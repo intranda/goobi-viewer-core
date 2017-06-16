@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui">
+	
+	<composite:interface>
+		<composite:attribute name="tagMethod" required="false" default="default"/>
+		<composite:attribute name="tagCount" required="false" default="50"/>
+	</composite:interface>
+	
+
+	<composite:implementation>
+
+		<div class="static_tagCloud">
+		<div class="tags">
+		
+			<h:form styleClass="formTagCloud" >
+			<div id="tagcloud">
+				
+				<h:panelGroup rendered="#{cc.attrs.tagMethod eq 'person'}">								
+				<ui:repeat value="#{tagCloudBean.tagsPersons}" var="tag" varStatus="counter">							
+			  	<h:panelGroup rendered="#{counter.index lt cc.attrs.tagCount+0}">				
+					<div class="tagcloudElement tag#{tag.css}">
+					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.escwapedName}/1/-/">
+						<h:outputText value="#{tag.name}"/>
+					</h:outputLink>
+					</div>
+				</h:panelGroup>				
+				</ui:repeat>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{cc.attrs.tagMethod eq 'year'}">								
+				<ui:repeat value="#{tagCloudBean.tagsYears}" var="tag" varStatus="counter">							
+			  	<h:panelGroup rendered="#{counter.index lt cc.attrs.tagCount+0}">				
+					<div class="tagcloudElement tag#{tag.css}">
+					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.escapedName}/1/-/">
+						<h:outputText value="#{tag.name}"/>
+					</h:outputLink>
+					</div>
+				</h:panelGroup>				
+				</ui:repeat>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{cc.attrs.tagMethod eq 'title'}">								
+				<ui:repeat value="#{tagCloudBean.tagsTitles}" var="tag" varStatus="counter">							
+			  	<h:panelGroup rendered="#{counter.index lt cc.attrs.tagCount+0}">				
+					<div class="tagcloudElement tag#{tag.css}">
+					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.escapedName}/1/-/">
+						<h:outputText value="#{tag.name}"/>
+					</h:outputLink>
+					</div>
+				</h:panelGroup>				
+				</ui:repeat>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{cc.attrs.tagMethod eq 'places'}">								
+				<ui:repeat value="#{tagCloudBean.tagsPlaces}" var="tag" varStatus="counter">							
+			  	<h:panelGroup rendered="#{counter.index lt cc.attrs.tagCount+0}">				
+					<div class="tagcloudElement tag#{tag.css}">
+					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.escapedName}/1/-/">
+						<h:outputText value="#{tag.name}"/>
+					</h:outputLink>
+					</div>
+				</h:panelGroup>				
+				</ui:repeat>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{cc.attrs.tagMethod eq 'autor'}">								
+				<ui:repeat value="#{tagCloudBean.tagsAutor}" var="tag" varStatus="counter">							
+			  	<h:panelGroup rendered="#{counter.index lt cc.attrs.tagCount+0}">				
+					<div class="tagcloudElement tag#{tag.css}">
+					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.escapedName}/1/-/">
+						<h:outputText value="#{tag.name}"/>
+					</h:outputLink>
+					</div>
+				</h:panelGroup>				
+				</ui:repeat>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{cc.attrs.tagMethod eq 'default'}">								
+				<ui:repeat value="#{tagCloudBean.tags}" var="tag" varStatus="counter">							
+			  	<h:panelGroup rendered="#{counter.index lt cc.attrs.tagCount+0}">				
+					<div class="tagcloudElement tag#{tag.css}">
+					<h:outputLink value="#{navigationHelper.searchUrl}/-/#{tag.escapedName}/1/-/">
+						<h:outputText value="#{tag.name}"/>
+					</h:outputLink>
+					</div>
+				</h:panelGroup>				
+				</ui:repeat>
+				</h:panelGroup>
+				</div>
+			</h:form>
+		
+		</div>
+		</div>
+	</composite:implementation>
+
+</ui:composition>

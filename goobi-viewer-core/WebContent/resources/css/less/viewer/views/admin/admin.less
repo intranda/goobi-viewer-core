@@ -1,0 +1,29 @@
+/* ==============================================================
+   Admin 
+   global style declarations for admin backend
+   ==============================================================*/
+#adminUser .nav-tabs li a,
+#adminUserGroup .nav-tabs li a,
+#adminIpRange .nav-tabs li a {
+    border-bottom: 1px solid @middlegray;
+    background-color: @lightgray;
+}
+
+#adminUser .nav-tabs li.active a,
+#adminUserGroup .nav-tabs li.active a,
+#adminIpRange .nav-tabs li.active a {
+    border-bottom: 1px solid @white;
+    background-color: @white;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

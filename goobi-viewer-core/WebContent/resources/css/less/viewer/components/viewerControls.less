@@ -1,0 +1,116 @@
+/* ==============================================================
+   viewer Controls
+   style declarations for viewImageControls.xhtml
+   ==============================================================*/
+.viewer-control {
+    display: inline-block;
+    width: 1.75rem;
+    height: 1.75rem;
+    background-image: url("../@{images}/icons/viewer-controls-sprite.png");
+    background-repeat: no-repeat;
+    &.viewer-control-start        { background-position:    0px   0px; }
+    &.viewer-control-back         { background-position:  -28px   0px; }
+    &.viewer-control-back5        { background-position:  -56px   0px; }
+    &.viewer-control-back20       { background-position:  -84px   0px; }
+    &.viewer-control-back50       { background-position: -112px   0px; }
+    &.viewer-control-reset        { background-position: -140px   0px; }
+    &.viewer-control-rotate-left  { background-position: -168px   0px; }
+    &.viewer-control-rotate-right { background-position: -196px   0px; }
+    &.viewer-control-end          { background-position:    0px -28px; }
+    &.viewer-control-forward      { background-position:  -28px -28px; }
+    &.viewer-control-forward5     { background-position:  -56px -28px; }
+    &.viewer-control-forward20    { background-position:  -84px -28px; }
+    &.viewer-control-forward50    { background-position: -112px -28px; }
+    &.viewer-control-fullscreen   { background-position: -140px -28px; }
+    &.viewer-control-toc          { background-position: -168px -28px; }
+    &.viewer-control-single-page  { background-position: -224px   0px; }
+    &.viewer-control-double-page  { background-position: -252px   0px; }
+    &.viewer-control-switch-page  { background-position: -224px -28px; }
+    &.viewer-control-pdf,
+    &.page-browse {
+        font-size: 0.8rem;
+        text-align: center;
+        color: #606060;
+        border: 1px solid #606060;
+        background-image: none;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    &.viewer-control-pdf {
+        border: none;
+        font-size: 1.6rem;
+    }
+    &.viewer-control-togglepageorientation {
+    	background-position: -140px   0px;
+    }
+}
+
+// basic styling for viewer-, fulltext- and preview-controls
+#viewer_controls_nav,
+#fulltext_controls_nav,
+#view_preview_controls_nav {
+    float: left;
+    width: 100%;
+    margin: 1rem 0;
+    ul {
+        position: relative;
+        float: left;
+        left: 50%;
+        margin: 0 auto;
+        li {
+            display: inline-block;
+            position: relative;
+            float: left;
+            right: 50%;
+            height: 1.75rem;
+            line-height: 1.75rem;
+            margin-right: 0.4375rem;
+            span, a {}
+            a {
+                cursor: pointer;
+            }
+            .control-select-box {
+                height: 1.75rem;
+                line-height: 1.3125rem;
+                border: 0.0625rem solid @gray;
+                select {
+                    height: 1.625rem;
+                    border: none;
+                }                
+            }
+            #slider-id {
+                width: 9.375rem;
+                height: 1rem;
+                margin-top: 0.375rem;
+                border: 1px solid @gray;
+                .zoom-slider-handle {
+                    position: relative;
+                    display: block;
+	                top: -7px;
+	                height: 1.75rem; 
+	                width: 0.875rem; 
+	                background-color: @gray;                	
+                }
+                a {
+                    width: 1.45rem;
+                    height: 1.45rem;
+                    margin: 0;
+                    background: @gray;
+                }
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

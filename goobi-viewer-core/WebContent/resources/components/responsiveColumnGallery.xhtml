@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- interface options -->
+    <composite:interface>
+        <!-- sets the themepath -->
+        <composite:attribute name="themePath" required="true" default="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/" />
+        <!-- sets the imagepath in themefolder -->
+        <composite:attribute name="imagePath" required="true" default="images/gallery/" />
+        <!-- sets the path to the JSON-File in themefolder -->
+        <composite:attribute name="imageDataFile" required="true" default="javascript/data/responsiveGalleryData.json" />
+        <!-- sets the count of the gallery columns (max = 4) -->
+        <composite:attribute name="maxColumnCount" required="true" default="3" />
+        <!-- sets the count of the images per column -->
+        <composite:attribute name="maxImagesPerColumn" required="true" default="3" />
+        <!-- sets a fixed image height (use if images are not at same size) -->
+        <composite:attribute name="fixedHeight" required="true" default="false" />
+        <!-- if image height is fixed, sets the height in pixel -->
+        <composite:attribute name="maxHeight" required="true" default="150px" />
+        <!-- enables the image caption -->
+        <composite:attribute name="caption" required="true" default="true" />
+        <!-- sets the color of the mouseover effect (use HEX-Codes) -->
+        <composite:attribute name="overlayColor" required="true" default="#304d6f" />
+        <!-- enables the lightbox -->
+        <composite:attribute name="lbActive" required="true" default="true" />
+        <!-- enables the image caption of the lightbox -->
+        <composite:attribute name="lbCaption" required="true" default="true" />
+    </composite:interface>
+
+    <!-- component content -->
+    <composite:implementation>
+        <!-- Responsive Column Gallery -->
+        <div id="responsiveColumnGallery"></div>
+
+        <script type="text/javascript">
+            var rcgConfig = {
+                themePath: '#{cc.attrs.themePath}',
+                imagePath: '#{cc.attrs.imagePath}',
+                imageDataFile: '#{cc.attrs.imageDataFile}',
+                galleryObject: $( '#responsiveColumnGallery' ),
+                maxColumnCount: #{cc.attrs.maxColumnCount},
+                maxImagesPerColumn: #{cc.attrs.maxImagesPerColumn},
+                fixedHeight: #{cc.attrs.fixedHeight},
+                maxHeight: '#{cc.attrs.maxHeight}',
+                caption: #{cc.attrs.caption},
+                overlayColor: '#{cc.attrs.overlayColor}',
+                lightbox: {
+                    active: #{cc.attrs.lbActive},
+                    caption: #{cc.attrs.lbCaption}
+                },
+                lang: {
+                    close: '#{msg.rcg_closeWindow}',
+                    showLightbox: '#{msg.rcg_showLightbox}',
+                    goToWork: '#{msg.rcg_goToWork}'
+                }
+            };
+            
+            viewerJS.responsiveColumnGallery.init( rcgConfig );
+        </script>
+    </composite:implementation>
+</ui:composition>

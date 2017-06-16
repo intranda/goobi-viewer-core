@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- interface options -->
+    <composite:interface>
+    	<composite:attribute name="sorting" required="false" default="desc" />
+    	<composite:attribute name="count" required="false" default="5" />
+    	<composite:attribute name="encoding" required="false" default="utf-8" />
+    </composite:interface>
+
+    <!-- component content -->
+    <composite:implementation>
+		<div id="dateSortedFeed" class="sidebar-widget">
+			<h3>#{msg.lastImports}</h3>
+		</div>
+		
+		<script type="text/javascript">
+			var dateSortedFeedConfig = {
+				path: '#{request.contextPath}',
+				feedBox: $('#dateSortedFeed')
+			};
+        	
+        	viewerJS.dateSortedFeed.setDataSortOrder( '#{cc.attrs.sorting}' );
+        	viewerJS.dateSortedFeed.setDataCount( '#{cc.attrs.count}' );
+        	viewerJS.dateSortedFeed.setDataEncoding( '#{cc.attrs.encoding}' );
+			viewerJS.dateSortedFeed.init( dateSortedFeedConfig );
+        </script>
+	</composite:implementation>
+</ui:composition>

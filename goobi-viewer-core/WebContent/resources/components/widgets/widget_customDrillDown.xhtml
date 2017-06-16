@@ -1,0 +1,103 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite" 
+	xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:facelets="http://de.intranda.digiverso.presentation">
+
+	<composite:interface>
+		<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+	</composite:interface>
+
+	<composite:implementation>
+		<h:form>
+			<h:panelGroup id="customDrillDownGroup" rendered="#{cc.attrs.widget != null and cc.attrs.widget.category == 'fieldQuery'}">
+				<div id="widgetCustomDrillDown-#{cc.attrs.widget.order}" class="widget widget-custom-drilldown #{cc.attrs.widget.cssClass}">
+					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
+						<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+
+						<ul>
+							<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit)}" var="filterLink">
+								<li>
+									<a href="#{navigationHelper.searchUrl}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}/1/-/-/">
+										#{msg[cc.attrs.labelPrefix]}#{msg[filterLink.label]}#{msg[cc.attrs.labelSuffix]} (#{filterLink.count})
+									</a>
+								</li>
+							</ui:repeat>
+
+							<h:panelGroup rendered="#{cc.attrs.widget.resultDisplayLimit > 0}">
+								<!-- EXPAND LINK -->
+								<h:panelGroup rendered="#{searchBean.isDrillDownCollapsed(cc.attrs.widget.id.toString())}">
+									<li class="sidebar-collection-more">
+										<h:commandLink action="#{searchBean.expandDrillDown(cc.attrs.widget.id.toString())}" title="#{msg.more}">
+                                        	#{msg.slideDown}
+                                        	<span class="glyphicon glyphicon-plus"></span>
+											<f:ajax render="customDrillDownGroup" />
+										</h:commandLink>
+									</li>
+								</h:panelGroup>
+
+								<!--   COLLAPSE LINK -->
+								<h:panelGroup rendered="#{searchBean.isDrillDownExpanded(cc.attrs.widget.id.toString())}">
+									<li class="sidebar-collection-less">
+										<h:commandLink action="#{searchBean.collapseDrillDown(cc.attrs.widget.id.toString())}" title="#{msg.less}">
+                                            #{msg.slideUp}
+                                            <span class="glyphicon glyphicon-minus"></span>
+											<f:ajax render="customDrillDownGroup" />
+										</h:commandLink>
+									</li>
+								</h:panelGroup>
+							</h:panelGroup>
+						</ul>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+						<h3>
+							<a href="#customCollapse-#{cc.attrs.widget.order}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
+								#{msg[cc.attrs.widget.widgetTitle]}
+								<span class="glyphicon glyphicon-arrow-down"></span>
+							</a>
+						</h3>
+						<div id="customCollapse-#{cc.attrs.widget.order}" class="collapse">
+							<ul>
+								<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? 0 : cc.attrs.widget.resultDisplayLimit)}" var="filterLink">
+									<li>
+										<a href="#{navigationHelper.searchUrl}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}/1/-/-/">
+											#{msg[cc.attrs.labelPrefix]}#{msg[filterLink.label]}#{msg[cc.attrs.labelSuffix]} (#{filterLink.count})
+										</a>
+									</li>
+								</ui:repeat>
+
+								<!-- EXPAND LINK -->
+								<h:panelGroup rendered="#{searchBean.isDrillDownCollapsed(cc.attrs.widget.id.toString())}">
+									<li class="sidebar-collection-more">
+										<h:commandLink action="#{searchBean.expandDrillDown(cc.attrs.widget.id.toString())}" title="#{msg.more}">
+											<f:ajax render="customDrillDownGroup" />
+                                                #{msg.slideDown}
+                                                <span class="glyphicon glyphicon-plus"></span>
+										</h:commandLink>
+									</li>
+								</h:panelGroup>
+
+								<!--   COLLAPSE LINK -->
+								<h:panelGroup rendered="#{searchBean.isDrillDownExpanded(cc.attrs.widget.id.toString())}">
+									<li class="sidebar-collection-less">
+										<h:commandLink action="#{searchBean.collapseDrillDown(cc.attrs.widget.id.toString())}" title="#{msg.less}">
+											<f:ajax render="customDrillDownGroup" />
+                                                #{msg.slideUp}
+                                                <span class="glyphicon glyphicon-minus"></span>
+										</h:commandLink>
+									</li>
+								</h:panelGroup>
+							</ul>
+						</div>
+					</h:panelGroup>
+				</div>
+			</h:panelGroup>
+		</h:form>
+	</composite:implementation>
+</ui:composition>

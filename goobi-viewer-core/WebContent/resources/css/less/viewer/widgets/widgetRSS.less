@@ -1,0 +1,37 @@
+/* ==============================================================
+   Widget RSS
+   style declarations for rssFeed.xhtml
+   ==============================================================*/
+.rss_elem_wrapp {
+    h3 {
+        a {
+            float: right;
+        }
+    }
+    .rss-wrapp {
+        .rss-elem {
+            dl {
+                .rss-elem-title {
+                    a {
+                        &:hover {}
+                    }
+                }
+                .rss-elem-info {
+                    margin-bottom: 0.875rem;
+                }
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

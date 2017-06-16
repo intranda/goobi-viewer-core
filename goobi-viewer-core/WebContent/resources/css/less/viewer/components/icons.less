@@ -1,0 +1,148 @@
+/* ==============================================================
+   Icons
+   style declarations for icons used in viewer
+   ==============================================================*/
+.icon-totop {
+    display: none;
+    position: fixed;
+    right: 15px;
+    bottom: 15px;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    /* background-image is deprecated in 3.1 */
+    background-image: url("@{images}/icons/icon-totop.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    opacity: 0.25;
+    cursor: pointer;
+    z-index: 9999;
+    &:hover {
+        opacity: 1;
+    }
+}
+
+// searchDrillDown icons
+.icon-more,
+.icon-less,
+.icon-close {
+    float: right;
+}
+
+// social media icons
+.icon-rss12x12,
+.icon-rss16x16,
+.icon-rss24x24,
+.icon-rss32x32,
+.icon-rss64x64,
+.icon-rss128x128,
+.icon-facebook12x12,
+.icon-facebook16x16,
+.icon-facebook24x24,
+.icon-facebook32x32,
+.icon-facebook64x64,
+.icon-facebook128x128,
+.icon-twitter12x12,
+.icon-twitter16x16,
+.icon-twitter24x24,
+.icon-twitter32x32,
+.icon-twitter64x64,
+.icon-twitter128x128,
+.icon-gplus12x12,
+.icon-gplus16x16,
+.icon-gplus24x24,
+.icon-gplus32x32,
+.icon-gplus64x64,
+.icon-gplus128x128 {
+    display: inline-block;
+    background-image: url("@{images}/icons/viewer-icon-sprite.png");
+    background-repeat: no-repeat;
+}
+
+.icon-rss12x12,
+.icon-facebook12x12,
+.icon-twitter12x12,
+.icon-gplus12x12 {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+.icon-rss16x16,
+.icon-facebook16x16,
+.icon-twitter16x16,
+.icon-gplus16x16 {
+    width: 1rem;
+    height: 1rem;
+}
+
+.icon-rss24x24,
+.icon-facebook24x24,
+.icon-twitter24x24,
+.icon-gplus24x24 {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.icon-rss32x32,
+.icon-facebook32x32,
+.icon-twitter32x32,
+.icon-gplus32x32 {
+    width: 2rem;
+    height: 2rem;
+}
+
+.icon-rss64x64,
+.icon-facebook64x64,
+.icon-twitter64x64,
+.icon-gplus64x64 {
+    width: 4rem;
+    height: 4rem;
+}
+
+.icon-rss128x128,
+.icon-facebook128x128,
+.icon-twitter128x128,
+.icon-gplus128x128 {
+    width: 8rem;
+    height: 8rem;
+}
+
+.icon-rss12x12   { background-position:   -3px -3px; }
+.icon-rss16x16   { background-position:  -18px -3px; }
+.icon-rss24x24   { background-position:  -37px -3px; }
+.icon-rss32x32   { background-position:  -64px -3px; }
+.icon-rss64x64   { background-position:  -99px -3px; }
+.icon-rss128x128 { background-position: -166px -3px; }
+
+.icon-facebook12x12   { background-position:   -3px -137px; }
+.icon-facebook16x16   { background-position:  -18px -137px; }
+.icon-facebook24x24   { background-position:  -37px -137px; }
+.icon-facebook32x32   { background-position:  -64px -137px; }
+.icon-facebook64x64   { background-position:  -99px -137px; }
+.icon-facebook128x128 { background-position: -166px -137px; }
+
+.icon-twitter12x12   { background-position:   -3px -271px; }
+.icon-twitter16x16   { background-position:  -18px -271px; }
+.icon-twitter24x24   { background-position:  -37px -271px; }
+.icon-twitter32x32   { background-position:  -64px -271px; }
+.icon-twitter64x64   { background-position:  -99px -271px; }
+.icon-twitter128x128 { background-position: -166px -271px; }
+
+.icon-gplus12x12   { background-position:   -3px -405px; }
+.icon-gplus16x16   { background-position:  -18px -405px; }
+.icon-gplus24x24   { background-position:  -37px -405px; }
+.icon-gplus32x32   { background-position:  -64px -405px; }
+.icon-gplus64x64   { background-position:  -99px -405px; }
+.icon-gplus128x128 { background-position: -166px -405px; }
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

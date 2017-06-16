@@ -1,0 +1,23 @@
+<link href="templates/css/styles.css" rel="stylesheet" type="text/css" />
+
+<script language="javascript" type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.jfeed.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.aRSSFeed.js"></script>
+
+<div class="RSSAggrCont" rssnum="5" rss_url="http://rss.news.yahoo.com/rss/topstories">
+    <div class="loading_rss">
+        <img alt="Loading..." src="templates/images/loading.gif" />
+    </div>
+</div>
+
+<div class="RSSAggrCont" rssnum="5" rss_url="http://newsrss.bbc.co.uk/rss/newsonline_world_edition/front_page/rss.xml">
+    <div class="loading_rss">
+        <img alt="Loading..." src="templates/images/loading.gif" />
+    </div>
+</div>
+
+<script language="javascript" type="text/javascript">
+$(document).ready( function() {
+    $('div.RSSAggrCont').aRSSFeed();
+} );
+</script>

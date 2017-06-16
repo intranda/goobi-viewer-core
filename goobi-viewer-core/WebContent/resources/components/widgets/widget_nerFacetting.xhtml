@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <composite:interface />
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.nerAvailable}">
+        <div id="widgetNerFacetting">
+            <a name="widgetNerFacettingTop"></a>
+            <h3>#{msg.widgetNerFacetting}</h3>
+            
+            <!-- TABS -->
+            <div class="facetting-content">
+                <!-- NAV TABS -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#overview" id="overviewTrigger" aria-controls="overview" role="tab" data-toggle="tab">#{msg.widgetNerFacetting_overview}</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#section" id="sectionTrigger" aria-controls="section" role="tab" data-toggle="tab">#{msg.widgetNerFacetting_section}</a>
+                    </li>
+                </ul>
+
+                <!-- TAB PANES -->
+                <div class="tab-content">
+                    <!-- AJAX LOADER -->
+                    <div id="nerFacettingLoader"></div>
+                
+                    <!-- OVERVIEW -->
+                    <div role="tabpanel" class="tab-pane active" id="overview">
+                        <!-- CURRENT TAGS -->
+                        <div class="current-tags"></div>
+                        
+                        <!-- DESCRIPTION -->
+                        <div class="tag-filter-description">
+                            <span class="pull-left">#{msg.widgetNerFacetting_setRange}:</span> 
+                            <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
+                        </div>
+
+                        <div class="clearfix"></div>
+                    
+                        <!-- SET RANGE -->
+                        <select class="set-tag-range-widget overview pull-left">
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 1}">
+                                <option value="1">#{msg.widgetNerFacetting_allPages}</option>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 5}">
+                                <option value="5">#{msg.widgetNerFacetting_5Pages}</option>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 10}">
+                                <option value="10">#{msg.widgetNerFacetting_10Pages}</option>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 50}">
+                                <option value="50">#{msg.widgetNerFacetting_50Pages}</option>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 100}">
+                                <option value="100">#{msg.widgetNerFacetting_100Pages}</option>
+                            </h:panelGroup>
+                        </select>
+                        
+                        <!-- TYPE FACETTING -->
+                        <ul class="filter-tags pull-right">
+                            <li class="reset-filter">
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger" data-type="-" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagAll}">
+                                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="person" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagPerson}">
+                                    <i class="fa fa-male" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="location" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagLocation}">
+                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="corporation" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagCorporation}">
+                                    <i class="fa fa-building-o" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="clearfix"></div>
+                                                
+                        <div class="overview-content"></div>
+                    </div>
+                    
+                    <!-- SECTION -->
+                    <div role="tabpanel" class="tab-pane" id="section">
+                        <!-- DESCRIPTION -->
+                        <div class="tag-filter-description">
+                            <span class="pull-left">#{msg.widgetNerFacetting_setSection}:</span>
+                            <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
+                        </div>
+
+                        <div class="clearfix"></div>
+                        
+                        
+                        <!-- SET RANGE -->
+                        <select class="set-tag-range-widget section pull-left">
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 5}">
+                                <option value="5">#{msg.widgetNerFacetting_5Pages}</option>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 10}">
+                                <option value="10">#{msg.widgetNerFacetting_10Pages}</option>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 50}">
+                                <option value="50">#{msg.widgetNerFacetting_50Pages}</option>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{activeDocumentBean.viewManager.pageLoader.numPages >= 100}">
+                                <option value="100">#{msg.widgetNerFacetting_100Pages}</option>
+                            </h:panelGroup>
+                        </select>
+                        
+                        <!-- TYPE FACETTING -->
+                        <ul class="filter-tags pull-right">
+                            <li class="reset-filter">
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger" data-type="-" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagAll}">
+                                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="person" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagPerson}">
+                                    <i class="fa fa-male" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="location" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagLocation}">
+                                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#widgetNerFacettingTop" class="facetting-trigger active" data-type="corporation" data-toggle="tooltip" data-placement="bottom" title="#{msg.widgetNerFacetting_tagCorporation}">
+                                    <i class="fa fa-building-o" aria-hidden="true"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="clearfix"></div>
+                                            
+                        <!-- SCALE -->
+                        <div id="sliderScale">
+                            <span class="scale-page start">1</span>
+                            <span class="slider-description">#{msg.widgetNerFacetting_pages}</span>
+                            <ul class="scale-stripes">
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li class="middle"></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                                <li></li>
+                            </ul>
+                            <span class="scale-page end"></span>
+                            <div class="scale-section-stripe"></div>
+                                                        
+                            <!-- SLIDER -->                            
+                            <div id="sliderVertical"></div>
+                        </div>
+                        
+                        <!-- TAGS -->
+                        <div id="sectionTags"></div>
+                        
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <script type="text/javascript">
+                var nerFacettingConfig = {
+                    currentPage: '#{navigationHelper.currentPage}',
+                    baseUrl: '#{request.contextPath}',
+                    workId: '#{activeDocumentBean.viewManager.pi}',
+                    overviewTrigger: '#overviewTrigger',
+                    overviewContent: '.overview-content',
+                    sectionTrigger: '#sectionTrigger',
+                    sectionContent: '.section-content',
+                    facettingTrigger: '.facetting-trigger',
+                    setTagRange: '.set-tag-range-widget',
+                    setTagRangeOverview: '.set-tag-range-widget.overview',
+                    setTagRangeSection: '.set-tag-range-widget.section',
+                    slider: '#sliderVertical',
+                    sliderScale: '#sliderScale',
+                    sectionTags: '#sectionTags',
+                    currentTags: '.current-tags',
+                    sliderHandle: '#sliderVertical .ui-slider-handle',
+                    sliderSectionStripe: '#sliderScale .scale-section-stripe',
+                    recurrenceNumber: 10,
+                    recurrenceSectionNumber: 100,
+                    loader: '#nerFacettingLoader',
+                    msg: {
+                        noJSON: '#{msg.widgetNerFacetting_noJSON}',
+                        emptyTag: '#{msg.widgetNerFacetting_emptyTag}',
+                        page: '#{msg.widgetNerFacetting_page}',
+                        tags: '#{msg.widgetNerFacetting_tags}',
+                    }
+                };
+            
+                viewerJS.nerFacetting.init( nerFacettingConfig );
+            </script>
+        </div>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

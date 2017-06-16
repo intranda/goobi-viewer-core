@@ -1,0 +1,435 @@
+<!-- http://gso.gbv.de/sru/DB=2.1/?version=1.1&recordSchema=marc21&operation=searchRetrieve&query=pica.ppn%3D%22150610432%22 -->
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="http://gso.gbv.de/sru/?xsl=searchRetrieveResponse" ?>
+<srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:diag="http://www.loc.gov/zing/srw/diagnostic/" xmlns:xcql="http://www.loc.gov/zing/cql/xcql/">
+	<srw:version>1.1</srw:version>
+	<srw:numberOfRecords>1</srw:numberOfRecords>
+	<srw:resultSetId>SID7b401ede-109fS776</srw:resultSetId>
+	<srw:records>
+
+
+
+		<srw:record>
+			<srw:recordSchema>pica</srw:recordSchema>
+			<srw:recordPacking>xml</srw:recordPacking>
+			<srw:recordData>
+				<record>
+					<datafield tag="001@">
+						<subfield code="0">31,50,65,69,341</subfield>
+					</datafield>
+					<datafield tag="001A">
+						<subfield code="0">0023:30-04-94</subfield>
+					</datafield>
+					<datafield tag="001B">
+						<subfield code="0">1999:28-12-12</subfield>
+						<subfield code="t">03:00:12.000</subfield>
+					</datafield>
+					<datafield tag="001D">
+						<subfield code="0">9999:99-99-99</subfield>
+					</datafield>
+					<datafield tag="001U">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="001X">
+						<subfield code="0">0</subfield>
+					</datafield>
+					<datafield tag="002@">
+						<subfield code="0">AFr</subfield>
+					</datafield>
+					<datafield tag="003@">
+						<subfield code="0">150610432</subfield>
+					</datafield>
+					<datafield tag="003O">
+						<subfield code="a">OCoLC</subfield>
+						<subfield code="0">247067634</subfield>
+						<subfield code="v">2012-12-31</subfield>
+					</datafield>
+					<datafield tag="006Y">
+						<subfield code="0">OKRT00036412</subfield>
+					</datafield>
+					<datafield tag="006Y">
+						<subfield code="0">016718267</subfield>
+					</datafield>
+					<datafield tag="007G">
+						<subfield code="c">GBV</subfield>
+						<subfield code="0">150610432</subfield>
+					</datafield>
+					<datafield tag="010@">
+						<subfield code="a">ger</subfield>
+					</datafield>
+					<datafield tag="011@">
+						<subfield code="a">1824</subfield>
+					</datafield>
+					<datafield tag="019@">
+						<subfield code="a">XG-DR</subfield>
+					</datafield>
+					<datafield tag="021A">
+						<subfield code="a">Das @Evangelium Johannis, die Apostel-Geschichte und die Epistel S. Pauli an die Römer</subfield>
+					</datafield>
+					<datafield tag="025@">
+						<subfield code="b">Evangelium Johannes, die Apostelgeschichte und die Epistel des Sankt Paulus Sancti Pauli an die Römer Schullehrerbibel
+						</subfield>
+					</datafield>
+					<datafield tag="028C">
+						<subfield code="d">Martin</subfield>
+						<subfield code="a">Luther</subfield>
+						<subfield code="9">133813363</subfield>
+						<subfield code="d">Martin</subfield>
+						<subfield code="a">Luther</subfield>
+						<subfield code="E">1483</subfield>
+						<subfield code="F">1546</subfield>
+						<subfield code="0">gnd/118575449</subfield>
+					</datafield>
+					<datafield tag="028C" occurrence="01">
+						<subfield code="d">Gustav Friedrich</subfield>
+						<subfield code="a">Dinter</subfield>
+						<subfield code="9">142286176</subfield>
+						<subfield code="d">Gustav Friedrich</subfield>
+						<subfield code="a">Dinter</subfield>
+						<subfield code="E">1760</subfield>
+						<subfield code="F">1831</subfield>
+						<subfield code="0">gnd/118525816</subfield>
+					</datafield>
+					<datafield tag="033A">
+						<subfield code="p">Neustadt an der Orla</subfield>
+						<subfield code="n">Wagner</subfield>
+					</datafield>
+					<datafield tag="034D">
+						<subfield code="a">[1] Bl., S. [203] - 412, [1] Bl., S. [55] - 92</subfield>
+					</datafield>
+					<datafield tag="034I">
+						<subfield code="a">8°</subfield>
+					</datafield>
+					<datafield tag="036C">
+						<subfield code="a">Schullehrer-Bibel</subfield>
+						<subfield code="c">Nach d. deutschen Uebers. Martin Luthers. Mit Anm. u. Zugaben ... von Gustav Friedrich Dinter</subfield>
+						<subfield code="l">[2]</subfield>
+					</datafield>
+					<datafield tag="036C" occurrence="01">
+						<subfield code="a">Neues Testament</subfield>
+						<subfield code="l">Theil 2</subfield>
+					</datafield>
+					<datafield tag="036D">
+						<subfield code="X">2,2.1824</subfield>
+						<subfield code="9">150610343</subfield>
+						<subfield code="a">Schullehrer-Bibel</subfield>
+						<subfield code="a">Luther</subfield>
+						<subfield code="d">Martin</subfield>
+						<subfield code="a">[Versch. Aufl.]</subfield>
+						<subfield code="p">Neustadt an der Orla</subfield>
+						<subfield code="n">Wagner</subfield>
+						<subfield code="a">1824</subfield>
+						<subfield code="l">[2], Theil 2</subfield>
+						<subfield code="x">_1212 1824</subfield>
+					</datafield>
+					<datafield tag="101@">
+						<subfield code="a">31</subfield>
+						<subfield code="c">PICA</subfield>
+						<subfield code="d">Jena, Thüringer Universitäts- und Landesbibliothek Jena &#60;27&#62;</subfield>
+					</datafield>
+					<datafield tag="208@" occurrence="01">
+						<subfield code="a">27-08-02</subfield>
+						<subfield code="b">r</subfield>
+					</datafield>
+					<datafield tag="201B" occurrence="01">
+						<subfield code="0">27-08-02</subfield>
+						<subfield code="t">07:04:06.043</subfield>
+					</datafield>
+					<datafield tag="201C" occurrence="01">
+						<subfield code="0">27-08-02</subfield>
+					</datafield>
+					<datafield tag="201D" occurrence="01">
+						<subfield code="0">27-08-02</subfield>
+						<subfield code="b">1196</subfield>
+						<subfield code="a">0000</subfield>
+					</datafield>
+					<datafield tag="201U" occurrence="01">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="203@" occurrence="01">
+						<subfield code="0">567417484</subfield>
+					</datafield>
+					<datafield tag="209A" occurrence="01">
+						<subfield code="f">Mag</subfield>
+						<subfield code="a">2002 A 9044 :2.2</subfield>
+						<subfield code="d">d</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="209G" occurrence="01">
+						<subfield code="a">27$003246744</subfield>
+					</datafield>
+					<datafield tag="220B" occurrence="01">
+						<subfield code="a">Umsetzung aus J 49 am 27.08.2002</subfield>
+					</datafield>
+					<datafield tag="101@">
+						<subfield code="a">50</subfield>
+						<subfield code="c">PICA</subfield>
+						<subfield code="d">Wolfenbüttel, Herzog-August-Bibliothek &#60;23&#62;</subfield>
+					</datafield>
+					<datafield tag="101B">
+						<subfield code="0">06-03-09</subfield>
+						<subfield code="t">08:57:08.000</subfield>
+					</datafield>
+					<datafield tag="101D">
+						<subfield code="0">06-03-09</subfield>
+						<subfield code="b">2035</subfield>
+						<subfield code="a">0023</subfield>
+					</datafield>
+					<datafield tag="101U">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="107F">
+						<subfield code="0">0068.205 // bj-M0388</subfield>
+					</datafield>
+					<datafield tag="145Z">
+						<subfield code="9">590621769</subfield>
+						<subfield code="a">THE Bc. 2</subfield>
+						<subfield code="j">Gesamtausgaben</subfield>
+					</datafield>
+					<datafield tag="145Z">
+						<subfield code="9">592869318</subfield>
+						<subfield code="a">THE Bd. 1.1</subfield>
+						<subfield code="j">Gesamtkommentare</subfield>
+					</datafield>
+					<datafield tag="208@" occurrence="01">
+						<subfield code="a">10-10-89</subfield>
+						<subfield code="b">r</subfield>
+					</datafield>
+					<datafield tag="201B" occurrence="01">
+						<subfield code="0">27-12-96</subfield>
+						<subfield code="t">21:51:37.017</subfield>
+					</datafield>
+					<datafield tag="201C" occurrence="01">
+						<subfield code="0">28-03-88</subfield>
+						<subfield code="b">bj</subfield>
+					</datafield>
+					<datafield tag="201D" occurrence="01">
+						<subfield code="0">10-10-89</subfield>
+						<subfield code="b">bj</subfield>
+					</datafield>
+					<datafield tag="201U" occurrence="01">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="203@" occurrence="01">
+						<subfield code="0">123552141</subfield>
+					</datafield>
+					<datafield tag="209A" occurrence="01">
+						<subfield code="a">Bibel-S. 144</subfield>
+						<subfield code="d">i</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="101@">
+						<subfield code="a">65</subfield>
+						<subfield code="c">PICA</subfield>
+						<subfield code="d">Halle, Universitäts- und Landesbibliothek Sachsen-Anhalt &#60;3&#62;</subfield>
+					</datafield>
+					<datafield tag="208@" occurrence="01">
+						<subfield code="a">16-11-99</subfield>
+						<subfield code="b">r12</subfield>
+					</datafield>
+					<datafield tag="201B" occurrence="01">
+						<subfield code="0">18-02-05</subfield>
+						<subfield code="t">04:52:01.000</subfield>
+					</datafield>
+					<datafield tag="201C" occurrence="01">
+						<subfield code="0">16-11-99</subfield>
+					</datafield>
+					<datafield tag="201D" occurrence="01">
+						<subfield code="0">18-02-05</subfield>
+						<subfield code="b">r65ausl</subfield>
+						<subfield code="a">0003</subfield>
+					</datafield>
+					<datafield tag="201U" occurrence="01">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="203@" occurrence="01">
+						<subfield code="0">365941816</subfield>
+					</datafield>
+					<datafield tag="209A" occurrence="01">
+						<subfield code="a">AB 89158</subfield>
+						<subfield code="d">i</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="208@" occurrence="02">
+						<subfield code="a">15-01-94</subfield>
+						<subfield code="b">r</subfield>
+					</datafield>
+					<datafield tag="201B" occurrence="02">
+						<subfield code="0">13-03-13</subfield>
+						<subfield code="t">09:33:52.000</subfield>
+					</datafield>
+					<datafield tag="201C" occurrence="02">
+						<subfield code="0">13-12-93</subfield>
+						<subfield code="b">JS</subfield>
+					</datafield>
+					<datafield tag="201D" occurrence="02">
+						<subfield code="0">13-03-13</subfield>
+						<subfield code="b">2418</subfield>
+						<subfield code="a">0003</subfield>
+					</datafield>
+					<datafield tag="201U" occurrence="02">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="203@" occurrence="02">
+						<subfield code="0">121776859</subfield>
+					</datafield>
+					<datafield tag="209A" occurrence="02">
+						<subfield code="a">Ga 1800</subfield>
+						<subfield code="d">i</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="208@" occurrence="03">
+						<subfield code="a">21-06-01</subfield>
+						<subfield code="b">r6</subfield>
+					</datafield>
+					<datafield tag="201B" occurrence="03">
+						<subfield code="0">18-02-05</subfield>
+						<subfield code="t">04:52:01.000</subfield>
+					</datafield>
+					<datafield tag="201C" occurrence="03">
+						<subfield code="0">13-12-93</subfield>
+						<subfield code="b">JS</subfield>
+					</datafield>
+					<datafield tag="201D" occurrence="03">
+						<subfield code="0">18-02-05</subfield>
+						<subfield code="b">r65ausl</subfield>
+						<subfield code="a">0003</subfield>
+					</datafield>
+					<datafield tag="201U" occurrence="03">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="203@" occurrence="03">
+						<subfield code="0">501715975</subfield>
+					</datafield>
+					<datafield tag="209A" occurrence="03">
+						<subfield code="a">AB K 1079 (N.T.2)</subfield>
+						<subfield code="d">i</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="101@">
+						<subfield code="a">69</subfield>
+						<subfield code="c">PICA</subfield>
+						<subfield code="d">Greifswald, Universitätsbibliothek &#60;9&#62;</subfield>
+					</datafield>
+					<datafield tag="208@" occurrence="01">
+						<subfield code="a">29-09-98</subfield>
+						<subfield code="b">r</subfield>
+					</datafield>
+					<datafield tag="201B" occurrence="01">
+						<subfield code="0">06-02-99</subfield>
+						<subfield code="t">05:03:17.540</subfield>
+					</datafield>
+					<datafield tag="201C" occurrence="01">
+						<subfield code="0">29-09-98</subfield>
+					</datafield>
+					<datafield tag="201D" occurrence="01">
+						<subfield code="0">29-09-98</subfield>
+						<subfield code="b">6837</subfield>
+						<subfield code="a">0000</subfield>
+					</datafield>
+					<datafield tag="201U" occurrence="01">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="203@" occurrence="01">
+						<subfield code="0">299869938</subfield>
+					</datafield>
+					<datafield tag="209A" occurrence="01">
+						<subfield code="f">UB 520</subfield>
+						<subfield code="a">520/Fa 612</subfield>
+						<subfield code="d">d</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="209C" occurrence="01">
+						<subfield code="a">1917. EF. 145</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="101@">
+						<subfield code="a">341</subfield>
+						<subfield code="c">PICA</subfield>
+						<subfield code="d">Oldenburg, Ev.-luth. Oberkirchenrat Bibliothek &#60;Old 3&#62;</subfield>
+					</datafield>
+					<datafield tag="208@" occurrence="01">
+						<subfield code="a">11-03-98</subfield>
+						<subfield code="b">n</subfield>
+					</datafield>
+					<datafield tag="201B" occurrence="01">
+						<subfield code="0">05-01-09</subfield>
+						<subfield code="t">18:09:36.000</subfield>
+					</datafield>
+					<datafield tag="201C" occurrence="01">
+						<subfield code="0">01-01-01</subfield>
+					</datafield>
+					<datafield tag="201D" occurrence="01">
+						<subfield code="0">18-11-04</subfield>
+						<subfield code="b">csf_mm_vzg</subfield>
+						<subfield code="a">1999</subfield>
+					</datafield>
+					<datafield tag="201U" occurrence="01">
+						<subfield code="0">utf8</subfield>
+					</datafield>
+					<datafield tag="203@" occurrence="01">
+						<subfield code="0">684295830</subfield>
+					</datafield>
+					<datafield tag="209A" occurrence="01">
+						<subfield code="a">82-1464:6</subfield>
+						<subfield code="d">u</subfield>
+						<subfield code="i">c</subfield>
+						<subfield code="x">00</subfield>
+					</datafield>
+					<datafield tag="237A" occurrence="01">
+						<subfield code="a">Angeb. an: 82-1464:6</subfield>
+					</datafield>
+				</record>
+			</srw:recordData>
+			<srw:recordPosition>1</srw:recordPosition>
+		</srw:record>
+	</srw:records>
+	<srw:echoedSearchRetrieveRequest>
+		<srw:version>1.1</srw:version>
+		<srw:query>pica.ppn%3D%22150610432%22</srw:query>
+		<srw:xQuery>
+			<xcql:searchClause>
+				<xcql:index>pica.ppn</xcql:index>
+				<xcql:relation>
+					<xcql:value>=</xcql:value>
+				</xcql:relation>
+				<xcql:term>"150610432"</xcql:term>
+			</xcql:searchClause>
+		</srw:xQuery>
+		<startRecord>1</startRecord>
+		<maximumRecords>10</maximumRecords>
+		<srw:recordPacking>xml</srw:recordPacking>
+		<srw:recordSchema>pica</srw:recordSchema>
+
+		<srw:stylesheet>http://gso.gbv.de/sru/?xsl=searchRetrieveResponse</srw:stylesheet>
+	</srw:echoedSearchRetrieveRequest>
+	<diag:diagnostics>
+		<diag:uri>info:srw/diagnostic/1/0</diag:uri>
+
+
+	</diag:diagnostics>
+	<srw:extraResponseData>
+		<rob:authenticationToken xmlns:rob="info:srw/extension/2/auth-1.0">U999,K999,D2.1,E7b401ede-109f,I0,B9994++++++,SY,A%5C9008+J,,1,,U,,4,,7,,M,H13-15,,17-23,,30,,50,,60-61,,73-78,,88-90,NGAST,L999,R37.82.40.223,FN,O999
+		</rob:authenticationToken>
+		<mg:resultGrouping xmlns:mg="info:srw/extension/5/metadata-grouping-v1.0">
+
+			<mg:grouping key="9008" description="Flag"></mg:grouping>
+
+			<mg:grouping key="9001" description="Materialart"></mg:grouping>
+
+			<mg:grouping key="9000" description="Erscheinungsjahr"></mg:grouping>
+
+			<mg:grouping key="9005" description="Laendercode"></mg:grouping>
+
+			<mg:grouping key="9002" description="Region"></mg:grouping>
+
+			<mg:grouping key="9004" description="Sprachcode"></mg:grouping>
+
+			<mg:grouping key="9012" description="Zeitraum"></mg:grouping>
+
+
+		</mg:resultGrouping>
+	</srw:extraResponseData>
+</srw:searchRetrieveResponse>

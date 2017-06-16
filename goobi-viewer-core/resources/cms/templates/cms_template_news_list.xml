@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_news_list" version="2015-01-14">
+    <name>News Übersichtsseite mit einleitendem Text</name>
+    <description>Mit diesem Template wird eine Übersichtsseite verschiedener Newsbeiträge erstellt. Im oberen Teil gibt es einen allgemeinen Text. Darunter folgen Bild und Anreisstext der einzelnen Beiträge. Um welche es sich dabei handelt und wie viele insgesamt angezeigt werden wird über die Konfiguration der zu verwendenden Klassifikation bestimmt.</description>
+    <icon>cms_template_news_list.png</icon>
+    <html>cms_template_news_list.xhtml</html>
+    <content>
+        <item id="text01" label="Inhalt" type="HTML" mandatory="true" />
+        <item id="pageList01" label="News-Einträge" type="PAGELIST" />
+    </content>
+</cms_page_template>

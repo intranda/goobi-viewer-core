@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:implementation>
+    	<h:panelGroup rendered="#{configurationBean.cmsEnabled and userBean.admin}">
+	        <div id="widgetCms" class="widget">
+				<h:form id="widgetCmsForm">
+					<h3>#{msg.cms_title}</h3>
+
+					<ul>
+						<li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminCmsOverview" value="#{msg.cms_overview}" />
+						</li>
+						<li class="#{navigationHelper.currentPage == 'adminCmsCreatePage' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminCmsSelectTemplate" value="#{msg.cms_createPage}" />
+						</li>
+						<li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminCmsMenuItems" value="#{msg.cms_menuItems}" />
+						</li>
+						<li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminCmsStaticPages" value="#{msg.cms_staticPages}" />
+						</li>
+						<li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
+							<h:commandLink action="pretty:adminCmsMedia" value="#{msg.cms_overviewMedia}" />
+						</li>
+					</ul>
+				</h:form>
+			</div>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

@@ -1,0 +1,123 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	            xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+	
+
+	<ui:define name="metadata">
+		<f:metadata>
+		    <!--
+			<f:event type="preRenderView" listener="#{activeDocumentBean.action}" />
+			<f:viewParam name="action" value="#{activeDocumentBean.action}" />
+			<f:viewParam name="iddoc" value="#{activeDocumentBean.elementToShow}" />
+			<f:viewParam name="page" value="#{activeDocumentBean.imageToShow}" />
+			<f:viewParam name="logId" value="#{activeDocumentBean.logid}" />
+			-->
+		</f:metadata>
+	</ui:define>
+
+	<composite:interface>
+		<composite:attribute name="itemCount" required="true" />
+		<composite:attribute name="itemActive" required="true" />
+		<composite:attribute name="urlPrefix" required="true" />
+		<composite:attribute name="urlSuffix" required="false" />
+	</composite:interface>
+
+    <h:panelGroup rendered="#{cc.attrs.itemCount > 1}">
+        <nav id="numeric_paginator_nav">
+            <ul>
+                <h:panelGroup rendered="#{cc.attrs.itemActive != 1}">
+                    <li class="paginator-navigate">
+                        <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}">
+<!--                             <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/back.png" title="#{msg.previous}" /> -->
+                            <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{cc.attrs.itemActive gt 1}">
+                    <li>
+                        <a href="#{cc.attrs.urlPrefix}1/#{cc.attrs.urlSuffix}">1</a>
+                    </li>
+
+                    <h:panelGroup rendered="#{cc.attrs.itemActive gt 4}">
+                        <li class="hidden-xs hidden-sm">
+                            <a href="#{cc.attrs.urlPrefix}2/#{cc.attrs.urlSuffix}">2</a>
+                        </li>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{cc.attrs.itemActive != '1'}">
+                    <h:panelGroup rendered="#{cc.attrs.itemActive gt 2}">
+                        <h:panelGroup rendered="#{cc.attrs.itemActive gt 5}">
+                            <li class="numeric-paginator-dots">
+                                <span>...</span>
+                            </li>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{cc.attrs.itemActive gt 3}">
+                            <li class="hidden-xs hidden-sm">
+                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive -  2}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive - 2}</a>
+                            </li>
+                        </h:panelGroup>
+
+                        <li>
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive - 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive - 1}</a>
+                        </li>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <li class="paginator-active">
+                	<span>#{cc.attrs.itemActive}</span>
+                </li>
+
+                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount)}">
+                        <li>
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive + 1}</a>
+                        </li>
+
+                        <h:panelGroup rendered="#{cc.attrs.itemActive lt (cc.attrs.itemCount - 1)}">
+                            <li class="hidden-xs hidden-sm">
+                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 2}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemActive + 2}</a>
+                            </li>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{cc.attrs.itemActive + 2 lt cc.attrs.itemCount - 2}">
+                            <li class="numeric-paginator-dots">
+                                <span>...</span>
+                            </li>
+                        </h:panelGroup>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.itemCount - 2}">
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.itemCount - 2 and cc.attrs.itemActive != cc.attrs.itemCount - 3}">
+                        <li>
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemCount - 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemCount - 1}</a>
+                        </li>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{cc.attrs.itemActive lt cc.attrs.itemCount - 1}">
+                        <li class="hidden-xs hidden-sm">
+                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemCount}/#{cc.attrs.urlSuffix}">#{cc.attrs.itemCount}</a>
+                        </li>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{cc.attrs.itemActive != cc.attrs.itemCount}">
+                    <li class="paginator-navigate">
+                        <a href="#{cc.attrs.urlPrefix}#{cc.attrs.itemActive + 1}/#{cc.attrs.urlSuffix}">
+<!--                             <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/forward.png" title="#{msg.next}" /> -->
+                            <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                </h:panelGroup>
+            </ul>
+        </nav>
+    </h:panelGroup>
+</ui:composition>

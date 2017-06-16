@@ -1,0 +1,46 @@
+/* ==============================================================
+   Mobile Navigation
+   style declarations for mobileNavigation.xhtml
+   ==============================================================*/
+#mobileNav {
+    display: none;
+    position: absolute;
+    width: 100%;
+    max-height: 250px;
+    padding: 0 15px;
+    border-top: 1px solid @lightgray;
+    border-bottom: 1px solid @lightgray;
+    background-color: @white;
+    overflow-y: auto !important;
+    z-index: 999;
+    ul {
+        li {
+            a {
+                display: block;
+                padding: 10px;
+                &.mainnav-active {}
+            }
+            &:hover > ul {}
+            &:last-child {}
+        }
+    }
+    .mainsubnav {
+        padding-left: 15px;
+        h3 {}
+        li {
+            a {}
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

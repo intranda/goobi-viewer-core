@@ -1,0 +1,46 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <composite:interface />
+
+    <composite:implementation>
+        <div class="search-list__save-search">
+			<span data-toggle="tooltip" data-placement="top" title="#{msg.saveSearch}">
+				<button type="button" class="btn-clean" data-toggle="modal" data-target="#saveSearchModal">
+					<i class="fa fa-floppy-o" aria-hidden="true"></i>
+				</button>
+			</span>
+
+			<h:form id="saveSearchForm" prependId="false">
+                <div class="modal fade" id="saveSearchModal" tabindex="-1" role="dialog" aria-labelledby="saveSearchModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"> <h:outputText value="&amp;times;" escape="false" />
+                                    </span>
+                                </button>
+                                <h4 class="modal-title" id="saveSearchModalLabel">#{msg.saveSearch}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <h:outputLabel for="saveSearchInput" value="#{msg.name}:" />
+                                    <h:inputText id="saveSearchInput" value="#{searchBean.currentSearch.name}" styleClass="form-control"
+                                        required="required" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+                                <h:commandButton styleClass="btn" action="#{searchBean.saveSearchAction()}" value="#{msg.save}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </composite:implementation>
+</ui:composition>

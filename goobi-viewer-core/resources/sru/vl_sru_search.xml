@@ -1,0 +1,407 @@
+<!-- http://s2w.visuallibrary.net/dps/sru/?operation=searchRetrieve&version=1.1&query=place=Augsburg -->
+
+<srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/" xmlns:vls="http://semantics.de/vls">
+	<srw:version>1.2</srw:version>
+	<srw:numberOfRecords>4</srw:numberOfRecords>
+	<srw:echoedSearchRetrieveRequest>
+		<srw:version>1.2</srw:version>
+		<srw:query cqlquery="place=Augsburg" lucenequery="(place: Augsburg) AND type: document" />
+		<srw:startRecord>1</srw:startRecord>
+		<srw:maximumRecords>10</srw:maximumRecords>
+		<srw:recordSchema>mods</srw:recordSchema>
+	</srw:echoedSearchRetrieveRequest>
+	<srw:records>
+		<srw:record>
+			<srw:recordSchema>info:srw/schema/1/mods-v3.4</srw:recordSchema>
+			<srw:recordPacking>xml</srw:recordPacking>
+			<srw:recordData>
+				<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.4"
+					xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+					<titleInfo>
+						<title>Augsburger Postzeitung</title>
+						<subTitle>Sonntags-Beiblatt</subTitle>
+					</titleInfo>
+					<titleInfo type="alternative">
+						<title>Augsburger Postzeitung / Sonntags-Beiblatt</title>
+					</titleInfo>
+					<typeOfResource>text</typeOfResource>
+					<genre authority="marcgt">newspaper</genre>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Augsburg</placeTerm>
+						</place>
+						<dateIssued>[1.]1841 - 18.1858</dateIssued>
+						<dateIssued keyDate="yes" encoding="w3cdtf" point="start">1841</dateIssued>
+						<dateIssued keyDate="yes" encoding="w3cdtf" point="end">1858</dateIssued>
+						<issuance>continuing</issuance>
+						<frequency authority="marcfrequency">Weekly</frequency>
+					</originInfo>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Aachen</placeTerm>
+						</place>
+						<publisher>semantics</publisher>
+						<dateIssued>2010</dateIssued>
+						<edition>[Electronic ed.]</edition>
+					</originInfo>
+					<language>
+						<languageTerm authority="iso639-2b" type="code">ger</languageTerm>
+					</language>
+					<note type="numbering">Sp&#228;ter mit Jg.-Z&#228;hlung. - Periodizit&#228;t: w&#246;chentl.</note>
+					<subject authority="gnd" authorityURI="http://d-nb.info/gnd/" valueURI="http://d-nb.info/gnd/2028044-0">
+						<hierarchicalGeographic>
+							<city>Augsburg</city>
+						</hierarchicalGeographic>
+					</subject>
+					<subject xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://s2w.visuallibrary.net/geographics/DE:Augsburg" authority="vls">
+						<hierarchicalGeographic>
+							<country>Deutschland</country>
+							<state>Bayern</state>
+							<city>Augsburg</city>
+						</hierarchicalGeographic>
+						<cartographics>
+							<projection>EPSG:4326</projection>
+							<coordinates>E010.8982552--E010.8982552/N048.3714407--N048.3714407</coordinates>
+						</cartographics>
+					</subject>
+					<identifier type="zdb">131551-1</identifier>
+					<identifier type="eki">ZDB131551-1</identifier>
+					<relatedItem type="succeeding">
+						<titleInfo>
+							<title>Augsburger Sonntagsblatt</title>
+						</titleInfo>
+						<recordInfo>
+							<recordIdentifier source="s2wpzs">331587-3</recordIdentifier>
+						</recordInfo>
+					</relatedItem>
+					<identifier type="urn">urn:nbn:de:s2w-1822</identifier>
+					<recordInfo>
+						<recordCreationDate encoding="marc">19991118</recordCreationDate>
+						<recordChangeDate encoding="marc">20050420</recordChangeDate>
+						<recordIdentifier source="s2wdps">131551-1</recordIdentifier>
+					</recordInfo>
+				</mods>
+			</srw:recordData>
+			<srw:extraRecordData xmlns:vl="http://visuallibrary.net/vl">
+				<vl:id>26097</vl:id>
+				<vl:datatype>1</vl:datatype>
+				<vl:type>21</vl:type>
+				<vl:state>1</vl:state>
+				<vl:domain>12</vl:domain>
+				<vl:imgid>30622</vl:imgid>
+				<vl:imgwidth>2941</vl:imgwidth>
+				<vl:imgheight>3290</vl:imgheight>
+				<vl:signature></vl:signature>
+				<vl:explainResult />
+			</srw:extraRecordData>
+		</srw:record>
+		<srw:record>
+			<srw:recordSchema>info:srw/schema/1/mods-v3.4</srw:recordSchema>
+			<srw:recordPacking>xml</srw:recordPacking>
+			<srw:recordData>
+				<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.4"
+					xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+					<titleInfo>
+						<title>Augsburgische Ordinari Postzeitung von Staats-, gelehrten, historisch- u. &#246;konomischen Neuigkeiten</title>
+					</titleInfo>
+					<titleInfo type="alternative">
+						<title>Augspurgische Extra-Zeitung von Staats-, gelehrten, historis. u. &#246;conomis. Neuigkeiten</title>
+					</titleInfo>
+					<titleInfo type="alternative">
+						<title>Augspurgische Ordinari Postzeitung</title>
+					</titleInfo>
+					<titleInfo type="alternative">
+						<title>Augsburgische Ordinari-Postzeitung</title>
+					</titleInfo>
+					<titleInfo type="alternative">
+						<title>Augspurgische Ordinari Postzeitung von Staats-, gelehrten, historisch- u. &#246;konomischen Neuigkeiten</title>
+					</titleInfo>
+					<titleInfo type="alternative">
+						<title>Augspurgisches Extra-Bl&#228;tel, von staats-politischen und andern Neuigkeiten</title>
+					</titleInfo>
+					<titleInfo type="alternative">
+						<title>Augspurgisches Extra-Blat, von Staats-, gelehrten, historis. u. &#246;conomis. Neuigkeiten</title>
+					</titleInfo>
+					<typeOfResource>text</typeOfResource>
+					<genre authority="marcgt">newspaper</genre>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Augsburg</placeTerm>
+						</place>
+						<publisher>Moy</publisher>
+						<dateIssued>1767 - 1827,108(5.Mai)</dateIssued>
+						<dateIssued keyDate="yes" encoding="w3cdtf" point="start">1767</dateIssued>
+						<dateIssued keyDate="yes" encoding="w3cdtf" point="end">1827</dateIssued>
+						<issuance>continuing</issuance>
+						<frequency authority="marcfrequency">Daily</frequency>
+					</originInfo>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Aachen</placeTerm>
+						</place>
+						<publisher>semantics</publisher>
+						<dateIssued>2010</dateIssued>
+						<edition>[Electronic ed.]</edition>
+					</originInfo>
+					<language>
+						<languageTerm authority="iso639-2b" type="code">ger</languageTerm>
+					</language>
+					<note type="former title">Hauptsacht. bis 1798,11.Jan.: Augspurgische Ordinari Postzeitung von Staats-, gelehrten, historisch- u. &#246;konomischen Neuigkeiten. - Nebent. teils: Augspurgisches Extra-Bl&#228;tel, von staats-politischen und andern Neuigkeiten. - Nebent. teils: Augspurgisches Extra-Blat, von Staats-, gelehrten, historis. u. &#246;conomis. Neuigkeiten</note>
+					<note type="numbering">Periodizit&#228;t: 4x t&#228;gl.</note>
+					<note type="supplement">Ungez&#228;hlte Beil.: Augspurgische Extra-Zeitung von Staats-, gelehrten, historis. u. &#246;conomis. Neuigkeiten</note>
+					<subject authority="gnd" authorityURI="http://d-nb.info/gnd/" valueURI="http://d-nb.info/gnd/2028044-0">
+						<hierarchicalGeographic>
+							<city>Augsburg</city>
+						</hierarchicalGeographic>
+					</subject>
+					<subject xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://s2w.visuallibrary.net/geographics/DE:Augsburg" authority="vls">
+						<hierarchicalGeographic>
+							<country>Deutschland</country>
+							<state>Bayern</state>
+							<city>Augsburg</city>
+						</hierarchicalGeographic>
+						<cartographics>
+							<projection>EPSG:4326</projection>
+							<coordinates>E010.8982552--E010.8982552/N048.3714407--N048.3714407</coordinates>
+						</cartographics>
+					</subject>
+					<identifier type="zdb">1060750-x</identifier>
+					<identifier type="eki">ZDB1060750-x</identifier>
+					<relatedItem type="constituent">
+						<titleInfo>
+							<title>Augsburgisches Intelligenz-Blatt</title>
+						</titleInfo>
+						<recordInfo>
+							<recordIdentifier source="s2wpzs">350230-2</recordIdentifier>
+						</recordInfo>
+					</relatedItem>
+					<relatedItem type="preceding">
+						<titleInfo>
+							<title>Augspurgische Ordinari-Post-Zeitung</title>
+						</titleInfo>
+						<recordInfo>
+							<recordIdentifier source="s2wpzs">1270231-6</recordIdentifier>
+						</recordInfo>
+					</relatedItem>
+					<relatedItem type="succeeding">
+						<titleInfo>
+							<title>Augsburger Ordinari Postzeitung von Staats-, gelehrten, historisch- u. &#246;konomischen Neuigkeiten</title>
+						</titleInfo>
+						<recordInfo>
+							<recordIdentifier source="s2wpzs">1270220-1</recordIdentifier>
+						</recordInfo>
+					</relatedItem>
+					<identifier type="urn">urn:nbn:de:s2w-1256</identifier>
+					<extension>
+						<zvdd:zvddWrap xmlns:zvdd="http://zvdd.gdz-cms.de/">
+							<zvdd:titleWord>historischen Extra-Bl&#228;ttel Extra-Blatt</zvdd:titleWord>
+						</zvdd:zvddWrap>
+					</extension>
+					<recordInfo>
+						<recordCreationDate encoding="marc">19991121</recordCreationDate>
+						<recordChangeDate encoding="marc">20070516</recordChangeDate>
+						<recordIdentifier source="s2wdps">1060750-x</recordIdentifier>
+					</recordInfo>
+				</mods>
+			</srw:recordData>
+			<srw:extraRecordData xmlns:vl="http://visuallibrary.net/vl">
+				<vl:id>20307</vl:id>
+				<vl:datatype>1</vl:datatype>
+				<vl:type>21</vl:type>
+				<vl:state>1</vl:state>
+				<vl:domain>12</vl:domain>
+				<vl:imgid>24219</vl:imgid>
+				<vl:imgwidth>2247</vl:imgwidth>
+				<vl:imgheight>2916</vl:imgheight>
+				<vl:signature></vl:signature>
+				<vl:explainResult />
+			</srw:extraRecordData>
+		</srw:record>
+		<srw:record>
+			<srw:recordSchema>info:srw/schema/1/mods-v3.4</srw:recordSchema>
+			<srw:recordPacking>xml</srw:recordPacking>
+			<srw:recordData>
+				<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.4"
+					xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+					<titleInfo>
+						<title>Augsburgs &#228;lteste Druckdenkmale und Formschneidearbeiten, welche in d. vereinigt. K&#246;nigl. Kreis- und Stadtbibliothek dasebst aufbewahrt werden</title>
+					</titleInfo>
+					<name type="personal" authority="gnd" authorityURI="http://d-nb.info/gnd/" valueURI="http://d-nb.info/gnd/182262804">
+						<namePart>Mezger, Georg Kaspar</namePart>
+						<role>
+							<roleTerm type="code" authority="marcrelator">aut</roleTerm>
+						</role>
+					</name>
+					<typeOfResource>text</typeOfResource>
+					<genre authority="marcgt">book</genre>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Augsburg</placeTerm>
+						</place>
+						<publisher>Himmer</publisher>
+						<dateIssued keyDate="yes" encoding="w3cdtf">1840</dateIssued>
+						<issuance>monographic</issuance>
+					</originInfo>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Aachen</placeTerm>
+						</place>
+						<publisher>semantics</publisher>
+						<dateIssued>2010</dateIssued>
+						<edition>[Electronic ed.]</edition>
+					</originInfo>
+					<physicalDescription>
+						<extent>80 S.</extent>
+					</physicalDescription>
+					<note type="statement of responsibility">Georg Kaspar Mezger</note>
+					<subject xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://s2w.visuallibrary.net/geographics/DE:Augsburg" authority="vls">
+						<hierarchicalGeographic>
+							<country>Deutschland</country>
+							<state>Bayern</state>
+							<city>Augsburg</city>
+						</hierarchicalGeographic>
+						<cartographics>
+							<projection>EPSG:4326</projection>
+							<coordinates>E010.8982552--E010.8982552/N048.3714407--N048.3714407</coordinates>
+						</cartographics>
+					</subject>
+					<identifier type="hbz-idn">CT000000244</identifier>
+					<identifier type="urn">urn:nbn:de:s2w-3771</identifier>
+					<location>
+						<physicalLocation>38</physicalLocation>
+						<shelfLocator>A8/6810#2</shelfLocator>
+					</location>
+					<location>
+						<physicalLocation>38</physicalLocation>
+						<shelfLocator>A8/6810</shelfLocator>
+					</location>
+					<location>
+						<physicalLocation>38</physicalLocation>
+						<shelfLocator>HL/Dka763/1</shelfLocator>
+					</location>
+					<recordInfo>
+						<recordCreationDate encoding="marc">19990125</recordCreationDate>
+						<recordChangeDate encoding="marc">20001009</recordChangeDate>
+						<recordIdentifier source="s2wpihd">HT009657871</recordIdentifier>
+					</recordInfo>
+				</mods>
+			</srw:recordData>
+			<srw:extraRecordData xmlns:vl="http://visuallibrary.net/vl">
+				<vl:id>47107</vl:id>
+				<vl:datatype>1</vl:datatype>
+				<vl:type>1</vl:type>
+				<vl:state>1</vl:state>
+				<vl:domain>2</vl:domain>
+				<vl:imgid>46931</vl:imgid>
+				<vl:imgwidth>2557</vl:imgwidth>
+				<vl:imgheight>3426</vl:imgheight>
+				<vl:signature></vl:signature>
+				<vl:explainResult />
+			</srw:extraRecordData>
+		</srw:record>
+		<srw:record>
+			<srw:recordSchema>info:srw/schema/1/mods-v3.4</srw:recordSchema>
+			<srw:recordPacking>xml</srw:recordPacking>
+			<srw:recordData>
+				<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.4"
+					xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+					<titleInfo>
+						<nonSort>Die</nonSort>
+						<title>Druckorte des 15. Jahrhunderts nebst Angabe der Erzeugnisse ihrer erstj&#228;hrigen typographischen Wirksamkeit</title>
+					</titleInfo>
+					<name type="personal" authority="gnd" authorityURI="http://d-nb.info/gnd/" valueURI="http://d-nb.info/gnd/177143983">
+						<namePart>Reichhart, Gottfried</namePart>
+						<role>
+							<roleTerm type="code" authority="marcrelator">aut</roleTerm>
+						</role>
+					</name>
+					<typeOfResource>text</typeOfResource>
+					<genre authority="marcgt">book</genre>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Augsburg</placeTerm>
+						</place>
+						<publisher>Butsch</publisher>
+						<dateIssued keyDate="yes" encoding="w3cdtf">1853</dateIssued>
+						<issuance>monographic</issuance>
+					</originInfo>
+					<originInfo>
+						<place>
+							<placeTerm type="text">Aachen</placeTerm>
+						</place>
+						<publisher>semantics</publisher>
+						<dateIssued>2010</dateIssued>
+						<edition>[Electronic ed.]</edition>
+					</originInfo>
+					<physicalDescription>
+						<extent>X, 36 S.</extent>
+					</physicalDescription>
+					<note type="statement of responsibility">Gottfried Reichhart</note>
+					<subject xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://s2w.visuallibrary.net/geographics/DE:Augsburg" authority="vls">
+						<hierarchicalGeographic>
+							<country>Deutschland</country>
+							<state>Bayern</state>
+							<city>Augsburg</city>
+						</hierarchicalGeographic>
+						<cartographics>
+							<projection>EPSG:4326</projection>
+							<coordinates>E010.8982552--E010.8982552/N048.3714407--N048.3714407</coordinates>
+						</cartographics>
+					</subject>
+					<identifier type="hbz-idn">CT000000229</identifier>
+					<identifier type="urn">urn:nbn:de:s2w-3598</identifier>
+					<location>
+						<physicalLocation>38</physicalLocation>
+						<shelfLocator>A6/4730</shelfLocator>
+					</location>
+					<location>
+						<physicalLocation>211</physicalLocation>
+					</location>
+					<recordInfo>
+						<recordCreationDate encoding="marc">19990316</recordCreationDate>
+						<recordChangeDate encoding="marc">20010709</recordChangeDate>
+						<recordIdentifier source="s2wpihd">HT009992039</recordIdentifier>
+					</recordInfo>
+				</mods>
+			</srw:recordData>
+			<srw:extraRecordData xmlns:vl="http://visuallibrary.net/vl">
+				<vl:id>45233</vl:id>
+				<vl:datatype>1</vl:datatype>
+				<vl:type>1</vl:type>
+				<vl:state>1</vl:state>
+				<vl:domain>2</vl:domain>
+				<vl:imgid>46384</vl:imgid>
+				<vl:imgwidth>2550</vl:imgwidth>
+				<vl:imgheight>3402</vl:imgheight>
+				<vl:signature></vl:signature>
+				<vl:explainResult />
+			</srw:extraRecordData>
+		</srw:record>
+	</srw:records>
+	<srw:extraResponseData>
+		<vl:facets xmlns:vl="http://visuallibrary.net/vl" numhits="2">
+			<facet count="2" name="d100" incquery="d100=&quot;$(facetval)&quot;" decquery="">
+				<item count="1" value="1700" />
+				<item count="1" value="1800" />
+			</facet>
+			<facet count="2" name="d50" incquery="d50=&quot;$(facetval)&quot;" decquery="">
+				<item count="1" value="1750" />
+				<item count="1" value="1800" />
+			</facet>
+			<facet count="2" name="d10" incquery="d10=&quot;$(facetval)&quot;" decquery="">
+				<item count="1" value="1760" />
+				<item count="1" value="1840" />
+			</facet>
+			<facet count="1" name="country" incquery="country=&quot;$(facetval)&quot;" decquery="">
+				<item count="2" value="Deutschland" />
+			</facet>
+			<facet count="1" name="region" incquery="region=&quot;$(facetval)&quot;" decquery="">
+				<item count="2" value="Bayern" />
+			</facet>
+			<facet count="1" name="place" incquery="place=&quot;$(facetval)&quot;" decquery="">
+				<item count="2" value="Augsburg" />
+			</facet>
+			<facet count="1" name="genre" incquery="genre=&quot;$(facetval)&quot;" decquery="" />
+		</vl:facets>
+	</srw:extraResponseData>
+</srw:searchRetrieveResponse>

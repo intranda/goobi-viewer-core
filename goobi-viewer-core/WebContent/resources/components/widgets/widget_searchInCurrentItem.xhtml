@@ -1,0 +1,40 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface />
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{!activeDocumentBean.anchor and configurationBean.showSearchInItem}">
+            <div id="widgetSearchInCurrentItem" class="sidebar-widget widget">
+                <h:form id="searchInCurrentItemForm" styleClass="form-inline" prependId="false">
+                    <div class="form-group">
+                        <label for="searchInCurrentItemInput" class="sr-only">#{msg.searchIn}</label>
+                        <div class="input-group">
+                            <h:inputText value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" id="searchInCurrentItemInput" styleClass="form-control">
+                                <f:passThroughAttribute name="placeholder" value="#{msg.searchIn}: #{msg[activeDocumentBean.topDocument.label]}" />
+                            </h:inputText>
+                            <div class="input-group-addon">
+                                <h:commandButton action="#{searchBean.searchAdvanced}">
+                                    <f:setPropertyActionListener value="#{activeDocumentBean.persistentIdentifier}"
+                                        target="#{searchBean.advancedQueryGroups[0].queryItems[0].value}" />
+                                    <f:setPropertyActionListener value="PI_TOPSTRUCT" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
+                                    <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
+                                    <f:setPropertyActionListener value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
+                                    <f:setPropertyActionListener value="AND" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
+                                    <f:setPropertyActionListener value="1" target="#{searchBean.activeSearchType}" />
+                                    <!--f:setPropertyActionListener value="#{searchBean.queryItems[1].value}*" target="#{searchBean.queryItems[1].value}" /-->
+                                    <f:setPropertyActionListener value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
+                                        target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
+                                </h:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+            </div>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

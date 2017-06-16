@@ -1,0 +1,55 @@
+.tooltipp {
+    position: absolute;
+    padding: 0.5em;
+    color: #FFFFFF;
+    border-radius: 3px;
+    background-color: #1A1A1A;
+    z-index: 99999;
+}
+
+.tooltipp-top:before,
+.tooltipp-right:before,
+.tooltipp-bottom:before,
+.tooltipp-left:before {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;    
+}
+
+.tooltipp-top:before {
+    bottom: -10px;
+    left: 5px;
+    border-top: 5px solid #1A1A1A;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+
+.tooltipp-bottom:before {
+    top: -10px;
+    left: 5px;
+    border-top: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #1A1A1A;
+    border-left: 5px solid transparent;
+}
+
+.tooltipp-right:before {
+    top: 5px;
+    left: -10px;
+    border-top: 5px solid transparent;
+    border-right: 5px solid #1A1A1A;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+
+.tooltipp-left:before {
+    top: 5px;
+    right: -10px;
+    border-top: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid #1A1A1A;
+}

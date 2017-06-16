@@ -1,0 +1,161 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+      xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+      xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/themeBoilerplate/components">
+
+    <!-- interface options -->
+    <composite:interface />
+
+    <!-- component content -->
+	<composite:implementation>
+		<div class="overview__publication">
+			<h:form id="overviewPublicationForm" prependId="false">
+				<div class="row">
+					<!-- TITLE -->
+					<div class="col-xs-12 col-sm-6">
+						<div class="overview__publication-title">
+							<h3>#{msg.viewOverviewPublication_publication}</h3>
+						</div>
+					</div>
+					
+					<!-- ACTION -->
+					<div class="col-xs-12 col-sm-6">
+						<div class="overview__publication-action text-right">
+							<h:panelGroup rendered="#{userBean.user.mayEditOverviewPage and !activeDocumentBean.overviewPage.editPublicationMode}">
+								<!-- EDIT -->
+								<h:commandButton 
+									styleClass="btn" 
+									value="#{msg.viewOverviewPublication_editPublication}"
+									action="#{activeDocumentBean.overviewPage.toggleEditPublicationModeAction}">
+									<f:ajax render="@form" />
+								</h:commandButton>
+							</h:panelGroup>
+		
+							<h:panelGroup rendered="#{userBean.user.mayEditOverviewPage and activeDocumentBean.overviewPage.editPublicationMode}">
+                                <div class="overview__publication-action-fullscreen">
+    								<!-- CANCEL -->
+    								<h:commandButton 
+    									styleClass="btn" 
+    									value="#{msg.viewOverviewPublication_editPublicationCancel}"
+    									action="#{activeDocumentBean.overviewPage.resetEditModes}" 
+    									immediate="true">
+    								</h:commandButton>
+    									
+    								<!-- SAVE -->
+    								<h:commandButton 
+    									styleClass="btn" 
+    									value="#{msg.viewOverviewPublication_editPublicationSave}"
+    									action="#{activeDocumentBean.overviewPage.saveAction(userBean.user)}">
+    								</h:commandButton>
+                                </div>
+							</h:panelGroup>
+						</div>
+					</div>
+				</div>
+	
+				<!-- NAVIGATE -->
+				<h:panelGroup rendered="#{(!userBean.user.mayEditOverviewPage or !activeDocumentBean.overviewPage.editPublicationMode) and activeDocumentBean.overviewPage.publicationTextNumPages > 1}">
+					<nav class="overview__publication-navigate clearfix">
+						<ul>
+							<li>
+								<h:commandLink 
+									title="#{msg.viewOverviewPublication_pubNavStart}"
+									action="#{activeDocumentBean.overviewPage.publicationTextFirstPageAction}"
+									disabled="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber == 1}"
+									style="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber == 1 ? 'opacity: 0.4;' : ''}">
+									<i class="fa fa-angle-double-left" aria-hidden="true"></i>
+									<f:ajax render="@form" />
+								</h:commandLink>
+							</li>
+							<li>
+								<h:commandLink 
+									title="#{msg.viewOverviewPublication_pubNavBack}"
+									action="#{activeDocumentBean.overviewPage.publicationTextPrevPageAction}"
+									disabled="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber == 1}"
+									style="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber == 1 ? 'opacity: 0.4;' : ''}">
+									<i class="fa fa-angle-left" aria-hidden="true"></i>
+									<f:ajax render="@form" />
+								</h:commandLink>
+							</li>
+							<li class="overview__publication-navigate-count">
+								<span>
+									<h:outputText value="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber}" />
+									/
+									<h:outputText value="#{activeDocumentBean.overviewPage.publicationTextNumPages}" />
+								</span>
+							</li>
+							<li>
+								<h:commandLink 
+									title="#{msg.viewOverviewPublication_pubNavForward}"
+									action="#{activeDocumentBean.overviewPage.publicationTextNextPageAction}"
+									disabled="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber ge activeDocumentBean.overviewPage.publicationTextNumPages}"
+									style="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber ge activeDocumentBean.overviewPage.publicationTextNumPages ? 'opacity: 0.4;' : ''}">
+									<i class="fa fa-angle-right" aria-hidden="true"></i>
+									<f:ajax render="@form" />
+								</h:commandLink>
+							</li>
+							<li>
+								<h:commandLink 
+									title="#{msg.viewOverviewPublication_pubNavEnd}"
+									action="#{activeDocumentBean.overviewPage.publicationTextLastPageAction}"
+									disabled="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber ge activeDocumentBean.overviewPage.publicationTextNumPages}"
+									style="#{activeDocumentBean.overviewPage.publicationTextCurrentPageNumber ge activeDocumentBean.overviewPage.publicationTextNumPages ? 'opacity: 0.4;' : ''}">
+									<i class="fa fa-angle-double-right" aria-hidden="true"></i>
+									<f:ajax render="@form" />
+								</h:commandLink>
+							</li>
+						</ul>
+					</nav>
+				</h:panelGroup>
+
+				<!-- TEXT -->
+				<h:panelGroup rendered="#{!userBean.user.mayEditOverviewPage or !activeDocumentBean.overviewPage.editPublicationMode}">
+					<div class="overview__publication-text">
+						<h:outputText value="#{activeDocumentBean.overviewPage.publicationTextCurrentPage}" escape="false" />
+					</div>
+				</h:panelGroup>
+
+				<!-- EDITOR -->
+				<h:panelGroup rendered="#{userBean.user.mayEditOverviewPage and activeDocumentBean.overviewPage.editPublicationMode}">
+					<div class="overview__publication-editor">
+						<h:inputTextarea escape="false" value="#{activeDocumentBean.overviewPage.publicationText}"
+							styleClass="overview-publications" />
+
+						<script type="text/javascript">
+						//<![CDATA[
+                            var tinyConfigPublications = {
+                                selector: "textarea.overview-publications",
+                                plugins: "table link preview charmap code fullscreen pagebreak",
+                                menubar: "edit insert view format table tools",
+                                language: 'de',
+                                convert_urls: false,
+                                pagebreak_separator: '<span class="pagebreak"></span>',
+                                pagebreak_split_block: true,
+                                setup: function( editor ) {
+                                    editor.on( 'init', function (e) {
+                                        $( '.overview__description-action .btn' ).hide();
+                                    } );
+                                    editor.on( 'FullscreenStateChanged', function( e ) {                                        
+                                        if ( e.state ) {
+                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
+                                        }
+                                        else {
+                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
+                                        }
+                                    } );
+                                }
+                            };
+                            
+                            tinymce.init( tinyConfigPublications );
+                        //]]>
+                        </script>
+					</div>
+				</h:panelGroup>
+			</h:form>
+		</div>
+	</composite:implementation>
+</ui:composition>

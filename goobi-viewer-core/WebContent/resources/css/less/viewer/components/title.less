@@ -1,0 +1,98 @@
+/* ==============================================================
+   Title
+   style declarations for title.xhtml
+   ==============================================================*/
+#titleWrapper {
+    .title-header {
+        h3 {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            a {
+                text-decoration: none;
+                &:hover {
+                    text-decoration: none;
+                }
+                span {
+                    float: left;
+                    width: 90%;
+                }
+                .fa {
+                    float: right;
+                    width: 10%;
+                    text-align: right;
+                }
+            }
+        }
+    }
+    .title-body {
+        form {
+            .dl-horizontal {
+                margin: 0;
+                /* deprecated since 3.1 */
+                a[id*="titlePdfDownloadLink"] {
+                    float: right;
+                    margin: 0 0 1rem 1rem;
+                }
+				dt {
+                    width: 25%;
+                    text-align: left;
+                }
+                dd {
+                    margin-left: 25%;
+                    .title-value {
+                        display: block;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                    }
+                    nav {
+                        ul {
+                            li {
+                                display: inline-block;
+                                min-height: 1.3125rem;
+                                line-height: 1.3125rem;
+                                margin-right: 0.1875rem;
+                                a {
+                                    display: block;
+                                }
+                                &.title-breadcrumb-spacer:before { 
+                                    content:"\203A";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#downloadWrapper {
+    margin: 0 0 10px 10px;
+    font-size: 1.5rem;
+    nav {
+        ul {
+            li {
+                display: inline-block;
+                &.download-title {
+                    font-size: 0.8rem;
+                }
+                a {}
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #titleWrapper .title-body form .dl-horizontal dt { width: 100%; }
+    #titleWrapper .title-body form .dl-horizontal dd { margin-left: 0; }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

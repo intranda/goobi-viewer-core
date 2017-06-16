@@ -1,0 +1,144 @@
+/* ==============================================================
+   View Reading Mode
+   style declarations for viewReadingMode.xhtml 
+   ==============================================================*/
+/* READING MODE */
+#readingMode {
+    margin: 0;
+    padding: 0;
+    padding-top: 70px;
+    background-color: @readingModeBg; 
+}
+
+#readingModeImageWrapper {}
+
+#readingModeImage {}
+
+/* BLOCK */
+.reading-mode {
+    position: relative;
+    height: 100%;
+    /* ELEMENT */
+    /* NAVIGATION */
+    &__navigation {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        min-height: 70px;
+        padding-left: 15px;
+        padding-right: 15px;
+        background-color: @middlegray;
+        z-index: 1000;
+    }
+    &__navigation-logo {
+        padding: 16px 0;
+    }
+    &__navigation-controls {
+        padding-top: 19px;
+    }
+    &__navigation-goback {
+        padding-top: 19px;
+        text-align: right;
+        a {
+            color: @gray;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+        
+        .fa {
+            font-size: 32px;
+            cursor: pointer;
+        }
+    }
+    /* CONTENT */
+    &__content {}
+    &__content-view,
+    &__content-sidebar {
+        float: left;
+    }
+    &__content-view {
+        transition: all .3s linear;
+        width: 100%;
+        &.in {
+            width: 70%;
+        }
+    }
+    &__content-view-image {}
+    &__content-sidebar {
+        position: relative;
+        width: 0;
+        background-color: @middlegray;
+        transition: all .3s linear;
+        &.in {
+            width: 30%;
+            .reading-mode__content-sidebar-inner {
+                padding: 15px;
+            }
+        }
+    }
+    &__content-sidebar-toggle {
+        position: absolute;
+        left: -32px;
+        margin-top: -32px;
+        width: 32px;
+        height: 64px;
+        line-height: 64px;
+        text-align: center;
+        background-color: @middlegray;
+        button {
+            width: 100%;
+            height: 62px;
+            padding-left: 5px;
+            .fa {
+                margin-left: -6px;
+            }
+            .fa-chevron-right {
+                display: none;
+            }
+            .fa-chevron-left {
+                display: inline-block;
+            }
+            &.in {
+                .fa-chevron-right {
+                    display: inline-block;
+                }
+                .fa-chevron-left {
+                    display: none;
+                }
+            }
+        }
+    }
+    &__content-sidebar-inner {
+        overflow-y: auto;
+    }
+}
+
+/* MODIFICATION */
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .reading-mode__content-view.in {
+        width: 60%;
+    }
+    .reading-mode__content-sidebar.in { 
+        width: 40%;
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .reading-mode__content-view.in {
+        width: 10%;
+    }
+    .reading-mode__content-sidebar.in { 
+        width: 90%;
+    }
+}

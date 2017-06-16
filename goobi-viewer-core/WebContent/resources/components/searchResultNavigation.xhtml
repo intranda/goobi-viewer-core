@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<!--
+			<f:event type="preRenderView" listener="#{activeDocumentBean.action}" />-
+			<f:viewParam name="action" value="#{activeDocumentBean.action}" />
+			<f:viewParam name="iddoc" value="#{activeDocumentBean.elementToShow}" />
+			<f:viewParam name="page" value="#{activeDocumentBean.imageToShow}" />
+			<f:viewParam name="logId" value="#{activeDocumentBean.logid}" />
+			-->
+		</f:metadata>
+	</ui:define>
+
+	<composite:interface />
+
+    <h:panelGroup rendered="#{searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
+        <div id="menu_search_result_navigation" class="sidebar-widget">
+            <h3>#{msg.searchHitNavigation}</h3>
+
+            <div class="search-result-navigation-wrapp">
+                <div class="search-result-navigation-left">
+                    <h:outputLink rendered="#{activeDocumentBean.prevHit != null}"
+                        disabled="#{searchBean.currentHitIndex == 0}" value="#{activeDocumentBean.prevHit.sidebarPrevUrl}">
+                        <h:graphicImage library="themes/#{navigationHelper.theme}/images/navigate" name="resultback.png" alt="#{msg.previousHit}"
+                            class="searchResultNavigationBackImg" title="#{activeDocumentBean.prevHit.label}"
+                            style="#{searchBean.currentHitIndex == 0?'opacity:0.4;':''}" />
+                    </h:outputLink>
+                </div>
+
+                <div class="search-result-navigation-center">
+                    <h:outputFormat value="#{msg.searchResultNavigation_hitIndex}"
+                        rendered="#{activeDocumentBean.nextHit != null or activeDocumentBean.prevHit != null}"
+                        class="searchResultNavigationText">
+                        <f:param value="#{activeDocumentBean.currentHitIndexDisplay}" />
+                        <f:param value="#{searchBean.hitsCount}" />
+                    </h:outputFormat>
+                        
+                </div>
+
+                <div class="search-result-navigation-right">
+                    <h:outputLink rendered="#{activeDocumentBean.nextHit != null}"
+                        disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}" value="#{activeDocumentBean.nextHit.sidebarNextUrl}">
+                        <h:graphicImage library="themes/#{navigationHelper.theme}/images/navigate" name="resultforward.png" alt="#{msg.nextHit}"
+                            class="searchResultNavigationForwardImg" title="#{activeDocumentBean.nextHit.label}"
+                            style="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)?'opacity:0.4;':''}" />
+                    </h:outputLink>
+                </div>
+            </div>
+
+            <div class="search-result-navigation-back-to-collection">
+                <h:outputLink rendered="#{activeDocumentBean.nextHit != null}"
+                    value="#{navigationHelper.applicationUrl}searchList">
+                    <h:graphicImage library="themes/#{navigationHelper.theme}/images/navigate" name="backToHitlist.png" alt="#{msg.returnToHitlist}"
+                        title="#{msg.returnToHitlist}" />
+                        #{msg.returnToHitlist}
+                </h:outputLink>
+            </div>
+        </div>
+    </h:panelGroup>
+</ui:composition>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_general_generic" version="2015-01-14">
+    <name>Generisches Template/Projektbeschreibung</name>
+    <description>Dieses Template beinhaltet vier Textabschnitte, optional mit Bild, und darunter eine optionale Gallerie mit Suchtreffern</description>
+    <icon>cms_template_01_generic.png</icon>
+    <html>cms_template_01_generic.xhtml</html>
+    <content>
+        <item id="text01" order="1" label="Textblock 1" type="HTML" mandatory="true" />
+        <item id="image01" order="2" label="Bild Textblock 1" type="MEDIA" mandatory="false" />
+        <item id="text02" order="3" label="Textblock 2" type="HTML" mandatory="false" />
+        <item id="image02" order="4" label="Bild Textblock 2" type="MEDIA" mandatory="false" />
+        <item id="text03" order="5" label="Textblock 3" type="HTML" mandatory="false" />
+        <item id="image03" order="6" label="Bild Textblock 3" type="MEDIA" mandatory="false" />
+        <item id="text04" order="7" label="Textblock 4" type="HTML" mandatory="false" />
+        <item id="image04" order="8" label="Bild Textblock 4" type="MEDIA" mandatory="false" />
+        <item id="queryList01" order="9" label="Suchtrefferliste" type="SOLRQUERY" />
+    </content>
+</cms_page_template>

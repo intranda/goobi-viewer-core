@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+	<composite:interface>
+		<composite:attribute name="zipCodeID" required="true" />
+	</composite:interface>
+	<f:view contentType="text/html" encoding="utf-8">
+		<style>
+		#weather {
+			background: #6f9dbe;
+			background: -webkit-gradient(linear, left top, left bottom, from(#adc7db), to(#6f9dbe));
+			background: -moz-linear-gradient(top, #b2bcc8, #adc7db);
+			width: 185px;
+			padding: 5px 10px;
+			overflow: hidden;
+			border: 1px solid #6591b3;
+		}
+		
+		#weather h2 {
+			color: #000;
+			text-shadow: rgba(250, 250, 250, 0.6) 2px 2px 0;
+		}
+		
+		#weather p {
+			font-size: 25px;
+			margin: 30px 0 0;
+		}
+		
+		#weather p span {
+			font-size: 16px;
+		}
+		
+		#weather a:link, #weather a:active, #weather a:visited {
+			display: block;
+			clear: both;
+			text-decoration: none;
+			color: #222;
+			font-size: 12px;
+		}
+		
+		#weather a:hover {
+			color: #000;
+			text-decoration: underline;
+		}
+	</style>
+	<script type="text/javascript">
+		var zipCodeID = "#{cc.attrs.zipCodeID}";
+	//<![CDATA[
+		var $ = jQuery;
+			$.simpleWeather({
+				zipcode: zipCodeID,
+				unit: 'c',
+				success: function(weather) {
+					html = '<h2>'+weather.city+', '+weather.region+'</h2>';
+					html += '<img style="float:left;" width="125px" src="'+weather.image+'">';
+					html += '<p>'+weather.temp+'&deg; '+weather.units.temp+'<br /><span>'+weather.currently+'</span></p>';
+					html += '<a href="'+weather.link+'">View Forecast &raquo;</a>';
+					
+					$("#weather").html(html);
+				},
+				error: function(error) {
+					$("#weather").html('<p>'+error+'</p>');
+				}
+			});
+		//]]>
+	</script>
+	<div id="weather">
+	
+	</div>
+		
+	</f:view>
+</ui:composition>

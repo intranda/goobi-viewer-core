@@ -1,0 +1,181 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    
+	<composite:interface>
+    	<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetUser' or cc.attrs.widget == null) and userBean.loggedIn}">
+            <!-- widget user standard -->
+            <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
+                <!-- user interactions -->
+                <h:panelGroup rendered="#{activeDocumentBean.recordLoaded}">
+                    <div id="widgetUserInteractions" class="widget">
+                        <h:form id="widgetUserInteractionsStandardForm" prependId="false">
+                            <h3>#{msg.menuUser_workInteractions}</h3>
+
+                            <ul>
+                                <h:panelGroup rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages}">
+                                    <li>
+                                        <h:commandLink action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}">
+                                            #{msg.setRepresentativeImage}
+    			                        </h:commandLink>
+                                    </li>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{activeDocumentBean.overviewPage == null and userBean.user.mayEditOverviewPage}">
+                                    <li>
+                                        <h:commandLink action="#{activeDocumentBean.forceOverviewPage}">
+                                            #{msg.forceOverviewPage}
+    								    </h:commandLink>
+                                    </li>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{userBean.admin}">
+                                    <li>
+                                        <h:commandLink action="#{activeDocumentBean.reIndexRecordAction}">
+                                            #{msg.reIndexRecord}
+                                        </h:commandLink>
+                                    </li>
+                                </h:panelGroup>
+                                <!-- TODO rendered=#{docstruct in allowed doctypes} -->
+                                <!-- TODO record already added to Transkribus -->
+                                <h:panelGroup rendered="#{configurationBean.transkribusEnabled and activeDocumentBean.viewManager.activeDocument.sourceDocFormat == 'METS'}">
+                                    <li>
+                                        <a href="#" data-toggle="modal" data-target="#transkribusModal"> #{msg.transkribus_add} </a> 
+                                        
+                                        <!-- TRANSKRIBUS MODAL -->
+                                        <div class="modal fade" id="transkribusModal" tabindex="-1" role="dialog" aria-labelledby="transkribusModalLabel">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true"> 
+                                                                <h:outputText value="&amp;times;" escape="false" />
+                                                            </span>
+                                                        </button>
+                                                        <h4 class="modal-title" id="transkribusModalLabel">#{msg.transkribus_add}</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <p>#{msg.transkribus_addDisclaimer}</p>
+                                                        </div>
+                                                        <h:panelGroup rendered="#{userBean.user.transkribusSession == null}">
+                                                            <div class="form-group">
+                                                                <label for="transkribusEmail">#{msg.email}</label>
+                                                                <h:inputText class="form-control" id="transkribusEmail" value="#{userBean.transkribusUserName}" />
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="transkribusPassword">#{msg.password}</label>
+                                                                <h:inputSecret class="form-control" id="transkribusPassword" value="#{userBean.transkribusPassword}" />
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+                                                        <h:commandButton rendered="#{userBean.user.transkribusSession == null}" type="submit"
+                                                            styleClass="btn" value="#{msg.transkribus_add}"
+                                                            action="#{activeDocumentBean.viewManager.addToTranskribusAction(true)}" />
+                                                        <h:commandButton rendered="#{userBean.user.transkribusSession != null}" type="submit"
+                                                            styleClass="btn" value="#{msg.transkribus_add}"
+                                                            action="#{activeDocumentBean.viewManager.addToTranskribusAction(false)}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </h:panelGroup>
+                            </ul>
+                        </h:form>
+                    </div>
+                </h:panelGroup>
+
+                <!-- user data -->
+                <div id="widgetUser" class="widget">
+                    <h:form id="widgetUserStandardForm" prependId="false">
+                        <h3>#{msg.menuUser_user}</h3>
+
+                        <ul>
+                            <li class="#{navigationHelper.currentPage == 'user'?'active':''}">
+                                <h:outputLink value="#{navigationHelper.applicationUrl}user/">
+                                    #{msg.userCP}
+                                </h:outputLink>
+                            </li>
+                            <li>
+                                <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
+                                    <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#{navigationHelper.currentUrl}" />
+                                </h:commandLink>
+                            </li>
+                        </ul>
+                    </h:form>
+                </div>
+            </h:panelGroup>
+
+            <!-- widget user foldout -->
+            <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+                <!-- user interactions -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.hasPages and userBean.admin}">
+                    <div id="widgetUserInteractions" class="widget">
+                        <h3>
+                            <a href="#interactionsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="interactionsCollapse">
+                                #{msg.menuUser_workInteractions}
+                                <span class="glyphicon glyphicon-arrow-down"></span>
+                            </a>
+                        </h3>
+
+                        <div id="interactionsCollapse" class="collapse">
+                            <h:form id="widgetUserInteractionsFoldoutForm" prependId="false">
+                                <ul>
+                                    <h:panelGroup rendered="#{userBean.user.maySetRepresentativeImage and activeDocumentBean.viewManager.hasPages}">
+                                        <li>
+                                            <h:commandLink action="#{adminBean.setRepresantativeImageAction(activeDocumentBean.viewManager.pi, activeDocumentBean.topDocument.dataRepository, activeDocumentBean.viewManager.currentPage.fileIdRoot)}">
+                                                #{msg.setRepresentativeImage}
+                                            </h:commandLink>
+                                        </li>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{activeDocumentBean.overviewPage == null and userBean.user.mayEditOverviewPage}">
+                                        <li>
+                                            <h:commandLink action="#{activeDocumentBean.forceOverviewPage}">
+                                                #{msg.forceOverviewPage}
+                                            </h:commandLink>
+                                        </li>
+                                    </h:panelGroup>
+                                </ul>
+                            </h:form>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <!-- user data -->
+                <div id="widgetUser" class="widget">
+                    <h3>
+                        <a href="#userdataCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="userdataCollapse">
+                            #{msg.menuUser_user}
+                            <span class="glyphicon glyphicon-arrow-down"></span>
+                        </a>
+                    </h3>
+
+                    <div id="userdataCollapse" class="collapse">
+                        <h:form id="widgetUserFoldoutForm" prependId="false">
+                            <ul>
+                                <li class="#{navigationHelper.currentPage == 'user'?'active':''}">
+                                    <h:outputLink value="#{navigationHelper.applicationUrl}user/">
+                                        #{msg.userCP}
+                                    </h:outputLink>
+                                </li>
+                                <li>
+                                    <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
+                                        <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#{navigationHelper.currentUrl}" />
+                                    </h:commandLink>
+                                </li>
+                            </ul>
+                        </h:form>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

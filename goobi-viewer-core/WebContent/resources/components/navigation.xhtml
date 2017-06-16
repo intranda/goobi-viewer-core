@@ -1,0 +1,367 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:component="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface>
+		<!-- activates a megamenu which takes the fullwidth of the page -->
+        <composite:attribute name="megaMenu" required="false" default="false" />
+	</composite:interface>
+
+	<composite:implementation>
+		<nav class="navigation">
+			<h:form id="navigationForm" prependId="false">
+				<ul>
+					<!-- STANDARD MENU -->
+					<h:panelGroup rendered="#{cc.attrs.megaMenu == false}">
+						<ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
+							<h:panelGroup rendered="#{navItem.valid and navItem.shouldDisplay}">
+								<li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
+									<!-- WITHOUT SUBMENU -->
+									<h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
+										<h:outputLink value="#{navItem.navigationUrl}">
+											<h:outputText value="#{msg[navItem.itemLabel]}" />
+										</h:outputLink>
+									</h:panelGroup>
+									<!-- WITH SUBMENU --> 
+									<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
+										<a href="#" data-toggle="submenu" role="button">
+											#{msg[navItem.itemLabel]}
+											<span class="caret"></span>
+										</a>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
+										<ui:param name="parentItem" value="#{navItem}" />
+										
+										<!-- LEVEL 1 -->
+										<div class="navigation__submenu level-1">
+											<ul>
+												<ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
+													<h:panelGroup rendered="#{child.valid and child.shouldDisplay}">
+														<li class="#{navigationHelper.currentPage == child.itemLabel ? 'active' : ''}">
+															<!-- WITHOUT SUBMENU -->
+															<h:panelGroup rendered="#{child.childItems.isEmpty()}">
+																<h:outputLink value="#{child.navigationUrl}">
+																	<h:outputText value="#{msg[child.itemLabel]}" />
+																</h:outputLink>
+															</h:panelGroup>
+															<!-- WITH SUBMENU --> 
+															<h:panelGroup rendered="#{!child.childItems.isEmpty()}">
+																<a href="#" data-toggle="submenu" role="button">
+																	#{msg[child.itemLabel]}
+																	<span class="caret"></span>
+																</a>
+															</h:panelGroup> 
+															<h:panelGroup rendered="#{!child.childItems.isEmpty()}">
+																<!-- LEVEL 2 -->
+																<div class="navigation__submenu level-2">
+																	<ul>
+																		<ui:repeat varStatus="count" var="child1" value="#{child.childItems}">
+																			<h:panelGroup rendered="#{child1.valid and child1.shouldDisplay}">
+																				<li class="#{navigationHelper.currentPage == child1.itemLabel ? 'active' : ''}">
+																					<!-- WITHOUT SUBMENU -->
+																					<h:panelGroup rendered="#{child1.childItems.isEmpty()}">
+																						<h:outputLink value="#{child1.navigationUrl}">
+																							<h:outputText value="#{msg[child1.itemLabel]}" />
+																						</h:outputLink>
+																					</h:panelGroup>
+																					<!-- WITH SUBMENU --> 
+																					<h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
+																						<a href="#" data-toggle="submenu" role="button">
+																							#{msg[child1.itemLabel]}
+																							<span class="caret"></span>
+																						</a>
+																					</h:panelGroup> 
+																					<h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
+																						<!-- LEVEL 3 -->
+																						<div class="navigation__submenu level-3">
+																							<ul>
+																								<ui:repeat varStatus="count" var="child2" value="#{child1.childItems}">
+																									<h:panelGroup rendered="#{child2.valid and child2.shouldDisplay}">
+																										<li class="#{navigationHelper.currentPage == child2.itemLabel ? 'active' : ''}">
+																											<!-- WITHOUT SUBMENU -->
+																											<h:panelGroup rendered="#{child2.childItems.isEmpty()}">
+																												<h:outputLink value="#{child2.navigationUrl}">
+																													<h:outputText value="#{msg[child2.itemLabel]}" />
+																												</h:outputLink>
+																											</h:panelGroup>
+																											<!-- WITH SUBMENU --> 
+																											<h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
+																												<a href="#" data-toggle="submenu" role="button">
+																													#{msg[child2.itemLabel]}
+																													<span class="caret"></span>
+																												</a>
+																											</h:panelGroup> 
+																											<h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
+																												<!-- LEVEL 4 -->
+																												<div class="navigation__submenu level-4">
+																													<ul>
+																														<ui:repeat varStatus="count" var="child3" value="#{child2.childItems}">
+																															<h:panelGroup rendered="#{child3.valid and child3.shouldDisplay}">
+																																<li class="#{navigationHelper.currentPage == child3.itemLabel ? 'active' : ''}">
+																																	<!-- WITHOUT SUBMENU -->
+																																	<h:panelGroup rendered="#{child3.childItems.isEmpty()}">
+																																		<h:outputLink value="#{child3.navigationUrl}">
+																																			<h:outputText value="#{msg[child3.itemLabel]}" />
+																																		</h:outputLink>
+																																	</h:panelGroup>
+																																	<!-- WITH SUBMENU --> 
+																																	<h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
+																																		<a href="#" data-toggle="submenu" role="button">
+																																			#{msg[child3.itemLabel]}
+																																			<span class="caret"></span>
+																																		</a>
+																																	</h:panelGroup> 
+																																	<h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
+																																		<!-- LEVEL 5 -->
+																																		<div class="navigation__submenu level-5">
+																																			<ul>
+																																				<ui:repeat varStatus="count" var="child4" value="#{child3.childItems}">
+																																					<h:panelGroup rendered="#{child4.valid and child4.shouldDisplay}">
+																																						<li class="#{navigationHelper.currentPage == child4.itemLabel ? 'active' : ''}">
+																																							<h:outputLink value="#{child4.navigationUrl}">
+																																								<h:outputText value="#{msg[child4.itemLabel]}" />
+																																							</h:outputLink>
+																																						</li>
+																																					</h:panelGroup>
+																																				</ui:repeat>
+																																			</ul>
+																																		</div>
+																																	</h:panelGroup>
+																																</li>
+																															</h:panelGroup>
+																														</ui:repeat>
+																													</ul>
+																												</div>
+																											</h:panelGroup>
+																										</li>
+																									</h:panelGroup>
+																								</ui:repeat>
+																							</ul>
+																						</div>
+																					</h:panelGroup>
+																				</li>
+																			</h:panelGroup>
+																		</ui:repeat>
+																	</ul>
+																</div>
+															</h:panelGroup>
+														</li>
+													</h:panelGroup>
+												</ui:repeat>
+											</ul>
+										</div>
+									</h:panelGroup>
+								</li>
+							</h:panelGroup>
+						</ui:repeat>
+					</h:panelGroup>
+					
+					<!-- MEGA MENU -->
+					<h:panelGroup rendered="#{cc.attrs.megaMenu == true}">
+						<ui:repeat var="navItem" value="#{cmsBean.navigationMenuItems}">
+							<h:panelGroup rendered="#{navItem.valid}">
+								<li class="#{!navItem.childItems.isEmpty() ? 'navigation__megamenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel ? 'active' : ''}">
+									<!-- WITHOUT SUBMENU -->
+									<h:panelGroup rendered="#{navItem.childItems.isEmpty()}">
+										<h:outputLink value="#{navItem.navigationUrl}">
+											<h:outputText value="#{msg[navItem.itemLabel]}" />
+										</h:outputLink>
+									</h:panelGroup>
+									<!-- WITH SUBMENU --> 
+									<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">										
+										<a href="#" data-toggle="megamenu" role="button">
+											#{msg[navItem.itemLabel]}
+											<span class="caret"></span>
+										</a>
+										<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
+											<ui:param name="parentItem" value="#{navItem}" />
+											
+											<div class="navigation__megamenu-wrapper">
+												<!-- CLOSE -->
+												<button type="button" class="navigation__megamenu-close btn-clean" data-toggle="close" title="#{msg.close}">
+													<i class="fa fa-times" aria-hidden="true"></i>
+												</button>
+											
+												<!-- LEVEL 1 -->
+												<div class="navigation__megamenu-element level-1">
+													<ul>
+														<ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
+															<h:panelGroup rendered="#{child.valid}">
+																<li class="navigation__megamenu-heading">
+																	<h:outputLink value="#{child.navigationUrl}">
+																		<h:outputText value="#{msg[child.itemLabel]}" />
+																	</h:outputLink>
+																	<h:panelGroup rendered="#{!child.childItems.isEmpty()}">
+																		<!-- LEVEL 2 -->
+																		<div class="navigation__megamenu-element level-2">
+																			<ul>
+																				<ui:repeat varStatus="count" var="child1" value="#{child.childItems}">
+																					<h:panelGroup rendered="#{child1.valid}">
+																						<li class="navigation__megamenu-item #{navigationHelper.currentPage == child1.itemLabel ? 'active' : ''}">
+																							<h:outputLink value="#{child1.navigationUrl}">
+																								<h:outputText value="#{msg[child1.itemLabel]}" />
+																							</h:outputLink>
+																						</li>
+																					</h:panelGroup>
+																				</ui:repeat>
+																			</ul>
+																		</div>
+																	</h:panelGroup>
+																</li>
+															</h:panelGroup>
+														</ui:repeat>
+													</ul>
+												</div>
+											</div>											
+										</h:panelGroup>
+									</h:panelGroup>
+								</li>
+							</h:panelGroup>
+						</ui:repeat>
+					</h:panelGroup>
+
+					<!-- USER -->
+					<h:panelGroup rendered="#{configurationBean.displayUserNavigation and !userBean.loggedIn}">
+						<li  class="#{navigationHelper.currentPage == 'user' ? 'active' : ''}">
+							<h:outputLink value="#{navigationHelper.applicationUrl}user/">
+								<h:outputText value="#{msg.userNotLoggedIn}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+					
+					<!-- ADMIN -->
+					<h:panelGroup rendered="#{userBean.admin}">
+						<li class="navigation__submenu-trigger #{navigationHelper.currentPage == 'adminAllUsers' or 
+                                             navigationHelper.currentPage == 'adminAllUserGroups' or
+                                             navigationHelper.currentPage == 'adminIpRanges' or
+                                             navigationHelper.currentPage == 'adminLicenseTypes' or
+                                             navigationHelper.currentPage == 'adminUserComments' or
+                                             navigationHelper.currentPage == 'adminUserActivity' ? 'active' : ''}">
+							<a href="#" data-toggle="submenu" role="button">
+								#{msg.admin}
+								<span class="caret"></span>
+							</a>
+							<div class="navigation__submenu level-1">
+								<ul>
+									<li class="#{navigationHelper.currentPage == 'adminAllUsers' ? 'active' : ''}">
+										<a href="#{navigationHelper.applicationUrl}adminAllUsers/">#{msg.admin_allUsers}</a>
+									</li>
+									<li class="#{navigationHelper.currentPage == 'adminAllUserGroups' ? 'active' : ''}">
+										<a href="#{navigationHelper.applicationUrl}adminAllUserGroups/">#{msg.admin_allUserGroups}</a>
+									</li>
+									<li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : ''}">
+										<a href="#{navigationHelper.applicationUrl}adminAllIpRanges/">#{msg.ipRanges}</a>
+									</li>
+									<li class="#{navigationHelper.currentPage == 'adminLicenseTypes' ? 'active' : ''}">
+										<a href="#{navigationHelper.applicationUrl}adminAllLicenseTypes/">#{msg.license_licenseTypes}</a>
+									</li>
+                                    <li class="#{navigationHelper.currentPage == 'adminUserComments' ? 'active' : ''}">
+                                        <h:commandLink action="pretty:adminUserComments">
+                                            <h:outputText value="#{msg.admin_userComments}" />
+                                        </h:commandLink>
+                                    </li>
+                                    <c:forEach var="module" items="#{configurationBean.modules}">
+                                        <c:forEach var="contribution" items="#{module.adminContributions}">
+                                            <ui:include src="/#{contribution}" />
+                                        </c:forEach>
+                                    </c:forEach>
+									<li role="separator" class="divider"></li>
+									<li>
+										<a href="#" data-toggle="submenu" role="button">
+											#{msg.cms_title_menu}
+											<span class="caret"></span>
+										</a>
+										<div class="navigation__submenu level-2">
+											<ul>
+												<li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : ''}">
+													<h:commandLink action="pretty:adminCmsOverview" value="#{msg.cms_overview}" />
+												</li>
+												<li class="#{navigationHelper.currentPage == 'adminCmsCreatePage' ? 'active' : ''}">
+													<h:commandLink action="pretty:adminCmsSelectTemplate" value="#{msg.cms_createPage}" />
+												</li>
+												<li class="#{navigationHelper.currentPage == 'adminCmsMenuItems' ? 'active' : ''}">
+													<h:commandLink action="pretty:adminCmsMenuItems" value="#{msg.cms_menuItems}" />
+												</li>
+                                                <li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
+                                                    <h:commandLink action="pretty:adminCmsStaticPages" value="#{msg.cms_staticPages}" />
+                                                </li>
+												<li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
+													<h:commandLink action="pretty:adminCmsMedia" value="#{msg.cms_overviewMedia}" />
+												</li>
+											</ul>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</li>
+					</h:panelGroup>
+				</ul>
+			</h:form>
+		</nav>
+		
+		<script type="text/javascript">
+			function resetMenus() {
+// 			    console.log('resetMenus');
+			    $( '.navigation__submenu-trigger' ).removeClass( 'active' );
+				$( '.navigation__submenu' ).removeClass( 'in' );
+				$( '.navigation__megamenu-trigger' ).removeClass( 'active' );
+				$( '.navigation__megamenu-wrapper' ).removeClass( 'in' );
+			}
+			
+			function resetSubMenus() {
+			    $( 'div[class*="level-"' ).removeClass( 'in' );
+			}
+			
+			// TODO:
+			// - Submenüs > level 2 müssen resettet werden, wenn ein anderes Submenü > level 2 angeklickt wird
+			// - Submenüs müssen resettet werden, wenn man auf den Elternlink klickt
+			$( '[data-toggle="submenu"]' ).on( 'click', function() {
+				if ( $( this ).parents( '.navigation__submenu' ).hasClass( 'in' ) ) {
+        			$( this ).parent().addClass( 'active' );
+        			$( this ).next( '.navigation__submenu' ).addClass( 'in' );
+				}
+				else {
+        			resetMenus();
+        			$( this ).parent().addClass( 'active' );
+                    $( this ).next( '.navigation__submenu' ).addClass( 'in' );
+				}
+			} );
+			
+			$( '[data-toggle="megamenu"]' ).on( 'click', function() {
+			    resetMenus();
+			    
+				if ( $( this ).next( '.navigation__megamenu-wrapper' ).hasClass( 'in' ) ) {
+					$( this ).parent().removeClass( 'active' );
+					$( this ).next( '.navigation__megamenu-wrapper' ).removeClass( 'in' );
+				}
+				else {
+					$( '.navigation__megamenu-trigger' ).removeClass( 'active' );
+					$( '.navigation__megamenu-wrapper' ).removeClass( 'in' );
+					$( this ).parent().addClass( 'active' );
+					$( this ).next( '.navigation__megamenu-wrapper' ).addClass( 'in' );
+				}				
+			} );
+			
+			$( '[data-toggle="close"]' ).on( 'click', function() {
+				resetMenus();
+			} );
+			
+			if ( $( '.navigation__megamenu-wrapper' ).length > 0 ) {
+			    resetMenus();
+			}
+			
+			// TODO:
+			// - Menüs sollten resettet werden, egal wo man klickt
+			$( document ).ready( function() {
+				$( '#pageContent' ).on( 'click', function() {					
+					resetMenus();
+				} );				
+			} );
+		</script>
+	</composite:implementation>
+</ui:composition>

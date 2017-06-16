@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:facelets="http://de.intranda.digiverso.presentation">
+	
+	<composite:interface>
+		<composite:attribute name="luceneField" required="false"/>
+		<composite:attribute name="tagCount" required="false" default="100"/>
+		<composite:attribute name="partnerId" required="false" />
+	</composite:interface>
+	
+
+	<composite:implementation>
+
+		<div id="tagcloudWrapper">
+		<div class="tags">
+		
+			<h:form styleClass="formTagCloud" >
+			<div id="tagcloud">
+						
+				<ui:repeat value="#{facelets:getTagsLuceneField(cc.attrs.luceneField,'30', cc.attrs.partnerId)}" var="tag" varStatus="counter" >
+				<!-- <h:outputText value="#{counter.index }"></h:outputText> -->
+					<h:panelGroup rendered="#{counter.index lt cc.attrs.tagCount+0}">
+					<div class="tagcloudElement tag#{tag.css}">
+					<h:outputLink value="#{navigationHelper.searchUrl}/-/(DEFAULT:#{tag.escapedName}* OR FULLTEXT:#{tag.escapedName}*) AND PARTNERID:#{cc.attrs.partnerId}/1/-/-/">
+						<h:outputText value="#{tag.name}"/>
+					</h:outputLink>
+					</div>
+					</h:panelGroup>
+				</ui:repeat>
+				
+				</div>
+			</h:form>
+		
+		</div>
+		</div>
+	</composite:implementation>
+
+</ui:composition>

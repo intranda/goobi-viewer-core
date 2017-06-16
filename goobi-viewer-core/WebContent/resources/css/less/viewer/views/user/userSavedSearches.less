@@ -1,0 +1,46 @@
+/* ==============================================================
+   User Searches
+   style declarations for userBackendSearches.xhtml
+   ==============================================================*/
+#mySearches {
+    h2 {}
+    #my_saved_searches_data_table {
+        thead {
+            tr {
+                th {
+                    &:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {
+                    	text-align: center;
+                    }
+                }
+            }
+        }
+        tbody {
+            tr {
+                td {
+                	&:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {
+                    	text-align: center;
+                    	button {
+                    		padding: 0 5px;
+                    	}
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

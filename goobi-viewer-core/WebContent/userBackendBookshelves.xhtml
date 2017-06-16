@@ -1,0 +1,157 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+	<composite:interface>
+	</composite:interface>
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('mybookshelves', false, true)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_myBookshelves,1)}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">    
+        <div id="myBookshelves" class="page-wrapp">
+            <h2>#{msg.bookshelf_myBookshelves}</h2>
+
+			<!-- warning if no bookshelf exists -->
+			<h:panelGroup rendered="#{bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
+				<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookshelvesWarning}</div>
+			</h:panelGroup>
+			
+			<!-- bookshelftable -->
+			<h:panelGroup rendered="#{!bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
+				<h:form id="myBookshelvesForm" prependId="false">
+					<h:dataTable 
+						id="user_bookshelf_data_table" 
+						value="#{bookshelfBean.getBookshelvesForUser(userBean.user)}" 
+						var="bookshelf"
+						styleClass="table table-condensed user-backend-table">
+						<h:column>
+							<f:facet name="header">
+								<h:outputText styleClass="tableHeader" value="#{msg.name}" />
+							</f:facet>
+							<h:commandLink title="#{bookshelf.name} #{bookshelf.publicString}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}"
+								value="#{bookshelf.name} #{bookshelf.publicString}">
+							</h:commandLink>
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg.description}" />
+							</f:facet>
+							#{bookshelf.description}
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg.action}" />
+							</f:facet>
+							<h:commandLink title="#{msg.show}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}">
+								<i class="fa fa-eye" aria-hidden="true"></i>
+								<f:passThroughAttribute name="data-toggle" value="tooltip" />
+								<f:passThroughAttribute name="data-placement" value="top" />
+							</h:commandLink>
+							<h:commandLink title="#{msg.edit}" action="#{bookshelfBean.editBookshelfAction(bookshelf)}">
+								<i class="fa fa-pencil" aria-hidden="true"></i>
+								<f:passThroughAttribute name="data-toggle" value="tooltip" />
+								<f:passThroughAttribute name="data-placement" value="top" />
+							</h:commandLink>
+						</h:column>
+					</h:dataTable>
+				</h:form>
+			</h:panelGroup>
+			
+			<div class="row">
+				<div class="col-xs-12 add-new-bookshelf-action">
+					<h:commandButton type="button" action="#{bookshelfBean.createNewBookshelfAction}" value="#{msg.bookshelf_newBookshelf}" styleClass="btn">
+		            	<f:passThroughAttribute name="data-toggle" value="modal" />
+		            	<f:passThroughAttribute name="data-target" value="#addNewBookshelfModal" />
+		            </h:commandButton>
+				</div>
+			</div>
+
+        </div>
+
+		<!-- add new bookshelf modal -->
+		<div class="modal fade" id="addNewBookshelfModal" tabindex="-1" role="dialog" aria-labelledby="addNewBookshelfLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">
+								<h:outputText value="&amp;times;" escape="false" />
+							</span>
+						</button>
+						<h4 class="modal-title" id="addNewBookshelfLabel">#{msg.bookshelf_newBookshelf}</h4>
+					</div>
+					<h:form id="userEditBookshelfForm" styleClass="form-horizontal" prependId="false">
+						<div class="modal-body">
+							<div class="form-group">
+								<h:outputLabel value="#{msg.name}:" styleClass="col-sm-3 control-label" />
+								<div class="col-sm-9">
+									<h:inputText styleClass="form-control" value="#{bookshelfBean.currentBookshelfName}" validator="#{bookshelfBean.validateName}"
+										required="true" requiredMessage="#{msg.bookshelf_bookshelfNameFailure}" />
+								</div>
+							</div>
+							<div class="form-group">
+								<h:outputLabel value="#{msg.description}:" styleClass="col-sm-3 control-label" />
+								<div class="col-sm-9">
+									<h:inputTextarea value="#{bookshelfBean.currentBookshelfDescription}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<h:outputLabel value="#{msg.public}:" styleClass="col-sm-3 control-label" />
+								<div class="col-sm-9">
+									<div class="checkbox">
+										<label> 
+											<h:selectBooleanCheckbox value="#{bookshelfBean.currentBookshelfPublic}" />
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+							<h:commandLink value="#{msg.bookshelf_newBookshelf}" action="#{bookshelfBean.saveCurrentBookshelfAction}" styleClass="btn" />
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+    <ui:define name="sidebar">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup>
+
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
+        
+        <h:panelGroup rendered="#{userBean.loggedIn}">
+        	<widgetComponent:widget_mySearches />
+        </h:panelGroup>
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+		<widgetComponent:widget_user />		
+	</ui:define>
+
+	<ui:define name="rssFeed">
+		<ui:include src="resources/includes/rssFeed.xhtml" />
+	</ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

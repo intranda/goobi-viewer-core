@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html" >
+
+	<composite:interface>
+	</composite:interface>
+
+	<composite:implementation>
+
+		<h:outputScript name="jquery.aRSSFeed.js" library="javascript"></h:outputScript>
+		<script language="javascript" type="text/javascript" src="#{navigationHelper.applicationUrl}resources/javascript/jquery.jfeed.js"></script>
+		<!-- 		<script language="javascript" type="text/javascript" src="resources/javascript/jquery.aRSSFeed.js"></script> -->
+
+		<div class="compName_rssFeed rss_wrapp men_wrapp ">
+			<h2>
+				#{msg.lastImports} <a href="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}" title="RSS">
+				<img alt="RSS" src="#{navigationHelper.applicationUrl}resources/themes/#{navigationHelper.theme}/images/template/rss.png" style="width: 15px;" />
+				</a>
+			</h2>
+			<div class="RSSAggrCont" rssnum="5" rss_url="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}?partnerId=#{cc.attrs.partnerId}" lastImportsMsg="#{msg.importdate}:">
+				<div class="loading_rss">
+					<img alt="Loading..." src="#{navigationHelper.applicationUrl}resources/themes/#{navigationHelper.theme}/images/ajax-loader.gif" />
+				</div>
+			</div>
+		</div>
+		<script language="javascript" type="text/javascript">
+			$(document).ready(function() {
+				$('div.RSSAggrCont').aRSSFeed();
+			});
+		</script>
+	</composite:implementation>
+</ui:composition>

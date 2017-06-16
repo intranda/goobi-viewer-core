@@ -1,0 +1,412 @@
+/**
+ * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package de.intranda.digiverso.presentation.model.search;
+
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import javax.faces.context.FacesContext;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.util.ClientUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
+import de.intranda.digiverso.presentation.managedbeans.SearchBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+
+public class FacetItem implements Comparable<FacetItem>, Serializable {
+
+    private static final long serialVersionUID = 5033196184122928247L;
+
+    private static final Logger logger = LoggerFactory.getLogger(FacetItem.class);
+
+    private static final Comparator<FacetItem> NUMERIC_COMPARATOR = new FacetItem.NumericComparator();
+    private static final Comparator<FacetItem> ALPHABETIC_COMPARATOR = new FacetItem.AlphabeticComparator();
+
+    //    private static AlphanumCollatorComparator comparator = new AlphanumCollatorComparator(null);
+
+    private String field;
+    private String value;
+    private String link;
+    private String label;
+    private String translatedLabel;
+    private long count;
+    private final boolean hierarchial;
+
+    /**
+     * Constructor for active facets received via the URL. The Solr query is split into individual field/value.
+     *
+     * @param link
+     * @param hierarchical
+     * @should split field and value correctly
+     */
+    public FacetItem(String link, boolean hierarchical) {
+        int colonIndex = link.indexOf(':');
+        if (colonIndex == -1) {
+            throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
+        }
+        this.link = link;
+        this.hierarchial = hierarchical;
+        String[] linkSplit = { link.substring(0, colonIndex), link.substring(colonIndex + 1) };
+        if (linkSplit.length == 2) {
+            this.field = linkSplit[0];
+            //            if (LuceneConstants.DC.equals(field)) {
+            //                field = LuceneConstants.FACET_DC;
+            //            }
+            this.value = linkSplit[1];
+            if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1) {
+                value = value.substring(1, value.length() - 1);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param link {@link String}
+     * @param label {@link String}
+     * @param translatedLabel {@link String}
+     * @param count {@link Integer}
+     * @param hierarchical
+     */
+    private FacetItem(String field, String link, String label, String translatedLabel, long count, boolean hierarchical) {
+        this.field = field;
+        this.link = link.trim();
+        this.label = label;
+        this.translatedLabel = translatedLabel;
+        this.count = count;
+        this.hierarchial = hierarchical;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((field == null) ? 0 : field.hashCode());
+        result = prime * result + ((link == null) ? 0 : link.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        FacetItem other = (FacetItem) obj;
+        if (field == null) {
+            if (other.field != null) {
+                return false;
+            }
+        } else if (!field.equals(other.field)) {
+            return false;
+        }
+        if (link == null) {
+            if (other.link != null) {
+                return false;
+            }
+        } else if (!link.equals(other.link)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int compareTo(FacetItem facetItem) {
+        //                return facetItem.getTranslatedLabel().toLowerCase().compareTo(translatedLabel.toLowerCase());
+        return count > facetItem.getCount() ? +1 : count < facetItem.getCount() ? -1 : 0;
+    }
+
+    /**
+     * Constructs Lucene queries for the drill-down. Always sorted by the label translation.
+     *
+     * @return {@link ArrayList} of {@link FacetItem}
+     */
+    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical) {
+        List<FacetItem> retList = new ArrayList<>();
+        NavigationHelper nh = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
+        for (String value : values.keySet()) {
+            // Skip reversed values
+            if (value.charAt(0) != 1) {
+                String label = value;
+                if (StringUtils.isEmpty(field)) {
+                    label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
+                }
+                String linkValue = value;
+                if (field.endsWith(SolrConstants._UNTOKENIZED)) {
+                    linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
+                }
+                String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
+                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null), values
+                        .get(value), hierarchical));
+            }
+        }
+        switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
+            case "numerical":
+            case "numerical_asc":
+                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
+                break;
+            case "numerical_desc":
+                Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
+                Collections.reverse(retList);
+                break;
+            case "alphabetical":
+            case "alphabetical_asc":
+                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
+                break;
+            case "alphabetical_desc":
+                Collections.sort(retList, FacetItem.ALPHABETIC_COMPARATOR);
+                Collections.reverse(retList);
+                break;
+            default:
+                Collections.sort(retList); // sort by count
+                Collections.reverse(retList);
+
+        }
+        // logger.debug("filters: " + retList.size());
+        return retList;
+    }
+
+    /**
+     * Constructs a list of FilterLink objects for the drill-down. Optionally sorted by the raw values.
+     *
+     * @param field
+     * @param values
+     * @param sort
+     * @return
+     */
+    public static List<FacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean hierarchical) {
+        List<FacetItem> retList = new ArrayList<>();
+        NavigationHelper nh = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
+        boolean numeric = true;
+        for (String s : values.keySet()) {
+            try {
+                Long.valueOf(s);
+            } catch (NumberFormatException e) {
+                numeric = false;
+                break;
+            }
+        }
+        List<String> keys = new ArrayList<>(values.keySet());
+        if (sort) {
+            if (numeric) {
+                List<Long> numberKeys = new ArrayList<>();
+                for (String s : keys) {
+                    numberKeys.add(Long.valueOf(s));
+                }
+                Collections.sort(numberKeys);
+                keys.clear();
+                for (Long l : numberKeys) {
+                    keys.add(String.valueOf(l));
+                }
+            } else {
+                Collections.sort(keys);
+            }
+        }
+
+        for (Object value : keys) {
+            String label = String.valueOf(value);
+            if (StringUtils.isEmpty(field)) {
+                label += SolrConstants._DRILLDOWN_SUFFIX;
+            }
+            String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
+            retList.add(new FacetItem(field, link, label, Helper.getTranslation(label, nh != null ? nh.getLocale() : null), values.get(String.valueOf(
+                    value)), hierarchical));
+        }
+        // logger.debug("filters: " + retList.size());
+        return retList;
+    }
+
+    /**
+     * Returns field:value (with the value escaped for the Solr query).
+     *
+     * @return
+     * @should construct link correctly
+     * @should escape values containing whitespaces
+     * @should construct hierarchical link correctly
+     */
+    public String getQueryEscapedLink() {
+        String escapedValue = ClientUtils.escapeQueryChars(value);
+        if (hierarchial) {
+            return new StringBuilder("(").append(field).append(':').append(escapedValue).append(" OR ").append(field).append(':').append(escapedValue)
+                    .append(".*)").toString();
+        }
+        if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
+            escapedValue = '"' + escapedValue + '"';
+        }
+        return new StringBuilder(field).append(':').append(escapedValue).toString();
+    }
+
+    /**
+     * Link after slash/backslash replacements for partner collection, static drill-down components and topic browsing (HU Berlin).
+     *
+     * @return
+     */
+    public String getEscapedLink() {
+        return BeanUtils.escapeCriticalUrlChracters(link);
+    }
+
+    /**
+     * URL escaped link for using in search drill-downs.
+     *
+     * @return
+     */
+    public String getUrlEscapedLink() {
+        String ret = getEscapedLink();
+        try {
+            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return ret;
+        }
+    }
+
+    /**
+     * @return the field
+     */
+    public String getField() {
+        return field;
+    }
+
+    /**
+     * @param field the field to set
+     */
+    public void setField(String field) {
+        this.field = field;
+    }
+
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * @return the link
+     */
+    public String getLink() {
+        return link;
+    }
+
+    /**
+     * @param link the link to set
+     */
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    /**
+     * @return the translatedLabel
+     */
+    public String getTranslatedLabel() {
+        return translatedLabel;
+    }
+
+    /**
+     * @param translatedLabel the translatedLabel to set
+     */
+    public void setTranslatedLabel(String translatedLabel) {
+        this.translatedLabel = translatedLabel;
+    }
+
+    /**
+     * @return the count
+     */
+    public long getCount() {
+        return count;
+    }
+
+    /**
+     * @param count the count to set
+     */
+    public void setCount(long count) {
+        this.count = count;
+    }
+
+    /**
+     * @return the hierarchial
+     */
+    public boolean isHierarchial() {
+        return hierarchial;
+    }
+
+    public static class AlphabeticComparator implements Comparator<FacetItem> {
+
+        @Override
+        public int compare(FacetItem o1, FacetItem o2) {
+            int ret = o1.getLabel().compareTo(o2.getLabel());
+            return ret;
+        }
+
+    }
+
+    public static class NumericComparator implements Comparator<FacetItem> {
+
+        @Override
+        public int compare(FacetItem o1, FacetItem o2) {
+            try {
+                int i1 = Integer.parseInt(o1.getLabel());
+                int i2 = Integer.parseInt(o2.getLabel());
+                return Integer.compare(i1, i2);
+            } catch (NumberFormatException e) {
+                return o1.getLabel().compareTo(o2.getLabel());
+            }
+        }
+
+    }
+}

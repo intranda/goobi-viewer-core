@@ -1,0 +1,2555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mets:mets
+	xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version17/mets.v1-7.xsd http://www.loc.gov/standards/premis/ http://www.loc.gov/standards/premis/v2/premis-v2-0.xsd http://www.loc.gov/standards/mix/ http://www.loc.gov/standards/mix/mix.xsd"
+	xmlns:mets="http://www.loc.gov/METS/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<mets:metsHdr CREATEDATE="2014-12-08T10:21:03">
+		<mets:agent OTHERTYPE="SOFTWARE" ROLE="CREATOR" TYPE="OTHER">
+			<mets:name>Goobi - UGH-1.10-c3c4320 - 12−April−2013</mets:name>
+			<mets:note>Goobi</mets:note>
+		</mets:agent>
+	</mets:metsHdr>
+	<mets:dmdSec ID="DMDLOG_0001">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:identifier type="urn">urn:nbn:de:0220-gd-4098770
+					</mods:identifier>
+					<mods:classification authority="GDZ">Kaiserreich
+						Geschichtsschulbuecher</mods:classification>
+					<mods:relatedItem type="host">
+						<mods:recordInfo>
+							<mods:recordIdentifier source="gbv-ppn">PPN640486592
+							</mods:recordIdentifier>
+						</mods:recordInfo>
+					</mods:relatedItem>
+					<mods:recordInfo>
+						<mods:recordIdentifier source="gbv-ppn">PPN648829383
+						</mods:recordIdentifier>
+					</mods:recordInfo>
+					<mods:identifier type="PPNanalog">PPN414680081
+					</mods:identifier>
+					<mods:titleInfo>
+						<mods:title>[1 = Mittelstufe]</mods:title>
+					</mods:titleInfo>
+					<mods:originInfo>
+						<mods:edition>Ausg. für mehrklassige Schulen, 24. Aufl.
+						</mods:edition>
+						<mods:place>
+							<mods:placeTerm type="text">Breslau</mods:placeTerm>
+						</mods:place>
+						<mods:dateIssued encoding="w3cdtf" keyDate="yes">1913
+						</mods:dateIssued>
+						<mods:publisher>Handel</mods:publisher>
+					</mods:originInfo>
+					<mods:part order="0001" type="host">
+						<mods:detail>
+							<mods:number>1 = Mittelstufe</mods:number>
+						</mods:detail>
+					</mods:part>
+					<mods:language>
+						<mods:languageTerm authority="iso639-2b" type="code">ger
+						</mods:languageTerm>
+					</mods:language>
+					<mods:extension>
+						<gei:gei xmlns:gei="http://gei-digital.gei.de/">
+							<gei:partnerlibrary>Staatsbibliothek zu Berlin – Preußischer
+								Kulturbesitz; Signatur: N. 13/4441-1&lt;24&gt;
+							</gei:partnerlibrary>
+						</gei:gei>
+					</mods:extension>
+					<mods:name type="personal">
+						<mods:role>
+							<mods:roleTerm authority="marcrelator" type="code">aut
+							</mods:roleTerm>
+						</mods:role>
+						<mods:namePart type="family">Kolbe</mods:namePart>
+						<mods:namePart type="given">Konrad</mods:namePart>
+						<mods:displayForm>Kolbe, Konrad</mods:displayForm>
+					</mods:name>
+					<mods:originInfo>
+						<mods:place>
+							<mods:placeTerm type="text">Braunschweig</mods:placeTerm>
+						</mods:place>
+						<mods:publisher>Georg-Eckert-Institut für internationale
+							Schulbuchforschung</mods:publisher>
+						<mods:edition>[Electronic ed.]</mods:edition>
+						<mods:dateCaptured encoding="w3cdtf">2012
+						</mods:dateCaptured>
+					</mods:originInfo>
+					<mods:physicalDescription>
+						<mods:digitalOrigin>reformatted digital</mods:digitalOrigin>
+					</mods:physicalDescription>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0003">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>Zeittafel</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0004">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>Kaiser Wilhelm II.</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0005">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>Kaiser Friedrich</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0006">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>Kaiser Wilhelm I., der Große</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0007">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>König Friedrich Wilhelm IV.</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0008">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>König Friedrich Wilhelm III.</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0009">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>König Friedrich Wilhelm II.</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0010">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>König Friedrich der Große</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0011">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>König Friedrich Wilhelm I.</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0012">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>König Friedrich I.</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0013">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>Friedrich Wilhelm, der Große Kurfürst</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0014">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>Friedrich I.</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDLOG_0015">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:titleInfo>
+						<mods:title>Inhalt</mods:title>
+					</mods:titleInfo>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:dmdSec ID="DMDPHYS_0000">
+		<mets:mdWrap MDTYPE="MODS">
+			<mets:xmlData>
+				<mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+					<mods:location>
+						<mods:physicalLocation>Georg-Eckert-Institut fÃ¼r internationale
+							Schulbuchforschung</mods:physicalLocation>
+						<mods:shelfLocator>N. 13 4441 1 24</mods:shelfLocator>
+					</mods:location>
+				</mods:mods>
+			</mets:xmlData>
+		</mets:mdWrap>
+	</mets:dmdSec>
+	<mets:amdSec ID="AMD">
+		<mets:rightsMD ID="RIGHTS">
+			<mets:mdWrap MDTYPE="OTHER" MIMETYPE="text/xml"
+				OTHERMDTYPE="DVRIGHTS">
+				<mets:xmlData>
+					<dv:rights xmlns:dv="http://dfg-viewer.de/">
+						<dv:owner>Georg-Eckert-Institut - Leibniz-Institut für
+							internationale Schulbuchforschung</dv:owner>
+						<dv:ownerLogo>http://gei-digital.gei.de/viewer/resources/themes/gei/images/dfgviewergei.jpg
+						</dv:ownerLogo>
+						<dv:ownerSiteURL>http://www.gei.de/</dv:ownerSiteURL>
+						<dv:ownerContact>gei-digital@gei.de</dv:ownerContact>
+					</dv:rights>
+				</mets:xmlData>
+			</mets:mdWrap>
+		</mets:rightsMD>
+		<mets:digiprovMD ID="DIGIPROV">
+			<mets:mdWrap MDTYPE="OTHER" MIMETYPE="text/xml"
+				OTHERMDTYPE="DVLINKS">
+				<mets:xmlData>
+					<dv:links xmlns:dv="http://dfg-viewer.de/">
+						<dv:reference>http://opac.lbs-braunschweig.gbv.de/DB=6.1/PPN?PPN=648829383
+						</dv:reference>
+						<dv:presentation>http://gei-digital.gei.de/viewer/ppnresolver?id=PPN648829383
+						</dv:presentation>
+					</dv:links>
+				</mets:xmlData>
+			</mets:mdWrap>
+		</mets:digiprovMD>
+	</mets:amdSec>
+	<mets:fileSec>
+		<mets:fileGrp USE="WORDCOORDS">
+			<mets:file ID="FILE_0000_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000001.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000002.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000003.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000004.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000005.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000006.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000007.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000008.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000009.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000010.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000011.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000012.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000013.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000014.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000015.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000016.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000017.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000018.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000019.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000020.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000021.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000022.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000023.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000024.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000025.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000026.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000027.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000028.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000029.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000030.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000031.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000032.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000033.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000034.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000035.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000036.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000037.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000038.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000039.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_WORDCOORDS" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=wc&amp;sourcepath=PPN648829383/00000040.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+		<mets:fileGrp USE="ABBYYXML">
+			<mets:file ID="FILE_0000_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000001.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000002.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000003.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000004.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000005.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000006.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000007.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000008.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000009.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000010.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000011.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000012.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000013.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000014.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000015.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000016.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000017.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000018.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000019.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000020.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000021.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000022.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000023.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000024.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000025.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000026.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000027.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000028.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000029.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000030.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000031.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000032.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000033.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000034.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000035.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000036.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000037.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000038.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000039.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_ABBYYXML" MIMETYPE="text/xml">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=abbyy&amp;sourcepath=PPN648829383/00000040.xml"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+		<mets:fileGrp USE="PRESENTATION">
+			<mets:file ID="FILE_0000_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000001.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000002.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000003.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000004.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000005.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000006.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000007.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000008.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000009.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000010.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000011.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000012.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000013.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000014.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000015.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000016.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000017.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000018.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000019.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000020.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000021.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000022.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000023.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000024.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000025.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000026.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000027.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000028.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000029.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000030.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000031.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000032.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000033.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000034.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000035.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000036.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000037.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000038.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000039.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_PRESENTATION" MIMETYPE="image/tiff">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="file:///opt/digiverso/viewer/tiff/PPN648829383/00000040.tif"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+		<mets:fileGrp USE="TXT">
+			<mets:file ID="FILE_0000_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000001.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000002.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000003.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000004.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000005.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000006.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000007.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000008.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000009.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000010.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000011.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000012.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000013.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000014.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000015.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000016.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000017.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000018.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000019.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000020.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000021.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000022.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000023.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000024.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000025.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000026.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000027.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000028.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000029.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000030.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000031.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000032.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000033.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000034.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000035.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000036.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000037.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000038.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000039.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_TXT" MIMETYPE="text/plain">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/viewer/content?action=text&amp;format=txt&amp;sourcepath=PPN648829383/00000040.txt"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+		<mets:fileGrp USE="MIN">
+			<mets:file ID="FILE_0000_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000001.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000002.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000003.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000004.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000005.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000006.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000007.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000008.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000009.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000010.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000011.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000012.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000013.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000014.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000015.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000016.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000017.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000018.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000019.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000020.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000021.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000022.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000023.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000024.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000025.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000026.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000027.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000028.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000029.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000030.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000031.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000032.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000033.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000034.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000035.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000036.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000037.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000038.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000039.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_MIN" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/600/0/00000040.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+		<mets:fileGrp USE="THUMBS">
+			<mets:file ID="FILE_0000_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000001.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000002.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000003.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000004.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000005.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000006.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000007.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000008.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000009.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000010.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000011.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000012.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000013.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000014.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000015.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000016.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000017.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000018.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000019.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000020.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000021.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000022.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000023.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000024.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000025.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000026.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000027.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000028.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000029.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000030.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000031.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000032.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000033.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000034.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000035.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000036.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000037.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000038.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000039.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_THUMBS" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/150/0/00000040.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+		<mets:fileGrp USE="DEFAULT">
+			<mets:file ID="FILE_0000_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000001.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000002.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000003.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000004.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000005.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000006.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000007.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000008.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000009.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000010.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000011.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000012.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000013.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000014.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000015.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000016.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000017.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000018.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000019.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000020.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000021.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000022.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000023.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000024.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000025.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000026.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000027.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000028.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000029.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000030.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000031.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000032.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000033.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000034.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000035.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000036.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000037.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000038.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000039.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_DEFAULT" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/800/0/00000040.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+		<mets:fileGrp USE="MAX">
+			<mets:file ID="FILE_0000_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000001.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0001_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000002.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0002_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000003.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0003_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000004.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0004_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000005.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0005_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000006.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0006_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000007.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0007_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000008.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0008_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000009.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0009_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000010.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0010_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000011.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0011_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000012.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0012_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000013.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0013_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000014.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0014_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000015.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0015_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000016.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0016_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000017.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0017_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000018.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0018_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000019.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0019_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000020.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0020_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000021.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0021_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000022.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0022_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000023.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0023_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000024.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0024_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000025.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0025_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000026.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0026_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000027.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0027_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000028.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0028_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000029.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0029_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000030.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0030_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000031.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0031_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000032.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0032_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000033.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0033_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000034.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0034_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000035.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0035_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000036.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0036_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000037.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0037_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000038.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0038_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000039.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+			<mets:file ID="FILE_0039_MAX" MIMETYPE="image/jpeg">
+				<mets:FLocat LOCTYPE="URL"
+					xlink:href="http://gei-digital.gei.de/content/PPN648829383/1000/0/00000040.jpg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" />
+			</mets:file>
+		</mets:fileGrp>
+	</mets:fileSec>
+	<mets:structMap TYPE="LOGICAL">
+		<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098765" ID="LOG_0002"
+			LABEL="Unterrichtstoff der vaterländischen Geschichte in Volksschulen"
+			TYPE="MultiVolumeWork">
+			<mets:mptr LOCTYPE="URL"
+				xlink:href="http://gei-digital.gei.de/viewer/metsresolver?id=PPN640486592"
+				xmlns:xlink="http://www.w3.org/1999/xlink" />
+			<mets:div ADMID="AMD" CONTENTIDS="urn:nbn:de:0220-gd-4098770"
+				DMDID="DMDLOG_0001" ID="LOG_0003" LABEL="[1 = Mittelstufe]" ORDER="0001"
+				TYPE="Volume">
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098786" ID="LOG_0004"
+					TYPE="Binder" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098798" DMDID="DMDLOG_0003"
+					ID="LOG_0005" LABEL="Zeittafel" TYPE="Table" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098803" DMDID="DMDLOG_0004"
+					ID="LOG_0006" LABEL="Kaiser Wilhelm II." TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098817" DMDID="DMDLOG_0005"
+					ID="LOG_0007" LABEL="Kaiser Friedrich" TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098821" DMDID="DMDLOG_0006"
+					ID="LOG_0008" LABEL="Kaiser Wilhelm I., der Große" TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098839" DMDID="DMDLOG_0007"
+					ID="LOG_0009" LABEL="König Friedrich Wilhelm IV." TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098841" DMDID="DMDLOG_0008"
+					ID="LOG_0010" LABEL="König Friedrich Wilhelm III." TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098856" DMDID="DMDLOG_0009"
+					ID="LOG_0011" LABEL="König Friedrich Wilhelm II." TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098861" DMDID="DMDLOG_0010"
+					ID="LOG_0012" LABEL="König Friedrich der Große" TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098875" DMDID="DMDLOG_0011"
+					ID="LOG_0013" LABEL="König Friedrich Wilhelm I." TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098881" DMDID="DMDLOG_0012"
+					ID="LOG_0014" LABEL="König Friedrich I." TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098898" DMDID="DMDLOG_0013"
+					ID="LOG_0015" LABEL="Friedrich Wilhelm, der Große Kurfürst" TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098905" DMDID="DMDLOG_0014"
+					ID="LOG_0016" LABEL="Friedrich I." TYPE="Chapter" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098918" DMDID="DMDLOG_0015"
+					ID="LOG_0017" LABEL="Inhalt" TYPE="TableOfContents" />
+				<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098929" ID="LOG_0018"
+					TYPE="Advertising" />
+			</mets:div>
+		</mets:div>
+	</mets:structMap>
+	<mets:structMap TYPE="PHYSICAL">
+		<mets:div DMDID="DMDPHYS_0000" ID="PHYS_0000" TYPE="physSequence">
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098930" ID="PHYS_0001"
+				ORDER="1" ORDERLABEL=" - " TYPE="page">
+				<mets:fptr FILEID="FILE_0000_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0000_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0000_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0000_TXT" />
+				<mets:fptr FILEID="FILE_0000_MIN" />
+				<mets:fptr FILEID="FILE_0000_THUMBS" />
+				<mets:fptr FILEID="FILE_0000_DEFAULT" />
+				<mets:fptr FILEID="FILE_0000_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098940" ID="PHYS_0002"
+				ORDER="2" ORDERLABEL=" - " TYPE="page">
+				<mets:fptr FILEID="FILE_0001_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0001_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0001_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0001_TXT" />
+				<mets:fptr FILEID="FILE_0001_MIN" />
+				<mets:fptr FILEID="FILE_0001_THUMBS" />
+				<mets:fptr FILEID="FILE_0001_DEFAULT" />
+				<mets:fptr FILEID="FILE_0001_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098950" ID="PHYS_0003"
+				ORDER="3" ORDERLABEL="1" TYPE="page">
+				<mets:fptr FILEID="FILE_0002_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0002_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0002_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0002_TXT" />
+				<mets:fptr FILEID="FILE_0002_MIN" />
+				<mets:fptr FILEID="FILE_0002_THUMBS" />
+				<mets:fptr FILEID="FILE_0002_DEFAULT" />
+				<mets:fptr FILEID="FILE_0002_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098969" ID="PHYS_0004"
+				ORDER="4" ORDERLABEL="2" TYPE="page">
+				<mets:fptr FILEID="FILE_0003_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0003_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0003_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0003_TXT" />
+				<mets:fptr FILEID="FILE_0003_MIN" />
+				<mets:fptr FILEID="FILE_0003_THUMBS" />
+				<mets:fptr FILEID="FILE_0003_DEFAULT" />
+				<mets:fptr FILEID="FILE_0003_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098976" ID="PHYS_0005"
+				ORDER="5" ORDERLABEL="3" TYPE="page">
+				<mets:fptr FILEID="FILE_0004_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0004_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0004_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0004_TXT" />
+				<mets:fptr FILEID="FILE_0004_MIN" />
+				<mets:fptr FILEID="FILE_0004_THUMBS" />
+				<mets:fptr FILEID="FILE_0004_DEFAULT" />
+				<mets:fptr FILEID="FILE_0004_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098984" ID="PHYS_0006"
+				ORDER="6" ORDERLABEL="4" TYPE="page">
+				<mets:fptr FILEID="FILE_0005_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0005_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0005_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0005_TXT" />
+				<mets:fptr FILEID="FILE_0005_MIN" />
+				<mets:fptr FILEID="FILE_0005_THUMBS" />
+				<mets:fptr FILEID="FILE_0005_DEFAULT" />
+				<mets:fptr FILEID="FILE_0005_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4098994" ID="PHYS_0007"
+				ORDER="7" ORDERLABEL="5" TYPE="page">
+				<mets:fptr FILEID="FILE_0006_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0006_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0006_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0006_TXT" />
+				<mets:fptr FILEID="FILE_0006_MIN" />
+				<mets:fptr FILEID="FILE_0006_THUMBS" />
+				<mets:fptr FILEID="FILE_0006_DEFAULT" />
+				<mets:fptr FILEID="FILE_0006_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099000" ID="PHYS_0008"
+				ORDER="8" ORDERLABEL="6" TYPE="page">
+				<mets:fptr FILEID="FILE_0007_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0007_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0007_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0007_TXT" />
+				<mets:fptr FILEID="FILE_0007_MIN" />
+				<mets:fptr FILEID="FILE_0007_THUMBS" />
+				<mets:fptr FILEID="FILE_0007_DEFAULT" />
+				<mets:fptr FILEID="FILE_0007_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099011" ID="PHYS_0009"
+				ORDER="9" ORDERLABEL="7" TYPE="page">
+				<mets:fptr FILEID="FILE_0008_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0008_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0008_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0008_TXT" />
+				<mets:fptr FILEID="FILE_0008_MIN" />
+				<mets:fptr FILEID="FILE_0008_THUMBS" />
+				<mets:fptr FILEID="FILE_0008_DEFAULT" />
+				<mets:fptr FILEID="FILE_0008_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099024" ID="PHYS_0010"
+				ORDER="10" ORDERLABEL="8" TYPE="page">
+				<mets:fptr FILEID="FILE_0009_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0009_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0009_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0009_TXT" />
+				<mets:fptr FILEID="FILE_0009_MIN" />
+				<mets:fptr FILEID="FILE_0009_THUMBS" />
+				<mets:fptr FILEID="FILE_0009_DEFAULT" />
+				<mets:fptr FILEID="FILE_0009_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099031" ID="PHYS_0011"
+				ORDER="11" ORDERLABEL="9" TYPE="page">
+				<mets:fptr FILEID="FILE_0010_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0010_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0010_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0010_TXT" />
+				<mets:fptr FILEID="FILE_0010_MIN" />
+				<mets:fptr FILEID="FILE_0010_THUMBS" />
+				<mets:fptr FILEID="FILE_0010_DEFAULT" />
+				<mets:fptr FILEID="FILE_0010_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099047" ID="PHYS_0012"
+				ORDER="12" ORDERLABEL="10" TYPE="page">
+				<mets:fptr FILEID="FILE_0011_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0011_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0011_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0011_TXT" />
+				<mets:fptr FILEID="FILE_0011_MIN" />
+				<mets:fptr FILEID="FILE_0011_THUMBS" />
+				<mets:fptr FILEID="FILE_0011_DEFAULT" />
+				<mets:fptr FILEID="FILE_0011_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099058" ID="PHYS_0013"
+				ORDER="13" ORDERLABEL="11" TYPE="page">
+				<mets:fptr FILEID="FILE_0012_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0012_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0012_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0012_TXT" />
+				<mets:fptr FILEID="FILE_0012_MIN" />
+				<mets:fptr FILEID="FILE_0012_THUMBS" />
+				<mets:fptr FILEID="FILE_0012_DEFAULT" />
+				<mets:fptr FILEID="FILE_0012_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099064" ID="PHYS_0014"
+				ORDER="14" ORDERLABEL="12" TYPE="page">
+				<mets:fptr FILEID="FILE_0013_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0013_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0013_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0013_TXT" />
+				<mets:fptr FILEID="FILE_0013_MIN" />
+				<mets:fptr FILEID="FILE_0013_THUMBS" />
+				<mets:fptr FILEID="FILE_0013_DEFAULT" />
+				<mets:fptr FILEID="FILE_0013_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099076" ID="PHYS_0015"
+				ORDER="15" ORDERLABEL="13" TYPE="page">
+				<mets:fptr FILEID="FILE_0014_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0014_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0014_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0014_TXT" />
+				<mets:fptr FILEID="FILE_0014_MIN" />
+				<mets:fptr FILEID="FILE_0014_THUMBS" />
+				<mets:fptr FILEID="FILE_0014_DEFAULT" />
+				<mets:fptr FILEID="FILE_0014_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099089" ID="PHYS_0016"
+				ORDER="16" ORDERLABEL="14" TYPE="page">
+				<mets:fptr FILEID="FILE_0015_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0015_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0015_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0015_TXT" />
+				<mets:fptr FILEID="FILE_0015_MIN" />
+				<mets:fptr FILEID="FILE_0015_THUMBS" />
+				<mets:fptr FILEID="FILE_0015_DEFAULT" />
+				<mets:fptr FILEID="FILE_0015_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099099" ID="PHYS_0017"
+				ORDER="17" ORDERLABEL="15" TYPE="page">
+				<mets:fptr FILEID="FILE_0016_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0016_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0016_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0016_TXT" />
+				<mets:fptr FILEID="FILE_0016_MIN" />
+				<mets:fptr FILEID="FILE_0016_THUMBS" />
+				<mets:fptr FILEID="FILE_0016_DEFAULT" />
+				<mets:fptr FILEID="FILE_0016_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099101" ID="PHYS_0018"
+				ORDER="18" ORDERLABEL="16" TYPE="page">
+				<mets:fptr FILEID="FILE_0017_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0017_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0017_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0017_TXT" />
+				<mets:fptr FILEID="FILE_0017_MIN" />
+				<mets:fptr FILEID="FILE_0017_THUMBS" />
+				<mets:fptr FILEID="FILE_0017_DEFAULT" />
+				<mets:fptr FILEID="FILE_0017_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099111" ID="PHYS_0019"
+				ORDER="19" ORDERLABEL="17" TYPE="page">
+				<mets:fptr FILEID="FILE_0018_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0018_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0018_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0018_TXT" />
+				<mets:fptr FILEID="FILE_0018_MIN" />
+				<mets:fptr FILEID="FILE_0018_THUMBS" />
+				<mets:fptr FILEID="FILE_0018_DEFAULT" />
+				<mets:fptr FILEID="FILE_0018_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099128" ID="PHYS_0020"
+				ORDER="20" ORDERLABEL="18" TYPE="page">
+				<mets:fptr FILEID="FILE_0019_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0019_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0019_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0019_TXT" />
+				<mets:fptr FILEID="FILE_0019_MIN" />
+				<mets:fptr FILEID="FILE_0019_THUMBS" />
+				<mets:fptr FILEID="FILE_0019_DEFAULT" />
+				<mets:fptr FILEID="FILE_0019_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099131" ID="PHYS_0021"
+				ORDER="21" ORDERLABEL="19" TYPE="page">
+				<mets:fptr FILEID="FILE_0020_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0020_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0020_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0020_TXT" />
+				<mets:fptr FILEID="FILE_0020_MIN" />
+				<mets:fptr FILEID="FILE_0020_THUMBS" />
+				<mets:fptr FILEID="FILE_0020_DEFAULT" />
+				<mets:fptr FILEID="FILE_0020_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099145" ID="PHYS_0022"
+				ORDER="22" ORDERLABEL="20" TYPE="page">
+				<mets:fptr FILEID="FILE_0021_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0021_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0021_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0021_TXT" />
+				<mets:fptr FILEID="FILE_0021_MIN" />
+				<mets:fptr FILEID="FILE_0021_THUMBS" />
+				<mets:fptr FILEID="FILE_0021_DEFAULT" />
+				<mets:fptr FILEID="FILE_0021_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099155" ID="PHYS_0023"
+				ORDER="23" ORDERLABEL="21" TYPE="page">
+				<mets:fptr FILEID="FILE_0022_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0022_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0022_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0022_TXT" />
+				<mets:fptr FILEID="FILE_0022_MIN" />
+				<mets:fptr FILEID="FILE_0022_THUMBS" />
+				<mets:fptr FILEID="FILE_0022_DEFAULT" />
+				<mets:fptr FILEID="FILE_0022_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099160" ID="PHYS_0024"
+				ORDER="24" ORDERLABEL="22" TYPE="page">
+				<mets:fptr FILEID="FILE_0023_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0023_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0023_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0023_TXT" />
+				<mets:fptr FILEID="FILE_0023_MIN" />
+				<mets:fptr FILEID="FILE_0023_THUMBS" />
+				<mets:fptr FILEID="FILE_0023_DEFAULT" />
+				<mets:fptr FILEID="FILE_0023_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099171" ID="PHYS_0025"
+				ORDER="25" ORDERLABEL="23" TYPE="page">
+				<mets:fptr FILEID="FILE_0024_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0024_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0024_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0024_TXT" />
+				<mets:fptr FILEID="FILE_0024_MIN" />
+				<mets:fptr FILEID="FILE_0024_THUMBS" />
+				<mets:fptr FILEID="FILE_0024_DEFAULT" />
+				<mets:fptr FILEID="FILE_0024_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099184" ID="PHYS_0026"
+				ORDER="26" ORDERLABEL="24" TYPE="page">
+				<mets:fptr FILEID="FILE_0025_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0025_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0025_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0025_TXT" />
+				<mets:fptr FILEID="FILE_0025_MIN" />
+				<mets:fptr FILEID="FILE_0025_THUMBS" />
+				<mets:fptr FILEID="FILE_0025_DEFAULT" />
+				<mets:fptr FILEID="FILE_0025_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099190" ID="PHYS_0027"
+				ORDER="27" ORDERLABEL="25" TYPE="page">
+				<mets:fptr FILEID="FILE_0026_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0026_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0026_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0026_TXT" />
+				<mets:fptr FILEID="FILE_0026_MIN" />
+				<mets:fptr FILEID="FILE_0026_THUMBS" />
+				<mets:fptr FILEID="FILE_0026_DEFAULT" />
+				<mets:fptr FILEID="FILE_0026_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099202" ID="PHYS_0028"
+				ORDER="28" ORDERLABEL="26" TYPE="page">
+				<mets:fptr FILEID="FILE_0027_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0027_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0027_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0027_TXT" />
+				<mets:fptr FILEID="FILE_0027_MIN" />
+				<mets:fptr FILEID="FILE_0027_THUMBS" />
+				<mets:fptr FILEID="FILE_0027_DEFAULT" />
+				<mets:fptr FILEID="FILE_0027_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099212" ID="PHYS_0029"
+				ORDER="29" ORDERLABEL="27" TYPE="page">
+				<mets:fptr FILEID="FILE_0028_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0028_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0028_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0028_TXT" />
+				<mets:fptr FILEID="FILE_0028_MIN" />
+				<mets:fptr FILEID="FILE_0028_THUMBS" />
+				<mets:fptr FILEID="FILE_0028_DEFAULT" />
+				<mets:fptr FILEID="FILE_0028_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099222" ID="PHYS_0030"
+				ORDER="30" ORDERLABEL="28" TYPE="page">
+				<mets:fptr FILEID="FILE_0029_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0029_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0029_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0029_TXT" />
+				<mets:fptr FILEID="FILE_0029_MIN" />
+				<mets:fptr FILEID="FILE_0029_THUMBS" />
+				<mets:fptr FILEID="FILE_0029_DEFAULT" />
+				<mets:fptr FILEID="FILE_0029_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099232" ID="PHYS_0031"
+				ORDER="31" ORDERLABEL="29" TYPE="page">
+				<mets:fptr FILEID="FILE_0030_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0030_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0030_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0030_TXT" />
+				<mets:fptr FILEID="FILE_0030_MIN" />
+				<mets:fptr FILEID="FILE_0030_THUMBS" />
+				<mets:fptr FILEID="FILE_0030_DEFAULT" />
+				<mets:fptr FILEID="FILE_0030_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099244" ID="PHYS_0032"
+				ORDER="32" ORDERLABEL="30" TYPE="page">
+				<mets:fptr FILEID="FILE_0031_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0031_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0031_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0031_TXT" />
+				<mets:fptr FILEID="FILE_0031_MIN" />
+				<mets:fptr FILEID="FILE_0031_THUMBS" />
+				<mets:fptr FILEID="FILE_0031_DEFAULT" />
+				<mets:fptr FILEID="FILE_0031_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099252" ID="PHYS_0033"
+				ORDER="33" ORDERLABEL="31" TYPE="page">
+				<mets:fptr FILEID="FILE_0032_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0032_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0032_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0032_TXT" />
+				<mets:fptr FILEID="FILE_0032_MIN" />
+				<mets:fptr FILEID="FILE_0032_THUMBS" />
+				<mets:fptr FILEID="FILE_0032_DEFAULT" />
+				<mets:fptr FILEID="FILE_0032_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099266" ID="PHYS_0034"
+				ORDER="34" ORDERLABEL="32" TYPE="page">
+				<mets:fptr FILEID="FILE_0033_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0033_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0033_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0033_TXT" />
+				<mets:fptr FILEID="FILE_0033_MIN" />
+				<mets:fptr FILEID="FILE_0033_THUMBS" />
+				<mets:fptr FILEID="FILE_0033_DEFAULT" />
+				<mets:fptr FILEID="FILE_0033_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099277" ID="PHYS_0035"
+				ORDER="35" ORDERLABEL="33" TYPE="page">
+				<mets:fptr FILEID="FILE_0034_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0034_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0034_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0034_TXT" />
+				<mets:fptr FILEID="FILE_0034_MIN" />
+				<mets:fptr FILEID="FILE_0034_THUMBS" />
+				<mets:fptr FILEID="FILE_0034_DEFAULT" />
+				<mets:fptr FILEID="FILE_0034_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099288" ID="PHYS_0036"
+				ORDER="36" ORDERLABEL="34" TYPE="page">
+				<mets:fptr FILEID="FILE_0035_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0035_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0035_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0035_TXT" />
+				<mets:fptr FILEID="FILE_0035_MIN" />
+				<mets:fptr FILEID="FILE_0035_THUMBS" />
+				<mets:fptr FILEID="FILE_0035_DEFAULT" />
+				<mets:fptr FILEID="FILE_0035_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099291" ID="PHYS_0037"
+				ORDER="37" ORDERLABEL="35" TYPE="page">
+				<mets:fptr FILEID="FILE_0036_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0036_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0036_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0036_TXT" />
+				<mets:fptr FILEID="FILE_0036_MIN" />
+				<mets:fptr FILEID="FILE_0036_THUMBS" />
+				<mets:fptr FILEID="FILE_0036_DEFAULT" />
+				<mets:fptr FILEID="FILE_0036_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099303" ID="PHYS_0038"
+				ORDER="38" ORDERLABEL="36" TYPE="page">
+				<mets:fptr FILEID="FILE_0037_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0037_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0037_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0037_TXT" />
+				<mets:fptr FILEID="FILE_0037_MIN" />
+				<mets:fptr FILEID="FILE_0037_THUMBS" />
+				<mets:fptr FILEID="FILE_0037_DEFAULT" />
+				<mets:fptr FILEID="FILE_0037_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099312" ID="PHYS_0039"
+				ORDER="39" ORDERLABEL=" - " TYPE="page">
+				<mets:fptr FILEID="FILE_0038_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0038_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0038_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0038_TXT" />
+				<mets:fptr FILEID="FILE_0038_MIN" />
+				<mets:fptr FILEID="FILE_0038_THUMBS" />
+				<mets:fptr FILEID="FILE_0038_DEFAULT" />
+				<mets:fptr FILEID="FILE_0038_MAX" />
+			</mets:div>
+			<mets:div CONTENTIDS="urn:nbn:de:0220-gd-4099325" ID="PHYS_0040"
+				ORDER="40" ORDERLABEL=" - " TYPE="page">
+				<mets:fptr FILEID="FILE_0039_WORDCOORDS" />
+				<mets:fptr FILEID="FILE_0039_ABBYYXML" />
+				<mets:fptr FILEID="FILE_0039_PRESENTATION" />
+				<mets:fptr FILEID="FILE_0039_TXT" />
+				<mets:fptr FILEID="FILE_0039_MIN" />
+				<mets:fptr FILEID="FILE_0039_THUMBS" />
+				<mets:fptr FILEID="FILE_0039_DEFAULT" />
+				<mets:fptr FILEID="FILE_0039_MAX" />
+			</mets:div>
+		</mets:div>
+	</mets:structMap>
+	<mets:structLink>
+		<mets:smLink xlink:to="PHYS_0001" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0002" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0003" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0004" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0005" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0006" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0007" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0008" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0009" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0010" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0011" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0012" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0013" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0014" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0015" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0016" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0017" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0018" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0019" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0020" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0021" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0022" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0023" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0024" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0025" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0026" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0027" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0028" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0029" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0030" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0031" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0032" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0033" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0034" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0035" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0036" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0037" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0038" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0039" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0040" xlink:from="LOG_0003"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0001" xlink:from="LOG_0004"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0002" xlink:from="LOG_0005"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0003" xlink:from="LOG_0006"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0004" xlink:from="LOG_0006"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0005" xlink:from="LOG_0006"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0006" xlink:from="LOG_0006"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0007" xlink:from="LOG_0006"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0008" xlink:from="LOG_0006"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0008" xlink:from="LOG_0007"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0009" xlink:from="LOG_0007"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0010" xlink:from="LOG_0007"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0011" xlink:from="LOG_0007"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0012" xlink:from="LOG_0008"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0013" xlink:from="LOG_0008"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0014" xlink:from="LOG_0008"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0015" xlink:from="LOG_0008"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0016" xlink:from="LOG_0008"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0017" xlink:from="LOG_0008"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0018" xlink:from="LOG_0008"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0018" xlink:from="LOG_0009"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0019" xlink:from="LOG_0009"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0020" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0021" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0022" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0023" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0024" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0025" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0026" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0027" xlink:from="LOG_0010"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0027" xlink:from="LOG_0011"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0028" xlink:from="LOG_0011"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0028" xlink:from="LOG_0012"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0029" xlink:from="LOG_0012"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0030" xlink:from="LOG_0012"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0031" xlink:from="LOG_0012"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0032" xlink:from="LOG_0012"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0033" xlink:from="LOG_0012"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0033" xlink:from="LOG_0013"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0034" xlink:from="LOG_0013"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0034" xlink:from="LOG_0014"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0035" xlink:from="LOG_0014"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0035" xlink:from="LOG_0015"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0036" xlink:from="LOG_0015"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0037" xlink:from="LOG_0015"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0038" xlink:from="LOG_0015"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0038" xlink:from="LOG_0016"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0039" xlink:from="LOG_0017"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+		<mets:smLink xlink:to="PHYS_0040" xlink:from="LOG_0018"
+			xmlns:xlink="http://www.w3.org/1999/xlink" />
+	</mets:structLink>
+</mets:mets>

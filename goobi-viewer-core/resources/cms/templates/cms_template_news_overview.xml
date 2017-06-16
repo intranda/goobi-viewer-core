@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_newsoverview" version="2015-02-03">
+    <name>News Übersichtsseite mit einleitendem Text und Bild</name>
+    <description>Mit diesem Template wird eine Übersichtsseite verschiedener Newsbeiträge erstellt. Im oberen Teil gibt es einen allgemeiner Text mit dazugehörigem Bild. Darunter folgen Bild und Anreisstext der einzelnen Beiträge. Um welche es sich dabei handelt und wie viele insgesamt angezeigt werden wird über die Konfiguration der zu verwendenden Klassifikation bestimmt.</description>
+    <icon>cms_template_news_overview.png</icon>
+    <html>cms_template_news_overview.xhtml</html>
+    <content>
+        <item id="A1" label="Beschreibender Text" type="HTML"/>
+        <item id="image01" label="Bild zum beschreibenden Text" type="MEDIA" />
+        <item id="list01" label="Aktuelles-Elemente" type="PAGELIST" mandatory="true"></item>
+    </content>
+</cms_page_template>

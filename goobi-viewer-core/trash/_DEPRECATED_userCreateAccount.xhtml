@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/template.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageUser}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+    
+    <ui:define name="content">    
+        <div id="userCreateAccount" class="page-wrapp">
+            <h2>#{msg.user_createNewAccount}</h2>
+
+			<h:panelGroup rendered="#{!userBean.loggedIn and userBean.userRegistrationEnabled}">
+				<h:form id="userCreateAccountForm" styleClass="form-horizontal" prependId="false">
+					<div class="form-group">
+						<label for="userCreateAccountNick" class="col-sm-4 control-label">#{msg.nameNick}:</label>
+						<div class="col-sm-8">
+							<h:inputText 
+								id="userCreateAccountNick" 
+								styleClass="form-control" 
+								value="#{userBean.nickName}" 
+								required="true"
+								requiredMessage="#{msg.loginEnterNickName}" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="userCreateAccountEMail" class="col-sm-4 control-label">#{msg.email}:</label>
+						<div class="col-sm-8">
+							<h:inputText 
+								id="userCreateAccountEMail" 
+								styleClass="form-control" 
+								value="#{userBean.email}" 
+								required="true"
+								requiredMessage="#{msg.loginEnterEmail}">
+								<f:validator validatorId="emailValidator" />
+							</h:inputText>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="userCreateAccountPW1" class="col-sm-4 control-label">#{msg.newUserPasswordOne}:</label>
+						<div class="col-sm-8">
+							<h:inputSecret 
+								id="userCreateAccountPW1" 
+								styleClass="form-control" 
+								type="password"
+								value="#{userBean.passwordOne}" 
+								required="true" 
+								requiredMessage="#{msg.newUserPasswordOneRequired}">
+								<f:validator validatorId="passwordValidator" />
+							</h:inputSecret>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="userCreateAccountPW2" class="col-sm-4 control-label">#{msg.newUserPasswordTwo}:</label>
+						<div class="col-sm-8">
+							<h:inputSecret 
+								id="userCreateAccountPW2" 
+								styleClass="form-control" 
+								type="password"
+								value="#{userBean.passwordTwo}" 
+								required="true" 
+								requiredMessage="#{msg.newUserPasswordTwoRequired}" />
+						</div>
+					</div>
+
+					<p>#{msg.user_newAccountAgreement}</p>
+
+					<h:commandLink styleClass="btn" value="#{msg.newUserTab}" action="#{userBean.createNewUserAccount}" />
+				</h:form>
+				
+				<div class="clearfix"></div>
+			</h:panelGroup>
+		</div>
+    </ui:define>
+    
+    <ui:define name="sidebar">
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup>
+        
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
+        
+        <h:panelGroup rendered="#{userBean.loggedIn}">
+        	<widgetComponent:widget_mySearches />
+        </h:panelGroup>
+        
+        <h:panelGroup rendered="#{userBean.loggedIn and configurationBean.crowdsourcingEnabled}">
+        	<widgetComponent:widget_crowdsourcing />
+        </h:panelGroup>
+        
+        <widgetComponent:widget_user />
+    </ui:define>
+
+    <ui:define name="rssFeed">
+        <ui:include src="resources/includes/rssFeed.xhtml" />
+    </ui:define>
+</ui:composition>

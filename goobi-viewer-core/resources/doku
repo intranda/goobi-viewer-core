@@ -1,0 +1,106 @@
+Dokumentation für die Komponenten und Struktur der Kulturerbe Niedersachsen Portal Seite
+
+1. Komponenten
+- Um die Komponenten benutzen zu können, muss xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" in der xhtml Datei eingefügt sein
+- Alle Komponenten befinden sich unter resources/components/partner
+
+1.1 collectionsPartner
+Gibt eine Link Liste von Sammlungen einer bestimmten Einrichtung aus.
+
+Beispiel: <viewer:collectionsPartner partner="isil_DE-7" />
+
+Benutzt in viewer/partner/kultureinrichtungen/, also der Datei Kultureinrichtungen.xhtml
+
+1.2 menuCategoriesStatic
+Erzeugt ein Menü um auf die Seiten der Kultureinrichtungstypen zu kommen.
+
+Beispiel: <viewer:menuCategoriesStatic />
+
+Benutzt in dem Standard template.html, um das Menü in der rechten Sidebar zu erzeugen.
+
+1.3 rsscComponent
+Erzeugt ein rss Feed + einen <div> Container mit den Inhalten einer speziellen Suchquery
+
+Beispiel: <viewer:rssComponent rssID="Kultureinrichtungen" queryString="PARTNERID:isil_DE-7" headerText="RSS von isil_DE-7" />
+
+Benutzt in viewer/partner/kultureinrichtungen/, also der Datei Kultureinrichtungen.xhtml
+
+1.4 tagCloud und tagCloudFixed
+Rendert eine Tag Cloud in einen <div> Container.
+
+Beispiel: <viewer:tagCloudFixed tagMethod="person" tagCount="20"/>
+Mögliche Parameter sind:
+- person
+- year
+- title
+- places
+- autor
+- default
+- tagCount: wobei tagCount<100 sein muss.
+Benutzt in viewer/partner/kultureinrichtungen/, also der Datei Kultureinrichtungen.xhtml
+
+Ein Beispiel für tagCloud: <viewer:tagCloud tagMethod="#{tagCloudBean.tagsTitles}" />
+Dieser Komponente wird direkt eine Bean Methode übergeben.
+ 
+ 
+1.5 sidebarDrillDown (befindet sich im Verzeichnis: resources/components)
+
+Beispiel: 
+<goobi:sidebarDrillDown title="objects" field="MD_OBJECTTYPE" />
+<goobi:sidebarDrillDown title="timePeriod" field="CENTURY" labelSuffix=". #{msg.centuryAbbrev}" />
+		
+Wird benutzt im template.html im kuni Verzeichnis.
+
+1.6 templateNavigation
+Erzeugt die horizontale Navigation: Startseite, Kultureinrichtungen, Objekte, (Touren, Zeitleiste)
+
+Beispiel: <viewer:templateNavigation />
+
+Wird benutzt im template.html im kuni Verzeichnis.
+
+1.7 textDisplay
+Rendern eines Textfeldes. Die Komponente bekommt einen String und gibt diesen von einem <div> eingeschlossen wieder aus.
+
+Beispiel: <viewer:textDisplay text="#{msg.welcomeheader}" />
+
+
+
+2. Struktur
+
+Alle xhtml Dateien liegen in einheitlichen Ordnern unterhalbt des Ordners "kuni".
+
+Im Grundverzeichnis des Unterordners kuni befindet sich das das template.html, 
+welches für alle viewer Hauptseiten wie Startseite und Objekte benutzt wird.
+
+kuni/sites/
+Hier befinden sich alle Portal spezifischen Seiten wie archive.xhtml oder Kultureinrichtungen.xhtml.
+Diese dateien könnten alle ein spezielles template bekommen, welches dann auch in diesem Verzeichnis gespeichert werden könnte.
+Erreichbar sind diese Seiten über die Links
+http://domain.de/viewer/partner/kultureinrichtungen/
+http://domain.de/viewer/partner/archive/
+etc.
+
+Für alle Einrichtungen gibt es Unterverzeichnisse mit dem folgendem Schema: ISIL_1_Oldenburg, ISIL_2_Wolfenbuettel.
+Diese speziefischen Ordner enthalten einen Unterordner "sites", welcher die Einrichtungsspezifischen Seiten enthält, 
+zB.: indexSubGoettingen.xhtml. Zudem könnte in dem ISIL Ordner die spezifischen css, und image Ordner liegen.
+Dies ergibt dann zum Beispiel folgende Struktur:
+kuni/ISIL_1_Oldenburg/sites
+kuni/ISIL_1_Oldenburg/images
+kuni/ISIL_1_Oldenburg/css
+Die Seiten in sites könnten natürlich alle ein Einrichtungsspezifisches template.html haben.
+
+Die Kultureinrichtungstyp Seiten sind über folgende Links erreichbar:
+http://localhost:8080/viewer/partner/bibliotheken/
+http://localhost:8080/viewer/partner/archive/
+
+Erreichbar sind die Einrichtungen Beispielhaft über folgende Links:
+http://domain.de/viewer/partner/kultureinrichtungen/subGoettingen/
+http://localhost:8080/viewer/partner/kultureinrichtungen/Wolfenbuettel/
+ 
+3. Museums Objekt Seite
+Die Museums Objekt Seite ist ein Include in den normalen Image view. Je nach dem ob das aktuelle Objekt ein Museums Objekt ist, 
+wird die normale Metadaten Anzeige nicht gerendert und dafür die Museums Objekt Metadata Anzeige.
+Ein Beispiel ist in der viewImage.xhtml 
+<ui:include src="resources/includes/metaMuseal.xhtml" />
+ 
+

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_collection_tiled" version="2015-01-14">
+    <name>Sammlungsanzeige gekachelt</name>
+    <description>Dieses Template bietet im oberen Bereich einen einleitenden Text. Darunter wird eine Sammlungen von Werken, die anhand eines Metadatums hierarchisch gegliedert werden, aufgeführt und in Kacheln dargestellt.</description>
+    <icon>cms_template_08_collectionTiled.png</icon>
+    <html>cms_template_08_collectionTiled.xhtml</html>
+    <content>
+        <item order="1" id="text01" label="Inhalt" type="HTML"/>
+        <item order="2" id="collection01" label="Sammlung" type="COLLECTION" mandatory="true"/>
+    </content>
+</cms_page_template>

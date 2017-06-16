@@ -1,0 +1,196 @@
+/* ==============================================================
+   Responsive Column Gallery
+   style declarations for responsiveColumnGallery.xhtml
+   ==============================================================*/
+#responsiveColumnGallery {
+    float: left;
+    width: 100%;
+    margin: 21px 0;
+    .rcg-col {
+        float: left;
+        padding: 0 7px 0 0;
+        &.col-1 {
+            width: 100%;
+        }
+        &.col-2 {
+            width: 50%;
+        }
+        &.col-3 {
+            width: 33.33333%;            
+        }
+        &.col-4 {
+            width: 25%;
+        }
+        .rcg-image-container {
+            float: left;
+            width: 100%;
+            margin: 0 0 10px 0;
+            .rcg-image-body {
+                position: relative;
+                float: left;
+                width: 98%;
+                max-width: 98%;
+                overflow: hidden;
+                z-index: 100;
+                .rcg-image-overlay {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    opacity: 0;
+                    transition: all .4s ease-in;
+                    z-index: 102;
+                }
+                .rcg-image-title {
+                    position: absolute;
+                    top: -100%;
+                    width: 100%;
+                    padding: 2%;
+                    z-index: 103;
+                    transition: all .25s ease-in;
+                    h4 {
+                        margin: 0;
+                        text-overflow: ellipsis;
+                        color: @white;
+                        overflow: hiddeen;
+                    }
+                }
+                img {
+                    display: block;
+                    max-width: 100%;
+                    margin: 0 auto;
+                    transition: all .25s ease-in;
+                }
+                .lightbox-toggle {
+                    display: none;
+                    position: absolute;
+                    right: 5px;
+                    bottom: 5px;
+                    font-size: 21px;
+                    cursor: pointer;
+                    z-index: 102;
+                    .glyphicon {
+                        color: @white;
+                    }                    
+                }
+            }
+            .rcg-image-body:hover {
+                .rcg-image-overlay {
+                    opacity: 0.5;
+                }
+                .rcg-image-title {
+                    top: 0;
+                }
+                img {
+                    transform: scale(1.2);
+                }
+                .lightbox-toggle {
+                    display: block;
+                }
+            }
+            .rcg-image-footer {
+                float: left;
+                width: 100%;
+                p {
+                    margin: 7px 0;
+                    font-size: 10px;
+                    a {
+                        display: block;
+                        margin: 2% 0;
+                        text-align: right;
+                        .glyphicon {}
+                    }
+                }
+            }
+        }
+    }
+}
+
+// responsive column gallery lightbox
+.rcg-lightbox-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0,0,0,.5);
+    z-index: 999;
+    .rcg-lightbox-body {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 80%;
+        max-width: 960px;
+        max-height: 90%;
+        border: 10px solid @white;
+        background-color: @white;
+        overflow: hidden;
+        z-index: 999;
+        .rcg-lightbox-close {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 28px;
+            height: 28px;
+            line-height: 26px;
+            text-align: center;
+            border: 2px solid @darkgray;
+            border-radius: 50%;
+            background-color: @white;
+            cursor: pointer;
+            .glyphicon {
+                top: 0;
+                font-size: 12px;
+            }
+        }
+        .rcg-lightbox-image {
+            float: left;
+            width: 100%;
+            overflow: hidden;
+            img {
+                display: block;
+                width: 100%;
+            }
+        }
+        .rcg-lightbox-caption {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            min-height: 50px;
+            padding: 14px;
+            background-color: @white;
+            p {
+                margin: 0;
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #responsiveColumnGallery .rcg-col {
+        &.col-4 {
+            width: 50%;  
+        }
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    #responsiveColumnGallery .rcg-col {
+        &.col-2,
+        &.col-3,
+        &.col-4 {
+            width: 100%;  
+        }
+    }
+}

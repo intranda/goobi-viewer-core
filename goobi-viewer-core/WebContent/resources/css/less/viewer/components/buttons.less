@@ -1,0 +1,81 @@
+/* ==============================================================
+   Buttons
+   style declarations for buttons
+   ==============================================================*/
+.btn,
+.btn.ui-button,
+a.btn,
+input.btn,
+.btn.ui-button,
+.btn-search,
+.btn-clean,
+.btn-inactive {
+	&:focus,
+    &:active {
+    	outline: none;
+    }
+}
+
+.btn,
+.btn.ui-button {
+    position: relative;
+    display: inline-block;
+    min-height: 28px;
+    line-height: 28px;
+    padding: 0 7px;
+    margin: 0 7px 7px 0;
+    font-weight: bold;
+    text-align: center;
+    color: @black;
+    border: none;
+    border-radius: 0;
+    background: @lightgray;
+    background-repeat: no-repeat;
+    background-position: center center;
+    outline: none;
+    cursor: pointer;
+    &:hover {}
+}
+
+a.btn {
+    text-decoration: none;
+}
+
+input.btn,
+.btn.ui-button {
+    .ui-button-text {
+        font-weight: bold;
+        color: @black;        
+    }
+    &:hover {
+        .ui-button-text {}
+    }    
+}
+
+.btn-search {
+    background-image: url("@{images}/icons/search.png");
+}
+
+.btn-clean {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+.btn-inactive {
+    cursor: default;
+    opacity: 0.4;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

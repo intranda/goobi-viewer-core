@@ -1,0 +1,384 @@
+/* ==============================================================
+   CMS Create Page
+   style declarations for adminCmsCreatePage.xhtml
+   ==============================================================*/
+#cmsCreatePage {
+    position: relative;
+    h2 {}
+    .create-page-left {
+        padding: 0 0 0 15px;
+    }
+    .create-page-right {}
+    .create-page-preview {
+        text-align: right;
+    }
+    span {
+        &.btn {
+            opacity: 0.65;
+        }
+    }
+    #cmsCreatePageWrapper {
+        .nav-tabs {
+            li {
+                a {
+                    border-bottom: 1px solid @gray;
+                    background-color: #eee;
+                }
+                span {
+                    display: block;
+                    position: relative;
+                    line-height: 1.42857;
+                    margin-right: 2px;
+                    padding: 10px 15px;
+                    border: 1px solid transparent;
+                    border-radius: 0;
+                }
+                &.active {
+                    a {
+                        border-bottom: 1px solid #fff;
+                        background-color: #fff;
+                    }
+                }
+            }
+        }
+        .tab-pane {
+        	padding: 10px;
+            border-right: 1px solid @gray;
+            border-bottom: 1px solid @gray;
+            border-left: 1px solid @gray;
+        }
+        .edit-content-page {
+            border-bottom: 1px solid #eee;
+            &.edit-content-page-content {
+                border-bottom: none;
+            }
+            &.edit-content-page-solr {
+                padding: 14px 14px 0 14px;
+                border-top: 1px solid #eee;
+            }
+            &.edit-content-page-collection {
+          	    padding: 14px 0px 0px 0px;
+                border-top: 1px solid #eee;
+                .group-label {
+                	font-size: 1.2rem;
+                	margin-bottom: 0px;
+                }
+                .control-label {
+                	padding-right: 0px;
+                	padding-left: 28px;
+                }
+            }
+            &.edit-content-page-media {
+                padding: 14px 0 0 0;
+                border-bottom: none;
+                label {
+                    padding: 7px 8px 0 15px;
+                }
+                .btn {
+                    margin: 0 0 0 7px;
+                }
+                .edit-content-page-media-preview {
+                    img {
+                        width: 100%;
+                    }
+                    h5 {}
+                    p {
+                        a {
+                            span {
+                                &.glyphicon {}
+                            }
+                        }
+                    }
+                }
+                .edit-content-page-media-gallery-item {
+                    margin: 7px 0;
+                    border: 1px solid #eee;
+                    border-radius: 4px;
+                    background-color: #fff;
+                    &.active-media-item {
+                        border: 1px solid #666;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+                    }
+                    .edit-content-page-media-gallery-item-image {
+                        height: 80px;
+                        border-radius: 4px 4px 0 0;
+                        overflow: hidden;
+                        img {
+                            display: block;
+                            max-height: 80px;
+                            margin: 0 auto;
+                        }
+                    }
+                    .edit-content-page-media-gallery-item-title {
+                        height: 45px;
+                        padding: 5px;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                    }
+                    .edit-content-page-media-gallery-item-action {
+                        padding: 5px;
+                        text-align: center;
+                        border-top: 1px solid #eee;
+                        .btn {
+                            .glyphicon {}
+                        }
+                    }
+                }
+            }
+            &.edit-content-page-pagelist {
+                margin: 0;
+                padding: 15px 0;
+                border-top: 1px solid #eee;
+                .form-horizontal .form-group:last-child {
+                	margin-bottom: 0;
+                }
+            }
+        }
+        #sidebarEditorWrapper {
+            padding: 14px 7px;
+            .sidebar-editor {
+                margin-bottom: 14px;
+                ul {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                    li {
+                        margin-bottom: 7px;
+                        border: 1px solid #eee;
+                        border-radius: 4px;
+                        background-color: #fff;
+                        .sidebar-editor-widget-item {
+                            .sidebar-editor-widget-item-header {
+                                position: relative;
+                                min-height: 28px;
+                                line-height: 27px;
+                                border-bottom: 1px solid #ccc;
+                                background-color: #eee;
+                                padding: 7px;
+                                h4 {
+                                    margin: 0;
+                                    padding-right: 15px;
+                                    color: @black;
+                                }
+                                .glyphicon {
+                                    position: absolute;
+                                    top: 9px;
+                                    right: 7px;
+                                    cursor: pointer;
+                                }
+                            }
+                            .sidebar-editor-widget-item-body {
+                                display: none;
+                                padding: 7px;
+                                .form-group {
+                                    margin: 0 0 5px 0;
+                                    padding: 0;
+                                    h4 {
+                                        margin: 0 0 14px 0;
+                                        font-weight: bold;
+                                    }
+                                    table {
+                                        tr {
+                                            td {
+                                                padding: 0 5px;
+                                                input[type="radio"] {
+                                                    margin: -2px 5px 0 0;
+                                                    vertical-align: middle;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    textarea {
+                                        resize: vertical;
+                                        min-height: 150px;
+                                    }
+                                }
+                                .sidebar-editor-item-widget-editor-action {
+                                    text-align: right;
+                                }
+                            }
+                        }
+                        .btn {
+                            margin: 0 0 0 5px;
+                        }
+                    }
+                }
+                .ui-sortable {
+                    min-height: 500px;
+                }
+                &.sidebar-editor-choose-standard {
+                    padding: 14px 0;
+                    input[type="checkbox"] {
+                        margin: -3px 0 0 7px;
+                        vertical-align: middle;
+                    }
+                }
+                &.sidebar-editor-editor {
+                    #addMenuItemWrapper {
+                        margin-bottom: 1.3125rem;
+                        text-align: right;
+                        .btn {
+                            margin: 0;
+                        }
+                    }
+                    .sidebar-editor-editor-left {}
+                    .sidebar-editor-editor-right {}
+                }
+            }
+        }
+    }
+    #cmsCreatePageMetadataItemWrapper {
+        border: 2px solid #eee;
+        .page-metadata-item {
+            padding: 14px 7px;
+            border-bottom: 1px solid #eee;
+            &:last-child {
+                border-bottom: none;
+            }
+            h3 {
+                margin: 0 0 1em 0;
+            }
+            .row {
+                margin: 0;
+            }
+            .dl-horizontal {
+                margin: 0;
+                dt {
+                    width: 30%;
+                    text-align: left;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                dd {
+                    margin-left: 30%;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+            }
+            ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+            &.page-metadata-item-type {
+                .glyphicon {
+                    cursor: pointer;
+                }
+                img {
+                    display: block;
+                    width: 100%;
+                }
+                p {
+                    margin: 14px 0;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                div[class^="col-"] {
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+            }
+            &.page-metadata-item-status {}
+            &.page-metadata-item-classification {
+                ul {
+                    margin-bottom: 14px;
+                    li {
+                        margin-bottom: 4px;
+                        span {
+                            &.glyphicon {}
+                        }
+                        a {
+                            float: right;
+                        }
+                    }
+                }
+                div[class^="col-"] {
+                    padding: 0;
+                    text-align: right;
+                    select {
+                        width: 100%;
+                    }
+                    .glyphicon {
+                        margin-top: 4px;
+                    }
+                }
+            }
+            &.page-metadata-item-privacy-status {
+                table {
+                    width: 100%;
+                    tr {
+                        td {
+                            input[type="radio"] {
+                                margin: -3px 7px 0 0;
+                                vertical-align: middle;
+                            }
+                        }
+                    }
+                }
+            }
+            &.page-metadata-item-action {
+                .btn {
+                    width: 100%;
+                }
+                ul {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                    li {
+                        margin-bottom: 4px;
+                        #previewDescription {
+                            display: none;
+                        }
+                    }
+                }
+                .modal-content {
+                    .modal-header {}
+                    .modal-body {}
+                    .modal-footer {
+                        .btn {
+                            width: auto;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // add sidebar item modal
+    #addSidebarItemModal {
+        .modal-body {
+            textarea {
+                resize: vertical;
+                min-height: 300px;
+            }
+        }
+    }
+}
+
+/* BLOCK */
+.edit-content-page {
+	/* ELEMENT */
+	&__pretty-url {
+		padding: 15px 0;
+		label {
+			padding-right: 0;
+		}
+		button {
+			margin-left: 5px;
+		}
+		.form-group {
+			margin-bottom: 0;
+		}
+	}
+}
+
+// breakpoint for smartphones
+@media screen and (max-width: @xSmallBreakpoint) {}
+
+// breakpoint for tablets
+@media screen and (max-width: @smallBreakpoint) {}
+
+// breakpoint for desktop
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// breakpoint for large desktops
+@media screen and (max-width: @largeBreakpoint) {}

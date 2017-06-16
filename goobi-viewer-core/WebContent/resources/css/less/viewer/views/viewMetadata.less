@@ -1,0 +1,120 @@
+/* ==============================================================
+   View Metadata
+   style declarations for viewMetadata.xhtml 
+   ==============================================================*/
+// metadata
+#metadataElementWrapper {
+	position: relative;
+    float: left;
+    width: 100%;
+    margin-bottom: 1.3125rem;
+    .metadata-element-box {
+        .metadata-element {
+            .dl-horizontal {
+                dt {
+                    width: 30%;
+                    text-align: left;
+
+                }
+                dd {
+                    margin-left: 30%;
+                    .metadata-value {
+                        display: block;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                    }
+                }
+            }
+        }
+    }
+    .metadata-event-box {
+        .metadata-event {
+            .dl-horizontal {
+                dt {
+                    width: 30%;
+                    text-align: left;
+
+                }
+                dd {
+                    margin-left: 30%;
+                    .metadata-value {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+    .glyphicon {
+    	margin-right: 5px;
+    }
+}
+
+// downloads
+#viewMetadataDownloads {
+    margin-bottom: 1.3125rem;
+    ul {
+        li {
+            display: inline-block;
+            a {}
+            .btn {}
+            /* BLOCK */
+            &.dl-links {
+                /* ELEMENT */
+                &__mets {}
+                &__mets-all {}
+                &__marcxml {}
+                &__dc {}
+                &__ese {}
+                &__dfg {}
+                &__opac {}
+                &__pdf {}
+                &__epub {}
+            }
+        }
+    }
+}
+
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #metadataElementWrapper {
+        .metadata-element-box {
+            .metadata-element {
+                .dl-horizontal {
+                    dt {
+                        width: 100%;
+                    }
+                    dd {
+                        width: 100%;
+                        margin: 0;
+                        .metadata-value {}
+                    }
+                }
+            }
+        }
+        .metadata-event-box {
+            .metadata-event {
+                .dl-horizontal {
+                    dt {
+                        width: 100%;
+                    }
+                    dd {
+                        width: 100%;
+                        margin: 0;
+                        .metadata-value {}
+                    }
+                }
+            }
+        }
+        .glyphicon {}
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

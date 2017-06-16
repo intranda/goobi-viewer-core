@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<composite:interface>
+		<composite:attribute name="searchString" required="true" />
+	</composite:interface>
+
+	<composite:implementation>
+		<!-- TODO: fertig machen -->
+			<script type="text/javascript">
+			var searchURL = '#{navigationHelper.searchUrl}/-/#{cc.attrs.searchString}/1/-/';
+			var applicationURL = "#{navigationHelper.applicationUrl}";
+			alert(searchURL);
+		
+		var $ = jQuery;
+		$().ready(function() {
+			alert(searchURL);
+			$('#resultYEAH').load(" http://localhost:8080/viewer/search/-/volk/1/-/ #searchList");
+		});
+		
+	</script>
+	
+	<div id="resultYEAH">
+	
+	</div>
+	</composite:implementation>
+</ui:composition>

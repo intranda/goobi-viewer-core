@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lido:lido xmlns:lido="http://www.lido-schema.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.lido-schema.org http://www.lido-schema.org/schema/v1.0/lido-v1.0.xsd">
+    <lido:lidoRecID lido:type="local">plm:aa000274</lido:lidoRecID>
+    <lido:category />
+    <lido:descriptiveMetadata xml:lang="de">
+      <lido:objectClassificationWrap>
+        <lido:objectWorkTypeWrap>
+          <lido:objectWorkType>
+            <lido:term lido:addedSearchTerm="no">Gemälde</lido:term>
+          </lido:objectWorkType>
+        </lido:objectWorkTypeWrap>
+      </lido:objectClassificationWrap>
+      <lido:objectIdentificationWrap>
+        <lido:titleWrap>
+          <lido:titleSet>
+            <lido:appellationValue>Landschaft mit Hütte</lido:appellationValue>
+          </lido:titleSet>
+        </lido:titleWrap>
+        <lido:repositoryWrap>
+          <lido:repositorySet lido:type="current">
+            <lido:repositoryName>
+              <lido:legalBodyName>
+                <lido:appellationValue>lido#Pommersches Landesmuseum Greifswald</lido:appellationValue>
+              </lido:legalBodyName>
+              <lido:legalBodyWeblink>http://www.pommersches-landesmuseum.de</lido:legalBodyWeblink>
+            </lido:repositoryName>
+            <lido:workID lido:type="inventory number">B1306/17525</lido:workID>
+          </lido:repositorySet>
+        </lido:repositoryWrap>
+        <lido:objectMeasurementsWrap>
+          <lido:objectMeasurementsSet>
+            <lido:displayObjectMeasurements>H: 40,5 cm</lido:displayObjectMeasurements>
+            <lido:displayObjectMeasurements>B: 58,5 cm</lido:displayObjectMeasurements>
+          </lido:objectMeasurementsSet>
+        </lido:objectMeasurementsWrap>
+      </lido:objectIdentificationWrap>
+      <lido:eventWrap>
+        <lido:eventSet>
+          <lido:event>
+            <lido:eventType>
+              <lido:term lido:addedSearchTerm="no">Production</lido:term>
+            </lido:eventType>
+            <lido:eventName>
+              <lido:appellationValue>Herstellung</lido:appellationValue>
+            </lido:eventName>
+            <lido:eventActor>
+              <lido:actorInRole>
+                <lido:actor>
+                  <lido:nameActorSet>
+                    <lido:appellationValue>Wijnants, Jan (Haarlem etwa 1630/35 - 1684 Amsterdam)</lido:appellationValue>
+                  </lido:nameActorSet>
+                </lido:actor>
+                <lido:roleActor>
+                  <lido:term lido:addedSearchTerm="no">Maler</lido:term>
+                </lido:roleActor>
+              </lido:actorInRole>
+            </lido:eventActor>
+            <lido:eventDate>
+              <lido:displayDate>1679</lido:displayDate>
+            </lido:eventDate>
+            <lido:eventMaterialsTech>
+              <lido:materialsTech>
+                <lido:termMaterialsTech lido:type="Material">
+                  <lido:term lido:addedSearchTerm="no">Leinwand</lido:term>
+                </lido:termMaterialsTech>
+                <lido:termMaterialsTech lido:type="Technique">
+                  <lido:term lido:addedSearchTerm="no">Öl/Leinwand</lido:term>
+                </lido:termMaterialsTech>
+              </lido:materialsTech>
+            </lido:eventMaterialsTech>
+          </lido:event>
+        </lido:eventSet>
+      </lido:eventWrap>
+    </lido:descriptiveMetadata>
+    <lido:administrativeMetadata xml:lang="de">
+      <lido:rightsWorkWrap>
+        <lido:rightsWorkSet>
+          <lido:rightsHolder>
+            <lido:legalBodyName>
+              <lido:appellationValue>lido#Pommersches Landesmuseum Greifswald</lido:appellationValue>
+            </lido:legalBodyName>
+            <lido:legalBodyWeblink>http://www.pommersches-landesmuseum.de</lido:legalBodyWeblink>
+          </lido:rightsHolder>
+        </lido:rightsWorkSet>
+      </lido:rightsWorkWrap>
+      <lido:recordWrap>
+        <lido:recordID lido:type="local (default)">aa000274</lido:recordID>
+        <lido:recordType>
+          <lido:term>item</lido:term>
+        </lido:recordType>
+        <lido:recordSource>
+          <lido:legalBodyName>
+            <lido:appellationValue>lido#Pommersches Landesmuseum Greifswald</lido:appellationValue>
+          </lido:legalBodyName>
+          <lido:legalBodyWeblink>http://www.pommersches-landesmuseum.de</lido:legalBodyWeblink>
+        </lido:recordSource>
+        <lido:recordRights>
+          <lido:rightsHolder>
+            <lido:legalBodyName>
+              <lido:appellationValue>lido#Pommersches Landesmuseum Greifswald</lido:appellationValue>
+            </lido:legalBodyName>
+            <lido:legalBodyWeblink>http://www.pommersches-landesmuseum.de</lido:legalBodyWeblink>
+          </lido:rightsHolder>
+        </lido:recordRights>
+      </lido:recordWrap>
+      <lido:resourceWrap>
+        <lido:resourceSet>
+          <lido:resourceID lido:type="local">aa000274.jpg</lido:resourceID>
+          <lido:resourceType>
+            <lido:term lido:addedSearchTerm="no">Digitalbild</lido:term>
+          </lido:resourceType>
+          <lido:rightsResource>
+            <lido:rightsType>
+              <lido:term>copyright</lido:term>
+            </lido:rightsType>
+            <lido:rightsDate>
+              <lido:earliestDate>2011</lido:earliestDate>
+              <lido:latestDate>2012</lido:latestDate>
+            </lido:rightsDate>
+            <lido:rightsHolder>
+              <lido:legalBodyID lido:type="local">PLM</lido:legalBodyID>
+              <lido:legalBodyName>
+                <lido:appellationValue>lido#Pommersches Landesmuseum Greifswald</lido:appellationValue>
+              </lido:legalBodyName>
+              <lido:legalBodyWeblink>http://www.pommersches-landesmuseum.de</lido:legalBodyWeblink>
+            </lido:rightsHolder>
+            <lido:creditLine>© 2012 Pommersches Landesmuseum Greifswald</lido:creditLine>
+          </lido:rightsResource>
+        </lido:resourceSet>
+      </lido:resourceWrap>
+    </lido:administrativeMetadata>
+  </lido:lido>

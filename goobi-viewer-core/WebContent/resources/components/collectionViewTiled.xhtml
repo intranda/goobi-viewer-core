@@ -1,0 +1,101 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <composite:interface>
+        <composite:attribute name="collection" required="true" type="de.intranda.digiverso.presentation.model.viewer.CollectionView" />
+    </composite:interface>
+
+    <composite:implementation>
+        <ui:param name="collection" value="#{cc.attrs.collection}" />
+        #{collection.reset(!collection.displayParentCollections)}
+        
+        <h:form id="collectionTiledForm" prependId="false">
+            <div class="collection-tiled">
+                <div class="row">
+                    <div class="collection-tiled__tiles">
+                        <ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
+                            <div class="col-xs-12 col-sm-4">
+                                <div class="collection-tiled__tile">
+    	                            <h:panelGroup rendered="#{browseDcElement.opensInNewWindow}">
+    	                          	    <div class="collection-tiled__header">
+    										<h:commandLink action="#{collection.expand(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'top-collection-elem' : ''}">
+    											<h:outputText
+    												rendered="#{browseDcElement.displayNumberOfVolumes}"
+    												value="#{msg[browseDcElement.name]} (#{browseDcElement.numberOfVolumes})"
+    												title="#{msg[browseDcElement.name]}" />
+    											<h:outputText
+    												rendered="#{!browseDcElement.displayNumberOfVolumes}"
+    												value="#{msg[browseDcElement.name]}"
+    												title="#{msg[browseDcElement.name]}" />
+    											<f:ajax render="@form" />
+    										</h:commandLink>
+    									</div>
+    	                                <div class="collection-tiled__body">
+    	                                    <!-- WITH DESCRIPTION -->
+    	                                    <h:commandLink rendered="#{!browseDcElement.info.description.equals('')}"  action="#{collection.expand(browseDcElement)}">
+    	                                        <f:passThroughAttribute name="data-toggle" value="popover" />
+    	                                        <f:passThroughAttribute name="data-placement" value="bottom" />
+    	                                        <f:passThroughAttribute name="data-container" value="body" />
+    	                                        <f:passThroughAttribute name="data-trigger" value="hover" />
+    	                                        <f:passThroughAttribute name="data-html" value="true" />
+    	                                        <f:passThroughAttribute name="data-content" value="#{browseDcElement.info.description}" />
+    	                                        <img src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" />
+    	                                    	<f:ajax render="@form" />
+    	                                    </h:commandLink>
+    	                                    
+    	                                    <!-- WITHOUT DESCRIPTION -->
+    	                                    <h:outputLink rendered="#{browseDcElement.info.description.equals('')}" value="#{collection.getCollectionUrl(browseDcElement)}">
+    	                                        <img src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" />
+    	                                    </h:outputLink>
+    	                                </div>
+    	                            </h:panelGroup>
+    	                            <h:panelGroup rendered="#{!browseDcElement.opensInNewWindow}">
+    	                                <div class="collection-tiled__header">
+    	                                    <a href="#{collection.getCollectionUrl(browseDcElement)}" title="#{msg[browseDcElement.name]}">
+    	                                       <h:outputText
+    												rendered="#{browseDcElement.displayNumberOfVolumes}"
+    												value="#{msg[browseDcElement.name]} (#{browseDcElement.numberOfVolumes})"
+    												title="#{msg[browseDcElement.name]}" />
+    											<h:outputText
+    												rendered="#{!browseDcElement.displayNumberOfVolumes}"
+    												value="#{msg[browseDcElement.name]}"
+    												title="#{msg[browseDcElement.name]}" />
+    										</a>
+    	                                </div>
+    	                                <div class="collection-tiled__body">
+    	                                    <!-- WITH DESCRIPTION -->
+    	                                    <h:outputLink rendered="#{!browseDcElement.info.description.equals('')}" value="#{collection.getCollectionUrl(browseDcElement)}">
+    	                                        <f:passThroughAttribute name="data-toggle" value="popover" />
+    	                                        <f:passThroughAttribute name="data-placement" value="bottom" />
+    	                                        <f:passThroughAttribute name="data-container" value="body" />
+    	                                        <f:passThroughAttribute name="data-trigger" value="hover" />
+    	                                        <f:passThroughAttribute name="data-html" value="true" />
+    	                                        <f:passThroughAttribute name="data-content" value="#{browseDcElement.info.description}" />
+    	                                        <img src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" />
+    	                                    </h:outputLink>
+    	                                    
+    	                                    <!-- WITHOUT DESCRIPTION -->
+    	                                    <h:outputLink rendered="#{browseDcElement.info.description.equals('')}" value="#{collection.getCollectionUrl(browseDcElement)}">
+    	                                        <img src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" />
+    	                                    </h:outputLink>
+    	                                </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </ui:repeat>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+        <script type="text/javascript">
+            $( function() {
+                $( '[data-toggle="popover"]' ).popover()
+            } )
+        </script>
+    </composite:implementation>
+</ui:composition>

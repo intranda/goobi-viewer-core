@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI.2>
+  <teiHeader/>
+  <text>
+    <body>
+      <figure id="IDc" function="76,3810,3134,4712"></figure>
+      <p id="ID1">
+        <w function="120,590,174,802" match="i">I</w>
+        <w function="476,648,1044,758" match="gesellschaft">GESELLSCHAFT</w>
+        <w function="1098,652,1540,760" match="deutscher">DEUTSCHER</w>
+        <w function="1594,654,2234,762" match="naturforscher">NATURFORSCHER</w>
+        <w function="2288,654,2428,762" match="und">UND</w>
+        <w function="2484,648,2724,764" match="ärzte">ÄRZTE</w>
+        <w function="2726,736,2742,766" match=".">.</w>
+        <w function="3054,592,3108,804" match="|">|</w>
+      </p>
+      <p id="ID2">
+        <w function="122,812,176,946" match="1">1</w>
+        <w function="872,852,1398,928" match="verhandlungen">VERHANDLUNGEN</w>
+        <w function="1442,856,1568,930" match="1898">1898</w>
+        <w function="1572,914,1584,930" match=".">.</w>
+        <w function="1692,856,2118,934" match="allgemeiner">ALLGEMEINER</w>
+        <w function="2164,860,2342,936" match="theil">THEIL</w>
+        <w function="2346,920,2358,936" match=".">.</w>
+        <w function="3054,814,3108,946" match="i">I</w>
+      </p>
+      <p id="ID3">
+        <w function="124,1396,178,1542" match="i">I</w>
+        <w function="1294,1398,1372,1492" match="f">F</w>
+        <w function="1378,1476,1394,1494" match=".">.</w>
+        <w function="1456,1400,1916,1498" match="klein">KLEIN</w>
+        <w function="1924,1482,1940,1512" match=",">,</w>
+        <w function="3054,1390,3108,1536" match="|">|</w>
+      </p>
+      <p id="ID4">
+        <w function="124,1580,178,1822" match="|">|</w>
+        <w function="354,1626,1052,1760" match="universität">UNIVERSITÄT</w>
+        <w function="1120,1650,1342,1762" match="und">UND</w>
+        <w function="1414,1652,2074,1768" match="technische">TECHNISCHE</w>
+        <w function="2142,1656,2848,1772" match="hochschule">HOCHSCHULE</w>
+        <w function="2854,1750,2874,1774" match=".">.</w>
+        <w function="3054,1588,3110,1824" match="j">J</w>
+      </p>
+      <p id="ID5">
+        <w function="124,1832,178,2004" match="|">|</w>
+        <w function="1396,1884,1806,1966" match="vortrag">VORTRAG</w>
+        <w function="1818,1944,1834,1978" match=",">,</w>
+        <w function="3034,1836,3112,2008" match="|">|</w>
+      </p>
+      <p id="ID6">
+        <w function="126,2028,180,2162" match="|">|</w>
+        <w function="686,2064,1056,2132" match="gehalten">GEHALTEN</w>
+        <w function="1098,2066,1178,2132" match="in">IN</w>
+        <w function="1218,2068,1358,2132" match="der">DER</w>
+        <w function="1398,2068,1666,2134" match="ersten">ERSTEN</w>
+        <w function="1710,2070,2212,2140" match="allgemeinen">ALLGEMEINEN</w>
+        <w function="2258,2074,2552,2142" match="sitzung">SITZUNG</w>
+        <w function="3058,2032,3112,2164" match="1">1</w>
+      </p>
+      <p id="ID7">
+        <w function="126,2160,180,2280" match="i">I</w>
+        <w function="1544,2200,1688,2252" match="deb">DEB</w>
+        <w function="3058,2162,3112,2284" match="1">1</w>
+      </p>
+      <p id="ID8">
+        <w function="126,2278,180,2412" match="|">|</w>
+        <w function="486,2308,566,2376" match="70">70</w>
+        <w function="570,2360,584,2376" match=".">.</w>
+        <w function="626,2310,1160,2380" match="versammlung">VERSAMMLUNG</w>
+        <w function="1200,2314,1608,2380" match="deutscher">DEUTSCHER</w>
+        <w function="1650,2318,2252,2388" match="naturforscher">NATURFORSCHER</w>
+        <w function="2296,2322,2436,2388" match="und">UND</w>
+        <w function="2480,2324,2748,2392" match="aerzte">AERZTE</w>
+        <w function="3058,2280,3112,2414" match="|">|</w>
+      </p>
+      <p id="ID9">
+        <w function="126,2448,180,2580" match="|">|</w>
+        <w function="1342,2480,1422,2546" match="in">IN</w>
+        <w function="1462,2470,1908,2550" match="düsseldorf">DÜSSELDORF</w>
+        <w function="3058,2438,3110,2584" match="|">|</w>
+      </p>
+      <p id="IDa">
+        <w function="126,2630,180,2724" match="i">i</w>
+        <w function="1196,2660,1300,2712" match="am">AM</w>
+        <w function="1338,2664,1400,2716" match="19">19</w>
+        <w function="1404,2702,1416,2716" match=".">.</w>
+        <w function="1454,2662,1876,2718" match="september">SEPTEMBER</w>
+        <w function="1912,2666,2046,2720" match="1898">1898</w>
+        <w function="2048,2704,2062,2720" match=".">.</w>
+        <w function="3058,2634,3110,2728" match="•§">•§</w>
+      </p>
+      <p id="IDb">
+        <w function="1264,3180,1946,3264" match="sonderabdruck">Sonderabdruck</w>
+        <w function="1954,3248,1970,3266" match=".">.</w>
+      </p>
+      <pb/>
+      <milestone n="1" type="page"></milestone>
+    </body>
+  </text>
+</TEI.2>

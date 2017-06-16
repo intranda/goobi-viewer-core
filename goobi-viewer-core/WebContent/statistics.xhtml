@@ -1,0 +1,140 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/template.html">
+	
+	<ui:define name="metadata">
+	    <f:metadata> 
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageStatistics}" />
+        </f:metadata>
+    </ui:define>
+
+	<ui:define name="breadcrumbs">
+		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+	</ui:define>
+
+    <ui:define name="content">
+        <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/javascript/jqplot/jquery.jqplot.min.css" />
+        <h:outputScript library="javascript/jqplot" name="jquery.jqplot.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.pieRenderer.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.barRenderer.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.categoryAxisRenderer.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.pointLabels.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.canvasAxisTickRenderer.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.canvasTextRenderer.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.dateAxisRenderer.min.js" target="head" />
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.BezierCurveRenderer.min.js" target="head" />
+<!-- 		<h:outputScript library="javascript/jqplot/plugins" name="jqplot.cursor.min.js" target="head" /> -->
+        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.highlighter.min.js" target="head" />
+        <h:outputScript library="javascript/dev/modules/statistics" name="statistics.js" target="head" />
+
+        <script type="text/javascript">
+        $(document).ready(function() {
+            var publicationTypes = new Statistics.PublicationTypes( {
+                labelList : "#{statisticsBean.topStructTypesByNumber}",
+                labelDesc : "#{msg.statistics_publicationTypes_dataLabel}",
+            });
+            publicationTypes.plot('chart-publication');
+            publicationTypes.initSearchQuery('chart-publication', 'searchInput', 'searchBtn');
+            
+            var importedWorks = new Statistics.MostImportedWorksTrend( {
+                labelList : "#{statisticsBean.getImportedRecordsTrend(6*30, 12)}",
+                labelDesc : "#{msg.statistics_importedWorksTrend_dataLabel}",
+            });
+            importedWorks.plot('chart-import-over-time');
+            
+            var numPages = new Statistics.NumberOfPages( {
+                titlePages : "#{msg.statistics_importedPages}",
+                numPages : "#{statisticsBean.importedPages}",
+                titleFullTexts : "#{msg.statistics_importedFullTexts}",
+                numFullTexts : "#{statisticsBean.importedFullTexts}",
+            });
+            numPages.plot("chart-import-pages-fulltext");
+            
+            Statistics.initMouseover(document, window);
+        });
+        </script>
+
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="statistics" class="page-wrapp">
+                <h2>#{msg.statisticsTitle}</h2>
+                <h:outputText rendered="#{statisticsBean.indexEmpty}">#{msg.statistics_noRecords}</h:outputText>
+                <h:panelGroup layout="block" class="statistics-grid" rendered="#{!statisticsBean.indexEmpty}">
+                    <div id="statPublicationType" class="statistics-grid-row">
+                        <!-- Publication type : start -->
+                        <div class="statistic-grid-cell">
+                            <h3>#{msg.statistics_publicationTypes}</h3>
+                            <div id="chartpseudotooltip" class="jqplot-highlighter-tooltip"></div>
+                            <div id="chart-publication" class="statistic-chart"></div>
+                        </div>
+                        <!-- Publication type : end -->
+                    </div>
+                    
+                    <div id="statImportedWorksTrend" class="statistics-grid-row">
+                        <!-- Imported Works Trend : start -->
+                        <div class="statistic-grid-cell">
+                            <h3>#{msg.statistics_importedWorksTrend}</h3>
+                            <div id="chart-import-over-time" class="statistic-chart"></div>
+                        </div>
+                        <!-- Imported Works Trend : end -->
+                    </div>
+
+                    <div id="statImportedPages" class="statistics-grid-row">
+                        <!-- Imported pages : start -->
+                        <div class="statistic-grid-cell">
+                            <h3>#{msg.statistics_importedPagesTitle}</h3>
+                            <div id="chart-import-pages-fulltext" class="statistic-chart"></div>
+                        </div>
+                        <!-- Imported pages : end -->
+                    </div>
+                    
+                    
+                    <!-- Module statistics components -->
+                    <c:forEach var="module" items="#{configurationBean.modules}">
+                        <c:forEach var="contribution" items="#{module.getWidgets('statistics')}">
+                            <ui:include src="/#{contribution}" />
+                        </c:forEach>
+                    </c:forEach>
+ 
+                    
+                </h:panelGroup>
+            </div>
+            <h:form prependId="false" id="dsSearchForm" style="display: none;">
+            	<h:inputText id="searchInput" value="#{searchBean.exactSearchString}"></h:inputText>
+            	<h:commandButton id="searchBtn"
+					styleClass="btn" 
+					action="#{searchBean.searchDirect}">
+				</h:commandButton>
+            </h:form>
+        </f:view>
+    </ui:define>
+
+    <ui:define name="sidebar">
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup>
+
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
+
+		<h:panelGroup rendered="#{userBean.loggedIn}">
+        	<widgetComponent:widget_mySearches />
+        </h:panelGroup>
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+
+        <widgetComponent:widget_user />
+    </ui:define>
+
+    <ui:define name="rssFeed">
+        <ui:include src="/resources/includes/rssFeed.xhtml" />
+    </ui:define>
+
+</ui:composition>

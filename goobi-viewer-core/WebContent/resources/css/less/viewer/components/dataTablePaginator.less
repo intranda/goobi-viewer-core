@@ -1,0 +1,71 @@
+/* ==============================================================
+   Datatable Paginator
+   style declarations for dataTablePaginator.xhtml
+   ==============================================================*/
+/* DATATABLE PAGINATOR */
+/* BLOCK */
+.data-table-paginator {
+    margin-bottom: 15px;
+    /* ELEMENT */
+    ul {
+        position: relative;
+        float: left;
+        left: 50%;
+        margin: 0 auto;
+    }
+    li {
+        position: relative;
+        display: inline-block;
+        float: left;
+        right: 50%;
+        border-right: 1px solid @white;
+    }
+    a, span {
+        display: block;
+        padding: 5px 15px;
+    }
+    &__page-count {
+        span {
+            display: inline-block;
+            padding: 9px 0;
+        }
+        .data-table-paginator__current-page {
+            padding-right: 2px;
+            padding-left: 8px;
+        }
+        .data-table-paginator__input {
+            padding-left: 8px;
+        }
+        .data-table-paginator__total-count {
+            padding-right: 15px;
+        }
+    }
+    &__total-count,
+    &__current-page {
+        cursor: pointer;
+    }
+    &__current-page {}
+    &__input {
+        input {
+            max-width: 40px;
+        }
+    }
+    &__total-count {}
+}
+
+#txtMoveTo2,
+input[id*="cmdMoveTo"] {
+    display: none;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

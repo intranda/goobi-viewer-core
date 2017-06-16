@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+      xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/ubkassel/components">
+
+    <!-- interface options -->
+    <composite:interface>
+        <composite:attribute name="normal" required="true" default="1em" />
+        <composite:attribute name="onehalf" required="true" default="1.1em" />
+        <composite:attribute name="double" required="true" default="1.2em" />
+    </composite:interface>
+
+    <!-- component content -->
+    <composite:implementation>
+    
+        <!-- barrierfree style declarations -->    
+        <!-- font size -->
+        <h:panelGroup rendered="#{navigationHelper.statusMap['barrierFreeFontNormal'] == 'true'}">
+            <style>
+                body { font-size: #{cc.attrs.normal}; }
+            </style>        
+        </h:panelGroup>
+        <h:panelGroup rendered="#{navigationHelper.statusMap['barrierFreeFontOnehalf'] == 'true'}">
+            <style>
+                body { font-size: #{cc.attrs.onehalf}; }
+            </style>        
+        </h:panelGroup>
+        <h:panelGroup rendered="#{navigationHelper.statusMap['barrierFreeFontDouble'] == 'true'}">
+            <style>
+                body { font-size: #{cc.attrs.double}; }
+            </style>        
+        </h:panelGroup>
+    
+        <h:form id="barrierFreeForm" prependId="false">
+            <ul>
+                <!-- normal font size -->
+                <li class="barrierfree-one #{navigationHelper.statusMap['barrierFreeFontNormal'] == 'true' ? 'active' : ''}">
+                    <h:commandLink value="A">
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontNormal']}"
+                            value="#{navigationHelper.statusMap['barrierFreeFontNormal'] == 'true' ? 'false' : 'true'}" />
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontOnehalf']}" value="false" />
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontDouble']}" value="false" />
+                        <f:passThroughAttribute name="href" value="#" />
+                    </h:commandLink>
+                </li>
+
+                <!-- one half of font size -->
+                <li class="barrierfree-onehalf #{navigationHelper.statusMap['barrierFreeFontOnehalf'] == 'true' ? 'active' : ''}">
+                    <h:commandLink value="A">
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontNormal']}" value="false" />
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontOnehalf']}"
+                            value="#{navigationHelper.statusMap['barrierFreeFontOnehalf'] == 'true' ? 'false' : 'true'}" />
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontDouble']}" value="false" />
+                        <f:passThroughAttribute name="href" value="#" />
+                    </h:commandLink>
+                </li>
+
+                <!-- double font size -->
+                <li class="barrierfree-two #{navigationHelper.statusMap['barrierFreeFontDouble'] == 'true' ? 'active' : ''}">
+                    <h:commandLink value="A">
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontNormal']}" value="false" />
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontOnehalf']}" value="false" />
+                        <f:setPropertyActionListener target="#{navigationHelper.statusMap['barrierFreeFontDouble']}"
+                            value="#{navigationHelper.statusMap['barrierFreeFontDouble'] == 'true' ? 'false' : 'true'}" />
+                        <f:passThroughAttribute name="href" value="#" />
+                    </h:commandLink>
+                </li>
+            </ul>
+        </h:form>
+    </composite:implementation>
+</ui:composition>

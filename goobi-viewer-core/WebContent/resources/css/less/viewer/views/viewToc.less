@@ -1,0 +1,222 @@
+/* ==============================================================
+   View Toc
+   style declarations for viewToc.xhtml
+   ==============================================================*/
+/* deprecated since 3.2 */
+#viewTocWrapper {
+    margin-bottom: 1.3125rem;
+    h4 {
+        margin: 0;
+    }
+    /* MULTIVOLUME VIEW */
+    .toc-elem-group-wrapp {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 0.875rem;
+        .toc-elem-group-title {
+            flex: 5;
+            a {}
+        }
+        .toc-elem-group-number {}
+        .toc-elem-group-link {
+            flex: 1;
+            align-self: flex-end;
+        }
+        .toc-elem-group-img {
+            flex: 1;
+            a {
+                img {}
+            }
+        }
+    }
+    /* SINGLE VIEW */
+    #view_toc_nav {
+        ul {
+            li {
+                float: left;
+                width: 100%;
+                min-height: 1.75rem;
+                line-height: 1.75rem;
+                &:hover {}
+                a {
+                    display: block;
+                }
+                .toctreeview-elem-treebutton {
+                    float: left;
+                    width: 5%;
+                    a {
+                        img {}
+                    }
+                }
+                .toctreeview-elem-title {
+                    float: left;
+                    width: 80%;
+                    a {}
+                }
+                .toctreeview-elem-number {
+                    float: right;
+                    width: 15%;
+                    .toctreeview-elem-number-nav {
+                        ul {
+                            li {
+                                display: inline;
+                                float: right;
+                                width: auto;
+                                margin-left: 0.3125rem;
+                                a {
+                                    img {
+                                        width: 1rem;
+                                    }
+                                }                                
+                            }
+                        }
+                    }
+                }
+                .toc-elem-title {
+                    float: left;
+                    width: 85%;
+                    a {}
+                }
+                .toc-elem-number {
+                    float: right;
+                    width: 15%;
+                    .toc-elem-number-nav {
+                        ul {
+                            li {
+                                display: inline;
+                                float: right;
+                                width: auto;
+                                margin-left: 0.3125rem;
+                                a {
+                                    img {
+                                        width: 1rem;
+                                    }
+                                }                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* VIEW TOC */
+/* BLOCK */
+.toc {
+	margin-bottom: 15px;
+	/* MULTI VOLUME TOC */
+	/* ELEMENT */
+	h4 {}
+	&__multi-volume {
+		margin-top: 15px;
+	}
+	&__mv-group {
+        padding: 5px 0;
+        button {
+            width: 16px;
+            height: 16px;
+            line-height: 14px;
+            margin-right: 10px;
+            text-align: center;
+            border: 1px solid @lightgray;
+            span:before {
+                content: "\2013";
+            }
+            &.active {
+                span:before {
+                    content: "+";
+                }
+            }
+        }
+        &.inactive {
+            border-bottom: 2px solid @lightgray;
+        }
+    }
+	&__mv-element {
+		padding: 15px 0;
+		border-bottom: 1px solid @middlegray;
+		transition: all 0.3s linear;
+		&:hover {
+			background-color: @lightgray;
+		}
+		&.level-0 {
+			background-color: transparent;
+			h4 {
+				display: none;
+			}
+		}
+		a {
+			display: block;
+		}
+		.row {
+			margin: 0;
+		}
+	}
+	&__mv-element-title {}
+	&__mv-element-link {}
+	&__mv-element-img {
+		overflow: hidden;
+	}
+	/* TOC TREEVIEW */
+	/* ELEMENT */
+	&__list {}
+	&__title {
+		a {
+			display: block;
+			padding: 5px 0;
+			&:hover,
+			&:focus,
+			&:active {}
+		}
+	}
+	&__number {
+		li {
+			display: inline-block;
+			border: none;
+		}
+		a {
+			display: block;
+			padding: 5px 3px;
+			text-decoration: none;
+			&:hover,
+			&:focus,
+			&:active {
+				text-decoration: none;
+			}
+		}
+	}
+}
+
+
+/* DOWNLOAD MODAL */
+#reCaptchaWrapper {
+    margin-bottom: 1.3125rem;
+}
+
+div[id*="Modal"] {
+    p {
+        color: #737373;
+    }
+    .email-form {
+        .form-group {
+            margin: 1.3125rem 0 0 0;
+            p {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

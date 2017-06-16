@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_newsdetail" version="2015-01-14">
+    <name>Ausführlicher Newsbeitrag mit vier Textabschnitten und Bild sowie Suchtrefferliste</name>
+    <description>Mit diesem Template kann ein sehr ausführlicher Newsbeitrag geschrieben werden. Er beinhaltet vier Textabschnitte jeweils mit eigenem Bild. Darunter werden die Treffer einer Suchabfrage inklusive eines Paginators angezeigt. Die Suchabfrage wie auch die Anzahl der Elemente pro Seite wird im Template konfiguriert.  </description>
+    <icon>cms_template_news_detail.png</icon>
+    <html>cms_template_news_detail.xhtml</html>
+    <content>
+        <item id="A0" label="Datum" type="TEXT"/>
+        <item id="A1" label="Überschrift 1" type="TEXT"/>
+        <item id="A2" label="Textabschnitt 1" type="HTML"/>
+        <item id="A3" label="Textabschnitt 1 (Vorschau)" type="HTML"/>
+        <item id="image01" label="Bild 1" type="MEDIA" />
+        
+        <item id="B1" label="Überschrift 2" type="TEXT"/>
+        <item id="B2" label="Textabschnitt 2" type="HTML"/>
+        <item id="image02" label="Bild 2" type="MEDIA" />
+        
+        <item id="C1" label="Überschrift 3" type="TEXT"/>
+        <item id="C2" label="Textabschnitt 3" type="HTML"/>
+        <item id="image03" label="Bild 3" type="MEDIA" />
+        
+        <item id="D1" label="Überschrift 4" type="TEXT"/>
+        <item id="D2" label="Textabschnitt 4" type="HTML"/>
+        <item id="image04" label="Bild 4" type="MEDIA" />
+        
+        <item id="gallery" label="Gallerie" type="SOLRQUERY"/>
+        
+        
+    </content>
+</cms_page_template>

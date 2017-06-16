@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components">
+	<composite:interface>
+	</composite:interface>
+
+	<composite:implementation>
+
+
+
+		<!-- Nutzergruppen -->
+		<h:panelGroup id="ownershipGroup" rendered="#{userBean.loggedIn}">
+			<h2><h:outputText value="#{msg.userGroup_myUserGroups}" /></h2>
+			<p:dataTable var="userGroup"
+				value="#{userBean.user.userGroupOwnerships}"
+				rendered="#{userBean.loggedIn}" emptyMessage="#{msg.noRecordsFound}">
+				<p:column>
+					<f:facet name="header">
+						<h:outputText styleClass="documentHeader" value="#{msg.name}" />
+					</f:facet>
+					<h:link outcome="manageUserGroup" value="#{userGroup.name}">
+						<f:param name="userGroupId" value="#{userGroup.id}" />
+					</h:link>
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText styleClass="documentHeader"
+							value="#{msg.description}" />
+					</f:facet>
+					<h:outputText value="#{userGroup.description}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText styleClass="documentHeader" value="#{msg.action}" />
+					</f:facet>
+					<!--
+					<p:commandLink id="editUserGroupLink" styleClass="editButton"
+						title="#{msg.edit}" style="float:left;"
+						rerender="editFormUserGroup" async="true"
+						update="editUserGroupForm bookshelf:ownershipGroup"
+						oncomplete="editUserGroup.show();">
+						<f:setPropertyActionListener
+							target="#{userGroupBean.currentOwnUserGroup}"
+							value="#{userGroup}"></f:setPropertyActionListener>
+					</p:commandLink>
+					-->
+					<p:commandLink id="deleteUserGroupLink" styleClass="deleteButton"
+						title="#{msg.delete}" style="float:left;"
+						action="#{userGroupBean.deleteCurrentUserGroupAction}"
+						update="usergroupForm:ownershipGroup">
+						<f:setPropertyActionListener
+							target="#{userGroupBean.currentOwnUserGroup}"
+							value="#{userGroup}"></f:setPropertyActionListener>
+					</p:commandLink>
+
+				</p:column>
+			</p:dataTable>
+
+			<p:commandButton id="createNewUserGroupButton"
+				value="#{msg.userGroup_createNewUserGroup}"
+				style="margin-bottom: 20px; margin-top: 10px;"
+				oncomplete="createNewUserGroup.show();"
+				action="#{userGroupBean.resetCurrentUserGroupAction}" async="true"
+				update="newUserGroupForm">
+			</p:commandButton>
+
+
+			<!-- Meine Mitgliedschaften -->
+			<h:panelGroup
+				rendered="#{!userGroupBean.newUserGroup} and #{userBean.loggedIn}">
+				<h2><h:outputText value="#{msg.userGroup_members}" /></h2>
+				<p:dataTable var="member"
+					value="#{userGroupBean.currentOwnUserGroup.members}"
+					emptyMessage="#{msg.noRecordsFound}">
+					<p:column>
+						<f:facet name="header">
+							<h:outputText styleClass="documentHeader" value="#{msg.name}" />
+						</f:facet>
+						<h:outputText styleClass="inputbox" value="#{member.displayName}" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">
+							<h:outputText styleClass="documentHeader" value="#{msg.action}" />
+						</f:facet>
+						<h:commandLink id="removeMemberLink" value="#{msg.remove}"
+							style="float:left;" styleClass="deleteButton"
+							action="#{userGroupBean.removeCurrentMemberAction}">
+							<f:setPropertyActionListener
+								target="#{userGroupBean.currentMember}" value="#{member}" />
+						</h:commandLink>
+					</p:column>
+				</p:dataTable>
+				<h:panelGrid id="newMemberGrid" columns="2">
+					<h:selectOneMenu id="selectMemberToAdd" styleClass="inputbox"
+						value="#{userGroupBean.currentId}">
+						<f:selectItems var="element"
+							value="#{userGroupBean.remainingUsers}" />
+					</h:selectOneMenu>
+					<h:commandLink styleClass="inputbox"
+						value="#{msg.userGroup_addNewMember}" style="float:left;"
+						action="#{userGroupBean.addNewMemberAction}" />
+				</h:panelGrid>
+			</h:panelGroup>
+		</h:panelGroup>
+
+		<h:panelGroup id="membershipGroup"
+			rendered="#{userBean.loggedIn}">
+			<h2><h:outputText value="#{msg.userGroup_myMemberships}" /></h2>
+			<p:dataTable var="userGroup"
+				value="#{userBean.user.userGroupMemberships}"
+				emptyMessage="#{msg.noRecordsFound}">
+				<p:column>
+					<f:facet name="header">
+						<h:outputText styleClass="documentHeader" value="#{msg.name}" />
+					</f:facet>
+					<h:outputText value="#{userGroup.name}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText styleClass="documentHeader"
+							value="#{msg.userGroup_owner}" />
+					</f:facet>
+					<h:outputText value="#{userGroup.owner.displayName}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText styleClass="documentHeader"
+							value="#{msg.description}" />
+					</f:facet>
+					<h:outputText value="#{userGroup.description}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText styleClass="documentHeader" value="#{msg.action}" />
+					</f:facet>
+					<h:commandLink value="#{msg.userGroup_leaveGroup}"
+						style="float:left;"
+						action="#{userGroupBean.leaveCurrentUserGroupAction}"
+						rerender="membershipListGrid">
+						<f:setPropertyActionListener
+							target="#{userGroupBean.currentOtherUserGroup}"
+							value="#{userGroup}" />
+					</h:commandLink>
+				</p:column>
+			</p:dataTable>
+
+		</h:panelGroup>
+
+		<p:confirmDialog id="deleteUserGroupConfirmationId"
+			header="#{msg.deleteCurrentUserGroupConfirmation}"
+			widgetVar="deleteUserGroupConfirmation"
+			message="#{msg.deleteCurrentUserGroupConfirmationTextLeft}"
+			modal="true">
+			<p:commandButton value="#{msg.cancel}"
+				onclick="deleteUserGroupConfirmation.hide()" type="button" />
+			<p:commandButton value="#{msg.delete}"
+				update="myBookshelvesForm:bookshelfDataTable"
+				oncomplete="deleteUserGroupConfirmation.hide()"
+				action="#{userGroupBean.deleteCurrentUserGroupAction}" />
+		</p:confirmDialog>
+
+	</composite:implementation>
+
+</ui:composition>

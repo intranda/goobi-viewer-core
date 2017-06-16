@@ -1,0 +1,34 @@
+﻿<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+	<composite:interface>
+	</composite:interface>
+
+	<composite:implementation>
+							<div class="men_wrapp" style="position: relative;">
+								<h2>Einrichtungen in Niedersachsen</h2>
+								<br />
+								
+								<div id="mapCityPopup"> 
+									<div id="mapCityPopupTop"></div>
+									<div id="mapCityPopupMiddle"></div>
+									<div id="mapCityPopupBottom"></div>
+								</div>
+								
+								<img src="#{request.contextPath}/resources/themes/kuni/images/map/map.png" id="mapNDS" usemap="#map" />
+								
+								<map name="map">
+									<area shape="circle" coords="150,124,9" class="mapCity" data-city="Hannover" />
+									<area shape="circle" coords="76,62,7" class="mapCity" data-city="Oldenburg" />
+									<area shape="circle" coords="157,193,7" class="mapCity" data-city="Göttingen" />
+									<area shape="circle" coords="191,131,6" class="mapCity" data-city="Braunschweig" />
+									<area shape="circle" coords="198,142,5" class="mapCity" data-city="Wolfenbüttel" />
+								</map>
+							</div>
+	</composite:implementation>
+</ui:composition>

@@ -1,0 +1,99 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html"
+	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3">
+
+	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle)}" />
+			
+			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+		</f:metadata>
+	</ui:define>
+	
+	<ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
+	<ui:define name="content">
+		<f:param name="currentPage" value="#{cmsBean.random}" />
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="templateSearchList" class="page-wrapp">
+				<h1>#{cmsPage.title}</h1>
+                
+                <!-- PAGE UNPUBLISHED -->
+                <h:panelGroup rendered="#{!cmsPage.published}">
+                    <div class="alert alert-warning" role="alert">
+                        #{msg.cms_pagePreviewNotPublished}
+                    </div>
+                </h:panelGroup>
+                
+                <div class="tpl-search-list">
+                    <ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('queryList01'))}">
+                        <div class="row">
+                            <div class="tpl-search-list__element clearfix">
+                                <div class="col-xs-4 col-sm-2">
+                                    <div class="tpl-search-list__image">
+                                        <img src="#{hit.browseElement.getThumbnailUrl(50, 150)}" alt="#{hit.browseElement.label}" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-8 col-sm-10">
+                                    <div class="tpl-search-list__text">
+                                        <dl class="dl-horizontal">
+                                            <dt>#{msg.MD_TITLE}:</dt>
+                                            <dd>
+                                                <a href="#{hit.browseElement.url}" title="#{hit.browseElement.label}">#{hit.browseElement.label}</a>
+                                            </dd>
+                                        </dl>
+                                        <dl class="dl-horizontal">
+                                            <dt>#{msg.MD_CREATOR}:</dt>
+                                            <dd>
+                                                <ui:repeat value="#{hit.browseElement.getMetadataList('MD_CREATOR')}" var="metadata">
+                                                    <ui:repeat value="#{metadata.values}" var="val">
+                                                        <span class="tpl-search-list__text-person"> 
+                                                            <h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+                                                                <f:param value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
+                                                                <f:param value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
+                                                                <f:param value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />
+                                                                <f:param value="#{val.paramValues[3] != null ? val.paramValues[3] : ''}" />
+                                                            </h:outputFormat>
+                                                        </span>
+                                                    </ui:repeat>
+                                                </ui:repeat>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </div>
+
+                <!-- paginator -->
+                <viewerComponent:simplePaginator itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('queryList01'))}"
+                    itemActive="#{cmsPage.listPage}" urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+            </div>
+		</f:view>
+	</ui:define>
+
+	<ui:define name="sidebar">
+    	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
+    		<widgetComponent:widget_custom widget="#{element}"/>
+    		<widgetComponent:widget_customDrillDown widget="#{element}"/>
+            <widgetComponent:widget_searchField widget="#{element}"/>
+            <widgetComponent:widget_browsing widget="#{element}"/>            
+            <widgetComponent:widget_bookshelves widget="#{element}"/>
+            <widgetComponent:widget_mySearches widget="#{element}"/>
+            <widgetComponent:widget_user widget="#{element}"/>
+    	</c:forEach>
+    </ui:define>
+</ui:composition>

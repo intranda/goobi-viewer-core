@@ -1,0 +1,299 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    template="/resources/themes/#{navigationHelper.theme}/template.html"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('toc')}" />
+        </f:metadata>
+    </ui:define> 
+	
+	<ui:define name="head">		
+		<f:view contentType="text/html" encoding="utf-8">
+			<h:outputText escape="false" value="#{activeDocumentBean.viewManager.htmlHeadDCMetadata}" rendered="#{navigationHelper.htmlHeadDCMetadata == true}" />			
+		</f:view>
+	</ui:define>
+
+    <ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+            <!-- reCAPTCHA API -->
+            <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
+                <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
+            </h:panelGroup>
+            
+			<div id="viewToc" class="page-wrapp">
+				<!-- TITLE -->
+				<ui:include src="/resources/includes/title.xhtml">
+					<ui:param name="structure" value="false" />
+					<ui:param name="pdf" value="true" />
+					<ui:param name="purl" value="true" />
+				</ui:include>
+				
+				<div class="toc">
+					<h:form id="tocForm" prependId="false">
+						<!-- MULTI VOLUME TOC -->
+						<h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.group}">
+							<div class="toc__multi-volume">
+								<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
+									<!-- MV GROUP -->
+									<h:panelGroup rendered="#{group != '_DEFAULT'}">
+										<div class="toc__mv-group">
+											<h4>
+                                                <button type="button" class="btn-clean" data-toggle="mv-element">
+                                                    <span></span>
+                                                </button>
+                                                #{msg[group]}
+                                            </h4>
+										</div>
+                                        
+                                        <!-- MV ELEMENT -->
+                                        <ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
+                                            <div class="toc__mv-element level-#{tocElement.level}">
+                                                <h:panelGroup rendered="#{tocElement.pageNo == null}">
+                                                    <h4>#{tocElement.label}</h4>
+                                                </h:panelGroup>
+        
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-8 col-md-9">
+                                                        <!-- MV TITLE -->
+                                                        <h:panelGroup rendered="#{tocElement.label != null and tocElement.pageNo != null}">
+                                                            <div class="toc__mv-element-title">
+                                                                <a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.label}</a>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="col-xs-6 col-sm-2">
+                                                        <!-- MV GROUPLINK -->
+                                                        <h:panelGroup rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
+                                                            <div class="toc__mv-element-link text-right">
+                                                                <ui:repeat var="groupId" value="#{tocElement.groupIds}">
+                                                                    <h:outputLink value="#{navigationHelper.tocUrl}/#{groupId}/1/" target="_blank">
+                                                                        <h:outputText value="#{msg.convolutePart}" />
+                                                                    </h:outputLink>
+                                                                </ui:repeat>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="col-xs-6 col-sm-2 col-md-1">
+                                                        <!-- MV IMAGE -->
+                                                        <div class="toc__mv-element-img text-center">
+                                                            <h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
+                                                                <img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}" />
+                                                            </h:outputLink>
+                                                        </div>
+                                                    </div>
+                                                </div>  
+                                            </div>
+                                        </ui:repeat>
+								    </h:panelGroup>
+                                    
+                                    <!-- MV FLAT -->
+                                    <h:panelGroup rendered="#{group == '_DEFAULT'}">
+    									<!-- MV ELEMENT -->
+    									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.flatView}">
+    										<div class="toc__mv-element level-#{tocElement.level}">
+        										<h:panelGroup rendered="#{tocElement.pageNo == null}">
+        											<h4>#{tocElement.label}</h4>
+        										</h:panelGroup>
+    	
+    											<div class="row">
+    												<div class="col-xs-6 col-sm-8 col-md-9">
+    													<!-- MV TITLE -->
+    													<h:panelGroup rendered="#{tocElement.label != null and tocElement.pageNo != null}">
+    														<div class="toc__mv-element-title">
+    															<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.label}</a>
+    														</div>
+    													</h:panelGroup>
+    												</div>
+    												<div class="col-xs-6 col-sm-2">
+    													<!-- MV GROUPLINK -->
+    													<h:panelGroup rendered="#{activeDocumentBean.anchor and fn:length(tocElement.groupIds) > 0}">
+    														<div class="toc__mv-element-link text-right">
+    															<ui:repeat var="groupId" value="#{tocElement.groupIds}">
+    																<h:outputLink value="#{navigationHelper.tocUrl}/#{groupId}/1/" target="_blank">
+    																	<h:outputText value="#{msg.convolutePart}" />
+    																</h:outputLink>
+    															</ui:repeat>
+    														</div>
+    													</h:panelGroup>
+    												</div>
+    												<div class="col-xs-6 col-sm-2 col-md-1">
+    													<!-- MV IMAGE -->
+    													<div class="toc__mv-element-img text-center">
+    														<h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
+    															<img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}" />
+    														</h:outputLink>
+    													</div>
+    												</div>
+    											</div>	
+    										</div>
+    									</ui:repeat>
+                                    </h:panelGroup>								    
+								</ui:repeat>
+
+								<viewerComponent:simplePaginator itemCount="#{activeDocumentBean.toc.numPages}" itemActive="#{activeDocumentBean.toc.currentPage}"
+									urlPrefix="#{navigationHelper.tocUrl}/#{activeDocumentBean.persistentIdentifier}/" urlSuffix="" />
+							</div>
+						</h:panelGroup>
+
+						<!-- TOC TREEVIEW -->
+						<h:panelGroup rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}">
+							<c:set var="indent" value="#{configurationBean.tocIndentation}" scope="request" />
+
+							<nav class="toc__list">
+								<ul>
+									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
+										<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
+											<div class="row">
+												<div class="col-xs-12 col-sm-10">
+													<!-- TITLE -->
+													<div class="toc__title">
+														<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
+															#{tocElement.label}
+														</h:outputLink>
+														<h:outputLink rendered="#{tocElement.pageNo != null}" title="#{tocElement.label}" value="#{tocElement.url}">
+															#{tocElement.label}
+														</h:outputLink>
+													</div>
+												</div>
+												<div class="col-xs-12 col-sm-2">
+													<!-- NUMBER -->
+													<div class="toc__number text-right">
+														<ul>
+															<h:panelGroup rendered="#{tocElement.label != null}">
+																<li>
+																	<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
+																</li>
+															</h:panelGroup>
+															<h:panelGroup rendered="#{tocElement.pageNo == null}">
+																<li>#{tocElement.pageNoLabel}</li>
+															</h:panelGroup>
+		
+															<!-- PDF DOWNLOAD -->
+															<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
+																<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
+																	<li>
+																		<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.pdfDownload}">
+																			<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																		</a>
+																	</li>
+																</h:panelGroup>
+																<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
+																	<li>
+																		<a 
+																			href="#" 
+																			class="download-modal" 
+																			data-type="pdf" 
+																			data-title="#{tocElement.label}" 
+																			data-id="#{tocElement.logId}" 
+																			data-pi="#{tocElement.topStructPi}"
+																			title="#{msg.pdfDownload}">
+																			<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																		</a>
+																	</li>
+																</h:panelGroup>
+															</h:panelGroup>
+														</ul>
+													</div>
+												</div>
+											</div>											
+
+											<div class="clearfix"></div>
+										</li>
+									</ui:repeat>
+								</ul>
+							</nav>
+						</h:panelGroup>
+					</h:form>
+				</div>
+			</div>
+            
+            <h:panelGroup rendered="#{userBean.loggedIn}">
+                <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
+            </h:panelGroup>            
+            
+            <script type="text/javascript">
+                $( '[data-toggle="mv-element"]' ).on( 'click', function() {
+                    var currBtn = $( this );
+                    
+                    currBtn.toggleClass( 'active' );
+                    currBtn.parents().next( '.toc__mv-element' ).slideToggle( {
+                        duration: 0,
+                        start: function() {
+                            currBtn.prev().toggleClass( 'inactive' );                        
+                        }
+                    } );
+                } );
+                
+                 $( '[data-iddoc*="iddoc"] a' ).on( 'click', function( event ) {
+                     event.preventDefault();
+                     
+                     var currIdDoc = $( this ).parents( 'li' ).attr( 'data-iddoc' );
+                     var currUrl = $( this ).attr( 'href' );
+                     
+                     localStorage.setItem( 'currIdDoc', currIdDoc );
+                     location.href = currUrl;
+                 } );
+            
+                var downloadModalConfig = {
+                    downloadBtn: $( '.download-modal' ),
+                    path: '#{navigationHelper.applicationUrl}',
+                    userEmail: $( '#userEmail' ).val(),
+                    useReCaptcha: #{configurationBean.useReCaptcha},
+                    reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
+                    messages: {
+                        reCaptchaText: '#{msg.downloadReCaptchaText}',
+                        rcInvalid: '#{msg.downloadRcInvalid}',
+                        rcValid: '#{msg.downloadRcValid}',
+                        eMailText: '#{msg.downloadEMailText}',
+                        eMailTextLoggedIn: '#{msg.downloadEMailTextLoggedIn}',
+                        eMail: '#{msg.downloadEmail}',
+                        closeBtn: '#{msg.downloadCloseModal}',
+                        saveBtn: '#{msg.downloadGenerateFile}',
+                    }
+                };
+            
+                viewerJS.downloadModal.init( downloadModalConfig );
+            </script>
+		</f:view>
+	</ui:define>
+
+    <ui:define name="sidebar">
+        <widgetComponent:widget_views pageType="toc" />
+        
+        <widgetComponent:widget_searchInCurrentItem />
+        
+        <widgetComponent:widget_nerFacetting />
+        
+        <widgetComponent:widget_searchResultNavigation />
+        
+        <widgetComponent:widget_metadata />
+
+        <widgetComponent:widget_download />
+        
+        <widgetComponent:widget_versionHistory />
+
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="true" />
+        
+        <widgetComponent:widget_mySearches />
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_user />
+    </ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

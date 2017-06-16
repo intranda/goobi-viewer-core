@@ -1,0 +1,32 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+	<composite:interface>
+	</composite:interface>
+
+	<composite:implementation>
+							<div class="men_wrapp men_wrapp_einrichtungen">
+								<h2>Partner</h2>
+								<div class="men_elem_wrapp">
+									<div class="men_elem">
+										<a href="#{request.contextPath}/sites/bibliotheken/"
+											target="_self">#{msg.libraries}</a>
+									</div>
+									<div class="men_elem">
+										<a href="#{request.contextPath}/sites/archive/" target="_self">#{msg.archives}</a>
+									</div>
+									<div class="men_elem">
+										<a href="#{request.contextPath}/sites/museen/" target="_self">#{msg.museums}</a>
+									</div>									
+								<!--<div class="men_elem_wrapp">
+									<a >Sammlungen</a>
+								</div>--> 
+							</div>
+						</div>
+	</composite:implementation>
+</ui:composition>

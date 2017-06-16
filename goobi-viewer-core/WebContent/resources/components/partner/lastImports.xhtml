@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:facelets="http://de.intranda.digiverso.presentation">
+
+	<composite:interface>
+			<composite:attribute name="title" required="true" default="false"/>
+			<composite:attribute name="image" required="true" default="false"/>
+			<composite:attribute name="count" required="false" default="0"/>
+	</composite:interface>
+
+	<composite:implementation>
+	
+	<style>
+		.last_imports_wrapper{
+			display: block;
+		}
+	</style>
+
+		<div class="lastImports">
+				<ui:repeat  value="#{facelets:getLastImports(cc.attrs.count)}" var="title" varStatus="counter">
+					<div class="last_imports_wrapper">
+						<ui:fragment rendered="#{cc.attrs.title}">
+							<h:outputText value="#{title}" styleClass="title"/>
+						</ui:fragment>
+						<ui:fragment rendered="#{cc.attrs.image}">
+							<img src="#{facelets:getLastImportImages(cc.attrs.count)}[counter.index]" class="image" />
+						</ui:fragment>
+					</div>
+				</ui:repeat>
+		</div>
+	</composite:implementation>
+</ui:composition>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_simple" version="2015-01-14">
+    <name>Text mit Bild in der Mitte</name>
+    <description>Das Template beinhaltet drei Abschnitte, oben einen Textbereich, in der Mitte ein Bild und darunter einen weiteren Textbereich.</description>
+    <icon>cms_template_simple.png</icon>
+    <html>cms_template_simple.xhtml</html>
+    <content>
+        <item id="text01" label="Inhalt über Bild" type="HTML" mandatory="true" />
+        <item id="image01" label="Zentrales Bild" type="MEDIA" />
+        <item id="text02" label="Inhalt unter Bild" type="HTML" />
+    </content>
+</cms_page_template>

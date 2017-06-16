@@ -1,0 +1,1043 @@
+/**
+ * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package de.intranda.digiverso.presentation.managedbeans;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.SolrDocumentList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.RecordDeletedException;
+import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
+import de.intranda.digiverso.presentation.faces.validators.PIValidator;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.download.DownloadJob;
+import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
+import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
+import de.intranda.digiverso.presentation.model.metadata.Metadata;
+import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.model.search.BrowseElement;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.toc.TOC;
+import de.intranda.digiverso.presentation.model.toc.TOCElement;
+import de.intranda.digiverso.presentation.model.toc.export.pdf.TocWriter;
+import de.intranda.digiverso.presentation.model.toc.export.pdf.WriteTocException;
+import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.model.viewer.ViewManager;
+import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
+import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
+import de.intranda.digiverso.presentation.modules.IModule;
+
+/**
+ * This bean opens the requested record and provides all data relevant to this record.
+ */
+@ManagedBean
+@SessionScoped
+public class ActiveDocumentBean implements Serializable {
+
+    private static final long serialVersionUID = -8686943862186336894L;
+
+    private static final Logger logger = LoggerFactory.getLogger(ActiveDocumentBean.class);
+
+    private static int imageContainerWidth = 600;
+
+    @ManagedProperty("#{navigationHelper}")
+    private NavigationHelper navigationHelper;
+    @ManagedProperty("#{cmsBean}")
+    private CmsBean cmsBean;
+    @ManagedProperty("#{searchBean}")
+    private SearchBean searchBean;
+    @ManagedProperty("#{bookshelfBean}")
+    private BookshelfBean bookshelfBean;
+
+    /** URL parameter 'action'. */
+    private String action = "";
+    /** URL parameter 'imageToShow'. */
+    private int imageToShow = 1;
+    /** URL parameter 'logid'. */
+    private String logid = "";
+    /** URL parameter 'tocCurrentPage'. */
+    private int tocCurrentPage = 1;
+
+    private ViewManager viewManager;
+    private OverviewPage overviewPage;
+    private boolean anchor = false;
+    private boolean volume = false;
+    private boolean group = false;
+    protected long topDocumentIddoc = 0;
+
+    /** Table of contents object. */
+    private TOC toc;
+
+    /** Metadata displayed in title.xhtml */
+    private List<Metadata> titleBarMetadata = new ArrayList<>();
+
+    // TODO move to SearchBean
+    private BrowseElement prevHit;
+    private BrowseElement nextHit;
+
+    /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
+    private String lastReceivedIdentifier;
+
+    /** Empty constructor. */
+    public ActiveDocumentBean() {
+        // the emptiness inside
+    }
+
+    /**
+     * Required setter for ManagedProperty injection
+     * 
+     * @param navigationHelper the navigationHelper to set
+     */
+    public void setNavigationHelper(NavigationHelper navigationHelper) {
+        this.navigationHelper = navigationHelper;
+    }
+
+    /**
+     * Required setter for ManagedProperty injection
+     * 
+     * @param cmsBean the cmsBean to set
+     */
+    public void setCmsBean(CmsBean cmsBean) {
+        this.cmsBean = cmsBean;
+    }
+
+    /**
+     * Required setter for ManagedProperty injection
+     * 
+     * @param searchBean the searchBean to set
+     */
+    public void setSearchBean(SearchBean searchBean) {
+        this.searchBean = searchBean;
+    }
+
+    /**
+     * Required setter for ManagedProperty injection
+     * 
+     * @param bookshelfBean the bookshelfBean to set
+     */
+    public void setBookshelfBean(BookshelfBean bookshelfBean) {
+        this.bookshelfBean = bookshelfBean;
+    }
+
+    /**
+     * TODO This can cause NPEs if called while update() is running.
+     */
+    public void reset() {
+        synchronized (this) {
+            logger.debug("reset (thread {})", Thread.currentThread().getId());
+            viewManager = null;
+            overviewPage = null;
+            topDocumentIddoc = 0;
+            toc = null;
+            titleBarMetadata.clear();
+            logid = "";
+            action = "";
+            prevHit = null;
+            nextHit = null;
+            group = false;
+
+            // Any cleanup modules need to do when a record is unloaded
+            for (IModule module : DataManager.getInstance().getModules()) {
+                module.augmentResetRecord();
+            }
+        }
+    }
+
+    /**
+     * Do not call from ActiveDocumentBean.update()!
+     *
+     * @return
+     */
+    public ViewManager getViewManager() {
+        if (viewManager == null) {
+            try {
+                update();
+            } catch (PresentationException e) {
+                logger.debug("PresentationException thrown here: {}", e.getMessage());
+            } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException e) {
+            }
+        }
+
+        return viewManager;
+    }
+
+    /**
+     * Loads the record with the IDDOC set in <code>currentElementIddoc</code>.
+     *
+     * @throws PresentationException
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should create ViewManager correctly
+     * @should update ViewManager correctly if LOGID has changed
+     * @should not override topDocumentIddoc if LOGID has changed
+     */
+    public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException {
+        synchronized (this) {
+            if (topDocumentIddoc == 0) {
+                throw new RecordNotFoundException(lastReceivedIdentifier);
+            }
+            logger.debug("update(): {} (thread {})", topDocumentIddoc, Thread.currentThread().getId());
+            prevHit = null;
+            nextHit = null;
+            titleBarMetadata.clear();
+
+            if (viewManager != null && viewManager.getCurrentDocument() != null) {
+                if (!viewManager.getCurrentDocument().isExists()) {
+                    logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
+                            viewManager.getPi(), topDocumentIddoc);
+                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(viewManager.getPi());
+                    if (topDocumentIddoc == 0) {
+                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?", viewManager
+                                .getPi());
+                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                    }
+                    viewManager = null;
+                } else if (viewManager.getCurrentDocument().isDeleted()) {
+                    logger.debug("Record '{}' is deleted and only available as a trace document.", viewManager.getPi());
+                    throw new RecordDeletedException(viewManager.getPi());
+                }
+            }
+
+            // Do these steps only if a new document has been loaded
+            if (viewManager == null || viewManager.getTopDocument() == null || viewManager.getTopDocumentIddoc() != topDocumentIddoc) {
+                toc = null;
+                anchor = false;
+                volume = false;
+                group = false;
+                StructElement topDocument = new StructElement(topDocumentIddoc);
+
+                // Do not open records who may not be listed for the current user
+                List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
+                if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
+                    boolean access = SearchHelper.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
+                            new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(topDocument.getPi()).toString(),
+                            (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                    if (!access) {
+                        logger.debug("User may not open {}", topDocument.getPi());
+                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                    }
+
+                }
+
+                int numPages = topDocument.getNumPages();
+                if (numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold()) {
+                    viewManager = new ViewManager(topDocument, new EagerPageLoader(topDocument), topDocumentIddoc, logid, topDocument
+                            .getMetadataValue(SolrConstants.MIMETYPE));
+                } else {
+                    logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
+                    viewManager = new ViewManager(topDocument, new LeanPageLoader(topDocument, numPages), topDocumentIddoc, logid, topDocument
+                            .getMetadataValue(SolrConstants.MIMETYPE));
+                }
+
+                overviewPage = OverviewPage.loadOverviewPage(topDocument, BeanUtils.getLocale());
+                logger.trace("Overview page found: {}", overviewPage != null);
+                toc = new TOC();
+                toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
+            }
+
+            // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
+            if (searchBean != null && searchBean.getCurrentHitIndex() < 0) {
+                searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow);
+            }
+
+            // If LOGID is set, update the current element
+            if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
+                // TODO set new values instead of re-creating ViewManager, perhaps
+                logger.debug("Find doc by LOGID: {}", logid);
+                new StructElement(topDocumentIddoc);
+                StringBuilder sbQuery = new StringBuilder();
+                sbQuery.append(SolrConstants.LOGID).append(':').append(logid).append(" AND ").append(SolrConstants.PI_TOPSTRUCT).append(':')
+                        .append(viewManager.getPi());
+                SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Collections.singletonList(
+                        SolrConstants.IDDOC));
+                long subElementIddoc = 0;
+                if (!docList.isEmpty()) {
+                    subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
+                    // Re-initialize ViewManager with the new current element
+                    viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid, viewManager
+                            .getMainMimeType());
+                } else {
+                    logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
+                }
+            }
+
+            if (viewManager != null && viewManager.getCurrentDocument() != null) {
+                StructElement structElement = viewManager.getCurrentDocument();
+                if (!structElement.isExists()) {
+                    logger.trace("StructElement {} is not marked as existing.", structElement.getLuceneId());
+                    throw new RecordNotFoundException(lastReceivedIdentifier);
+                }
+                if (structElement.isAnchor()) {
+                    anchor = true;
+                }
+                if (structElement.isVolume()) {
+                    volume = true;
+                }
+                if (structElement.isGroup()) {
+                    group = true;
+                }
+
+                // Populate title bar metadata
+                StructElement topSe = viewManager.getCurrentDocument().getTopStruct();
+                // logger.debug("topSe: " + topSe.getId());
+                for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
+                    md.populate(topSe.getMetadataFields(), BeanUtils.getLocale());
+                    if (!md.isEmpty()) {
+                        titleBarMetadata.add(md);
+                    }
+                }
+
+                viewManager.setCurrentImageNo(imageToShow);
+                viewManager.updateDropdownSelected();
+            } else {
+                logger.debug("ViewManager is null or ViewManager.currentDocument is null.");
+                throw new RecordNotFoundException(lastReceivedIdentifier);
+            }
+
+            // Prepare a new bookshelf item
+            if (bookshelfBean != null) {
+                bookshelfBean.prepareItemForBookshelf();
+                if (bookshelfBean.getCurrentBookshelfItem() == null || !viewManager.getPi().equals(bookshelfBean.getCurrentBookshelfItem().getPi())) {
+                    bookshelfBean.prepareItemForBookshelf();
+                }
+            }
+        }
+    }
+
+    /**
+     * Pretty-URL entry point.
+     *
+     * @return
+     * @throws RecordNotFoundException
+     * @throws RecordDeletedException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public String open() throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException {
+        synchronized (this) {
+            logger.trace("open");
+            try {
+                update();
+                if (navigationHelper != null && viewManager != null) {
+                    String name = viewManager.getTopDocument().getLabel();
+                    HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+                    URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+                    if (name != null && name.length() > DataManager.getInstance().getConfiguration().getBreadcrumbsClipping()) {
+                        name = new StringBuilder(name.substring(0, DataManager.getInstance().getConfiguration().getBreadcrumbsClipping())).append(
+                                "...").toString();
+                    }
+                    // TODO move breadcrumb to HTML?
+                    if (!PrettyContext.getCurrentInstance(request).getRequestURL().toURL().contains("/crowd")) {
+                        navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(),
+                                NavigationHelper.WEIGHT_OPEN_DOCUMENT));
+                    }
+                }
+            } catch (PresentationException e) {
+                logger.debug("PresentationException thrown here: {}", e.getMessage(), e);
+                Messages.error(e.getMessage());
+                return "";
+            }
+
+            return "";
+        }
+    }
+
+    public String openFulltext() throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException {
+        open();
+        return "viewFulltext";
+    }
+
+    public BrowseElement getPrevHit() throws PresentationException, IndexUnreachableException, DAOException {
+        if (prevHit == null && searchBean != null) {
+            prevHit = searchBean.getPreviousElement();
+        }
+
+        return prevHit;
+    }
+
+    public BrowseElement getNextHit() throws PresentationException, IndexUnreachableException, DAOException {
+        if (nextHit == null && searchBean != null) {
+            nextHit = searchBean.getNextElement();
+        }
+
+        return nextHit;
+    }
+
+    /*********************************** Getter and Setter ***************************************/
+
+    public long getActiveDocumentIddoc() {
+        if (viewManager != null) {
+            return viewManager.getTopDocumentIddoc();
+        }
+
+        return 0;
+    }
+
+    /**
+     * @return the currentElement
+     * @throws IndexUnreachableException
+     */
+    public StructElement getCurrentElement() throws IndexUnreachableException {
+        if (viewManager != null) {
+            return viewManager.getCurrentDocument();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param imageToShow the imageToShow to set
+     */
+    public void setImageToShow(int imageToShow) {
+        synchronized (this) {
+            this.imageToShow = imageToShow;
+            if (viewManager != null) {
+                viewManager.setDropdownSelected(String.valueOf(imageToShow));
+            }
+            // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
+            setLogid("");
+            logger.debug("imageToShow: {}", this.imageToShow);
+        }
+    }
+
+    /**
+     * @return the imageToShow
+     */
+    public int getImageToShow() {
+        return imageToShow;
+    }
+
+    /**
+     * @return the titleBarMetadata
+     */
+    public List<Metadata> getTitleBarMetadata() {
+        return titleBarMetadata;
+    }
+
+    /**
+     * @param logid the logid to set
+     */
+    public void setLogid(String logid) {
+        synchronized (this) {
+            if ("-".equals(logid)) {
+                this.logid = "";
+            } else {
+                this.logid = logid;
+            }
+        }
+    }
+
+    /**
+     * @return the logid
+     */
+    public String getLogid() {
+        if (StringUtils.isEmpty(logid)) {
+            return "-";
+        }
+
+        return logid;
+    }
+
+    /**
+     * @return the anchor
+     */
+    public boolean isAnchor() {
+        return anchor;
+    }
+
+    /**
+     * @param anchor the anchor to set
+     */
+    public void setAnchor(boolean anchor) {
+        this.anchor = anchor;
+    }
+
+    public boolean isVolume() {
+        return volume;
+    }
+
+    /**
+     * @param anchor the anchor to set
+     */
+    public boolean isGroup() {
+        return group;
+    }
+
+    /**
+     * @return the action
+     */
+    public String getAction() {
+        return action;
+    }
+
+    /**
+     * @param action the action to set
+     */
+    public void setAction(String action) {
+        synchronized (this) {
+            // logger.debug("setAction: " + action);
+            this.action = action;
+            if (searchBean != null) {
+                if ("nextHit".equals(action)) {
+                    searchBean.increaseCurrentHitIndex();
+                } else if ("prevHit".equals(action)) {
+                    searchBean.decreaseCurrentHitIndex();
+                }
+            }
+        }
+    }
+
+    public int getCurrentHitIndexDisplay() {
+        if (searchBean != null) {
+            return searchBean.getCurrentHitIndex() + 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param persistentIdentifier
+     * @throws PresentationException
+     * @throws RecordNotFoundException
+     * @throws IndexUnreachableException
+     * @should determine currentElementIddoc correctly
+     */
+    public void setPersistentIdentifier(String persistentIdentifier) throws PresentationException, RecordNotFoundException,
+            IndexUnreachableException {
+        synchronized (this) {
+            logger.trace("setPersistentIdentifier: {}", persistentIdentifier);
+            lastReceivedIdentifier = persistentIdentifier;
+            if (!PIValidator.validatePi(persistentIdentifier)) {
+                logger.warn("Invalid identifier '{}'.", persistentIdentifier);
+                reset();
+                return;
+                // throw new RecordNotFoundException("Illegal identifier: " + persistentIdentifier);
+            }
+            if (!"-".equals(persistentIdentifier) && (viewManager == null || !persistentIdentifier.equals(viewManager.getPi()))) {
+                long id = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(persistentIdentifier);
+                if (id > 0) {
+                    if (topDocumentIddoc != id) {
+                        topDocumentIddoc = id;
+                        logger.trace("IDDOC found for {}: {}", persistentIdentifier, id);
+                    }
+                } else {
+                    logger.warn("No IDDOC for identifier '{}' found.", persistentIdentifier);
+                    reset();
+                    return;
+                    // throw new RecordNotFoundException(new StringBuilder(persistentIdentifier).toString());
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the PI of the currently loaded record. Only call this method after the update() method has re-initialized ViewManager, otherwise the
+     * previous PI may be returned!
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getPersistentIdentifier() throws IndexUnreachableException {
+        if (viewManager != null) {
+            return viewManager.getPi();
+        }
+        return "-";
+    }
+
+    /**
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getThumbPart() throws IndexUnreachableException {
+        if (viewManager != null) {
+            return new StringBuilder("/").append(getPersistentIdentifier()).append('/').append(viewManager.getCurrentThumbnailPage()).append('/')
+                    .toString();
+        }
+
+        return "";
+    }
+
+    /**
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getLogPart() throws IndexUnreachableException {
+        return new StringBuilder("/").append(getPersistentIdentifier()).append('/').append(imageToShow).append('/').append(getLogid()).append('/')
+                .toString();
+    }
+
+    // navigation in work
+
+    /**
+     * Returns the navigation URL for the given page type and number.
+     *
+     * @param pageType
+     * @param page
+     * @return
+     * @throws IndexUnreachableException
+     * @should construct url correctly
+     */
+    public String getPageUrl(String pageType, int page) throws IndexUnreachableException {
+        StringBuilder sbUrl = new StringBuilder();
+        if (StringUtils.isBlank(pageType)) {
+            pageType = navigationHelper.getPreferredView();
+            logger.trace("preferred view: {}", pageType);
+        }
+        if (StringUtils.isBlank(pageType)) {
+            pageType = navigationHelper.getCurrentView();
+            logger.trace("current view: {}", pageType);
+        }
+
+        page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
+        page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
+
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(pageType).append('/').append(getPersistentIdentifier())
+                .append('/').append(page).append('/');
+
+        return sbUrl.toString();
+    }
+
+    public String getPageUrl(int page) throws IndexUnreachableException {
+        return getPageUrl(null, page);
+    }
+
+    public String getPageUrl() throws IndexUnreachableException {
+        StringBuilder sbUrl = new StringBuilder();
+        String pageType = null;
+        if (StringUtils.isBlank(pageType)) {
+            pageType = navigationHelper.getPreferredView();
+        }
+        if (StringUtils.isBlank(pageType)) {
+            pageType = navigationHelper.getCurrentView();
+        }
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(pageType).append('/').append(getPersistentIdentifier())
+                .append('/');
+
+        return sbUrl.toString();
+    }
+
+    public String getFirstPageUrl() throws IndexUnreachableException {
+        return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+    }
+
+    public String getLastPageUrl() throws IndexUnreachableException {
+        return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+    }
+
+    public String getPreviousPageUrl(int step) throws IndexUnreachableException {
+        if (viewManager.isDoublePageMode()) {
+            step *= 2;
+        }
+        int number = imageToShow - step;
+        return getPageUrl(number);
+    }
+
+    public String getNextPageUrl(int step) throws IndexUnreachableException {
+        if (viewManager.isDoublePageMode()) {
+            step *= 2;
+        }
+        int number = imageToShow + step;
+        return getPageUrl(number);
+    }
+
+    public String getPreviousPageUrl() throws IndexUnreachableException {
+        return getPreviousPageUrl(1);
+    }
+
+    public String getNextPageUrl() throws IndexUnreachableException {
+        return getNextPageUrl(1);
+    }
+
+    /**
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getImageUrl() throws IndexUnreachableException {
+        return getPageUrl(PageType.viewImage.getName(), imageToShow);
+    }
+
+    /**
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getFullscreenImageUrl() throws IndexUnreachableException {
+        return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
+    }
+
+    /**
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getReadingModeUrl() throws IndexUnreachableException {
+        return getPageUrl(PageType.viewReadingMode.getName(), imageToShow);
+    }
+
+    /**
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getFulltextUrl() throws IndexUnreachableException {
+        return getPageUrl(PageType.viewFulltext.getName(), imageToShow);
+    }
+
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getMetadataUrl() throws IndexUnreachableException {
+        return getPageUrl(PageType.viewMetadata.getName(), imageToShow);
+    }
+
+    public StructElement getTopDocument() {
+        if (viewManager != null) {
+            return viewManager.getTopDocument();
+        }
+
+        return null;
+    }
+
+    public void setChildrenVisible(TOCElement element) {
+        synchronized (toc) {
+            if (toc != null) {
+                toc.setChildVisible(element.getID());
+                toc.getActiveElement();
+            }
+        }
+    }
+
+    public void setChildrenInvisible(TOCElement element) {
+        synchronized (toc) {
+            if (toc != null) {
+                toc.setChildInvisible(element.getID());
+                toc.getActiveElement();
+            }
+        }
+    }
+
+    /**
+     * Recalculates the visibility of TOC elements and jumps to the active element after a +/- button has been pressed.
+     *
+     * @throws IOException
+     */
+    public String calculateSidebarToc() throws IOException {
+        if (toc != null) {
+            TOCElement activeTocElement = toc.getActiveElement();
+            if (activeTocElement != null) {
+                String result = new StringBuilder("#").append(activeTocElement.getLogId()).toString();
+                FacesContext.getCurrentInstance().getExternalContext().redirect(result);
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return the toc
+     */
+    public TOC getToc() {
+        return toc;
+    }
+
+    public int getTocCurrentPage() {
+        return tocCurrentPage;
+    }
+
+    public void setTocCurrentPage(int tocCurrentPage) throws PresentationException, IndexUnreachableException, DAOException {
+        synchronized (this) {
+            this.tocCurrentPage = tocCurrentPage;
+            if (this.tocCurrentPage < 1) {
+                this.tocCurrentPage = 1;
+            }
+            if (toc != null) {
+                int currentCurrentPage = toc.getCurrentPage();
+                toc.setCurrentPage(this.tocCurrentPage);
+                // Create a new TOC if pagination is enabled and the paginator page has changed
+                if (currentCurrentPage != this.tocCurrentPage && DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage() > 0
+                        && viewManager != null) {
+                    toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(),
+                            this.tocCurrentPage);
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getTitleBarLabel() {
+        PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTitleBarLabel() != null) {
+            return viewManager.getTitleBarLabel();
+        } else if (cmsBean != null) {
+            CMSPage cmsPage = cmsBean.getCurrentPage();
+            if (cmsPage != null) {
+                String pageName = navigationHelper.getCurrentPage();
+                String cmsPageName = cmsPage.getMenuTitle();
+                if (cmsPageName != null && cmsPageName.equals(pageName)) {
+                    return cmsPageName;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * LABEL value escaped for JavaScript.
+     * 
+     * @return
+     */
+    public String getLabelForJS() {
+        if (viewManager != null) {
+            String label = viewManager.getTitleBarLabel();
+            label = StringEscapeUtils.escapeJavaScript(label);
+            return label;
+        }
+
+        return null;
+    }
+
+    public int getImageContainerWidth() {
+        return imageContainerWidth;
+    }
+
+    public int getNumberOfImages() throws IndexUnreachableException {
+        if (viewManager != null) {
+            return viewManager.getImagesCount();
+        }
+
+        return 0;
+    }
+
+    /**
+     * @return Not this.topDocumentIddoc but ViewManager.topDocumentIddoc
+     */
+    public long getTopDocumentIddoc() {
+        if (viewManager != null) {
+            return viewManager.getTopDocumentIddoc();
+        }
+        return 0;
+    }
+
+    /**
+     * Indicates whether a record is currently properly loaded in this bean. Use to determine whether to display components.
+     *
+     * @return
+     */
+    public boolean isRecordLoaded() {
+        return viewManager != null;
+    }
+
+    /**
+     * Checks if there is an anchor in this docStruct's hierarchy
+     *
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public boolean hasAnchor() throws IndexUnreachableException {
+        return getTopDocument().isAnchorChild();
+    }
+
+    /**
+     * Exports the currently loaded for re-indexing.
+     *
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public String reIndexRecordAction() throws IndexUnreachableException, DAOException {
+        if (viewManager != null) {
+            if (Helper.reIndexRecord(viewManager.getPi(), viewManager.getTopDocument().getSourceDocFormat(), overviewPage)) {
+                Messages.info("reIndexRecordSuccess");
+            } else {
+                Messages.error("reIndexRecordFailure");
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * @return
+     * @throws IndexUnreachableException
+     * @throws IllegalArgumentException
+     * @throws DAOException
+     * @should create new config document
+     * @should set forced to true
+     * @should set displayLink to true
+     * @should save the config document
+     */
+    public String forceOverviewPage() throws IllegalArgumentException, IndexUnreachableException, DAOException {
+        synchronized (this) {
+            logger.debug("forceOverviewPage");
+            overviewPage = new OverviewPage();
+            overviewPage.init(viewManager.getTopDocument(), BeanUtils.getLocale());
+            UserBean ub = BeanUtils.getUserBean();
+            if (ub != null) {
+                return overviewPage.saveAction(ub.getUser(), true);
+            }
+            return overviewPage.saveAction(null, true);
+        }
+    }
+
+    /**
+     * @return the overviewPage
+     */
+    public OverviewPage getOverviewPage() {
+        return overviewPage;
+    }
+
+    /**
+     * @param overviewPage the overviewPage to set
+     */
+    public void setOverviewPage(OverviewPage overviewPage) {
+        synchronized (this) {
+            this.overviewPage = overviewPage;
+        }
+    }
+
+    public int getCurrentThumbnailPage() {
+        return viewManager != null ? viewManager.getCurrentThumbnailPage() : 1;
+    }
+
+    public void setCurrentThumbnailPage(int currentThumbnailPage) {
+        synchronized (this) {
+            if (viewManager != null) {
+                viewManager.setCurrentThumbnailPage(currentThumbnailPage);
+            }
+        }
+    }
+
+    public boolean isAccessPermissionEpub() {
+        synchronized (this) {
+            try {
+                if ((navigationHelper != null && !isEnabled(EPUBDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null
+                        || !DownloadJob.ocrFolderExists(viewManager.getPi())) {
+                    return false;
+                }
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Error checking pdf resources: " + e.getMessage());
+                return false;
+            }
+
+            // TODO EPUB privilege type
+            return viewManager.isAccessPermissionPdf();
+        }
+    }
+
+    public boolean isAccessPermissionPdf() {
+        synchronized (this) {
+            if ((navigationHelper != null && !isEnabled(PDFDownloadJob.TYPE, navigationHelper.getCurrentPage())) || viewManager == null) {
+                return false;
+            }
+
+            return viewManager.isAccessPermissionPdf();
+        }
+    }
+
+    /**
+     * @param currentPage
+     * @return
+     */
+    private static boolean isEnabled(String downloadType, String pageTypeName) {
+        if (downloadType.equals(EPUBDownloadJob.TYPE) && !DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager()) {
+            return false;
+        }
+        PageType pageType = PageType.getByName(pageTypeName);
+        boolean pdf = PDFDownloadJob.TYPE.equals(downloadType);
+        if (pageType != null) {
+            switch (pageType) {
+                case viewToc:
+                    return pdf ? DataManager.getInstance().getConfiguration().isTocPdfEnabled() : DataManager.getInstance().getConfiguration()
+                            .isTocEpubEnabled();
+                case viewMetadata:
+                    return pdf ? DataManager.getInstance().getConfiguration().isMetadataPdfEnabled() : DataManager.getInstance().getConfiguration()
+                            .isMetadataEpubEnabled();
+                default:
+                    return pdf ? DataManager.getInstance().getConfiguration().isTitlePdfEnabled() : DataManager.getInstance().getConfiguration()
+                            .isTitleEpubEnabled();
+            }
+        }
+
+        logger.warn("Unknown page type: {}", pageTypeName);
+        return false;
+    }
+
+    public void downloadTOCAction() throws IOException {
+
+        try {
+
+            String fileNameRaw = getToc().getTocElements().get(0).getLabel();
+            String fileName = fileNameRaw + ".pdf";
+
+            FacesContext fc = FacesContext.getCurrentInstance();
+            ExternalContext ec = fc.getExternalContext();
+            ec.responseReset(); // Some JSF component library or some Filter might have set some headers in the buffer beforehand. We want to get rid of them, else it may collide.
+            ec.setResponseContentType("application/pdf");
+            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+            OutputStream os = ec.getResponseOutputStream();
+            TocWriter writer = new TocWriter("", fileNameRaw);
+            writer.createDocument(os, getToc().getTocElements());
+            fc.responseComplete(); // Important! Otherwise JSF will attempt to render the response which obviously will fail since it's already written with a file and closed.
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("No toc to generate");
+        } catch (WriteTocException e) {
+            logger.error("Error writing toc: " + e.getMessage(), e);
+        }
+    }
+}

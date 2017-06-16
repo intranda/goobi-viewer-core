@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/template.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageBrowse}" />
+            <f:event type="preRenderView" listener="#{searchBean.resetActiveSearchType}" />
+            <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+            <f:event type="preRenderView" listener="#{cmsBean.forwardToCMSPage}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">    
+        <div id="browse" class="page-wrapp">
+            <h2>#{msg.browseCollectionHeader}</h2>
+
+            <h:panelGroup rendered="#{msg.browseCollectionDescription != 'browseCollectionDescription'}">
+                <p>
+                    <h:outputText value="#{msg.browseCollectionDescription}" escape="false" />
+                </p>
+            </h:panelGroup>
+            
+            <viewerComponent:collectionView id="collection" collection="#{browseBean.dcCollection}" />
+        </div>
+    </ui:define>
+
+    <ui:define name="sidebar">
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup>
+        
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
+        
+        <h:panelGroup rendered="#{userBean.loggedIn}">
+        	<widgetComponent:widget_mySearches />
+        </h:panelGroup>
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_user />
+    </ui:define>
+
+    <ui:define name="rssFeed">
+        <ui:include src="resources/includes/rssFeed.xhtml" />
+    </ui:define>
+    
+    <ui:define name="breadcrumbs">
+        <ui:include src="resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

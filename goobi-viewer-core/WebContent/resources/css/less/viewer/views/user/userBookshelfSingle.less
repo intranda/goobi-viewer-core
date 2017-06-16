@@ -1,0 +1,47 @@
+/* ==============================================================
+   User view Bookshelf
+   style declarations for userBackendViewBookshelf.xhtml
+   ==============================================================*/
+#viewBookshelf {
+    h2 {}
+    h3 {}
+    #single_bookshelf_data_table {
+        thead {
+            tr {
+                th {
+                    &:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {}
+                    &:nth-child(4) {}
+                }
+            }
+        }
+        tbody {
+            tr {
+                td {
+                    a {
+                        img {}
+                    }
+                }
+            }
+        }
+    }
+    #viewBookshelfControlsForm {
+        text-align: right;
+        .btn {
+            margin: 1.3125rem 0;
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

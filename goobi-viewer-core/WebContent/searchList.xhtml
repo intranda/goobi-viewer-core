@@ -1,0 +1,358 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+                xmlns:c="http://java.sun.com/jsp/jstl/core" 
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core" 
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+                template="/resources/themes/#{navigationHelper.theme}/template.html">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchlist', false, true)}" />
+<!--             <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.searchList,1)}" /> -->
+            <f:event type="preRenderView" listener="#{searchBean.resetCurrentHitIndex}" />
+            <f:event type="preRenderView" listener="#{searchBean.updateBreadcrumbsForSearchHits}" />
+        </f:metadata>
+    </ui:define>
+    
+    <!-- TODO: statische Texte übersetzen -->
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">        
+            <div id="searchList" class="page-wrapp">
+
+                <!-- SEARCH LIST -->
+                <div class="search-list">
+                    <!-- SEARCH LIST TITLE -->
+                    <div class="search-list__title">
+                        <h3 class="pull-left">
+                            <h:outputText rendered="#{searchBean.activeSearchType == 0}" value="#{msg.searchResults}:" />
+                            <h:outputText rendered="#{searchBean.activeSearchType == 1}" value="#{msg.searchResultsAdvanced}:" />
+                        </h3>
+
+                        <!-- SEARCH LIST OPTIONS -->
+                        <div class="search-list__options pull-right">                            
+                            <!-- HITCOUNT -->
+                            <div class="search-list__hitcount">
+                                <h:outputText rendered="#{searchBean.hitsCount > 0}" value="#{msg.hits}: #{searchBean.hitsCount}" />
+                                <h:outputText rendered="#{searchBean.hitsCount == 0}" value="#{msg.hitsZero}." />
+                            </div>
+                            
+                            <!-- RSS LINK -->
+                            <h:panelGroup rendered="#{configurationBean.displaySearchRssLinks}">
+                                <div class="search-list__rss">
+                                    <a href="#{searchBean.rssUrl}" data-toggle="tooltip" data-placement="top" title="#{msg.rssSubscribe}" target="_blank"><i class="fa fa-rss" aria-hidden="true"></i></a>
+                                </div>
+                            </h:panelGroup>
+
+                            <!-- SAVE SEARCH -->
+                            <h:panelGroup rendered="#{userBean.loggedIn and searchBean.searchSavingEnabled and !searchBean.currentSearch.saved}">
+                                <viewerComponent:searchSaveDialog />
+                            </h:panelGroup>
+
+                            <!-- SEARCH EXPORT -->
+                            <h:panelGroup rendered="#{configurationBean.searchExcelExportEnabled}">
+                                <div class="search-list__excel-export">
+                                    <h:form id="slExportSearchForm" prependId="false">                                    
+                                        <h:commandLink styleClass="excel-export-trigger" action="#{searchBean.exportSearchAsExcelAction()}" title="#{msg.searchExportExcel}">
+                                            <i class="fa fa-table" aria-hidden="true"></i>
+                                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                            <f:passThroughAttribute name="data-placement" value="top" />
+                                        </h:commandLink>
+
+                                        <span class="excel-export-loader"> 
+                                            #{msg.searchExportExcelLoading} 
+                                            <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" alt="Excel Export Loader" />
+                                        </span>
+                                    </h:form>
+                                </div>
+                            </h:panelGroup>
+                        </div>
+                        
+                        <div class="clearfix"></div>
+                    </div>
+                    
+                    <!-- SEARCH LIST CURRENT SEARCH -->
+                    <h:panelGroup rendered="#{searchBean.activeSearchType == 0}">
+                        <div class="search-list__current-search">
+                            <h:form id="slCurrentSearchForm" prependId="false">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-2">
+                                        <span class="search-list__label">#{msg.searchFor}:</span>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-10">
+                                        <div class="form-group">
+                                            <label class="sr-only" for="currentSearchInput">#{msg.currentSearch}</label>
+                                            <div class="input-group">
+                                                <div class="input-group-addon reset">
+                                                    <button type="button" id="resetCurrentSearch" class="btn-clean" data-toggle="tooltip" data-placement="top" title="#{msg.searchList_resetCurrentSearch}">
+                                                        <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+    
+                                                <h:inputText id="currentSearchInput" class="form-control" value="#{searchBean.searchString}" />
+    
+                                                <div class="input-group-addon search">
+                                                    <h:commandButton type="submit" id="slCurrentSearchTrigger" styleClass="btn-clean" action="#{searchBean.searchSimple}">
+                                                        <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
+                                                    </h:commandButton>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- ADVANCED SEARCH -->
+                                <div class="search-list__links text-right">
+                                    <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>
+                                </div>
+                            </h:form>
+                        </div>
+                    </h:panelGroup>
+                    
+                    <!-- ADVANCED SEARCH INFO -->
+                    <h:panelGroup rendered="#{searchBean.activeSearchType == 1}">
+                        <div class="search-list__adv-search-info">
+                            <h:outputText value="#{searchBean.advancedSearchQueryInfo}" escape="false" />
+                            
+                            <!-- ADVANCED SEARCH -->
+                            <div class="search-list__adv-search-info-back text-right">
+                                <a href="#{request.contextPath}/searchadvanced/#{searchBean.currentCollection}/">#{msg.searchAdvancedBack}</a>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    
+                    <hr />
+
+                    <!-- SEARCH LIST SORTING -->
+                    <h:panelGroup rendered="#{searchBean.hitsCount > 1}">
+                        <div class="search-list__sorting">
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-4">
+                                    <span class="search-list__label">#{msg.sortBy}:</span>
+                                </div>
+                                <div class="col-xs-12 col-sm-8">
+                                    <div class="custom-control custom-control--select">
+                                        <select id="sortSelect">
+                                            <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
+                                            <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
+                                                <option
+                                                    value="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.currentFacetString}/"
+                                                    data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
+                                                    <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
+                                                </option>
+                                                <option
+                                                    value="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.currentFacetString}/"
+                                                    data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
+                                                    <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
+                                                </option>
+                                            </ui:repeat>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="clearfix"></div>
+                    </h:panelGroup>
+                    
+                    <!-- TODO: access denied noch ergänzen -->
+                    
+                    <!-- SEARCH LIST HITS -->
+                    <div class="search-list__hits">
+                        <h:form id="searchListHitsForm" prependId="false">
+                            <ui:repeat value="#{searchBean.currentSearch.hits}" var="hit" varStatus="status">
+                                <div class="search-list__hit">
+                                    <!-- COinS IMPLEMENTATION -->
+                                    <span class="Z3988" title="#{hit.browseElement.contextObject}"></span>
+                                    
+                                    
+                                    <!-- HEADER -->
+                                    <header class="search-list__hit-header">
+                                    	<div class="row">
+                                    		<div class="col-xs-12 col-sm-10">
+		                                        <!-- TITLE -->
+		                                        <div class="search-list__hit-title">
+		                                            <h4>
+		                                                <a href="#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
+		                                                    <h:outputText value="#{msg[hit.browseElement.labelShort]}" escape="false" />
+		                                                </a>
+		                                            </h4>
+		                                        </div>
+		                                        
+		                                        <!-- TYPE -->
+		                                        <div class="search-list__hit-type">
+		                                            <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
+		                                            <h:panelGroup rendered="#{fn:length(hit.browseElement.structElements) > 0 and hit.browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+		                                                <nav class="search-list__hit-docstruct">
+		                                                    <ul>
+		                                                        <ui:repeat value="#{hit.browseElement.structElements}" varStatus="stat" var="struct">
+		                                                            <li>
+		                                                                <h:outputLink value="#{struct.url}" rendered="#{hit.browseElement.hasImages or hit.browseElement.anchor}">
+		                                                                    <h:outputText value="#{msg[struct.docStructType]}" />
+		                                                                </h:outputLink>
+		                                                                <h:outputLink value="#{struct.metadataUrl}" rendered="#{!hit.browseElement.hasImages and !hit.browseElement.anchor}">
+		                                                                    <h:outputText value="#{msg[struct.docStructType]}" />
+		                                                                </h:outputLink>
+		                                                            </li>
+		                                                        </ui:repeat>
+		                                                    </ul>
+		                                                </nav>
+		                                            </h:panelGroup>
+		                                            
+		                                            <!-- VALUES -->
+		                                            <ui:repeat value="#{hit.browseElement.metadataList}" var="browseElementMetadata">
+		                                                <h:panelGroup rendered="#{!browseElementMetadata.blank}">
+		                                                    <div class="search-list__hit-text">
+		                                                        <h:outputText value="#{msg[browseElementMetadata.label]}: " escape="false"
+		                                                            rendered="#{!browseElementMetadata.blank}" styleClass="search-list__hit-text-label" />
+		                                                        <ui:repeat var="val" value="#{browseElementMetadata.values}">
+		                                                            <h:outputFormat value="#{msg[browseElementMetadata.masterValue]}" escape="false"
+		                                                                rendered="#{!browseElementMetadata.blank}" styleClass="search-list__hit-text-value">
+		                                                                <f:param value="#{val.getComboValueShort(0)}" />
+		                                                                <f:param value="#{val.getComboValueShort(1)}" />
+		                                                                <f:param value="#{val.getComboValueShort(2)}" />
+		                                                                <f:param value="#{val.getComboValueShort(3)}" />
+		                                                                <f:param value="#{val.getComboValueShort(4)}" />
+		                                                                <f:param value="#{val.getComboValueShort(5)}" />
+		                                                                <f:param value="#{val.getComboValueShort(6)}" />
+		                                                                <f:param value="#{val.getComboValueShort(7)}" />
+		                                                                <f:param value="#{val.getComboValueShort(8)}" />
+		                                                                <f:param value="#{val.getComboValueShort(9)}" />
+		                                                            </h:outputFormat>
+		                                                        </ui:repeat>
+		                                                    </div>
+		                                                </h:panelGroup>
+		                                            </ui:repeat>
+		    
+		                                            <!-- FULLTEXT -->
+		                                            <h:panelGroup rendered="#{hit.browseElement.fulltext != null and browseElement.fulltext != ''}">
+		                                                <h:outputText value="#{msg.fulltext}: "
+		                                                    rendered="#{hit.browseElement.fulltext != null and browseElement.fulltext != ''}" />
+		                                                <h:outputText value="#{hit.browseElement.fulltextForHtml}" escape="false"
+		                                                    rendered="#{hit.browseElement.fulltext != ''}" />
+		                                            </h:panelGroup>
+		                                        </div>
+		    
+		                                        <!-- INFO -->
+		                                        <h:panelGroup rendered="#{hit.browseElement.anchor}">
+		                                            <div class="search-list__hit-info">
+		                                                <h:outputText value="#{msg.numVolumes}: " styleClass="search-list__hit-text-label" />
+		                                                <h:outputText value="#{hit.browseElement.numVolumes}" />
+		                                            </div>
+		                                        </h:panelGroup>
+                                    		</div>
+                                    		<div class="col-xs-12 col-sm-2">
+		                                        <!-- THUMBNAIL -->
+		                                        <figure class="search-list__hit-thumbnail">
+		                                            <!-- SINGLEVOLUME -->
+		                                            <h:outputLink value="#{hit.browseElement.url}" rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
+		                                                <img src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" />
+		                                            </h:outputLink>
+		    
+		                                            <!-- MULTIVOLUME -->
+		                                            <h:outputLink value="#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
+		                                                <h:graphicImage url="#{hit.browseElement.thumbnailUrl}" title="#{hit.browseElement.label}" styleClass="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" />
+		                                                <h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+		                                                    <div class="stacked-thumbnail-before"></div>
+		                                                    <div class="stacked-thumbnail-after"></div>
+		                                                </h:panelGroup>
+		                                            </h:outputLink>
+		                                        </figure>
+                                    		</div>
+                                    	</div>
+                                    </header>
+                                    
+                                    <!-- CONTENT -->
+                                    <h:panelGroup rendered="#{hit.hasHitCount}">
+                                        <!-- GET CHILD HITS -->
+                                        <button type="button" class="btn-clean" data-toggle="hit-content" data-iddoc="#{hit.browseElement.iddoc}">
+                                            <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                            <i class="fa fa-caret-down" aria-hidden="true"></i>
+                                            <h:outputFormat rendered="#{hit.overviewPageHitCount > 0}" value="#{msg.searchChildOverviewPageHitCount}">
+                                                <f:param value="#{hit.overviewPageHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat rendered="#{hit.docstructHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                                 <h:outputText rendered="#{hit.overviewPageHitCount > 0}" value=", " />
+                                                <f:param value="#{hit.docstructHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat rendered="#{hit.pageHitCount > 0}" value="#{msg.searchChildFulltextHitCount}">
+                                                <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
+                                                <f:param value="#{hit.pageHitCount}" />
+                                            </h:outputFormat>
+                                            <h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
+                                                <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
+                                                <f:param value="#{hit.eventHitCount}" />
+                                            </h:outputFormat>
+                                            <!-- LOADER -->
+                                            <span class="search-list__loader">
+                                                <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Search List Loader" />
+                                            </span>
+                                        </button>
+                                    </h:panelGroup>
+                                    
+                                    <div class="search-list__hit-content"></div>
+                                </div>
+                            </ui:repeat>
+                        </h:form>
+                    </div>                    
+                </div>
+
+                <!-- PAGINATOR -->
+                <viewerComponent:simplePaginator 
+                    itemCount="#{searchBean.lastPage}" 
+                    itemActive="#{searchBean.currentPage}"
+                    urlPrefix="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/"
+                    urlSuffix="#{searchBean.sortString}/#{searchBean.currentFacetString}/" />
+                
+                <div class="clearfix"></div>
+            </div>
+
+            <script type="text/javascript">                
+                $( document ).ready( function() {
+                    var searchSortingDropdownConfig = {};
+                    var searchListConfig = {
+                        contextPath: '#{request.contextPath}',
+                        msg: {
+                            getMoreChildren: '#{msg.searchList_getMoreHits}'
+                        }
+                    };
+                    
+                    viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
+                    viewerJS.searchList.init( searchListConfig );
+                } );
+                
+                $( window ).on( 'load', function() {
+                    var stackedThumbnailsConfig = {};
+                    
+                    viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
+                });
+            </script>
+        </f:view>
+    </ui:define>
+
+    <ui:define name="sidebar">
+        <widgetComponent:widget_searchDrillDown />
+        
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
+
+        <h:panelGroup rendered="#{userBean.loggedIn}">
+        	<widgetComponent:widget_mySearches />
+        </h:panelGroup>
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_user />
+    </ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

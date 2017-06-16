@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<testsuite name="PhantomJS 2.1.1 (Linux 0.0.0)" package="" timestamp="2016-10-17T14:09:49" id="0" hostname="Florians-PC" tests="6" errors="0" failures="0" time="0.003">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.1.1 Safari/538.1"/>
+  </properties>
+  <testcase name="Statistics tests General statistics module is defined" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Publication types is defined" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most edited works is defined" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Number of pages is defined" time="0.001" classname="PhantomJS_2_1_1_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most imported works trend is defined" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Crowdsourcing progress is defined" time="0" classname="PhantomJS_2_1_1_(Linux_0_0_0).Statistics tests"/>
+  <system-out>
+    <![CDATA[
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>

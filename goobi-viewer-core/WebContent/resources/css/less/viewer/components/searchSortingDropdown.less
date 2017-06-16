@@ -1,0 +1,56 @@
+/* ==============================================================
+   Search Sorting Dropdown
+   style declarations for searchSortingDropdown.xhtml
+   ==============================================================*/
+#searchSortingDropdown {
+    float: right;
+    width: 40%;
+    margin: 1rem 0;
+    border: 1px solid @lightgray;
+    background-color:  @white;
+    .sort-header,
+    .sort-body {
+        float: left;
+        height: 2rem;
+    }
+    .sort-header {
+        width: 30%;
+        line-height: 2rem;
+        padding: 0 0.5rem 0 0;
+        text-align: right;
+    }
+    .sort-body {
+        width: 70%;
+        form {
+            .form-group {
+                select {
+                    height: 2rem;
+                    border: none;
+                    border-radius: 0;
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #searchSortingDropdown { 
+        margin: 0.75rem 0; 
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    #searchSortingDropdown {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}

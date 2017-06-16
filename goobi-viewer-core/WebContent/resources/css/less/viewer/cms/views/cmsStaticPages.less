@@ -1,0 +1,54 @@
+/* ==============================================================
+   CMS Static Pages
+   style declarations for adminCmsStaticPages.xhtml
+   ==============================================================*/
+/* STATIC PAGES */
+/* BLOCK */
+.cms-static-pages {
+    h2 {}
+    /* ELEMENT */
+    &__page-name-head {}
+    &__page-language-head {
+        text-align: center;
+    }
+    &__page-select-head {}
+    &__page-action-head {
+        text-align: center;
+    }
+    &__page-name {}
+    &__page-language {
+        text-align: center;
+        img {
+            width: 16px;
+            opacity: 0.5;
+        }
+    }
+    &__page-select {}
+    &__page-action {
+        a, span {
+            padding: 0;
+        }
+    }
+    &__save {
+        text-align: right;
+        .btn {
+            margin: 0;
+        }
+    }
+}
+/* MODIFICATION */
+img.cms-static-pages__page-language--complete {
+    opacity: 1;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

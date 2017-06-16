@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_project" version="2015-02-03">
+    <name>Projektbeschreibung</name>
+    <description>Mit diesem Template kann eine Seite mit drei Abschnitten erstellt werden. Der obere Abschnitt hat eine Überschrift und einen Textbereich. Der mittlere Bereich hat eine Überschrift, einen Textbereich und ein Bild links davon. Die untere Sektion ist gleich der mittleren.</description>
+    <icon>cms_template_project.png</icon>
+    <html>cms_template_project.xhtml</html>
+    <content>
+        <item id="A1" label="Obere Überschrift" type="TEXT" mandatory="true" />
+        <item id="A2" label="Oberer Textabschnitt" type="HTML" mandatory="true" />
+        <item id="B1" label="Mittlere Überschrift" type="TEXT" />
+        <item id="B2" label="Mittlere Textabschnitt" type="HTML" />
+        <item id="image01" label="Bild in mittlerem Textabschnitt" type="MEDIA" />
+        <item id="C1" label="Untere Überschrift" type="TEXT" />
+        <item id="C2" label="Unterer Textabschnitt" type="HTML" />
+        <item id="image02" label="Bild in unterem Textabschnitt" type="MEDIA" />
+    </content>
+</cms_page_template>

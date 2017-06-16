@@ -1,0 +1,153 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+	<composite:interface />
+
+    <composite:implementation>
+        <h:form id="editUserGeneral" styleClass="form-horizontal" role="form" prependId="false">
+            <!-- prevent autocomplete in IE, Chrome and Firefox -->
+            <input type="text" class="hidden" />
+            <input type="password" class="hidden" />
+
+            <!-- USERDATA -->
+            <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
+                <h3>#{msg.user_userData}</h3>
+            </h:panelGroup>
+            
+            <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
+                <h3>#{msg.changeUserData}</h3>
+            </h:panelGroup>
+
+            <div class="form-group">
+                <h:outputLabel for="email" styleClass="col-sm-4 control-label" value="#{msg.email} *" />
+                <div class="col-sm-8">
+                    <h:inputText value="#{adminBean.currentUser.email}" id="email" label="email" required="true" styleClass="form-control">
+                        <f:validator validatorId="emailValidator" />
+                    </h:inputText>
+                </div>
+            </div>
+            <!--
+                    <div class="form-group">
+                        <h:outputLabel for="displayName" styleClass="col-sm-4 control-label" value="#{msg.nameDisplay}" />
+                        <div class="col-sm-8">
+                            <h:inputText value="#{adminBean.currentUser.displayName}" id="displayName" label="displayName" styleClass="form-control" />
+                        </div>
+                    </div>
+                    -->
+            <div class="form-group">
+                <h:outputLabel for="lastName" styleClass="col-sm-4 control-label" value="#{msg.nameLast}" />
+                <div class="col-sm-8">
+                    <h:inputText value="#{adminBean.currentUser.lastName}" id="lastName" label="lastName" styleClass="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <h:outputLabel for="firstName" styleClass="col-sm-4 control-label" value="#{msg.nameFirst}" />
+                <div class="col-sm-8">
+                    <h:inputText value="#{adminBean.currentUser.firstName}" id="firstName" label="firstName" styleClass="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <h:outputLabel for="nickName" styleClass="col-sm-4 control-label" value="#{msg.nameNick} *" />
+                <div class="col-sm-8">
+                    <h:inputText value="#{adminBean.currentUser.nickName}" id="nickName" label="nickName" styleClass="form-control" required="true" requiredMessage="#{msg.loginEnterNickName}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <div class="checkbox">
+                        <label> 
+                        	<h:selectBooleanCheckbox value="#{adminBean.currentUser.useGravatar}" /> 
+                        	#{msg.user_useGravatar} 
+                        	<a href="http://de.gravatar.com/" target="_blank">
+                        		<img src="#{adminBean.currentUser.getGravatarUrl(96)}" />
+                        	</a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSWORD -->
+            <h:panelGroup rendered="#{adminBean.currentUser.id == null}">
+                <h3>#{msg.password}</h3>
+                
+                <div class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <h:outputLabel for="adminPasswordOneNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
+                        <div class="col-sm-8">
+                            <h:inputSecret id="adminPasswordOneNew" styleClass="form-control" value="#{adminBean.passwordOne}" required="true"
+                                requiredMessage="#{msg.newUserPasswordOneRequired}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="adminPasswordTwoNew" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}:" />
+                        <div class="col-sm-8">
+                            <h:inputSecret id="adminPasswordTwoNew" styleClass="form-control" value="#{adminBean.passwordTwo}" required="true"
+                                requiredMessage="#{msg.newUserPasswordOneRequired}" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{adminBean.currentUser.id != null}">
+                <h3>#{msg.changePassword}</h3>
+                
+                <div class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <h:outputLabel for="adminPasswordOne" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordOne}:" />
+                        <div class="col-sm-8">
+                            <h:inputSecret id="adminPasswordOne" styleClass="form-control" value="#{adminBean.passwordOne}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <h:outputLabel for="adminPasswordTwo" styleClass="col-sm-4 control-label" value="#{msg.newUserPasswordTwo}:" />
+                        <div class="col-sm-8">
+                            <h:inputSecret id="adminPasswordTwo" styleClass="form-control" value="#{adminBean.passwordTwo}" />
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+            
+            <!-- ACCOUNT OPTIONS -->
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <div class="checkbox">
+                        <label> 
+                            <h:selectBooleanCheckbox value="#{adminBean.currentUser.active}" disabled="#{adminBean.currentUser.active}" /> #{msg.accountActive}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <div class="checkbox">
+                        <label> 
+                            <h:selectBooleanCheckbox value="#{adminBean.currentUser.suspended}" /> #{msg.user_accountSuspended}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <div class="checkbox">
+                        <label> 
+                            <h:selectBooleanCheckbox value="#{adminBean.currentUser.superuser}" onclick="superuserConfirmation.show();" /> #{msg.admin_superuser}
+                        </label>
+                    </div>
+
+                    <span class="help-block">#{msg.admin_superuserNotice}</span>
+                </div>
+            </div>
+
+            <!-- ACTION -->
+            <div class="text-right">
+                <h:commandLink id="cancelUserButton" styleClass="btn" value="#{msg.cancel}" action="adminAllUsers" immediate="true">
+                    <f:setPropertyActionListener target="#{adminBean.currentUser}" value="#{null}" />
+                </h:commandLink>
+                <h:commandLink id="saveUserButton" styleClass="btn" value="#{msg.save}" action="#{adminBean.saveUserAction}" />
+            </div>
+        </h:form>
+    </composite:implementation>
+</ui:composition>

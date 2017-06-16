@@ -1,0 +1,110 @@
+/* ==============================================================
+   Normdata
+   style declarations for normdata.xhtml 
+   ==============================================================*/
+.normdataLink,
+.normdataDetailLink,
+.sortPopovers {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    padding: 0;
+    color: @blue;
+    border: none;
+    background: none;
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.25;
+        i {
+            display: none;
+        }
+    }
+    
+}
+
+.sortPopovers {
+    display: none;
+}
+
+.normdata-preloader {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    margin-bottom: -5px;
+    background-image: url("@{images}/ajax_preloader_ner.gif");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;                  
+}
+
+.closeAllPopovers {
+    display: none;
+    color: red;
+    cursor: pointer;
+}
+
+.normdata-popover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid @middlegray;
+    background-color: @white;
+    cursor: move;
+    z-index: 999;
+    .normdata-popover-title {
+        position: relative;
+        padding: 5px;
+        h4 {
+            margin: 0;
+        }
+        .normdata-popover-close {
+            display: inline-block;
+            position: absolute;
+            top: 5px;
+            right: 0;
+            width: 21px;
+            height: 21px;
+            line-height: 21px;
+            text-align: center;
+            color: @gray;
+            cursor: pointer;
+        }
+    }
+    .normdata-popover-content {
+        padding: 5px;
+        .dl-horizontal {
+            margin: 0;
+            dt, dd {
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+            dt {
+                text-align: left;
+                width: 35%;
+            }
+            dd {
+                margin-left: 35%;
+                padding-left: 5px;
+                .glyphicon,
+                .fa {
+                    margin-left: 5px;
+                }
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -1,0 +1,258 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html" 
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+                template="/resources/themes/#{navigationHelper.theme}/template.html"> 
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <!-- JSF 2.2 passthrough parameter (needed to use HTML <input> elements with bean backing) -->
+            <f:viewParam name="searchStandardFilter" value="#{searchBean.currentSearchFilterString}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('search', false, true)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.search,1)}" />
+            <f:event type="preRenderView" listener="#{searchBean.resetSearchParameters}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <div id="searchStandard" class="page-wrapp">
+                <h2>#{msg.searchHeader}</h2>
+                
+                <!-- SEARCH STANDARD -->
+                <div class="search-standard">
+                    <!-- SEARCH STANDARD HELP -->
+                    <div class="search-standard__help pull-right clearfix">
+                        <button type="button" data-toggle="modal" data-target="#searchHelpModal">
+                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <h:form id="searchForm" prependId="false">
+                        <!-- SEARCH STANDRAD TITLE -->
+                        <div class="search-standard__title">
+                            <h3>
+                                <h:outputText rendered="#{!searchBean.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
+                                <h:panelGroup rendered="#{searchBean.searchInDcFlag}">
+                                    <h:outputText value="#{msg.searchIn}: " />
+                                    <ui:repeat var="facet" value="#{searchBean.currentHierarchicalFacets}">
+                                        <br />
+                                        <h:outputText value="#{msg[facet.field]}: #{msg[facet.value]}" />
+                                    </ui:repeat>
+                                </h:panelGroup>
+                            </h3>
+                        </div>
+
+                        <!-- SEARCH STANDARD INPUT -->
+                        <div class="search-standard__input">
+                            <div class="search-standard__input-autocomplete">
+                                <p:autoComplete completeMethod="#{searchBean.autocomplete}" value="#{searchBean.searchString}" maxResults="50">
+                                    <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
+                                </p:autoComplete>
+                            </div>
+                        </div>
+
+                        <!-- SEARCH STANDARD FILTER -->
+                        <div class="search-standard__filter">
+                            <div class="search-standard__filter-radio">
+                                <ui:repeat var="filter" value="#{searchBean.searchFilters}">
+                                    <label for="#{filter.label}" class="custom-control custom-control--radio"> 
+                                        <!-- jsf:id is needed for automatic setting of the current value from the bean -->
+                                        <!-- pt:name is needed binding this input to the bean variable via passthrough --> 
+                                        <input 
+                                            type="radio" 
+                                            id="#{filter.label}" 
+                                            jsf:id="#{filter.label}" 
+                                            name="searchStandardFilter" 
+                                            pt:name="searchStandardFilter" 
+                                            value="#{filter.label}"
+                                            checked="#{filter.label eq searchBean.currentSearchFilterString ? 'checked' : null}" />
+                                        <span class="custom-control__icon"> 
+                                            <i class="fa fa-circle-o" aria-hidden="true"></i> 
+                                            <i class="fa fa-check-circle-o" aria-hidden="true"></i>
+                                        </span>
+                                        #{msg[filter.label]}
+                                    </label>
+                                </ui:repeat>
+                            </div>
+                            <div class="search-standard__filter-link">
+                                <a href="#{request.contextPath}/searchadvanced/">#{msg.searchAdvanced}</a>
+                            </div>
+                        </div>
+
+                        <!-- SEARCH STANDARD ACTION -->
+                        <div class="search-standard__action">
+                            <h:commandLink styleClass="btn" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
+                            <h:commandButton type="submit" styleClass="btn" action="#{searchBean.searchSimple}" value="#{msg.search}">
+                                <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
+                            </h:commandButton>
+                        </div>
+                    </h:form>
+                </div>
+                
+                <!-- SEARCH HELP MODAL -->
+                <div class="modal fade search-help" id="searchHelpModal" tabindex="-1" role="dialog" aria-labelledby="searchHelpModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"> 
+                                        <h:outputText value="&amp;times;" escape="false" />
+                                    </span>
+                                </button>
+                                <h4 class="modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="panel-group" id="searchHelpAccordion" role="tablist" aria-multiselectable="true">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingOne">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseOne"
+                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading01}</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                            <div class="panel-body">
+                                                <h:outputText value="#{msg.searchExplanationText_paragraph01}" escape="false" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingTwo">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseTwo"
+                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading02}</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                            <div class="panel-body">
+                                                <h:outputText value="#{msg.searchExplanationText_paragraph02}" escape="false" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingThree">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseThree"
+                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading03}</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                                            <div class="panel-body">
+                                                <h:outputText value="#{msg.searchExplanationText_paragraph03}" escape="false" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingFour">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFour"
+                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading04}</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                                            <div class="panel-body">
+                                                <h:outputText value="#{msg.searchExplanationText_paragraph04}" escape="false" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" role="tab" id="headingFive">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFive"
+                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading05}</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+                                            <div class="panel-body">
+                                                <h:outputText value="#{msg.searchExplanationText_paragraph05}" escape="false" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-dismiss="modal">#{msg.search_helpModalClose}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SEARCH TILES -->
+<!--                 <div class="row"> -->
+<!--                     <div class="col-xs-12 col-sm-6"> -->
+<!--                         <div class="search-tile"> -->
+<!--                             <div class="search-tile__description"> -->
+<!--                                 <span class="search-tile__icon"> -->
+<!--                                     <i class="fa fa-user" aria-hidden="true"></i> -->
+<!--                                 </span> -->
+<!--                                 <h3>#{msg.search_tileTitle_person}</h3> -->
+<!--                                 <p>Suchen Sie hier gezielt nach einer Person. Es kann ein Name oder auch ein GND-Identifier eingegeben werden.</p> -->
+<!--                             </div> -->
+<!--                             <div class="search-tile__input"> -->
+<!--                                 <label for="personSearch" class="sr-only">#{msg.search_tile_personSearch}</label> -->
+<!--                                 <input type="text" id="personSearch" class="form-control" /> -->
+<!--                             </div> -->
+<!--                             <div class="search-tile__action"> -->
+<!--                                 <button type="button" class="btn">#{msg.search}</button> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                     <div class="col-xs-12 col-sm-6"> -->
+<!--                         <div class="search-tile"> -->
+<!--                             <div class="search-tile__description"> -->
+<!--                                 <span class="search-tile__icon"> -->
+<!--                                     <i class="fa fa-book" aria-hidden="true"></i> -->
+<!--                                 </span> -->
+<!--                                 <h3>#{msg.search_tileTitle_metadata}</h3> -->
+<!--                                 <p>Suchen Sie hier gezielt nur in den Metadaten der einzelnen Objekte.</p> -->
+<!--                             </div> -->
+<!--                             <div class="search-tile__input"> -->
+<!--                                 <label for="metadataSearch" class="sr-only">#{msg.search_tile_metadataSearch}</label> -->
+<!--                                 <input type="text" id="metadataSearch" class="form-control" /> -->
+<!--                             </div> -->
+<!--                             <div class="search-tile__action"> -->
+<!--                                 <button type="button" class="btn">#{msg.search}</button> -->
+<!--                             </div> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+            </div>
+        </f:view>
+    </ui:define>
+
+    <ui:define name="sidebar">             
+        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+            <widgetComponent:widget_browsing />
+        </h:panelGroup>
+        
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />        
+
+        <h:panelGroup rendered="#{userBean.loggedIn}">
+        	<widgetComponent:widget_mySearches />
+        </h:panelGroup>
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_user />
+    </ui:define>
+
+    <ui:define name="rssFeed">
+        <ui:include src="/resources/includes/rssFeed.xhtml" />
+    </ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

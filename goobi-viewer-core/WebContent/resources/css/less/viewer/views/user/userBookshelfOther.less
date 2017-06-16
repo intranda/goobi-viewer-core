@@ -1,0 +1,45 @@
+/* ==============================================================
+   User other Bookshelves
+   style declarations for userBackendOtherBookshelves.xhtml
+   ==============================================================*/
+#otherBookshelves {
+    h2 {}
+    #other_bookshelf_data_table {
+        thead {
+            tr {
+                th {
+                    &:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {}
+                    &:nth-child(4) {
+                    	text-align: center;
+                    }
+                }
+            }
+        }
+        tbody {
+            tr {
+                td {
+                	&:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {}
+                    &:nth-child(4) {
+                    	text-align: center;
+                    }
+                }
+            }
+        }
+    }    
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

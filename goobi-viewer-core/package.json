@@ -1,0 +1,22 @@
+{
+  "name": "goobi-viewer",
+  "version": "3.2.0",
+  "description": "The Goobi Viewer is a web application that allows digitised material to be displayed on the computer screen.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "intranda GmbH",
+  "license": "SEE LICENSE IN <http://www.gnu.org/licenses/>",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-less": "^1.4.1",
+    "grunt-contrib-uglify": "^3.0.1",
+    "grunt-contrib-watch": "^1.0.0"
+  }
+}

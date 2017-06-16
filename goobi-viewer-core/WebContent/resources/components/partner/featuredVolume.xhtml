@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:facelets="http://de.intranda.digiverso.presentation">
+
+	<composite:interface>
+			<composite:attribute name="id" required="true"/>
+			<composite:attribute name="image" required="false" default="false"/>
+			<composite:attribute name="imageNumber" required="false" default="1"/>
+			<composite:attribute name="title" required="false" default="false"/>
+			<composite:attribute name="creator" required="false" default="false"/>
+			<composite:attribute name="imageHeight" required="false" default="300"/>
+			<composite:attribute name="imageWidth" required="false" default="150"/>
+			
+	</composite:interface>
+
+	<composite:implementation>
+		<div class="featuredVolume id_#{cc.attrs.id}">
+			<ui:fragment rendered="#{cc.attrs.image}">
+			<h:outputLink class="title_link" value="#{navigationHelper.imageUrl}/#{cc.attrs.id}/#{cc.attrs.imageNumber}/" >
+				<img class="featuredVolumeImage" src="#{facelets:getFeaturedVolumeImage(cc.attrs.id, cc.attrs.imageHeight, cc.attrs.imageWidth)}" /> 
+			</h:outputLink>
+			</ui:fragment>
+			<ui:fragment rendered="#{cc.attrs.title}">
+				<span class="title">
+				<h:outputLink class="title_link" value="#{navigationHelper.imageUrl}/#{cc.attrs.id}/#{cc.attrs.imageNumber}/" >
+					<h:outputText value="#{facelets:getFeaturedVolumeField(cc.attrs.id,'MD_TITLE')}" />
+				</h:outputLink>
+				</span>
+			</ui:fragment>
+			<ui:fragment rendered="#{cc.attrs.creator}">
+				<span class="creator" > 
+					<h:outputLink class="title_link" value="#{navigationHelper.imageUrl}/#{cc.attrs.id}/#{cc.attrs.imageNumber}/" >
+						<h:outputText value="#{facelets:getFeaturedVolumeField(cc.attrs.id,'MD_CREATOR')}" />
+					</h:outputLink>
+				</span>
+			</ui:fragment>
+		</div>
+	</composite:implementation>
+</ui:composition>

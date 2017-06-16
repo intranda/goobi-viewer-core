@@ -1,0 +1,74 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:component="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+    <composite:implementation>
+        <!-- OPEN SEADRAGON -->
+        <h:outputScript library="javascript/openseadragon" name="openseadragon.js" />
+        <h:outputScript library="javascript/openseadragon" name="openseadragon-viewerinputhook.js" />
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
+
+        <div id="readingModeImageWrapper">            
+            <div id="readingModeImage"></div>
+            
+            <script type="text/javascript" rel="nofollow">          
+                //<![CDATA[
+                var imageMap = $( '#readingModeImage' );
+                var configViewer = {
+                    global: {
+                        divId: 'readingModeImage',
+                        zoomSlider: '.zoom-slider',
+                        zoomSliderHandle: '.zoom-slider-handle',
+                        useTiles: #{activeDocumentBean.viewManager.currentPage.useTiles('viewReadingMode')},
+				        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewReadingMode')},
+				        imageSizes: "#{activeDocumentBean.viewManager.currentPage.getImageSizes('viewReadingMode')}",
+				        tileSizes: "#{activeDocumentBean.viewManager.currentPage.getTileSizes('viewReadingMode')}",
+                        persistZoom: #{configurationBean.rememberImageZoom},
+                        persistRotation: #{configurationBean.rememberImageRotation},
+                        persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
+                    },
+                    image: {
+                        mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
+                        tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+                        baseFooterUrl : "#{activeDocumentBean.viewManager.watermarkUrl}",
+                        highlightCoords: [
+                            {
+                                name: "searchHighlighting",
+                                coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
+                                displayTooltip: false
+                            }, 
+                            {
+                                name: "ugc",
+                                coordinates: [],
+                                displayTooltip: true
+                            }
+                        ],
+                        tileUrl: null
+                    }
+                };
+                
+                var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
+                var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
+                
+                if ( access ) {
+                    viewImage.init( configViewer ).then( function( osViewer ) {
+                        // TODO: hide loader
+                    }).catch( function( error ) {
+                        imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
+                        console.log(error);
+                    })
+                } else {
+                    imageMap.html( accessDeniedMessage );
+                }
+                //]]>   
+            </script>
+        </div>
+    </composite:implementation>
+</ui:composition>

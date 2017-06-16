@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<searchRetrieveResponse xmlns="http://www.loc.gov/zing/srw/">
+	<version>1.1</version>
+	<numberOfRecords>5</numberOfRecords>
+	<resultSetId>13770828040811980</resultSetId>
+	<records>
+		<record>
+			<recordSchema>MARC21-xml</recordSchema>
+			<recordPacking>xml</recordPacking>
+			<recordData>
+				<slim:record xmlns:slim="http://www.loc.gov/MARC21/slim" type="Authority">
+					<slim:leader>00725nz a2200205o 4500</slim:leader>
+					<slim:controlfield tag="001">120656728</slim:controlfield>
+					<slim:controlfield tag="003">DE-101</slim:controlfield>
+					<slim:controlfield tag="005">20080406083953.0</slim:controlfield>
+					<slim:controlfield tag="008">981120n||aznnnabbn | aaa |c</slim:controlfield>
+					<slim:datafield tag="024" ind1="7" ind2=" ">
+						<slim:subfield code="a">http://d-nb.info/gnd/120656728</slim:subfield>
+						<slim:subfield code="2">uri</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-101)120656728</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-588)120656728</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="z">(DE-588a)120656728</slim:subfield>
+						<slim:subfield code="9">v:zg</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="040" ind1=" " ind2=" ">
+						<slim:subfield code="a">DE-101</slim:subfield>
+						<slim:subfield code="9">r:DE-101</slim:subfield>
+						<slim:subfield code="b">ger</slim:subfield>
+						<slim:subfield code="d">9999</slim:subfield>
+						<slim:subfield code="e">rakwb</slim:subfield>
+						<slim:subfield code="f">rswk</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="079" ind1=" " ind2=" ">
+						<slim:subfield code="a">g</slim:subfield>
+						<slim:subfield code="b">p</slim:subfield>
+						<slim:subfield code="c">3</slim:subfield>
+						<slim:subfield code="q">f</slim:subfield>
+						<slim:subfield code="u">v</slim:subfield>
+						<slim:subfield code="v">piz</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="100" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+						<slim:subfield code="d">1966-</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="548" ind1=" " ind2=" ">
+						<slim:subfield code="a">1966-</slim:subfield>
+						<slim:subfield code="9">4:datl</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Lebensdaten</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="550" ind1=" " ind2=" ">
+						<slim:subfield code="0">(DE-101)041452585</slim:subfield>
+						<slim:subfield code="0">(DE-588)4145258-6</slim:subfield>
+						<slim:subfield code="a">Bibliothekar</slim:subfield>
+						<slim:subfield code="9">4:berc</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Charakteristischer Beruf</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="678" ind1=" " ind2=" ">
+						<slim:subfield code="b">Studium Musik- und Erziehungswissenschaften; Bibliothekar</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="913" ind1=" " ind2=" ">
+						<slim:subfield code="S">pnd</slim:subfield>
+						<slim:subfield code="i">a</slim:subfield>
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+						<slim:subfield code="0">(DE-588a)120656728</slim:subfield>
+					</slim:datafield>
+				</slim:record>
+			</recordData>
+			<recordPosition>1</recordPosition>
+		</record>
+		<record>
+			<recordSchema>MARC21-xml</recordSchema>
+			<recordPacking>xml</recordPacking>
+			<recordData>
+				<slim:record xmlns:slim="http://www.loc.gov/MARC21/slim" type="Authority">
+					<slim:leader>01515nz a2200349o 4500</slim:leader>
+					<slim:controlfield tag="001">1034663550</slim:controlfield>
+					<slim:controlfield tag="003">DE-101</slim:controlfield>
+					<slim:controlfield tag="005">20130516093509.0</slim:controlfield>
+					<slim:controlfield tag="008">130516n||aznnnabbn | aaa |c</slim:controlfield>
+					<slim:datafield tag="024" ind1="7" ind2=" ">
+						<slim:subfield code="a">http://d-nb.info/gnd/1034663550</slim:subfield>
+						<slim:subfield code="2">uri</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-101)1034663550</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-588)1034663550</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="040" ind1=" " ind2=" ">
+						<slim:subfield code="a">DE-35</slim:subfield>
+						<slim:subfield code="9">r:DE-601</slim:subfield>
+						<slim:subfield code="b">ger</slim:subfield>
+						<slim:subfield code="d">0035</slim:subfield>
+						<slim:subfield code="e">rakwb</slim:subfield>
+						<slim:subfield code="f">rswk</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="043" ind1=" " ind2=" ">
+						<slim:subfield code="c">ZZ</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="079" ind1=" " ind2=" ">
+						<slim:subfield code="a">g</slim:subfield>
+						<slim:subfield code="b">p</slim:subfield>
+						<slim:subfield code="c">4</slim:subfield>
+						<slim:subfield code="q">f</slim:subfield>
+						<slim:subfield code="v">piz</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="100" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+						<slim:subfield code="d">ca. 1465 oder später</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="375" ind1=" " ind2=" ">
+						<slim:subfield code="a">1</slim:subfield>
+						<slim:subfield code="2">iso5218</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="0" ind2=" ">
+						<slim:subfield code="a">Berthold</slim:subfield>
+						<slim:subfield code="c">Meyer</slim:subfield>
+						<slim:subfield code="d">ca. 1465 oder später</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="0" ind2=" ">
+						<slim:subfield code="a">Bertold</slim:subfield>
+						<slim:subfield code="c">Meier</slim:subfield>
+						<slim:subfield code="d">ca. 1465 oder später</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meier, Barthold</slim:subfield>
+						<slim:subfield code="d">ca. 1465 oder später</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meyer, Bertold</slim:subfield>
+						<slim:subfield code="d">ca. 1465 oder später</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="548" ind1=" " ind2=" ">
+						<slim:subfield code="a">ca. 1465 oder später</slim:subfield>
+						<slim:subfield code="9">4:datl</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Lebensdaten</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="550" ind1=" " ind2=" ">
+						<slim:subfield code="a">1435 philosophisches Baccalaureat, Leipzig; Dr. iur. utr., Padua 1446</slim:subfield>
+						<slim:subfield code="9">4:akad</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Akademischer Grad</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="550" ind1=" " ind2=" ">
+						<slim:subfield code="a">Abt im St.-Aegidien-Kloster Braunschweig</slim:subfield>
+						<slim:subfield code="9">4:beru</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Beruf</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="550" ind1=" " ind2=" ">
+						<slim:subfield code="a">Chronist</slim:subfield>
+						<slim:subfield code="9">4:beru</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Beruf</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="551" ind1=" " ind2=" ">
+						<slim:subfield code="a">Braunschweig</slim:subfield>
+						<slim:subfield code="9">4:ortw</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Wirkungsort</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="551" ind1=" " ind2=" ">
+						<slim:subfield code="a">Leipzig</slim:subfield>
+						<slim:subfield code="9">4:ortw</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Wirkungsort</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="551" ind1=" " ind2=" ">
+						<slim:subfield code="a">Padua</slim:subfield>
+						<slim:subfield code="9">4:ortw</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Wirkungsort</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="667" ind1=" " ind2=" ">
+						<slim:subfield code="a">NDSBIO</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="670" ind1=" " ind2=" ">
+						<slim:subfield code="a">BBL (2006), S. 490</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="670" ind1=" " ind2=" ">
+						<slim:subfield code="a">Steding, Rolf: Bemerkungen zur Sprache in der Auctor-Chronik des Abtes Berthold Meier aus dem Braunschweiger
+							St. Aegidien-Kloster (um 1460). In: St. Aegidien zu Braunschweig. 1979, S. 99-101</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="678" ind1=" " ind2=" ">
+						<slim:subfield code="b">Verfasser einer mittelniederdeutschen Chronik über den Braunschweiger Stadtheiligen Auctor (nach 1457)
+						</slim:subfield>
+					</slim:datafield>
+				</slim:record>
+			</recordData>
+			<recordPosition>2</recordPosition>
+		</record>
+		<record>
+			<recordSchema>MARC21-xml</recordSchema>
+			<recordPacking>xml</recordPacking>
+			<recordData>
+				<slim:record xmlns:slim="http://www.loc.gov/MARC21/slim" type="Authority">
+					<slim:leader>00489nz a2200169o 4500</slim:leader>
+					<slim:controlfield tag="001">107000482</slim:controlfield>
+					<slim:controlfield tag="003">DE-101</slim:controlfield>
+					<slim:controlfield tag="005">20080517003654.0</slim:controlfield>
+					<slim:controlfield tag="008">941015n||aznnnabbn | aba |c</slim:controlfield>
+					<slim:datafield tag="024" ind1="7" ind2=" ">
+						<slim:subfield code="a">http://d-nb.info/gnd/107000482</slim:subfield>
+						<slim:subfield code="2">uri</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-101)107000482</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-588)107000482</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="z">(DE-588a)107000482</slim:subfield>
+						<slim:subfield code="9">v:zg</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="040" ind1=" " ind2=" ">
+						<slim:subfield code="a">DE-101</slim:subfield>
+						<slim:subfield code="9">r:DE-101</slim:subfield>
+						<slim:subfield code="b">ger</slim:subfield>
+						<slim:subfield code="d">9999</slim:subfield>
+						<slim:subfield code="e">rakwb</slim:subfield>
+						<slim:subfield code="f">rswk</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="079" ind1=" " ind2=" ">
+						<slim:subfield code="a">g</slim:subfield>
+						<slim:subfield code="b">n</slim:subfield>
+						<slim:subfield code="c">3</slim:subfield>
+						<slim:subfield code="q">f</slim:subfield>
+						<slim:subfield code="u">v</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="100" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="913" ind1=" " ind2=" ">
+						<slim:subfield code="S">pnd</slim:subfield>
+						<slim:subfield code="i">a</slim:subfield>
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+						<slim:subfield code="0">(DE-588a)107000482</slim:subfield>
+					</slim:datafield>
+				</slim:record>
+			</recordData>
+			<recordPosition>3</recordPosition>
+		</record>
+		<record>
+			<recordSchema>MARC21-xml</recordSchema>
+			<recordPacking>xml</recordPacking>
+			<recordData>
+				<slim:record xmlns:slim="http://www.loc.gov/MARC21/slim" type="Authority">
+					<slim:leader>00648nz a2200193o 4500</slim:leader>
+					<slim:controlfield tag="001">130183989</slim:controlfield>
+					<slim:controlfield tag="003">DE-101</slim:controlfield>
+					<slim:controlfield tag="005">20080513212202.0</slim:controlfield>
+					<slim:controlfield tag="008">050718n||aznnnabbn | aaa |c</slim:controlfield>
+					<slim:datafield tag="024" ind1="7" ind2=" ">
+						<slim:subfield code="a">http://d-nb.info/gnd/130183989</slim:subfield>
+						<slim:subfield code="2">uri</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-101)130183989</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-588)130183989</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="z">(DE-588a)130183989</slim:subfield>
+						<slim:subfield code="9">v:zg</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="040" ind1=" " ind2=" ">
+						<slim:subfield code="a">DE-101</slim:subfield>
+						<slim:subfield code="9">r:DE-101</slim:subfield>
+						<slim:subfield code="b">ger</slim:subfield>
+						<slim:subfield code="d">9999</slim:subfield>
+						<slim:subfield code="e">rakwb</slim:subfield>
+						<slim:subfield code="f">rswk</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="079" ind1=" " ind2=" ">
+						<slim:subfield code="a">g</slim:subfield>
+						<slim:subfield code="b">p</slim:subfield>
+						<slim:subfield code="c">3</slim:subfield>
+						<slim:subfield code="q">f</slim:subfield>
+						<slim:subfield code="u">v</slim:subfield>
+						<slim:subfield code="v">piz</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="100" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="550" ind1=" " ind2=" ">
+						<slim:subfield code="0">(DE-101)040673030</slim:subfield>
+						<slim:subfield code="0">(DE-588)4067303-0</slim:subfield>
+						<slim:subfield code="a">Zahnarzt</slim:subfield>
+						<slim:subfield code="9">4:berc</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Charakteristischer Beruf</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="678" ind1=" " ind2=" ">
+						<slim:subfield code="b">Dissertation München 1936; Zahnarzt</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="913" ind1=" " ind2=" ">
+						<slim:subfield code="S">pnd</slim:subfield>
+						<slim:subfield code="i">a</slim:subfield>
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+						<slim:subfield code="0">(DE-588a)130183989</slim:subfield>
+					</slim:datafield>
+				</slim:record>
+			</recordData>
+			<recordPosition>4</recordPosition>
+		</record>
+		<record>
+			<recordSchema>MARC21-xml</recordSchema>
+			<recordPacking>xml</recordPacking>
+			<recordData>
+				<slim:record xmlns:slim="http://www.loc.gov/MARC21/slim" type="Authority">
+					<slim:leader>01191nz a2200337n 4500</slim:leader>
+					<slim:controlfield tag="001">102840113</slim:controlfield>
+					<slim:controlfield tag="003">DE-101</slim:controlfield>
+					<slim:controlfield tag="005">20130624140340.0</slim:controlfield>
+					<slim:controlfield tag="008">941229n||aznnnabbn | aaa |c</slim:controlfield>
+					<slim:datafield tag="024" ind1="7" ind2=" ">
+						<slim:subfield code="a">http://d-nb.info/gnd/102840113</slim:subfield>
+						<slim:subfield code="2">uri</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-101)102840113</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="a">(DE-588)102840113</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="035" ind1=" " ind2=" ">
+						<slim:subfield code="z">(DE-588a)102840113</slim:subfield>
+						<slim:subfield code="9">v:zg</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="040" ind1=" " ind2=" ">
+						<slim:subfield code="a">DE-12</slim:subfield>
+						<slim:subfield code="9">r:DE-12</slim:subfield>
+						<slim:subfield code="b">ger</slim:subfield>
+						<slim:subfield code="d">7777</slim:subfield>
+						<slim:subfield code="e">rakwb</slim:subfield>
+						<slim:subfield code="f">rswk</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="079" ind1=" " ind2=" ">
+						<slim:subfield code="a">g</slim:subfield>
+						<slim:subfield code="b">p</slim:subfield>
+						<slim:subfield code="c">1</slim:subfield>
+						<slim:subfield code="q">f</slim:subfield>
+						<slim:subfield code="q">n</slim:subfield>
+						<slim:subfield code="v">piz</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="100" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meyer, Bertold</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meier, Bertold</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meyer, Barthold</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meyer, Bartholdus</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="0" ind2=" ">
+						<slim:subfield code="a">Bertold</slim:subfield>
+						<slim:subfield code="c">Meyer</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="0" ind2=" ">
+						<slim:subfield code="a">Berthold</slim:subfield>
+						<slim:subfield code="c">Meier</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="1" ind2=" ">
+						<slim:subfield code="a">Meier, Berthold</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="0" ind2=" ">
+						<slim:subfield code="a">Bertold</slim:subfield>
+						<slim:subfield code="c">Abt von Sankt Aegidien in Braunschweig</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="0" ind2=" ">
+						<slim:subfield code="a">Barthold</slim:subfield>
+						<slim:subfield code="c">Meyer</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="400" ind1="0" ind2=" ">
+						<slim:subfield code="a">Bartholdus</slim:subfield>
+						<slim:subfield code="c">Meyer</slim:subfield>
+						<slim:subfield code="d">ca. um 1450</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="548" ind1=" " ind2=" ">
+						<slim:subfield code="a">ca. um 1450</slim:subfield>
+						<slim:subfield code="9">4:datl</slim:subfield>
+						<slim:subfield code="w">r</slim:subfield>
+						<slim:subfield code="i">Lebensdaten</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="667" ind1=" " ind2=" ">
+						<slim:subfield code="a">NDSBIO</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="667" ind1=" " ind2=" ">
+						<slim:subfield code="a">12-PMA:Suppl.</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="670" ind1=" " ind2=" ">
+						<slim:subfield code="a">VL(2),6,473/476; Rep.Font. VII,586</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="678" ind1=" " ind2=" ">
+						<slim:subfield code="b">OSB; "Vita und Translatio des Hl. St. Autor" mit eigenen Teilen in niederdt.</slim:subfield>
+					</slim:datafield>
+					<slim:datafield tag="913" ind1=" " ind2=" ">
+						<slim:subfield code="S">pnd</slim:subfield>
+						<slim:subfield code="i">a</slim:subfield>
+						<slim:subfield code="a">Meyer, Bertold</slim:subfield>
+						<slim:subfield code="0">(DE-588a)102840113</slim:subfield>
+					</slim:datafield>
+				</slim:record>
+			</recordData>
+			<recordPosition>5</recordPosition>
+		</record>
+	</records>
+	<nextRecordPosition>6</nextRecordPosition>
+	<echoedSearchRetrieveRequest>
+		<version>1.1</version>
+		<query>PER="Meier,Berthold"</query>
+		<xQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true" />
+		<recordSchema>MARC21-xml</recordSchema>
+	</echoedSearchRetrieveRequest>
+	<extraResponseData>
+		<accountOf xmlns="">intranda GmbH</accountOf>
+	</extraResponseData>
+</searchRetrieveResponse>

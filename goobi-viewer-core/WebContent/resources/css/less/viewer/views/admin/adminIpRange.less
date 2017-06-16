@@ -1,0 +1,38 @@
+/* ==============================================================
+   Admin IP-Range
+   style declarations for adminIpRange.xhtml
+   ==============================================================*/
+#adminIpRange {
+    h2 {}
+    // tabs
+    .nav-tabs {
+        li {
+            &.active {}
+            a {}
+        }
+    }
+    .tab-content {
+        border: 1px solid #ddd;
+        border-top: none;
+        background-color: @white;
+        .tab-pane {
+            padding: 15px;
+            &.active {}
+        }
+    }
+}
+
+// single tabs
+#ipRangeGeneral {}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<document xmlns="http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml" version="1.0" producer="" languages="">
+<documentData>
+<sections>
+<section><stream role="text" beginPage="0"><mainText columnCount="1"/><elemId id="{07CFCBF1-7F80-45C6-988A-8CFFCC60C2B8}"/><elemId id="{78134DFB-F1BE-4388-B713-D4C21419B8DB}"/><elemId id="{852C243B-92E9-4C85-AFAE-E55F68FB7ED7}"/><elemId id="{E60D9238-D06C-4BE9-9923-F2456EB787AA}"/><elemId id="{61ADBFD0-FBF4-4068-B2EB-66EF52FCB5E4}"/></stream><stream role="incut" beginPage="0"><elemId id="{7FB23F0A-CD50-4D17-ADCE-637939F7D680}"/></stream><stream role="incut" beginPage="0"><elemId id="{E58EBCD3-B6B2-42DD-B27D-15E31E2E8488}"/></stream>
+</section>
+</sections>
+</documentData>
+<page width="2579" height="3686" resolution="600" originalCoords="1">
+<block blockType="Text" l="0" t="0" r="2408" b="108"><region><rect l="0" t="0" r="2380" b="16"/><rect l="0" t="16" r="2374" b="18"/><rect l="0" t="18" r="2372" b="20"/><rect l="0" t="20" r="2374" b="26"/><rect l="0" t="26" r="2380" b="28"/><rect l="0" t="28" r="2378" b="30"/><rect l="0" t="30" r="2394" b="36"/><rect l="0" t="36" r="2390" b="38"/><rect l="0" t="38" r="2388" b="40"/><rect l="0" t="40" r="2390" b="42"/><rect l="0" t="42" r="2394" b="52"/><rect l="0" t="52" r="2396" b="56"/><rect l="0" t="56" r="2386" b="60"/><rect l="0" t="60" r="2396" b="70"/><rect l="0" t="70" r="2388" b="72"/><rect l="0" t="72" r="2394" b="74"/><rect l="0" t="74" r="2408" b="108"/></region>
+</block>
+<block blockType="Text" pageElemId="{7FB23F0A-CD50-4D17-ADCE-637939F7D680}" l="916" t="336" r="1660" b="552"><region><rect l="916" t="336" r="1660" b="552"/></region>
+<text id="{7FB23F0A-CD50-4D17-ADCE-637939F7D680}">
+<par leftIndent="500">
+<line baseline="524" l="950" t="378" r="1630" b="546"><formatting lang="OldGerman">Herli«rr</formatting></line></par>
+</text>
+</block>
+<block blockType="Picture" pageElemId="{E58EBCD3-B6B2-42DD-B27D-15E31E2E8488}" l="396" t="620" r="2172" b="1024"><region><rect l="396" t="620" r="2172" b="1024"/></region>
+</block>
+<block blockType="Picture" pageElemId="{07CFCBF1-7F80-45C6-988A-8CFFCC60C2B8}" l="1172" t="1168" r="1388" b="1480"><region><rect l="1172" t="1168" r="1388" b="1480"/></region>
+</block>
+<block blockType="Picture" pageElemId="{78134DFB-F1BE-4388-B713-D4C21419B8DB}" l="908" t="1676" r="1636" b="1904"><region><rect l="908" t="1676" r="1636" b="1904"/></region>
+</block>
+<block blockType="Text" pageElemId="{852C243B-92E9-4C85-AFAE-E55F68FB7ED7}" l="792" t="1988" r="1740" b="2068"><region><rect l="792" t="1988" r="1740" b="2068"/></region>
+<text id="{852C243B-92E9-4C85-AFAE-E55F68FB7ED7}">
+<par align="Center" rightIndent="1000">
+<line baseline="2048" l="823" t="1998" r="1709" b="2060"><formatting lang="OldGerman">Unter Benutzung amtlicher Quellen</formatting></line></par>
+</text>
+</block>
+<block blockType="Text" pageElemId="{E60D9238-D06C-4BE9-9923-F2456EB787AA}" l="152" t="2504" r="2368" b="2912"><region><rect l="152" t="2504" r="2368" b="2912"/></region>
+<text id="{E60D9238-D06C-4BE9-9923-F2456EB787AA}">
+<par align="Center" rightIndent="1000">
+<line baseline="2606" l="1003" t="2529" r="1543" b="2627"><formatting lang="OldGerman">Erster K»«-,</formatting></line></par>
+<par leftIndent="1800" rightIndent="900" lineSpacing="900">
+<line baseline="2747" l="185" t="2688" r="2336" b="2760"><formatting lang="OldGerman">EÜttV-HASV GvvH-VevWs A-Q. Alphabetisches Verzeichnis der Einwohner und Firmen</formatting></line>
+<line baseline="2821" l="348" t="2766" r="2336" b="2840"><formatting lang="OldGerman">Die im Handelsregister eingetragenen Firmen sind durch lateinischen Druck gekennzeichnet</formatting></line>
+<line baseline="2900" l="182" t="2842" r="1214" b="2904"><formatting lang="OldGerman">LheaLevvlSne - GekchSkisameksett</formatting></line></par>
+</text>
+</block>
+<block blockType="Text" pageElemId="{61ADBFD0-FBF4-4068-B2EB-66EF52FCB5E4}" l="0" t="3152" r="1800" b="3672"><region><rect l="0" t="3152" r="1800" b="3672"/></region>
+<text id="{61ADBFD0-FBF4-4068-B2EB-66EF52FCB5E4}">
+<par align="Justified" leftIndent="400">
+<line baseline="3199" l="69" t="3158" r="1462" b="3209"><formatting lang="OldGerman">■ % * Druck und Verlag: ,</formatting></line></par>
+<par align="Center" rightIndent="1000" lineSpacing="696">
+<line baseline="3274" l="730" t="3231" r="1778" b="3285"><formatting lang="OldGerman">August Scher! Deutsche Adreßbuch. Gesellschaft m. b. L.</formatting></line>
+<line baseline="3332" l="816" t="3297" r="1690" b="3341"><formatting lang="OldGerman">Berlin SW19, Krausenstraße 38. 39 (Krausenhvf)</formatting></line></par>
+<par align="Justified">
+<line baseline="3373" l="37" t="3344" r="1644" b="3375"><formatting lang="OldGerman">• . Sfern[pte(5w: 3cntrinn 7939, 8123, 8124, 10192. 11735, 11736.</formatting></line></par>
+</text>
+</block>
+</page>
+</document>

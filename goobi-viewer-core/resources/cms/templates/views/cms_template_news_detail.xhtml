@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core" 
+                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+		
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="templateNewsDetail" class="page-wrapp">
+				<h1><h:outputText value="#{cmsPage.title}" /></h1>
+                <h:panelGroup rendered="#{!cmsPage.published}">
+                    <h3 class="unpublished_notice"><h:outputText value="#{msg.cms_pagePreviewNotPublished}" /></h3>
+                </h:panelGroup>
+				
+				<!-- date -->
+				<p>
+					<h:outputText value="#{cmsPage.getContent('A0')}" />
+				</p>
+				
+				<!-- news detail content -->
+				<div class="tpl-news-detail-content">
+					<h3>#{cmsPage.getContent('A1')}</h3>
+					<h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
+						<div class="tpl-news-detail-content-image">
+							<img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" alt="#{cmsPage.getMediaName('image01')}" />
+							<span class="tpl-news-detail-content-image-caption"></span>
+						</div>
+					</h:panelGroup>
+					<ui:include src="#{cmsPage.getContent('A2')}" />
+				</div>
+
+				<div class="tpl-news-detail-content">
+					<h3>#{cmsPage.getContent('B1')}</h3>
+					<h:panelGroup rendered="#{cmsPage.getContent('image02') != ''}">
+						<div class="tpl-news-detail-content-image">
+							<img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" alt="#{cmsPage.getMediaName('image02')}" />
+							<span class="tpl-news-detail-content-image-caption">
+								#{cmsPage.getMediaDescription('image02')}
+							</span>
+						</div>
+					</h:panelGroup>
+					<ui:include src="#{cmsPage.getContent('B2')}" />
+				</div>
+
+				<div class="tpl-news-detail-content">
+					<h3>#{cmsPage.getContent('C1')}</h3>
+					<h:panelGroup rendered="#{cmsPage.getContent('image03') != ''}">
+						<div class="tpl-news-detail-content-image">
+							<img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" alt="#{cmsPage.getMediaName('image03')}" />
+							<span class="tpl-news-detail-content-image-caption"></span>
+						</div>
+					</h:panelGroup>
+					<ui:include src="#{cmsPage.getContent('C2')}" />
+				</div>
+
+				<div class="tpl-news-detail-content">
+					<h3>#{cmsPage.getContent('D1')}</h3>
+					<h:panelGroup rendered="#{cmsPage.getContent('image04') != ''}">
+						<div class="tpl-news-detail-content-image">
+							<img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" alt="#{cmsPage.getMediaName('image04')}" />
+							<span class="tpl-news-detail-content-image-caption"></span>
+						</div>
+					</h:panelGroup>
+					<ui:include src="#{cmsPage.getContent('D2')}" />
+				</div>
+
+				<!-- collection list -->
+				<div id="list" class="collection-thumb-wrapp">
+					<ui:repeat var="browseElement" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('gallery'))}">
+						<div class="collection-thumb">
+							<div class="collection-thumb-title">
+								<h2 title="#{msg[browseElement.label]}">
+									<h:outputLink value="#{browseElement.url}">
+										<h:outputText value="#{msg[browseElement.label]}" />
+									</h:outputLink>
+								</h2>
+							</div>
+
+							<div class="collection-thumb-img">
+								<!-- singlevolume -->
+								<h:outputLink value="#{browseElement.url}" rendered="#{!browseElement.anchor}">
+									<h:graphicImage url="#{browseElement.thumbnailUrl}" title="#{browseElement.label}" />
+								</h:outputLink>
+
+								<!-- multivolume -->
+								<h:outputLink value="#{browseElement.url}" rendered="#{browseElement.anchor}">
+									<h:graphicImage url="#{browseElement.thumbnailUrl}" title="#{browseElement.label}"
+										styleClass="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" />
+									<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+										<div class="stacked-thumbnail-before"></div>
+										<div class="stacked-thumbnail-after"></div>
+									</h:panelGroup>
+								</h:outputLink>
+							</div>
+						</div>
+					</ui:repeat>
+					
+					<!-- paginator -->
+					<viewerComponent:simplePaginator 
+						itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('gallery'))}" 
+						itemActive="#{cmsPage.listPage}"
+						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+				</div>
+			</div>
+		</f:view>
+</ui:composition>

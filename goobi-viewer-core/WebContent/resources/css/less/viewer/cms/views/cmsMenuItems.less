@@ -1,0 +1,126 @@
+/* ==============================================================
+   CMS Menu Items
+   style declarations for adminCmsMenuItems.xhtml
+   ==============================================================*/
+#cmsMenuItems {
+    h2 {}
+    #addMenuItemWrapper {
+        text-align: right;
+        margin-bottom: 1.3125rem;
+        .btn {}
+    }
+    #menuEditor {
+        h3 {
+            font-size: 0.9rem;
+            font-weight: normal;
+    	}
+        .menu-editor-left, .menu-editor-right {
+            .ui-sortable {
+                list-style: none;
+                min-height: 100px;
+                margin: 0;
+                padding: 0;
+            }
+        }
+        .menu-editor-left {
+            h4 {}
+        }
+        .menu-editor-right {
+            h4 {}
+        }
+    }
+    #saveMenuItemsWrapper {
+        .btn {
+            float: right;
+        }
+    }
+    #addMenuItemModal {
+        .modal-header {
+            text-align: left;
+        }
+        .tooltip {
+            .tooltip-inner {
+                font-weight: normal;
+            }
+        }
+    }
+}
+
+.menu-item {
+    margin-bottom: 4px;
+    padding: 10px;
+    color: @black;
+    border: 1px solid @middlegray;
+    background-color: @lightgray;
+    &__level, 
+    &__text, 
+    &__edit {
+        float: left;
+    }
+    &__level {
+        width: 15%;
+    }
+    &__text {
+        width: 70%;
+        padding: 0 10px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    &__edit {
+        width: 15%;
+        a {
+            font-size: 1.1rem;
+            color: @black;
+            &:hover, 
+            &:focus, 
+            &:active {
+                color: @black;
+            }
+        }
+    }
+    &.unpublished {
+        opacity: 0.5;
+        span {}
+    }
+    &.deleted {
+        border: 1px solid #ff0000;
+        opacity: 0.5;
+        span {}
+    }
+}
+
+#edit_navigationitem_wrapper {
+    display: none;
+    margin: 10px;
+    padding: 5px;
+    border-style: double;
+    border-width: medium;
+    dl {
+        margin-bottom: 5px;
+        dt {
+            clear: left;
+            float: left;
+            width: 120px;
+            margin: 0;
+            padding: 5px;
+        }
+        dd {
+            width: 500px;
+            margin: 0;
+            margin-left: 200px;
+            padding: 5px;
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

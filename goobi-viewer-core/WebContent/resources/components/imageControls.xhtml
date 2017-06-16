@@ -1,0 +1,261 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    
+	<composite:interface />
+
+    <composite:implementation>
+        <nav class="image-controls">
+        	<h:form id="imageControlsForm" prependId="false">
+	            <ul>
+	                <!-- START -->
+	                <li class="image-control image-control__start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+	                    <h:outputLink 
+	                        value="#{activeDocumentBean.firstPageUrl}" 
+	                        title="#{msg.firstImage}"
+	                        disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
+	                        <i class="image-start"></i>
+	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                        <f:passThroughAttribute name="data-placement" value="bottom" />
+	                    </h:outputLink>
+	                </li>
+	                
+	                <!-- PAGE BROWSE BACK -->
+	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
+	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep3Visible}">
+	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'inactive' : ''}">
+	                            <h:outputLink 
+	                                value="#{activeDocumentBean.getPreviousPageUrl(configurationBean.pageBrowseStep3)}" 
+	                                title="#{configurationBean.pageBrowseStep3} #{msg.stepBack}"
+	                                disabled="#{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'true' : 'false'}">
+	                                -#{configurationBean.pageBrowseStep3}
+	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                            </h:outputLink>
+	                        </li>
+	                    </h:panelGroup>
+	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep2Visible}">
+	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep2 + 1) ? 'inactive' : ''}">
+	                            <h:outputLink 
+	                                value="#{activeDocumentBean.getPreviousPageUrl(configurationBean.pageBrowseStep2)}" 
+	                                title="#{configurationBean.pageBrowseStep2} #{msg.stepBack}"
+	                                disabled="#{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep2 + 1) ? 'true' : 'false'}">
+	                                -#{configurationBean.pageBrowseStep2}
+	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                <f:passThroughAttribute name="data-placement" value="bottom" />                          
+	                            </h:outputLink>
+	                        </li>
+	                    </h:panelGroup>
+	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep1Visible}">
+	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep1 + 1) ? 'inactive' : ''}">
+	                            <h:outputLink   
+	                                value="#{activeDocumentBean.getPreviousPageUrl(configurationBean.pageBrowseStep1)}" 
+	                                title="#{configurationBean.pageBrowseStep2} #{msg.stepBack}" 
+	                                disabled="#{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep1 + 1) ? 'true' : 'false'}">
+	                                -#{configurationBean.pageBrowseStep1}
+	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                            </h:outputLink>
+	                        </li>
+	                    </h:panelGroup>
+	                </h:panelGroup>
+	                
+	                <!-- BACK -->
+	                <li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+	                    <h:outputLink 
+	                        value="#{activeDocumentBean.getPreviousPageUrl(1 )}" 
+	                        title="#{msg.prevImage}"
+	                        disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
+	                        <i class="image-back"></i>
+	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                        <f:passThroughAttribute name="data-placement" value="bottom" />
+	                    </h:outputLink>
+	                </li>
+	                
+	                <!-- SELECT -->
+	                <li class="image-control image-control__select">
+	                    <div class="form-control__select">
+	                        <h:selectOneMenu
+	                            onchange="location.href='#{activeDocumentBean.getPageUrl()}' + $(this).val(); + '/';"
+	                            value="#{activeDocumentBean.viewManager.dropdownSelected}"
+	                            styleClass="form-control">
+	                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+	                        </h:selectOneMenu>
+	                    </div>
+	                </li>
+	                
+	                <!-- FORWARD -->
+	                <li class="image-control image-control__forward #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
+	                    <h:outputLink 
+	                        value="#{activeDocumentBean.getNextPageUrl(1 )}" 
+	                        title="#{msg.nextImage}"
+	                        disabled="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'true' : 'false'}">
+	                        <i class="image-forward"></i>
+	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                        <f:passThroughAttribute name="data-placement" value="bottom" />
+	                    </h:outputLink>
+	                </li>
+	                
+	                <!-- PAGE BROWSE FORWARD -->
+	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
+	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep1Visible}">
+	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
+	                            <h:outputLink 
+	                                value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep1)}" 
+	                                title="#{configurationBean.pageBrowseStep1} #{msg.stepForward}"
+	                                disabled="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'true' : 'false'}">
+	                                +#{configurationBean.pageBrowseStep1}
+	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                            </h:outputLink>
+	                        </li>
+	                    </h:panelGroup>
+	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep2Visible}">
+	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2) ? 'inactive' : ''}">
+	                            <h:outputLink 
+	                                value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep2)}" 
+	                                title="#{configurationBean.pageBrowseStep2} #{msg.stepForward}"
+	                                disabled="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2) ? 'true' : 'false'}">
+	                                +#{configurationBean.pageBrowseStep2}
+	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                            </h:outputLink>
+	                        </li>
+	                    </h:panelGroup>
+	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep3Visible}">
+	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3) ? 'inactive' : ''}">
+	                            <h:outputLink 
+	                                value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep3)}" 
+	                                title="#{configurationBean.pageBrowseStep3} #{msg.stepForward}"
+	                                disabled="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3) ? 'true' : 'false'}">
+	                                +#{configurationBean.pageBrowseStep3}
+	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                                <f:passThroughAttribute name="data-placement" value="bottom" />
+	                            </h:outputLink>
+	                        </li>
+	                    </h:panelGroup>
+	                </h:panelGroup>
+	                
+	                <!-- END -->
+	                <li class="image-control image-control__end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
+	                    <h:outputLink 
+	                        value="#{activeDocumentBean.getLastPageUrl()}" 
+	                        title="#{msg.lastImage}"
+	                        disabled="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'true' : 'false'}">
+	                        <i class="image-end"></i>
+	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                        <f:passThroughAttribute name="data-placement" value="bottom" />
+	                    </h:outputLink>
+	                </li>
+	                
+	                <!-- DUOBLEPAGEVIEW -->
+	                <h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}">
+		                <li class="image-control image-control__double-page-view">
+		                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
+		                    	<i class="image-doublePageView"></i>
+		                    	<f:passThroughAttribute name="data-toggle" value="tooltip" />
+		                    	<f:passThroughAttribute name="data-placement" value="bottom" />
+		                    </h:commandLink>
+		                </li>
+		            </h:panelGroup>
+	                <h:panelGroup rendered="#{activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}">
+		                <li class="image-control image-control__single-page-view">
+		                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(false)}"  title="#{msg.singlePageView}">
+		                    	<i class="image-singlePageView"></i>
+		                    	<f:passThroughAttribute name="data-toggle" value="tooltip" />
+		                    	<f:passThroughAttribute name="data-placement" value="bottom" />
+		                    </h:commandLink>
+		                </li>
+		                <li class="image-control image-control__switch-pages">
+		                    <h:commandLink action="#{activeDocumentBean.viewManager.togglePageOrientation()}"  title="#{msg.switchPages}">
+		                    	<i class="image-switchPages">
+		                    		<span class="path1"></span>
+		                    		<span class="path2"></span>
+		                    		<span class="path3"></span>
+		                    		<span class="path4"></span>
+		                    		<span class="path5"></span>
+		                    		<span class="path6"></span>
+		                    		<span class="path7"></span>
+		                    		<span class="path8"></span>
+		                    		<span class="path9"></span>
+		                    		<span class="path10"></span>
+		                    		<span class="path11"></span>
+		                    		<span class="path12"></span>
+		                    		<span class="path13"></span>
+		                    		<span class="path14"></span>
+		                    		<span class="path15"></span>
+		                    		<span class="path16"></span>
+		                    		<span class="path17"></span>
+		                    		<span class="path18"></span>
+		                    		<span class="path19"></span>
+		                    		<span class="path20"></span>
+		                    		<span class="path21"></span>
+		                    		<span class="path22"></span>
+		                    	</i>
+		                    	<f:passThroughAttribute name="data-toggle" value="tooltip" />
+		                    	<f:passThroughAttribute name="data-placement" value="bottom" />
+		                    </h:commandLink>
+		                </li>
+					</h:panelGroup>
+	                
+	                <h:panelGroup rendered="#{navigationHelper.currentPage != 'fulltext'}">
+		                <!-- ROTATE -->
+		                <li class="image-control image-control__rotate-left">
+		                    <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateLeft}" onclick="viewImage.controls.rotateLeft();">
+		                        <i class="image-rotate_left"></i>
+		                    </a>
+		                </li>
+		                <li class="image-control image-control__rotate-right">
+		                    <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateRight}" onclick="viewImage.controls.rotateRight();">
+		                        <i class="image-rotate_right"></i>
+		                    </a>
+		                </li>
+		                
+		                <!-- RESET -->
+						<li class="image-control image-control__reset">
+		                    <a data-toggle="tooltip" data-placement="bottom" title="#{msg.resetImage}" onclick="viewImage.controls.reset(true);">
+		                        <i class="image-reset"></i>
+		                    </a>
+		                </li>
+		                
+		                <!-- FULLSCREEN -->
+		                <h:panelGroup rendered="#{navigationHelper.currentPage != 'readingmode'}">
+							<li class="image-control image-control__fullscreen">
+			                	<h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.enterFullscreen}">
+			                        <i class="image-fullscreen"></i>
+			                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
+			                        <f:passThroughAttribute name="data-placement" value="bottom" />
+			                    </h:outputLink>
+			                </li>
+		                </h:panelGroup>
+		                
+		                <!-- ZOMMSLIDER -->
+		                <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
+		                <li class="image-control image-control__zoom-slider">
+		                    <div class="zoom-slider">
+		                    	<span class="zoom-slider-handle"></span>
+		                    </div>
+		                </li>
+		                
+		                <!-- PDF -->
+		                <h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
+		                    <li class="image-control image-control__pdf">
+		                        <h:outputLink 
+		                            value="#{activeDocumentBean.viewManager.currentPage.imageToPdfUrl}" 
+		                            title="#{msg.pdfDownloadCurrentPage}"
+		                            rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}">
+		                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+		                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+		                            <f:passThroughAttribute name="data-placement" value="bottom" />    
+		                        </h:outputLink>
+		                    </li>
+		                </h:panelGroup>
+	                </h:panelGroup>
+	            </ul>
+            </h:form>
+        </nav>
+    </composite:implementation>
+</ui:composition>

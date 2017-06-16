@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<testsuite name="Chrome 52.0.2743 (Linux 0.0.0)" package="" timestamp="2016-10-17T14:09:51" id="0" hostname="Florians-PC" tests="6" errors="0" failures="0" time="0.004">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"/>
+  </properties>
+  <testcase name="Statistics tests General statistics module is defined" time="0.002" classname="Chrome_52_0_2743_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Publication types is defined" time="0.002" classname="Chrome_52_0_2743_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most edited works is defined" time="0" classname="Chrome_52_0_2743_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Number of pages is defined" time="0" classname="Chrome_52_0_2743_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most imported works trend is defined" time="0" classname="Chrome_52_0_2743_(Linux_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Crowdsourcing progress is defined" time="0" classname="Chrome_52_0_2743_(Linux_0_0_0).Statistics tests"/>
+  <system-out>
+    <![CDATA[
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>

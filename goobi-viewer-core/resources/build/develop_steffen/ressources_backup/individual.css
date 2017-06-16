@@ -1,0 +1,413 @@
+ul.collection {
+	list-style: none;
+	margin-left: 30px;
+	margin-top: 30px;
+	font-size: 1.3em;
+	font-weight: bold;
+}
+
+ul.collection li {
+	background: rgb(230, 226, 210);
+	margin-top: 5px;
+	padding: 10px;
+}
+
+ul.collection li:hover {
+	background-color: rgb(219, 213, 186);
+}
+
+ul.collection li a {
+	color:#83390D;
+	text-decoration: none;
+}
+
+div.browseElementInfo {
+	float: left;
+	width: 540px;
+}
+.browseElement { /*	clear: both;*/
+	height: 130px;
+	/*	display:block;*/
+	margin-left: 0px;
+	/*margin-right: 10px;*/
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 10px;
+	/*	border: thin solid #000;*/
+	background-color: #F4F2EA;
+	border: 1px solid #DFD9C3;
+	width: 650px;
+}
+
+.browseElement:hover {
+	background-color: #EFE9D1;
+}
+
+div.browseElementThumbnail { /*width: 90px;*/
+	float: left;
+}
+
+p.elementTitle span.title { /*color: #95542B;  rot*/
+	color: #4F4F4F;
+	font-weight: bold;
+}
+
+/*Titel name  */
+.thumbnailTitleLabel {
+	color: #95542B;
+}
+fieldset#searchFormFieldset {
+	border: 1px solid #CFCFCF;
+}
+
+div#titleImageViewerTitle {
+	padding-top: 10px;
+	clear: left;
+}
+
+p.searchTitle {
+	color: #3F3F3F;
+}
+
+p.searchExplain {
+	color: #7F7F7F;
+}
+
+div#searchText,div#welcomeText {
+	width: 800px;
+	margin: 0px auto;
+	margin-bottom: 40px;
+	padding-top: 30px;
+}
+
+div.extendedSearch {
+	display: none;
+	margin: 0 auto;
+	height: 130px;
+	width: 550px;
+	border: 1px solid #B5B8C8;
+	-moz-border-radius: 3px;
+	padding-top: 20px;
+}
+
+div.extendedSearch form {
+	margin-left: 20px;
+}
+
+span#advancedSearch {
+	text-decoration: underline;
+	color: #95542B;
+	font-size: 80%;
+	cursor: pointer;
+	/*	cursor: hand;*/
+}
+
+#selectSearchType {
+	width: 300px;
+}
+
+.extendedSearch .selectSearchOperator {
+	clear: left;
+}
+
+.selectOperator {
+	width: 60px;
+}
+
+input.searchString {
+	clear: right;
+}
+
+.extendedSearch input,.extendedSearch select {
+	float: left;
+}
+
+/*new style for new goobi presi*/ /*div.extendedSearch form{
+	float: left;
+}*/
+div.searchElement input,div.extendedSearch input {
+	-moz-border-radius: 3px;
+	border: 1px solid #B5B8C8;
+	padding: 3px;
+}
+
+div.searchElement input:focus,div.extendedSearch input:focus {
+	border: 1px solid #CFA79B;
+	background-color: #F1F3F5;
+	background-image: none;
+}
+
+div.extendedSearch input {
+	margin-bottom: 20px;
+	margin-left: 10px;
+	width: 300px;
+}
+
+div.searchElement table {
+	margin: 0px;
+	padding: 0px;
+}
+
+div.div.searchElement tbody {
+	margin: 0px;
+	padding: 0px;
+}
+
+div.searchElement form {
+	margin-bottom: 20px;
+	padding: 0px;
+}
+
+select.selectSearchTypeOneMenu {
+	/*margin-left: 30px; out til there is a empty element insert to move the first advancedSearch field to the right*/
+	}
+	
+	ul#metaData {
+	clear: left;
+	margin-left: 30px;
+	
+	/*border: 1px solid #BFA7A7;*/
+	padding: 10px;
+}
+
+ul#metaData li {
+	list-style: none;
+}
+
+.metaDataElementList {
+	border-left: 7px solid #EFE9D1;
+	border-bottom: 2px solid #EFE9D1; /*#BFA7A7; /*#EAEAEA;*/
+	margin-bottom: 10px;
+	vertical-align: top;
+}
+
+.metaDataElementListElement {
+	font-size: 1em;
+	vertical-align: top;
+}
+
+.metaDataElementListElement a {
+	color: #95542B;
+}
+	
+	/* styles for entire widget */
+.yui-skin-sam .yui-ac {
+	position: relative !important;
+	font-family: arial;
+	font-size: 100%;
+}
+
+/* styles for input field */
+.yui-skin-sam .yui-ac-input {
+	/*position: absolute;*/
+	position: relative !important;
+	width: 200px !important;
+}
+
+#searchFormSidebar .yui-ac-input {
+	position: relative !important;
+	width: 180px !important;
+	
+}
+/* styles for results container */
+.yui-skin-sam .yui-ac-container {
+	position: absolute;
+	top: 1.6em;
+	width:  680px !important;
+}
+
+/* styles for header/body/footer wrapper within container */
+.yui-skin-sam .yui-ac-content {
+	position: absolute;
+	width: 100%;
+	border: 1px solid #808080;
+	background: #fff;
+	overflow: hidden;
+	z-index: 9050;
+}
+
+/* styles for container shadow */
+.yui-skin-sam .yui-ac-shadow {
+	position: absolute;
+	margin: .3em;
+	width: 100%;
+	background: #000;
+	-moz-opacity: 0.10;
+	opacity: .10;
+	filter: alpha(opacity = 10);
+	z-index: 9049;
+}
+
+/* styles for results list */
+.yui-skin-sam .yui-ac-content ul {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+/* styles for result item */
+.yui-skin-sam .yui-ac-content li {
+	margin: 0;
+	padding: 2px 5px;
+	cursor: default;
+	white-space: nowrap;
+}
+
+/* styles for prehighlighted result item */
+.yui-skin-sam .yui-ac-content li.yui-ac-prehighlight {
+	background: #B3D4FF;
+}
+
+/* styles for highlighted result item */
+.yui-skin-sam .yui-ac-content li.yui-ac-highlight {
+	background: #426FD9;
+	color: #FFF;
+}
+
+#autocomplete {
+	width: 15em; /* set width for widget here */
+	padding-bottom: 2em;
+}
+
+.tags ul {
+	margin: 1em 0;
+	padding: .5em 10px;
+	text-align: center;
+	background: #F4F2EA;
+}
+
+.tags li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: inline;
+}
+
+.tags li a {
+	text-decoration: none;
+	padding: 0 2px;
+	vertical-align: middle;
+}
+
+.tags li a:hover {
+	text-decoration: underline;
+}
+
+.tag1 a {
+	font-size: 100%;
+	color: #CF938E
+}
+
+.tag2 a {
+	font-size: 110%;
+	color: #AF7C78
+}
+
+.tag3 a {
+	font-size: 120%;
+	color: #AF6862
+}
+
+.tag4 a {
+	font-size: 130%;
+	color: #9F5E59
+}
+
+.tag5 a {
+	font-size: 140%;
+	color: #8F4C47
+}
+
+.tag6 a {
+	font-size: 150%;
+	color: #762D27
+}
+
+.tag7 a {
+	font-size: 160%;
+	color: #762D27
+}
+
+.tag8 a {
+	font-size: 170%;
+	color: #762D27
+}
+
+#pageView{
+	margin-top: 20px;
+}
+
+.changeBookshelfSave{
+	float: right;
+}
+.changeBookshelfSave a{
+	margin: 6px;
+}
+
+.changeBookshelfTable{
+	font-size: 80%;
+}
+
+.fontLight{
+	color:#555555;
+}
+
+.fontHeavy{
+	color:#83390D;
+}
+
+span.loginTable span{
+	margin: 6px;
+}
+.ButtonDialogPosition{
+	float: right;
+}
+tr.viewerBookshelfGridRows td{
+	vertical-align: top; 
+}
+table.viewerBookshelfTable{
+	margin-bottom: 20px;
+}
+.viewerSelectBookshelf{
+	width: 255px;
+}
+.fulltext{
+	background: #FFFFFF;
+	margin-top: 20px;
+	padding: 10px;
+	border: solid #CCCCCC 1px;
+}
+
+.documentHeader{
+	vertical-align:top;
+	margin-bottom:20px;
+}
+
+.table_top {
+	vertical-align: top;
+}
+
+.table_left {
+	text-align: left;
+}
+.table_center {
+	text-align: center
+}
+.table_right {
+	text-align: right;
+}
+
+.inputbox{
+	/* group selection 
+	 * */
+	 width: 250px;	
+}
+
+.inputarea{
+	width: 250px;	
+	height: 100px;
+}
+.metaDataElementListElement .name{
+	padding-right: 8px;
+	min-width: 110px;
+}

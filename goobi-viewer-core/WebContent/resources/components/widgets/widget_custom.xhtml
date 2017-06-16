@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface>
+    	<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+    </composite:interface>
+
+	<composite:implementation>
+		<h:panelGroup rendered="#{cc.attrs.widget != null and cc.attrs.widget.hasHtml()}">
+			<div id="widgetCustom-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
+			
+				<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
+					<h3>#{msg[cc.attrs.widget.type]}</h3>
+					<ui:include src="#{cc.attrs.widget.content}" />
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+					<h3>
+						<a href="#customCollapse-#{cc.attrs.widget.order}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse"> #{msg[cc.attrs.widget.type]} <span
+							class="glyphicon glyphicon-arrow-down"></span>
+						</a>
+					</h3>
+					<div id="customCollapse-#{cc.attrs.widget.order}" class="collapse">
+						<ui:include src="#{cc.attrs.widget.content}" />
+					</div>
+				</h:panelGroup>
+			</div>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

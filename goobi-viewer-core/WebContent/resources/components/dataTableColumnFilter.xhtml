@@ -1,0 +1,31 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:harvesterComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+    <!-- interface options -->
+    <composite:interface>
+        <composite:attribute name="filter" required="true" />
+    </composite:interface>
+
+    <!-- component content -->
+    <composite:implementation>
+        <div class="column-filter-wrapper">
+            <div class="form-group">
+                <label class="sr-only" for="#{cc.attrs.filter.column}">Filter</label>
+                <div class="input-group">
+                    <h:inputText id="#{cc.attrs.filter.column}Col" styleClass="form-control filter-input" value="#{cc.attrs.filter.value}" />
+                    <div class="input-group-addon">
+                        <h:commandLink id="#{cc.attrs.filter.column}Btn" styleClass="btn-filter">
+                            <span class="glyphicon glyphicon-filter"></span>
+                            <f:ajax execute="@form" render="@form" />
+                        </h:commandLink>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </composite:implementation>
+</ui:composition>

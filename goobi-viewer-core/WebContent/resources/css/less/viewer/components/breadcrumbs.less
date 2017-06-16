@@ -1,0 +1,71 @@
+/* ==============================================================
+   Breadcrumbs
+   style declarations for breadcrumbs.xhtml
+   ==============================================================*/
+/* deprecated since 3.2 */
+#breadcrumbsnav {
+    font-size: 0.75rem;
+    ul {
+        li {
+            display: inline-block;
+            min-height: 1.3125rem;
+            line-height: 1.3125rem;
+            margin-right: 0.1875rem;
+            a, span {
+                display: block;
+            }
+            &.breadcrumb-starttext {}
+            &.breadcrumb-spacer:before { 
+                content:"\203A";
+            }
+        }
+    }
+}
+
+/* BREADCRUMBS */
+/* BLOCK */
+.breadcrumbs-wrapper {
+    font-size: 0.75rem;
+}
+.breadcrumbs {
+    /* ELEMENTS */
+    ul {}
+    li {
+        display: inline-block;
+    }
+    a, span {
+        display: inline-block;
+        padding: 5px 5px 5px 10px;
+    }
+    a {}
+    span {}
+    &__starttext {
+        a, span {
+            padding: 5px 0;
+        }
+    }
+    &__starttext + li {
+        a, span {
+            padding-left: 5px;
+        }
+    }
+    &__crumb + li:before {
+        content:"\203A";
+        display: block;
+        float: left;
+        clear: left;
+        padding: 5px 0;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

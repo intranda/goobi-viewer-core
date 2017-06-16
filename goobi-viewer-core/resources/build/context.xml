@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+<Resource name="viewer" auth="Container" type="javax.sql.DataSource" driverClassName="org.mariadb.jdbc.Driver"
+        removeAbandoned="true" logAbandoned="true" maxActive="100" maxIdle="30" maxWait="20000"
+url="jdbc:mysql://192.168.178.4:3306/viewer?characterEncoding=UTF-8&amp;autoReconnect=true&amp;autoReconnectForPools=true"
+        username="viewer" password="viewer" /> 
+<!-- 	<Resource name="viewer" auth="Container" type="javax.sql.DataSource" driverClassName="org.drizzle.jdbc.DrizzleDriver" -->
+<!-- 		removeAbandoned="true" logAbandoned="true" maxActive="100" maxIdle="30" maxWait="10000" -->
+<!-- 		url="jdbc:mysql:thin://192.168.178.4:3306/viewer?characterEncoding=UTF-8&amp;autoReconnect=true&amp;autoReconnectForPools=true" -->
+<!-- 		username="viewer" password="viewer" /> -->
+</Context>

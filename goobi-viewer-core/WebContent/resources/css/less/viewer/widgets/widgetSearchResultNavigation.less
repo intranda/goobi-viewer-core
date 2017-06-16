@@ -1,0 +1,54 @@
+/* ==============================================================
+   Widget Search Result Navigation
+   style declarations for widget_searchresultNavigation.xhtml
+   ==============================================================*/
+#widgetSearchResultNavigation {
+    h3 {}
+    .search-result-navigation-wrapp {
+        .search-result-navigation-left,
+        .search-result-navigation-center,
+        .search-result-navigation-right {
+            float: left;
+            overflow: hidden;
+        }
+        .search-result-navigation-left {
+            width: 20%;
+            text-align: left;
+            a {}
+            span {}
+            img {}
+        }
+        .search-result-navigation-center {
+            width: 60%;
+            text-align: center;
+            span {}
+        }
+        .search-result-navigation-right {
+            width: 20%;
+            text-align: right;
+            a {}
+            span {}
+            img {}
+        }
+    }
+    .search-result-navigation-back-to-collection {
+        padding: 0.4375rem 0 0 0;
+        a {
+            img {
+                margin: -0.1875rem 0.1875rem 0 0;
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

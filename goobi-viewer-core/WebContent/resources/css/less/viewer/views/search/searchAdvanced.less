@@ -1,0 +1,157 @@
+/* ==============================================================
+   Search Advanced
+   style declarations for searchAdvanced.xhtml 
+   ==============================================================*/
+/* SAERCH ADVANCED */
+/* BLOCK */
+.search-advanced {
+    /* ELEMENT */
+    &__group {
+        position: relative;
+        margin-bottom: 21px;
+        padding: 10px;
+        border: 1px solid @middlegray;
+        span.remove {
+            display: none;
+        }
+        .remove {
+            position: absolute;
+            top: 0;
+            right: .5rem;
+            padding: .5rem;
+            color: @black;
+        }
+    }
+    &__loader {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url("@{images}/ajax_preloader.gif");
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-color: rgba(255,255,255,0.75);
+        z-index: 10;
+    }
+    &__connector {}
+    &__input-group {
+        .form-control__select,
+        input[type="text"] {
+            width: 100%;
+        }
+        input[type="text"] {
+            border-right-color: transparent;
+            &:focus {
+                border-right-color: @blue;
+            }
+        }
+        .input-group-addon {
+            padding: 0;
+            border-radius: 0;
+            background-color: @white;
+            a {
+                color: @black;
+                &:hover,
+                &:focus,
+                &:active {
+                    text-decoration: none;
+                    color: @black;
+                }
+            }
+        }
+        .custom-control--select {
+            width: 100%;
+            border: 1px solid @middlegray;
+            &.disabled {
+            	display: none;
+            	&:after {
+	                display: none;
+	            }
+            }
+            &:after {
+                right: 12px;
+            }
+            select {
+            	padding: 6px 12px;
+            }
+            select[disabled] {
+                border-radius: 0;
+                background-color: transparent;
+                opacity: 0.4;
+            }
+        }
+        select {
+            padding-right: 1rem;
+            padding-left: 0;
+        }
+        button {
+            padding: .5rem;
+        }
+        .row .col-sm-1 {
+            padding-left: 0;
+        }
+    }
+    &__input-col {
+    	margin-bottom: 15px;
+        a {
+            display: inline-block;
+            padding: 7px;
+            color: @black;
+            &:hover,
+            &:focus,
+            &:active {
+                text-decoration: none;
+                outline: none !important;
+            }
+        }
+        span {
+            display: none;
+        }
+        .form-group {
+        	margin: 0;
+        }
+    }
+    &__connect-group {
+        padding: 0 10px;
+    }
+    &__add-group {
+        margin-bottom: 21px;
+        padding: .5rem 18px;
+        text-align: right;
+        a {
+            color: @black;
+            &:hover,
+            &:focus,
+            &:active {
+                text-decoration: none;
+                color: @black;
+            }
+        }
+    }
+    &__action {
+        text-align: right;
+        .btn {
+            margin: 0 0 0 5px;
+        }
+    } 
+}
+/* MODIFICATION */    
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .search-advanced__input-group input[type="text"],
+    .search-advanced__input-group .form-control__select { 
+        width: 100%; 
+    } 
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

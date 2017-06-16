@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('preview')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="head">
+        <f:view contentType="text/html" encoding="utf-8">
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.htmlHeadDCMetadata}"
+                rendered="#{navigationHelper.htmlHeadDCMetadata == true}" />
+        </f:view>
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view contentType="text/html" encoding="utf-8">
+            <!-- reCAPTCHA API -->
+            <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
+                <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
+            </h:panelGroup>
+                
+            <div id="view_preview" class="page-wrapp">
+
+                <ui:include src="/resources/includes/title.xhtml">
+                    <ui:param name="structure" value="false" />
+                    <ui:param name="purl" value="true" />
+                    <ui:param name="displayCollectionAndPartnerID" value="false" />
+                </ui:include>
+
+                <h:form id="viewPreviewForm" prependId="false" rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+                    <a name="topDocAnchor"></a>
+                    <div id="view_preview_wrapp">
+                        <h:outputText value="#{activeDocumentBean.viewManager.linkForDFGViewer}" id="imageNumber" styleClass="hiddenDfgViewerLink"
+                            style="display:none;" />
+
+                        <viewerComponent:viewPreviewControls />
+                        
+                        <div class="clearfix"></div>
+                        
+                        <div id="view_preview_img_wrapp">
+	                        <h:outputLink value="#{activeDocumentBean.exitFullscreenUrl}">
+	                            <img src="#{activeDocumentBean.viewManager.currentPreviewUrl}" />
+	                        </h:outputLink>                        
+                        </div>
+                    </div>
+
+                    <div id="view_preview_thumb_wrapp">
+                        <h:outputLink value="#{activeDocumentBean.exitFullscreenUrl}">
+                            <img src="#{activeDocumentBean.viewManager.currentThumbnailUrl}" />
+                        </h:outputLink>
+                    </div>
+                </h:form>
+            </div>
+            
+            <h:panelGroup rendered="#{userBean.loggedIn}">
+                <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
+            </h:panelGroup>
+    
+            <script type="text/javascript">
+                var downloadModalConfig = {
+                    downloadBtn: $( '.download-modal' ),
+                    path: '#{navigationHelper.applicationUrl}',
+                    userEmail: $( '#userEmail' ).val(),
+                    useReCaptcha: #{configurationBean.useReCaptcha},
+                    reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
+                    messages: {
+                        reCaptchaText: '#{msg.downloadReCaptchaText}',
+                        rcInvalid: '#{msg.downloadRcInvalid}',
+                        rcValid: '#{msg.downloadRcValid}',
+                        eMailText: '#{msg.downloadEMailText}',
+                        eMailTextLoggedIn: '#{msg.downloadEMailTextLoggedIn}',
+                        eMail: '#{msg.downloadEmail}',
+                        closeBtn: '#{msg.downloadCloseModal}',
+                        saveBtn: '#{msg.downloadGenerateFile}',
+                    }
+                };
+                viewerJS.downloadModal.init( downloadModalConfig );
+            </script>
+        </f:view>
+    </ui:define>
+
+    <ui:define name="sidebar">
+        <widgetComponent:widget_views pageType="preview" />
+        
+        <widgetComponent:widget_searchInCurrentItem />
+        
+        <widgetComponent:widget_nerFacetting />
+        
+        <widgetComponent:widget_searchResultNavigation />
+
+        <widgetComponent:widget_metadata />
+
+        <widgetComponent:widget_convolutes />
+        
+        <widgetComponent:widget_toc />
+
+        <widgetComponent:widget_download />
+        
+        <widgetComponent:widget_versionHistory />
+
+        <widgetComponent:widget_bookshelves addToBookshelfDisplay="true" />
+        
+        <widgetComponent:widget_mySearches />
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+        
+        <widgetComponent:widget_user />
+    </ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+</ui:composition>

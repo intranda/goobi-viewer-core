@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_solrQuery_list" version="2015-01-14">
+    <name>Text mit Suchtreffern</name>
+    <description>Dieses Template beinhaltet im oberen Bereich einen beschreibenden Text. Darunter werden die Treffer einer Suchabfrage inklusive eines Paginators angezeigt. Die Suchabfrage wie auch die Anzahl der Elemente pro Seite wird im Template konfiguriert. </description>
+    <icon>cms_template_solrquery_list.png</icon>
+    <html>cms_template_solrquery_list.xhtml</html>
+    <content>
+        <item id="text01" label="Inhalt" type="HTML" mandatory="true" />
+        <item id="queryList01" label="Werke" type="SOLRQUERY" />
+    </content>
+</cms_page_template>

@@ -1,0 +1,63 @@
+/* ==============================================================
+   Admin Tab User Licenses
+   style declarations for tabUserLicenses.xhtml
+   ==============================================================*/
+#editLicenseWrapper {
+    h3 {}
+    .form-horizontal {
+        .form-group {
+            .control-label {}
+            .col-sm-8 {
+                select {
+                    height: 34px;
+                    padding: 6px 12px;
+                }
+                input {}
+                textarea {
+                    min-height: 150px;
+                    resize: vertical;
+                }
+                /* datepicker */
+                span {
+                    input, button {
+                        width: inherit;
+                        height: 34px;
+                        padding: 6px 12px;
+                        border: 1px solid @middlegray;
+                        background: none;
+                    }
+                    input {}
+                    button {
+                        margin-top: -4px;
+                        border-left: none;
+                        background-color: @lightgray;
+                    }
+                }
+            }
+        }
+    }
+    /* privileges */
+    .select-privileges {
+        label {
+            input[type="checkbox"] {
+                margin-right: 5px;
+            }
+        }
+    }
+    /* action */
+    .edit-license-action {
+        text-align: right;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

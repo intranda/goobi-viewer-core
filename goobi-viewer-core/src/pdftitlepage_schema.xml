@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="line1">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="line2">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" type="xs:NMTOKEN" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="line3">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="line4">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="p" type="xs:string" />
+
+  <xs:element name="parenttype">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="pdftitlepage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="parenttype" />
+        <xs:element ref="line1" />
+        <xs:element ref="line2" />
+        <xs:element ref="line3" />
+        <xs:element ref="line4" />
+        <xs:element ref="termsconditions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="termsconditions">
+    <xs:complexType mixed="true">
+      <xs:choice>
+        <xs:element ref="p" />
+      </xs:choice>
+      <xs:attribute name="title" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

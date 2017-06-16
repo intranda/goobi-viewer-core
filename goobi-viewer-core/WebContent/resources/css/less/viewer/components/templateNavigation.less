@@ -1,0 +1,61 @@
+/* ==============================================================
+   Template Navigation
+   style declarations for templateNavigation.xhtml
+   ==============================================================*/
+#mainnav {
+    position: relative;
+    float: left;
+    width: 100%;
+    ul {
+        li {
+            display: inline-block;
+            float: left;
+            min-height: 1.75rem;
+            line-height: 1.75rem;
+            margin-right: 0.4375rem;
+            a {
+                display: block;
+                &.mainnav-active {
+                    font-weight: bold;
+                }
+            }
+            &:hover > ul {
+                display: block;
+            }
+            &:last-child {
+                margin: 0;
+            }
+        }
+    }
+    .mainsubnav {
+        display: none;
+        position: absolute;
+        padding: 0.5rem;
+        background-color: @white;
+        z-index: 9999;
+        h3 {
+            margin: 0 0 0.875rem 0;
+        }
+        li {
+            float: left;
+            width: 100%;
+            a {}
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #mainnav {
+        display: none;
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

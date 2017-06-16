@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://java.sun.com/jsp/jstl/core" 
+                xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="templateSolrQuery" class="page-wrapp">
+				<h1>#{cmsPage.title}</h1>
+                <h:panelGroup rendered="#{!cmsPage.published}">
+                    <h3 class="unpublished_notice"><h:outputText value="#{msg.cms_pagePreviewNotPublished}" /></h3>
+                </h:panelGroup>
+				
+				<div class="tpl-solr-query-text">
+					<ui:include src="#{cmsPage.getContent('text01')}" />
+				</div>
+				
+				<div class="tpl-solr-query-collection-thumbs">
+					<ui:repeat var="browseElement" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('queryList01'))}">
+						<div class="collection-thumb">
+							<div class="collection-thumb-title">
+								<h2>
+									<h:outputLink value="#{browseElement.url}" title="#{msg[browseElement.label]}">
+										#{msg[browseElement.label]}
+									</h:outputLink>
+								</h2>
+							</div>	
+
+							<div class="collection-thumb-img">
+								<!-- singlevolume -->
+								<h:outputLink value="#{browseElement.url}" rendered="#{!browseElement.anchor}">
+									<h:graphicImage url="#{browseElement.thumbnailUrl}" title="#{browseElement.label}" />
+								</h:outputLink>
+	
+								<!-- multivolume -->
+								<h:outputLink value="#{browseElement.url}" rendered="#{browseElement.anchor}">
+									<h:graphicImage url="#{browseElement.thumbnailUrl}" title="#{browseElement.label}"
+										styleClass="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" />
+									<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
+										<div class="stacked-thumbnail-before"></div>
+										<div class="stacked-thumbnail-after"></div>
+									</h:panelGroup>
+								</h:outputLink>
+							</div>
+						</div>
+					</ui:repeat>
+
+					<!-- paginator -->
+					<viewerComponent:simplePaginator 
+						itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('queryList01'))}"
+						itemActive="#{cmsPage.listPage}"
+						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+				</div>
+			</div>
+		</f:view>
+</ui:composition>

@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<testsuite name="Firefox 49.0.0 (Ubuntu 0.0.0)" package="" timestamp="2016-11-01T15:52:22" id="0" hostname="Florians-PC" tests="26" errors="0" failures="10" time="0.027">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0"/>
+  </properties>
+  <testcase name="OpenSeadragon related tests  Coordinate calculations  rounds to the nearest 10^(-14)" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).OpenSeadragon related tests "/>
+  <testcase name="Statistics tests General statistics module is defined" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Publication types is defined" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Publication types executes jqplot" time="0.005" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most edited works is defined" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most edited works executes jqplot" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Number of pages is defined" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Number of pages executes jqplot" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most imported works trend is defined" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Most imported works trend executes jqplot" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Crowdsourcing progress is defined" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="Statistics tests General statistics module Crowdsourcing progress does not execute jqplot" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).Statistics tests"/>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test loadIfJsonURL  returns the json object behind the url" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 33)
+osViewer.tileSourceResolver.loadIfJsonURL@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:33:17
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:37:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test loadIfJsonURL  fails for a iiif image url" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 33)
+osViewer.tileSourceResolver.loadIfJsonURL@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:33:17
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:44:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test loadIfJsonURL  fails for an image url" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 33)
+osViewer.tileSourceResolver.loadIfJsonURL@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:33:17
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:51:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test loadIfJsonURL  fails for a string other than a url" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 33)
+osViewer.tileSourceResolver.loadIfJsonURL@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:33:17
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:58:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test loadIfJsonURL  fails for a json object" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 33)
+osViewer.tileSourceResolver.loadIfJsonURL@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:33:17
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:65:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test resolveAsJson returns a json object from image info url" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 9)
+osViewer.tileSourceResolver.resolveAsJson@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:9:21
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:78:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test resolveAsJson fails for a iiif image url" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 9)
+osViewer.tileSourceResolver.resolveAsJson@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:9:21
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:84:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test resolveAsJson fails for an image url" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 9)
+osViewer.tileSourceResolver.resolveAsJson@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:9:21
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:90:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test resolveAsJson returns the inserted object if it already is a json object" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 9)
+osViewer.tileSourceResolver.resolveAsJson@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:9:21
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:96:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test resolveAsJson returns the resolved json object is it is a stringified object" time="0" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests ">
+    <failure type="">ReferenceError: Q is not defined in /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js (line 9)
+osViewer.tileSourceResolver.resolveAsJson@/opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.tileSourceResolver.js:9:21
+@/opt/digiverso/git/intrandaViewer/Viewer/resources/test/javascript/spec/viewImage.tileSourceResolver-spec.js:102:13
+</failure>
+  </testcase>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test isJsonURI  returns true if object is an uri and represents a json object " time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests "/>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test isURI  returns true if object is an uri and leads to an image " time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests "/>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test isStringifiedJson returns true of parameter is a stringified json object" time="0.001" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests "/>
+  <testcase name="ViewImage.TileSourceResolver Tests  Test isJson returns true if parameter is a json object" time="0.007" classname="Firefox_49_0_0_(Ubuntu_0_0_0).ViewImage.TileSourceResolver Tests "/>
+  <system-out>
+    <![CDATA[PhantomJS 2.1.1 (Linux 0.0.0) ERROR
+  SyntaxError: Unexpected token '('
+  at /opt/digiverso/git/intrandaViewer/Viewer/WebContent/resources/javascript/modules/viewImage/viewImage.js:95
+
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>

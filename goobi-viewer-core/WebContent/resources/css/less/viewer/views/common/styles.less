@@ -1,0 +1,91 @@
+/* ==============================================================
+   Styles
+   style declarations for styles.xhtml
+   ==============================================================*/
+#styles {}
+
+/* STYLES */
+/* BLOCK */
+.styles {
+    &__button {
+        display: block;
+        margin: 10px 0;
+        padding: 15px;
+        font-size: 18px;
+        text-align: center;
+        color: @white;
+        background-color: @blue;
+        &:hover,
+        &:focus,
+        &:active {
+            text-decoration: none;
+        }
+    }
+    &__heading {
+        padding-left: 15px;
+        border-top: 1px solid @middlegray;
+        border-right: 3px solid @middlegray;
+        border-bottom: 1px solid @middlegray;
+        border-left: 3px solid @middlegray;
+    }
+    &__spacerheading {
+        padding-left: 10px;
+        border-bottom: 1px solid @middlegray;
+    }
+    &__subheading {
+        padding-left: 10px;
+        border-left: 3px solid @middlegray;
+    }
+    /* ELEMENT */
+    &__logos {
+        margin-bottom: 15px;
+    }
+    &__logo {
+        margin-bottom: 10px;
+        padding: 10px;
+        figcaption {
+            padding-top: 10px;
+            font-style: italic;
+            font-size: 12px;
+        }
+    }
+    &__colors {}
+    &__color {
+        margin-bottom: 10px;
+        border: 1px solid @middlegray;
+    }
+    &__color-header {
+        height: 50px;
+        border-bottom: 1px solid @middlegray;
+    }
+    &__color-body {
+        padding: 5px;
+        font-size: 12px;
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+    }
+    &__fonts {}
+    &__headings {}
+    &__typo {}    
+}
+
+/* MODIFICATION */
+.styles__logo--bw {
+    color: @white;
+    background-color: @black;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

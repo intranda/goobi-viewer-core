@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config>
+
+    <configFolder>/opt/digiverso/viewer/config/</configFolder>
+
+    <urls>
+        <solr>http://viewertest.fritz.box/solr</solr>
+    </urls>
+
+    <cacheFiller>
+        <baseUrlViewer>http://viewertest.fritz.box/reference/</baseUrlViewer>
+        <formatToUse>jpg</formatToUse>
+        <resolution>72</resolution>
+        <timeoutIntervall>120000</timeoutIntervall>
+        <pauseBetweenRequests>0</pauseBetweenRequests>
+        <pauseBetweenGenerations>200</pauseBetweenGenerations>
+        <logfilePath>/opt/digiverso/logs/missingImages.txt</logfilePath>
+        <tracefilePath>/opt/digiverso/logs/cacheFillerTrace.tr</tracefilePath>
+        <generators>
+            <thumbnail sizes="100x120" defaultUse="false"></thumbnail>
+            <largeImage sizes="" defaultUse="true"></largeImage>
+            <preview sizes="" defaultUse="false"></preview>
+            <fullscreen sizes="" defaultUse="false"></fullscreen>
+            <pdf defaultUse="false"></pdf>
+        </generators>
+    </cacheFiller>
+
+</config>

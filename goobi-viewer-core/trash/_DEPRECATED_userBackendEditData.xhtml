@@ -1,0 +1,118 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageUser}" />
+            <f:event type="preRenderView" listener="#{userBean.user.backupFields}" />
+            <f:event type="preRenderView" listener="#{userBean.resetPasswordFields}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="breadcrumbs">
+		<ui:include src="resources/includes/breadcrumbs.xhtml" />
+	</ui:define>
+    
+    <ui:define name="content">
+		<h:panelGroup rendered="#{userBean.loggedIn}">
+            <div id="editUserData" class="page-wrapp">
+				<h2>#{msg.changeUserData}</h2>
+
+                <h:outputText escape="false" value="#{msg.userEditInfoText}" />
+
+                <h3>#{msg.userCP}</h3>
+
+				<h:form id="userEditDataForm" styleClass="form-horizontal">
+                    <!-- prevent autocomplete in IE, Chrome and Firefox -->
+                    <input type="text" class="hidden" />
+                    <input type="password" class="hidden" />
+                
+					<div class="form-group">
+						<h:outputLabel value="#{msg.nameNick}:" styleClass="col-sm-4 control-label" />
+						<div class="col-sm-8">
+							<h:inputText value="#{userBean.user.nickName}" required="true" requiredMessage="#{msg.loginEnterNickName}" styleClass="form-control" />
+						</div>
+					</div>
+					<div class="form-group">
+						<h:outputLabel value="#{msg.nameFirst}:" styleClass="col-sm-4 control-label" />
+						<div class="col-sm-8">
+							<h:inputText value="#{userBean.user.firstName}" styleClass="form-control" />
+						</div>
+					</div>
+					<div class="form-group">
+						<h:outputLabel value="#{msg.nameLast}:" styleClass="col-sm-4 control-label" />
+						<div class="col-sm-8">
+							<h:inputText value="#{userBean.user.lastName}" styleClass="form-control" />
+						</div>
+					</div>
+					<div class="form-group">
+						<h:outputLabel value="#{msg.email}:" styleClass="col-sm-4 control-label" />
+						<div class="col-sm-8">
+							<h:inputText value="#{userBean.user.email}" styleClass="form-control" disabled="true" />
+						</div>
+					</div>
+					<div class="form-group">
+						<h:outputLabel value="#{msg.user_useGravatar}:" styleClass="col-sm-4 control-label" />
+						<div class="col-sm-8">
+							<div class="checkbox">
+								<label> 
+									<h:selectBooleanCheckbox value="#{userBean.user.useGravatar}" /> 
+									<img src="#{userBean.user.getGravatarUrl(48)}" alt="#{msg.user_useGravatar}" />
+								</label>
+							</div>
+						</div>
+					</div>
+					<h:panelGroup rendered="#{!userBean.user.openIdUser}">
+                        <div class="form-group">
+							<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-sm-4 control-label" />
+							<div class="col-sm-8">
+								<h:inputSecret value="#{userBean.passwordOne}" styleClass="form-control">
+<!-- 									<f:validator validatorId="passwordValidator" /> -->
+								</h:inputSecret>
+							</div>
+						</div>
+						<div class="form-group">
+							<h:outputLabel value="#{msg.user_newPasswordTwo}:" styleClass="col-sm-4 control-label" />
+							<div class="col-sm-8">
+								<h:inputSecret value="#{userBean.passwordTwo}" styleClass="form-control" />
+							</div>
+						</div>
+					</h:panelGroup>
+					<div class="form-group">
+						<div class="col-sm-offset-4 col-sm-8">
+							<h:commandButton value="#{msg.save}" action="#{userBean.saveUserAction}" styleClass="btn" />
+							<a href="#{request.contextPath}/user/" class="btn">#{msg.cancel}</a>
+						</div>
+					</div>
+				</h:form>
+			</div>
+        </h:panelGroup>
+    </ui:define>
+    
+    <ui:define name="sidebar">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<widgetComponent:widget_browsing />
+		</h:panelGroup>
+		
+		<widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
+		
+		<h:panelGroup rendered="#{userBean.loggedIn}">
+        	<widgetComponent:widget_mySearches />
+        </h:panelGroup>
+        
+        <h:panelGroup rendered="#{userBean.loggedIn and configurationBean.crowdsourcingEnabled}">
+        	<widgetComponent:widget_crowdsourcing />
+        </h:panelGroup>
+		
+		<widgetComponent:widget_user />
+	</ui:define>
+
+	<ui:define name="rssFeed">
+		<ui:include src="resources/includes/rssFeed.xhtml" />
+	</ui:define>    
+</ui:composition>

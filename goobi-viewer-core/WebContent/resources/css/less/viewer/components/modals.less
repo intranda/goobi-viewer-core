@@ -1,0 +1,40 @@
+/* ==============================================================
+   Modals
+   style declarations for Bootstrap Modals
+   ==============================================================*/
+.modal {
+    .modal-dialog {
+        .modal-content {
+            .modal-header {
+                text-align: left;
+                button {}
+                h4 {}
+            }
+            .modal-body {
+                text-align: left;
+                textarea {
+                    width: 100%;
+                    min-height: 150px;
+                    resize: vertical;
+                }
+            }
+            .modal-footer {
+                .btn {
+                    margin: 0 0 0 5px;
+                }
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

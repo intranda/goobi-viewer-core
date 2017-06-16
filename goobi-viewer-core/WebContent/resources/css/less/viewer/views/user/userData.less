@@ -1,0 +1,66 @@
+/* ==============================================================
+   User Data
+   style declarations for user.xhtml
+   ==============================================================*/
+/* DEPRECATED SINCE 3.1 */
+#user {
+    h2 {}
+    #includeUserDataForm {
+        margin-bottom: 1.3125rem;
+        h3 {}
+        .userdata-gravatar {
+            img {}
+        }
+        .userdata-data-row {
+            .userdata-data-label,
+            .userdata-data-value {
+                height: 1.75rem;
+                line-height: 1.75rem;
+            }
+            .userdata-data-label {}
+            .userdata-data-value {}
+        }
+        .userdata-change-data {
+            text-align: right;
+            .btn {
+                margin: 0;
+            }
+        }
+    }
+}
+
+/* USERDATA */
+/* BLOCK */
+.userdata {
+	/* ELEMENT */
+	h3 {}
+	&__gravatar {
+		img {
+			display: block;
+		}
+	}
+	&__data {
+        overflow-x: auto;
+	}
+	&__action {
+		text-align: right;
+		.btn {
+			margin: 0;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.userdata__gravatar img { margin: 0 auto; }
+	.userdata__action { text-align: center; }
+}

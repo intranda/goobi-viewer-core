@@ -1,0 +1,46 @@
+/* ==============================================================
+   Admin Add User
+   style declarations for adminUser.xhtml
+   ==============================================================*/
+#adminUser {
+    h2 {}
+    // tabs
+    .nav-tabs {
+        li {
+            &.active {}
+            a {}
+        }
+    }
+    .tab-content {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-top: none;
+        background-color: @white;
+        .tab-pane {
+            padding: 15px;
+            &.active {}
+        }
+    }
+}
+
+// single tabs
+#userData {}
+
+#licenses {
+    h3 {}
+    p {
+        text-align: right;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

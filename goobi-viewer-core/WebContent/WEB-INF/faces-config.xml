@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<faces-config version="2.2"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_2.xsd">
+	<application>
+
+		<resource-bundle>
+			<base-name>de.intranda.digiverso.presentation.messages.ViewerResourceBundle</base-name>
+			<var>msg</var>
+		</resource-bundle>
+
+		<!-- <resource-bundle> <base-name>de.intranda.digiverso.presentation.messages.StructtypesRessourceBundle</base-name> 
+			<var>msgstruct</var> </resource-bundle> -->
+
+	</application>
+
+	<factory>
+		<exception-handler-factory>de.intranda.digiverso.presentation.exceptions.MyExceptionHandlerFactory</exception-handler-factory>
+	</factory>
+
+	<lifecycle>
+		<phase-listener>com.ocpsoft.pretty.faces.event.MultiPageMessagesSupport</phase-listener>
+	</lifecycle>
+
+</faces-config>

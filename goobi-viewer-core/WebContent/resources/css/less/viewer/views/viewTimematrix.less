@@ -1,0 +1,200 @@
+/* ==============================================================
+   View Timematrix
+   style declarations for viewTimematrix.xhtml
+   ==============================================================*/
+#timeMatrix {
+    h2 {}
+    p {}
+    h3 {}
+    .timematrix-selection {
+        float: left;
+        width: 100%;
+        padding: 1.875rem;
+        margin-bottom: 1.3125rem;
+        #slider-range {
+            .ui-slider-range {}
+            .ui-slider-handle {
+                display: block;
+                position: relative;
+                float: left;
+                border: 1px solid @middlegray;
+                border-radius: 0;
+                background: @lightgray;
+                cursor: pointer;
+                .timematrix-slider-bubble-startDate,
+                .timematrix-slider-bubble-endDate {
+                    position: absolute;
+                    top: -2.5rem;
+                    left: 50%;
+                    min-width: 1.5625rem;
+                    height: 1.875rem;
+                    line-height: 1.75rem;
+                    margin-left: -1.9375rem;
+                    padding: 0 0.625rem;
+                    border: 1px solid @middlegray;
+                    border-radius: 0.1875rem;
+                    background: @lightgray;
+                    &:before {
+                        content: "";
+                        position: absolute;
+                        bottom: -1.25rem;
+                        left: 50%;
+                        width: 0;
+                        height: 0;
+                        margin-left: -0.625rem;
+                        border-color: @middlegray transparent transparent transparent;
+                        border-style: solid;
+                        border-width: 0.625rem;
+                    }
+                }
+                .timematrix-slider-bubble-startDate {}
+                .timematrix-slider-bubble-endDate {}
+            }
+        }
+    }
+    .btn {
+        float: right;
+        margin: 1.3125rem 0 0 0;
+    }
+}
+
+#timematrixCanvas {
+	position: relative;
+    float: left;
+    width: 100%;
+    min-width: 18.75rem;
+    min-height: 600px;
+    margin-bottom: 1.3125rem;
+    .timematrix-box {
+        .timematrix-header {
+            h3 {
+                margin: 0;
+            }
+        }
+        .timematrix-body {
+            .timematrix-thumb {
+                position: relative;
+                float: left;
+                width: 12.5%;
+                border: 1px solid @middlegray;
+                cursor: pointer;
+                overflow: hidden;
+                transition: all .3s;
+                &:hover {
+                    border: 2px solid red;
+                }
+                img {
+                	display: block;
+                	margin: 0 auto;
+                	width: 100%;
+                }
+                &.marker:before {
+                	content: "";
+                	display: block;
+                	position: absolute;
+                	width: 0;
+                	height: 0;
+                	bottom: 0;
+                	left: 50%;
+                	margin-left: -10px;
+                	border-width: 10px;
+                	border-style: solid;
+                	border-color: transparent transparent @middlegray transparent;
+                	z-index: 1;
+                }
+            }
+        }
+        .timematrix-footer {}
+    }
+}
+
+.timematrix-popover {
+    position: absolute;
+    width: 18.75rem;
+    font-size: 1rem;
+    border: 1px solid @middlegray;
+    border-radius: 0.3125rem;
+    background-color: @lightgray;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.35);
+    z-index: 9999;
+    .timematrix-popover-close {
+        position: absolute;
+        top: 0;
+        right: 0.3125rem;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 9999;
+    }
+    .timematrix-popover-header,
+    .timematrix-popover-body,
+    .timematrix-popover-footer {
+        position: relative;
+        padding: 10px;
+    }
+    .timematrix-popover-header {
+        height: 4.375rem;
+        padding: 0.9375rem 0.625rem 0.625rem 0.625rem;
+        border-bottom: 1px solid @middlegray;
+        h4 {
+            margin: 0;
+        }
+    }
+    .timematrix-popover-body {
+        height: 16.875rem;
+        line-height: 15.3rem;
+        text-align: center;
+        background-color: @white;
+        .timematrix-popover-imageloader {
+            position: absolute;
+            width: 17.5rem;
+            height: 15.625rem;
+            background-image: url("@{images}/image_preloader.gif");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-color: @white;
+        }
+        a {
+            img {
+                max-width: 100%;
+                max-height: 100%;
+            }
+        }
+    }
+    .timematrix-popover-footer {
+        height: 40px;
+        text-align: right;
+        border-top: 1px solid @middlegray;
+        a {}
+    }
+}
+
+@media screen and (max-width: 400px) {
+	#timematrixCanvas {
+	    .timematrix-box {
+	        .timematrix-header {
+	            h3 {}
+	        }
+	        .timematrix-body {
+	            .timematrix-thumb {
+	            	width: 33.33333%;
+	                &:hover {}
+	                img {}
+	                &.marker:before {}
+	            }
+	        }
+	        .timematrix-footer {}
+	    }
+	}	
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

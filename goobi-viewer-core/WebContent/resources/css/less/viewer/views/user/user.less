@@ -1,0 +1,67 @@
+/* ==============================================================
+   User
+   style declarations for user.xhtml
+   ==============================================================*/
+/* DEPRECATED SINCE 3.1 */
+#user {
+    h2 {}
+    #userLoginWrapper {
+        margin-bottom: 1.3125rem;
+        #userLoginLocal {
+            margin-bottom: 1.3125rem;
+            h3 {}
+            p {}
+            #userLoginLocalForm {
+                margin-bottom: 0.875rem;
+                .btn {
+                    float: right;
+                    margin: 0;
+                }
+            }
+            #accountOptions {}
+        }
+        #userLoginOpenId {
+            h3 {}
+            p {}
+            #openIdOptions {
+                ul {
+                    li {
+                        a {
+                            img {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* USER */
+/* BLOCK */
+.user {
+	/* ELEMENT */
+	&__local {}
+	&__action {
+		.btn {
+			margin: 0;
+		}
+	}
+	&__options {}
+	&__openid {}
+}
+
+/* MODALS */
+#createAccountModal p { margin: 0; }
+#createAccountModal .modal-footer { margin: 0; }
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

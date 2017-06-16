@@ -1,0 +1,84 @@
+/* ==============================================================
+   User Activity
+   style declarations for userBackendActivity.xhtml
+   ==============================================================*/
+/* deprecated since 3.2 */
+#myActivity {
+    h2 {}
+    #userScoreTable {
+        tbody {
+            tr {
+                td {
+                    &:nth-child(1) {
+                        width: 25%;
+                    }
+                    &:nth-child(2) {
+                        width: 75%;
+                    }
+                    span {}
+                }
+            }
+        }
+    }
+    #myActivityTable {
+        thead {
+            tr {
+                th {
+                    &:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {
+                        .popover {
+                            font-weight: normal;
+                        }
+                    }
+                    span {}
+                }
+            }
+        }
+        tbody {
+            tr {
+                td {}
+            }
+        }
+    }
+}
+/* USER SCORE */
+/* BLOCK */
+.user-score {
+    margin-bottom: 15px;
+    /* ELEMENT */
+    &__table {
+        tr td:first-child {
+            width: 25%;
+        }
+        tr td:last-child {
+            width: 75%;
+        }
+    }
+}
+/* USER ACTIVITY */
+/* BLOCK */
+.user-activity {
+    margin-bottom: 15px;
+    /* ELEMENT */
+    &__table {
+        .glyphicon {
+            cursor: pointer;
+        }
+        .popover {
+            font-weight: normal;
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

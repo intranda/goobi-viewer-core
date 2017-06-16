@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: viewImage/viewImage.zoomSlider.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: viewImage/viewImage.zoomSlider.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This file is part of the Goobi Viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see &lt;http://www.gnu.org/licenses/>.
+ * 
+ * Module which handles the zoomslider functionality.
+ * 
+ * @version 3.2.0
+ * @module viewImage.zoomSlider
+ * @requires jQuery
+ */
+var viewImage = ( function( osViewer ) {
+    'use strict';
+    
+    var _debug = false;
+    var _zoomSlider = {};
+    var _defaults = {
+        global: {
+            /**
+             * The position of the zoom-slider is "dilated" by a function d(zoom) =
+             * 1/sliderDilation*tan[atan(sliderDilation)*zoom] This makes the slider
+             * position change slower for small zoom and faster for larger zoom The
+             * function is chosen so that d(0) = 0 and d(1) = 1
+             */
+            sliderDilation: 12
+        }
+    };
+    
+    osViewer.zoomSlider = {
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'osViewer.zoomSlider.init' );
+                console.log( '##############################' );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            if ( $( _defaults.global.zoomSlider ) ) {
+                osViewer.zoomSlider.addZoomSlider( _defaults.global.zoomSlider );
+                
+                // handler for openSeadragon Object
+                osViewer.viewer.addHandler( 'zoom', function( data ) {
+                    osViewer.zoomSlider.buttonToZoom( data.zoom );
+                } );
+            }
+        },
+        buttonToMouse: function( mousePos ) {
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.buttonToMouse: mousePos - ' + mousePos );
+            }
+            
+            var offset = _zoomSlider.$button.width() / 2;
+            var newPos = mousePos - offset;
+            if ( newPos &lt; 0 ) {
+                newPos = 0;
+            }
+            if ( newPos + 2 * offset > _zoomSlider.absoluteWidth ) {
+                newPos = _zoomSlider.absoluteWidth - 2 * offset;
+            }
+            _zoomSlider.$button.css( {
+                left: newPos
+            } );
+            _zoomSlider.buttonPosition = newPos;
+            var factor = ( newPos / ( _zoomSlider.absoluteWidth - offset * 2 ) );
+            factor = 1 / _defaults.global.sliderDilation * Math.tan( Math.atan( _defaults.global.sliderDilation ) * factor );
+            
+            var newScale = osViewer.viewer.viewport.getMinZoom() + ( osViewer.viewer.viewport.getMaxZoom() - osViewer.viewer.viewport.getMinZoom() ) * factor;
+            
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.buttonToMouse: newScale - ' + newScale );
+            }
+            
+            osViewer.controls.zoomTo( newScale );
+        },
+        buttonToZoom: function( scale ) {
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.buttonToZoom: scale - ' + scale );
+            }
+            
+            if ( !_zoomSlider || !osViewer.viewer.viewport ) {
+                return;
+            }
+            
+            // console.log("Dilation = ", osViewer.viewer.viewport.getMinZoom())
+            // console.log("minZoom = ", osViewer.viewer.viewport.getMinZoom());
+            // console.log("maxZoom = ", osViewer.viewer.viewport.getMaxZoom())
+            // console.log("scale = ", scale);
+            
+            var factor = ( scale - osViewer.viewer.viewport.getMinZoom() ) / ( osViewer.viewer.viewport.getMaxZoom() - osViewer.viewer.viewport.getMinZoom() );
+            // console.log( "factor = ", factor );
+            //            
+            factor = 1 / Math.atan( _defaults.global.sliderDilation ) * Math.atan( _defaults.global.sliderDilation * factor );
+            var newPos = factor * ( _zoomSlider.absoluteWidth - _zoomSlider.$button.width() );
+            // var newPos = ( ( scale - osViewer.viewer.viewport.getMinZoom() ) / (
+            // osViewer.viewer.viewport.getMaxZoom() -
+            // osViewer.viewer.viewport.getMinZoom() ) )
+            // * ( _zoomSlider.absoluteWidth - _zoomSlider.$button.width() );
+            // console.log( "pos = ", newPos );
+            
+            if ( Math.abs( osViewer.viewer.viewport.getMaxZoom() - scale ) &lt; 0.0000000001 ) {
+                newPos = _zoomSlider.absoluteWidth - _zoomSlider.$button.width();
+            }
+            
+            if ( newPos &lt; 0 ) {
+                newPos = 0;
+            }
+            
+            _zoomSlider.$button.css( {
+                left: newPos
+            } );
+            _zoomSlider.buttonPosition = newPos;
+        },
+        zoomSliderMouseUp: function() {
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.zoomSliderMouseUp' );
+            }
+            
+            _zoomSlider.mousedown = false;
+        },
+        zoomSliderMouseMove: function( evt ) {
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.zoomSliderMouseMove: evt - ' + evt );
+            }
+            
+            if ( !_zoomSlider.mousedown ) {
+                return;
+            }
+            var offset = $( this ).offset();
+            var hitX = evt.pageX - offset.left;
+            osViewer.zoomSlider.buttonToMouse( hitX );
+            
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.zoomSliderMouseMove: moving - ' + hitX );
+            }
+        },
+        zoomSliderMouseDown: function( evt ) {
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.zoomSliderMouseDown: evt - ' + evt );
+            }
+            
+            _zoomSlider.mousedown = true;
+            var offset = $( this ).offset();
+            var hitX = evt.pageX - offset.left;
+            osViewer.zoomSlider.buttonToMouse( hitX );
+        },
+        buttonMouseDown: function() {
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.buttonMouseDown' );
+            }
+            
+            _zoomSlider.mousedown = true;
+            
+            return false;
+        },
+        addZoomSlider: function( element ) {
+            if ( _debug ) {
+                console.log( 'osViewer.zoomSlider.addZoomSlider: element - ' + element );
+            }
+            
+            _zoomSlider.$element = $( element );
+            _zoomSlider.$button = _zoomSlider.$element.children( _defaults.global.zoomSliderHandle );
+            _zoomSlider.buttonPosition = 0;
+            _zoomSlider.absoluteWidth = _zoomSlider.$element.innerWidth();
+            _zoomSlider.mousedown = false;
+            _zoomSlider.$button.on( 'mousedown', osViewer.zoomSlider.buttonMouseDown );
+            _zoomSlider.$element.click( osViewer.zoomSlider._zoomSliderClick );
+            _zoomSlider.$element.mousedown( osViewer.zoomSlider.zoomSliderMouseDown );
+            _zoomSlider.$element.mousemove( osViewer.zoomSlider.zoomSliderMouseMove );
+            $( document ).on( 'mouseup', osViewer.zoomSlider.zoomSliderMouseUp );
+        }
+    };
+    
+    return osViewer;
+    
+} )( viewImage || {}, jQuery );
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="cmsJS.module_createPage.html">createPage</a></li><li><a href="cmsJS.module_masonry.html">masonry</a></li><li><a href="cmsJS.module_sortableList.html">sortableList</a></li><li><a href="cmsJS.module_tagList.html">tagList</a></li><li><a href="cmsJS.module_tileGrid.html">tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_changeFontSize.html">changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">download</a></li><li><a href="viewerJS.module_downloadModal.html">downloadModal</a></li><li><a href="viewerJS.module_editComment.html">editComment</a></li><li><a href="viewerJS.module_helper.html">helper</a></li><li><a href="viewerJS.module_nerFacetting.html">nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">normdata</a></li><li><a href="viewerJS.module_pageScroll.html">pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">timematrix</a></li><li><a href="viewerJS.module_versionHistory.html">versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">persistence</a></li><li><a href="viewImage.module_controls.html">controls</a></li><li><a href="viewImage.module_drawLine.html">drawLine</a></li><li><a href="viewImage.module_drawRect.html">drawRect</a></li><li><a href="viewImage.module_Measures.html">Measures</a></li><li><a href="viewImage.module_overlays.html">overlays</a></li><li><a href="viewImage.module_readingMode.html">readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">zoomSlider</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Statistics">Statistics</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jun 12 2017 17:12:34 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

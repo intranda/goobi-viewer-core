@@ -1,0 +1,18 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui" >
+
+	<composite:interface>
+	<composite:attribute name="text" required="false" />
+	</composite:interface>
+
+	<composite:implementation>
+							<div class="text_wrapp">
+								<h:outputText value="#{cc.attrs.text}"/>
+							</div>
+	</composite:implementation>
+</ui:composition>

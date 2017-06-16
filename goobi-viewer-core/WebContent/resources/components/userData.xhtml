@@ -1,0 +1,146 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+	
+	<ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{userBean.user.backupFields}" />
+        </f:metadata>
+    </ui:define>
+
+	<composite:interface />
+
+    <composite:implementation>
+        <div class="userdata">
+	        <h3>#{msg.userCP}</h3>
+	        
+        	<h:form id="userDataForm" prependId="false">
+        		<div class="row">
+        			<div class="col-xs-12 col-sm-2">
+        				<!-- GRAVATAR -->
+        				<div class="userdata__gravatar">
+        					<h:graphicImage rendered="#{user.useGravatar}" value="#{user.getGravatarUrl(96)}" alt="User Gravatar" />
+							<h:graphicImage rendered="#{!user.useGravatar}" library="themes/#{navigationHelper.theme}/images" name="thumbnail_person.jpg" alt="User Gravatar" />
+        				</div>
+        			</div>
+        			<div class="col-xs-12 col-sm-10">
+        				<!-- USERDATA -->
+        				<div class="userdata__data">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>#{msg.nameNick}:</strong></td>
+                                        <td>#{userBean.user.nickName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#{msg.nameFirst}:</strong></td>
+                                        <td>#{userBean.user.firstName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#{msg.nameLast}:</strong></td>
+                                        <td>#{userBean.user.lastName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>#{msg.email}:</strong></td>
+                                        <td>#{userBean.user.email}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+        				</div>
+        				
+        			</div>
+        		</div>
+
+				<!-- ACTION -->
+				<div class="userdata__action">
+					<button type="button" class="btn" data-toggle="modal" data-target="#editUserdataModal">#{msg.changeUserData}</button>
+				</div>
+			</h:form>
+        </div>
+
+		<!-- EDIT USERDATA MODAL -->
+		<div class="modal fade" id="editUserdataModal" tabindex="-1" role="dialog" aria-labelledby="editUserdataModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<h:form id="userEditDataForm" styleClass="form-horizontal" prependId="false">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true"> 
+									<h:outputText value="&amp;times;" escape="false" />
+								</span>
+							</button>
+							<h4 class="modal-title" id="editUserdataModalLabel">#{msg.changeUserData}</h4>
+						</div>
+						<div class="modal-body">
+							<!-- prevent autocomplete in IE, Chrome and Firefox -->
+							<input type="text" class="hidden" /> 
+							<input type="password" class="hidden" />
+
+							<h:outputText escape="false" value="#{msg.userEditInfoText}" />
+
+							<h3>#{msg.userCP}</h3>
+
+							<div class="form-group">
+								<h:outputLabel value="#{msg.nameNick}*:" styleClass="col-xs-12 col-sm-5 control-label" />
+								<div class="col-xs-12 col-sm-7">
+                                    <h:inputText value="#{userBean.user.nickName}" required="true" requiredMessage="#{msg.loginEnterNickName}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<h:outputLabel value="#{msg.nameFirst}:" styleClass="col-xs-12 col-sm-5 control-label" />
+								<div class="col-xs-12 col-sm-7">
+									<h:inputText value="#{userBean.user.firstName}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<h:outputLabel value="#{msg.nameLast}:" styleClass="col-xs-12 col-sm-5 control-label" />
+								<div class="col-xs-12 col-sm-7">
+									<h:inputText value="#{userBean.user.lastName}" styleClass="form-control" />
+								</div>
+							</div>
+							<div class="form-group">
+								<h:outputLabel value="#{msg.email}:" styleClass="col-xs-12 col-sm-5 control-label" />
+								<div class="col-xs-12 col-sm-7">
+									<h:inputText value="#{userBean.user.email}" styleClass="form-control" disabled="true" />
+								</div>
+							</div>
+							<div class="form-group">
+								<h:outputLabel value="#{msg.user_useGravatar}:" styleClass="col-xs-12 col-sm-5 control-label" />
+								<div class="col-xs-12 col-sm-7">
+									<div class="checkbox">
+										<label> 
+											<h:selectBooleanCheckbox value="#{userBean.user.useGravatar}" />
+											<img src="#{userBean.user.getGravatarUrl(48)}" alt="#{msg.user_useGravatar}" />
+										</label>
+									</div>
+								</div>
+							</div>
+							<h:panelGroup rendered="#{!userBean.user.openIdUser}">
+								<div class="form-group">
+									<h:outputLabel value="#{msg.user_newPasswordOne}:" styleClass="col-xs-12 col-sm-5 control-label" />
+									<div class="col-xs-12 col-sm-7">
+										<h:inputSecret value="#{userBean.passwordOne}" styleClass="form-control">
+<!-- 											<f:validator validatorId="passwordValidator" /> -->
+										</h:inputSecret>
+									</div>
+								</div>
+								<div class="form-group">
+									<h:outputLabel value="#{msg.user_newPasswordTwo}:" styleClass="col-xs-12 col-sm-5 control-label" />
+									<div class="col-xs-12 col-sm-7">
+										<h:inputSecret value="#{userBean.passwordTwo}" styleClass="form-control" />
+									</div>
+								</div>
+							</h:panelGroup>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn" data-dismiss="modal">#{msg.cancel}</button>
+							<h:commandButton value="#{msg.save}" action="#{userBean.saveUserAction}" styleClass="btn" />
+						</div>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</composite:implementation>
+</ui:composition>

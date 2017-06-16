@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" 
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"> 
+
+	<composite:interface />
+
+	<composite:implementation>
+		<h:panelGroup rendered="#{contentItem.type == 'COLLECTION'}">
+			<div class="edit-content-page edit-content-page-collection">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-12 group-label">#{msg.cms_itemCollection}#{contentItem.mandatory?'*':''}:</label>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-6 control-label">#{msg.cms_itemCollectionField}#{contentItem.mandatory?'*':''}:</label>
+						<div class="col-sm-6">
+							<div class="form-control__select">
+								<h:selectOneMenu styleClass="form-control content-input" value="#{contentItem.collectionField}">
+									<f:selectItems value="#{cmsBean.getLuceneFields()}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+									<f:ajax render="baseCollectionMenu" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-6 control-label">#{msg.cms_itemBaseCollection}:</label>
+						<div class="col-sm-6">
+							<div class="form-control__select">
+								<h:selectOneMenu id="baseCollectionMenu" styleClass="form-control content-input" value="#{contentItem.baseCollection}" disabled="#{StringUtils.isBlank(contentItem.collectionField)}">
+									<f:selectItems value="#{contentItem.possibleBaseCollectionList}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
+									<f:ajax render="@none" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-6 control-label">#{msg.cms_baseLevels}:</label>
+						<div class="col-sm-6">
+							<div class="form-control__select">
+								<h:selectOneMenu styleClass="form-control content-input" value="#{contentItem.collectionBaseLevels}">
+									<f:selectItem itemValue="0" itemLabel="#{msg.none}" />
+									<f:selectItem itemValue="1" itemLabel="1" />
+									<f:selectItem itemValue="2" itemLabel="2" />
+									<f:selectItem itemValue="3" itemLabel="3" />
+									<f:selectItem itemValue="4" itemLabel="4" />
+									<f:selectItem itemValue="5" itemLabel="5" />
+									<f:selectItem itemValue="6" itemLabel="6" />
+									<f:selectItem itemValue="7" itemLabel="7" />
+									<f:selectItem itemValue="8" itemLabel="8" />
+									<f:selectItem itemValue="9" itemLabel="9" />
+									<f:selectItem itemValue="10" itemLabel="10" />
+									<f:ajax render="@none" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-6 control-label">#{msg.cms_collectionOpenExpanded}:</label>
+						<div class="col-sm-6">
+							<h:selectBooleanCheckbox value="#{contentItem.collectionOpenExpanded}">
+								<f:ajax event="change" render="@this" />
+							</h:selectBooleanCheckbox>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-6 control-label">#{msg.cms_collectionDisplayParents}:</label>
+						<div class="col-sm-6">
+							<h:selectBooleanCheckbox value="#{contentItem.collectionDisplayParents}">
+								<f:ajax event="change" render="@this" />
+							</h:selectBooleanCheckbox>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

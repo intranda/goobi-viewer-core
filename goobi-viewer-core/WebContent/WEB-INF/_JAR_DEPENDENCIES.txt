@@ -1,0 +1,32 @@
+Lib                         Required by
+----------------------------------------
+jaxen-1.1.6.jar             JDOM
+jcl-over-slf4j-1.6.1.jar    SLF4J
+jj2000.jar         	        ICS (reading jpeg2000 images)
+json-rpc.jar                ???
+metadata-extractor-2.6.4	ICS (required to read certain image metadata)
+nekohtml-1.9.14.jar         HTTPUnit
+noggit-0.5.jar              SolrJ
+rome-1.0.jar                RSSlib4J
+saxon-9.0.0.2.jar           ICS (reading mets-file) 
+saxon-dom-9.0.0.2.jar       ICS (reading mets-file) 
+stax-api-1.0.1.jar          XStream
+wstx-asl-3.2.7.jar          ???
+xalan.jar                   JDOM
+xercesImpl.jar              JDOM
+xml-apis.jar                JDOM
+xmlbeans-2.4.0.jar          ICS (reading mets-file) 
+xmlbeans-xpath-2.4.0.jar    ICS (reading mets-file)
+xmlpull-1.1.3.1.jar         XStream
+xmpcore.jar					ICS (reading xmp-headers with metadata-extractor)
+xpp3-1.1.4c.jar             XStream
+zookeeper-3.4.6.jar         SolrJ
+wro4j-core-1.7.8.jar		wro4j (Web-Ressourcen-Verwaltung)
+wro4j-extensions-1.7.8.jar	wro4j (Web-Ressourcen-Verwaltung)
+commons-lang3-3.4.jar		wro4j
+commons-pool-1.6.jar		wro4j (für javascript-Packer)
+less4j-1.14.0.jar			wro4j (less-Compiler)
+webjars-locator-0.21.jar	wro4j (Finden von web-Ressourcen in jars)
+js.jar						wro4j (javascript-Implementierung)
+epubconvert.jar				epub
+jsoup-1.8.1.jat				epub

@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:adminComponent="http://xmlns.jcp.org/jsf/composite/components/admin">
+
+	<composite:interface>
+	</composite:interface>
+
+    <composite:implementation>
+        <h:form id="licenseForm" rendered="#{userBean.admin}" prependId="false">
+            <h:panelGroup id="listUserLicenses" rendered="#{adminBean.currentLicense == null}">
+                <h3>#{msg.licenses}</h3>
+                
+                <p>
+                    <h:commandLink value="#{msg.license_addNew}" action="#{adminBean.resetCurrentLicenseForIpRangeAction}" styleClass="btn">
+						<f:ajax render="@form" />
+					</h:commandLink>
+                </p>
+                
+                <adminComponent:licensesTable licenses="#{adminBean.currentIpRange.licenses}" />
+                
+            </h:panelGroup>
+            
+            <h:panelGroup id="editLicense" rendered="#{adminBean.currentLicense != null}">
+				<fieldset>
+					<ui:include src="/resources/includes/admin/currentLicense.xhtml" />
+                    <ui:include src="/resources/includes/admin/currentLicensePrivileges.xhtml" />
+				</fieldset>
+				<br />
+				<div style="text-align: right;">
+					<h:commandLink id="cancelButton" styleClass="btn" value="#{msg.cancel}" action="adminIpRange" immediate="true">
+						<f:setPropertyActionListener target="#{adminBean.currentLicense}" value="#{null}" />
+						<f:ajax render="@form" />
+					</h:commandLink>
+					<h:commandLink id="saveButton" styleClass="btn" value="#{msg.save}" action="#{adminBean.saveCurrentLicenseAction}"
+						disabled="#{adminBean.currentLicense == null}">
+<!-- 						<f:ajax render="@form" /> -->
+					</h:commandLink>
+				</div>
+			</h:panelGroup>
+        </h:form>
+    </composite:implementation>
+</ui:composition>

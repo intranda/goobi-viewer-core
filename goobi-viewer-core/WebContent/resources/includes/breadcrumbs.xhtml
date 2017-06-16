@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="metadata">
+		<f:metadata />
+	</ui:define>
+
+	<composite:interface />
+
+	<composite:implementation>
+        <h:panelGroup rendered="#{configurationBean.displayBreadcrumbs}">
+            <div id="breadcrumbs" class="breadcrumbs-wrapper">
+                <nav class="breadcrumbs">
+    				<ul>
+    					<li class="breadcrumbs__starttext">
+    						<span>#{msg.breadcrumbStartText}:</span>
+    					</li>
+    					<ui:repeat value="#{navigationHelper.breadcrumbs}" var="breadcrumb" varStatus="status">
+    						<h:panelGroup rendered="#{!status.last}">
+    							<li class="breadcrumbs__crumb">
+    								<a href="#{breadcrumb.url}">#{msg[breadcrumb.name]}</a>
+    							</li>
+    						</h:panelGroup>
+    						<h:panelGroup rendered="#{status.last}">
+    							<li class="breadcrumbs__crumb">
+    								<span>#{msg[breadcrumb.name]}</span>
+    							</li>
+    						</h:panelGroup>
+    					</ui:repeat>
+    				</ul>                    
+                </nav>
+            </div>
+        </h:panelGroup>
+	</composite:implementation>
+</ui:composition>

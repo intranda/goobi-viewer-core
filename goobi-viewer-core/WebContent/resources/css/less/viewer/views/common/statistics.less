@@ -1,0 +1,177 @@
+/* ==============================================================
+   Statistics
+   style declarations for statistics.xhtml
+   ==============================================================*/
+.statistics-grid,
+.statistics-grid-row,
+.chart-nearly-completed-table-row,
+.chart-most-active-users-table-row,
+.chart-nearly-completed-inner-table-row,
+.chart-nearly-completed-inner-label-row,
+#chart-nearly-completed,
+.chart-most-active-users-table,
+.chart-nearly-completed-table-cell,
+.chart-most-active-users-table-cell,
+.chart-nearly-completed-table-cell-right,
+.chart-nearly-completed-inner-table-cell-left,
+.chart-nearly-completed-inner-table-cell-right {
+    float: left;
+    width: 100%;
+}
+
+.statistics-grid-row {
+    margin-bottom: 2rem;
+}
+
+#chart-nearly-completed,
+.chart-most-active-users-table {
+    display: table;
+}
+
+.chart-nearly-completed-table-row,
+.chart-most-active-users-table-row,
+.chart-nearly-completed-inner-table-row,
+.chart-nearly-completed-inner-label-row  {
+    display: table-row;
+}
+
+.chart-nearly-completed-table-cell,
+.chart-most-active-users-table-cell,
+.chart-nearly-completed-table-cell-right,
+.chart-nearly-completed-inner-table-cell-left,
+.chart-nearly-completed-inner-table-cell-right {
+    display: table-cell;
+    padding: 0.25rem;
+}
+
+.chart-most-active-users-table-cell-center {
+    text-align: center;
+}
+
+.chart-nearly-completed-table-row {
+    padding: 0.5rem;
+}
+
+.chart-nearly-completed-table-cell {
+    width: 20%;
+}
+
+.chart-nearly-completed-table-cell-right {
+    width: 80%;
+}
+
+.chart-nearly-completed-inner-table-cell-left,
+.chart-nearly-completed-inner-table-cell-right {
+    width: 50%;
+}
+
+.chart-nearly-completed-inner-table-cell-left {
+    font-weight: bold;
+}
+
+.chart-most-active-users-table-cell {
+    width: 20%;
+    text-align: left;
+}
+
+.chart-most-active-users-table-cell-center {
+    width: 50%;
+}
+
+.chart-most-active-users-table-cell-right {
+    width: 30%;
+    text-align: center;
+}
+
+.rank {
+    background-color: @lightgray;
+}
+
+#statistics {
+    h2 {}
+    .statistics-grid {
+        margin-bottom: 1.3125rem;
+        .statistics-grid-row {
+            .statistic-grid-cell {
+                h3 {}
+                .statistic-chart {}
+            }
+        }
+    }
+    
+    // nearly completed
+    #chart-nearly-completed {
+        padding: 0.3125rem;
+        border: 2px solid @statDarkgray;
+        background-color: @statBackgroundColor;
+        box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+        .chart-nearly-completed-table-row {
+            border-bottom: 1px solid @statDarkgray;
+            .chart-nearly-completed-table-cell {
+                .chart-nearly-completed-label-right {
+                    font-weight: bold;
+                    font-size: 1rem;
+                }
+                &.chart-nearly-completed-table-cell-right {
+                    .chart-nearly-completed-inner-label-row {
+                        a {}
+                    }
+                    .chart-nearly-completed-inner-table-row {
+                        .chart-nearly-completed-inner-table-cell {
+                            span {}
+                            &.chart-nearly-completed-inner-table-cell-left {}
+                            &.chart-nearly-completed-inner-table-cell-right {
+                                .progress {
+                                    color: @black;
+                                    border-radius: 0;
+                                    border: 1px solid @black;
+                                    background-color: @statDarkgray;
+                                    .bar {
+                                        height: 1.25rem;
+                                        line-height: 1.125rem;
+                                        background-color: @statBackgroundColor;
+                                        span {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // most active user
+    #chart-most-active-users {
+        padding: 0.3125rem;
+        border: 2px solid @statDarkgray;
+        background-color: @statBackgroundColor;
+        box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+        .chart-most-active-users-table-row {
+            .chart-most-active-users-table-cell {
+                span {}
+                &.chart-most-active-users-table-cell-center {
+                    .chart-most-active-users-name-label {}
+                }
+                &.chart-most-active-users-table-cell-right {
+                    .rank {
+                        background-color: @statDarkgray;
+                        img {}
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

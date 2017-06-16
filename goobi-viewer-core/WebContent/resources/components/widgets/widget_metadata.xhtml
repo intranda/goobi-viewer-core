@@ -1,0 +1,152 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+
+	<composite:interface />
+
+	<composite:implementation>
+		<h:panelGroup rendered="#{metadataBean.bottomMetadataElement.hasSidebarMetadata}">
+			<div id="widgetMetadata" class="widget">
+				<h3>#{msg.sidebarBibData}</h3>
+
+				<dl>
+					<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
+						<dd>
+							<h:outputText value="#{msg.description}" escape="false" />
+						</dd>
+					</h:panelGroup>
+
+					<ui:repeat value="#{metadataBean.bottomMetadataElement.sidebarMetadataList}" var="metadata">
+						<dt title="#{msg[metadata.label]}">
+							<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+						</dt>
+
+						<!-- Grouped metadata -->
+						<h:panelGroup rendered="#{metadata.group}">
+							<dd>
+								<ui:repeat value="#{metadata.values}" var="val">
+									<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+										<f:param value="#{val.paramLabels[0] != null ? val.getParamLabelWithColon(0) : ''}" />
+										<f:param value="#{val.getComboValueShort(0)}" />
+										<f:param value="#{val.paramLabels[1] != null ? val.getParamLabelWithColon(1) : ''}" />
+										<f:param value="#{val.getComboValueShort(1)}" />
+										<f:param value="#{val.paramLabels[2] != null ? val.getParamLabelWithColon(2) : ''}" />
+										<f:param value="#{val.getComboValueShort(2)}" />
+										<f:param value="#{val.paramLabels[3] != null ? val.getParamLabelWithColon(3) : ''}" />
+										<f:param value="#{val.getComboValueShort(3)}" />
+										<f:param value="#{val.paramLabels[4] != null ? val.getParamLabelWithColon(4) : ''}" />
+										<f:param value="#{val.getComboValueShort(4)}" />
+										<f:param value="#{val.paramLabels[5] != null ? val.getParamLabelWithColon(5) : ''}" />
+										<f:param value="#{val.getComboValueShort(5)}" />
+										<f:param value="#{val.paramLabels[6] != null ? val.getParamLabelWithColon(6) : ''}" />
+										<f:param value="#{val.getComboValueShort(6)}" />
+										<f:param value="#{val.paramLabels[7] != null ? val.getParamLabelWithColon(7) : ''}" />
+										<f:param value="#{val.getComboValueShort(7)}" />
+										<f:param value="#{val.paramLabels[8] != null ? val.getParamLabelWithColon(8) : ''}" />
+										<f:param value="#{val.getComboValueShort(8)}" />
+										<f:param value="#{val.paramLabels[9] != null ? val.getParamLabelWithColon(9) : ''}" />
+										<f:param value="#{val.getComboValueShort(9)}" />
+									</h:outputFormat>
+
+                                    <!-- NORMDATA -->
+                                    <viewerComponent:normdata />
+                                    <br />
+                                </ui:repeat>
+							</dd>
+						</h:panelGroup>
+
+						<!-- Non-grouped metadata with valueLink -->
+						<h:panelGroup rendered="#{!metadata.group and metadata.valueLink != null}">
+							<dd>
+								<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
+							</dd>
+						</h:panelGroup>
+
+						<!-- Non-grouped metadata -->
+						<h:panelGroup rendered="#{!metadata.group and metadata.valueLink == null}">
+							<dd>
+								<ui:repeat value="#{metadata.values}" var="val">
+									<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+										<f:param value="#{val.getComboValueShort(0)}" />
+										<f:param value="#{val.getComboValueShort(1)}" />
+										<f:param value="#{val.getComboValueShort(2)}" />
+										<f:param value="#{val.getComboValueShort(3)}" />
+										<f:param value="#{val.getComboValueShort(4)}" />
+										<f:param value="#{val.getComboValueShort(5)}" />
+										<f:param value="#{val.getComboValueShort(6)}" />
+										<f:param value="#{val.getComboValueShort(7)}" />
+										<f:param value="#{val.getComboValueShort(8)}" />
+										<f:param value="#{val.getComboValueShort(9)}" />
+									</h:outputFormat>
+									<br />
+								</ui:repeat>
+							</dd>
+						</h:panelGroup>
+					</ui:repeat>
+				</dl>
+
+				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
+					<dl>
+						<c:forEach items="#{metadataBean.events}" var="event">
+						    <h:panelGroup rendered="#{fn.length(event.sidebarMetadata) > 0}">
+							<dt>
+								<h:outputText value="#{msg[event.label]}" escape="false" />
+							</dt>
+							<ui:repeat value="#{event.sidebarMetadata}" var="metadata">
+								<h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
+									<dd>
+										<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+									</dd>
+									<h:panelGroup rendered="#{metadata.valueLink != null}">
+										<dd>
+											<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
+										</dd>
+									</h:panelGroup>
+									<h:panelGroup rendered="#{metadata.valueLink == null}">
+										<dd>
+											<ui:repeat value="#{metadata.values}" var="val">
+												<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+                                                    <f:param value="#{val.getComboValueShort(0)}" />
+                                                    <f:param value="#{val.getComboValueShort(1)}" />
+                                                    <f:param value="#{val.getComboValueShort(2)}" />
+                                                    <f:param value="#{val.getComboValueShort(3)}" />
+                                                    <f:param value="#{val.getComboValueShort(4)}" />
+                                                    <f:param value="#{val.getComboValueShort(5)}" />
+                                                    <f:param value="#{val.getComboValueShort(6)}" />
+                                                    <f:param value="#{val.getComboValueShort(7)}" />
+                                                    <f:param value="#{val.getComboValueShort(8)}" />
+                                                    <f:param value="#{val.getComboValueShort(9)}" />
+												</h:outputFormat>
+											</ui:repeat>
+										</dd>
+									</h:panelGroup>
+								</h:panelGroup>
+							</ui:repeat>
+							</h:panelGroup>
+						</c:forEach>
+					</dl>
+				</h:panelGroup>
+			</div>
+            
+            <script type="text/javascript">
+                var normdataWidgetConfig = {
+                    path: '#{request.contextPath}',
+                    lang: {
+                        popoverTitle: '#{msg.normdataPopverTitle}',
+                        popoverClose: '#{msg.normdataPopoverClose}',
+                        showNormdata: '#{msg.normdataExpand}'
+                    },
+                    elemWrapper: $( '#widgetMetadata' )
+                };
+                
+                viewerJS.normdata.init( normdataWidgetConfig );
+            </script>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

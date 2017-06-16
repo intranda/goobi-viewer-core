@@ -1,0 +1,58 @@
+/* ==============================================================
+   Change Local
+   style declarations for changeLocal.xhtml
+   ==============================================================*/
+/* deprecated since 3.2 */
+#change_local {
+    ul {
+        li {
+            display: inline-block;
+            height: 1.75rem;
+            line-height: 1.75rem;
+            margin: 0 0.4375rem 0 0;    
+            a {
+                display: block;
+                img {
+                    width: 1.3125rem;
+                    margin: -0.125rem 0.25rem 0 0.25rem;
+                }
+                &.activeLang {
+                    font-weight: bold;
+                } 
+            }
+        }
+    }
+}
+
+/* BLOCK */
+.change-local {
+	/* ELEMENT */
+	ul {}
+	li {
+		display: inline-block;
+		float: left;
+        margin: 0 0.4375rem 0 0;
+	}
+	a {
+		display: block;
+		&.activeLang {
+			font-weight: bold;
+		}
+	}
+	img {
+		width: 1.3125rem;
+		margin: -0.125rem 0.25rem 0 0.25rem;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

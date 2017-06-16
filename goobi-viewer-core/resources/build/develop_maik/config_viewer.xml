@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+
+	<!-- local path configuration for lucene, mets files, persistence etc. -->
+	<configFolder>/Users/AppleCan/Desktop/Intranda/viewer/config/</configFolder>
+	<indexedMetsFolder>/Users/AppleCan/Desktop/Intranda/viewer/indexed_mets/
+	</indexedMetsFolder>
+	<xstreamFolder>/Users/AppleCan/Desktop/Intranda/viewer/xstream/</xstreamFolder>
+	<tiffFolder>/Users/AppleCan/Desktop/Intranda/viewer/media/</tiffFolder>
+	<mediaFolder>/Users/AppleCan/Desktop/Intranda/viewer/media/</mediaFolder>
+	<sourceContentFolder>/Users/AppleCan/Desktop/Intranda/viewer/source/</sourceContentFolder>
+	<hotfolder>/Users/AppleCan/Desktop/Intranda/viewer/hotfolder/</hotfolder>
+	<tempFolder>/Users/AppleCan/Desktop/Intranda/viewer/temp/</tempFolder>
+
+
+	<!-- path to external URLs -->
+	<urls>
+		<!-- Addresses for download of metadata via oai -->
+		<metadata>
+			<mets>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=mets&amp;identifier=
+			</mets>
+			<marc>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=marcxml&amp;identifier=
+			</marc>
+			<dc>http://localhost:8080/viewer/oai?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=
+			</dc>
+			<opac>http://opac.sub.uni-goettingen.de/DB=1/PPN?PPN=</opac>
+		</metadata>
+		<!-- <solr>http://localhost:8081/solr</solr> -->
+		<!-- <solr>http://viewer.soton.ac.uk/solr</solr> -->
+		<!-- <solr>http://digi.landesbibliothek.at/solr</solr> -->
+		<!-- <solr>http://orka.bibliothek.uni-kassel.de/solr</solr> -->
+		<!-- <solr>http://fuldig.hs-fulda.de/solr</solr> -->
+		<!-- <solr>http://goobipr2.uni-weimar.de/solr</solr> -->
+		<!-- <solr>http://goobiweb.bbf.dipf.de/solr</solr> -->
+		<solr>http://esx-176.gbv.de/solr</solr>
+		<contentServer>/</contentServer>
+		<contentServerWrapper>http://localhost:8080/viewer/content
+		</contentServerWrapper>
+		<!-- Address of DFG-Viewer -->
+		<dfg-viewer>http://dfg-viewer.de/v2?set[mets]=</dfg-viewer>
+	</urls>
+
+	<!-- OpenID-Authentification -->
+	<openID show="true">
+		<provider name="Google" url="https://www.google.com/accounts/o8/id"
+			useTextField="false" image="google.png" />
+		<provider name="AOL" url="http://openid.aol.com/{username}"
+			useTextField="false" image="aol.png" />
+		<!--<provider name="Yahoo" url="https://yahoo.com/" useTextField="true" 
+			image="yahoo.png" /> -->
+	</openID>
+
+	<accessConditions>
+		<unconditionalImageAccessMaxWidth>150
+		</unconditionalImageAccessMaxWidth>
+	</accessConditions>
+
+	<viewer>
+		<!-- default image size in pixel -->
+		<defaultImageWidth>600</defaultImageWidth>
+		<defaultImageHeight>1000</defaultImageHeight>
+
+		<!-- change of image size, when user clicks -->
+		<zoomStep>100</zoomStep>
+		<!-- Number of thumbnails to show on one page -->
+		<thumbnailsPerPage>30</thumbnailsPerPage>
+		<!-- optional default is 100wx120h <thumbnailsWidth>200</thumbnailsWidth> 
+			<thumbnailsHeight>220</thumbnailsHeight> -->
+		<multivolumeOverviewThumbWidth>50</multivolumeOverviewThumbWidth>
+		<multivolumeOverviewThumbHeight>60</multivolumeOverviewThumbHeight>
+		<tocLabelLength>90</tocLabelLength>
+		<browseLabelLength>180</browseLabelLength>
+		<watermarkHeight>50</watermarkHeight>
+		<!-- has parameters for position of watermark. possible values are: left/right/bottom/top -->
+		<watermarkPosition> bottom </watermarkPosition>
+		<splittingCharacter>.</splittingCharacter>
+
+		<!--THEME -->
+		<theme>kuni</theme>
+
+	</viewer>
+
+	<search>
+		<hitsPerPage>10</hitsPerPage>
+	</search>
+
+	<collections>
+		<!-- <config> <collection name="varia"> <defaultSortField>TITLE</defaultSortField> 
+			</collection> <collection name="universitaetsbibliothek"> <defaultSortField>CREATOR</defaultSortField> 
+			</collection> <collection name="universitaetsbibliothek.nzpomeranica"> <defaultSortField>CURRENTNO</defaultSortField> 
+			</collection> </config> -->
+		<sorting>
+			<collection>zeitschriften</collection>
+			<collection>nachlaesse</collection>
+		</sorting>
+		<!-- <blacklist> <collection>varia</collection> </blacklist> -->
+	</collections>
+
+	<metadata>
+		<anchor>
+			<element>Periodical</element>
+			<element>MultiVolumeWork</element>
+			<element>VolumeRun</element>
+		</anchor>
+
+		<mainMetadataList>
+			<metadata label="URN" value="">
+				<param type="field" key="URN" />
+			</metadata>
+			<metadata label="PI" value="">
+				<param type="field" key="PI" />
+			</metadata>
+			<metadata label="EVENTTYPE" value="">
+				<param type="field" key="EVENTTYPE" />
+			</metadata>
+			<metadata label="MD_EVENTNAME" value="">
+				<param type="field" key="MD_EVENTNAME" />
+			</metadata>
+			<metadata label="EVENTDATESTART" value="">
+				<param type="field" key="EVENTDATESTART" />
+			</metadata>
+			<metadata label="EVENTDATEEND" value="">
+                <param type="field" key="EVENTDATEEND" />
+            </metadata>
+			<metadata label="MD_TITLE" value="">
+				<param type="field" key="MD_TITLE" />
+			</metadata>
+			<metadata label="MD_SHELFMARK" value="">
+				<param type="field" key="MD_SHELFMARK" />
+			</metadata>
+			<metadata label="MD_ISSN" value="">
+				<param type="field" key="MD_ISSN" />
+			</metadata>
+			<metadata label="MD_AUTHOR" value="LINK_WIKIPEDIA">
+				<param type="field" key="MD_AUTHOR" />
+				<param type="wikifield" key="MD_AUTHOR" />
+			</metadata>
+			<metadata label="MD_COMPOSER" value="LINK_WIKIPEDIA">
+				<param type="field" key="MD_COMPOSER" />
+				<param type="wikifield" key="MD_COMPOSER" />
+			</metadata>
+			<metadata label="MD_PHOTOGRAPHER" value="LINK_WIKIPEDIA">
+				<param type="field" key="MD_PHOTOGRAPHER" />
+				<param type="wikifield" key="MD_PHOTOGRAPHER" />
+			</metadata>
+			<metadata label="MD_PRINTER" value="">
+				<param type="field" key="MD_PRINTER" />
+			</metadata>
+			<metadata label="MD_EDITOR" value="">
+				<param type="field" key="MD_EDITOR" />
+			</metadata>
+			<metadata label="MD_ARTIST" value="LINK_WIKIPEDIA">
+				<param type="field" key="MD_ARTIST" />
+				<param type="wikifield" key="MD_ARTIST" />
+			</metadata>
+			<metadata label="MD_ILLUSTRATOR" value="LINK_WIKIPEDIA">
+                <param type="field" key="MD_ILLUSTRATOR" />
+                <param type="wikifield" key="MD_ILLUSTRATOR" />
+            </metadata>
+			<metadata label="MD_WOODENGRAVER" value="LINK_WIKIPEDIA">
+				<param type="field" key="MD_WOODENGRAVER" />
+				<param type="wikifield" key="MD_WOODENGRAVER" />
+			</metadata>
+			<metadata label="MD_LOCATION" value="LINK_WIKIPEDIA">
+				<param type="field" key="MD_LOCATION" />
+				<param type="wikifield" key="MD_LOCATION" />
+			</metadata>
+			<metadata label="DOCSTRCT" value="">
+				<param type="field" key="DOCSTRCT" />
+			</metadata>
+			<metadata label="MD_PUBLISHER" value="">
+				<param type="field" key="MD_PUBLISHER" />
+			</metadata>
+			<metadata label="MD_YEARPUBLISH" value="">
+				<param type="field" key="MD_YEARPUBLISH" />
+			</metadata>
+			<metadata label="MD_PLACEPUBLISH" value="LINK_MAPS">
+				<param type="field" key="MD_PLACEPUBLISH" />
+			</metadata>
+			<metadata label="MD_DOCLANGUAGE" value="">
+				<param type="field" key="MD_DOCLANGUAGE" />
+			</metadata>
+			<metadata label="DC" value="">
+				<param type="field" key="DC" />
+			</metadata>
+		</mainMetadataList>
+
+		<titleBarMetadataList>
+			<metadata label="MD_TITLE" value="">
+				<param type="field" key="MD_TITLE" />
+			</metadata>
+			<metadata label="MD_CREATOR" value="LINK_WIKIPEDIA">
+				<param type="field" key="MD_CREATOR" />
+				<param type="wikifield" key="MD_CREATOR" />
+			</metadata>
+			<metadata label="MD_SHELFMARKSOURCE" value="">
+				<param type="field" key="MD_SHELFMARKSOURCE" />
+			</metadata>
+			<!-- <metadata label="PI" value=""> <param type="field" key="PI" /> </metadata> -->
+		</titleBarMetadataList>
+
+		<sideBarMetadataList>
+			<template name="_DEFAULT">
+				<metadata>MD_TITLE</metadata>
+				<metadata>MD_AUTHOR</metadata>
+				<metadata>URN</metadata>
+			</template>
+			<template name="Map">
+				<metadata>MD_TITLE</metadata>
+				<metadata>MD_CREATOR</metadata>
+				<metadata>MD_SHELFMARKSOURCE</metadata>
+				<metadata>MD_COORDINATES</metadata>
+				<metadata>URN</metadata>
+			</template>
+		</sideBarMetadataList>
+
+		<!-- Only search hits of allowed docstruct types will be listed -->
+		<docStructWhiteList>
+			<docStruct>Monograph</docStruct>
+			<docStruct>MultiVolumeWork</docStruct>
+			<docStruct>Periodical</docStruct>
+			<docStruct>VolumeRun</docStruct>
+			<docStruct>Record</docStruct>
+			<docStruct>SingleLetter</docStruct>
+			<docStruct>Picture</docStruct>
+			<docStruct>Video</docStruct>
+			<docStruct>Audio</docStruct>
+			<docStruct>MusicSupplies</docStruct>
+			<docStruct>manuscript</docStruct>
+			<docStruct>Map</docStruct>
+			<docStruct>Incunable</docStruct>
+			<docStruct>Drawing</docStruct>
+		</docStructWhiteList>
+
+		<docstructDrilldown>
+			<enabled>true</enabled>
+		</docstructDrilldown>
+		<collectionDrilldown>
+			<enabled>true</enabled>
+		</collectionDrilldown>
+
+		<browsingMenu>
+			<enabled>true</enabled>
+			<hitsPerPage>70</hitsPerPage>
+			<luceneField>MD_AUTHOR_UNTOKENIZED</luceneField>
+			<luceneField>MD_TITLE_UNTOKENIZED</luceneField>
+			<luceneField>MD_TAXONOMY_UNTOKENIZED</luceneField>
+		</browsingMenu>
+
+	</metadata>
+
+	<!-- Temporary role management -->
+	<roles use="true">
+		<superuser>
+			<user id="0">.</user>
+		</superuser>
+	</roles>
+
+	<urnresolver>
+		<RequestParamName>urn</RequestParamName>
+		<LuceneFields>
+			<SourceField>URN</SourceField>
+			<PageField>IMAGEURN</PageField>
+			<TargetField>PI</TargetField>
+		</LuceneFields>
+		<TargetURLs>
+			<TargetWorkURL>/view/(0)/1/</TargetWorkURL>
+			<TargetPageURL>/view/(0)/(1)/</TargetPageURL>
+		</TargetURLs>
+		<doRedirectInsteadofForward>false</doRedirectInsteadofForward>
+
+	</urnresolver>
+	<!-- example for not displaying the user Account in the top navigation -->
+
+	<sidebar>
+		<page>
+			<visible>true</visible>
+		</page>
+		<toc>
+			<visible>true</visible>
+		</toc>
+		<thumbs>
+			<visible>true</visible>
+		</thumbs>
+		<metadata>
+			<visible>true</visible>
+		</metadata>
+		<fulltext>
+			<visible>true</visible>
+		</fulltext>
+		<dfg>
+			<visible>true</visible>
+		</dfg>
+		<opac>
+			<visible>true</visible>
+		</opac>
+		<sidebarToc>
+			<visible>false</visible>
+			<pageNumbersVisible>false</pageNumbersVisible>
+			<lengthBeforeCut>60</lengthBeforeCut>
+			<textListStyle>-</textListStyle>
+		</sidebarToc>
+	</sidebar>
+
+	<webGuiDisplay>
+		<userAccountNavigation>true</userAccountNavigation>
+		<!-- <displayTagCloudNavigation>false</displayTagCloudNavigation> > -->
+		<displayTagCloudStartpage>true</displayTagCloudStartpage>
+		<displaySearchResultNavigation>true</displaySearchResultNavigation>
+		<displayCategoriesNavigation>true</displayCategoriesNavigation>
+		<displaySidebarMetadata>false</displaySidebarMetadata>
+		<displayPDFdowloadInImageview>false</displayPDFdowloadInImageview>
+		<displayBreadcrumbs>true</displayBreadcrumbs>
+		<displayMetadataPageLinkBlock>true</displayMetadataPageLinkBlock>
+	</webGuiDisplay>
+
+	<rss>
+		<numberOfItems>50</numberOfItems>
+		<title>digiverso RSS Feed</title>
+		<description>latest imports</description>
+		<copyright>(c)intranda GmbH 2010 </copyright>
+	</rss>
+
+	<!-- Content upload -->
+	<content>
+		<ruleset>C:/digiverso/viewer/config/gdz.xml</ruleset>
+		<defaultCollection>Varia</defaultCollection>
+		<defaultDocstrct>OtherDocStrct</defaultDocstrct>
+	</content>
+
+
+</config>

@@ -1,0 +1,1302 @@
+<?xml version="1.0" ?>
+<alto xmlns="http://www.loc.gov/standards/alto/ns-v2#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto.xsd">
+  
+  <Description>
+    
+    <MeasurementUnit>pixel</MeasurementUnit>
+    
+    <sourceImageInformation>
+      
+      <fileName>00000009.xml</fileName>
+    </sourceImageInformation>
+    
+    <OCRProcessing ID="OCR_1">
+      
+      <preProcessingStep>
+        
+        <processingDateTime>2012-11-27T12:02:48</processingDateTime>
+        
+        <processingAgency>intranda GmbH, www.intranda.com</processingAgency>
+        
+        <processingSoftware>
+          
+          <softwareCreator>intranda GmbH, Germany</softwareCreator>
+          
+          <softwareName>intranda OCR Module for TaskManager</softwareName>
+          
+          <softwareVersion>1.0r42</softwareVersion>
+        </processingSoftware>
+      </preProcessingStep>
+      
+      <ocrProcessingStep>
+        
+        <processingSoftware>
+          
+          <softwareCreator>ABBYY (BIT Software), Russia</softwareCreator>
+          
+          <softwareName>FineReader Engine</softwareName>
+          
+          <softwareVersion>10</softwareVersion>
+        </processingSoftware>
+      </ocrProcessingStep>
+    </OCRProcessing>
+  </Description>
+  
+  <Tags>
+    <NamedEntityTag ID="Tag0" LABEL="Wilhelm" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag1" LABEL="I." TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag2" LABEL="Augusta." TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag3" LABEL="Luise." TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag4" LABEL="Friedrich Wilhelm." TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag5" LABEL="Friedrich" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag6" LABEL="Wilhelm" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag7" LABEL="Eurtius," TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag8" LABEL="Friedrich" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag9" LABEL="Wilhelm" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag10" LABEL="Bonn." TYPE="location"></NamedEntityTag>
+    <NamedEntityTag ID="Tag11" LABEL="Friedrich" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag12" LABEL="Wilhelm" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag13" LABEL="Viktoria," TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag14" LABEL="England." TYPE="location"></NamedEntityTag>
+    <NamedEntityTag ID="Tag15" LABEL="Wilhelm" TYPE="person"></NamedEntityTag>
+    <NamedEntityTag ID="Tag16" LABEL="II." TYPE="person"></NamedEntityTag>
+  </Tags>
+  <Layout>
+    
+    <Page ID="PAGE_29" HEIGHT="3572" WIDTH="2224" PHYSICAL_IMG_NR="29">
+      
+      <PrintSpace ID="PrintSpace_30" HPOS="620" VPOS="429" HEIGHT="94" WIDTH="109">
+        
+        <TextBlock ID="TextBlock_100" HPOS="946" VPOS="268" HEIGHT="52" WIDTH="39">
+          
+          <TextLine ID="TextLine_1155" HPOS="955" VPOS="276" HEIGHT="36" WIDTH="22">
+            
+            <String ID="Word_10324" CONTENT="7" HPOS="955" VPOS="276" HEIGHT="36" WIDTH="22"></String>
+          </TextLine>
+        </TextBlock>
+        
+        <TextBlock ID="TextBlock_101" HPOS="101" VPOS="406" HEIGHT="2811" WIDTH="1728">
+          
+          <TextLine ID="TextLine_1156" HPOS="1355" VPOS="414" HEIGHT="45" WIDTH="434">
+            
+            <String ID="Word_10325" CONTENT="Eltern" HPOS="1355" VPOS="414" HEIGHT="44" WIDTH="137"></String>
+            
+            <SP HPOS="1493" VPOS="425" WIDTH="48" ID="SP_9174"></SP>
+            
+            <String ID="Word_10326" CONTENT="waren" HPOS="1542" VPOS="425" HEIGHT="34" WIDTH="135"></String>
+            
+            <SP HPOS="1678" VPOS="415" WIDTH="46" ID="SP_9175"></SP>
+            
+            <String ID="Word_10327" CONTENT="der" HPOS="1725" VPOS="415" HEIGHT="43" WIDTH="64"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1157" HPOS="1323" VPOS="477" HEIGHT="57" WIDTH="492">
+            
+            <String ID="Word_10328" CONTENT="Kaiser" HPOS="1323" VPOS="478" HEIGHT="45" WIDTH="135"></String>
+            
+            <SP HPOS="1459" VPOS="478" WIDTH="16" ID="SP_9176"></SP>
+            
+            <String ID="Word_10329" CONTENT="Wilhelm" HPOS="1476" VPOS="478" HEIGHT="44" WIDTH="192" TAGREFS="Tag0"></String>
+            
+            <SP HPOS="1669" VPOS="479" WIDTH="16" ID="SP_9177"></SP>
+            
+            <String ID="Word_10330" CONTENT="I." HPOS="1686" VPOS="479" HEIGHT="42" WIDTH="29" TAGREFS="Tag1"></String>
+            
+            <SP HPOS="1716" VPOS="492" WIDTH="19" ID="SP_9178"></SP>
+            
+            <String ID="Word_10331" CONTENT="und" HPOS="1736" VPOS="477" HEIGHT="45" WIDTH="79"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1158" HPOS="1322" VPOS="543" HEIGHT="56" WIDTH="495">
+            
+            <String ID="Word_10332" CONTENT="die" HPOS="1322" VPOS="543" HEIGHT="45" WIDTH="61"></String>
+            
+            <SP HPOS="1384" VPOS="544" WIDTH="30" ID="SP_9179"></SP>
+            
+            <String ID="Word_10333" CONTENT="Kaiserin" HPOS="1415" VPOS="544" HEIGHT="44" WIDTH="180"></String>
+            
+            <SP HPOS="1596" VPOS="543" WIDTH="26" ID="SP_9180"></SP>
+            
+            <String ID="Word_10334" CONTENT="Augusta." HPOS="1623" VPOS="543" HEIGHT="55" WIDTH="194" TAGREFS="Tag2"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1159" HPOS="1325" VPOS="608" HEIGHT="56" WIDTH="494">
+            
+            <String ID="Word_10335" CONTENT="Er" HPOS="1325" VPOS="608" HEIGHT="44" WIDTH="56"></String>
+            
+            <SP HPOS="1382" VPOS="619" WIDTH="42" ID="SP_9181"></SP>
+            
+            <String ID="Word_10336" CONTENT="war" HPOS="1425" VPOS="619" HEIGHT="34" WIDTH="86"></String>
+            
+            <SP HPOS="1512" VPOS="608" WIDTH="47" ID="SP_9182"></SP>
+            
+            <String ID="Word_10337" CONTENT="der" HPOS="1560" VPOS="608" HEIGHT="44" WIDTH="65"></String>
+            
+            <SP HPOS="1626" VPOS="621" WIDTH="46" ID="SP_9183"></SP>
+            
+            <String ID="Word_10338" CONTENT="einzige" HPOS="1673" VPOS="608" HEIGHT="56" WIDTH="146"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1160" HPOS="1324" VPOS="673" HEIGHT="57" WIDTH="496">
+            
+            <String ID="Word_10339" CONTENT="Sohn" HPOS="1324" VPOS="674" HEIGHT="44" WIDTH="125"></String>
+            
+            <SP HPOS="1450" VPOS="687" WIDTH="37" ID="SP_9184"></SP>
+            
+            <String ID="Word_10340" CONTENT="und" HPOS="1488" VPOS="674" HEIGHT="44" WIDTH="79"></String>
+            
+            <SP HPOS="1568" VPOS="673" WIDTH="39" ID="SP_9185"></SP>
+            
+            <String ID="Word_10341" CONTENT="hatte" HPOS="1608" VPOS="673" HEIGHT="56" WIDTH="102"></String>
+            
+            <SP HPOS="1711" VPOS="686" WIDTH="31" ID="SP_9186"></SP>
+            
+            <String ID="Word_10342" CONTENT="nur" HPOS="1743" VPOS="686" HEIGHT="31" WIDTH="77"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1161" HPOS="1324" VPOS="739" HEIGHT="55" WIDTH="493">
+            
+            <String ID="Word_10343" CONTENT="noch" HPOS="1324" VPOS="740" HEIGHT="54" WIDTH="91"></String>
+            
+            <SP HPOS="1416" VPOS="740" WIDTH="46" ID="SP_9187"></SP>
+            
+            <String ID="Word_10344" CONTENT="eine" HPOS="1463" VPOS="739" HEIGHT="44" WIDTH="82"></String>
+            
+            <SP HPOS="1546" VPOS="740" WIDTH="38" ID="SP_9188"></SP>
+            
+            <String ID="Word_10345" CONTENT="Schwester," HPOS="1585" VPOS="739" HEIGHT="55" WIDTH="232"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1162" HPOS="1325" VPOS="803" HEIGHT="56" WIDTH="496">
+            
+            <String ID="Word_10346" CONTENT="namens" HPOS="1325" VPOS="810" HEIGHT="38" WIDTH="167"></String>
+            
+            <SP HPOS="1493" VPOS="803" WIDTH="15" ID="SP_9189"></SP>
+            
+            <String ID="Word_10347" CONTENT="Luise." HPOS="1509" VPOS="803" HEIGHT="45" WIDTH="123" TAGREFS="Tag3"></String>
+            
+            <SP HPOS="1633" VPOS="804" WIDTH="23" ID="SP_9190"></SP>
+            
+            <String ID="Word_10348" CONTENT="Das" HPOS="1657" VPOS="804" HEIGHT="43" WIDTH="95"></String>
+            
+            <SP HPOS="1753" VPOS="803" WIDTH="21" ID="SP_9191"></SP>
+            
+            <String ID="Word_10349" CONTENT="ist" HPOS="1775" VPOS="803" HEIGHT="56" WIDTH="46"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1163" HPOS="1326" VPOS="868" HEIGHT="55" WIDTH="493">
+            
+            <String ID="Word_10350" CONTENT="die" HPOS="1326" VPOS="869" HEIGHT="44" WIDTH="58"></String>
+            
+            <SP HPOS="1385" VPOS="880" WIDTH="30" ID="SP_9192"></SP>
+            
+            <String ID="Word_10351" CONTENT="verwitwete" HPOS="1416" VPOS="869" HEIGHT="44" WIDTH="234"></String>
+            
+            <SP HPOS="1651" VPOS="869" WIDTH="31" ID="SP_9193"></SP>
+            
+            <String ID="Word_10352" CONTENT="Groß¬" HPOS="1683" VPOS="868" HEIGHT="55" WIDTH="136"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1164" HPOS="1326" VPOS="933" HEIGHT="58" WIDTH="492">
+            
+            <String ID="Word_10353" CONTENT="herzogin" HPOS="1326" VPOS="934" HEIGHT="57" WIDTH="184"></String>
+            
+            <SP HPOS="1511" VPOS="944" WIDTH="37" ID="SP_9194"></SP>
+            
+            <String ID="Word_10354" CONTENT="von" HPOS="1549" VPOS="944" HEIGHT="34" WIDTH="79"></String>
+            
+            <SP HPOS="1629" VPOS="933" WIDTH="31" ID="SP_9195"></SP>
+            
+            <String ID="Word_10355" CONTENT="Baden." HPOS="1661" VPOS="933" HEIGHT="45" WIDTH="157"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1165" HPOS="1326" VPOS="999" HEIGHT="57" WIDTH="491">
+            
+            <String ID="Word_10356" CONTENT="Ehe" HPOS="1326" VPOS="1000" HEIGHT="44" WIDTH="82"></String>
+            
+            <SP HPOS="1409" VPOS="1014" WIDTH="31" ID="SP_9196"></SP>
+            
+            <String ID="Word_10357" CONTENT="er" HPOS="1441" VPOS="1014" HEIGHT="30" WIDTH="39"></String>
+            
+            <SP HPOS="1481" VPOS="999" WIDTH="19" ID="SP_9197"></SP>
+            
+            <String ID="Word_10358" CONTENT="Kaiser" HPOS="1501" VPOS="999" HEIGHT="45" WIDTH="136"></String>
+            
+            <SP HPOS="1638" VPOS="1009" WIDTH="31" ID="SP_9198"></SP>
+            
+            <String ID="Word_10359" CONTENT="wurde," HPOS="1670" VPOS="999" HEIGHT="52" WIDTH="147"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1166" HPOS="1325" VPOS="1064" HEIGHT="57" WIDTH="490">
+            
+            <String ID="Word_10360" CONTENT="hieß" HPOS="1325" VPOS="1066" HEIGHT="55" WIDTH="87"></String>
+            
+            <SP HPOS="1413" VPOS="1066" WIDTH="68" ID="SP_9199"></SP>
+            
+            <String ID="Word_10361" CONTENT="er" HPOS="1482" VPOS="1079" HEIGHT="30" WIDTH="39"></String>
+            
+            <SP HPOS="1522" VPOS="1064" WIDTH="65" ID="SP_9200"></SP>
+            
+            <String ID="Word_10362" CONTENT="Kronprinz" HPOS="1588" VPOS="1064" HEIGHT="56" WIDTH="227"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1167" HPOS="1323" VPOS="1129" HEIGHT="58" WIDTH="437">
+            
+            <String ID="Word_10363" CONTENT="Friedrich" HPOS="1323" VPOS="1130" HEIGHT="57" WIDTH="198" TAGREFS="Tag4"></String>
+            
+            <SP HPOS="1522" VPOS="1129" WIDTH="32" ID="SP_9201"></SP>
+            
+            <String ID="Word_10364" CONTENT="Wilhelm." HPOS="1555" VPOS="1129" HEIGHT="57" WIDTH="205" TAGREFS="Tag4"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1168" HPOS="1421" VPOS="1196" HEIGHT="53" WIDTH="393">
+            
+            <String ID="Word_10365" CONTENT="2." HPOS="1421" VPOS="1196" HEIGHT="43" WIDTH="43"></String>
+            
+            <SP HPOS="1465" VPOS="1197" WIDTH="48" ID="SP_9202"></SP>
+            
+            <String ID="Word_10366" CONTENT="Vorbereitung" HPOS="1514" VPOS="1196" HEIGHT="53" WIDTH="300"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1169" HPOS="1325" VPOS="1260" HEIGHT="55" WIDTH="490">
+            
+            <String ID="Word_10367" CONTENT="auf" HPOS="1325" VPOS="1262" HEIGHT="53" WIDTH="67"></String>
+            
+            <SP HPOS="1393" VPOS="1262" WIDTH="51" ID="SP_9203"></SP>
+            
+            <String ID="Word_10368" CONTENT="den" HPOS="1445" VPOS="1263" HEIGHT="42" WIDTH="76"></String>
+            
+            <SP HPOS="1522" VPOS="1261" WIDTH="46" ID="SP_9204"></SP>
+            
+            <String ID="Word_10369" CONTENT="Beruf" HPOS="1569" VPOS="1260" HEIGHT="54" WIDTH="130"></String>
+            
+            <SP HPOS="1700" VPOS="1260" WIDTH="52" ID="SP_9205"></SP>
+            
+            <String ID="Word_10370" CONTENT="alr" HPOS="1753" VPOS="1268" HEIGHT="36" WIDTH="62"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1170" HPOS="1322" VPOS="1325" HEIGHT="57" WIDTH="496">
+            
+            <String ID="Word_10371" CONTENT="Herrscher." HPOS="1322" VPOS="1328" HEIGHT="54" WIDTH="217"></String>
+            
+            <SP HPOS="1540" VPOS="1325" WIDTH="68" ID="SP_9206"></SP>
+            
+            <String ID="Word_10372" CONTENT="Wie" HPOS="1609" VPOS="1325" HEIGHT="44" WIDTH="90"></String>
+            
+            <SP HPOS="1700" VPOS="1339" WIDTH="44" ID="SP_9207"></SP>
+            
+            <String ID="Word_10373" CONTENT="alle" HPOS="1745" VPOS="1325" HEIGHT="45" WIDTH="73"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1171" HPOS="1323" VPOS="1391" HEIGHT="58" WIDTH="492">
+            
+            <String ID="Word_10374" CONTENT="Prinzen" HPOS="1323" VPOS="1393" HEIGHT="56" WIDTH="176"></String>
+            
+            <SP HPOS="1500" VPOS="1392" WIDTH="46" ID="SP_9208"></SP>
+            
+            <String ID="Word_10375" CONTENT="des" HPOS="1547" VPOS="1392" HEIGHT="43" WIDTH="68"></String>
+            
+            <SP HPOS="1616" VPOS="1391" WIDTH="44" ID="SP_9209"></SP>
+            
+            <String ID="Word_10376" CONTENT="Hauses" HPOS="1661" VPOS="1391" HEIGHT="57" WIDTH="154"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1172" HPOS="1322" VPOS="1456" HEIGHT="60" WIDTH="495">
+            
+            <String ID="Word_10377" CONTENT="Hohenzollern," HPOS="1322" VPOS="1456" HEIGHT="60" WIDTH="312"></String>
+            
+            <SP HPOS="1635" VPOS="1467" WIDTH="47" ID="SP_9210"></SP>
+            
+            <String ID="Word_10378" CONTENT="wurde" HPOS="1683" VPOS="1457" HEIGHT="43" WIDTH="134"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1173" HPOS="1323" VPOS="1521" HEIGHT="58" WIDTH="494">
+            
+            <String ID="Word_10379" CONTENT="auch" HPOS="1323" VPOS="1524" HEIGHT="55" WIDTH="89"></String>
+            
+            <SP HPOS="1413" VPOS="1523" WIDTH="59" ID="SP_9211"></SP>
+            
+            <String ID="Word_10380" CONTENT="der" HPOS="1473" VPOS="1523" HEIGHT="43" WIDTH="65"></String>
+            
+            <SP HPOS="1539" VPOS="1521" WIDTH="49" ID="SP_9212"></SP>
+            
+            <String ID="Word_10381" CONTENT="Kronprinz" HPOS="1589" VPOS="1521" HEIGHT="57" WIDTH="228"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1174" HPOS="1349" VPOS="1586" HEIGHT="59" WIDTH="439">
+            
+            <String ID="Word_10382" CONTENT="Friedrich" HPOS="1349" VPOS="1588" HEIGHT="57" WIDTH="197" TAGREFS="Tag5"></String>
+            
+            <SP HPOS="1547" VPOS="1586" WIDTH="48" ID="SP_9213"></SP>
+            
+            <String ID="Word_10383" CONTENT="Wilhelm" HPOS="1596" VPOS="1586" HEIGHT="57" WIDTH="192" TAGREFS="Tag6"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1175" HPOS="1320" VPOS="1652" HEIGHT="59" WIDTH="497">
+            
+            <String ID="Word_10384" CONTENT="schon" HPOS="1320" VPOS="1655" HEIGHT="56" WIDTH="109"></String>
+            
+            <SP HPOS="1430" VPOS="1653" WIDTH="45" ID="SP_9214"></SP>
+            
+            <String ID="Word_10385" CONTENT="im" HPOS="1476" VPOS="1653" HEIGHT="44" WIDTH="54"></String>
+            
+            <SP HPOS="1531" VPOS="1652" WIDTH="46" ID="SP_9215"></SP>
+            
+            <String ID="Word_10386" CONTENT="Alter" HPOS="1578" VPOS="1652" HEIGHT="44" WIDTH="113"></String>
+            
+            <SP HPOS="1692" VPOS="1663" WIDTH="46" ID="SP_9216"></SP>
+            
+            <String ID="Word_10387" CONTENT="von" HPOS="1739" VPOS="1663" HEIGHT="34" WIDTH="78"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1176" HPOS="1320" VPOS="1719" HEIGHT="56" WIDTH="496">
+            
+            <String ID="Word_10388" CONTENT="8" HPOS="1320" VPOS="1726" HEIGHT="39" WIDTH="24"></String>
+            
+            <SP HPOS="1345" VPOS="1720" WIDTH="13" ID="SP_9217"></SP>
+            
+            <String ID="Word_10389" CONTENT="Jahren" HPOS="1359" VPOS="1720" HEIGHT="50" WIDTH="161"></String>
+            
+            <SP HPOS="1521" VPOS="1733" WIDTH="16" ID="SP_9218"></SP>
+            
+            <String ID="Word_10390" CONTENT="mit" HPOS="1538" VPOS="1719" HEIGHT="44" WIDTH="72"></String>
+            
+            <SP HPOS="1611" VPOS="1724" WIDTH="16" ID="SP_9219"></SP>
+            
+            <String ID="Word_10391" CONTENT="2" HPOS="1628" VPOS="1724" HEIGHT="38" WIDTH="25"></String>
+            
+            <SP HPOS="1654" VPOS="1719" WIDTH="18" ID="SP_9220"></SP>
+            
+            <String ID="Word_10392" CONTENT="Spiel¬" HPOS="1673" VPOS="1719" HEIGHT="55" WIDTH="143"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1177" HPOS="1319" VPOS="1785" HEIGHT="54" WIDTH="497">
+            
+            <String ID="Word_10393" CONTENT="kameraden" HPOS="1319" VPOS="1786" HEIGHT="44" WIDTH="227"></String>
+            
+            <SP HPOS="1547" VPOS="1785" WIDTH="46" ID="SP_9221"></SP>
+            
+            <String ID="Word_10394" CONTENT="im" HPOS="1594" VPOS="1785" HEIGHT="44" WIDTH="55"></String>
+            
+            <SP HPOS="1650" VPOS="1785" WIDTH="47" ID="SP_9222"></SP>
+            
+            <String ID="Word_10395" CONTENT="Exer¬" HPOS="1698" VPOS="1785" HEIGHT="44" WIDTH="118"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1178" HPOS="1319" VPOS="1849" HEIGHT="59" WIDTH="497">
+            
+            <String ID="Word_10396" CONTENT="zieren" HPOS="1319" VPOS="1851" HEIGHT="57" WIDTH="123"></String>
+            
+            <SP HPOS="1443" VPOS="1865" WIDTH="18" ID="SP_9223"></SP>
+            
+            <String ID="Word_10397" CONTENT="geübt." HPOS="1462" VPOS="1849" HEIGHT="57" WIDTH="128"></String>
+            
+            <SP HPOS="1591" VPOS="1850" WIDTH="35" ID="SP_9224"></SP>
+            
+            <String ID="Word_10398" CONTENT="Er" HPOS="1627" VPOS="1850" HEIGHT="44" WIDTH="57"></String>
+            
+            <SP HPOS="1685" VPOS="1864" WIDTH="16" ID="SP_9225"></SP>
+            
+            <String ID="Word_10399" CONTENT="zeich¬" HPOS="1702" VPOS="1850" HEIGHT="57" WIDTH="114"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1179" HPOS="1318" VPOS="1916" HEIGHT="56" WIDTH="496">
+            
+            <String ID="Word_10400" CONTENT="nete" HPOS="1318" VPOS="1923" HEIGHT="38" WIDTH="82"></String>
+            
+            <SP HPOS="1401" VPOS="1916" WIDTH="30" ID="SP_9226"></SP>
+            
+            <String ID="Word_10401" CONTENT="sich" HPOS="1432" VPOS="1916" HEIGHT="55" WIDTH="67"></String>
+            
+            <SP HPOS="1500" VPOS="1916" WIDTH="33" ID="SP_9227"></SP>
+            
+            <String ID="Word_10402" CONTENT="immer" HPOS="1534" VPOS="1916" HEIGHT="43" WIDTH="139"></String>
+            
+            <SP HPOS="1674" VPOS="1916" WIDTH="26" ID="SP_9228"></SP>
+            
+            <String ID="Word_10403" CONTENT="durch" HPOS="1701" VPOS="1916" HEIGHT="56" WIDTH="113"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1180" HPOS="113" VPOS="1975" HEIGHT="65" WIDTH="1704">
+            
+            <String ID="Word_10404" CONTENT="Mut" HPOS="113" VPOS="1981" HEIGHT="45" WIDTH="99"></String>
+            
+            <SP HPOS="213" VPOS="1987" WIDTH="21" ID="SP_9229"></SP>
+            
+            <String ID="Word_10405" CONTENT="und" HPOS="235" VPOS="1984" HEIGHT="43" WIDTH="77"></String>
+            
+            <SP HPOS="313" VPOS="1983" WIDTH="22" ID="SP_9230"></SP>
+            
+            <String ID="Word_10406" CONTENT="Wahrheitsliebe" HPOS="336" VPOS="1983" HEIGHT="56" WIDTH="335"></String>
+            
+            <SP HPOS="672" VPOS="1998" WIDTH="23" ID="SP_9231"></SP>
+            
+            <String ID="Word_10407" CONTENT="aus." HPOS="696" VPOS="1991" HEIGHT="37" WIDTH="89"></String>
+            
+            <SP HPOS="786" VPOS="1985" WIDTH="44" ID="SP_9232"></SP>
+            
+            <String ID="Word_10408" CONTENT="Die" HPOS="831" VPOS="1985" HEIGHT="43" WIDTH="79"></String>
+            
+            <SP HPOS="911" VPOS="1998" WIDTH="22" ID="SP_9233"></SP>
+            
+            <String ID="Word_10409" CONTENT="ersten" HPOS="934" VPOS="1990" HEIGHT="50" WIDTH="120"></String>
+            
+            <SP HPOS="1055" VPOS="1975" WIDTH="15" ID="SP_9234"></SP>
+            
+            <String ID="Word_10410" CONTENT="Übungen" HPOS="1071" VPOS="1975" HEIGHT="54" WIDTH="197"></String>
+            
+            <SP HPOS="1269" VPOS="1984" WIDTH="21" ID="SP_9235"></SP>
+            
+            <String ID="Word_10411" CONTENT="im" HPOS="1291" VPOS="1984" HEIGHT="43" WIDTH="55"></String>
+            
+            <SP HPOS="1347" VPOS="1982" WIDTH="16" ID="SP_9236"></SP>
+            
+            <String ID="Word_10412" CONTENT="Lesen" HPOS="1364" VPOS="1982" HEIGHT="43" WIDTH="113"></String>
+            
+            <SP HPOS="1478" VPOS="1994" WIDTH="22" ID="SP_9237"></SP>
+            
+            <String ID="Word_10413" CONTENT="und" HPOS="1501" VPOS="1982" HEIGHT="42" WIDTH="79"></String>
+            
+            <SP HPOS="1581" VPOS="1981" WIDTH="18" ID="SP_9238"></SP>
+            
+            <String ID="Word_10414" CONTENT="Schreiben" HPOS="1600" VPOS="1980" HEIGHT="57" WIDTH="217"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1181" HPOS="112" VPOS="2046" HEIGHT="60" WIDTH="1704">
+            
+            <String ID="Word_10415" CONTENT="machte" HPOS="112" VPOS="2047" HEIGHT="56" WIDTH="139"></String>
+            
+            <SP HPOS="252" VPOS="2061" WIDTH="31" ID="SP_9239"></SP>
+            
+            <String ID="Word_10416" CONTENT="er" HPOS="284" VPOS="2062" HEIGHT="30" WIDTH="39"></String>
+            
+            <SP HPOS="324" VPOS="2048" WIDTH="30" ID="SP_9240"></SP>
+            
+            <String ID="Word_10417" CONTENT="bei" HPOS="355" VPOS="2048" HEIGHT="44" WIDTH="60"></String>
+            
+            <SP HPOS="416" VPOS="2048" WIDTH="31" ID="SP_9241"></SP>
+            
+            <String ID="Word_10418" CONTENT="dem" HPOS="448" VPOS="2049" HEIGHT="43" WIDTH="84"></String>
+            
+            <SP HPOS="533" VPOS="2049" WIDTH="19" ID="SP_9242"></SP>
+            
+            <String ID="Word_10419" CONTENT="Lehrer" HPOS="553" VPOS="2049" HEIGHT="44" WIDTH="142"></String>
+            
+            <SP HPOS="696" VPOS="2049" WIDTH="23" ID="SP_9243"></SP>
+            
+            <String ID="Word_10420" CONTENT="Ernst." HPOS="720" VPOS="2049" HEIGHT="55" WIDTH="129"></String>
+            
+            <SP HPOS="850" VPOS="2049" WIDTH="44" ID="SP_9244"></SP>
+            
+            <String ID="Word_10421" CONTENT="Als" HPOS="895" VPOS="2049" HEIGHT="44" WIDTH="79"></String>
+            
+            <SP HPOS="975" VPOS="2050" WIDTH="22" ID="SP_9245"></SP>
+            
+            <String ID="Word_10422" CONTENT="der" HPOS="998" VPOS="2050" HEIGHT="43" WIDTH="65"></String>
+            
+            <SP HPOS="1064" VPOS="2050" WIDTH="22" ID="SP_9246"></SP>
+            
+            <String ID="Word_10423" CONTENT="Prinz" HPOS="1087" VPOS="2050" HEIGHT="56" WIDTH="127"></String>
+            
+            <SP HPOS="1215" VPOS="2055" WIDTH="24" ID="SP_9247"></SP>
+            
+            <String ID="Word_10424" CONTENT="13" HPOS="1240" VPOS="2054" HEIGHT="40" WIDTH="53"></String>
+            
+            <SP HPOS="1294" VPOS="2049" WIDTH="21" ID="SP_9248"></SP>
+            
+            <String ID="Word_10425" CONTENT="Jahre" HPOS="1316" VPOS="2049" HEIGHT="49" WIDTH="132"></String>
+            
+            <SP HPOS="1449" VPOS="2060" WIDTH="33" ID="SP_9249"></SP>
+            
+            <String ID="Word_10426" CONTENT="alt" HPOS="1483" VPOS="2047" HEIGHT="42" WIDTH="57"></String>
+            
+            <SP HPOS="1541" VPOS="2050" WIDTH="31" ID="SP_9250"></SP>
+            
+            <String ID="Word_10427" CONTENT="war," HPOS="1573" VPOS="2056" HEIGHT="43" WIDTH="98"></String>
+            
+            <SP HPOS="1672" VPOS="2049" WIDTH="30" ID="SP_9251"></SP>
+            
+            <String ID="Word_10428" CONTENT="über¬" HPOS="1703" VPOS="2046" HEIGHT="44" WIDTH="113"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1182" HPOS="113" VPOS="2111" HEIGHT="59" WIDTH="1705">
+            
+            <String ID="Word_10429" CONTENT="nahm" HPOS="113" VPOS="2125" HEIGHT="43" WIDTH="119"></String>
+            
+            <SP HPOS="233" VPOS="2126" WIDTH="31" ID="SP_9252"></SP>
+            
+            <String ID="Word_10430" CONTENT="ein" HPOS="265" VPOS="2112" HEIGHT="45" WIDTH="62"></String>
+            
+            <SP HPOS="328" VPOS="2112" WIDTH="31" ID="SP_9253"></SP>
+            
+            <String ID="Word_10431" CONTENT="berühmter" HPOS="360" VPOS="2112" HEIGHT="57" WIDTH="221"></String>
+            
+            <SP HPOS="582" VPOS="2114" WIDTH="31" ID="SP_9254"></SP>
+            
+            <String ID="Word_10432" CONTENT="Gelehrter," HPOS="614" VPOS="2114" HEIGHT="56" WIDTH="219"></String>
+            
+            <SP HPOS="834" VPOS="2129" WIDTH="33" ID="SP_9255"></SP>
+            
+            <String ID="Word_10433" CONTENT="namens" HPOS="868" VPOS="2121" HEIGHT="38" WIDTH="169"></String>
+            
+            <SP HPOS="1038" VPOS="2115" WIDTH="32" ID="SP_9256"></SP>
+            
+            <String ID="Word_10434" CONTENT="Eurtius," HPOS="1071" VPOS="2115" HEIGHT="52" WIDTH="185" TAGREFS="Tag7"></String>
+            
+            <SP HPOS="1257" VPOS="2114" WIDTH="32" ID="SP_9257"></SP>
+            
+            <String ID="Word_10435" CONTENT="den" HPOS="1290" VPOS="2114" HEIGHT="44" WIDTH="72"></String>
+            
+            <SP HPOS="1363" VPOS="2112" WIDTH="31" ID="SP_9258"></SP>
+            
+            <String ID="Word_10436" CONTENT="Unterricht." HPOS="1395" VPOS="2111" HEIGHT="57" WIDTH="230"></String>
+            
+            <SP HPOS="1626" VPOS="2111" WIDTH="54" ID="SP_9259"></SP>
+            
+            <String ID="Word_10437" CONTENT="Es" HPOS="1681" VPOS="2111" HEIGHT="44" WIDTH="59"></String>
+            
+            <SP HPOS="1741" VPOS="2112" WIDTH="30" ID="SP_9260"></SP>
+            
+            <String ID="Word_10438" CONTENT="ist" HPOS="1772" VPOS="2112" HEIGHT="56" WIDTH="46"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1183" HPOS="112" VPOS="2176" HEIGHT="60" WIDTH="1706">
+            
+            <String ID="Word_10439" CONTENT="eine" HPOS="112" VPOS="2189" HEIGHT="31" WIDTH="80"></String>
+            
+            <SP HPOS="193" VPOS="2190" WIDTH="32" ID="SP_9261"></SP>
+            
+            <String ID="Word_10440" CONTENT="alte" HPOS="226" VPOS="2178" HEIGHT="43" WIDTH="75"></String>
+            
+            <SP HPOS="302" VPOS="2178" WIDTH="31" ID="SP_9262"></SP>
+            
+            <String ID="Word_10441" CONTENT="Sitte" HPOS="334" VPOS="2178" HEIGHT="43" WIDTH="109"></String>
+            
+            <SP HPOS="444" VPOS="2178" WIDTH="30" ID="SP_9263"></SP>
+            
+            <String ID="Word_10442" CONTENT="in" HPOS="475" VPOS="2178" HEIGHT="44" WIDTH="42"></String>
+            
+            <SP HPOS="518" VPOS="2192" WIDTH="32" ID="SP_9264"></SP>
+            
+            <String ID="Word_10443" CONTENT="unserem" HPOS="551" VPOS="2179" HEIGHT="55" WIDTH="172"></String>
+            
+            <SP HPOS="724" VPOS="2179" WIDTH="30" ID="SP_9265"></SP>
+            
+            <String ID="Word_10444" CONTENT="Königshause," HPOS="755" VPOS="2179" HEIGHT="57" WIDTH="293"></String>
+            
+            <SP HPOS="1049" VPOS="2181" WIDTH="40" ID="SP_9266"></SP>
+            
+            <String ID="Word_10445" CONTENT="daß" HPOS="1090" VPOS="2180" HEIGHT="54" WIDTH="77"></String>
+            
+            <SP HPOS="1168" VPOS="2180" WIDTH="31" ID="SP_9267"></SP>
+            
+            <String ID="Word_10446" CONTENT="die" HPOS="1200" VPOS="2179" HEIGHT="44" WIDTH="60"></String>
+            
+            <SP HPOS="1261" VPOS="2179" WIDTH="31" ID="SP_9268"></SP>
+            
+            <String ID="Word_10447" CONTENT="Prinzen" HPOS="1293" VPOS="2179" HEIGHT="55" WIDTH="176"></String>
+            
+            <SP HPOS="1470" VPOS="2190" WIDTH="32" ID="SP_9269"></SP>
+            
+            <String ID="Word_10448" CONTENT="ein" HPOS="1503" VPOS="2176" HEIGHT="44" WIDTH="61"></String>
+            
+            <SP HPOS="1565" VPOS="2177" WIDTH="30" ID="SP_9270"></SP>
+            
+            <String ID="Word_10449" CONTENT="Handwerk" HPOS="1596" VPOS="2177" HEIGHT="56" WIDTH="222"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1184" HPOS="112" VPOS="2241" HEIGHT="59" WIDTH="1689">
+            
+            <String ID="Word_10450" CONTENT="erlernen;" HPOS="112" VPOS="2241" HEIGHT="56" WIDTH="193"></String>
+            
+            <SP HPOS="306" VPOS="2242" WIDTH="44" ID="SP_9271"></SP>
+            
+            <String ID="Word_10451" CONTENT="der" HPOS="351" VPOS="2242" HEIGHT="44" WIDTH="65"></String>
+            
+            <SP HPOS="417" VPOS="2242" WIDTH="41" ID="SP_9272"></SP>
+            
+            <String ID="Word_10452" CONTENT="Kronprinz" HPOS="459" VPOS="2242" HEIGHT="58" WIDTH="226"></String>
+            
+            <SP HPOS="686" VPOS="2245" WIDTH="43" ID="SP_9273"></SP>
+            
+            <String ID="Word_10453" CONTENT="Friedrich" HPOS="730" VPOS="2244" HEIGHT="56" WIDTH="198" TAGREFS="Tag8"></String>
+            
+            <SP HPOS="929" VPOS="2244" WIDTH="38" ID="SP_9274"></SP>
+            
+            <String ID="Word_10454" CONTENT="Wilhelm" HPOS="968" VPOS="2244" HEIGHT="56" WIDTH="194" TAGREFS="Tag9"></String>
+            
+            <SP HPOS="1163" VPOS="2258" WIDTH="44" ID="SP_9275"></SP>
+            
+            <String ID="Word_10455" CONTENT="erlernte" HPOS="1208" VPOS="2249" HEIGHT="39" WIDTH="164"></String>
+            
+            <SP HPOS="1373" VPOS="2243" WIDTH="43" ID="SP_9276"></SP>
+            
+            <String ID="Word_10456" CONTENT="die" HPOS="1417" VPOS="2242" HEIGHT="44" WIDTH="59"></String>
+            
+            <SP HPOS="1477" VPOS="2241" WIDTH="37" ID="SP_9277"></SP>
+            
+            <String ID="Word_10457" CONTENT="Buchbinderei" HPOS="1515" VPOS="2241" HEIGHT="57" WIDTH="286"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1185" HPOS="110" VPOS="2304" HEIGHT="62" WIDTH="1707">
+            
+            <String ID="Word_10458" CONTENT="Im" HPOS="110" VPOS="2304" HEIGHT="49" WIDTH="74"></String>
+            
+            <SP HPOS="185" VPOS="2306" WIDTH="31" ID="SP_9278"></SP>
+            
+            <String ID="Word_10459" CONTENT="Alter" HPOS="217" VPOS="2306" HEIGHT="43" WIDTH="112"></String>
+            
+            <SP HPOS="330" VPOS="2317" WIDTH="30" ID="SP_9279"></SP>
+            
+            <String ID="Word_10460" CONTENT="von" HPOS="361" VPOS="2317" HEIGHT="33" WIDTH="79"></String>
+            
+            <SP HPOS="441" VPOS="2312" WIDTH="32" ID="SP_9280"></SP>
+            
+            <String ID="Word_10461" CONTENT="10" HPOS="474" VPOS="2312" HEIGHT="39" WIDTH="54"></String>
+            
+            <SP HPOS="529" VPOS="2308" WIDTH="29" ID="SP_9281"></SP>
+            
+            <String ID="Word_10462" CONTENT="Jahren" HPOS="559" VPOS="2308" HEIGHT="49" WIDTH="160"></String>
+            
+            <SP HPOS="720" VPOS="2320" WIDTH="39" ID="SP_9282"></SP>
+            
+            <String ID="Word_10463" CONTENT="war" HPOS="760" VPOS="2320" HEIGHT="32" WIDTH="85"></String>
+            
+            <SP HPOS="846" VPOS="2310" WIDTH="39" ID="SP_9283"></SP>
+            
+            <String ID="Word_10464" CONTENT="der" HPOS="886" VPOS="2310" HEIGHT="43" WIDTH="65"></String>
+            
+            <SP HPOS="952" VPOS="2309" WIDTH="31" ID="SP_9284"></SP>
+            
+            <String ID="Word_10465" CONTENT="Prinz" HPOS="984" VPOS="2309" HEIGHT="57" WIDTH="128"></String>
+            
+            <SP HPOS="1113" VPOS="2309" WIDTH="31" ID="SP_9285"></SP>
+            
+            <String ID="Word_10466" CONTENT="Offizier" HPOS="1145" VPOS="2309" HEIGHT="56" WIDTH="167"></String>
+            
+            <SP HPOS="1313" VPOS="2323" WIDTH="32" ID="SP_9286"></SP>
+            
+            <String ID="Word_10467" CONTENT="geworden;" HPOS="1346" VPOS="2321" HEIGHT="44" WIDTH="229"></String>
+            
+            <SP HPOS="1576" VPOS="2321" WIDTH="38" ID="SP_9287"></SP>
+            
+            <String ID="Word_10468" CONTENT="aber" HPOS="1615" VPOS="2321" HEIGHT="31" WIDTH="92"></String>
+            
+            <SP HPOS="1708" VPOS="2322" WIDTH="37" ID="SP_9288"></SP>
+            
+            <String ID="Word_10469" CONTENT="erst" HPOS="1746" VPOS="2309" HEIGHT="55" WIDTH="71"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1186" HPOS="112" VPOS="2369" HEIGHT="62" WIDTH="1703">
+            
+            <String ID="Word_10470" CONTENT="als" HPOS="112" VPOS="2369" HEIGHT="43" WIDTH="63"></String>
+            
+            <SP HPOS="176" VPOS="2375" WIDTH="43" ID="SP_9289"></SP>
+            
+            <String ID="Word_10471" CONTENT="er" HPOS="220" VPOS="2384" HEIGHT="29" WIDTH="39"></String>
+            
+            <SP HPOS="260" VPOS="2376" WIDTH="39" ID="SP_9290"></SP>
+            
+            <String ID="Word_10472" CONTENT="18" HPOS="300" VPOS="2375" HEIGHT="39" WIDTH="51"></String>
+            
+            <SP HPOS="352" VPOS="2371" WIDTH="37" ID="SP_9291"></SP>
+            
+            <String ID="Word_10473" CONTENT="Jahre" HPOS="390" VPOS="2371" HEIGHT="49" WIDTH="131"></String>
+            
+            <SP HPOS="522" VPOS="2386" WIDTH="43" ID="SP_9292"></SP>
+            
+            <String ID="Word_10474" CONTENT="alt" HPOS="566" VPOS="2374" HEIGHT="42" WIDTH="56"></String>
+            
+            <SP HPOS="623" VPOS="2379" WIDTH="42" ID="SP_9293"></SP>
+            
+            <String ID="Word_10475" CONTENT="war," HPOS="666" VPOS="2384" HEIGHT="41" WIDTH="98"></String>
+            
+            <SP HPOS="765" VPOS="2379" WIDTH="45" ID="SP_9294"></SP>
+            
+            <String ID="Word_10476" CONTENT="trat" HPOS="811" VPOS="2379" HEIGHT="38" WIDTH="78"></String>
+            
+            <SP HPOS="890" VPOS="2382" WIDTH="43" ID="SP_9295"></SP>
+            
+            <String ID="Word_10477" CONTENT="er" HPOS="934" VPOS="2388" HEIGHT="30" WIDTH="39"></String>
+            
+            <SP HPOS="974" VPOS="2375" WIDTH="42" ID="SP_9296"></SP>
+            
+            <String ID="Word_10478" CONTENT="in" HPOS="1017" VPOS="2375" HEIGHT="43" WIDTH="41"></String>
+            
+            <SP HPOS="1059" VPOS="2375" WIDTH="45" ID="SP_9297"></SP>
+            
+            <String ID="Word_10479" CONTENT="die" HPOS="1105" VPOS="2375" HEIGHT="43" WIDTH="59"></String>
+            
+            <SP HPOS="1165" VPOS="2374" WIDTH="38" ID="SP_9298"></SP>
+            
+            <String ID="Word_10480" CONTENT="Reihen" HPOS="1204" VPOS="2374" HEIGHT="44" WIDTH="154"></String>
+            
+            <SP HPOS="1359" VPOS="2374" WIDTH="38" ID="SP_9299"></SP>
+            
+            <String ID="Word_10481" CONTENT="des" HPOS="1398" VPOS="2374" HEIGHT="43" WIDTH="69"></String>
+            
+            <SP HPOS="1468" VPOS="2372" WIDTH="38" ID="SP_9300"></SP>
+            
+            <String ID="Word_10482" CONTENT="Militärs" HPOS="1507" VPOS="2372" HEIGHT="44" WIDTH="194"></String>
+            
+            <SP HPOS="1702" VPOS="2379" WIDTH="37" ID="SP_9301"></SP>
+            
+            <String ID="Word_10483" CONTENT="ein." HPOS="1740" VPOS="2373" HEIGHT="44" WIDTH="75"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1187" HPOS="111" VPOS="2434" HEIGHT="62" WIDTH="1705">
+            
+            <String ID="Word_10484" CONTENT="Da" HPOS="111" VPOS="2434" HEIGHT="43" WIDTH="68"></String>
+            
+            <SP HPOS="180" VPOS="2435" WIDTH="36" ID="SP_9302"></SP>
+            
+            <String ID="Word_10485" CONTENT="sagte" HPOS="217" VPOS="2435" HEIGHT="56" WIDTH="102"></String>
+            
+            <SP HPOS="320" VPOS="2436" WIDTH="36" ID="SP_9303"></SP>
+            
+            <String ID="Word_10486" CONTENT="sein" HPOS="357" VPOS="2436" HEIGHT="55" WIDTH="77"></String>
+            
+            <SP HPOS="435" VPOS="2436" WIDTH="37" ID="SP_9304"></SP>
+            
+            <String ID="Word_10487" CONTENT="Vater" HPOS="473" VPOS="2436" HEIGHT="44" WIDTH="124"></String>
+            
+            <SP HPOS="598" VPOS="2451" WIDTH="37" ID="SP_9305"></SP>
+            
+            <String ID="Word_10488" CONTENT="zu" HPOS="636" VPOS="2452" HEIGHT="42" WIDTH="46"></String>
+            
+            <SP HPOS="683" VPOS="2439" WIDTH="37" ID="SP_9306"></SP>
+            
+            <String ID="Word_10489" CONTENT="den" HPOS="721" VPOS="2439" HEIGHT="43" WIDTH="72"></String>
+            
+            <SP HPOS="794" VPOS="2439" WIDTH="39" ID="SP_9307"></SP>
+            
+            <String ID="Word_10490" CONTENT="höheren" HPOS="834" VPOS="2439" HEIGHT="55" WIDTH="170"></String>
+            
+            <SP HPOS="1005" VPOS="2439" WIDTH="36" ID="SP_9308"></SP>
+            
+            <String ID="Word_10491" CONTENT="Offizieren:" HPOS="1042" VPOS="2439" HEIGHT="55" WIDTH="236"></String>
+            
+            <SP HPOS="1279" VPOS="2454" WIDTH="44" ID="SP_9309"></SP>
+            
+            <String ID="Word_10492" CONTENT="„Ich" HPOS="1324" VPOS="2439" HEIGHT="55" WIDTH="98"></String>
+            
+            <SP HPOS="1423" VPOS="2439" WIDTH="39" ID="SP_9310"></SP>
+            
+            <String ID="Word_10493" CONTENT="vertraue" HPOS="1463" VPOS="2443" HEIGHT="39" WIDTH="181"></String>
+            
+            <SP HPOS="1645" VPOS="2437" WIDTH="29" ID="SP_9311"></SP>
+            
+            <String ID="Word_10494" CONTENT="Ihnen" HPOS="1675" VPOS="2437" HEIGHT="56" WIDTH="141"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1188" HPOS="112" VPOS="2498" HEIGHT="62" WIDTH="1698">
+            
+            <String ID="Word_10495" CONTENT="meinen" HPOS="112" VPOS="2498" HEIGHT="45" WIDTH="149"></String>
+            
+            <SP HPOS="262" VPOS="2500" WIDTH="21" ID="SP_9312"></SP>
+            
+            <String ID="Word_10496" CONTENT="Sohn" HPOS="284" VPOS="2500" HEIGHT="44" WIDTH="125"></String>
+            
+            <SP HPOS="410" VPOS="2514" WIDTH="31" ID="SP_9313"></SP>
+            
+            <String ID="Word_10497" CONTENT="an," HPOS="442" VPOS="2514" HEIGHT="39" WIDTH="65"></String>
+            
+            <SP HPOS="508" VPOS="2501" WIDTH="32" ID="SP_9314"></SP>
+            
+            <String ID="Word_10498" CONTENT="daß" HPOS="541" VPOS="2501" HEIGHT="54" WIDTH="76"></String>
+            
+            <SP HPOS="618" VPOS="2502" WIDTH="33" ID="SP_9315"></SP>
+            
+            <String ID="Word_10499" CONTENT="er" HPOS="652" VPOS="2516" HEIGHT="30" WIDTH="38"></String>
+            
+            <SP HPOS="691" VPOS="2503" WIDTH="22" ID="SP_9316"></SP>
+            
+            <String ID="Word_10500" CONTENT="Gehorsam" HPOS="714" VPOS="2503" HEIGHT="56" WIDTH="219"></String>
+            
+            <SP HPOS="934" VPOS="2505" WIDTH="32" ID="SP_9317"></SP>
+            
+            <String ID="Word_10501" CONTENT="lerne," HPOS="967" VPOS="2505" HEIGHT="51" WIDTH="119"></String>
+            
+            <SP HPOS="1087" VPOS="2519" WIDTH="32" ID="SP_9318"></SP>
+            
+            <String ID="Word_10502" CONTENT="um" HPOS="1120" VPOS="2519" HEIGHT="29" WIDTH="67"></String>
+            
+            <SP HPOS="1188" VPOS="2518" WIDTH="32" ID="SP_9319"></SP>
+            
+            <String ID="Word_10503" CONTENT="einst" HPOS="1221" VPOS="2504" HEIGHT="56" WIDTH="94"></String>
+            
+            <SP HPOS="1316" VPOS="2504" WIDTH="31" ID="SP_9320"></SP>
+            
+            <String ID="Word_10504" CONTENT="befehlen" HPOS="1348" VPOS="2504" HEIGHT="55" WIDTH="176"></String>
+            
+            <SP HPOS="1525" VPOS="2517" WIDTH="28" ID="SP_9321"></SP>
+            
+            <String ID="Word_10505" CONTENT="zu" HPOS="1554" VPOS="2517" HEIGHT="43" WIDTH="47"></String>
+            
+            <SP HPOS="1602" VPOS="2502" WIDTH="20" ID="SP_9322"></SP>
+            
+            <String ID="Word_10506" CONTENT="können.&quot;" HPOS="1623" VPOS="2502" HEIGHT="45" WIDTH="187"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1189" HPOS="110" VPOS="2564" HEIGHT="61" WIDTH="1705">
+            
+            <String ID="Word_10507" CONTENT="Um" HPOS="110" VPOS="2564" HEIGHT="43" WIDTH="76"></String>
+            
+            <SP HPOS="187" VPOS="2577" WIDTH="32" ID="SP_9323"></SP>
+            
+            <String ID="Word_10508" CONTENT="aber" HPOS="220" VPOS="2578" HEIGHT="30" WIDTH="92"></String>
+            
+            <SP HPOS="313" VPOS="2579" WIDTH="30" ID="SP_9324"></SP>
+            
+            <String ID="Word_10509" CONTENT="noch" HPOS="344" VPOS="2565" HEIGHT="55" WIDTH="92"></String>
+            
+            <SP HPOS="437" VPOS="2565" WIDTH="32" ID="SP_9325"></SP>
+            
+            <String ID="Word_10510" CONTENT="mehr" HPOS="470" VPOS="2566" HEIGHT="55" WIDTH="109"></String>
+            
+            <SP HPOS="580" VPOS="2567" WIDTH="30" ID="SP_9326"></SP>
+            
+            <String ID="Word_10511" CONTENT="für" HPOS="611" VPOS="2567" HEIGHT="54" WIDTH="65"></String>
+            
+            <SP HPOS="677" VPOS="2567" WIDTH="30" ID="SP_9327"></SP>
+            
+            <String ID="Word_10512" CONTENT="die" HPOS="708" VPOS="2567" HEIGHT="43" WIDTH="59"></String>
+            
+            <SP HPOS="768" VPOS="2567" WIDTH="31" ID="SP_9328"></SP>
+            
+            <String ID="Word_10513" CONTENT="Regierung" HPOS="800" VPOS="2567" HEIGHT="57" WIDTH="231"></String>
+            
+            <SP HPOS="1032" VPOS="2582" WIDTH="32" ID="SP_9329"></SP>
+            
+            <String ID="Word_10514" CONTENT="zu" HPOS="1065" VPOS="2582" HEIGHT="42" WIDTH="47"></String>
+            
+            <SP HPOS="1113" VPOS="2570" WIDTH="30" ID="SP_9330"></SP>
+            
+            <String ID="Word_10515" CONTENT="lernen," HPOS="1144" VPOS="2570" HEIGHT="51" WIDTH="148"></String>
+            
+            <SP HPOS="1293" VPOS="2569" WIDTH="34" ID="SP_9331"></SP>
+            
+            <String ID="Word_10516" CONTENT="besuchte" HPOS="1328" VPOS="2569" HEIGHT="56" WIDTH="166"></String>
+            
+            <SP HPOS="1495" VPOS="2582" WIDTH="32" ID="SP_9332"></SP>
+            
+            <String ID="Word_10517" CONTENT="er" HPOS="1528" VPOS="2582" HEIGHT="29" WIDTH="39"></String>
+            
+            <SP HPOS="1568" VPOS="2568" WIDTH="29" ID="SP_9333"></SP>
+            
+            <String ID="Word_10518" CONTENT="später" HPOS="1598" VPOS="2568" HEIGHT="55" WIDTH="127"></String>
+            
+            <SP HPOS="1726" VPOS="2568" WIDTH="30" ID="SP_9334"></SP>
+            
+            <String ID="Word_10519" CONTENT="die" HPOS="1757" VPOS="2568" HEIGHT="44" WIDTH="58"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1190" HPOS="110" VPOS="2628" HEIGHT="62" WIDTH="1705">
+            
+            <String ID="Word_10520" CONTENT="Hochschule" HPOS="110" VPOS="2628" HEIGHT="57" WIDTH="225"></String>
+            
+            <SP HPOS="336" VPOS="2643" WIDTH="45" ID="SP_9335"></SP>
+            
+            <String ID="Word_10521" CONTENT="zu" HPOS="382" VPOS="2644" HEIGHT="41" WIDTH="46"></String>
+            
+            <SP HPOS="429" VPOS="2629" WIDTH="37" ID="SP_9336"></SP>
+            
+            <String ID="Word_10522" CONTENT="Bonn." HPOS="467" VPOS="2629" HEIGHT="45" WIDTH="137" TAGREFS="Tag10"></String>
+            
+            <SP HPOS="605" VPOS="2633" WIDTH="68" ID="SP_9337"></SP>
+            
+            <String ID="Word_10523" CONTENT="Hier" HPOS="674" VPOS="2633" HEIGHT="55" WIDTH="97"></String>
+            
+            <SP HPOS="772" VPOS="2642" WIDTH="42" ID="SP_9338"></SP>
+            
+            <String ID="Word_10524" CONTENT="war" HPOS="815" VPOS="2642" HEIGHT="33" WIDTH="86"></String>
+            
+            <SP HPOS="902" VPOS="2645" WIDTH="44" ID="SP_9339"></SP>
+            
+            <String ID="Word_10525" CONTENT="er" HPOS="947" VPOS="2646" HEIGHT="30" WIDTH="39"></String>
+            
+            <SP HPOS="987" VPOS="2646" WIDTH="36" ID="SP_9340"></SP>
+            
+            <String ID="Word_10526" CONTENT="mit" HPOS="1024" VPOS="2633" HEIGHT="43" WIDTH="71"></String>
+            
+            <SP HPOS="1096" VPOS="2634" WIDTH="37" ID="SP_9341"></SP>
+            
+            <String ID="Word_10527" CONTENT="den" HPOS="1134" VPOS="2634" HEIGHT="44" WIDTH="71"></String>
+            
+            <SP HPOS="1206" VPOS="2637" WIDTH="38" ID="SP_9342"></SP>
+            
+            <String ID="Word_10528" CONTENT="übrigen" HPOS="1245" VPOS="2634" HEIGHT="44" WIDTH="168"></String>
+            
+            <SP HPOS="1414" VPOS="2635" WIDTH="40" ID="SP_9343"></SP>
+            
+            <String ID="Word_10529" CONTENT="Studenten" HPOS="1455" VPOS="2635" HEIGHT="43" WIDTH="227"></String>
+            
+            <SP HPOS="1683" VPOS="2647" WIDTH="38" ID="SP_9344"></SP>
+            
+            <String ID="Word_10530" CONTENT="gern" HPOS="1722" VPOS="2646" HEIGHT="43" WIDTH="93"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1191" HPOS="111" VPOS="2693" HEIGHT="62" WIDTH="1704">
+            
+            <String ID="Word_10531" CONTENT="lustig," HPOS="111" VPOS="2693" HEIGHT="55" WIDTH="127"></String>
+            
+            <SP HPOS="239" VPOS="2709" WIDTH="47" ID="SP_9345"></SP>
+            
+            <String ID="Word_10532" CONTENT="und" HPOS="287" VPOS="2694" HEIGHT="44" WIDTH="79"></String>
+            
+            <SP HPOS="367" VPOS="2694" WIDTH="48" ID="SP_9346"></SP>
+            
+            <String ID="Word_10533" CONTENT="als" HPOS="416" VPOS="2695" HEIGHT="43" WIDTH="64"></String>
+            
+            <SP HPOS="481" VPOS="2700" WIDTH="47" ID="SP_9347"></SP>
+            
+            <String ID="Word_10534" CONTENT="er" HPOS="529" VPOS="2709" HEIGHT="29" WIDTH="39"></String>
+            
+            <SP HPOS="569" VPOS="2709" WIDTH="45" ID="SP_9348"></SP>
+            
+            <String ID="Word_10535" CONTENT="nach" HPOS="615" VPOS="2696" HEIGHT="55" WIDTH="92"></String>
+            
+            <SP HPOS="708" VPOS="2696" WIDTH="47" ID="SP_9349"></SP>
+            
+            <String ID="Word_10536" CONTENT="2" HPOS="756" VPOS="2701" HEIGHT="38" WIDTH="25"></String>
+            
+            <SP HPOS="782" VPOS="2696" WIDTH="46" ID="SP_9350"></SP>
+            
+            <String ID="Word_10537" CONTENT="Jahren" HPOS="829" VPOS="2696" HEIGHT="49" WIDTH="159"></String>
+            
+            <SP HPOS="989" VPOS="2708" WIDTH="46" ID="SP_9351"></SP>
+            
+            <String ID="Word_10538" CONTENT="wegging," HPOS="1036" VPOS="2708" HEIGHT="46" WIDTH="197"></String>
+            
+            <SP HPOS="1234" VPOS="2710" WIDTH="47" ID="SP_9352"></SP>
+            
+            <String ID="Word_10539" CONTENT="waren" HPOS="1282" VPOS="2710" HEIGHT="33" WIDTH="135"></String>
+            
+            <SP HPOS="1418" VPOS="2713" WIDTH="47" ID="SP_9353"></SP>
+            
+            <String ID="Word_10540" CONTENT="alle" HPOS="1466" VPOS="2699" HEIGHT="43" WIDTH="74"></String>
+            
+            <SP HPOS="1541" VPOS="2698" WIDTH="44" ID="SP_9354"></SP>
+            
+            <String ID="Word_10541" CONTENT="Bewohner" HPOS="1586" VPOS="2698" HEIGHT="57" WIDTH="229"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1192" HPOS="111" VPOS="2758" HEIGHT="59" WIDTH="1704">
+            
+            <String ID="Word_10542" CONTENT="traurig;" HPOS="111" VPOS="2758" HEIGHT="56" WIDTH="173"></String>
+            
+            <SP HPOS="285" VPOS="2759" WIDTH="50" ID="SP_9355"></SP>
+            
+            <String ID="Word_10543" CONTENT="so" HPOS="336" VPOS="2759" HEIGHT="55" WIDTH="38"></String>
+            
+            <SP HPOS="375" VPOS="2760" WIDTH="52" ID="SP_9356"></SP>
+            
+            <String ID="Word_10544" CONTENT="sehr" HPOS="428" VPOS="2760" HEIGHT="55" WIDTH="83"></String>
+            
+            <SP HPOS="512" VPOS="2760" WIDTH="51" ID="SP_9357"></SP>
+            
+            <String ID="Word_10545" CONTENT="hatten" HPOS="564" VPOS="2760" HEIGHT="56" WIDTH="131"></String>
+            
+            <SP HPOS="696" VPOS="2760" WIDTH="49" ID="SP_9358"></SP>
+            
+            <String ID="Word_10546" CONTENT="sie" HPOS="746" VPOS="2760" HEIGHT="55" WIDTH="49"></String>
+            
+            <SP HPOS="796" VPOS="2761" WIDTH="50" ID="SP_9359"></SP>
+            
+            <String ID="Word_10547" CONTENT="ihn" HPOS="847" VPOS="2761" HEIGHT="56" WIDTH="68"></String>
+            
+            <SP HPOS="916" VPOS="2775" WIDTH="53" ID="SP_9360"></SP>
+            
+            <String ID="Word_10548" CONTENT="geliebt." HPOS="970" VPOS="2762" HEIGHT="55" WIDTH="152"></String>
+            
+            <SP HPOS="1123" VPOS="2763" WIDTH="78" ID="SP_9361"></SP>
+            
+            <String ID="Word_10549" CONTENT="Von" HPOS="1202" VPOS="2763" HEIGHT="44" WIDTH="96"></String>
+            
+            <SP HPOS="1299" VPOS="2777" WIDTH="50" ID="SP_9362"></SP>
+            
+            <String ID="Word_10550" CONTENT="nun" HPOS="1350" VPOS="2778" HEIGHT="30" WIDTH="84"></String>
+            
+            <SP HPOS="1435" VPOS="2778" WIDTH="53" ID="SP_9363"></SP>
+            
+            <String ID="Word_10551" CONTENT="an" HPOS="1489" VPOS="2778" HEIGHT="30" WIDTH="51"></String>
+            
+            <SP HPOS="1541" VPOS="2764" WIDTH="51" ID="SP_9364"></SP>
+            
+            <String ID="Word_10552" CONTENT="blieb" HPOS="1593" VPOS="2763" HEIGHT="45" WIDTH="102"></String>
+            
+            <SP HPOS="1696" VPOS="2763" WIDTH="54" ID="SP_9365"></SP>
+            
+            <String ID="Word_10553" CONTENT="der" HPOS="1751" VPOS="2764" HEIGHT="44" WIDTH="64"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1193" HPOS="109" VPOS="2820" HEIGHT="65" WIDTH="1706">
+            
+            <String ID="Word_10554" CONTENT="Kronprinz" HPOS="109" VPOS="2820" HEIGHT="59" WIDTH="224"></String>
+            
+            <SP HPOS="334" VPOS="2824" WIDTH="51" ID="SP_9366"></SP>
+            
+            <String ID="Word_10555" CONTENT="Friedrich" HPOS="386" VPOS="2824" HEIGHT="55" WIDTH="198" TAGREFS="Tag11"></String>
+            
+            <SP HPOS="585" VPOS="2824" WIDTH="52" ID="SP_9367"></SP>
+            
+            <String ID="Word_10556" CONTENT="Wilhelm" HPOS="638" VPOS="2824" HEIGHT="57" WIDTH="191" TAGREFS="Tag12"></String>
+            
+            <SP HPOS="830" VPOS="2827" WIDTH="47" ID="SP_9368"></SP>
+            
+            <String ID="Word_10557" CONTENT="Soldat." HPOS="878" VPOS="2827" HEIGHT="43" WIDTH="167"></String>
+            
+            <SP HPOS="1046" VPOS="2826" WIDTH="79" ID="SP_9369"></SP>
+            
+            <String ID="Word_10558" CONTENT="Eine" HPOS="1126" VPOS="2826" HEIGHT="44" WIDTH="99"></String>
+            
+            <SP HPOS="1226" VPOS="2828" WIDTH="46" ID="SP_9370"></SP>
+            
+            <String ID="Word_10559" CONTENT="Zeitlang" HPOS="1273" VPOS="2828" HEIGHT="57" WIDTH="188"></String>
+            
+            <SP HPOS="1462" VPOS="2830" WIDTH="53" ID="SP_9371"></SP>
+            
+            <String ID="Word_10560" CONTENT="stand" HPOS="1516" VPOS="2829" HEIGHT="54" WIDTH="111"></String>
+            
+            <SP HPOS="1628" VPOS="2829" WIDTH="53" ID="SP_9372"></SP>
+            
+            <String ID="Word_10561" CONTENT="er" HPOS="1682" VPOS="2842" HEIGHT="31" WIDTH="39"></String>
+            
+            <SP HPOS="1722" VPOS="2829" WIDTH="50" ID="SP_9373"></SP>
+            
+            <String ID="Word_10562" CONTENT="in" HPOS="1773" VPOS="2829" HEIGHT="45" WIDTH="42"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1194" HPOS="117" VPOS="2883" HEIGHT="66" WIDTH="1695">
+            
+            <String ID="Word_10563" CONTENT="Breslau" HPOS="117" VPOS="2883" HEIGHT="47" WIDTH="179"></String>
+            
+            <SP HPOS="297" VPOS="2900" WIDTH="32" ID="SP_9374"></SP>
+            
+            <String ID="Word_10564" CONTENT="an" HPOS="330" VPOS="2901" HEIGHT="30" WIDTH="50"></String>
+            
+            <SP HPOS="381" VPOS="2889" WIDTH="31" ID="SP_9375"></SP>
+            
+            <String ID="Word_10565" CONTENT="der" HPOS="413" VPOS="2889" HEIGHT="42" WIDTH="66"></String>
+            
+            <SP HPOS="480" VPOS="2889" WIDTH="20" ID="SP_9376"></SP>
+            
+            <String ID="Word_10566" CONTENT="Spitze" HPOS="501" VPOS="2889" HEIGHT="55" WIDTH="135"></String>
+            
+            <SP HPOS="637" VPOS="2889" WIDTH="30" ID="SP_9377"></SP>
+            
+            <String ID="Word_10567" CONTENT="des" HPOS="668" VPOS="2889" HEIGHT="43" WIDTH="68"></String>
+            
+            <SP HPOS="737" VPOS="2895" WIDTH="30" ID="SP_9378"></SP>
+            
+            <String ID="Word_10568" CONTENT="11." HPOS="768" VPOS="2895" HEIGHT="38" WIDTH="65"></String>
+            
+            <SP HPOS="834" VPOS="2889" WIDTH="24" ID="SP_9379"></SP>
+            
+            <String ID="Word_10569" CONTENT="Regiments." HPOS="859" VPOS="2889" HEIGHT="57" WIDTH="248"></String>
+            
+            <SP HPOS="1108" VPOS="2890" WIDTH="52" ID="SP_9380"></SP>
+            
+            <String ID="Word_10570" CONTENT="Auch" HPOS="1161" VPOS="2890" HEIGHT="58" WIDTH="104"></String>
+            
+            <SP HPOS="1266" VPOS="2892" WIDTH="30" ID="SP_9381"></SP>
+            
+            <String ID="Word_10571" CONTENT="hier" HPOS="1297" VPOS="2892" HEIGHT="57" WIDTH="81"></String>
+            
+            <SP HPOS="1379" VPOS="2893" WIDTH="21" ID="SP_9382"></SP>
+            
+            <String ID="Word_10572" CONTENT="denken" HPOS="1401" VPOS="2893" HEIGHT="44" WIDTH="139"></String>
+            
+            <SP HPOS="1541" VPOS="2893" WIDTH="30" ID="SP_9383"></SP>
+            
+            <String ID="Word_10573" CONTENT="die" HPOS="1572" VPOS="2893" HEIGHT="44" WIDTH="59"></String>
+            
+            <SP HPOS="1632" VPOS="2896" WIDTH="32" ID="SP_9384"></SP>
+            
+            <String ID="Word_10574" CONTENT="älteren" HPOS="1665" VPOS="2893" HEIGHT="44" WIDTH="147"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1195" HPOS="111" VPOS="2955" HEIGHT="59" WIDTH="1706">
+            
+            <String ID="Word_10575" CONTENT="Bewohner" HPOS="111" VPOS="2955" HEIGHT="57" WIDTH="224"></String>
+            
+            <SP HPOS="336" VPOS="2971" WIDTH="41" ID="SP_9385"></SP>
+            
+            <String ID="Word_10576" CONTENT="noch" HPOS="378" VPOS="2958" HEIGHT="55" WIDTH="91"></String>
+            
+            <SP HPOS="470" VPOS="2958" WIDTH="44" ID="SP_9386"></SP>
+            
+            <String ID="Word_10577" CONTENT="sehr" HPOS="515" VPOS="2958" HEIGHT="56" WIDTH="82"></String>
+            
+            <SP HPOS="598" VPOS="2971" WIDTH="43" ID="SP_9387"></SP>
+            
+            <String ID="Word_10578" CONTENT="gern" HPOS="642" VPOS="2971" HEIGHT="43" WIDTH="94"></String>
+            
+            <SP HPOS="737" VPOS="2971" WIDTH="39" ID="SP_9388"></SP>
+            
+            <String ID="Word_10579" CONTENT="an" HPOS="777" VPOS="2971" HEIGHT="30" WIDTH="52"></String>
+            
+            <SP HPOS="830" VPOS="2957" WIDTH="35" ID="SP_9389"></SP>
+            
+            <String ID="Word_10580" CONTENT="ihn." HPOS="866" VPOS="2957" HEIGHT="56" WIDTH="83"></String>
+            
+            <SP HPOS="950" VPOS="2958" WIDTH="68" ID="SP_9390"></SP>
+            
+            <String ID="Word_10581" CONTENT="Im" HPOS="1019" VPOS="2958" HEIGHT="49" WIDTH="76"></String>
+            
+            <SP HPOS="1096" VPOS="2957" WIDTH="35" ID="SP_9391"></SP>
+            
+            <String ID="Word_10582" CONTENT="Januar" HPOS="1132" VPOS="2957" HEIGHT="50" WIDTH="169"></String>
+            
+            <SP HPOS="1302" VPOS="2964" WIDTH="39" ID="SP_9392"></SP>
+            
+            <String ID="Word_10583" CONTENT="1858" HPOS="1342" VPOS="2964" HEIGHT="39" WIDTH="113"></String>
+            
+            <SP HPOS="1456" VPOS="2964" WIDTH="39" ID="SP_9393"></SP>
+            
+            <String ID="Word_10584" CONTENT="vermählte" HPOS="1496" VPOS="2958" HEIGHT="55" WIDTH="215"></String>
+            
+            <SP HPOS="1712" VPOS="2957" WIDTH="36" ID="SP_9394"></SP>
+            
+            <String ID="Word_10585" CONTENT="sich" HPOS="1749" VPOS="2957" HEIGHT="56" WIDTH="68"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1196" HPOS="112" VPOS="3020" HEIGHT="59" WIDTH="1707">
+            
+            <String ID="Word_10586" CONTENT="der" HPOS="112" VPOS="3020" HEIGHT="44" WIDTH="64"></String>
+            
+            <SP HPOS="177" VPOS="3021" WIDTH="41" ID="SP_9395"></SP>
+            
+            <String ID="Word_10587" CONTENT="Kronprinz" HPOS="219" VPOS="3021" HEIGHT="56" WIDTH="225"></String>
+            
+            <SP HPOS="445" VPOS="3035" WIDTH="43" ID="SP_9396"></SP>
+            
+            <String ID="Word_10588" CONTENT="mit" HPOS="489" VPOS="3022" HEIGHT="43" WIDTH="71"></String>
+            
+            <SP HPOS="561" VPOS="3022" WIDTH="42" ID="SP_9397"></SP>
+            
+            <String ID="Word_10589" CONTENT="der" HPOS="604" VPOS="3022" HEIGHT="44" WIDTH="64"></String>
+            
+            <SP HPOS="669" VPOS="3022" WIDTH="42" ID="SP_9398"></SP>
+            
+            <String ID="Word_10590" CONTENT="Prinzessin" HPOS="712" VPOS="3022" HEIGHT="56" WIDTH="224"></String>
+            
+            <SP HPOS="937" VPOS="3022" WIDTH="46" ID="SP_9399"></SP>
+            
+            <String ID="Word_10591" CONTENT="Viktoria," HPOS="984" VPOS="3022" HEIGHT="52" WIDTH="193" TAGREFS="Tag13"></String>
+            
+            <SP HPOS="1178" VPOS="3023" WIDTH="44" ID="SP_9400"></SP>
+            
+            <String ID="Word_10592" CONTENT="der" HPOS="1223" VPOS="3023" HEIGHT="44" WIDTH="65"></String>
+            
+            <SP HPOS="1289" VPOS="3024" WIDTH="38" ID="SP_9401"></SP>
+            
+            <String ID="Word_10593" CONTENT="Tochter" HPOS="1328" VPOS="3024" HEIGHT="55" WIDTH="164"></String>
+            
+            <SP HPOS="1493" VPOS="3024" WIDTH="42" ID="SP_9402"></SP>
+            
+            <String ID="Word_10594" CONTENT="der" HPOS="1536" VPOS="3024" HEIGHT="43" WIDTH="66"></String>
+            
+            <SP HPOS="1603" VPOS="3022" WIDTH="36" ID="SP_9403"></SP>
+            
+            <String ID="Word_10595" CONTENT="Königin" HPOS="1640" VPOS="3021" HEIGHT="57" WIDTH="179"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1197" HPOS="112" VPOS="3085" HEIGHT="59" WIDTH="1706">
+            
+            <String ID="Word_10596" CONTENT="von" HPOS="112" VPOS="3095" HEIGHT="34" WIDTH="78"></String>
+            
+            <SP HPOS="191" VPOS="3085" WIDTH="37" ID="SP_9404"></SP>
+            
+            <String ID="Word_10597" CONTENT="England." HPOS="229" VPOS="3085" HEIGHT="56" WIDTH="203" TAGREFS="Tag14"></String>
+            
+            <SP HPOS="433" VPOS="3087" WIDTH="63" ID="SP_9405"></SP>
+            
+            <String ID="Word_10598" CONTENT="Gott" HPOS="497" VPOS="3087" HEIGHT="44" WIDTH="100"></String>
+            
+            <SP HPOS="598" VPOS="3092" WIDTH="37" ID="SP_9406"></SP>
+            
+            <String ID="Word_10599" CONTENT="schenkte" HPOS="636" VPOS="3088" HEIGHT="54" WIDTH="155"></String>
+            
+            <SP HPOS="792" VPOS="3088" WIDTH="36" ID="SP_9407"></SP>
+            
+            <String ID="Word_10600" CONTENT="dem" HPOS="829" VPOS="3088" HEIGHT="43" WIDTH="84"></String>
+            
+            <SP HPOS="914" VPOS="3087" WIDTH="37" ID="SP_9408"></SP>
+            
+            <String ID="Word_10601" CONTENT="kronprinzlichen" HPOS="952" VPOS="3087" HEIGHT="57" WIDTH="330"></String>
+            
+            <SP HPOS="1283" VPOS="3088" WIDTH="38" ID="SP_9409"></SP>
+            
+            <String ID="Word_10602" CONTENT="Paare" HPOS="1322" VPOS="3088" HEIGHT="56" WIDTH="137"></String>
+            
+            <SP HPOS="1460" VPOS="3094" WIDTH="30" ID="SP_9410"></SP>
+            
+            <String ID="Word_10603" CONTENT="4" HPOS="1491" VPOS="3094" HEIGHT="39" WIDTH="28"></String>
+            
+            <SP HPOS="1520" VPOS="3089" WIDTH="31" ID="SP_9411"></SP>
+            
+            <String ID="Word_10604" CONTENT="Söhne" HPOS="1552" VPOS="3089" HEIGHT="43" WIDTH="146"></String>
+            
+            <SP HPOS="1699" VPOS="3101" WIDTH="38" ID="SP_9412"></SP>
+            
+            <String ID="Word_10605" CONTENT="und" HPOS="1738" VPOS="3087" HEIGHT="44" WIDTH="80"></String>
+          </TextLine>
+          
+          <TextLine ID="TextLine_1198" HPOS="114" VPOS="3150" HEIGHT="59" WIDTH="1705">
+            
+            <String ID="Word_10606" CONTENT="4" HPOS="114" VPOS="3154" HEIGHT="38" WIDTH="24"></String>
+            
+            <SP HPOS="139" VPOS="3150" WIDTH="32" ID="SP_9413"></SP>
+            
+            <String ID="Word_10607" CONTENT="Töchter:" HPOS="172" VPOS="3150" HEIGHT="56" WIDTH="182"></String>
+            
+            <SP HPOS="355" VPOS="3151" WIDTH="33" ID="SP_9414"></SP>
+            
+            <String ID="Word_10608" CONTENT="der" HPOS="389" VPOS="3151" HEIGHT="42" WIDTH="66"></String>
+            
+            <SP HPOS="456" VPOS="3153" WIDTH="32" ID="SP_9415"></SP>
+            
+            <String ID="Word_10609" CONTENT="älteste" HPOS="489" VPOS="3152" HEIGHT="53" WIDTH="126"></String>
+            
+            <SP HPOS="616" VPOS="3152" WIDTH="31" ID="SP_9416"></SP>
+            
+            <String ID="Word_10610" CONTENT="Sohn" HPOS="648" VPOS="3152" HEIGHT="43" WIDTH="125"></String>
+            
+            <SP HPOS="774" VPOS="3151" WIDTH="29" ID="SP_9417"></SP>
+            
+            <String ID="Word_10611" CONTENT="ist" HPOS="804" VPOS="3151" HEIGHT="44" WIDTH="46"></String>
+            
+            <SP HPOS="851" VPOS="3157" WIDTH="30" ID="SP_9418"></SP>
+            
+            <String ID="Word_10612" CONTENT="unser" HPOS="882" VPOS="3152" HEIGHT="55" WIDTH="113"></String>
+            
+            <SP HPOS="996" VPOS="3152" WIDTH="29" ID="SP_9419"></SP>
+            
+            <String ID="Word_10613" CONTENT="Kaiser" HPOS="1026" VPOS="3152" HEIGHT="45" WIDTH="136"></String>
+            
+            <SP HPOS="1163" VPOS="3152" WIDTH="30" ID="SP_9420"></SP>
+            
+            <String ID="Word_10614" CONTENT="Wilhelm" HPOS="1194" VPOS="3152" HEIGHT="57" WIDTH="193" TAGREFS="Tag15"></String>
+            
+            <SP HPOS="1388" VPOS="3154" WIDTH="32" ID="SP_9421"></SP>
+            
+            <String ID="Word_10615" CONTENT="II." HPOS="1421" VPOS="3154" HEIGHT="40" WIDTH="46" TAGREFS="Tag16"></String>
+            
+            <SP HPOS="1468" VPOS="3153" WIDTH="64" ID="SP_9422"></SP>
+            
+            <String ID="Word_10616" CONTENT="Die" HPOS="1533" VPOS="3153" HEIGHT="43" WIDTH="79"></String>
+            
+            <SP HPOS="1613" VPOS="3153" WIDTH="30" ID="SP_9423"></SP>
+            
+            <String ID="Word_10617" CONTENT="Familie" HPOS="1644" VPOS="3151" HEIGHT="57" WIDTH="175"></String>
+          </TextLine>
+        </TextBlock>
+        
+        <Illustration ID="Illustration_18" HPOS="112" VPOS="414" HEIGHT="1525" WIDTH="1183" TYPE="Picture"></Illustration>
+        
+        <Illustration ID="Illustration_19" HPOS="620" VPOS="429" HEIGHT="94" WIDTH="109" TYPE="Picture"></Illustration>
+      </PrintSpace>
+    </Page>
+  </Layout>
+</alto>

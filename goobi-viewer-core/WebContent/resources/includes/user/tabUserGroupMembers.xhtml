@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<composite:interface>
+	</composite:interface>
+
+	<!-- User version -->
+    <composite:implementation>
+        <h:form id="editUserGroupMembers" rendered="#{userBean.loggedIn and userGroupBean.currentOwnUserGroup != null}" prependId="false">
+            <h3>#{msg.userGroup_members}</h3>
+            <p:commandButton id="addNewMemberButton" value="#{msg.userGroup_addNewMember}" style="margin-bottom: 20px; margin-top: 10px;"
+                action="#{userGroupBean.resetCurrentMembershipAction}" oncomplete="addNewUserGroupMember.show();" async="true" update="dataTable">
+            </p:commandButton>
+            <p:dataTable id="dataTable" value="#{userGroupBean.currentOwnUserGroup.memberships}" var="membership" styleClass="UsersTable"
+                rowClasses="UsersTableOdd, UsersTableEven" headerClass="UserTableHeader" emptyMessage="#{msg.noRecordsFound}" rowIndexVar="rowIndex">
+                <p:column>
+                    <f:facet name="header" styleClass="header">
+                        <h:outputText styleClass="documentHeader" value="#{msg.user}" />
+                    </f:facet>
+                    <h:outputText value="#{membership.user.displayName}" />
+                </p:column>
+                <p:column>
+                    <f:facet name="header" styleClass="header">
+                        <h:outputText styleClass="documentHeader" value="#{msg.role}" />
+                    </f:facet>
+                    <h:selectOneMenu value="#{membership.role}" converter="roleConverter">
+                        <f:selectItems value="#{userGroupBean.allRoles}" var="role" itemLabel="#{role.name}" />
+                    </h:selectOneMenu>
+                </p:column>
+                <p:column>
+                    <f:facet name="header" styleClass="header">
+                        <h:outputText styleClass="documentHeader" value="#{msg.action}" />
+                    </f:facet>
+                    <p:commandButton action="#{adminBean.saveUserRoleAction}" update="@form" styleClass="saveButton" title="#{msg.save}">
+                        <f:setPropertyActionListener value="#{membership}" target="#{adminBean.currentUserRole}" />
+                    </p:commandButton>
+                    <p:commandButton onclick="deleteMembershipConfirmation_#{rowIndex}.show()" styleClass="deleteButton" title="#{msg.delete}">
+                        <f:setPropertyActionListener value="#{membership}" target="#{adminBean.currentUserRole}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:confirmDialog id="deleteMembershipConfirmationId" header="#{msg.userGroup_removeMember}"
+                widgetVar="deleteMembershipConfirmation_#{rowIndex}" message="#{msg.userGroup_deleteConfirmationText}" modal="true">
+                <p:commandButton value="#{msg.cancel}" onclick="deleteMembershipConfirmation_#{rowIndex}.hide()" type="button" />
+                <p:commandButton value="#{msg.delete}" update="@form" oncomplete="deleteMembershipConfirmation_#{rowIndex}.hide()"
+                    action="#{userGroupBean.deleteMembershipAction}" />
+            </p:confirmDialog>
+        </h:form>
+    </composite:implementation>
+</ui:composition>

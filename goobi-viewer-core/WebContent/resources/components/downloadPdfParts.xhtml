@@ -1,0 +1,60 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    
+	<composite:interface />
+
+    <composite:implementation>
+        <div id="downloadPdfParts" class="download-pdf-parts">
+			<p>#{msg.downloadPdfPartsText}</p>
+			
+			<h:form id="downloadPdfPartsForm">
+			<div class="row">
+				<!-- FROM -->
+				<div class="col-xs-2 download-pdf-parts__from">
+					<label for="selectPageFrom">#{msg.downloadPdfPartsFrom}:</label>
+				</div>
+				<div class="col-xs-3 download-pdf-parts__select-from">
+					<div class="form-control__select">
+                        <h:selectOneMenu
+                            id="selectPageFrom"
+                            value="#{activeDocumentBean.viewManager.firstPdfPage}"
+                            styleClass="form-control">
+                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                            <f:ajax execute="@form" render="@form" />
+                        </h:selectOneMenu>
+					</div>
+				</div>
+				<!-- TO -->
+				<div class="col-xs-2 download-pdf-parts__to">
+					<label for="selectPageTo">#{msg.downloadPdfPartsTo}:</label>
+				</div>
+				<div class="col-xs-3 download-pdf-parts__select-to">
+					<div class="form-control__select">
+                        <h:selectOneMenu
+                            id="selectPageTo"
+                            value="#{activeDocumentBean.viewManager.lastPdfPage}"
+                            styleClass="form-control">
+                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
+                            <f:ajax immediate="true" render="@form" />
+                        </h:selectOneMenu>
+					</div>
+				</div>
+				<!-- Download -->
+				<div class="col-xs-2 download-pdf-parts__download">
+					<h:outputLink styleClass="btn"
+					    disabled="#{!activeDocumentBean.viewManager.pdfPartDownloadLinkEnabled}"
+					    title="#{msg.pdfDownloadTitle}"
+					    value="#{activeDocumentBean.viewManager.pdfPartDownloadLink}">
+					    <i class="fa fa-download" aria-hidden="true"></i>
+					</h:outputLink>
+				</div>
+			</div>
+			</h:form>
+        </div>
+    </composite:implementation>
+</ui:composition>

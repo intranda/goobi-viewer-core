@@ -1,0 +1,77 @@
+/* ==============================================================
+   Simple (Numeric) Paginator
+   style declarations for simplePaginator.xhtml
+   ==============================================================*/
+#numeric_paginator_nav {
+    margin: 1rem 0;
+    overflow: hidden;
+    ul {
+        position: relative;
+        float: left;
+        left: 50%;
+        margin: 0 auto;
+        li {
+            display: inline-block;
+            position: relative;
+            float: left;
+            right: 50%;
+            margin: 0 3px;
+            text-align: center;
+            a, span {
+                display: block;
+                min-width: 32px;
+                height: 32px;
+                line-height: 32px;
+                padding: 0 5px;
+                text-decoration: none;
+                border: 1px solid @middlegray;
+            }
+            &.paginator-active {
+                a, span {
+                    font-weight: bold;
+                    background-color: @middlegray;
+                }
+            }
+            &.numeric-paginator-dots {
+                a, span {
+                    min-width: 0;
+                    padding: 0;
+                    border: none;
+                }
+            }
+            &.paginator-navigate {
+                a, span {}
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    #numeric_paginator_nav {
+        ul {
+            li {
+                margin: 0 2px;
+                a, span {}
+                &.paginator-active {
+                    a, span {}
+                }
+                &.numeric-paginator-dots {
+                    a, span {}
+                }
+                &.paginator-navigate {
+                    a, span {}
+                }
+            }
+        }
+    }
+}

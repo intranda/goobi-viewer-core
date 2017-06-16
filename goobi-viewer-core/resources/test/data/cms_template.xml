@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="test_template" version="2015-01-14">
+    <name>Test template</name>
+    <description>Test description</description>
+    <icon>icon.png</icon>
+    <html>test_template_html.xhtml</html>
+    <content>
+        <item id="text01" type="HTML" mandatory="true" />
+        <item id="imag01" type="MEDIA" />
+        <item id="queryList01" type="SOLRQUERY" />
+        <item id="pageList01" type="PAGELIST" />
+    </content>
+</cms_page_template>

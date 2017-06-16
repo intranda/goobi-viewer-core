@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" 
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"> 
+
+	<composite:interface />
+
+	<composite:implementation>
+		<h:panelGroup rendered="#{contentItem.type == 'TILEGRID'}">
+			<div class="edit-content-page edit-content-page-collection">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-12 group-label">#{msg.cms_itemTileGrid}#{contentItem.mandatory?'*':''}:</label>
+					</div>
+					<div class="form-group" id="control_tags">
+						<label class="col-sm-6 control-label">#{msg.cms_itemTileGrid_tags}:</label>
+						<div class="col-sm-6">
+							<h:selectManyListbox styleClass="form-control content-input" value="#{contentItem.allowedTagsAsArray}">
+								<f:selectItem itemValue="-" itemLabel="#{msg.cms_itemTileGrid_allTags}" />
+								<f:selectItems value="#{cmsMediaBean.allMediaTags}" var="tag" itemValue="#{tag}" itemLabel="#{tag}" />
+							</h:selectManyListbox>
+						</div>
+					</div>
+					<div class="form-group" id="control_preferImportant">
+						<label class="col-sm-6 control-label">#{msg.cms_itemTileGrid_numberOfImportantTiles}:</label>
+						<div class="col-sm-6">
+							<!-- 							<h:selectBooleanCheckbox value="#{contentItem.preferImportant}"> -->
+							<!-- 							</h:selectBooleanCheckbox> -->
+							<div class="form-control__select">
+								<h:selectOneMenu styleClass="form-control content-input" value="#{contentItem.numberOfImportantTiles}">
+									<f:selectItem itemValue="1" itemLabel="1" />
+									<f:selectItem itemValue="2" itemLabel="2" />
+									<f:selectItem itemValue="3" itemLabel="3" />
+									<f:selectItem itemValue="4" itemLabel="4" />
+									<f:selectItem itemValue="5" itemLabel="5" />
+									<f:selectItem itemValue="6" itemLabel="6" />
+									<f:selectItem itemValue="7" itemLabel="7" />
+									<f:selectItem itemValue="8" itemLabel="8" />
+									<f:selectItem itemValue="9" itemLabel="9" />
+									<f:selectItem itemValue="10" itemLabel="10" />
+									<f:selectItem itemValue="11" itemLabel="11" />
+									<f:selectItem itemValue="12" itemLabel="12" />
+									<f:selectItem itemValue="13" itemLabel="13" />
+									<f:selectItem itemValue="14" itemLabel="14" />
+									<f:selectItem itemValue="15" itemLabel="15" />
+									<f:selectItem itemValue="16" itemLabel="16" />
+									<f:selectItem itemValue="17" itemLabel="17" />
+									<f:selectItem itemValue="18" itemLabel="18" />
+									<f:selectItem itemValue="19" itemLabel="19" />
+									<f:selectItem itemValue="20" itemLabel="20" />
+									<f:selectItem itemValue="21" itemLabel="21" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" id="control_numTiles">
+						<label class="col-sm-6 control-label">#{msg.cms_itemTileGrid_numberOfTiles}:</label>
+						<div class="col-sm-6">
+							<div class="form-control__select">
+								<h:selectOneMenu styleClass="form-control content-input" value="#{contentItem.numberOfTiles}">
+									<f:selectItem itemValue="1" itemLabel="1" />
+									<f:selectItem itemValue="2" itemLabel="2" />
+									<f:selectItem itemValue="3" itemLabel="3" />
+									<f:selectItem itemValue="4" itemLabel="4" />
+									<f:selectItem itemValue="5" itemLabel="5" />
+									<f:selectItem itemValue="6" itemLabel="6" />
+									<f:selectItem itemValue="7" itemLabel="7" />
+									<f:selectItem itemValue="8" itemLabel="8" />
+									<f:selectItem itemValue="9" itemLabel="9" />
+									<f:selectItem itemValue="10" itemLabel="10" />
+									<f:selectItem itemValue="11" itemLabel="11" />
+									<f:selectItem itemValue="12" itemLabel="12" />
+									<f:selectItem itemValue="13" itemLabel="13" />
+									<f:selectItem itemValue="14" itemLabel="14" />
+									<f:selectItem itemValue="15" itemLabel="15" />
+									<f:selectItem itemValue="16" itemLabel="16" />
+									<f:selectItem itemValue="17" itemLabel="17" />
+									<f:selectItem itemValue="18" itemLabel="18" />
+									<f:selectItem itemValue="19" itemLabel="19" />
+									<f:selectItem itemValue="20" itemLabel="20" />
+									<f:selectItem itemValue="21" itemLabel="21" />
+								</h:selectOneMenu>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

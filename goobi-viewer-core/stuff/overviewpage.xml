@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<overviewPage>
+	<metadata>
+		<metadata label="URN" value="">
+			<param type="field" key="URN" />
+		</metadata>
+		<metadata label="PI" value="">
+			<param type="field" key="PI" />
+		</metadata>
+		<metadata label="MD_TITLE" value="">
+			<param type="field" key="MD_TITLE" />
+		</metadata>
+		<metadata label="MD_CREATOR" value="">
+			<param type="field" key="MD_CREATOR" />
+		</metadata>
+		<metadata label="DOCSTRCT" value="">
+			<param type="translatedfield" key="DOCSTRCT" />
+		</metadata>
+	</metadata>
+	<description>Hello, Overview</description>
+</overviewPage>

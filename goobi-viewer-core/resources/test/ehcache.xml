@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" 
+    name="intranda viewer ContentServer Cache"
+    maxBytesLocalDisk="100g"
+    updateCheck="false">
+
+	<diskStore path="/opt/digiverso/viewer/cache/" />
+
+
+	<!-- DEFAULT CACHE // OVERALL SETTINGS?=? -->
+	<defaultCache 	maxElementsInMemory="100" 
+			eternal="true"
+                	timeToIdleSeconds="0" 
+			timeToLiveSeconds="0" 
+			overflowToDisk="true"
+                	maxElementsOnDisk="2000000" 
+			diskPersistent="true"
+                	diskExpiryThreadIntervalSeconds="0" 
+			memoryStoreEvictionPolicy="LFU"
+			maxEntriesLocalHeap="10000" />
+
+
+	<!-- CONTENT CACHE -->
+	<cache 	name="content" 
+			maxElementsInMemory="500"
+			eternal="true"
+			timeToIdleSeconds="0" 
+			timeToLiveSeconds="0" 
+			overflowToDisk="true"
+			maxElementsOnDisk="1000000" 
+			diskPersistent="true"
+			diskExpiryThreadIntervalSeconds="0" 
+			memoryStoreEvictionPolicy="LFU" />
+
+	<!-- THUMBNAIL CACHE -->
+	<cache 		name="thumbnails" 
+			maxElementsInMemory="1000"
+			eternal="true"
+			timeToIdleSeconds="0"
+			timeToLiveSeconds="0" 
+			overflowToDisk="true"
+			maxElementsOnDisk="1000000" 
+			diskPersistent="true"
+                        diskExpiryThreadIntervalSeconds="0" 
+			memoryStoreEvictionPolicy="LFU" />
+
+    <!-- PDF CACHE -->
+    <cache name="pdf" 
+            maxElementsInMemory="50"
+            eternal="true"
+            timeToIdleSeconds="0" 
+            timeToLiveSeconds="0" 
+            overflowToDisk="true"
+            maxElementsOnDisk="1000000" 
+            diskPersistent="true"
+            diskExpiryThreadIntervalSeconds="0" 
+            memoryStoreEvictionPolicy="LFU" >
+    </cache>
+
+	<!-- DOCUMENTATION 
+
+name:			Sets the name of the cache. This is used to identify the cache.
+			It must be unique.
+
+maxElementsInMemory:	Sets the maximum number of objects that will be created in memory
+
+eternal:                If the cache’s eternal flag is set, it overrides any finite 
+                        TTI/TTL values that have been set. If eternal, timeouts are ignored 
+			and the element is never expired.
+
+timeToIdleSeconds:      The maximum number of seconds an element can exist in 
+                        the cache without being accessed. The element expires 
+                        at this limit and will no longer be returned from the 
+                        cache. The default value is 0, which means no TTI eviction 
+                        takes place (infinite lifetime).
+
+timeToLiveSeconds:      The maximum number of seconds an element can exist in the 
+                        cache regardless of use. The element expires at this limit 
+                        and will no longer be returned from the cache. The default 
+                        value is 0, which means no TTL eviction takes place (infinite
+                        lifetime).
+
+overflowToDisk:		Sets whether elements can overflow to disk when the in-memory cache
+			has reached the maxInMemory limit.
+
+maxElementsOnDisk:      The maximum sum total number of elements (cache entries) 
+                        allowed for a distributed cache in all Terracotta clients. 
+                        If this target is exceeded, eviction occurs to bring the 
+                        count within the allowed target. The default value is 0, 
+                        which means no eviction takes place (infinite size is allowed). 
+                        Note that this value reflects storage allocated on the 
+                        Terracotta Server Array. A setting of 0 means that no eviction 
+                        of the cache's entries takes place on Terracotta Server Array, 
+                        and consequently can cause the servers to run out of disk space.
+
+diskPersistent:		This is an optional attribute. Legal values are "true" or "false".
+			Whether or not the DiskStore should be persisted between CacheManager 
+			shutdowns and Virtual Machine restarts.
+
+diskExpiryThreadIntervalSeconds:
+			The number of seconds between runs of the disk expiry thread. The 
+			default value is 120 seconds
+			
+maxBytesLocalDisk:      Size may be expressed in bytes using the convention for specifying 
+                        -Xmx (e.g. 200k, 30m, 5g etc.)
+
+maxEntriesLocalHeap:	The maximum number of cache entries or bytes a cache can use in local 
+			heap memory, or, when set at the CacheManager level (maxBytesLocalHeap only), 
+			a local pool available to all caches under that CacheManager. This setting 
+			is required for every cache or at the CacheManager level.
+
+-->
+</ehcache>

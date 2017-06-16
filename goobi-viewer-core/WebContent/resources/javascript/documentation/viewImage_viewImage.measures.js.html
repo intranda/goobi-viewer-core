@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: viewImage/viewImage.measures.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: viewImage/viewImage.measures.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This file is part of the Goobi Viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see &lt;http://www.gnu.org/licenses/>.
+ * 
+ * Module which contains all image informations like size, scale etc.
+ * 
+ * @version 3.2.0
+ * @module viewImage.Measures
+ * @requires jQuery
+ */
+var viewImage = ( function( osViewer ) {
+    'use strict';
+    
+    var _debug = false;
+    
+    osViewer.Measures = function( osViewer ) {
+        this.config = osViewer.getConfig();
+        this.$container = $( "#" + this.config.global.divId );
+        
+        this.outerCanvasSize = new OpenSeadragon.Point( this.$container.outerWidth(), this.$container.outerHeight() );
+        this.innerCanvasSize = new OpenSeadragon.Point( this.$container.width(), this.$container.height() );
+        this.originalImageSize = new OpenSeadragon.Point( this.getTotalImageWidth( osViewer.getImageInfo() ), this.getMaxImageHeight( osViewer.getImageInfo() ) );
+        // console.log("Original image size = ", this.originalImageSize);
+        this.footerHeight = this.config.global.footerHeight;
+        this.rotation = osViewer.viewer != null ? osViewer.viewer.viewport.getRotation() : 0;
+        this.xPadding = this.outerCanvasSize.x - this.innerCanvasSize.x;
+        this.yPadding = this.outerCanvasSize.y - this.innerCanvasSize.y;
+        this.innerCanvasSize.y -= this.footerHeight;
+        
+        // calculate image size as it should be displayed in relation to canvas size
+        if ( this.fitToHeight() ) {
+            this.imageDisplaySize = new OpenSeadragon.Point( this.innerCanvasSize.y / this.ratio( this.getRotatedSize( this.originalImageSize ) ), this.innerCanvasSize.y )
+        }
+        else {
+            this.imageDisplaySize = new OpenSeadragon.Point( this.innerCanvasSize.x, this.innerCanvasSize.x * this.ratio( this.getRotatedSize( this.originalImageSize ) ) )
+        }
+        if ( this.rotated() ) {
+            this.imageDisplaySize = this.getRotatedSize( this.imageDisplaySize );
+        }
+    };
+    osViewer.Measures.prototype.getMaxImageWidth = function( imageInfo ) {
+        var width = 0;
+        if ( imageInfo &amp;&amp; imageInfo.length > 0 ) {
+            for ( var i = 0; i &lt; imageInfo.length; i++ ) {
+                var tileSource = imageInfo[ i ];
+                if ( tileSource.tileSource ) {
+                    correction = tileSource.width;
+                    tileSource = tileSource.tileSource;
+                }
+                width = Math.max( width, tileSource.width * correction );
+            }
+        }
+        return width;
+    };
+    osViewer.Measures.prototype.getMaxImageHeight = function( imageInfo ) {
+        var height = 0;
+        if ( imageInfo &amp;&amp; imageInfo.length > 0 ) {
+            for ( var i = 0; i &lt; imageInfo.length; i++ ) {
+                var tileSource = imageInfo[ i ];
+                var correction = 1;
+                if ( tileSource.tileSource ) {
+                    correction = tileSource.width;
+                    tileSource = tileSource.tileSource;
+                }
+                height = Math.max( height, tileSource.height * correction );
+            }
+        }
+        return height;
+    };
+    osViewer.Measures.prototype.getTotalImageWidth = function( imageInfo ) {
+        var width = 0;
+        if ( imageInfo &amp;&amp; imageInfo.length > 0 ) {
+            for ( var i = 0; i &lt; imageInfo.length; i++ ) {
+                var tileSource = imageInfo[ i ];
+                var correction = 1;
+                if ( tileSource.tileSource ) {
+                    correction = tileSource.width;
+                    tileSource = tileSource.tileSource;
+                }
+                width += ( tileSource.width * correction );
+            }
+        }
+        return width;
+    };
+    osViewer.Measures.prototype.getTotalImageHeight = function( imageInfo ) {
+        var height = 0;
+        if ( imageInfo &amp;&amp; imageInfo.length > 0 ) {
+            for ( var i = 0; i &lt; imageInfo.length; i++ ) {
+                var tileSource = imageInfo[ i ];
+                var aspectRatio
+                if ( tileSource.tileSource ) {
+                    correction = tileSource.width;
+                    tileSource = tileSource.tileSource;
+                }
+                height += tileSource.height * correction;
+            }
+        }
+        return height;
+    };
+    osViewer.Measures.prototype.getImageHomeSize = function() {
+        var ratio = this.rotated() ? 1 / this.ratio( this.originalImageSize ) : this.ratio( this.originalImageSize );
+        if ( this.fitToHeight() ) {
+            var height = this.innerCanvasSize.y;
+            var width = height / ratio;
+        }
+        else {
+            var width = this.innerCanvasSize.x;
+            var height = width * ratio;
+        }
+        return this.getRotatedSize( new OpenSeadragon.Point( width, height ) );
+    };
+    osViewer.Measures.prototype.rotated = function() {
+        return this.rotation % 180 !== 0;
+    };
+    osViewer.Measures.prototype.landscape = function() {
+        return this.ratio( this.originalImageSize ) &lt; 1;
+    };
+    osViewer.Measures.prototype.ratio = function( size ) {
+        return size.y / size.x;
+    };
+    osViewer.Measures.prototype.getRotatedSize = function( size ) {
+        return new OpenSeadragon.Point( this.rotated() ? size.y : size.x, this.rotated() ? size.x : size.y );
+    };
+    osViewer.Measures.prototype.fitToHeight = function() {
+        return !this.config.global.adaptContainerHeight &amp;&amp; this.ratio( this.getRotatedSize( this.originalImageSize ) ) > this.ratio( this.innerCanvasSize );
+    };
+    osViewer.Measures.prototype.resizeCanvas = function() {
+        // Set height of container if required
+        if ( this.config.global.adaptContainerHeight ) {
+            if ( _debug ) {
+                console.log( "adapt container height" );
+            }
+            this.$container.height( this.getRotatedSize( this.imageDisplaySize ).y + this.footerHeight );
+        }
+        this.outerCanvasSize = new OpenSeadragon.Point( this.$container.outerWidth(), this.$container.outerHeight() );
+        this.innerCanvasSize = new OpenSeadragon.Point( this.$container.width(), this.$container.height() - this.footerHeight );
+    };
+    osViewer.Measures.prototype.calculateExcessHeight = function() {
+        var imageSize = this.getRotatedSize( this.getImageHomeSize() );
+        var excessHeight = this.config.global.adaptContainerHeight || this.fitToHeight() ? 0 : 0.5 * ( this.innerCanvasSize.y - imageSize.y );
+        return excessHeight;
+    };
+    
+    return osViewer;
+    
+} )( viewImage || {}, jQuery );
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="cmsJS.module_createPage.html">createPage</a></li><li><a href="cmsJS.module_masonry.html">masonry</a></li><li><a href="cmsJS.module_sortableList.html">sortableList</a></li><li><a href="cmsJS.module_tagList.html">tagList</a></li><li><a href="cmsJS.module_tileGrid.html">tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_changeFontSize.html">changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">download</a></li><li><a href="viewerJS.module_downloadModal.html">downloadModal</a></li><li><a href="viewerJS.module_editComment.html">editComment</a></li><li><a href="viewerJS.module_helper.html">helper</a></li><li><a href="viewerJS.module_nerFacetting.html">nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">normdata</a></li><li><a href="viewerJS.module_pageScroll.html">pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">timematrix</a></li><li><a href="viewerJS.module_versionHistory.html">versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">persistence</a></li><li><a href="viewImage.module_controls.html">controls</a></li><li><a href="viewImage.module_drawLine.html">drawLine</a></li><li><a href="viewImage.module_drawRect.html">drawRect</a></li><li><a href="viewImage.module_Measures.html">Measures</a></li><li><a href="viewImage.module_overlays.html">overlays</a></li><li><a href="viewImage.module_readingMode.html">readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">zoomSlider</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Statistics">Statistics</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Jun 12 2017 17:12:34 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

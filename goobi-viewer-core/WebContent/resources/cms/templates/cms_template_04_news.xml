@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="template_news" version="2015-01-14">
+    <name>Newsbeitrag</name>
+    <description>Mit diesem Template wird ein Newsbeitrag erstellt. Er besteht nur aus einem Titel, Menütitel, Anreisstext und Text. Der Anreisstext wird auf der Newsübersicht angezeigt.</description>
+    <icon>cms_template_04_news.png</icon>
+    <html>cms_template_04_news.xhtml</html>
+    <content>
+        <item id="preview01" type="HTML" label="Preview-Text"/>
+        <item id="text01" type="HTML" label="Text" mandatory="true" />
+    </content>
+</cms_page_template>

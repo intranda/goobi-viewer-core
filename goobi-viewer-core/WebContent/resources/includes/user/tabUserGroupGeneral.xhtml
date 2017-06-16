@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<composite:interface>
+	</composite:interface>
+
+    <composite:implementation>
+        <h:form id="editUserGroupGeneral" rendered="#{userBean.loggedIn and userGroupBean.currentOwnUserGroup != null}" prependId="false">
+            <h3>#{msg.general}</h3>
+            <h:panelGrid id="dataGrid" columns="2">
+                <h:outputLabel for="active" value="#{msg.active}" />
+                <h:selectBooleanCheckbox value="#{userGroupBean.currentOwnUserGroup.active}" id="active" label="active" disabled="true" />
+                <h:outputLabel for="userGroupName" value="#{msg.name} *" />
+                <h:inputText value="#{userGroupBean.currentOwnUserGroup.name}" id="userGroupName" label="userGroupName" required="true" />
+                <h:outputLabel for="description" value="#{msg.description}" />
+                <h:inputTextarea value="#{userGroupBean.currentOwnUserGroup.description}" id="description" label="description" rows="4" cols="50" />
+            </h:panelGrid>
+            <br />
+            <p:commandLink id="changeUserGroupDataButton" value="#{msg.save}" actionListener="#{userGroupBean.saveCurrentOwnUserGroupAction}"
+                oncomplete="" />
+            <p:commandLink id="deleteUserGroupButton" value="#{msg.delete}" onclick="deleteUserGroupConfirmation.show()" oncomplete=""
+                styleClass="ButtonDialogPosition" />
+
+            <p:confirmDialog id="deleteUserGroupConfirmationId" header="#{msg.userGroup_delete}" widgetVar="deleteUserGroupConfirmation"
+                message="#{msg.userGroup_deleteConfirmationText}" modal="true">
+                <p:commandButton value="#{msg.cancel}" onclick="deleteUserGroupConfirmation.hide()" type="button" />
+                <p:commandButton value="#{msg.delete}" update="editUserGroupGeneral:dataGrid" oncomplete="deleteUserGroupConfirmation.hide()"
+                    action="#{adminBean.deleteUserGroupAction}" />
+            </p:confirmDialog>
+        </h:form>
+    </composite:implementation>
+</ui:composition>

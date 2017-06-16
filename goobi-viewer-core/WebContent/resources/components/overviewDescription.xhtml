@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+      xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+      xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/themeBoilerplate/components">
+
+    <!-- interface options -->
+    <composite:interface />
+
+    <!-- component content -->
+    <composite:implementation>
+	    <div class="overview__description">
+    		<h:form id="overviewDescriptionForm">
+	            <h:panelGroup id="panelGroupDescription">
+	            	<div class="row">
+	            		<!-- TITLE -->
+	            		<div class="col-xs-12 col-sm-6">
+	            			<div class="overview__description-title">
+				                <h3>#{msg.viewOverviewDescription}</h3>
+	            			</div>
+	            		</div>
+	            		
+	            		<!-- ACTION -->
+	            		<div class="col-xs-12 col-sm-6">
+	            			<div class="overview__description-action text-right">
+				                <h:panelGroup rendered="#{userBean.user.mayEditOverviewPage and !activeDocumentBean.overviewPage.editDescriptionMode}">
+				                	<!-- EDIT -->
+				                	<h:commandButton 
+				                		styleClass="btn" 
+				                		action="#{activeDocumentBean.overviewPage.toggleEditDescriptionModeAction}"
+					                    value="#{msg.viewOverviewDescription_edit}">
+					                    <f:ajax render="@form" />
+					                </h:commandButton>
+				                </h:panelGroup>
+				
+				                <h:panelGroup rendered="#{userBean.user.mayEditOverviewPage and activeDocumentBean.overviewPage.editDescriptionMode}">
+                                    <div class="overview__description-action-fullscreen">
+    				                    <!-- CANCEL -->
+    				                    <h:commandButton 
+    				                    	styleClass="btn" 
+    				                    	value="#{msg.viewOverviewDescription_cancel}"
+    				                        action="#{activeDocumentBean.overviewPage.resetEditModes}" 
+    				                        immediate="true" />
+    				
+    				                    <!-- SAVE -->
+    				                    <h:commandButton
+    				                    	styleClass="btn"
+    				                        action="#{activeDocumentBean.overviewPage.saveAction(userBean.user)}" 
+    				                        value="#{msg.viewOverviewDescription_save}" />
+                                    </div>
+				                </h:panelGroup>
+	            			</div>
+	            		</div>
+	            	</div>
+	
+	                <h:panelGroup rendered="#{activeDocumentBean.overviewPage.displayDescription or userBean.user.mayEditOverviewPage}">
+	                    <h:panelGroup rendered="#{!activeDocumentBean.overviewPage.editDescriptionMode}">
+	                        <div class="overview__description-text">
+	                            <h:outputText value="#{activeDocumentBean.overviewPage.description}" escape="false" />
+	                        </div>
+	                    </h:panelGroup>
+	                </h:panelGroup>
+	                <h:panelGroup rendered="#{userBean.user.mayEditOverviewPage}">
+	                    <h:panelGroup rendered="#{activeDocumentBean.overviewPage.editDescriptionMode}">
+	                        <div class="overview__description-editor">
+	                            <h:inputTextarea styleClass="overview-text" escape="false" value="#{activeDocumentBean.overviewPage.description}" />
+	                        </div>
+	                        <script type="text/javascript">
+	                            var tinyConfigDescription = {
+	                                selector: "textarea.overview-text",
+	                                plugins: "table link preview charmap code fullscreen",
+	                                menubar: "edit insert view format table tools",
+	                                language: tinyLang,
+	                                convert_urls: false,
+	                                setup: function( editor ) {
+	                                    editor.on( 'init', function (e) {
+	                                        $( '.overview__publication-action .btn' ).hide();
+	                                    } );
+	                                    editor.on( 'FullscreenStateChanged', function( e ) {
+	                                        if ( e.state ) {
+	                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
+	                                        }
+	                                        else {
+	                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
+	                                        }
+	                                    } );
+	                                }
+	                            };
+	                        
+	                            tinymce.init( tinyConfigDescription );
+	                        </script>
+	                    </h:panelGroup>
+	                </h:panelGroup>
+	            </h:panelGroup>
+    		</h:form>
+	    </div>    
+    </composite:implementation>
+</ui:composition>

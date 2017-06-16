@@ -1,0 +1,93 @@
+/* ==============================================================
+   General styling
+   ==============================================================*/
+html {
+    height: auto;
+    font-size: 100%;
+}
+
+body {
+    height: 100%;
+    font-family: @fontFamily;
+    font-size: @fontSize;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    margin: @baseMargin;
+}
+
+h1, .h1 { 
+    font-size: 2.1875rem; 
+    line-height: 2.625rem;     
+}
+
+h2, .h2 { 
+    font-size: 1.75rem; 
+    line-height: 2.1875rem; 
+}
+
+h3, .h3 { 
+    font-size: 1.3125rem; 
+    line-height: 1.75rem; 
+}
+
+h4, h5, h6,
+.h4, .h5, .h6 { 
+    font-size: 1.125rem; 
+    line-height: 1.5625rem; 
+}
+
+p {
+    margin: @baseMargin;
+}
+
+pre {
+    float: left;
+    width: 100%;
+    padding: 0.5rem;
+    font-family: monospace;
+    border-radius: 0.25rem;
+    border: 0.0625rem solid @gray;
+    background-color: @lightgray;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul {
+    list-style: square;
+}
+
+ol {}
+
+ul, ol {
+    margin: @baseMargin;
+    padding-left: 1.75rem;
+}
+
+a {
+    &:hover {}
+    &:active {}
+    &:focus {}
+}
+
+table,
+.table {
+    width: 100%;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

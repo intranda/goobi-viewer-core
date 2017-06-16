@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<overviewPage>
+	<metadata>
+		<metadata label="URN" value="">
+			<param type="field" key="URN" />
+		</metadata>
+		<metadata label="PI" value="">
+			<param type="field" key="PI" />
+		</metadata>
+		<metadata label="MD_TITLE" value="">
+			<param type="field" key="MD_TITLE" />
+		</metadata>
+		<metadata label="MD_CREATOR" value="">
+			<param type="field" key="MD_CREATOR" />
+		</metadata>
+		<metadata label="DOCSTRCT" value="">
+			<param type="translatedfield" key="DOCSTRCT" />
+		</metadata>
+	</metadata>
+	
+	<template name="_DEFAULT">
+            <!-- <metadata> </metadata> defines a single metadata element label="" 
+                defines a label-key that needs to be translated in the messages_XYZ.properties 
+                file value="" defines a string in a messages_XYZ.properties file where the 
+                parameter can be embedded. <param /> defines the parameter that are passed 
+                to the messages file. There is no parameter limit. type="" defins the type 
+                of the parameter. Possible values are: - field: the content of the index 
+                fields is passed through 1:1 - wikifield: the content of the index field 
+                is modified to create Wikipedia valid links (additional info in brackets 
+                remove, spaces replaced through underscores etc.) - wikipersonfield: in addition 
+                to the modification from 'wikifield', first+ and surename are swapped (if 
+                there is a comma in the string) - ppnfield: the first three characters of 
+                the content of the index fields are cut. This is necesarry if you would like 
+                to create an OPAC PPN link based on an index field - entityfield: interprets 
+                the string as an aggregated list of the following values: Surename;Firstname;Lifedata;Wikilink 
+                (static) key="" defines the index field All parameters can be used in the 
+                messages_XYZ.properties file using {0}, {1}, etc. This are a few exampled: -->
+            <metadata label="URN" value="">
+                <param type="field" key="URN" />
+            </metadata>
+            <metadata label="PI" value="">
+                <param type="field" key="PI" />
+            </metadata>
+            <metadata label="MD_TITLE" value="">
+                <param type="field" key="MD_TITLE" />
+            </metadata>
+            <metadata label="MD_CREATOR" value="">
+                <param type="field" key="MD_CREATOR" />
+            </metadata>
+            <metadata label="MD_CATALOGIDSOURCE" value="LINK_CATALOGIDSOURCE">
+                <param type="field" key="MD_CATALOGIDSOURCE" />
+                <param type="ppnfield" key="MD_CATALOGIDSOURCE" />
+            </metadata>
+            <metadata label="DOCSTRCT" value="">
+                <param type="field" key="DOCSTRCT" />
+            </metadata>
+        </template>
+</overviewPage>

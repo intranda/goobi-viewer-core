@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- interface options -->
+    <composite:interface />
+
+    <!-- component content -->
+	<composite:implementation>
+        <div id="ePubWrapper">
+            <h3>
+                <h:outputText value="#{msg.epub_fileList}" />
+                <!-- 				<h:outputText value="#{activeDocumentBean.viewManager.activeDocument.label}" /> -->
+            </h3>
+
+            <h:panelGroup rendered="#{!activeDocumentBean.viewManager.currentPage.accessForJs}">
+                <p>
+                    <h:outputText value="#{msg.ePub_accessConditionText}" escape="false" />
+                </p>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
+                <ul>
+                    <ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
+                        <li>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    <a href="#{page.url}" target="_blank">
+                                        <img src="#{request.contextPath}/resources/images/pdf-2-32.png" alt="ePub PDF" /> [#{page.fileSizeAsString}]
+                                    </a>
+                                </dt>
+                                <dd>#{page.orderLabel}</dd>
+                            </dl>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </h:panelGroup>
+        </div>
+    </composite:implementation>
+</ui:composition>

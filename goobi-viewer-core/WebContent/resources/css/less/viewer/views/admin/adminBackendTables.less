@@ -1,0 +1,128 @@
+/* ==============================================================
+   Admin Backend Tables
+   style declarations for admin backend tables
+   ==============================================================*/
+/* BLOCK */
+.admin-table {
+    /* ELEMENT */
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    &__action {
+        font-size: 1.1rem;
+        text-align: center;
+        vertical-align: top;
+        a, span {
+            display: inline-block;
+            padding: 5px;
+            text-decoration: none;
+            color: @black;
+            &:hover,
+            &:focus,
+            &:active {
+                text-decoration: none;
+            }
+        }
+        span {
+            opacity: 0.5;
+        }
+    }
+}
+
+/* BOOTSTRAP OVERWRITE */
+.admin-table > thead > tr > th {
+    vertical-align: top;
+}
+
+/* ADMIN TABLE IDS */
+/* ALL USER */
+#adminAllUserTable {
+    td {
+        span {
+            opacity: 1;
+        }
+    }
+}
+/* ALL USER GROUPS */
+#adminAllUserGroupsTable {
+    td:nth-child(3) {
+        text-align: center;
+    }
+}
+/* IP RANGES */
+#adminIpRangesTable {}
+/* LICENSE TYPES */
+#adminLicenseTypesTable {
+    td:nth-child(1) {
+        .glyphicon-info-sign {
+            float: right;
+            cursor: pointer;
+        }
+    }
+    td:nth-child(3) {
+        text-align: center;
+    }
+    td:nth-child(5) {
+        min-width: 100px;
+    }
+    li .glyphicon {
+        margin-right: 5px;
+        color: green;
+    }
+}
+/* USER COMMENTS */
+#adminUserCommentsTable {}
+/* USER ACTIVITY */
+#adminUserActivityTable {}
+
+/* DATATABLES SORTING */
+.sorting-wrapper {
+    float: right;
+    .sort {
+        text-decoration: none;
+        &:hover {
+            text-decoration: none;
+        }
+        .fa {}
+    }    
+}
+
+/* DATATABLES FILTER */
+.column-filter-wrapper {
+    margin: 0.5rem 0;
+    .form-group {
+        height: 28px;
+        line-height: normal;
+        margin: 0;
+        label {}
+        .input-group {
+            height: 28px;
+            line-height: normal;
+            input {
+                font-size: 12px;
+                font-weight: normal;
+                height: 28px;
+                line-height: normal;
+                padding: 4px 7px;
+            }
+            .input-group-addon {
+                font-size: 10px;
+                padding: 4px 7px;
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

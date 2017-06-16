@@ -1,0 +1,107 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{metadataBean.loadMetadata}" />
+        </f:metadata>
+    </ui:define>
+
+    <composite:interface>
+        <composite:attribute name="bookshelfDisplay" default="true" required="false" />
+        <composite:attribute name="addToBookshelfDisplay" default="true" required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <h:panelGroup rendered="#{userBean.loggedIn and cc.attrs.bookshelfDisplay and !activeDocumentBean.anchor and (configurationBean.bookshelvesEnabled or userBean.user.maySetRepresentativeImage)}">
+			<h:form id="menuBookshelfForm" prependId="false">
+				<div id="menuBookshelf" class="sidebar-widget">
+
+					<!-- bookshelves -->
+					<h3>#{msg.bookshelf_bookshelf}</h3>
+
+					<nav>
+						<ul>
+							<h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
+								<h:panelGroup rendered="#{bookshelfBean.getNumBookshelvesForUser(userBean.user) gt 0 and cc.attrs.addToBookshelfDisplay}">
+									<li>
+										<h:commandLink value="#{msg.bookshelf_addToBookshelf}">
+											<f:passThroughAttribute name="data-toggle" value="modal" />
+											<f:passThroughAttribute name="data-target" value="#addToBookshelfModal" />
+											<f:ajax />
+										</h:commandLink>
+									</li>
+								</h:panelGroup>
+								
+								<h:panelGroup rendered="#{bookshelfBean.getNumBookshelvesForUser(userBean.user) lt 1}">
+									<li>
+										<h:commandLink value="#{msg.bookshelf_newBookshelf}" action="#{bookshelfBean.createNewBookshelfAction}" />
+									</li>
+								</h:panelGroup>
+								
+								<h:panelGroup>
+									<li class="#{navigationHelper.currentPage == 'mybookshelves'?'menu-active':''}">
+										<h:outputLink value="#{navigationHelper.applicationUrl}mybookshelves/">
+											#{msg.bookshelf_myBookshelves}
+										</h:outputLink>
+									</li>
+								</h:panelGroup>
+								
+								<h:panelGroup>
+									<li class="#{navigationHelper.currentPage == 'otherbookshelves'?'menu-active':''}">
+										<h:outputLink value="#{navigationHelper.applicationUrl}otherbookshelves/">
+                                        	#{msg.bookshelf_otherBookshelves}
+                                    	</h:outputLink>
+                                    </li>
+								</h:panelGroup>
+							</h:panelGroup>
+						</ul>
+					</nav>
+
+					<!-- my searches -->
+					<h3>#{msg.bookshelf_savedSearches}</h3>
+					
+					<nav>
+						<ul>
+							<li class="#{navigationHelper.currentPage == 'mysearches'?'menu-active':''}">
+								<h:outputLink value="#{navigationHelper.applicationUrl}mysearches/">
+									#{msg.user_mySearches}
+								</h:outputLink>
+							</li>
+						</ul>
+					</nav>
+					
+					<!-- crowdsourcing -->
+<!-- 					<h:panelGroup rendered="#{configurationBean.crowdsourcingEnabled}"> -->
+<!-- 						<h3>#{msg.crowdsourcing}</h3> -->
+<!-- 						<nav> -->
+<!-- 							<ul> -->
+<!-- 								<h:panelGroup rendered="#{activeDocumentBean.viewManager.hasPages and activeDocumentBean.persistentIdentifier != ''}"> -->
+<!-- 									<li> -->
+<!-- 										<h:outputLink value="#{navigationHelper.applicationUrl}crowd/#{activeDocumentBean.persistentIdentifier}/"> -->
+<!-- 											#{msg.crowdsourcing_contribute} -->
+<!-- 										</h:outputLink> -->
+<!-- 									</li> -->
+<!-- 								</h:panelGroup> -->
+<!-- 								<li class="#{navigationHelper.currentPage == 'myactivity'?'menu-active':''}"> -->
+<!-- 									<h:outputLink value="#{navigationHelper.applicationUrl}myactivity/"> -->
+<!-- 										<h:outputText value="#{msg.crowdsourcing_myActivity}" /> -->
+<!-- 									</h:outputLink> -->
+<!-- 								</li> -->
+<!-- 							</ul> -->
+<!-- 						</nav> -->
+<!-- 					</h:panelGroup>					 -->
+				</div>
+			</h:form>
+			<script type="text/javascript">
+            $(document).ready(function() {
+            	$('.addToBookshelfLink').attr('data-toggle', 'modal').attr('data-target', '#addToBookshelfModal');
+            });
+            </script>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

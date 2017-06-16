@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config>
+        <userGeneratedContent>
+            <Content type="PERSON">
+                <field label="firstname" titleEntry="2"/>
+                <field label="lastname" titleEntry="3"/>
+                <field label="termsOfAddress" desc="Adelige oder akademische Titel\, etc." titleEntry="1"/>
+                <field label="occupation" titleEntry = "5" titleFormat="\, {}"/>
+                <field label="maidenName" titleEntry="4" titleFormat="\, geb. {}"/>
+                <field label="maritalStatus" desc="'ledig'\, 'verlobt'\, 'verheiratet', verwitwet oder 'geschieden'"/>
+                <field label="personIdentifier" desc="Identifier der verwendeten Normdatenbank"  titleFormat="&#8200;[{}]" titleEntry="7"/>
+                <field label="references" titleFormat="&#8200;({})" titleEntry="6"/>
+            </Content>
+             <Content type="ADDRESS">
+                <field label="street" titleEntry="1"/>
+<!--                 <field label="houseNumber" titleEntry="2"/> -->
+                <field label="district" titleFormat="\, {}" titleEntry="3"/>
+                <field label="city" titleEntry = "4" titleFormat="\, {}"/>
+                <field label="country" titleEntry = "5" titleFormat="\, {}"/>
+                <field label="coordinateX"/>
+                <field label="coordinateY"/>
+            </Content>
+            <Content type="CORPORATION">
+                <field label="title" titleEntry="1"/>
+                <field label="address" titleEntry="2" titleFormat="\, {}"/>
+                <field label="corporationIdentifier"/>
+            </Content>
+            <Content type="COMMENT">
+                <field label="text" titleEntry="1"/>
+            </Content>
+           <!--<Content type="PICTURE">
+                <field label="title" titleEntry="2"/>
+                <field label="artist" titleEntry="1" titleFormat="{}: "/>
+                <field label="yearOfProduction" titleEntry="3" titleFormat="\, {}"/>
+                <field label="objectType"/>
+                <field label="additionalInformation"/>
+                <field label="iconClass"/>
+            </Content>-->
+        </userGeneratedContent>
+</config>

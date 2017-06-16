@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" 
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"> 
+
+	<composite:interface />
+
+	<composite:implementation>
+		<h:panelGroup id="content_media_group" rendered="#{contentItem.type == 'MEDIA'}">
+			<div class="edit-content-page edit-content-page-media">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label class="col-sm-3 control-label">#{msg[contentItem.itemLabel]}#{contentItem.mandatory?'*':''}:</label>
+						<div class="col-sm-9">
+							<h:panelGroup rendered="#{contentItem.mediaItem == null}">
+								<h:commandButton 
+									type="button" 
+									class="btn" 
+									value="#{msg.cms_selectMedia}"
+									action="#{contentItem.setVisible(true)}">
+									<f:passThroughAttribute name="data-toggle" value="modal"></f:passThroughAttribute>
+									<f:passThroughAttribute name="data-target" value="#selectMediaModal-#{contentItem.itemId}-#{locale.language}"></f:passThroughAttribute>
+									<f:ajax render="editContentPageMediaGalleryItem"></f:ajax>
+								</h:commandButton>
+
+								<div 
+									id="selectMediaModal-#{contentItem.itemId}-#{locale.language}" 
+									class="modal fade" 
+									tabindex="-1" 
+									role="dialog"
+									aria-labelledby="selectMediaModal-#{contentItem.itemId}Label" 
+									aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal">
+													<span aria-hidden="true"> 	
+														<h:outputText value="&amp;times;" escape="false" />
+													</span> 
+													<span class="sr-only">Close</span>
+												</button>
+												<h4 class="modal-title" id="selectMediaModal-#{contentItem.itemId}Label">#{msg.cms_selectMedia}</h4>
+											</div>
+											<div class="modal-body">
+												<!-- preloader -->
+												<div id="AJAXLoader"></div>
+												
+												<div class="row">
+													<h:panelGroup id="editContentPageMediaGalleryItem">
+													<h:panelGroup rendered="#{contentItem.visible}">
+														<c:forEach var="media" items="#{cmsMediaBean.getAllMedia()}">
+															<div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">														
+																<div class="edit-content-page-media-gallery-item #{media == cmsBean.selectedMediaItem ? 'active-media-item' : ''}">
+																	<div class="edit-content-page-media-gallery-item-image">
+																		<img src="#{cmsMediaBean.getMediaPreviewUrl(media)}" />
+																	</div>
+																	<div class="edit-content-page-media-gallery-item-title">
+																		<h:outputText 
+																			value="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}"
+																			title="#{media.getMetadataForLocale(cmsBean.selectedLocale).name}" />
+																	</div>
+																	<div class="edit-content-page-media-gallery-item-action">
+																		<h:commandLink action="#{cmsBean.setSelectedMediaItem(media)}" value="#{msg.cms_selectMedia}"
+																		onclick="setSelected($(this).parent().parent())">
+																			<f:ajax render="@none" />
+																		</h:commandLink>
+																	</div>
+																</div>
+																<div class="clearfix"></div>
+															</div>
+														</c:forEach>
+														<script type="text/javascript">
+														function setSelected(item) {
+															$(".active-media-item").removeClass("active-media-item");
+															$(item).addClass("active-media-item");
+														}
+														</script>
+														</h:panelGroup>
+													</h:panelGroup>
+												</div>
+											</div>
+											<div class="modal-footer">
+<!-- 												<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a> -->
+												<h:commandLink
+													action="#{contentItem.setVisible(false)}"
+													value="#{msg.cancel}"
+													styleClass="btn"
+													onclick="$('body').removeClass('modal-open'); cmsJS.createPage.disablePreview();">
+													<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
+													<f:ajax render="@none"/>
+												</h:commandLink>
+												<h:commandLink
+													action="#{contentItem.setMediaItem(cmsBean.selectedMediaItem)}" 
+													actionListener="#{contentItem.setVisible(false)}"
+													value="#{msg.save}"
+													styleClass="btn"
+													onclick="$('body').removeClass('modal-open'); cmsJS.createPage.disablePreview();">
+													<f:passThroughAttribute name="data-dismiss" value="modal"></f:passThroughAttribute>
+													<f:ajax render="content_media_group"/>
+												</h:commandLink>
+											</div>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+
+							<h:panelGroup rendered="#{contentItem.mediaItem != null}">
+								<div class="edit-content-page-media-preview">
+									<div class="row">
+										<div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+											<img alt="#{contentItem.mediaItem.fileName}" src="#{cmsMediaBean.getMediaPreviewUrl(contentItem.mediaItem)}" />
+										</div>
+										<div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+											<h5>#{contentItem.mediaItem.getMetadataForLocale(locale).name}</h5>
+											<p>
+												<h:outputText value="#{contentItem.mediaItem.getMetadataForLocale(locale).description}" />
+												<h:commandLink 
+													action="#{contentItem.setMediaItem(null)}" 
+													actionListener="#{contentItem.setVisible(false)}"
+													onclick="cmsJS.createPage.disablePreview();">
+													<span class="glyphicon glyphicon-trash"></span>
+													<f:ajax render="content_media_group"></f:ajax>
+												</h:commandLink>
+											</p>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

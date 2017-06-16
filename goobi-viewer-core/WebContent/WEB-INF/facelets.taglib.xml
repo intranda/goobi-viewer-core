@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<facelet-taglib version="2.0"
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd">
+
+    <namespace>http://de.intranda.digiverso.presentation</namespace>
+    
+    <function>
+        <function-name>getTagsLuceneField</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            java.util.ArrayList getTagsLuceneField(java.lang.String, java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+    
+    <function>
+        <function-name>getFeaturedVolumeImage</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            string getFeaturedVolumeImage(java.lang.String, java.lang.Integer, java.lang.Integer)
+        </function-signature>
+    </function>
+    
+    <function>
+        <function-name>getFeaturedImage</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            string getFeaturedImage(java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Integer)
+        </function-signature>
+    </function>
+    
+       <function>
+        <function-name>getFeaturedVolumeField</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            java.lang.String getFeaturedVolumeField(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+
+
+    <function>
+        <function-name>getLastImports</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            java.util.List getLastImports(java.lang.Integer)
+        </function-signature>
+    </function>
+    
+    <function>
+        <function-name>getLastImportImages</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            java.util.List getLastImportImages(java.lang.Integer)
+        </function-signature>
+    </function>
+
+    <function>
+        <function-name>teaserList</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            java.lang.String teaserList(java.lang.String)
+        </function-signature>
+    </function>
+    <!-- 
+        <function>
+        <function-name>getTagsLuceneField</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.managedbeans.TagCloudBean
+        </function-class>
+        <function-signature>
+            java.util.String getTagsLuceneField(java.lang.String, java.lang.String)
+        </function-signature>
+    </function>
+     -->
+         
+<!--      <function> -->
+<!--         <function-name>getCollections</function-name> -->
+<!--         <function-class> -->
+<!--             de.intranda.digiverso.presentation.controller.TagLib -->
+<!--         </function-class> -->
+<!--         <function-signature> -->
+<!--             java.util.List getCollections(java.lang.String) -->
+<!--         </function-signature> -->
+<!--     </function> -->
+
+      <function>
+        <function-name> getCollectionText</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            java.lang.String  getCollectionText(java.lang.String)
+        </function-signature>
+    </function>
+    
+     <function>
+        <function-name>getDrillDown</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.controller.TagLib
+        </function-class>
+        <function-signature>
+            java.util.List getDrillDown(java.lang.String, java.lang.String, java.lang.Integer)
+        </function-signature>
+    </function>
+    
+    <function>
+        <function-name>getMediaUrl</function-name>
+        <function-class>
+            de.intranda.digiverso.presentation.model.viewer.PhysicalElement
+        </function-class>
+        <function-signature>
+            string getMediaUrl(java.lang.String)
+        </function-signature>
+    </function>
+    
+ </facelet-taglib>

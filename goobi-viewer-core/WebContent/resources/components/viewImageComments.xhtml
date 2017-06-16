@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface />
+
+	<composite:implementation>
+		<h:panelGroup
+			rendered="#{activeDocumentBean.viewManager.allowUserComments}">
+			<div id="viewImageComments">
+				<h3>#{msg.commentAdd}</h3>
+				
+				<h:panelGroup rendered="#{!userBean.loggedIn}">
+					<p>
+						<h:outputText value="#{msg.commentDescription} " escape="false" />				
+						<h:outputLink value="#{navigationHelper.applicationUrl}user/?from=#{navigationHelper.currentUrl}">#{msg.login}</h:outputLink>.
+					</p>
+				</h:panelGroup>
+
+				<h:form id="commentForm" styleClass="form-horizontal" prependId="false">
+					<h:panelGroup rendered="#{userBean.loggedIn}">
+                        <div id="newCommentField">
+    						<!-- add comment -->
+    						<div class="form-group">
+    							<h:outputLabel for="newCommentInput" value="#{msg.COMMENT}" styleClass="col-sm-2 control-label" />
+    							<div class="col-sm-10">
+    								<h:inputTextarea id="newCommentInput" styleClass="form-control" value="#{activeDocumentBean.viewManager.currentPage.currentComment.text}" />
+    							</div>
+    						</div>
+    						<div class="form-group">
+    							<div class="col-sm-offset-2 col-sm-10">
+    								<!-- add comment button -->
+    								<h:commandButton 
+    									rendered="#{activeDocumentBean.viewManager.currentPage.currentComment.id == null}" 
+    									action="#{activeDocumentBean.viewManager.currentPage.createNewCommentAction(userBean.user)}" 
+    									styleClass="btn comment-submit"
+    									value="#{msg.addNoteText}">
+    								</h:commandButton>
+    							</div>
+    						</div>
+                        </div>
+					</h:panelGroup>
+
+					<!-- existing comments -->
+                    <h:panelGroup id="commentList">
+						<ui:repeat var="comment" value="#{activeDocumentBean.viewManager.currentPage.comments}">					
+							<div class="comments-elem">
+								<div class="comments-gravatar">
+									<img src="#{comment.owner.avatarUrl}" alt="User Gravatar" />
+								</div>
+								<div class="comments-content">
+									<div class="comments-header">
+										<span class="comments-creator">#{comment.owner.displayNameObfuscated}</span> 
+										<span class="comments-date">#{navigationHelper.getLocalDate(comment.dateCreated)}</span>
+										<span class="comments-last-change">
+											<h:outputText 
+												rendered="#{comment.dateUpdated != null}" 
+												class="comments-date">
+												 (#{msg.lastEdited} #{navigationHelper.getLocalDate(comment.dateUpdated)})
+											</h:outputText>
+										</span>
+										<h:panelGroup rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
+											<h:commandLink styleClass="comments-delete-btn" title="#{msg.commentDelete}">
+												<f:ajax execute="@form" />
+												<span class="glyphicon glyphicon-trash"></span>
+											</h:commandLink>
+										</h:panelGroup>
+									</div>
+									<div class="comments-comment">
+										<div class="comments-comment-text">
+											<h:outputText value="#{comment.text}" />
+										</div>
+	
+										<h:panelGroup rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
+											<div class="comments-comment-edit">
+												<div class="form-group">
+													<h:inputTextarea 
+														styleClass="form-control" 
+														value="#{comment.text}" />
+												</div>
+		
+												<!-- edit comment button -->
+												<h:commandButton 
+													action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}" 
+													styleClass="btn comment-change"
+													value="#{msg.save}">
+												</h:commandButton>	
+	
+												<!-- abort button -->
+												<h:commandButton
+	                                                type="button" 
+													immediate="true" 
+													styleClass="btn comment-abort"
+													value="#{msg.cancel}">
+												</h:commandButton>
+											</div>
+		
+											<!-- Edit+delete buttons for comment owner -->
+											<div class="comments-edit-comment-btn">
+												<h:commandLink styleClass="btn comment-edit" value="#{msg.edit}">
+													<f:setPropertyActionListener target="#{activeDocumentBean.viewManager.currentPage.currentComment}" value="#{comment}" />
+													<f:ajax execute="@form" />
+												</h:commandLink>											
+	                                        </div>
+										</h:panelGroup>
+									</div>
+								</div>
+	
+								<!-- delete comment modal -->
+								<div class="modal deleteCommentModal" tabindex="-1" role="dialog" aria-labelledby="deleteCommentModal" aria-hidden="true">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">
+														<h:outputText value="&amp;times;" escape="false" />
+													</span>
+												</button>
+												<h4 class="modal-title" id="myModalLabel">#{msg.commentDelete}</h4>
+											</div>
+											<div class="modal-body">
+												<p>
+													#{msg.commentDeleteConfirmationText}
+												</p>
+												<blockquote>#{comment.text}</blockquote>
+											</div>
+											<div class="modal-footer">
+												<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
+												<h:commandLink action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}" value="#{msg.commentDelete}" styleClass="btn" />
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</ui:repeat>
+                    </h:panelGroup>
+					
+					<div class="clearfix"></div>
+				</h:form>
+			</div>
+			
+			<div class="clearfix"></div>
+		</h:panelGroup>
+		
+		<script type="text/javascript">
+			$(document).ready(function() {
+			  viewerJS.editComment.init();
+			});			
+			
+            jsf.ajax.addOnEvent( function( data ) {
+                var ajaxstatus = data.status;
+                
+                switch ( ajaxstatus ) {
+                    case "success":
+                        viewerJS.editComment.init();
+                        break;
+                }
+            } );
+        </script>
+	</composite:implementation>
+</ui:composition>

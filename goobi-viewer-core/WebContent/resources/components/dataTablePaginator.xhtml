@@ -1,0 +1,64 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:component="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- interface options -->
+    <composite:interface>
+        <composite:attribute name="tableValues" required="true" />
+    </composite:interface>
+
+    <!-- component content -->
+    <composite:implementation>
+        <nav id="dataTablePaginator" class="data-table-paginator clearfix">
+            <ul>
+                <li>
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMoveFirst}" disabled="#{cc.attrs.tableValues.firstPage}">
+                        <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                        <f:ajax render="@form" />
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.firstPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMovePrevious}" disabled="#{cc.attrs.tableValues.firstPage}">
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <f:ajax render="@form" />
+                        <h:outputText value=" #{msgs.pagePrevious}" />
+                    </h:commandLink>
+                </li>
+                <li class="data-table-paginator__page-count">
+                    <!-- SHOW CURRENT PAGE -->
+                    <span id="txtMoveTo1" class="data-table-paginator__current-page">
+                        #{cc.attrs.tableValues.pageNumberCurrent}
+                    </span>
+                    <span id="txtMoveTo2" class="data-table-paginator__input">
+                        <h:inputText  value="#{cc.attrs.tableValues.txtMoveTo}" required="true" />
+                    </span>
+                    <span id="totalCount" class="data-table-paginator__total-count">
+                        #{msg.of} #{cc.attrs.tableValues.pageNumberLast}
+                    </span>
+                    
+                    <!-- GO TO PAGE --> 
+                    <h:commandButton action="#{navigationHelper.reload()}" id="cmdMoveTo" class="btn-clean" />
+                </li>
+                <li>
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMoveNext}" disabled="#{cc.attrs.tableValues.lastPage}">
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                        <f:ajax render="@form" />
+                    </h:commandLink>
+                </li>
+                <li>
+                    <h:commandLink styleClass="btn #{cc.attrs.tableValues.lastPage ? 'btn-inactive' : ''}" action="#{cc.attrs.tableValues.cmdMoveLast}" disabled="#{cc.attrs.tableValues.lastPage}">
+                        <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                        <f:ajax render="@form" />
+                    </h:commandLink>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="clearfix"></div>
+    </composite:implementation>
+</ui:composition>

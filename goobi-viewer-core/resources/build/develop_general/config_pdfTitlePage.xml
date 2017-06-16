@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TODO: Reference Schema here and remove reference to DTD -->
+<!--
+    new version; paragraphs aren't empty elements any more
+-->
+<!--
+<!DOCTYPE pdftitlepage PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+                         "http://dz-srv1.sub.uni-goettingen.de:8080/sub/pdftitlepage.dtd">
+-->
+<!-- http://dz-srv1.sub.uni-goettingen.de:8080/sub/digbib/showpdftitle?did=D51260 Link auf Monographie -->
+<!-- http://dz-srv1.sub.uni-goettingen.de:8080/sub/digbib/showpdftitle?did=D637 Link auf Chapter einer Monographie --> 
+<!-- examples for the use of the fo leader -->
+<pdftitlepage>
+
+    <!-- get all parents -->
+    <!--  <parenttype>Monograph</parenttype> -->
+    <!-- usually line1 contains the title of the selected document - this is the title of the chapter, the article or if the whole monograph was selected, the title of the monograph -->
+    <!--   <line1>Reformation in Hamburg</line1> -->
+    <!-- line 2 contains the creator of the document -->
+    <!--   <line2 type="parent">Leopold Kist</line2> -->
+    <!-- line 3 contains the title of the parent, in which the selected document is contained title of monograph, periodical etc... Besides just the title, volume and issues numbers can be display here-->
+    <!--   <line3>in: Amerikanisches </line3> -->
+    <!-- line4 contains the pages; from and until -->
+    <!--   <line4>pp. 15 - 27</line4> -->
+    <termsconditions title="Terms and Conditions">
+        <p>The Goettingen State and University Library provides access to digitized documents strictly for noncommercial educational, research and private purposes and makes no warranty with regard to their use for other purposes. Some of our collections are protected by copyright. Publication and/or broadcast in any form (including electronic) requires prior written permission from the Goettingen State- and University Library.</p>
+        <p>Each copy of any part of this document must contain there Terms and Conditions. With the usage of the library's online system to access or download a digitized document you accept there Terms and Conditions.</p>
+        <p>Reproductions of material on the web site may not be made for or donated to other repositories, nor may be further reproduced without written permission from the Goettingen State- and University Library</p>
+        <p>For reproduction requests and permissions, please contact us. If citing materials, please give proper attribution of the source.</p>
+        <p>Contact:</p>
+        <p>Niedersaechsische Staats- und Universitaetsbibliothek</p>
+        <p>Digitalisierungszentrum</p>
+        <p>37070 Goettingen</p>
+        <p>Germany</p>
+        <p>Email: gdz@www.sub.uni-goettingen.de</p>
+    </termsconditions>
+</pdftitlepage>

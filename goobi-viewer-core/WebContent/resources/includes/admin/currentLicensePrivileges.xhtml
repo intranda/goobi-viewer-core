@@ -1,0 +1,129 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+	<h3>#{msg.role_managePrivileges}</h3>
+
+    <div class="col-sm-offset-4 col-sm-8 select-privileges">
+        <label> 
+            <h:selectBooleanCheckbox 
+                id="privListDisabled" 
+                rendered="#{adminBean.currentLicense.licenseType.privList}" 
+                disabled="true"
+                selected="true" 
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privList" /> 
+            <h:selectBooleanCheckbox 
+                id="privList"
+                rendered="#{!adminBean.currentLicense.licenseType.privList}" 
+                value="#{adminBean.currentLicense.privList}" 
+                label="privList" /> #{msg.license_privList}
+        </label> 
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privViewImagesDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privViewImages}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privViewImages" />
+            <h:selectBooleanCheckbox 
+                id="privViewImages"
+                rendered="#{!adminBean.currentLicense.licenseType.privViewImages}" 
+                value="#{adminBean.currentLicense.privViewImages}"
+                label="privViewImages" /> #{msg.license_privViewImages}
+        </label>
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privViewThumbnailsDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privViewThumbnails}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privViewThumbnails" />
+            <h:selectBooleanCheckbox 
+                id="privViewThumbnails"
+                rendered="#{!adminBean.currentLicense.licenseType.privViewThumbnails}" 
+                value="#{adminBean.currentLicense.privViewThumbnails}"
+                label="privViewThumbnails" /> #{msg.license_privViewThumbnails}
+        </label>
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privViewFulltextDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privViewFulltext}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privViewFulltext" />
+            <h:selectBooleanCheckbox 
+                id="privViewFulltext"
+                rendered="#{!adminBean.currentLicense.licenseType.privViewFulltext}" 
+                value="#{adminBean.currentLicense.privViewFulltext}"
+                label="privViewFulltext" /> #{msg.license_privViewFulltext}
+        </label>
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privViewVideoDisabled" 
+                rendered="#{adminBean.currentLicense.licenseType.privViewVideo}"
+                disabled="true" 
+                selected="true" 
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privViewVideo" />
+            <h:selectBooleanCheckbox
+                id="privViewVideo" 
+                rendered="#{!adminBean.currentLicense.licenseType.privViewVideo}" 
+                value="#{adminBean.currentLicense.privViewVideo}"
+                label="privViewVideo" /> #{msg.license_privViewVideo}
+        </label>
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privViewAudioDisabled" 
+                rendered="#{adminBean.currentLicense.licenseType.privViewAudio}"
+                disabled="true" 
+                selected="true" 
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privViewAudio" />
+            <h:selectBooleanCheckbox
+                id="privViewAudio" 
+                rendered="#{!adminBean.currentLicense.licenseType.privViewAudio}" 
+                value="#{adminBean.currentLicense.privViewAudio}"
+                label="privViewAudio" /> #{msg.license_privViewAudio}
+        </label>
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privDownloadPdfDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privDownloadPdf}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privDownloadPdf" />
+            <h:selectBooleanCheckbox 
+                id="privDownloadPdf"
+                rendered="#{!adminBean.currentLicense.licenseType.privDownloadPdf}" 
+                value="#{adminBean.currentLicense.privDownloadPdf}"
+                label="privDownloadPdf" /> #{msg.license_privDownloadPdf}
+        </label>
+        <br />
+        <label>
+            <h:selectBooleanCheckbox 
+                id="privDownloadOriginalContentDisabled"
+                rendered="#{adminBean.currentLicense.licenseType.privDownloadOriginalContent}" 
+                disabled="true" 
+                selected="true"
+                title="#{msg.license_privInheritedFromLicenseType}" 
+                label="privDownloadOriginalContent" />
+            <h:selectBooleanCheckbox
+                id="privDownloadOriginalContent" 
+                rendered="#{!adminBean.currentLicense.licenseType.privDownloadOriginalContent}"
+                value="#{adminBean.currentLicense.privDownloadOriginalContent}" 
+                label="privDownloadOriginalContent" /> #{msg.license_privDownloadOriginalContent}
+        </label>
+    </div>
+</ui:composition>

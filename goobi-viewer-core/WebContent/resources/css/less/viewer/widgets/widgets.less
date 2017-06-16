@@ -1,0 +1,61 @@
+/* ==============================================================
+   Widgets
+   style declarations for sidebar widgets
+   ==============================================================*/
+// deprecated since 3.0
+.sidebar-widget {
+    margin-bottom: 1.3125rem;
+    h3 {}
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li {
+            a {
+                &:hover {}
+            }
+        }
+    }
+}
+
+.widget {
+    margin-bottom: 1.3125rem;
+    h3 {}
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            a {
+                &:hover {}
+            }
+            &.active {
+                a {}
+            }
+        }
+    }
+    dl {
+        margin: 0;
+        dt,
+        dd {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        dt {}
+        dd {}
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

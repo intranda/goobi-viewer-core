@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+	<Appenders>
+		<Console name="stdout">
+			<PatternLayout
+				pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread]  %logger{36}%n        %msg%n" />
+		</Console>
+		<File name="rolling" fileName="/opt/digiverso/logs/viewer.log">
+			<PatternLayout
+				pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread]  %logger{36}%n        %msg%n" />
+		</File>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="de.intranda" level="DEBUG" additivity="true" />
+		<Logger name="com.ocpsoft" level="ERROR" additivity="true" />
+		<Logger name="ro.isdc.wro" level="ERROR" additivity="true" />
+		<Logger name="de.unigoettingen" level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.ImageManager"
+			level="INFO" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.ImageManipulator"
+			level="INFO" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.JpegImageInterpreter"
+			level="INFO" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.JpegTwoThousandImageInterpreter"
+			level="INFO" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.PngImageInterpreter"
+			level="INFO" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.TIFFLZWImageInterpreter"
+			level="INFO" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.TiffImageInterpreter"
+			level="INFO" additivity="true" />
+		<Logger name="de.unigoettingen.sub.commons.contentlib.imagelib.Watermark"
+			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.WatermarkBox"
+			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.WatermarkImage"
+			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.imagelib.WatermarkText"
+			level="ERROR" additivity="true" />
+		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib.PDFCreator"
+			level="INFO" additivity="true" />
+		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib.PDFManager"
+			level="INFO" additivity="true" />
+		<Logger name="de.unigoettingen.sub.commons.contentlib.pdflib.PDFTitlePage"
+			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer"
+			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.GetErrorReportAction"
+			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.GetImageAction"
+			level="INFO" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.GetPdfAction"
+			level="DEBUG" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.servlet.controller.JspOnlyAction"
+			level="ERROR" additivity="true" />
+		<Logger
+			name="de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig"
+			level="ERROR" additivity="true" />
+		<Logger name="httpclient" level="ERROR" additivity="true" />
+		<Logger name="java.net.SocketOutputStream" level="ERROR"
+			additivity="true" />
+		<Logger name="net.sf.ehcache" level="ERROR" additivity="true" />
+		<Logger name="org.apache" level="ERROR" additivity="true" />
+		<Logger name="ugh" level="ERROR" additivity="true" />
+		<Root level="info">
+			<AppenderRef ref="stdout" />
+			<AppenderRef ref="rolling" />
+		</Root>
+	</Loggers>
+
+</Configuration>

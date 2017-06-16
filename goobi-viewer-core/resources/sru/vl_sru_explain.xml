@@ -1,0 +1,160 @@
+<srw:explainResponse xmlns:srw="http://www.loc.gov/zing/srw/">
+	<srw:version>1.2</srw:version>
+	<srw:record>
+		<srw:recordSchema>http://explain.z3950.org/dtd/2.0/</srw:recordSchema>
+		<srw:recordPacking>xml</srw:recordPacking>
+		<srw:recordData>
+			<zr:explain xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zr="http://explain.z3950.org/dtd/2.0/"
+				xsi:schemaLocation="http://explain.z3950.org/dtd/2.0/ http://www.loc.gov/standards/sru/resources/zeerex-2.0.xsd">
+				<zr:serverInfo protocol="SRU" version="1.2" transport="http">
+					<zr:host>{server.host}</zr:host>
+					<zr:port>{server.port}</zr:port>
+					<zr:database>{server.domain}</zr:database>
+					<host>visuallibrary.net</host>
+					<port>10080</port>
+					<database>s2wdps/sru</database>
+				</zr:serverInfo>
+				<zr:databaseInfo>
+					<zr:title lang="de" primary="true">{server.description}</zr:title>
+					<title>Periodikasammlung</title>
+					<author>Visual Library Server 2009</author>
+					<contact>sru@visuallibrary.net</contact>
+				</zr:databaseInfo>
+				<zr:indexInfo>
+					<zr:set name="cql" identifier="info:srw/cql-context-set/1/cql-v1.1">
+						<zr:title>CQL Standard Set</zr:title>
+					</zr:set>
+					<zr:set name="dc" identifier="info:srw/cql-context-set/1/dc-v1.1">
+						<zr:title>Dublin Core Set</zr:title>
+					</zr:set>
+					<zr:set name="bib" identifier="info:srw/cql-context-set/1/bib-v1">
+						<zr:title>bib Context Set</zr:title>
+					</zr:set>
+					<zr:set name="vl" identifier="http://visuallibrary.net/cql-context-set/1/vl-v1/">
+						<zr:title>Visual Library Server Set</zr:title>
+					</zr:set>
+					<zr:index id="anywhere" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="cql">anywhere</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">anywhere</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="title" search="true" scan="false" sort="true">
+						<zr:map>
+							<zr:name set="dc">title</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">title</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="personalName" search="true" scan="false" sort="true">
+						<zr:map>
+							<zr:name set="bib">personalName</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">person</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="corporation" search="true" scan="false" sort="true">
+						<zr:map>
+							<zr:name set="vl">corporation</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="printer-publisher" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vl">printer-publisher</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="originPlace" search="true" scan="false" sort="true">
+						<zr:map>
+							<zr:name set="bib">originPlace</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">place</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="date" search="true" scan="false" sort="true">
+						<zr:map>
+							<zr:name set="dc">date</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">date</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="subject" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="dc">subject</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">keyword</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="genre-aad" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vl">genre-aad</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="signature" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vl">signature</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="series.idn" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vl">series.idn</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="identifier" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="dc">identifier</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">numbers</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="domain" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vl">domain</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="collection" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vl">collections</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="fulltext" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vl">fulltext</zr:name>
+						</zr:map>
+					</zr:index>
+					<zr:index id="structures" search="true" scan="false" sort="false">
+						<zr:map>
+							<zr:name set="vls">structures</zr:name>
+						</zr:map>
+						<zr:map>
+							<zr:name set="vl">fulltext</zr:name>
+						</zr:map>
+					</zr:index>
+				</zr:indexInfo>
+				<zr:schemaInfo>
+					<zr:schema identifier="info:srw/schema/1/mods-v3.3" name="mods">
+						<zr:title>MODS v3</zr:title>
+					</zr:schema>
+				</zr:schemaInfo>
+				<zr:configInfo>
+					<zr:supports type="searchType">fulltext</zr:supports>
+					<zr:supports type="sortModifier">relevance</zr:supports>
+					<zr:default type="skipInSearchForm">isbn,issn,domain,collection,fulltext,structures,series.idn</zr:default>
+					<zr:default type="excludeFromSearchForm">corporation</zr:default>
+					<zr:default type="booleanOperator">and</zr:default>
+					<zr:supports type="booleanOperator">and</zr:supports>
+					<zr:supports type="booleanOperator">or</zr:supports>
+					<zr:supports type="booleanOperator">not</zr:supports>
+					<zr:supports type="maskingCharacter">*</zr:supports>
+				</zr:configInfo>
+			</zr:explain>
+		</srw:recordData>
+	</srw:record>
+</srw:explainResponse>

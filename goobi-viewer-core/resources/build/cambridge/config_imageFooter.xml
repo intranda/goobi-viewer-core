@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<watermark width="500" height="50" color="CCCCCC">
+ <!--     <box x="30" y="50" height="65" width="180" color="555555"/>-->
+    <image x="0" y="0" origin="left" url="http://cambridge.intranda.com/viewer/resources/images/watermark/background.jpg"/>
+    <image x="10" y="5" origin="left" url="http://cambridge.intranda.com/viewer/resources/images/watermark/intranda.png"/>
+    <image x="10" y="5" origin="right" url="http://cambridge.intranda.com/viewer/resources/images/watermark/book.png"/>
+
+    <text x="200" y="30" fontname="Arial" fontsize="10" fontcolor="CCCCCC" origin="center">intranda viewer</text>
+</watermark>

@@ -1,0 +1,906 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<alto xmlns="http://www.loc.gov/standards/alto/alto-v2.0.xsd">
+	<Description>
+		<MeasurementUnit>pixel</MeasurementUnit>
+		<OcrProcessing>
+			<ocrProcessingStep>
+				<processingDateTime>129617890783430000</processingDateTime>
+				<processingSoftware softwareCreator="ABBYY"/>
+			</ocrProcessingStep>
+		</OcrProcessing>
+	</Description>
+	<Styles>
+		<ParagraphStyle ID="{FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0"/>
+		<ParagraphStyle ID="{36624388-20A1-42ED-B284-81923FE3C755}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{D783C9C0-C21D-4D20-8118-66CB28BDE639}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{AA086F50-862D-4B9D-84AA-104D602B8D20}" ALIGN="Block" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{740FD106-8CBE-49A9-B3F5-482EE713C336}" ALIGN="Block" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{29E1AB4A-DE7A-42F8-B653-3FE5F459EB5D}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{0E38268B-D0ED-4E12-A913-BA65716CE32A}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{B53D1620-260B-4089-A2F8-7EE6C42CA493}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{6DCC6B59-3432-4620-9579-285098AE784B}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+		<ParagraphStyle ID="{AE6E9475-3022-4CB0-9A3A-F6CC773A03A2}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="1560"/>
+		<ParagraphStyle ID="{B2E03B84-E030-40EC-8186-33A82E7C622A}" ALIGN="Left" LEFT="0" RIGHT="0" FIRSTLINE="0" LINESPACE="0"/>
+	</Styles>
+	<Layout>
+		<Page ID="0" PHYSICAL_IMG_NR="0">
+			<PrintSpace>
+				<ComposedBlock ID="{24E8FAF4-EF29-4A63-A3FA-3F145C232539}" HEIGHT="6102" WIDTH="4430" VPOS="0" HPOS="0" TYPE="container">
+					<textBlock ID="{AB81DA76-BF7B-4882-9C6B-08FA6DFE3F5A}" HEIGHT="120" WIDTH="596" VPOS="1480" HPOS="152" STYLEREFS="{6DCC6B59-3432-4620-9579-285098AE784B}">
+						<TextLine HEIGHT="96" WIDTH="564" VPOS="1500" HPOS="168">
+							<String CONTENT="Vaduz," WIDTH="298" VPOS="1500" HPOS="168"/>
+							<SP WIDTH="46" VPOS="1504" HPOS="467"/>
+							<String CONTENT="Freitag" WIDTH="218" VPOS="1504" HPOS="514"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{A213D496-C9A1-4946-833D-0F9C40A11211}" HEIGHT="194" WIDTH="1236" VPOS="422" HPOS="1384" STYLEREFS="{D783C9C0-C21D-4D20-8118-66CB28BDE639}">
+						<TextLine HEIGHT="152" WIDTH="1208" VPOS="456" HPOS="1396">
+							<String CONTENT="Liechtensteinische" WIDTH="1208" VPOS="456" HPOS="1396"/>
+						</TextLine>
+					</textBlock>
+					<Illustration ID="{EC8C44C8-AA4C-406C-8B96-F00B90243EB4}" HEIGHT="462" WIDTH="2888" VPOS="644" HPOS="964"/>
+					<textBlock ID="{2C9DE565-8111-4AF2-A41F-01314FE5F2BC}" HEIGHT="136" WIDTH="1188" VPOS="1220" HPOS="1398" STYLEREFS="{29E1AB4A-DE7A-42F8-B653-3FE5F459EB5D}">
+						<TextLine HEIGHT="106" WIDTH="1172" VPOS="1246" HPOS="1414">
+							<String CONTENT="Fünfter" WIDTH="484" VPOS="1246" HPOS="1414"/>
+							<SP WIDTH="54" VPOS="1248" HPOS="1899"/>
+							<String CONTENT="Jahrgang." WIDTH="632" VPOS="1248" HPOS="1954"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{3AAB3731-E71B-4723-A935-12BF7CD0B7D5}" HEIGHT="120" WIDTH="336" VPOS="1460" HPOS="1838" STYLEREFS="{B53D1620-260B-4089-A2F8-7EE6C42CA493}">
+						<TextLine HEIGHT="100" WIDTH="304" VPOS="1476" HPOS="1854">
+							<String CONTENT="Nr." WIDTH="170" VPOS="1476" HPOS="1854"/>
+							<SP WIDTH="58" VPOS="1484" HPOS="2025"/>
+							<String CONTENT="1." WIDTH="74" VPOS="1484" HPOS="2084"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{F8C0C7B6-10E5-4968-8684-77E69111B17C}" HEIGHT="98" WIDTH="744" VPOS="1470" HPOS="3136" STYLEREFS="{0E38268B-D0ED-4E12-A913-BA65716CE32A}">
+						<TextLine HEIGHT="76" WIDTH="712" VPOS="1488" HPOS="3152">
+							<String CONTENT="den" WIDTH="100" VPOS="1492" HPOS="3152"/>
+							<SP WIDTH="48" VPOS="1494" HPOS="3253"/>
+							<String CONTENT="5." WIDTH="58" VPOS="1494" HPOS="3302"/>
+							<SP WIDTH="46" VPOS="1488" HPOS="3361"/>
+							<String CONTENT="Jänner" WIDTH="210" VPOS="1488" HPOS="3408"/>
+							<SP WIDTH="48" VPOS="1490" HPOS="3619"/>
+							<String CONTENT="1877." WIDTH="196" VPOS="1490" HPOS="3668"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{FB456C7E-C933-446C-94DB-8C99E9E62E2B}" HEIGHT="1180" WIDTH="3750" VPOS="1810" HPOS="148" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<Shape>
+							<Polygon POINTS="148,1810 3898,1810 3898,1970 2172,1970 2172,2044 3882,2044 3882,2898 3704,2898 3704,2990 2928,2990 2928,2898 2044,2898 2044,2044 2118,2044 2118,1986 1584,1986 1584,1970 148,1970 148,1810"/>
+						</Shape>
+						<TextLine HEIGHT="72" WIDTH="3717" VPOS="1834" HPOS="166" STYLEREFS="{AE6E9475-3022-4CB0-9A3A-F6CC773A03A2}">
+							<String CONTENT="Redaktion" WIDTH="248" VPOS="1851" HPOS="166"/>
+							<SP WIDTH="27" VPOS="1848" HPOS="415"/>
+							<String CONTENT="in" WIDTH="49" VPOS="1848" HPOS="443"/>
+							<SP WIDTH="33" VPOS="1847" HPOS="493"/>
+							<String CONTENT="Vaduz" WIDTH="165" VPOS="1847" HPOS="527"/>
+							<SP WIDTH="35" VPOS="1861" HPOS="693"/>
+							<String CONTENT="oder" WIDTH="114" VPOS="1852" HPOS="729"/>
+							<SP WIDTH="30" VPOS="1850" HPOS="844"/>
+							<String CONTENT="bei" WIDTH="76" VPOS="1844" HPOS="875"/>
+							<SP WIDTH="26" VPOS="1844" HPOS="952"/>
+							<String CONTENT="den" WIDTH="88" VPOS="1849" HPOS="979"/>
+							<SP WIDTH="31" VPOS="1846" HPOS="1068"/>
+							<String CONTENT="betreffenden" WIDTH="317" VPOS="1844" HPOS="1100"/>
+							<SP WIDTH="29" VPOS="1842" HPOS="1418"/>
+							<String CONTENT="Postämtern." WIDTH="324" VPOS="1842" HPOS="1448"/>
+							<SP WIDTH="31" VPOS="1870" HPOS="1773"/>
+							<String CONTENT="—" WIDTH="53" VPOS="1870" HPOS="1805"/>
+							<SP WIDTH="32" VPOS="1842" HPOS="1859"/>
+							<String CONTENT="EinrückuWSgebührMür" WIDTH="629" VPOS="1836" HPOS="1892"/>
+							<SP WIDTH="28" VPOS="1842" HPOS="2522"/>
+							<String CONTENT="die" WIDTH="74" VPOS="1842" HPOS="2551"/>
+							<SP WIDTH="27" VPOS="1846" HPOS="2626"/>
+							<String CONTENT="zgespaltene" WIDTH="311" VPOS="1834" HPOS="2654"/>
+							<SP WIDTH="33" VPOS="1838" HPOS="2966"/>
+							<String CONTENT="AeUe" WIDTH="131" VPOS="1838" HPOS="3000"/>
+							<SP WIDTH="31" VPOS="1846" HPOS="3132"/>
+							<String CONTENT="s" WIDTH="29" VPOS="1846" HPOS="3164"/>
+							<SP WIDTH="25" VPOS="1838" HPOS="3194"/>
+							<String CONTENT="kr." WIDTH="71" VPOS="1838" HPOS="3220"/>
+							<SP WIDTH="15" VPOS="1863" HPOS="3292"/>
+							<String CONTENT="—Brlefe" WIDTH="251" VPOS="1836" HPOS="3308"/>
+							<SP WIDTH="24" VPOS="1847" HPOS="3560"/>
+							<String CONTENT="und" WIDTH="93" VPOS="1839" HPOS="3585"/>
+							<SP WIDTH="25" VPOS="1834" HPOS="3679"/>
+							<String CONTENT="Gelder" WIDTH="178" VPOS="1834" HPOS="3705"/>
+						</TextLine>
+						<TextLine HEIGHT="75" WIDTH="1989" VPOS="1893" HPOS="170" STYLEREFS="{AE6E9475-3022-4CB0-9A3A-F6CC773A03A2}">
+							<String CONTENT="«erden" WIDTH="178" VPOS="1915" HPOS="170"/>
+							<SP WIDTH="19" VPOS="1912" HPOS="349"/>
+							<String CONTENT="franco" WIDTH="169" VPOS="1912" HPOS="369"/>
+							<SP WIDTH="30" VPOS="1922" HPOS="539"/>
+							<String CONTENT="erbeten" WIDTH="190" VPOS="1912" HPOS="570"/>
+							<SP WIDTH="29" VPOS="1921" HPOS="761"/>
+							<String CONTENT="an" WIDTH="61" VPOS="1920" HPOS="791"/>
+							<SP WIDTH="33" VPOS="1911" HPOS="853"/>
+							<String CONTENT="die" WIDTH="74" VPOS="1904" HPOS="887"/>
+							<SP WIDTH="29" VPOS="1907" HPOS="962"/>
+							<String CONTENT="Redaktion" WIDTH="270" VPOS="1904" HPOS="992"/>
+							<SP WIDTH="30" VPOS="1902" HPOS="1263"/>
+							<String CONTENT="in" WIDTH="52" VPOS="1902" HPOS="1294"/>
+							<SP WIDTH="30" VPOS="1902" HPOS="1347"/>
+							<String CONTENT="Vaduz." WIDTH="192" VPOS="1902" HPOS="1378"/>
+							<SP WIDTH="575" VPOS="1893" HPOS="1571"/>
+							<String CONTENT="I" WIDTH="12" VPOS="1893" HPOS="2147"/>
+						</TextLine>
+						<TextLine HEIGHT="88" WIDTH="54" VPOS="2000" HPOS="2118">
+							<String CONTENT="1" WIDTH="54" VPOS="2000" HPOS="2118"/>
+						</TextLine>
+						<TextLine HEIGHT="110" WIDTH="1436" VPOS="2078" HPOS="2126" STYLEREFS="{740FD106-8CBE-49A9-B3F5-482EE713C336}">
+							<String CONTENT="|" WIDTH="40" VPOS="2092" HPOS="2126"/>
+							<SP WIDTH="192" VPOS="2086" HPOS="2167"/>
+							<String CONTENT="Oeffeutliche" WIDTH="522" VPOS="2082" HPOS="2360"/>
+							<SP WIDTH="42" VPOS="2078" HPOS="2883"/>
+							<String CONTENT="Versteigerung." WIDTH="636" VPOS="2078" HPOS="2926"/>
+						</TextLine>
+						<TextLine HEIGHT="79" WIDTH="1689" VPOS="2222" HPOS="2176">
+							<String CONTENT="Am" WIDTH="92" VPOS="2229" HPOS="2176"/>
+							<SP WIDTH="39" VPOS="2227" HPOS="2269"/>
+							<String CONTENT="Montag," WIDTH="322" VPOS="2227" HPOS="2309"/>
+							<SP WIDTH="38" VPOS="2231" HPOS="2632"/>
+							<String CONTENT="den" WIDTH="88" VPOS="2231" HPOS="2671"/>
+							<SP WIDTH="38" VPOS="2226" HPOS="2760"/>
+							<String CONTENT="8." WIDTH="54" VPOS="2226" HPOS="2799"/>
+							<SP WIDTH="44" VPOS="2222" HPOS="2854"/>
+							<String CONTENT="Jänttep" WIDTH="202" VPOS="2222" HPOS="2899"/>
+							<SP WIDTH="36" VPOS="2222" HPOS="3102"/>
+							<String CONTENT="Nachmittags" WIDTH="343" VPOS="2222" HPOS="3139"/>
+							<SP WIDTH="39" VPOS="2225" HPOS="3483"/>
+							<String CONTENT="2" WIDTH="35" VPOS="2225" HPOS="3523"/>
+							<SP WIDTH="39" VPOS="2222" HPOS="3559"/>
+							<String CONTENT="Uhr" WIDTH="101" VPOS="2222" HPOS="3599"/>
+							<SP WIDTH="37" VPOS="2234" HPOS="3701"/>
+							<String CONTENT="wer-" WIDTH="126" VPOS="2234" HPOS="3739"/>
+						</TextLine>
+						<TextLine HEIGHT="77" WIDTH="1333" VPOS="2298" HPOS="2062">
+							<String CONTENT="denk" WIDTH="94" VPOS="2311" HPOS="2062"/>
+							<SP WIDTH="33" VPOS="2308" HPOS="2157"/>
+							<String CONTENT="in" WIDTH="48" VPOS="2308" HPOS="2191"/>
+							<SP WIDTH="36" VPOS="2311" HPOS="2240"/>
+							<String CONTENT="dem" WIDTH="103" VPOS="2311" HPOS="2277"/>
+							<SP WIDTH="39" VPOS="2305" HPOS="2381"/>
+							<String CONTENT="Gasthause" WIDTH="277" VPOS="2302" HPOS="2421"/>
+							<SP WIDTH="36" VPOS="2318" HPOS="2699"/>
+							<String CONTENT="zum" WIDTH="106" VPOS="2318" HPOS="2736"/>
+							<SP WIDTH="39" VPOS="2299" HPOS="2843"/>
+							<String CONTENT="Löwen" WIDTH="175" VPOS="2299" HPOS="2883"/>
+							<SP WIDTH="36" VPOS="2299" HPOS="3059"/>
+							<String CONTENT="in" WIDTH="50" VPOS="2299" HPOS="3096"/>
+							<SP WIDTH="38" VPOS="2298" HPOS="3147"/>
+							<String CONTENT="Schaan" WIDTH="209" VPOS="2298" HPOS="3186"/>
+						</TextLine>
+						<TextLine HEIGHT="78" WIDTH="549" VPOS="2392" HPOS="2421">
+							<String CONTENT="Eine" WIDTH="129" VPOS="2395" HPOS="2421"/>
+							<SP WIDTH="38" VPOS="2392" HPOS="2551"/>
+							<String CONTENT="Eylinder-Uhr," WIDTH="380" VPOS="2392" HPOS="2590"/>
+						</TextLine>
+						<TextLine HEIGHT="65" WIDTH="449" VPOS="2470" HPOS="2604">
+							<String CONTENT="Eine" WIDTH="125" VPOS="2471" HPOS="2604"/>
+							<SP WIDTH="36" VPOS="2470" HPOS="2730"/>
+							<String CONTENT="Wanduhr," WIDTH="286" VPOS="2470" HPOS="2767"/>
+						</TextLine>
+						<TextLine HEIGHT="75" WIDTH="313" VPOS="2544" HPOS="2785">
+							<String CONTENT="Ein" WIDTH="102" VPOS="2547" HPOS="2785"/>
+							<SP WIDTH="36" VPOS="2545" HPOS="2888"/>
+							<String CONTENT="Koffer" WIDTH="173" VPOS="2544" HPOS="2925"/>
+						</TextLine>
+						<TextLine HEIGHT="81" WIDTH="1804" VPOS="2635" HPOS="2064">
+							<String CONTENT="im" WIDTH="67" VPOS="2646" HPOS="2064"/>
+							<SP WIDTH="52" VPOS="2643" HPOS="2132"/>
+							<String CONTENT="ExekutionSwege" WIDTH="423" VPOS="2641" HPOS="2185"/>
+							<SP WIDTH="50" VPOS="2655" HPOS="2609"/>
+							<String CONTENT="versteigert," WIDTH="296" VPOS="2640" HPOS="2660"/>
+							<SP WIDTH="64" VPOS="2650" HPOS="2957"/>
+							<String CONTENT="wozu" WIDTH="140" VPOS="2650" HPOS="3022"/>
+							<SP WIDTH="53" VPOS="2635" HPOS="3163"/>
+							<String CONTENT="Kaufluftige" WIDTH="313" VPOS="2635" HPOS="3217"/>
+							<SP WIDTH="51" VPOS="2652" HPOS="3531"/>
+							<String CONTENT="eingeladen" WIDTH="285" VPOS="2636" HPOS="3583"/>
+						</TextLine>
+						<TextLine HEIGHT="70" WIDTH="115" VPOS="2722" HPOS="2066">
+							<String CONTENT="find." WIDTH="115" VPOS="2722" HPOS="2066"/>
+						</TextLine>
+						<TextLine HEIGHT="82" WIDTH="922" VPOS="2806" HPOS="2179">
+							<String CONTENT="Vchaau," WIDTH="251" VPOS="2810" HPOS="2179"/>
+							<SP WIDTH="37" VPOS="2814" HPOS="2431"/>
+							<String CONTENT="den" WIDTH="93" VPOS="2814" HPOS="2469"/>
+							<SP WIDTH="39" VPOS="2810" HPOS="2563"/>
+							<String CONTENT="3." WIDTH="50" VPOS="2810" HPOS="2603"/>
+							<SP WIDTH="38" VPOS="2807" HPOS="2654"/>
+							<String CONTENT="Jänner" WIDTH="200" VPOS="2807" HPOS="2693"/>
+							<SP WIDTH="44" VPOS="2806" HPOS="2894"/>
+							<String CONTENT="1877." WIDTH="162" VPOS="2806" HPOS="2939"/>
+						</TextLine>
+						<TextLine HEIGHT="71" WIDTH="743" VPOS="2910" HPOS="2946">
+							<String CONTENT="Josef" WIDTH="146" VPOS="2911" HPOS="2946"/>
+							<SP WIDTH="31" VPOS="2910" HPOS="3093"/>
+							<String CONTENT="Tschetter," WIDTH="255" VPOS="2910" HPOS="3125"/>
+							<SP WIDTH="34" VPOS="2911" HPOS="3381"/>
+							<String CONTENT="Vorsteher." WIDTH="273" VPOS="2911" HPOS="3416"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{2B938A66-60B2-48ED-8AD2-29C2D8A54044}" HEIGHT="558" WIDTH="1830" VPOS="2080" HPOS="156" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<TextLine HEIGHT="71" WIDTH="1685" VPOS="2098" HPOS="283">
+							<String CONTENT="Den" WIDTH="107" VPOS="2105" HPOS="283"/>
+							<SP WIDTH="38" VPOS="2099" HPOS="391"/>
+							<String CONTENT="Tit." WIDTH="100" VPOS="2099" HPOS="430"/>
+							<SP WIDTH="30" VPOS="2101" HPOS="531"/>
+							<String CONTENT="Gemeindebehörden" WIDTH="496" VPOS="2099" HPOS="562"/>
+							<SP WIDTH="39" VPOS="2115" HPOS="1059"/>
+							<String CONTENT="und" WIDTH="99" VPOS="2104" HPOS="1099"/>
+							<SP WIDTH="37" VPOS="2098" HPOS="1199"/>
+							<String CONTENT="Privaten" WIDTH="241" VPOS="2098" HPOS="1237"/>
+							<SP WIDTH="41" VPOS="2105" HPOS="1479"/>
+							<String CONTENT="theilen" WIDTH="173" VPOS="2099" HPOS="1521"/>
+							<SP WIDTH="41" VPOS="2108" HPOS="1695"/>
+							<String CONTENT="wir" WIDTH="93" VPOS="2099" HPOS="1737"/>
+							<SP WIDTH="33" VPOS="2113" HPOS="1831"/>
+							<String CONTENT="mit," WIDTH="103" VPOS="2098" HPOS="1865"/>
+						</TextLine>
+						<TextLine HEIGHT="79" WIDTH="1797" VPOS="2190" HPOS="171">
+							<String CONTENT="daß" WIDTH="91" VPOS="2199" HPOS="171"/>
+							<SP WIDTH="36" VPOS="2194" HPOS="263"/>
+							<String CONTENT="Inserate," WIDTH="240" VPOS="2193" HPOS="300"/>
+							<SP WIDTH="35" VPOS="2192" HPOS="541"/>
+							<String CONTENT="Kundmachungen" WIDTH="451" VPOS="2192" HPOS="577"/>
+							<SP WIDTH="40" VPOS="2207" HPOS="1029"/>
+							<String CONTENT="zc." WIDTH="57" VPOS="2207" HPOS="1070"/>
+							<SP WIDTH="39" VPOS="2191" HPOS="1128"/>
+							<String CONTENT="jeweils" WIDTH="187" VPOS="2191" HPOS="1168"/>
+							<SP WIDTH="50" VPOS="2190" HPOS="1356"/>
+							<String CONTENT="bis" WIDTH="78" VPOS="2190" HPOS="1407"/>
+							<SP WIDTH="41" VPOS="2195" HPOS="1486"/>
+							<String CONTENT="längstens" WIDTH="247" VPOS="2191" HPOS="1528"/>
+							<SP WIDTH="37" VPOS="2190" HPOS="1776"/>
+							<String CONTENT="Mitt" WIDTH="129" VPOS="2190" HPOS="1814"/>
+							<HYP CONTENT="172"/>
+						</TextLine>
+						<TextLine HEIGHT="80" WIDTH="1795" VPOS="2278" HPOS="173">
+							<String CONTENT="woch" WIDTH="124" VPOS="2291" HPOS="173"/>
+							<SP WIDTH="36" VPOS="2286" HPOS="298"/>
+							<String CONTENT="Abends" WIDTH="198" VPOS="2286" HPOS="335"/>
+							<SP WIDTH="38" VPOS="2290" HPOS="534"/>
+							<String CONTENT="an" WIDTH="64" VPOS="2297" HPOS="573"/>
+							<SP WIDTH="37" VPOS="2288" HPOS="638"/>
+							<String CONTENT="die" WIDTH="72" VPOS="2283" HPOS="676"/>
+							<SP WIDTH="26" VPOS="2278" HPOS="749"/>
+							<String CONTENT="Redaktion" WIDTH="268" VPOS="2278" HPOS="776"/>
+							<SP WIDTH="41" VPOS="2285" HPOS="1045"/>
+							<String CONTENT="in" WIDTH="48" VPOS="2285" HPOS="1087"/>
+							<SP WIDTH="28" VPOS="2281" HPOS="1136"/>
+							<String CONTENT="Vaduz" WIDTH="180" VPOS="2281" HPOS="1165"/>
+							<SP WIDTH="38" VPOS="2298" HPOS="1346"/>
+							<String CONTENT="oder" WIDTH="110" VPOS="2286" HPOS="1385"/>
+							<SP WIDTH="35" VPOS="2282" HPOS="1496"/>
+							<String CONTENT="bis" WIDTH="77" VPOS="2281" HPOS="1532"/>
+							<SP WIDTH="27" VPOS="2280" HPOS="1610"/>
+							<String CONTENT="Donnerstag" WIDTH="330" VPOS="2280" HPOS="1638"/>
+						</TextLine>
+						<TextLine HEIGHT="86" WIDTH="1798" VPOS="2368" HPOS="172">
+							<String CONTENT="Mittags" WIDTH="216" VPOS="2378" HPOS="172"/>
+							<SP WIDTH="37" VPOS="2388" HPOS="389"/>
+							<String CONTENT="an" WIDTH="67" VPOS="2392" HPOS="427"/>
+							<SP WIDTH="37" VPOS="2381" HPOS="495"/>
+							<String CONTENT="die" WIDTH="72" VPOS="2376" HPOS="533"/>
+							<SP WIDTH="36" VPOS="2368" HPOS="606"/>
+							<String CONTENT="Erasssche" WIDTH="264" VPOS="2368" HPOS="643"/>
+							<SP WIDTH="38" VPOS="2375" HPOS="908"/>
+							<String CONTENT="Buchdruckerei" WIDTH="364" VPOS="2374" HPOS="947"/>
+							<SP WIDTH="46" VPOS="2374" HPOS="1312"/>
+							<String CONTENT="in" WIDTH="51" VPOS="2375" HPOS="1359"/>
+							<SP WIDTH="38" VPOS="2374" HPOS="1411"/>
+							<String CONTENT="Feldkirch" WIDTH="229" VPOS="2373" HPOS="1450"/>
+							<SP WIDTH="52" VPOS="2373" HPOS="1680"/>
+							<String CONTENT="einzusen-" WIDTH="237" VPOS="2372" HPOS="1733"/>
+						</TextLine>
+						<TextLine HEIGHT="79" WIDTH="1797" VPOS="2463" HPOS="172">
+							<String CONTENT="den" WIDTH="84" VPOS="2475" HPOS="172"/>
+							<SP WIDTH="37" VPOS="2470" HPOS="257"/>
+							<String CONTENT="find," WIDTH="113" VPOS="2469" HPOS="295"/>
+							<SP WIDTH="53" VPOS="2482" HPOS="409"/>
+							<String CONTENT="wenn" WIDTH="143" VPOS="2482" HPOS="463"/>
+							<SP WIDTH="51" VPOS="2469" HPOS="607"/>
+							<String CONTENT="dieselben" WIDTH="228" VPOS="2467" HPOS="659"/>
+							<SP WIDTH="48" VPOS="2467" HPOS="888"/>
+							<String CONTENT="in" WIDTH="49" VPOS="2467" HPOS="937"/>
+							<SP WIDTH="53" VPOS="2468" HPOS="987"/>
+							<String CONTENT="der" WIDTH="81" VPOS="2468" HPOS="1041"/>
+							<SP WIDTH="50" VPOS="2467" HPOS="1123"/>
+							<String CONTENT="betreffenden" WIDTH="316" VPOS="2466" HPOS="1174"/>
+							<SP WIDTH="38" VPOS="2463" HPOS="1491"/>
+							<String CONTENT="Wochennummer" WIDTH="439" VPOS="2463" HPOS="1530"/>
+						</TextLine>
+						<TextLine HEIGHT="76" WIDTH="942" VPOS="2558" HPOS="174">
+							<String CONTENT="noch" WIDTH="112" VPOS="2566" HPOS="174"/>
+							<SP WIDTH="33" VPOS="2564" HPOS="287"/>
+							<String CONTENT="berücksichtiget" WIDTH="358" VPOS="2560" HPOS="321"/>
+							<SP WIDTH="38" VPOS="2569" HPOS="680"/>
+							<String CONTENT="werden" WIDTH="191" VPOS="2562" HPOS="719"/>
+							<SP WIDTH="40" VPOS="2558" HPOS="911"/>
+							<String CONTENT="sollen." WIDTH="164" VPOS="2558" HPOS="952"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{CBCE48AC-2FE9-447D-93FA-023AE1E2F015}" HEIGHT="138" WIDTH="928" VPOS="2778" HPOS="616" STYLEREFS="{B2E03B84-E030-40EC-8186-33A82E7C622A}">
+						<TextLine HEIGHT="108" WIDTH="896" VPOS="2804" HPOS="632">
+							<String CONTENT="Nichtamtliche" WIDTH="486" VPOS="2804" HPOS="632"/>
+							<SP WIDTH="54" VPOS="2804" HPOS="1119"/>
+							<String CONTENT="Anzeigen." WIDTH="354" VPOS="2804" HPOS="1174"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{5BB2D9D2-2EC7-4976-B1CD-1A6BCE1B8A25}" HEIGHT="406" WIDTH="1832" VPOS="3244" HPOS="160" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<TextLine HEIGHT="74" WIDTH="1692" VPOS="3262" HPOS="283">
+							<String CONTENT="Die" WIDTH="96" VPOS="3266" HPOS="283"/>
+							<SP WIDTH="38" VPOS="3266" HPOS="380"/>
+							<String CONTENT="Gemeinde" WIDTH="265" VPOS="3266" HPOS="419"/>
+							<SP WIDTH="37" VPOS="3265" HPOS="685"/>
+							<String CONTENT="Triesenberg" WIDTH="431" VPOS="3264" HPOS="723"/>
+							<SP WIDTH="56" VPOS="3264" HPOS="1155"/>
+							<String CONTENT="ist" WIDTH="56" VPOS="3264" HPOS="1212"/>
+							<SP WIDTH="59" VPOS="3262" HPOS="1269"/>
+							<String CONTENT="Willens," WIDTH="236" VPOS="3262" HPOS="1329"/>
+							<SP WIDTH="59" VPOS="3268" HPOS="1566"/>
+							<String CONTENT="das" WIDTH="94" VPOS="3268" HPOS="1626"/>
+							<SP WIDTH="59" VPOS="3270" HPOS="1721"/>
+							<String CONTENT="ob" WIDTH="57" VPOS="3265" HPOS="1781"/>
+							<SP WIDTH="53" VPOS="3265" HPOS="1839"/>
+							<String CONTENT="der" WIDTH="82" VPOS="3267" HPOS="1893"/>
+						</TextLine>
+						<TextLine HEIGHT="77" WIDTH="1794" VPOS="3339" HPOS="178">
+							<String CONTENT="Alp" WIDTH="93" VPOS="3342" HPOS="178"/>
+							<SP WIDTH="25" VPOS="3355" HPOS="272"/>
+							<String CONTENT="„Garsella&quot;" WIDTH="298" VPOS="3343" HPOS="298"/>
+							<SP WIDTH="38" VPOS="3345" HPOS="597"/>
+							<String CONTENT="stehende" WIDTH="208" VPOS="3345" HPOS="636"/>
+							<SP WIDTH="26" VPOS="3341" HPOS="845"/>
+							<String CONTENT="Knieholz" WIDTH="230" VPOS="3341" HPOS="872"/>
+							<SP WIDTH="37" VPOS="3341" HPOS="1103"/>
+							<String CONTENT="käuflich" WIDTH="195" VPOS="3340" HPOS="1141"/>
+							<SP WIDTH="38" VPOS="3345" HPOS="1337"/>
+							<String CONTENT="abzugeben." WIDTH="286" VPOS="3342" HPOS="1376"/>
+							<SP WIDTH="56" VPOS="3339" HPOS="1663"/>
+							<String CONTENT="Allfällige" WIDTH="252" VPOS="3339" HPOS="1720"/>
+						</TextLine>
+						<TextLine HEIGHT="75" WIDTH="1794" VPOS="3416" HPOS="176">
+							<String CONTENT="KausSliebhaber" WIDTH="401" VPOS="3418" HPOS="176"/>
+							<SP WIDTH="48" VPOS="3430" HPOS="578"/>
+							<String CONTENT="werden" WIDTH="184" VPOS="3421" HPOS="627"/>
+							<SP WIDTH="55" VPOS="3422" HPOS="812"/>
+							<String CONTENT="daher" WIDTH="145" VPOS="3421" HPOS="868"/>
+							<SP WIDTH="56" VPOS="3434" HPOS="1014"/>
+							<String CONTENT="ersucht," WIDTH="205" VPOS="3416" HPOS="1071"/>
+							<SP WIDTH="51" VPOS="3417" HPOS="1277"/>
+							<String CONTENT="ihre" WIDTH="99" VPOS="3417" HPOS="1329"/>
+							<SP WIDTH="38" VPOS="3417" HPOS="1429"/>
+							<String CONTENT="Angebote" WIDTH="251" VPOS="3416" HPOS="1468"/>
+							<SP WIDTH="45" VPOS="3417" HPOS="1720"/>
+							<String CONTENT="bis" WIDTH="75" VPOS="3417" HPOS="1766"/>
+							<SP WIDTH="44" VPOS="3418" HPOS="1842"/>
+							<String CONTENT="15." WIDTH="83" VPOS="3418" HPOS="1887"/>
+						</TextLine>
+						<TextLine HEIGHT="76" WIDTH="1800" VPOS="3492" HPOS="175">
+							<String CONTENT="Februar" WIDTH="204" VPOS="3496" HPOS="175"/>
+							<SP WIDTH="30" VPOS="3500" HPOS="380"/>
+							<String CONTENT="1877" WIDTH="143" VPOS="3499" HPOS="411"/>
+							<SP WIDTH="37" VPOS="3499" HPOS="555"/>
+							<String CONTENT="bei" WIDTH="69" VPOS="3498" HPOS="593"/>
+							<SP WIDTH="37" VPOS="3498" HPOS="663"/>
+							<String CONTENT="der" WIDTH="80" VPOS="3500" HPOS="701"/>
+							<SP WIDTH="27" VPOS="3495" HPOS="782"/>
+							<String CONTENT="Gemeindevorstehung" WIDTH="555" VPOS="3495" HPOS="810"/>
+							<SP WIDTH="36" VPOS="3507" HPOS="1366"/>
+							<String CONTENT="von" WIDTH="99" VPOS="3507" HPOS="1403"/>
+							<SP WIDTH="26" VPOS="3493" HPOS="1503"/>
+							<String CONTENT="Triesenberg" WIDTH="307" VPOS="3492" HPOS="1530"/>
+							<SP WIDTH="38" VPOS="3510" HPOS="1838"/>
+							<String CONTENT="an-" WIDTH="98" VPOS="3510" HPOS="1877"/>
+						</TextLine>
+						<TextLine HEIGHT="75" WIDTH="1367" VPOS="3570" HPOS="175">
+							<String CONTENT="zumelden," WIDTH="248" VPOS="3575" HPOS="175"/>
+							<SP WIDTH="36" VPOS="3585" HPOS="424"/>
+							<String CONTENT="welche" WIDTH="168" VPOS="3575" HPOS="461"/>
+							<SP WIDTH="38" VPOS="3588" HPOS="630"/>
+							<String CONTENT="auch" WIDTH="118" VPOS="3574" HPOS="669"/>
+							<SP WIDTH="39" VPOS="3574" HPOS="788"/>
+							<String CONTENT="nähere" WIDTH="174" VPOS="3571" HPOS="828"/>
+							<SP WIDTH="40" VPOS="3571" HPOS="1003"/>
+							<String CONTENT="Auskunft" WIDTH="255" VPOS="3570" HPOS="1044"/>
+							<SP WIDTH="37" VPOS="3577" HPOS="1300"/>
+							<String CONTENT="ertheilt." WIDTH="204" VPOS="3571" HPOS="1338"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{502C64E2-4898-4202-9824-E44FADA550E7}" HEIGHT="96" WIDTH="1006" VPOS="3664" HPOS="266" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<TextLine HEIGHT="79" WIDTH="974" VPOS="3677" HPOS="282">
+							<String CONTENT="Triesenberg," WIDTH="315" VPOS="3677" HPOS="282"/>
+							<SP WIDTH="37" VPOS="3685" HPOS="598"/>
+							<String CONTENT="den" WIDTH="86" VPOS="3685" HPOS="636"/>
+							<SP WIDTH="40" VPOS="3680" HPOS="723"/>
+							<String CONTENT="2." WIDTH="52" VPOS="3680" HPOS="764"/>
+							<SP WIDTH="38" VPOS="3677" HPOS="817"/>
+							<String CONTENT="Jänner" WIDTH="199" VPOS="3677" HPOS="856"/>
+							<SP WIDTH="42" VPOS="3680" HPOS="1056"/>
+							<String CONTENT="1877." WIDTH="157" VPOS="3678" HPOS="1099"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{10542915-8429-49A8-A582-4D261BCD1D52}" HEIGHT="54" WIDTH="82" VPOS="3798" HPOS="508" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<TextLine HEIGHT="40" WIDTH="50" VPOS="3807" HPOS="524">
+							<String CONTENT="2t" WIDTH="50" VPOS="3807" HPOS="524"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{71E6749E-BEB1-460C-B8FB-4DDB461E2E4D}" HEIGHT="86" WIDTH="708" VPOS="3764" HPOS="1202" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<TextLine HEIGHT="78" WIDTH="676" VPOS="3768" HPOS="1217">
+							<String CONTENT="I." WIDTH="69" VPOS="3769" HPOS="1217"/>
+							<SP WIDTH="36" VPOS="3768" HPOS="1287"/>
+							<String CONTENT="Gasner," WIDTH="252" VPOS="3768" HPOS="1324"/>
+							<SP WIDTH="44" VPOS="3768" HPOS="1577"/>
+							<String CONTENT="Vorsteher." WIDTH="271" VPOS="3768" HPOS="1622"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{14B251AD-AC39-4E0C-8E33-C8B1E0971914}" HEIGHT="666" WIDTH="1828" VPOS="3996" HPOS="156" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<TextLine HEIGHT="100" WIDTH="1200" VPOS="4012" HPOS="462" STYLEREFS="{740FD106-8CBE-49A9-B3F5-482EE713C336}">
+							<String CONTENT="Oeffeutliche" WIDTH="522" VPOS="4014" HPOS="462"/>
+							<SP WIDTH="40" VPOS="4014" HPOS="985"/>
+							<String CONTENT="Versteigerung." WIDTH="636" VPOS="4012" HPOS="1026"/>
+						</TextLine>
+						<TextLine HEIGHT="81" WIDTH="1680" VPOS="4152" HPOS="284">
+							<String CONTENT="Auf" WIDTH="103" VPOS="4154" HPOS="284"/>
+							<SP WIDTH="33" VPOS="4158" HPOS="388"/>
+							<String CONTENT="freiwilliges" WIDTH="299" VPOS="4158" HPOS="422"/>
+							<SP WIDTH="39" VPOS="4158" HPOS="722"/>
+							<String CONTENT="Ansuchen" WIDTH="244" VPOS="4152" HPOS="762"/>
+							<SP WIDTH="53" VPOS="4161" HPOS="1007"/>
+							<String CONTENT="deS" WIDTH="86" VPOS="4161" HPOS="1061"/>
+							<SP WIDTH="38" VPOS="4156" HPOS="1148"/>
+							<String CONTENT="I." WIDTH="55" VPOS="4156" HPOS="1187"/>
+							<SP WIDTH="44" VPOS="4157" HPOS="1243"/>
+							<String CONTENT="G." WIDTH="69" VPOS="4157" HPOS="1288"/>
+							<SP WIDTH="40" VPOS="4155" HPOS="1358"/>
+							<String CONTENT="Bühler" WIDTH="194" VPOS="4155" HPOS="1399"/>
+							<SP WIDTH="52" VPOS="4154" HPOS="1594"/>
+							<String CONTENT="in" WIDTH="52" VPOS="4154" HPOS="1647"/>
+							<SP WIDTH="39" VPOS="4154" HPOS="1700"/>
+							<String CONTENT="Mauren" WIDTH="224" VPOS="4154" HPOS="1740"/>
+						</TextLine>
+						<TextLine HEIGHT="77" WIDTH="1790" VPOS="4231" HPOS="173">
+							<String CONTENT="werden" WIDTH="181" VPOS="4232" HPOS="173"/>
+							<SP WIDTH="37" VPOS="4248" HPOS="355"/>
+							<String CONTENT="verschiedene" WIDTH="311" VPOS="4236" HPOS="393"/>
+							<SP WIDTH="47" VPOS="4238" HPOS="705"/>
+							<String CONTENT="demselben" WIDTH="259" VPOS="4234" HPOS="753"/>
+							<SP WIDTH="55" VPOS="4251" HPOS="1013"/>
+							<String CONTENT="gehörige" WIDTH="221" VPOS="4233" HPOS="1069"/>
+							<SP WIDTH="39" VPOS="4232" HPOS="1291"/>
+							<String CONTENT="Grundstücke" WIDTH="324" VPOS="4231" HPOS="1331"/>
+							<SP WIDTH="52" VPOS="4233" HPOS="1656"/>
+							<String CONTENT="in" WIDTH="48" VPOS="4233" HPOS="1709"/>
+							<SP WIDTH="41" VPOS="4231" HPOS="1758"/>
+							<String CONTENT="Mau-" WIDTH="163" VPOS="4231" HPOS="1800"/>
+						</TextLine>
+						<TextLine HEIGHT="78" WIDTH="1796" VPOS="4307" HPOS="172">
+							<String CONTENT="ren" WIDTH="78" VPOS="4323" HPOS="172"/>
+							<SP WIDTH="37" VPOS="4323" HPOS="251"/>
+							<String CONTENT="am" WIDTH="78" VPOS="4323" HPOS="289"/>
+							<SP WIDTH="39" VPOS="4314" HPOS="368"/>
+							<String CONTENT="10." WIDTH="81" VPOS="4314" HPOS="408"/>
+							<SP WIDTH="45" VPOS="4312" HPOS="490"/>
+							<String CONTENT="Jänner" WIDTH="196" VPOS="4312" HPOS="536"/>
+							<SP WIDTH="39" VPOS="4310" HPOS="733"/>
+							<String CONTENT="Nachmittags" WIDTH="343" VPOS="4310" HPOS="773"/>
+							<SP WIDTH="53" VPOS="4313" HPOS="1117"/>
+							<String CONTENT="3" WIDTH="34" VPOS="4313" HPOS="1171"/>
+							<SP WIDTH="40" VPOS="4310" HPOS="1206"/>
+							<String CONTENT="Uhr" WIDTH="103" VPOS="4310" HPOS="1247"/>
+							<SP WIDTH="36" VPOS="4311" HPOS="1351"/>
+							<String CONTENT="im" WIDTH="65" VPOS="4311" HPOS="1388"/>
+							<SP WIDTH="40" VPOS="4307" HPOS="1454"/>
+							<String CONTENT="WirthShause" WIDTH="343" VPOS="4307" HPOS="1495"/>
+							<SP WIDTH="40" VPOS="4314" HPOS="1839"/>
+							<String CONTENT="deS" WIDTH="88" VPOS="4314" HPOS="1880"/>
+						</TextLine>
+						<TextLine HEIGHT="80" WIDTH="1367" VPOS="4383" HPOS="173">
+							<String CONTENT="Batliner" WIDTH="221" VPOS="4383" HPOS="173"/>
+							<SP WIDTH="34" VPOS="4405" HPOS="395"/>
+							<String CONTENT="zur" WIDTH="84" VPOS="4405" HPOS="430"/>
+							<SP WIDTH="38" VPOS="4389" HPOS="515"/>
+							<String CONTENT="öffentlichen" WIDTH="293" VPOS="4389" HPOS="554"/>
+							<SP WIDTH="42" VPOS="4386" HPOS="848"/>
+							<String CONTENT="Versteigerung" WIDTH="373" VPOS="4386" HPOS="891"/>
+							<SP WIDTH="39" VPOS="4404" HPOS="1265"/>
+							<String CONTENT="gebracht." WIDTH="235" VPOS="4388" HPOS="1305"/>
+						</TextLine>
+						<TextLine HEIGHT="85" WIDTH="962" VPOS="4487" HPOS="278">
+							<String CONTENT="Mauren,," WIDTH="306" VPOS="4487" HPOS="278"/>
+							<SP WIDTH="19" VPOS="4499" HPOS="585"/>
+							<String CONTENT="den" WIDTH="90" VPOS="4499" HPOS="605"/>
+							<SP WIDTH="39" VPOS="4498" HPOS="696"/>
+							<String CONTENT="3." WIDTH="52" VPOS="4498" HPOS="736"/>
+							<SP WIDTH="41" VPOS="4494" HPOS="789"/>
+							<String CONTENT="Jänner" WIDTH="202" VPOS="4494" HPOS="831"/>
+							<SP WIDTH="42" VPOS="4497" HPOS="1034"/>
+							<String CONTENT="1877." WIDTH="163" VPOS="4497" HPOS="1077"/>
+						</TextLine>
+						<TextLine HEIGHT="73" WIDTH="533" VPOS="4585" HPOS="1255">
+							<String CONTENT="Der" WIDTH="109" VPOS="4585" HPOS="1255"/>
+							<SP WIDTH="34" VPOS="4587" HPOS="1365"/>
+							<String CONTENT="OrtSvorstand." WIDTH="388" VPOS="4586" HPOS="1400"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{F3914D62-F7F4-4807-A1FD-CAF775D41C40}" HEIGHT="1596" WIDTH="1842" VPOS="3070" HPOS="2048" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<TextLine HEIGHT="105" WIDTH="1560" VPOS="3073" HPOS="2071" STYLEREFS="{740FD106-8CBE-49A9-B3F5-482EE713C336}">
+							<String CONTENT="-" WIDTH="63" VPOS="3073" HPOS="2071"/>
+							<SP WIDTH="230" VPOS="3073" HPOS="2135"/>
+							<String CONTENT="OeffenilichK" WIDTH="529" VPOS="3076" HPOS="2366"/>
+							<SP WIDTH="31" VPOS="3076" HPOS="2896"/>
+							<String CONTENT="Beesteigernug" WIDTH="612" VPOS="3077" HPOS="2928"/>
+							<SP WIDTH="68" VPOS="3083" HPOS="3541"/>
+							<String CONTENT="&apos;" WIDTH="21" VPOS="3083" HPOS="3610"/>
+						</TextLine>
+						<TextLine HEIGHT="74" WIDTH="1696" VPOS="3205" HPOS="2178">
+							<String CONTENT="Aus" WIDTH="111" VPOS="3213" HPOS="2178"/>
+							<SP WIDTH="59" VPOS="3217" HPOS="2290"/>
+							<String CONTENT="dem" WIDTH="103" VPOS="3217" HPOS="2350"/>
+							<SP WIDTH="46" VPOS="3211" HPOS="2454"/>
+							<String CONTENT="Nachlasse" WIDTH="250" VPOS="3209" HPOS="2501"/>
+							<SP WIDTH="55" VPOS="3224" HPOS="2752"/>
+							<String CONTENT="von" WIDTH="99" VPOS="3223" HPOS="2808"/>
+							<SP WIDTH="41" VPOS="3207" HPOS="2908"/>
+							<String CONTENT="Andreas" WIDTH="226" VPOS="3207" HPOS="2950"/>
+							<SP WIDTH="39" VPOS="3205" HPOS="3177"/>
+							<String CONTENT="Alber" WIDTH="147" VPOS="3205" HPOS="3217"/>
+							<SP WIDTH="56" VPOS="3208" HPOS="3365"/>
+							<String CONTENT="in" WIDTH="50" VPOS="3208" HPOS="3422"/>
+							<SP WIDTH="53" VPOS="3206" HPOS="3473"/>
+							<String CONTENT="Echaanwald" WIDTH="347" VPOS="3206" HPOS="3527"/>
+						</TextLine>
+						<TextLine HEIGHT="80" WIDTH="1805" VPOS="3282" HPOS="2066">
+							<String CONTENT="wird" WIDTH="122" VPOS="3292" HPOS="2066"/>
+							<SP WIDTH="35" VPOS="3295" HPOS="2189"/>
+							<String CONTENT="dessen" WIDTH="150" VPOS="3288" HPOS="2225"/>
+							<SP WIDTH="38" VPOS="3289" HPOS="2376"/>
+							<String CONTENT="Wohnhaus" WIDTH="304" VPOS="3289" HPOS="2415"/>
+							<SP WIDTH="39" VPOS="3285" HPOS="2720"/>
+							<String CONTENT="sammt" WIDTH="173" VPOS="3285" HPOS="2760"/>
+							<SP WIDTH="36" VPOS="3286" HPOS="2934"/>
+							<String CONTENT="beiliegenden" WIDTH="323" VPOS="3285" HPOS="2971"/>
+							<SP WIDTH="38" VPOS="3282" HPOS="3295"/>
+							<String CONTENT="Gütern" WIDTH="196" VPOS="3282" HPOS="3334"/>
+							<SP WIDTH="55" VPOS="3302" HPOS="3531"/>
+							<String CONTENT="am." WIDTH="114" VPOS="3302" HPOS="3587"/>
+							<SP WIDTH="22" VPOS="3304" HPOS="3702"/>
+							<String CONTENT="näch-" WIDTH="146" VPOS="3290" HPOS="3725"/>
+						</TextLine>
+						<TextLine HEIGHT="84" WIDTH="1806" VPOS="3357" HPOS="2066">
+							<String CONTENT="sten" WIDTH="94" VPOS="3371" HPOS="2066"/>
+							<SP WIDTH="40" VPOS="3367" HPOS="2161"/>
+							<String CONTENT="Mittwoch," WIDTH="368" VPOS="3367" HPOS="2202"/>
+							<SP WIDTH="52" VPOS="3369" HPOS="2571"/>
+							<String CONTENT="den" WIDTH="91" VPOS="3369" HPOS="2624"/>
+							<SP WIDTH="59" VPOS="3365" HPOS="2716"/>
+							<String CONTENT="10." WIDTH="85" VPOS="3365" HPOS="2776"/>
+							<SP WIDTH="58" VPOS="3360" HPOS="2862"/>
+							<String CONTENT="Jänner" WIDTH="199" VPOS="3360" HPOS="2921"/>
+							<SP WIDTH="52" VPOS="3357" HPOS="3121"/>
+							<String CONTENT="Nachmittags" WIDTH="344" VPOS="3357" HPOS="3174"/>
+							<SP WIDTH="52" VPOS="3364" HPOS="3519"/>
+							<String CONTENT="3" WIDTH="34" VPOS="3364" HPOS="3572"/>
+							<SP WIDTH="55" VPOS="3364" HPOS="3607"/>
+							<String CONTENT="Uhr" WIDTH="101" VPOS="3365" HPOS="3663"/>
+							<SP WIDTH="39" VPOS="3368" HPOS="3765"/>
+							<String CONTENT="im" WIDTH="67" VPOS="3368" HPOS="3805"/>
+						</TextLine>
+						<TextLine HEIGHT="80" WIDTH="1700" VPOS="3435" HPOS="2066">
+							<String CONTENT="WirtShause" WIDTH="313" VPOS="3443" HPOS="2066"/>
+							<SP WIDTH="37" VPOS="3458" HPOS="2380"/>
+							<String CONTENT="von" WIDTH="98" VPOS="3458" HPOS="2418"/>
+							<SP WIDTH="43" VPOS="3441" HPOS="2517"/>
+							<String CONTENT="Batliner" WIDTH="230" VPOS="3441" HPOS="2561"/>
+							<SP WIDTH="39" VPOS="3440" HPOS="2792"/>
+							<String CONTENT="in" WIDTH="52" VPOS="3440" HPOS="2832"/>
+							<SP WIDTH="39" VPOS="3437" HPOS="2885"/>
+							<String CONTENT="Mauren" WIDTH="227" VPOS="3437" HPOS="2925"/>
+							<SP WIDTH="54" VPOS="3436" HPOS="3153"/>
+							<String CONTENT="öffentlich" WIDTH="238" VPOS="3435" HPOS="3208"/>
+							<SP WIDTH="36" VPOS="3442" HPOS="3447"/>
+							<String CONTENT="versteigert." WIDTH="282" VPOS="3440" HPOS="3484"/>
+						</TextLine>
+						<TextLine HEIGHT="84" WIDTH="1694" VPOS="3513" HPOS="2177">
+							<String CONTENT="Die" WIDTH="100" VPOS="3521" HPOS="2177"/>
+							<SP WIDTH="53" VPOS="3519" HPOS="2278"/>
+							<String CONTENT="LizitationSbedingnisse" WIDTH="572" VPOS="3513" HPOS="2332"/>
+							<SP WIDTH="54" VPOS="3527" HPOS="2905"/>
+							<String CONTENT="werden" WIDTH="192" VPOS="3516" HPOS="2960"/>
+							<SP WIDTH="57" VPOS="3525" HPOS="3153"/>
+							<String CONTENT="vor" WIDTH="92" VPOS="3525" HPOS="3211"/>
+							<SP WIDTH="61" VPOS="3517" HPOS="3304"/>
+							<String CONTENT="der" WIDTH="79" VPOS="3517" HPOS="3366"/>
+							<SP WIDTH="54" VPOS="3514" HPOS="3446"/>
+							<String CONTENT="Versteigerung" WIDTH="370" VPOS="3514" HPOS="3501"/>
+						</TextLine>
+						<TextLine HEIGHT="74" WIDTH="465" VPOS="3599" HPOS="2065">
+							<String CONTENT="bekannt" WIDTH="203" VPOS="3601" HPOS="2065"/>
+							<SP WIDTH="38" VPOS="3603" HPOS="2269"/>
+							<String CONTENT="gegeben." WIDTH="222" VPOS="3599" HPOS="2308"/>
+						</TextLine>
+						<TextLine HEIGHT="82" WIDTH="964" VPOS="3700" HPOS="2178">
+							<String CONTENT="Maureu," WIDTH="289" VPOS="3702" HPOS="2178"/>
+							<SP WIDTH="40" VPOS="3710" HPOS="2468"/>
+							<String CONTENT="den" WIDTH="88" VPOS="3710" HPOS="2509"/>
+							<SP WIDTH="39" VPOS="3705" HPOS="2598"/>
+							<String CONTENT="3." WIDTH="51" VPOS="3705" HPOS="2638"/>
+							<SP WIDTH="41" VPOS="3700" HPOS="2690"/>
+							<String CONTENT="Jänner" WIDTH="204" VPOS="3700" HPOS="2732"/>
+							<SP WIDTH="42" VPOS="3700" HPOS="2937"/>
+							<String CONTENT="1877." WIDTH="162" VPOS="3700" HPOS="2980"/>
+						</TextLine>
+						<TextLine HEIGHT="73" WIDTH="618" VPOS="3789" HPOS="2987">
+							<String CONTENT="Der" WIDTH="107" VPOS="3792" HPOS="2987"/>
+							<SP WIDTH="37" VPOS="3789" HPOS="3095"/>
+							<String CONTENT="Massaverwalter:" WIDTH="472" VPOS="3789" HPOS="3133"/>
+						</TextLine>
+						<TextLine HEIGHT="92" WIDTH="1731" VPOS="3890" HPOS="2067">
+							<SP WIDTH="332" VPOS="3947" HPOS="2067"/>
+							<String CONTENT="." WIDTH="3" VPOS="3947" HPOS="2400"/>
+							<SP WIDTH="792" VPOS="3947" HPOS="2404"/>
+							<String CONTENT="Bartholom." WIDTH="312" VPOS="3892" HPOS="3196"/>
+							<SP WIDTH="41" VPOS="3890" HPOS="3509"/>
+							<String CONTENT="Batliner." WIDTH="247" VPOS="3890" HPOS="3551"/>
+						</TextLine>
+						<TextLine HEIGHT="152" WIDTH="1654" VPOS="4060" HPOS="2144" STYLEREFS="{AA086F50-862D-4B9D-84AA-104D602B8D20}">
+							<String CONTENT="Sein" WIDTH="252" VPOS="4066" HPOS="2144"/>
+							<SP WIDTH="52" VPOS="4070" HPOS="2397"/>
+							<String CONTENT="Lager" WIDTH="288" VPOS="4070" HPOS="2450"/>
+							<SP WIDTH="50" VPOS="4078" HPOS="2739"/>
+							<String CONTENT="in" WIDTH="90" VPOS="4078" HPOS="2790"/>
+							<SP WIDTH="50" VPOS="4060" HPOS="2881"/>
+							<String CONTENT="Holjfthuhen" WIDTH="866" VPOS="4060" HPOS="2932"/>
+						</TextLine>
+						<TextLine HEIGHT="82" WIDTH="1808" VPOS="4228" HPOS="2065">
+							<String CONTENT="mit" WIDTH="88" VPOS="4233" HPOS="2065"/>
+							<SP WIDTH="37" VPOS="4239" HPOS="2154"/>
+							<String CONTENT="oder" WIDTH="111" VPOS="4235" HPOS="2192"/>
+							<SP WIDTH="39" VPOS="4247" HPOS="2304"/>
+							<String CONTENT="ohne" WIDTH="121" VPOS="4232" HPOS="2344"/>
+							<SP WIDTH="37" VPOS="4228" HPOS="2466"/>
+							<String CONTENT="Filz" WIDTH="130" VPOS="4228" HPOS="2504"/>
+							<SP WIDTH="37" VPOS="4244" HPOS="2635"/>
+							<String CONTENT="oder" WIDTH="112" VPOS="4234" HPOS="2673"/>
+							<SP WIDTH="37" VPOS="4247" HPOS="2786"/>
+							<String CONTENT="mit" WIDTH="85" VPOS="4232" HPOS="2824"/>
+							<SP WIDTH="26" VPOS="4229" HPOS="2910"/>
+							<String CONTENT="Schafpelz" WIDTH="306" VPOS="4229" HPOS="2937"/>
+							<SP WIDTH="37" VPOS="4235" HPOS="3244"/>
+							<String CONTENT="in" WIDTH="51" VPOS="4235" HPOS="3282"/>
+							<SP WIDTH="41" VPOS="4236" HPOS="3334"/>
+							<String CONTENT="beliebigen" WIDTH="258" VPOS="4235" HPOS="3376"/>
+							<SP WIDTH="30" VPOS="4235" HPOS="3635"/>
+							<String CONTENT="Größen" WIDTH="207" VPOS="4235" HPOS="3666"/>
+						</TextLine>
+						<TextLine HEIGHT="74" WIDTH="1596" VPOS="4308" HPOS="2063">
+							<String CONTENT="und" WIDTH="103" VPOS="4312" HPOS="2063"/>
+							<SP WIDTH="35" VPOS="4308" HPOS="2167"/>
+							<String CONTENT="Qualitäten" WIDTH="308" VPOS="4308" HPOS="2203"/>
+							<SP WIDTH="40" VPOS="4323" HPOS="2512"/>
+							<String CONTENT="empfiehlt" WIDTH="239" VPOS="4308" HPOS="2553"/>
+							<SP WIDTH="36" VPOS="4315" HPOS="2793"/>
+							<String CONTENT="einem" WIDTH="154" VPOS="4310" HPOS="2830"/>
+							<SP WIDTH="36" VPOS="4310" HPOS="2985"/>
+							<String CONTENT="Tit." WIDTH="99" VPOS="4310" HPOS="3022"/>
+							<SP WIDTH="43" VPOS="4310" HPOS="3122"/>
+							<String CONTENT="Publikum" WIDTH="266" VPOS="4310" HPOS="3166"/>
+							<SP WIDTH="41" VPOS="4313" HPOS="3433"/>
+							<String CONTENT="bestens" WIDTH="184" VPOS="4313" HPOS="3475"/>
+						</TextLine>
+						<TextLine HEIGHT="76" WIDTH="1406" VPOS="4400" HPOS="2176">
+							<String CONTENT="Sevelen" WIDTH="296" VPOS="4400" HPOS="2176"/>
+							<SP WIDTH="41" VPOS="4406" HPOS="2473"/>
+							<String CONTENT="(bei" WIDTH="99" VPOS="4400" HPOS="2515"/>
+							<SP WIDTH="36" VPOS="4400" HPOS="2615"/>
+							<String CONTENT="der" WIDTH="80" VPOS="4404" HPOS="2652"/>
+							<SP WIDTH="39" VPOS="4400" HPOS="2733"/>
+							<String CONTENT="Bruck)," WIDTH="196" VPOS="4400" HPOS="2773"/>
+							<SP WIDTH="39" VPOS="4402" HPOS="2970"/>
+							<String CONTENT="im" WIDTH="65" VPOS="4402" HPOS="3010"/>
+							<SP WIDTH="37" VPOS="4403" HPOS="3076"/>
+							<String CONTENT="Dezember" WIDTH="263" VPOS="4403" HPOS="3114"/>
+							<SP WIDTH="42" VPOS="4406" HPOS="3378"/>
+							<String CONTENT="1876." WIDTH="161" VPOS="4404" HPOS="3421"/>
+						</TextLine>
+						<TextLine HEIGHT="100" WIDTH="650" VPOS="4490" HPOS="3136" STYLEREFS="{740FD106-8CBE-49A9-B3F5-482EE713C336}">
+							<String CONTENT="I." WIDTH="106" VPOS="4490" HPOS="3136"/>
+							<SP WIDTH="44" VPOS="4490" HPOS="3243"/>
+							<String CONTENT="Borburger." WIDTH="498" VPOS="4490" HPOS="3288"/>
+						</TextLine>
+						<TextLine HEIGHT="82" WIDTH="1386" VPOS="4580" HPOS="2274">
+							<String CONTENT="(Wiederverkäufe" WIDTH="470" VPOS="4580" HPOS="2274"/>
+							<SP WIDTH="34" VPOS="4600" HPOS="2745"/>
+							<String CONTENT="erhalten" WIDTH="218" VPOS="4582" HPOS="2780"/>
+							<SP WIDTH="40" VPOS="4600" HPOS="2999"/>
+							<String CONTENT="angemessenen" WIDTH="360" VPOS="4584" HPOS="3040"/>
+							<SP WIDTH="38" VPOS="4586" HPOS="3401"/>
+							<String CONTENT="Rabat.)" WIDTH="220" VPOS="4586" HPOS="3440"/>
+						</TextLine>
+					</textBlock>
+					<textBlock ID="{59A63C93-5F24-4141-86EB-243AFBE97BC2}" HEIGHT="904" WIDTH="3754" VPOS="4822" HPOS="138" STYLEREFS="{DC4E9A5C-5441-4886-9CE4-1C594E8D3238}">
+						<Shape>
+							<Polygon POINTS="1348,4822 3892,4822 3892,5726 138,5726 138,5298 1000,5298 1000,5098 1348,5098 1348,4822"/>
+						</Shape>
+						<TextLine HEIGHT="220" WIDTH="2208" VPOS="4872" HPOS="1416" STYLEREFS="{36624388-20A1-42ED-B284-81923FE3C755}">
+							<String CONTENT="c&amp;tttttttfißittttttti" WIDTH="1148" VPOS="4872" HPOS="1416"/>
+							<SP WIDTH="102" VPOS="4876" HPOS="2565"/>
+							<String CONTENT="Schieitheim." WIDTH="956" VPOS="4876" HPOS="2668"/>
+						</TextLine>
+						<TextLine HEIGHT="152" WIDTH="2470" VPOS="5140" HPOS="1014" STYLEREFS="{AA086F50-862D-4B9D-84AA-104D602B8D20}">
+							<String CONTENT="Schaphausen," WIDTH="674" VPOS="5142" HPOS="1014"/>
+							<SP WIDTH="78" VPOS="5150" HPOS="1689"/>
+							<String CONTENT="badische" WIDTH="372" VPOS="5150" HPOS="1768"/>
+							<SP WIDTH="74" VPOS="5140" HPOS="2141"/>
+							<String CONTENT="Station" WIDTH="402" VPOS="5140" HPOS="2216"/>
+							<SP WIDTH="80" VPOS="5142" HPOS="2619"/>
+							<String CONTENT="Stühlingen." WIDTH="784" VPOS="5142" HPOS="2700"/>
+						</TextLine>
+						<TextLine HEIGHT="81" WIDTH="3440" VPOS="5336" HPOS="431">
+							<String CONTENT="Wir" WIDTH="114" VPOS="5339" HPOS="431"/>
+							<SP WIDTH="36" VPOS="5358" HPOS="546"/>
+							<String CONTENT="empfehlen" WIDTH="266" VPOS="5343" HPOS="583"/>
+							<SP WIDTH="18" VPOS="5358" HPOS="850"/>
+							<String CONTENT="uns" WIDTH="100" VPOS="5349" HPOS="869"/>
+							<SP WIDTH="37" VPOS="5349" HPOS="970"/>
+							<String CONTENT="zum" WIDTH="107" VPOS="5357" HPOS="1008"/>
+							<SP WIDTH="38" VPOS="5339" HPOS="1116"/>
+							<String CONTENT="Verspinnen" WIDTH="473" VPOS="5338" HPOS="1155"/>
+							<SP WIDTH="38" VPOS="5353" HPOS="1629"/>
+							<String CONTENT="von" WIDTH="100" VPOS="5353" HPOS="1668"/>
+							<SP WIDTH="37" VPOS="5337" HPOS="1769"/>
+							<String CONTENT="Hanf," WIDTH="184" VPOS="5337" HPOS="1807"/>
+							<SP WIDTH="36" VPOS="5337" HPOS="1992"/>
+							<String CONTENT="Flachs" WIDTH="211" VPOS="5336" HPOS="2029"/>
+							<SP WIDTH="40" VPOS="5339" HPOS="2241"/>
+							<String CONTENT="und" WIDTH="103" VPOS="5342" HPOS="2282"/>
+							<SP WIDTH="31" VPOS="5336" HPOS="2386"/>
+							<String CONTENT="Abwerg" WIDTH="259" VPOS="5336" HPOS="2418"/>
+							<SP WIDTH="36" VPOS="5338" HPOS="2678"/>
+							<String CONTENT="im" WIDTH="65" VPOS="5338" HPOS="2715"/>
+							<SP WIDTH="25" VPOS="5337" HPOS="2781"/>
+							<String CONTENT="L" WIDTH="34" VPOS="5337" HPOS="2807"/>
+							<SP WIDTH="21" VPOS="5337" HPOS="2842"/>
+							<String CONTENT="o" WIDTH="27" VPOS="5355" HPOS="2864"/>
+							<SP WIDTH="23" VPOS="5339" HPOS="2892"/>
+							<String CONTENT="h" WIDTH="27" VPOS="5339" HPOS="2916"/>
+							<SP WIDTH="24" VPOS="5339" HPOS="2944"/>
+							<String CONTENT="n" WIDTH="30" VPOS="5352" HPOS="2969"/>
+							<SP WIDTH="23" VPOS="5352" HPOS="3000"/>
+							<String CONTENT="e" WIDTH="22" VPOS="5354" HPOS="3024"/>
+							<SP WIDTH="38" VPOS="5352" HPOS="3047"/>
+							<String CONTENT="unter" WIDTH="143" VPOS="5343" HPOS="3086"/>
+							<SP WIDTH="26" VPOS="5336" HPOS="3230"/>
+							<String CONTENT="Zusicherung" WIDTH="325" VPOS="5336" HPOS="3257"/>
+							<SP WIDTH="37" VPOS="5357" HPOS="3583"/>
+							<String CONTENT="gewissen-" WIDTH="250" VPOS="5340" HPOS="3621"/>
+						</TextLine>
+						<TextLine HEIGHT="81" WIDTH="3721" VPOS="5414" HPOS="154">
+							<String CONTENT="haster" WIDTH="158" VPOS="5415" HPOS="154"/>
+							<SP WIDTH="54" VPOS="5431" HPOS="313"/>
+							<String CONTENT="und" WIDTH="101" VPOS="5421" HPOS="368"/>
+							<SP WIDTH="58" VPOS="5419" HPOS="470"/>
+							<String CONTENT="billigster" WIDTH="224" VPOS="5418" HPOS="529"/>
+							<SP WIDTH="59" VPOS="5420" HPOS="754"/>
+							<String CONTENT="Bedienung." WIDTH="309" VPOS="5420" HPOS="814"/>
+							<SP WIDTH="75" VPOS="5414" HPOS="1124"/>
+							<String CONTENT="Agenten" WIDTH="270" VPOS="5414" HPOS="1200"/>
+							<SP WIDTH="57" VPOS="5417" HPOS="1471"/>
+							<String CONTENT="in" WIDTH="51" VPOS="5417" HPOS="1529"/>
+							<SP WIDTH="56" VPOS="5415" HPOS="1581"/>
+							<String CONTENT="Sullett:" WIDTH="306" VPOS="5415" HPOS="1638"/>
+							<SP WIDTH="57" VPOS="5416" HPOS="1945"/>
+							<String CONTENT="Wittwe" WIDTH="203" VPOS="5416" HPOS="2003"/>
+							<SP WIDTH="56" VPOS="5414" HPOS="2207"/>
+							<String CONTENT="Tiner," WIDTH="182" VPOS="5414" HPOS="2264"/>
+							<SP WIDTH="40" VPOS="5415" HPOS="2447"/>
+							<String CONTENT="Handlung." WIDTH="294" VPOS="5415" HPOS="2488"/>
+							<SP WIDTH="82" VPOS="5414" HPOS="2783"/>
+							<String CONTENT="Sevelen:" WIDTH="318" VPOS="5414" HPOS="2866"/>
+							<SP WIDTH="76" VPOS="5415" HPOS="3185"/>
+							<String CONTENT="Eggenberger," WIDTH="359" VPOS="5415" HPOS="3262"/>
+							<SP WIDTH="65" VPOS="5417" HPOS="3622"/>
+							<String CONTENT="Färber" WIDTH="187" VPOS="5417" HPOS="3688"/>
+						</TextLine>
+						<TextLine HEIGHT="80" WIDTH="3719" VPOS="5490" HPOS="155">
+							<String CONTENT="Trübbach:" WIDTH="362" VPOS="5490" HPOS="155"/>
+							<SP WIDTH="59" VPOS="5494" HPOS="518"/>
+							<String CONTENT="Kuhn," WIDTH="172" VPOS="5494" HPOS="578"/>
+							<SP WIDTH="50" VPOS="5494" HPOS="751"/>
+							<String CONTENT="Handlung." WIDTH="296" VPOS="5494" HPOS="802"/>
+							<SP WIDTH="81" VPOS="5493" HPOS="1099"/>
+							<String CONTENT="Maienfeld:" WIDTH="405" VPOS="5493" HPOS="1181"/>
+							<SP WIDTH="64" VPOS="5493" HPOS="1587"/>
+							<String CONTENT="A." WIDTH="60" VPOS="5493" HPOS="1652"/>
+							<SP WIDTH="40" VPOS="5491" HPOS="1713"/>
+							<String CONTENT="Möhr," WIDTH="179" VPOS="5491" HPOS="1754"/>
+							<SP WIDTH="39" VPOS="5492" HPOS="1934"/>
+							<String CONTENT="Handlung." WIDTH="296" VPOS="5492" HPOS="1974"/>
+							<SP WIDTH="81" VPOS="5491" HPOS="2271"/>
+							<String CONTENT="Ferner" WIDTH="180" VPOS="5491" HPOS="2353"/>
+							<SP WIDTH="35" VPOS="5509" HPOS="2534"/>
+							<String CONTENT="ertheilen" WIDTH="221" VPOS="5492" HPOS="2570"/>
+							<SP WIDTH="39" VPOS="5506" HPOS="2792"/>
+							<String CONTENT="nähere" WIDTH="177" VPOS="5491" HPOS="2832"/>
+							<SP WIDTH="38" VPOS="5490" HPOS="3010"/>
+							<String CONTENT="Auskunft" WIDTH="254" VPOS="5490" HPOS="3049"/>
+							<SP WIDTH="41" VPOS="5500" HPOS="3304"/>
+							<String CONTENT="und" WIDTH="101" VPOS="5495" HPOS="3346"/>
+							<SP WIDTH="39" VPOS="5495" HPOS="3448"/>
+							<String CONTENT="nehmen" WIDTH="202" VPOS="5494" HPOS="3488"/>
+							<SP WIDTH="40" VPOS="5494" HPOS="3691"/>
+							<String CONTENT="Sen-" WIDTH="142" VPOS="5494" HPOS="3732"/>
+						</TextLine>
+						<TextLine HEIGHT="81" WIDTH="3713" VPOS="5566" HPOS="153">
+							<String CONTENT="düngen" WIDTH="197" VPOS="5574" HPOS="153"/>
+							<SP WIDTH="57" VPOS="5585" HPOS="351"/>
+							<String CONTENT="entgegen" WIDTH="230" VPOS="5576" HPOS="409"/>
+							<SP WIDTH="40" VPOS="5571" HPOS="640"/>
+							<String CONTENT="in" WIDTH="49" VPOS="5571" HPOS="681"/>
+							<SP WIDTH="41" VPOS="5568" HPOS="731"/>
+							<String CONTENT="Vaduz:" WIDTH="250" VPOS="5568" HPOS="773"/>
+							<SP WIDTH="58" VPOS="5570" HPOS="1024"/>
+							<String CONTENT="Seger" WIDTH="163" VPOS="5570" HPOS="1083"/>
+							<SP WIDTH="38" VPOS="5569" HPOS="1247"/>
+							<String CONTENT="Handlung." WIDTH="300" VPOS="5569" HPOS="1286"/>
+							<SP WIDTH="40" VPOS="5567" HPOS="1587"/>
+							<String CONTENT="Eschen:" WIDTH="263" VPOS="5567" HPOS="1628"/>
+							<SP WIDTH="59" VPOS="5567" HPOS="1892"/>
+							<String CONTENT="Landrath" WIDTH="244" VPOS="5567" HPOS="1952"/>
+							<SP WIDTH="37" VPOS="5569" HPOS="2197"/>
+							<String CONTENT="Oehri." WIDTH="172" VPOS="5569" HPOS="2235"/>
+							<SP WIDTH="82" VPOS="5568" HPOS="2408"/>
+							<String CONTENT="Gamprin:" WIDTH="370" VPOS="5567" HPOS="2491"/>
+							<SP WIDTH="58" VPOS="5566" HPOS="2862"/>
+							<String CONTENT="Gebrüder" WIDTH="257" VPOS="5566" HPOS="2921"/>
+							<SP WIDTH="57" VPOS="5567" HPOS="3179"/>
+							<String CONTENT="Näscher," WIDTH="241" VPOS="5567" HPOS="3237"/>
+							<SP WIDTH="56" VPOS="5570" HPOS="3479"/>
+							<String CONTENT="Wirtschaft." WIDTH="330" VPOS="5570" HPOS="3536"/>
+						</TextLine>
+						<TextLine HEIGHT="77" WIDTH="738" VPOS="5644" HPOS="156">
+							<String CONTENT="Denzler:" WIDTH="328" VPOS="5648" HPOS="156"/>
+							<SP WIDTH="40" VPOS="5644" HPOS="485"/>
+							<String CONTENT="Ruoß" WIDTH="149" VPOS="5644" HPOS="526"/>
+							<SP WIDTH="38" VPOS="5647" HPOS="676"/>
+							<String CONTENT="&lt;fc" WIDTH="44" VPOS="5650" HPOS="715"/>
+							<SP WIDTH="39" VPOS="5645" HPOS="760"/>
+							<String CONTENT="Co." WIDTH="94" VPOS="5645" HPOS="800"/>
+						</TextLine>
+					</textBlock>
+					<GraphicalElement ID="{16F104F3-9A49-4DA1-800E-B529F5E46DEC}" HEIGHT="19" WIDTH="710" VPOS="1167" HPOS="1626"/>
+					<GraphicalElement ID="{B0D85909-7C79-4591-9391-1DFF081F766F}" HEIGHT="13" WIDTH="1991" VPOS="1429" HPOS="1874"/>
+					<GraphicalElement ID="{C4E72852-3077-4272-94F8-A80AE4739828}" HEIGHT="25" WIDTH="1607" VPOS="1433" HPOS="267"/>
+					<GraphicalElement ID="{64CD35AE-33F5-4EF3-8240-5176A9B4CC8D}" HEIGHT="27" WIDTH="3244" VPOS="1616" HPOS="617"/>
+					<GraphicalElement ID="{5357F28B-E972-4AC1-9AF2-CD7F465197E0}" HEIGHT="16" WIDTH="439" VPOS="1633" HPOS="174"/>
+					<GraphicalElement ID="{B50690F6-A19F-48EC-8E87-6F0DFD4AFA84}" HEIGHT="12" WIDTH="1698" VPOS="1975" HPOS="2163"/>
+					<GraphicalElement ID="{F0D98511-716D-43CB-8E95-DF2BFC558204}" HEIGHT="15" WIDTH="1544" VPOS="1981" HPOS="615"/>
+					<GraphicalElement ID="{5D89F6DF-4302-49F0-BD26-0F2AEE822637}" HEIGHT="40" WIDTH="3685" VPOS="1990" HPOS="180"/>
+					<GraphicalElement ID="{B300ECDA-469F-4B8D-95B7-93EF82C4FAB3}" HEIGHT="8" WIDTH="210" VPOS="1996" HPOS="172"/>
+					<GraphicalElement ID="{9DAF0B09-3D69-4A0F-A6D1-A44EB5C14643}" HEIGHT="20" WIDTH="1788" VPOS="2711" HPOS="181"/>
+					<GraphicalElement ID="{AF913AC3-4BF8-4624-A18F-93C24BCC8B6A}" HEIGHT="12" WIDTH="362" VPOS="2976" HPOS="885"/>
+					<GraphicalElement ID="{60B621EE-D9E9-4104-A316-9A02AE875223}" HEIGHT="29" WIDTH="1807" VPOS="2986" HPOS="2067"/>
+					<GraphicalElement ID="{89E19948-A9D1-42BD-8015-E1DA549CDA67}" HEIGHT="19" WIDTH="1794" VPOS="3922" HPOS="180"/>
+					<GraphicalElement ID="{0008D1D5-8511-4642-B3AA-6BABA37F928F}" HEIGHT="24" WIDTH="1807" VPOS="3967" HPOS="2071"/>
+					<GraphicalElement ID="{B52FD0CB-B984-467D-A7CF-C124FE021EBD}" HEIGHT="22" WIDTH="3699" VPOS="4758" HPOS="175"/>
+					<GraphicalElement ID="{1B668DA1-6D65-4900-9C19-C2B93FDEA500}" HEIGHT="338" WIDTH="10" VPOS="4935" HPOS="70"/>
+					<GraphicalElement ID="{046ADE43-7CF2-40E7-BD45-D5EEC536E0EE}" HEIGHT="410" WIDTH="12" VPOS="4329" HPOS="73"/>
+					<GraphicalElement ID="{808405B5-9EFA-40EC-9D63-369A9BB3F1F4}" HEIGHT="560" WIDTH="16" VPOS="3108" HPOS="79"/>
+					<GraphicalElement ID="{07DE306E-5580-4A23-8AD3-54A5868477B6}" HEIGHT="583" WIDTH="15" VPOS="2094" HPOS="80"/>
+					<GraphicalElement ID="{DEA97F99-FAB1-4937-8833-47D84E3526D3}" HEIGHT="168" WIDTH="8" VPOS="3973" HPOS="80"/>
+					<GraphicalElement ID="{3D488109-935E-4318-8CC5-76804A87D96A}" HEIGHT="213" WIDTH="9" VPOS="2706" HPOS="82"/>
+					<GraphicalElement ID="{39FC0236-8F03-4368-991B-C8ECECA16819}" HEIGHT="170" WIDTH="10" VPOS="780" HPOS="459"/>
+					<GraphicalElement ID="{985BAB0C-D972-491F-A4D7-898C95DF1AFB}" HEIGHT="141" WIDTH="9" VPOS="774" HPOS="628"/>
+					<GraphicalElement ID="{FF381ECB-A145-408E-BCF2-F57111FDB5D7}" HEIGHT="130" WIDTH="8" VPOS="4905" HPOS="782"/>
+					<GraphicalElement ID="{008398C0-C7C7-4FD2-87C0-BB826F5C2BC8}" HEIGHT="1367" WIDTH="17" VPOS="3111" HPOS="2007"/>
+					<GraphicalElement ID="{ED1B6591-A5B4-47F0-99F0-20F80C95A278}" HEIGHT="995" WIDTH="13" VPOS="2094" HPOS="2009"/>
+					<GraphicalElement ID="{4B15F698-2206-459A-8806-D8DB2A1E5CF9}" HEIGHT="183" WIDTH="13" VPOS="4478" HPOS="2015"/>
+					<GraphicalElement ID="{5B3CEC87-3251-4191-98F5-4B0C1F6B118B}" HEIGHT="1" WIDTH="49" VPOS="1616" HPOS="3810"/>
+				</ComposedBlock>
+			</PrintSpace>
+		</Page>
+	</Layout>
+</alto>

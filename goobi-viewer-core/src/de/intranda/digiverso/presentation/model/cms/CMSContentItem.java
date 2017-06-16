@@ -1,0 +1,653 @@
+/**
+ * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package de.intranda.digiverso.presentation.model.cms;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.viewer.CollectionView;
+import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
+import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
+
+/**
+ * This class represents both template content configuration items and instance items of actual pages. Only the latter are persisted to the DB.
+ */
+@Entity
+@Table(name = "cms_content_items")
+public class CMSContentItem implements Comparable<CMSContentItem> {
+
+    public enum CMSContentItemType {
+        TEXT,
+        HTML,
+        MEDIA,
+        SOLRQUERY,
+        PAGELIST,
+        COLLECTION,
+        TILEGRID;
+
+        public static CMSContentItemType getByName(String name) {
+            if (name != null) {
+                switch (name) {
+                    case "TEXT":
+                        return TEXT;
+                    case "HTML":
+                        return HTML;
+                    case "MEDIA":
+                        return MEDIA;
+                    case "SOLRQUERY":
+                        return SOLRQUERY;
+                    case "PAGELIST":
+                        return PAGELIST;
+                    case "COLLECTION":
+                        return COLLECTION;
+                    case "TILEGRID":
+                        return TILEGRID;
+                    default:
+                        return null;
+                }
+            }
+
+            return null;
+        }
+    }
+
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(CMSContentItem.class);
+
+    /** Unique database ID. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_content_item_id")
+    private Long id;
+
+    /** Item ID from the template. */
+    @Column(name = "item_id")
+    private String itemId;
+
+    /** Label to display during page creation */
+    @Column(name = "item_label")
+    private String itemLabel;
+
+    /** Content item type. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private CMSContentItemType type;
+
+    /** Mandatory items must be filled with actual content in a page. */
+    @Column(name = "mandatory", nullable = false)
+    private boolean mandatory = false;
+
+    /** Reference to the owning <code>CMSPage</code>. */
+    @ManyToOne
+    @JoinColumn(name = "owner_page_language_version_id")
+    private CMSPageLanguageVersion ownerPageLanguageVersion;
+
+    /** Displayed elements per paginator page (records, pages, etc.). */
+    @Column(name = "elements_per_page")
+    private int elementsPerPage = 10;
+
+    /** HTML fragment for HTML type content items. */
+    @Column(name = "html_fragment", columnDefinition = "LONGTEXT")
+    private String htmlFragment;
+
+    /** Solr query definition for content items that list records. */
+    @Column(name = "solr_query", columnDefinition = "LONGTEXT")
+    private String solrQuery;
+
+    /** Optional list of Solr fields by which to sort the results of <code>solrQuery</code>. */
+    @Column(name = "solr_sort_fields")
+    private String solrSortFields;
+
+    /** Media item reference for media content items. */
+    @JoinColumn(name = "media_item_id")
+    private CMSMediaItem mediaItem;
+
+    /** Page classification for page list content items. */
+    @Column(name = "page_classification")
+    private String pageClassification;
+
+    /** Lucence field on which to base a collecion view */
+    @Column(name = "collection_field")
+    private String collectionField = null;
+
+    /** Number of hierarchy levels from the top which open in their own collection view */
+    @Column(name = "collection_base_levels")
+    private Integer collectionBaseLevels = 0;
+
+    /** whether this collection should open with all subcollections expanded. Base levels don't expand */
+    @Column(name = "collection_open_expanded")
+    private boolean collectionOpenExpanded = false;
+
+    /** whether any subcollections opened as base levels should display its parent collections */
+    @Column(name = "collection_display_parents")
+    private boolean collectionDisplayParents = true;
+
+    /** whether this collection should open with all subcollections expanded. Base levels don't expand */
+    @Column(name = "base_collection")
+    private String baseCollection = null;
+
+    /**
+     * For TileGrid
+     */
+    @Column(name = "allowed_tags")
+    private String allowedTags = "-";
+
+    /**
+     * For TileGrid
+     */
+    @Column(name = "important_count")
+    private int numberOfImportantTiles = 0;
+
+    /**
+     * For TileGrid
+     */
+    @Column(name = "tile_count")
+    private int numberOfTiles = 9;
+
+    @Transient
+    private CollectionView collection = null;
+
+    @Transient
+    private boolean visible = false;
+
+    @Transient
+    List<CMSPage> nestedPages = null;
+
+    @Transient
+    private int nestedPagesCount = 0;
+
+    @Transient
+    private int order = 0;
+    
+    
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(CMSContentItem o) {
+        if (this == o) {
+            return 0;
+        }
+        if (this.getOrder() != o.getOrder()) {
+            return Integer.compare(this.getOrder(), o.getOrder());
+        }
+        return itemId.compareTo(o.getItemId());
+    }
+
+    /**
+     * Returns a copy of this object's configuration. Use this to create content item instances of template items for pages.
+     *
+     * @should clone item correctly
+     */
+    @Override
+    public CMSContentItem clone() {
+        CMSContentItem clone = new CMSContentItem();
+        clone.setItemId(itemId);
+        clone.setItemLabel(itemLabel);
+        clone.setType(type);
+        clone.setMandatory(mandatory);
+        clone.setOrder(order);
+        clone.setHtmlFragment(getHtmlFragment());
+        clone.setElementsPerPage(elementsPerPage);
+        clone.setBaseCollection(getBaseCollection());
+        clone.setCollectionBaseLevels(getCollectionBaseLevels());
+        clone.setCollectionField(getCollectionField());
+        clone.setCollectionOpenExpanded(isCollectionOpenExpanded());
+        clone.setBaseCollection(getBaseCollection());
+        clone.setMediaItem(getMediaItem());
+        clone.setPageClassification(getPageClassification());
+        return clone;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the itemId
+     */
+    public String getItemId() {
+        return itemId;
+    }
+
+    /**
+     * @param itemId the itemId to set
+     */
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    /**
+     * @return the itemLabel
+     */
+    public String getItemLabel() {
+        if (itemLabel != null && !itemLabel.isEmpty()) {
+            return itemLabel;
+        }
+
+        return itemId;
+    }
+
+    /**
+     * @param itemLabel the itemLabel to set
+     */
+    public void setItemLabel(String itemLabel) {
+        this.itemLabel = itemLabel;
+    }
+
+    /**
+     * @return the type
+     */
+    public CMSContentItemType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(CMSContentItemType type) {
+        this.type = type;
+    }
+
+    /**
+     * @return the mandatory
+     */
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    /**
+     * @param mandatory the mandatory to set
+     */
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    /**
+     * @return the ownerPageLanguageVersion
+     */
+    public CMSPageLanguageVersion getOwnerPageLanguageVersion() {
+        return ownerPageLanguageVersion;
+    }
+
+    /**
+     * @param ownerPageLanguageVersion the ownerPageLanguageVersion to set
+     */
+    public void setOwnerPageLanguageVersion(CMSPageLanguageVersion ownerPageLanguageVersion) {
+        this.ownerPageLanguageVersion = ownerPageLanguageVersion;
+    }
+
+    /**
+     * @return the elementsPerPage
+     */
+    public int getElementsPerPage() {
+        return elementsPerPage;
+    }
+
+    /**
+     * @param elementsPerPage the elementsPerPage to set
+     */
+    public void setElementsPerPage(int elementsPerPage) {
+        this.elementsPerPage = elementsPerPage;
+    }
+
+    /**
+     * @return the htmlFragment
+     */
+    public String getHtmlFragment() {
+        return htmlFragment;
+    }
+
+    /**
+     * @param htmlFragment the htmlFragment to set
+     */
+    public void setHtmlFragment(String htmlFragment) {
+        this.htmlFragment = htmlFragment;
+    }
+
+    /**
+     * @return the solrQuery
+     */
+    public String getSolrQuery() {
+        return solrQuery;
+    }
+
+    /**
+     * @param solrQuery the solrQuery to set
+     */
+    public void setSolrQuery(String solrQuery) {
+        this.solrQuery = solrQuery;
+    }
+
+    /**
+     * @return the solrSortFields
+     */
+    public String getSolrSortFields() {
+        return solrSortFields;
+    }
+
+    /**
+     * @param solrSortFields the solrSortFields to set
+     */
+    public void setSolrSortFields(String solrSortFields) {
+        this.solrSortFields = solrSortFields;
+    }
+
+    /**
+     * @return the mediaItem
+     */
+    public CMSMediaItem getMediaItem() {
+        return mediaItem;
+    }
+
+    /**
+     * @param mediaItem the mediaItem to set
+     */
+    public void setMediaItem(CMSMediaItem mediaItem) {
+        this.mediaItem = mediaItem;
+    }
+
+    /**
+     * @return the pageClassification
+     */
+    public String getPageClassification() {
+        return pageClassification;
+    }
+
+    /**
+     * @param pageClassification the pageClassification to set
+     */
+    public void setPageClassification(String pageClassification) {
+        this.pageClassification = pageClassification;
+    }
+
+    public int getListPage() {
+        return getOwnerPageLanguageVersion().getOwnerPage().getListPage();
+    }
+
+    public void setListPage(int listPage) {
+        getOwnerPageLanguageVersion().getOwnerPage().setListPage(listPage);
+    }
+
+    public int getListOffset() {
+        return (getListPage() - 1) * elementsPerPage;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public List<CMSPage> getNestedPages() throws DAOException {
+        if (nestedPages == null) {
+            return loadNestedPages();
+        }
+        return nestedPages;
+    }
+
+    public void resetData() {
+        nestedPages = null;
+    }
+
+    private List<CMSPage> loadNestedPages() throws DAOException {
+        int size = getElementsPerPage();
+        int offset = getListOffset();
+        nestedPages = new ArrayList<>();
+        int counter = 0;
+        if (!StringUtils.isEmpty(getPageClassification())) {
+            List<CMSPage> allPages = DataManager.getInstance().getDao().getCMSPagesByClassification(getPageClassification());
+            Collections.sort(allPages, new CMSPage.PageComparator());
+            for (CMSPage cmsPage : allPages) {
+                if (cmsPage.isPublished()) {
+                    counter++;
+                    if (counter > offset && counter <= size + offset) {
+                        //                        if (cmsPage.sortGlobalLanguageItems()) {
+                        //                            DataManager.getInstance().getDao().updateCMSPage(cmsPage);
+                        //                        }
+                        nestedPages.add(cmsPage);
+                    }
+                }
+            }
+        }
+        setNestedPagesCount((int) Math.ceil(counter / (double) size));
+        return nestedPages;
+    }
+
+    public int getNestedPagesCount() {
+        return nestedPagesCount;
+    }
+
+    public void setNestedPagesCount(int nestedPages) {
+        this.nestedPagesCount = nestedPages;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+    public String getCollectionField() {
+        return collectionField;
+    }
+
+    public void setCollectionField(String collectionField) {
+        this.collectionField = collectionField;
+        this.collection = null;
+    }
+
+    public Integer getCollectionBaseLevels() {
+        return collectionBaseLevels;
+    }
+
+    public void setCollectionBaseLevels(Integer collectionBaseLevels) {
+        this.collectionBaseLevels = collectionBaseLevels;
+        this.collection = null;
+    }
+
+    public boolean isCollectionOpenExpanded() {
+        return collectionOpenExpanded;
+    }
+
+    public void setCollectionOpenExpanded(boolean collectionOpenExpanded) {
+        this.collectionOpenExpanded = collectionOpenExpanded;
+        this.collection = null;
+    }
+
+    /**
+     * @return the collectionDisplayParents
+     */
+    public boolean isCollectionDisplayParents() {
+        return collectionDisplayParents;
+    }
+
+    /**
+     * @param collectionDisplayParents the collectionDisplayParents to set
+     */
+    public void setCollectionDisplayParents(boolean collectionDisplayParents) {
+        this.collectionDisplayParents = collectionDisplayParents;
+    }
+
+    /**
+     * @return the baseCollection
+     */
+    public String getBaseCollection() {
+        return baseCollection;
+    }
+
+    /**
+     * @param baseCollection the baseCollection to set
+     */
+    public void setBaseCollection(String baseCollection) {
+        this.baseCollection = baseCollection;
+        this.collection = null;
+    }
+
+    public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
+        if (StringUtils.isBlank(collectionField)) {
+            return Collections.singletonList("");
+        }
+        Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, collectionField, true, true, true, true);
+        List<String> list = new ArrayList<>(dcStrings.keySet());
+        list.add(0, "");
+        Collections.sort(list);
+        return list;
+    }
+
+    public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
+        if (this.collection == null) {
+            this.collection = initializeCollection();
+        }
+        return this.collection;
+    }
+
+    public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isBlank(getCollectionField())) {
+            throw new PresentationException("No solr field provided to create collection view");
+        }
+        CollectionView collection = initializeCollection(getCollectionField(), getCollectionField());
+        collection.setBaseElementName(getBaseCollection());
+        collection.setBaseLevels(getCollectionBaseLevels());
+        collection.setDisplayParentCollections(isCollectionDisplayParents());
+        if (isCollectionOpenExpanded()) {
+            collection.setShowAllHierarchyLevels(true);
+        }
+        collection.populateCollectionList();
+        return collection;
+    }
+
+    /**
+     * Adds a CollecitonView object for the given field to the map and populates its values.
+     *
+     * @param collectionField
+     * @param facetField
+     * @param sortField
+     */
+    private static CollectionView initializeCollection(final String collectionField, final String facetField) {
+        CollectionView collection = new CollectionView(collectionField, new BrowseDataProvider() {
+
+            @Override
+            public Map<String, Long> getData() throws IndexUnreachableException {
+                Map<String, Long> dcStrings = SearchHelper.findAllCollectionsFromField(collectionField, facetField, true, true, true, true);
+                return dcStrings;
+            }
+        });
+        return collection;
+    }
+
+    /**
+     * @return the allowedTags
+     */
+    public String getAllowedTags() {
+        return allowedTags;
+    }
+
+    /**
+     * @param allowedTags the allowedTags to set
+     */
+    public void setAllowedTags(String allowedTags) {
+        this.allowedTags = allowedTags;
+    }
+
+    public String[] getAllowedTagsAsArray() {
+        if (StringUtils.isBlank(this.allowedTags)) {
+            return new String[0];
+        }
+        return this.allowedTags.split(TileGridResource.TAG_SEPARATOR_REGEX);
+    }
+
+    public void setAllowedTagsAsArray(String[] tags) {
+        if (tags == null || tags.length == 0) {
+            this.allowedTags = "-";
+        }
+        this.allowedTags = StringUtils.join(tags, TileGridResource.TAG_SEPARATOR);
+    }
+
+    /**
+     * @param numberOfImportantTiles the numberOfImportantTiles to set
+     */
+    public void setNumberOfImportantTiles(int numberOfImportantTiles) {
+        this.numberOfImportantTiles = numberOfImportantTiles;
+    }
+
+    /**
+     * @return the numberOfImportantTiles
+     */
+    public int getNumberOfImportantTiles() {
+        return numberOfImportantTiles;
+    }
+
+    /**
+     * @return the numberOfTiles
+     */
+    public int getNumberOfTiles() {
+        return numberOfTiles;
+    }
+
+    /**
+     * @param numberOfTiles the numberOfTiles to set
+     */
+    public void setNumberOfTiles(int numberOfTiles) {
+        this.numberOfTiles = numberOfTiles;
+    }
+
+    @Override
+    public String toString() {
+        return CMSContentItem.class.getSimpleName() + ": " + getType() + " (" + getItemId() + ")";
+    }
+
+}
