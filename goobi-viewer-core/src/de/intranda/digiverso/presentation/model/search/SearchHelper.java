@@ -877,7 +877,7 @@ public final class SearchHelper {
             logger.trace("discriminatorValue: {}", discriminatorValue);
             if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
                 StringBuilder sbSuffix = new StringBuilder();
-                sbSuffix.append(" +").append(discriminatorField).append(':').append(discriminatorValue);
+                sbSuffix.append(" AND ").append(discriminatorField).append(':').append(discriminatorValue);
                 logger.trace("Discriminator field suffix: {}", sbSuffix.toString());
                 return sbSuffix.toString();
             }

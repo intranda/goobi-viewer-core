@@ -273,7 +273,7 @@ public class BrowseBean implements Serializable {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 return "searchTermList";
             }
-            String suffix = SearchHelper.getAllSuffixes(true);
+            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
                 terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(), suffix);
 

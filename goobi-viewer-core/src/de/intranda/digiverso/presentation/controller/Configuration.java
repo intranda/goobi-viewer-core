@@ -2368,6 +2368,15 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public boolean isSubthemeAddFilterQuery() {
+        return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isSubthemeFilterQueryVisible() {
         return getLocalBoolean("viewer.theme[@filterQueryVisible]", false);
     }

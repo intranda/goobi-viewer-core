@@ -809,6 +809,17 @@ public class ConfigurationTest {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch());
     }
 
+
+    /**
+     * @see Configuration#isSubthemeAddFilterQuery()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSubthemeAddFilterQuery_shouldReturnCorrectValue() throws Exception {
+        //TODO auto-generated
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
+    }
+
     /**
      * @see ConfigurationHelper#isSubthemeFilterQueryVisible()
      * @verifies return correct value

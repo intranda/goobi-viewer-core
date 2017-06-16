@@ -111,7 +111,8 @@ public class RssResolver extends HttpServlet {
             if (StringUtils.isNotEmpty(query)) {
                 SyndFeedOutput output = new SyndFeedOutput();
                 output.output(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request), query + SearchHelper.getAllSuffixes(
-                        request, true, true), language), new OutputStreamWriter(response.getOutputStream(), "utf-8"));
+                        request, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()), language), new OutputStreamWriter(
+                                response.getOutputStream(), "utf-8"));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");
                 return;

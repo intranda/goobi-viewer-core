@@ -2056,7 +2056,7 @@ public class SearchBean implements Serializable {
                 advancedSearchSelectItems.put(key, ret);
             } else {
                 new BrowsingMenuFieldConfig(field, null, null, false);
-                String suffix = SearchHelper.getAllSuffixes(true);
+                String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
                 String facetField = field.replace(SolrConstants._UNTOKENIZED, "").replace("MD_", "FACET_");
                 List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, facetField);
                 for (String value : values) {

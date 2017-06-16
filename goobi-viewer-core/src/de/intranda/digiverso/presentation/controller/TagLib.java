@@ -63,7 +63,7 @@ public class TagLib {
      */
     public static List<String> getLastImports(Integer number) throws PresentationException, IndexUnreachableException {
         String query = new StringBuilder("(").append(SolrConstants.ISWORK).append(":true").append(getDiscriminatorQuery()).append(')').append(
-                SearchHelper.getAllSuffixes(true)).toString();
+                SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery())).toString();
         logger.debug("getLastImports query: {}", query);
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, 0, number, Collections.singletonList(new StringPair(
                 SolrConstants.DATECREATED, "desc")), null, Arrays.asList(RSSFeed.FIELDS)).getResults();
@@ -92,7 +92,7 @@ public class TagLib {
         List<String> ret = new ArrayList<>();
 
         String query = new StringBuilder("(").append(SolrConstants.ISWORK).append(":true").append(getDiscriminatorQuery()).append(')').append(
-                SearchHelper.getAllSuffixes(true)).toString();
+                SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery())).toString();
         logger.trace("getLastImportTitles query: {}", query);
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, 0, number, Collections.singletonList(new StringPair(
                 SolrConstants.DATECREATED, "desc")), null, Arrays.asList(RSSFeed.FIELDS)).getResults();
@@ -177,8 +177,8 @@ public class TagLib {
      */
     public static String getFeaturedImage(String pi, Integer imageNumber, Integer imageWidth, Integer imageHeight) throws PresentationException,
             IndexUnreachableException {
-        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.ORDER).append(
-                ':').append(imageNumber - 1).append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.PAGE.name()).toString();
+        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.ORDER).append(':')
+                .append(imageNumber - 1).append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.PAGE.name()).toString();
         logger.debug("query: {}", query);
         String width = String.valueOf(imageWidth);
         String height = String.valueOf(imageHeight);
@@ -244,6 +244,7 @@ public class TagLib {
             sbQuery.append(" AND (").append(subQuery).append(')');
         }
         // logger.debug("getDrillDown query: " + query);
+        field = field.replace("MD_", "FACET_");
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null, Collections.singletonList(field),
                 Collections.singletonList(SolrConstants.IDDOC));
         // TODO Filter with the docstruct whitelist?

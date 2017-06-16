@@ -121,7 +121,7 @@ public class TagCloudBean implements Serializable {
 
             // int byzero = 1/0;
 
-            String suffix = SearchHelper.getAllSuffixes(true);
+            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
             if (StringUtils.isEmpty(query)) {
                 mytags = DataManager.getInstance().getSearchIndex().generateFilteredTagCloud(luceneField, suffix);
             } else {

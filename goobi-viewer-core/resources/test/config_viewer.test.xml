@@ -314,11 +314,9 @@
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="true" mainTheme="mainTheme_value"
 			discriminatorField="discriminatorField_value"
-			autoSwitch="true" filterQueryVisible="true">
-<!-- 			<subTheme discriminatorValue="discriminatorValue1" -->
-<!-- 				themeFolder="themeFolder1" /> -->
-<!-- 			<subTheme discriminatorValue="discriminatorValue2" -->
-<!-- 				themeFolder="themeFolder2" /> -->
+			autoSwitch="true"
+			addFilterQuery="true"
+			filterQueryVisible="true">
 		</theme>
 	</viewer>
 
