@@ -71,8 +71,8 @@
         <dependent-module archiveName="viewer-theme-oolbib.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-oolbib/goobi-viewer-theme-oolbib">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- REFERENCE 2 -->
-        <dependent-module archiveName="viewer-theme-reference2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-reference/goobi-viewer-theme-reference">
+        <!-- REFERENCE -->
+        <dependent-module archiveName="goobi-viewer-theme-reference.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-reference/goobi-viewer-theme-reference">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- SBLUE -->
