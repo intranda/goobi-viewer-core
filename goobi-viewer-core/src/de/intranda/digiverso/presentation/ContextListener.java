@@ -41,7 +41,7 @@ public class ContextListener implements ServletContextListener {
         logger.info("Launching {}", Helper.getVersion());
         DataManager.getInstance();
         // Add a "member" role, if not yet in the database
-        try {
+        try { 
             if (DataManager.getInstance().getDao().getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");
                 if (!DataManager.getInstance().getDao().addRole(new Role("member"))) {
