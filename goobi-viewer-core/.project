@@ -3,37 +3,37 @@
 	<name>goobi-viewer-core</name>
 	<comment></comment>
 	<projects>
-		<project>viewer-theme-akwien</project>
-		<project>viewer-theme-belvedere2</project>
-		<project>viewer-theme-bsh</project>
-		<project>viewer-theme-buw</project>
-		<project>viewer-theme-dipf3</project>
-		<project>viewer-theme-gei</project>
-		<project>viewer-theme-haab2</project>
-		<project>viewer-theme-hlbw2</project>
-		<project>viewer-theme-iai</project>
-		<project>viewer-theme-ikfn</project>
-		<project>viewer-theme-ikfn2</project>
-		<project>viewer-theme-khz</project>
-		<project>viewer-theme-kuni</project>
-		<project>viewer-theme-lie</project>
-		<project>viewer-theme-mvp3</project>
-		<project>viewer-theme-oolbib</project>
-		<project>viewer-theme-reference2</project>
-		<project>viewer-theme-sblue</project>
-		<project>viewer-theme-sim</project>
-		<project>viewer-theme-sulb</project>
-		<project>viewer-theme-themeBoilerplate</project>
-		<project>viewer-theme-tib2</project>
-		<project>viewer-theme-twl</project>
-		<project>viewer-theme-ubkassel</project>
-		<project>viewer-theme-ubkiel</project>
-		<project>viewer-theme-ubs</project>
-		<project>viewer-theme-ubwien</project>
-		<project>viewer-theme-unisammlungen</project>
-		<project>viewer-theme-zlb2</project>
-		<project>viewer-module-crowdsourcing</project>
-		<project>viewer-theme-wuw</project>
+		<project>goobi-viewer-theme-akwien</project>
+		<project>goobi-viewer-theme-belvedere2</project>
+		<project>goobi-viewer-theme-bsh</project>
+		<project>goobi-viewer-theme-buw</project>
+		<project>goobi-viewer-theme-dipf3</project>
+		<project>goobi-viewer-theme-gei</project>
+		<project>goobi-viewer-theme-haab2</project>
+		<project>goobi-viewer-theme-hlbw2</project>
+		<project>goobi-viewer-theme-iai</project>
+		<project>goobi-viewer-theme-ikfn</project>
+		<project>goobi-viewer-theme-ikfn2</project>
+		<project>goobi-viewer-theme-khz</project>
+		<project>goobi-viewer-theme-kuni</project>
+		<project>goobi-viewer-theme-lie</project>
+		<project>goobi-viewer-theme-mvp3</project>
+		<project>goobi-viewer-theme-oolbib</project>
+		<project>goobi-viewer-theme-reference</project>
+		<project>goobi-viewer-theme-sblue</project>
+		<project>goobi-viewer-theme-sim</project>
+		<project>goobi-viewer-theme-sulb</project>
+		<project>goobi-viewer-theme-themeBoilerplate</project>
+		<project>goobi-viewer-theme-tib2</project>
+		<project>goobi-viewer-theme-twl</project>
+		<project>goobi-viewer-theme-ubkassel</project>
+		<project>goobi-viewer-theme-ubkiel</project>
+		<project>goobi-viewer-theme-ubs</project>
+		<project>goobi-viewer-theme-ubwien</project>
+		<project>goobi-viewer-theme-unisammlungen</project>
+		<project>goobi-viewer-theme-zlb2</project>
+		<project>goobi-viewer-module-crowdsourcing</project>
+		<project>goobi-viewer-theme-wuw</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
