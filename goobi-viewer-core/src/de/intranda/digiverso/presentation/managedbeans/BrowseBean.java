@@ -273,9 +273,9 @@ public class BrowseBean implements Serializable {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 return "searchTermList";
             }
-            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(), suffix);
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(), DataManager.getInstance().getConfiguration()
+                        .isAggregateHits());
 
                 // Populate the list of available starting characters with ones that actually exist in the complete terms list
                 if (availableStringFilters.get(browsingMenuField) == null) {
@@ -310,7 +310,8 @@ public class BrowseBean implements Serializable {
 
             // Get the terms again, this time using the requested filter. The search over all terms the first time is necessary to get the list of available filters.
             if (StringUtils.isNotEmpty(currentStringFilter)) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, new BrowseTermRawComparator(), suffix);
+                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, new BrowseTermRawComparator(), DataManager.getInstance()
+                        .getConfiguration().isAggregateHits());
             }
             hitsCount = terms.size();
             if (hitsCount > 0) {
