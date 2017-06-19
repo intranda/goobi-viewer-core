@@ -1727,9 +1727,6 @@ public final class SearchHelper {
         }
 
         String query = buildFinalQuery(sbQuery.toString(), false);
-        if (aggregateHits) {
-            // TODO
-        }
         logger.debug("getFilteredTerms query: {}", query);
         // int rows = 0;
         int rows = SolrSearchIndex.MAX_HITS;
@@ -1849,9 +1846,7 @@ public final class SearchHelper {
                     terms.put(browseTerm, true);
                     usedTerms.put(term, browseTerm);
                     usedTermsInCurrentDoc.add(term);
-                    if (aggregateHits) {
-                        browseTerm.getPiList().add(pi);
-                    }
+                    browseTerm.getPiList().add(pi);
                 } else if (!usedTermsInCurrentDoc.contains(term)) {
                     // Only add to hit count if the same string is not in the same doc
                     BrowseTerm browseTerm = usedTerms.get(term);
@@ -1861,6 +1856,7 @@ public final class SearchHelper {
                     }
                     browseTerm.addToHitCount(1);
                     usedTermsInCurrentDoc.add(term);
+                    browseTerm.getPiList().add(pi);
                 }
             }
             sortTerm = null; // only use the sort term for the first term

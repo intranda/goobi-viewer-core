@@ -18,9 +18,9 @@ package de.intranda.digiverso.presentation.model.viewer;
 import java.io.Serializable;
 import java.text.Collator;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class BrowseTerm implements Serializable {
     private final String term;
     private final String sortTerm;
     private long hitCount = 0;
-    private final Set<String> piList = new HashSet<>();
+    private final Set<String> piList = ConcurrentHashMap.newKeySet();
 
     /**
      * Constructor that sets <code>hitCount</code> to 1.
