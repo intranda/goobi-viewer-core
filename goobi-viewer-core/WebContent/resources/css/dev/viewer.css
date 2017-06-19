@@ -6269,7 +6269,7 @@ div[id*="Modal"] .email-form .form-group p {
 #widgetToc .widget-toc-title .widget-toc-title-expand li {
   display: inline-block;
   float: left;
-  margin-left: 0.1875rem;
+  margin-left: 7px;
   padding: 0;
   border: inherit;
 }
@@ -6284,63 +6284,30 @@ div[id*="Modal"] .email-form .form-group p {
   max-height: 25rem;
   overflow: auto;
 }
-#widgetToc .widget-toc-elem-wrapp ul li.parent .widget-toc-elem-link {
-  border-left: none;
-}
-#widgetToc .widget-toc-elem-wrapp ul li.parent .widget-toc-elem-link a {
-  font-size: 15px;
-}
-#widgetToc .widget-toc-elem-wrapp ul li.last-child {
-  margin-bottom: 15px;
-}
-#widgetToc .widget-toc-elem-wrapp ul li.last-child .widget-toc-elem-link {
-  border-left: none;
-}
-#widgetToc .widget-toc-elem-wrapp ul li.last-child .widget-toc-elem-link:after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 3px;
-  left: 0;
-  width: 0;
-  height: 10px;
-  border-left: 1px dotted #6f6f6f;
-}
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand {
   float: left;
   width: 16px;
   min-width: 0.75rem;
   min-height: 1px;
 }
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand a .fa-stack {
-  top: 2px;
-  left: -1px;
-  font-size: 10px;
-  line-height: 18px;
+#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand a {
+  display: block;
+  padding: 3px 0;
 }
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link {
   float: left;
   width: calc(100% - 16px);
-  position: relative;
-  padding: 3px 5px 3px 15px;
-  border-left: 1px dotted #6f6f6f;
 }
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link:before {
-  content: "";
+#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a {
   display: block;
-  position: absolute;
-  top: 13px;
-  left: 0;
-  width: 10px;
-  height: 0;
-  border-bottom: 1px dotted #6f6f6f;
+  padding: 3px 5px 3px 15px;
 }
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link:hover,
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link:focus,
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link:active {
+#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:hover,
+#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:focus,
+#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:active {
   text-decoration: none;
 }
-#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link:hover {
+#widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a:hover {
   background-color: #eee;
 }
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-link a.active {
