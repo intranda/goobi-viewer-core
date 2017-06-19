@@ -20,7 +20,7 @@
             li {
                 display: inline-block;
                 float: left;
-                margin-left: 0.1875rem;
+                margin-left: 7px;
                 padding: 0;
                 border: inherit;
                 a {
@@ -40,27 +40,11 @@
             li {
                 &.parent {
                     .widget-toc-elem-link {
-                        border-left: none;
-                        a {
-                            font-size: 15px;
-                        }
+                    	a {}
                     }
                 }
-                &.last-child {
-                    margin-bottom: 15px;                
-                    .widget-toc-elem-link {
-                        border-left: none;
-                        &:after {
-                            content: "";
-                            display: block;
-                            position: absolute;
-                            top: 3px;
-                            left: 0;
-                            width: 0;
-                            height: 10px;
-                            border-left: 1px dotted @gray;
-                        }
-                    }
+                &.last-child {              
+                    .widget-toc-elem-link {}
                 }
                 .widget-toc-elem-expand {
                     float: left;
@@ -68,39 +52,24 @@
                     min-width: 0.75rem;
                     min-height: 1px;
                     a {
-                        .fa-stack {
-                        	top: 2px;
-    						left: -1px;
-                        	font-size: 10px;
-                        	line-height: 18px;
-                        }
+                    	display: block;
+                    	padding: 3px 0;
                     }
                 }
                 .widget-toc-elem-link {
                     float: left;
                     width: calc(~"100% - 16px");
-                    position: relative;
-                    padding: 3px 5px 3px 15px;
-                    border-left: 1px dotted @gray;
-                    &:before {
-                        content: "";
-                        display: block;
-                        position: absolute;
-                        top: 13px;
-                        left: 0;
-                        width: 10px;
-                        height: 0;
-                        border-bottom: 1px dotted @gray;
-                    }
-                    &:hover,
-                    &:focus,
-                    &:active {
-                        text-decoration: none;
-                    }
-                    &:hover {
-                        background-color: @lightgray;
-                    }
                     a {
+                    	display: block;
+                    	padding: 3px 5px 3px 15px;
+	                    &:hover,
+	                    &:focus,
+	                    &:active {
+	                        text-decoration: none;
+	                    }
+	                    &:hover {
+	                        background-color: @lightgray;
+	                    }
                         &.active {
                             font-weight: bold;
                         }
