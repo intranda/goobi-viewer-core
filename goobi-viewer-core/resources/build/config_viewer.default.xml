@@ -948,6 +948,9 @@
         <ancestorIdentifierFields listSiblingRecords="false">
            <field>PI_PARENT</field>
         </ancestorIdentifierFields>
+        
+        <!-- display as interactive tree view -->
+        <useTreeView showDocStructs="_ALL">false</useTreeView>
 	</toc>
 
 	<tagclouds>
@@ -1053,7 +1056,7 @@
 			<lengthBeforeCut>60</lengthBeforeCut>
 
 			<!-- display as interactive tree view -->
-			<useTreeView showDocStructs="_ALL">true</useTreeView>
+			<useTreeView>true</useTreeView>
 
 			<!-- level for initial collapse -->
 			<initialCollapseLevel>2</initialCollapseLevel>

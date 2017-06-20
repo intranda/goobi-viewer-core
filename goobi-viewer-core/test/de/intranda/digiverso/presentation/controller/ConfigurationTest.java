@@ -633,23 +633,32 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#isSidebarTocTreeView(String)
-     * @verifies return true for allowed docstructs
+     * @see Configuration#isSidebarTocTreeView()
+     * @verifies return correct value
      */
     @Test
-    public void isSidebarTocTreeView_shouldReturnTrueForAllowedDocstructs() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("Monograph"));
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("Manuscript"));
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("MusicSupplies"));
+    public void isSidebarTocTreeView_shouldReturnCorrectValue() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSidebarTocTreeView());
     }
 
     /**
-     * @see Configuration#isSidebarTocTreeView(String)
+     * @see Configuration#isTocTreeView(String)
+     * @verifies return true for allowed docstructs
+     */
+    @Test
+    public void isTocTreeView_shouldReturnTrueForAllowedDocstructs() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isTocTreeView("Monograph"));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isTocTreeView("Manuscript"));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isTocTreeView("MusicSupplies"));
+    }
+
+    /**
+     * @see Configuration#isTocTreeView(String)
      * @verifies return false for other docstructs
      */
     @Test
-    public void isSidebarTocTreeView_shouldReturnFalseForOtherDocstructs() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("Volume"));
+    public void isTocTreeView_shouldReturnFalseForOtherDocstructs() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isTocTreeView("Volume"));
     }
 
     /**
