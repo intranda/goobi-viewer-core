@@ -476,7 +476,37 @@
 	</target>
 
 	<!-- Builds for university libraries -->
-
+	<target name="akwien">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
+		<property name="server.url" value="http://emedien.arbeiterkammer.at/viewer2/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Femedien.arbeiterkammer.at%2Fviewer2%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://127.0.0.1/viewer" />
+		<property name="theme" value="akwien" />
+		<property name="contentserver.color.red" value="190" />
+		<property name="contentserver.color.green" value="0" />
+		<property name="contentserver.color.blue" value="33" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="belvedere">
+		<property name="enableCrowdsourcing" value="false" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://digitale-bibliothek.belvedere.at/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitale-bibliothek.belvedere.at%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://127.0.0.1/viewer" />
+		<property name="theme" value="belvedere2" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 	<target name="bielefeld">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
@@ -507,6 +537,51 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
+	<target name="bsz">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/digishelf_viewer/config2/" />
+		<property name="server.folder" value="/opt/digiverso/digishelf_viewer/" />
+		<property name="server.url" value="http://www.digishelf.de/viewer2/" />
+		<property name="solr.url" value="http://localhost:8083/solr/collection2" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.digishelf.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/digishelf_viewer" />
+		<property name="theme" value="bsz" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="buw">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://digitalesammlungen.uni-weimar.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitalesammlungen.uni-weimar.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="buw" />
+		<property name="contentserver.color.red" value="114" />
+		<property name="contentserver.color.green" value="0" />
+		<property name="contentserver.color.blue" value="28" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="csic">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="http://simurg.bibliotecas.csic.es/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fsimurg.bibliotecas.csic.es%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="csic" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 	<target name="dipf">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
@@ -522,53 +597,21 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-	<target name="mvp">
+	<target name="fulda">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://ub-goobi-pr2.ub.uni-greifswald.de/viewer/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="http://fuldig.hs-fulda.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fub-goobi-pr2.ub.uni-greifswald.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Ffuldig.hs-fulda.de%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="mvp" />
+		<property name="theme" value="fulda" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-	<target name="mvp2">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://ub-goobi-pr2.ub.uni-greifswald.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fub-goobi-pr2.ub.uni-greifswald.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="mvp2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="mvp3">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://www.digitale-bibliothek-mv.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.digitale-bibliothek-mv.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="mvp3" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-
 	<target name="gbv">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
@@ -578,96 +621,6 @@
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigiview.gbv.de%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
 		<property name="theme" value="intranda" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="kuni">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://kulturerbe.niedersachsen.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fkulturerbe.niedersachsen.de%2Fviewer%2Foai" />
-		<property name="jta-data-source" value="java:comp/env/kuni_viewer" />
-		<property name="theme" value="kuni" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="kuni.dev">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/dev_viewer/" />
-		<property name="server.config" value="/opt/digiverso/dev_viewer/config/" />
-		<property name="server.url" value="http://kulturerbe.niedersachsen.de/dev/" />
-		<property name="solr.url" value="http://localhost:8080/dev_solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fkulturerbe.niedersachsen.de%2Fdev%2Foai" />
-		<property name="jta-data-source" value="java:comp/env/kuni_viewer" />
-		<property name="theme" value="kuni" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="kenom">
-		<property name="local.folder" value="resources/build/deploy_ubuntu/kenom" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://www.kenom.de/" />
-		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.kenom.de%2Foai" />
-		<property name="theme" value="kenom" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="kenom.dev">
-		<property name="local.folder" value="resources/build/deploy_ubuntu/kenom" />
-		<property name="server.folder" value="/opt/digiverso/dev_viewer/" />
-		<property name="server.config" value="/opt/digiverso/dev_viewer/config/" />
-		<property name="server.url" value="http://kenom-portal-dev.gbv.de/" />
-		<property name="solr.url" value="http://localhost:8081/solr/dev_collection" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fkenom-portal-dev.gbv.de%2Foai" />
-		<property name="theme" value="kenom" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-root" />
-	</target>
-
-	<target name="unisammlungen_gbv">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://unisammlungsportal.gbv.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Funisammlungsportal.gbv.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="unisammlungen" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-
-	<target name="csic">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://simurg.bibliotecas.csic.es/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fsimurg.bibliotecas.csic.es%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="csic" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
@@ -686,6 +639,37 @@
 		<property name="contentserver.color.red" value="114" />
 		<property name="contentserver.color.green" value="0" />
 		<property name="contentserver.color.blue" value="28" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="haab">
+		<property name="enableCrowdsourcing" value="false" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://haab-digital.klassik-stiftung.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+		<property name="theme" value="haab2" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="hlbw2">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="https://viewer.hlb-wuppertal.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fviewer.hlb-wuppertal.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+		<property name="theme" value="hlbw2" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
@@ -734,7 +718,6 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-
 	<target name="iai">
 		<property name="enableCrowdsourcing" value="true" />
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
@@ -751,21 +734,6 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-	<target name="cms.demo05">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://demo05.intranda.com/cms/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdemo05.intranda.com%2Fcms%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="zlb" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
 	<target name="ikfn">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
@@ -781,7 +749,159 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-
+	<target name="kenom">
+		<property name="local.folder" value="resources/build/deploy_ubuntu/kenom" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://www.kenom.de/" />
+		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.kenom.de%2Foai" />
+		<property name="theme" value="kenom" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war-internal" />
+	</target>
+	<target name="kenom.dev">
+		<property name="local.folder" value="resources/build/deploy_ubuntu/kenom" />
+		<property name="server.folder" value="/opt/digiverso/dev_viewer/" />
+		<property name="server.config" value="/opt/digiverso/dev_viewer/config/" />
+		<property name="server.url" value="http://kenom-portal-dev.gbv.de/" />
+		<property name="solr.url" value="http://localhost:8081/solr/dev_collection" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fkenom-portal-dev.gbv.de%2Foai" />
+		<property name="theme" value="kenom" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war-root" />
+	</target>
+	<target name="kuni">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://kulturerbe.niedersachsen.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fkulturerbe.niedersachsen.de%2Fviewer%2Foai" />
+		<property name="jta-data-source" value="java:comp/env/kuni_viewer" />
+		<property name="theme" value="kuni" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="kuni.dev">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/dev_viewer/" />
+		<property name="server.config" value="/opt/digiverso/dev_viewer/config/" />
+		<property name="server.url" value="http://kulturerbe.niedersachsen.de/dev/" />
+		<property name="solr.url" value="http://localhost:8080/dev_solr" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fkulturerbe.niedersachsen.de%2Fdev%2Foai" />
+		<property name="jta-data-source" value="java:comp/env/kuni_viewer" />
+		<property name="theme" value="kuni" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="kunsthaus02">
+		<property name="enableCrowdsourcing" value="false" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="https://digital.kunsthaus.ch/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigital.kunsthaus.ch%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="khz" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="lie">
+		<property name="enableCrowdsourcing" value="false" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://193.222.115.4/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2F193.222.115.4%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="lie" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="luebeck">
+		<property name="enableCrowdsourcing" value="false" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://digital.stadtbibliothek.luebeck.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.stadtbibliothek.luebeck.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="sblue" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="mak">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="http://mak01.intranda.com/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fmak01.intranda.com%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="MAK" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="mvp3">
+		<property name="enableCrowdsourcing" value="true" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://www.digitale-bibliothek-mv.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.digitale-bibliothek-mv.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+		<property name="theme" value="mvp3" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="oolbib">
+		<property name="enableCrowdsourcing" value="true" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://digi.landesbibliothek.at/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigi.landesbibliothek.at%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="oolbib" />
+		<property name="contentserver.color.red" value="171" />
+		<property name="contentserver.color.green" value="18" />
+		<property name="contentserver.color.blue" value="16" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 	<target name="sim">
 		<property name="enableCrowdsourcing" value="true" />
 		<property name="local.folder" value="resources/build/deploy_ubuntu/sim" />
@@ -794,22 +914,6 @@
 		<property name="customDataSource" value="true" />
 		<property name="jta-data-source" value="java:comp/env/sim_viewer" />
 		<property name="theme" value="sim" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-
-	<target name="mak">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://mak01.intranda.com/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fmak01.intranda.com%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="MAK" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
@@ -861,6 +965,37 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
+	<target name="sulb">
+		<property name="enableCrowdsourcing" value="false" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://digital.sulb.uni-saarland.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.sulb.uni-saarland.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="sulb" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="tib">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="https://goobi.tib.eu/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fgoobi.tib.eu%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="tib2" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 	<target name="tuberlin">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
@@ -876,679 +1011,6 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-	<target name="zlb">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digital.zlb.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.zlb.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="zlb2" />
-		<property name="contentserver.color.red" value="114" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="28" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="test.mvp">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_mvp/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://test.intranda.com/mvp/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Ftest.intranda.com/%2Fmvp%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="mvp" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="fulda">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://fuldig.hs-fulda.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Ffuldig.hs-fulda.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="fulda" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="oolbib">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digi.landesbibliothek.at/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigi.landesbibliothek.at%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="oolbib" />
-		<property name="contentserver.color.red" value="171" />
-		<property name="contentserver.color.green" value="18" />
-		<property name="contentserver.color.blue" value="16" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="hlbw">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://viewer.hlb-wuppertal.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewer.hlb-wuppertal.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="hlbw" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="hlbw2">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="https://viewer.hlb-wuppertal.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fviewer.hlb-wuppertal.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="hlbw2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="demo05.osnabrueck">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://demo05.intranda.com/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdemo05.intranda.com%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="ikfn" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="255" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-
-	<target name="fritz.mvp2">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_mvp2/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://viewertest.fritz.box/mvp2/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box/%2Fmvp2%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="mvp2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.mvp3">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_mvp3/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://viewertest.fritz.box/mvp3/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box/%2Fmvp3%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="mvp3" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.bsh">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_bsh/" />
-		<property name="server.url" value="http://viewertest.fritz.box/bsh/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fbsh%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="bsh" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.kuni">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_kuni/" />
-		<property name="server.url" value="http://viewertest.fritz.box/kuni/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fkuni%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="kuni" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.csic">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_csic/" />
-		<property name="server.url" value="http://viewertest.fritz.box/csic/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fcsic%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="csic" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.dipf">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_dipf/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://viewertest.fritz.box/dipf/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fdipf%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="dipf3" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.gei">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_gei/" />
-		<property name="server.url" value="http://viewertest.fritz.box/gei/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fgei%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="gei" />
-		<property name="contentserver.color.red" value="114" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="28" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.mak">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_mak/" />
-		<property name="server.url" value="http://viewertest.fritz.box/mak/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fmak%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="MAK" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.iai">
-		<property name="disablePdfCache" value="true" />
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_iai/" />
-		<property name="server.url" value="http://viewertest.fritz.box/iai/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fiai%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="iai" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.tuberlin">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_tuberlin/" />
-		<property name="server.url" value="http://viewertest.fritz.box/tuberlin/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Ftuberlin%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="tuberlin" />
-		<property name="contentserver.color.red" value="153" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.humboldt">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_humboldt/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://viewertest.fritz.box/humboldt/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fhumboldt%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="humboldt" />
-		<property name="contentserver.color.red" value="0" />
-		<property name="contentserver.color.green" value="51" />
-		<property name="contentserver.color.blue" value="102" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.tiho">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_tiho/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://viewertest.fritz.box/tiho/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Ftiho%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="tiho" />
-		<property name="contentserver.color.red" value="0" />
-		<property name="contentserver.color.green" value="51" />
-		<property name="contentserver.color.blue" value="102" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.zlb">
-		<property name="disablePdfCache" value="true" />
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_zlb/" />
-		<property name="server.url" value="http://viewertest.fritz.box/zlb/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fzlb%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="zlb" />
-		<property name="contentserver.color.red" value="114" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="28" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.ci">
-		<property name="disablePdfCache" value="true" />
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_zlb13/" />
-		<property name="server.url" value="http://viewertest.fritz.box/zlb13/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fzlb%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="zlb13" />
-		<property name="contentserver.color.red" value="114" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="28" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="fritz.kassel">
-		<property name="disablePdfCache" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_kassel/" />
-		<property name="server.url" value="http://viewertest.fritz.box/kassel/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fkassel%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="kassel" />
-		<property name="contentserver.color.red" value="177" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="80" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.buw">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_buw/" />
-		<property name="server.url" value="http://viewertest.fritz.box/buw/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fbuw%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="buw" />
-		<property name="contentserver.color.red" value="114" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="28" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.southampton">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_southampton/" />
-		<property name="server.url" value="http://viewertest.fritz.box/southampton/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fsouthampton%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="southampton" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.sotonnol">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_sotonnol/" />
-		<property name="server.url" value="http://viewertest.fritz.box/sotonnol/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fsotonnol%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="sotonnol" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.sotonlibrary">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_sotonlibrary/" />
-		<property name="server.url" value="http://viewertest.fritz.box/sotonlibrary/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fsotonlibrary%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="sotonlibrary" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.fulda">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_fulda/" />
-		<property name="server.url" value="http://viewertest.fritz.box/fulda/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Ffulda%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="fulda" />
-		<property name="contentserver.color.red" value="171" />
-		<property name="contentserver.color.green" value="18" />
-		<property name="contentserver.color.blue" value="16" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.ikfn">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_ikfn/" />
-		<property name="server.url" value="http://viewertest.fritz.box/ikfn/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fikfn%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="ikfn" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.oolbib">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_oolbib/" />
-		<property name="server.url" value="http://viewertest.fritz.box/oolbib/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Foolbib%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="oolbib" />
-		<property name="contentserver.color.red" value="171" />
-		<property name="contentserver.color.green" value="18" />
-		<property name="contentserver.color.blue" value="16" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.akwien">
-		<property name="local.folder" value="build_resouces/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_akwien/" />
-		<property name="server.url" value="http://viewertest.fritz.box/akwien/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fakwien%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="akwien" />
-		<property name="contentserver.color.red" value="190" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="33" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.messe">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_messe/" />
-		<property name="server.url" value="http://viewertest.fritz.box/messe/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fmesse%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="intranda2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.themeBoilerplate">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_themeBoilerplate/" />
-		<property name="server.url" value="http://viewertest.fritz.box/themeBoilerplate/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2FthemeBoilerplate%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="themeBoilerplate" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.ubkiel">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_kiel/" />
-		<property name="server.url" value="http://viewertest.fritz.box/kiel/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fkiel%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="ubkiel" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.hlbw">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_hlbw/" />
-		<property name="server.url" value="http://viewertest.fritz.box/hlbw/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fhlbw%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="hlbw" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.sim">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_sim/" />
-		<property name="server.url" value="http://viewertest.fritz.box/sim/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fsim%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="sim" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.intranda3">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_intranda3/" />
-		<property name="server.url" value="http://viewertest.fritz.box/intranda3/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fintranda3%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="intranda3" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.sulb">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_sulb/" />
-		<property name="server.url" value="http://viewertest.fritz.box/sulb/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fsulb%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="sulb" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-
-	<target name="fritz.tib">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_tib/" />
-		<property name="server.url" value="http://viewertest.fritz.box/tib/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Ftib%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="tib" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-		<target name="fritz.tib2">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_tib2/" />
-		<property name="server.url" value="http://viewertest.fritz.box/tib2/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Ftib2%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="tib2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.haab">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_haab/" />
-		<property name="server.url" value="http://viewertest.fritz.box/haab/" />
-		<property name="solr.url" value="http://localhost:8080/solr" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fhaab%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="haab2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.ubkassel">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_ubkassel/" />
-		<property name="server.url" value="http://viewertest.fritz.box/ubkassel/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fubkassel%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="ubkassel" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.reference">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_reference/" />
-		<property name="server.url" value="http://viewertest.fritz.box/reference/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Freference%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://db01.fritz.box:3306/viewer" />
-		<property name="theme" value="reference2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
 	<target name="ubkassel">
 		<property name="enableCrowdsourcing" value="false" />
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
@@ -1559,38 +1021,6 @@
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Forka.bibliothek.uni-kassel.de%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql:thin://127.0.0.1/viewer" />
 		<property name="theme" value="ubkassel" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="fritz.belvedere">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_belvedere/" />
-		<property name="server.url" value="http://viewertest.fritz.box/belvedere/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fbeldevere%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="belvedere" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="belvedere">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digitale-bibliothek.belvedere.at/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitale-bibliothek.belvedere.at%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://127.0.0.1/viewer" />
-		<property name="theme" value="belvedere2" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
@@ -1613,115 +1043,6 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-	<target name="akwien">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
-		<property name="server.url" value="http://emedien.arbeiterkammer.at/viewer2/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Femedien.arbeiterkammer.at%2Fviewer2%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://127.0.0.1/viewer" />
-		<property name="theme" value="akwien" />
-		<property name="contentserver.color.red" value="190" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="33" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="buw">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digitalesammlungen.uni-weimar.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitalesammlungen.uni-weimar.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="buw" />
-		<property name="contentserver.color.red" value="114" />
-		<property name="contentserver.color.green" value="0" />
-		<property name="contentserver.color.blue" value="28" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="messe.mvp">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://messe.intranda.local/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fmesse.intranda.local%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="mvp3" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="messe.reference">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://messe.intranda.local/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fmesse.intranda.local%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="reference2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="tib">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="https://goobi.tib.eu/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fgoobi.tib.eu%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="tib2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="sulb">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digital.sulb.uni-saarland.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.sulb.uni-saarland.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="sulb" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="haab">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://haab-digital.klassik-stiftung.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="haab2" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
 	<target name="ubs">
 		<property name="enableCrowdsourcing" value="false" />
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
@@ -1737,38 +1058,6 @@
 		<property name="contentserver.color.blue" value="0" />
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
-	</target>
-	<target name="fritz.ubs">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_ubs/" />
-		<property name="server.url" value="http://viewertest.fritz.box/ubs/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fubs%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="ubs" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="fritz.ubwien">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_ubwien/" />
-		<property name="server.url" value="http://viewertest.fritz.box/ubwien/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fubwien%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="ubwien" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
 	</target>
 	<target name="ubwien">
 		<property name="enableCrowdsourcing" value="false" />
@@ -1786,153 +1075,37 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-
-	<target name="schulung">
-		<property name="enableCrowdsourcing" value="true" />
+	<target name="unisammlungen_gbv">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://viewer.schulung.intranda/viewer/" />
+		<property name="server.url" value="http://unisammlungsportal.gbv.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewer.schulung.intranda%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Funisammlungsportal.gbv.de%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="reference" />
-		<property name="contentserver.color.red" value="0" />
-		<property name="contentserver.color.green" value="51" />
-		<property name="contentserver.color.blue" value="102" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-
-	<target name="viewerdemo01">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://viewer-demo01.intranda.com/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewer-demo01.intranda.com%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="reference" />
+		<property name="theme" value="unisammlungen" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-	<target name="twl">
-		<property name="enableCrowdsourcing" value="true" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_twl/" />
-		<property name="server.url" value="http://viewer-demo01.intranda.com/twl/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewer-demo01.intranda.com%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="twl" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-
-	<target name="kunsthaus02">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="https://digital.kunsthaus.ch/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigital.kunsthaus.ch%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="khz" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="fritz.khz">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_khz/" />
-		<property name="server.url" value="http://viewertest.fritz.box/khz/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fkhz%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="khz" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="lie">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://193.222.115.4/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2F193.222.115.4%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="lie" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="fritz.lie">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_lie/" />
-		<property name="server.url" value="http://viewertest.fritz.box/lie/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Flie%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="lie" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
-	<target name="luebeck">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digital.stadtbibliothek.luebeck.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.stadtbibliothek.luebeck.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="sblue" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
-	<target name="fritz.luebeck">
-		<property name="enableCrowdsourcing" value="false" />
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config_luebeck/" />
-		<property name="server.url" value="http://viewertest.fritz.box/luebeck/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fluebeck%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
-		<property name="theme" value="sblue" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
-	</target>
+        <target name="wuw">
+                <property name="enableCrowdsourcing" value="false" />
+                <property name="local.folder" value="resources/build/deploy_ubuntu" />
+                <property name="server.folder" value="/opt/digiverso/viewer/" />
+                <property name="server.config" value="/opt/digiverso/viewer/config/" />
+                <property name="server.url" value="http://viewer.wu.ac.at/viewer/" />
+                <property name="solr.url" value="http://localhost:8080/solr/collection1" />
+                <property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewer.wu.ac.at%2Fviewer%2Foai" />
+                <property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+                <property name="theme" value="wuw" />
+                <property name="contentserver.color.red" value="255" />
+                <property name="contentserver.color.green" value="255" />
+                <property name="contentserver.color.blue" value="0" />
+                <property name="contentserver.color.alpha" value="255" />
+                <antcall target="war" />
+        </target>
         <target name="zbw">
                 <property name="enableCrowdsourcing" value="false" />
                 <property name="local.folder" value="resources/build/deploy_ubuntu" />
@@ -1949,34 +1122,84 @@
                 <property name="contentserver.color.alpha" value="255" />
                 <antcall target="war" />
         </target>
-        <target name="fritz.zbw">
-                <property name="enableCrowdsourcing" value="false" />
-                <property name="local.folder" value="resources/build/deploy_ubuntu" />
-                <property name="server.folder" value="/opt/digiverso/viewer/" />
-                <property name="server.config" value="/opt/digiverso/viewer/config_zbw/" />
-                <property name="server.url" value="http://viewertest.fritz.box/zbw/" />
-                <property name="solr.url" value="http://localhost:8080/solr/collection1" />
-                <property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fzbw%2Foai" />
-                <property name="jdbc.url" value="jdbc:mysql://192.168.178.4:3306/viewer" />
-                <property name="theme" value="reference" />
-                <property name="contentserver.color.red" value="255" />
-                <property name="contentserver.color.green" value="255" />
-                <property name="contentserver.color.blue" value="0" />
-                <property name="contentserver.color.alpha" value="255" />
-                <antcall target="war-internal" />
-        </target>
-	<target name="bsz">
+	<target name="zlb">
+		<property name="enableCrowdsourcing" value="true" />
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/digishelf_viewer/config2/" />
-		<property name="server.folder" value="/opt/digiverso/digishelf_viewer/" />
-		<property name="server.url" value="http://www.digishelf.de/viewer2/" />
-		<property name="solr.url" value="http://localhost:8083/solr/collection2" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.digishelf.de%2Fviewer%2Foai" />
-		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/digishelf_viewer" />
-		<property name="theme" value="bsz" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://digital.zlb.de/viewer/" />
+		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.zlb.de%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+		<property name="theme" value="zlb2" />
+		<property name="contentserver.color.red" value="114" />
+		<property name="contentserver.color.green" value="0" />
+		<property name="contentserver.color.blue" value="28" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="fritz.ci">
+		<property name="disablePdfCache" value="true" />
+		<property name="enableCrowdsourcing" value="true" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config_zlb13/" />
+		<property name="server.url" value="http://viewertest.fritz.box/zlb13/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Fzlb%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://192.168.178.4:3306/viewer" />
+		<property name="theme" value="zlb13" />
+		<property name="contentserver.color.red" value="114" />
+		<property name="contentserver.color.green" value="0" />
+		<property name="contentserver.color.blue" value="28" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="fritz.reference">
+		<property name="enableCrowdsourcing" value="true" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config_reference/" />
+		<property name="server.url" value="http://viewertest.fritz.box/reference/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Freference%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://db01.fritz.box:3306/viewer" />
+		<property name="theme" value="reference2" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war-internal" />
+	</target>
+	<target name="messe.reference">
+		<property name="enableCrowdsourcing" value="true" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://messe.intranda.local/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fmesse.intranda.local%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+		<property name="theme" value="reference2" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="schulung">
+		<property name="enableCrowdsourcing" value="true" />
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="http://viewer.schulung.intranda/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewer.schulung.intranda%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="reference" />
+		<property name="contentserver.color.red" value="0" />
+		<property name="contentserver.color.green" value="51" />
+		<property name="contentserver.color.blue" value="102" />
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
@@ -1995,6 +1218,4 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war-internal" />
 	</target>
-
-
 </project>
