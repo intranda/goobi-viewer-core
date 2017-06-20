@@ -292,8 +292,8 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("Find doc by LOGID: {}", logid);
                 new StructElement(topDocumentIddoc);
                 StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.LOGID).append(':').append(logid).append(" AND ").append(SolrConstants.PI_TOPSTRUCT).append(':')
-                        .append(viewManager.getPi());
+                sbQuery.append(SolrConstants.LOGID).append(':').append(logid).append(" AND ").append(SolrConstants.PI_TOPSTRUCT).append(':').append(
+                        viewManager.getPi());
                 SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Collections.singletonList(
                         SolrConstants.IDDOC));
                 long subElementIddoc = 0;
@@ -627,10 +627,10 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getPageUrl(String pageType, int page) throws IndexUnreachableException {
         StringBuilder sbUrl = new StringBuilder();
-        if (StringUtils.isBlank(pageType)) {
-            pageType = navigationHelper.getPreferredView();
-            logger.trace("preferred view: {}", pageType);
-        }
+        //        if (StringUtils.isBlank(pageType)) {
+        //            pageType = navigationHelper.getPreferredView();
+        //            logger.trace("preferred view: {}", pageType);
+        //        }
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
             logger.trace("current view: {}", pageType);
