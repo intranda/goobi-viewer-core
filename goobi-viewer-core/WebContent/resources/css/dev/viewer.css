@@ -348,6 +348,33 @@ table,
   margin: 0;
   border-bottom: none;
 }
+.nav-tabs li a {
+  border-bottom: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 0;
+  border-color: #ccc;
+}
+.nav-tabs li span {
+  display: block;
+  position: relative;
+  line-height: 1.42857;
+  margin-right: 2px;
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 0;
+}
+.nav-tabs li.active a {
+  border-color: #ccc;
+  border-bottom: 1px solid #fff;
+  background-color: #fff;
+}
+.tab-pane {
+  padding: 10px;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
@@ -6695,29 +6722,6 @@ div[id*="Modal"] .email-form .form-group p {
 #cmsCreatePage span.btn {
   opacity: 0.65;
 }
-#cmsCreatePage #cmsCreatePageWrapper .nav-tabs li a {
-  border-bottom: 1px solid #6f6f6f;
-  background-color: #eee;
-}
-#cmsCreatePage #cmsCreatePageWrapper .nav-tabs li span {
-  display: block;
-  position: relative;
-  line-height: 1.42857;
-  margin-right: 2px;
-  padding: 10px 15px;
-  border: 1px solid transparent;
-  border-radius: 0;
-}
-#cmsCreatePage #cmsCreatePageWrapper .nav-tabs li.active a {
-  border-bottom: 1px solid #fff;
-  background-color: #fff;
-}
-#cmsCreatePage #cmsCreatePageWrapper .tab-pane {
-  padding: 10px;
-  border-right: 1px solid #6f6f6f;
-  border-bottom: 1px solid #6f6f6f;
-  border-left: 1px solid #6f6f6f;
-}
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page {
   border-bottom: 1px solid #eee;
 }
@@ -7009,10 +7013,15 @@ div[id*="Modal"] .email-form .form-group p {
 .media-gallery__tag-filter {
   margin-bottom: 10px;
 }
+.media-gallery__tag-filter .col-sm-4 {
+  padding: 0;
+}
 .media-gallery__tag-filter-label {
   display: inline-block;
   height: 34px;
-  line-height: 34px;
+  padding-top: 9px;
+  line-height: normal;
+  font-size: 14px;
 }
 .media-gallery__item {
   margin: 7px 0;
@@ -7086,31 +7095,6 @@ div[id*="Modal"] .email-form .form-group p {
   margin-left: 50px;
   text-overflow: ellipsis;
   overflow: hidden;
-}
-.media-modal__metadata-tabs .nav-tabs li a {
-  border-bottom: 1px solid #ccc;
-  background-color: #eee;
-  border-radius: 0;
-  border-color: #ccc;
-}
-.media-modal__metadata-tabs .nav-tabs li span {
-  display: block;
-  position: relative;
-  line-height: 1.42857;
-  margin-right: 2px;
-  padding: 10px 15px;
-  border: 1px solid transparent;
-  border-bottom: none;
-  border-radius: 0;
-}
-.media-modal__metadata-tabs .nav-tabs li.active a {
-  border-bottom: 1px solid #fff;
-  background-color: #fff;
-}
-.media-modal__metadata-tabs .tab-pane {
-  padding: 10px;
-  border-right: 1px solid #ccc;
-  border-left: 1px solid #ccc;
 }
 .media-modal__options {
   padding: 10px;

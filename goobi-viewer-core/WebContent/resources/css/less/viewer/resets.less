@@ -7,3 +7,36 @@
     margin: 0;
     border-bottom: none;
 }
+.nav-tabs {
+	li {
+		a {
+			border-bottom: 1px solid @middlegray;
+			background-color: @lightgray;
+			border-radius: 0;
+			border-color: @middlegray;
+		}
+		span {
+			display: block;
+			position: relative;
+			line-height: 1.42857;
+			margin-right: 2px;
+			padding: 10px 15px;
+			border: 1px solid transparent;
+			border-bottom: none;
+			border-radius: 0;
+		}
+		&.active {
+			a {
+				border-color: @middlegray;
+				border-bottom: 1px solid @white;
+				background-color: @white;
+			}
+		}
+	}
+}
+.tab-pane {
+	padding: 10px;
+	border-right: 1px solid @middlegray;
+	border-bottom: 1px solid @middlegray;
+	border-left: 1px solid @middlegray;
+}
