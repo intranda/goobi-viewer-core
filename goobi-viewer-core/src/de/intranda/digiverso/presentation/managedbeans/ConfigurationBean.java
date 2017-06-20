@@ -429,7 +429,11 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isSidebarTocTreeView() {
-        return DataManager.getInstance().getConfiguration().getSidebarTocTreeView();
+        return DataManager.getInstance().getConfiguration().isSidebarTocTreeView("_ALL");
+    }
+
+    public boolean isSidebarTocTreeView(String docStructType) {
+        return DataManager.getInstance().getConfiguration().isSidebarTocTreeView(docStructType);
     }
 
     public int getSidebarTocLengthBeforeCut() {

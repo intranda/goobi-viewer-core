@@ -1554,10 +1554,31 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
-     * @should return correct value
+     * @should return true for allowed docstructs
+     * @should return false for other docstructs
      */
-    public boolean getSidebarTocTreeView() {
-        return getLocalBoolean("sidebar.sidebarToc.useTreeView", true);
+    public boolean isSidebarTocTreeView(String docStructType) {
+        HierarchicalConfiguration hc = getLocalConfigurationAt("sidebar.sidebarToc.useTreeView");
+        String docStructTypes = hc.getString("[@showDocStructs]");
+        boolean allowed = hc.getBoolean(".");
+        if (!allowed) {
+            logger.trace("Tree view disabled");
+            return false;
+        }
+
+        if (docStructTypes != null) {
+            String[] docStructTypesSplit = docStructTypes.split(";");
+            for (String dst : docStructTypesSplit) {
+                if (dst.equals("_ALL") || dst.equals(docStructType)) {
+                    logger.trace("Tree view for {} allowed", docStructType);
+                    return true;
+                }
+            }
+
+        }
+
+        logger.trace("Tree view for {} not allowed", docStructType);
+        return false;
     }
 
     /**

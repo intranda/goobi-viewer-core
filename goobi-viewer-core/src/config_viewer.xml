@@ -990,7 +990,7 @@
             <lengthBeforeCut>60</lengthBeforeCut>
 
             <!-- display as interactive tree view -->
-            <useTreeView>true</useTreeView>
+            <useTreeView showDocStructs="_ALL">true</useTreeView>
 
             <!-- level for initial collapse -->
             <initialCollapseLevel>2</initialCollapseLevel>

@@ -19,7 +19,7 @@
                         <h3>#{msg.sidebarTocAnchor}</h3>
 
                         <!-- EXPAND ALL -->
-                        <h:panelGroup rendered="#{configurationBean.sidebarTocTreeView and activeDocumentBean.toc.maxTocDepth > 0}">
+                        <h:panelGroup rendered="#{configurationBean.isSidebarTocTreeView(activeDocumentBean.viewManager.topDocument.docStructType) and activeDocumentBean.toc.maxTocDepth > 0}">
                             <ul class="widget-toc-title-expand">
                                 <li>
                                     <h:commandLink styleClass="minus" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="widget-toc-elem-wrapp">	            
-		            	<h:panelGroup rendered="#{configurationBean.sidebarTocTreeView}">
+		            	<h:panelGroup rendered="#{configurationBean.isSidebarTocTreeView(activeDocumentBean.viewManager.topDocument.docStructType)}">
 							<ul>
 							    <ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
     								<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getTreeViewForGroup(group)}">
@@ -107,7 +107,7 @@
 							</ul>
 						</h:panelGroup>	                
 		
-		                <h:panelGroup rendered="#{!configurationBean.sidebarTocTreeView}">
+		                <h:panelGroup rendered="#{!configurationBean.isSidebarTocTreeView(activeDocumentBean.viewManager.topDocument.docStructType)}">
 							<ul>
 								<ui:repeat var="group" value="#{activeDocumentBean.toc.groupNames}">
 									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.getViewForGroup(group)}">

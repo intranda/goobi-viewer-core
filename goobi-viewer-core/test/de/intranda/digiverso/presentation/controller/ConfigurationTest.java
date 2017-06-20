@@ -633,12 +633,23 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getSidebarTocTreeView()
-     * @verifies return correct value
+     * @see Configuration#isSidebarTocTreeView(String)
+     * @verifies return true for allowed docstructs
      */
     @Test
-    public void getSidebarTocTreeView_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().getSidebarTocTreeView());
+    public void isSidebarTocTreeView_shouldReturnTrueForAllowedDocstructs() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("Monograph"));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("Manuscript"));
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("MusicSupplies"));
+    }
+
+    /**
+     * @see Configuration#isSidebarTocTreeView(String)
+     * @verifies return false for other docstructs
+     */
+    @Test
+    public void isSidebarTocTreeView_shouldReturnFalseForOtherDocstructs() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isSidebarTocTreeView("Volume"));
     }
 
     /**
@@ -808,7 +819,6 @@ public class ConfigurationTest {
     public void isSubthemeAutoSwitch_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch());
     }
-
 
     /**
      * @see Configuration#isSubthemeAddFilterQuery()
@@ -2280,7 +2290,7 @@ public class ConfigurationTest {
     public void isAggregateHits_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isAggregateHits());
     }
-    
+
     @Test
     public void testSidebarTocVisibleIfEmpty() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());

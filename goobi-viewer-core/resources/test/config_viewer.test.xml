@@ -845,8 +845,8 @@
 				is cut and a "more" link is shown -->
 			<lengthBeforeCut>21</lengthBeforeCut>
 
-			<!-- display as interactive tree view -->
-			<useTreeView>false</useTreeView>
+            <!-- display as interactive tree view -->
+            <useTreeView showDocStructs="Monograph;Manuscript;MusicSupplies">true</useTreeView>
 
 			<!-- level for initial collapse -->
 			<initialCollapseLevel>22</initialCollapseLevel>
