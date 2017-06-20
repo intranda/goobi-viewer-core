@@ -73,7 +73,7 @@
         													<h:outputLink 
         														rendered="#{tocElement.label != null and tocElement.visible}" 
         														title="#{tocElement.label}"
-        														value="#{tocElement.getUrl()}"
+        														value="#{tocElement.getUrl('readingmode')}"
         														styleClass="#{tocElement.iddoc == activeDocumentBean.viewManager.currentDocumentIddoc ? 'active' : ''}">
         														#{tocElement.label}
         													</h:outputLink>

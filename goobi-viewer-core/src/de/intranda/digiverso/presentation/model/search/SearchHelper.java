@@ -1696,13 +1696,13 @@ public final class SearchHelper {
      * @param bmfc
      * @param startsWith
      * @param comparator
-     * @param suffix Optional Solr query suffix.
+     * @param aggregateHits
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, Comparator<BrowseTerm> comparator, String suffix)
-            throws PresentationException, IndexUnreachableException {
+    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, Comparator<BrowseTerm> comparator,
+            boolean aggregateHits) throws PresentationException, IndexUnreachableException {
         List<BrowseTerm> ret = new ArrayList<>();
         Map<BrowseTerm, Boolean> terms = new ConcurrentHashMap<>();
         Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
@@ -1725,14 +1725,14 @@ public final class SearchHelper {
         if (bmfc.isRecordsAndAnchorsOnly()) {
             sbQuery.append(" AND (").append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
         }
-        if (StringUtils.isNotEmpty(suffix)) {
-            sbQuery.append(suffix);
-        }
-        logger.debug("getFilteredTerms query: {}", sbQuery.toString());
+
+        String query = buildFinalQuery(sbQuery.toString(), false);
+        logger.debug("getFilteredTerms query: {}", query);
         // int rows = 0;
         int rows = SolrSearchIndex.MAX_HITS;
         List<String> fieldList = new ArrayList<>();
         fieldList.add(bmfc.getField());
+        fieldList.add(SolrConstants.PI_TOPSTRUCT);
         List<String> facetFields = new ArrayList<>();
         facetFields.add(bmfc.getField());
 
@@ -1743,10 +1743,8 @@ public final class SearchHelper {
                 params.put(GroupParams.GROUP_MAIN, "true");
                 params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
             }
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, rows, null, facetFields, null, fieldList,
-                    params);
-            // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
-            // facetFields, false);
+            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, null, fieldList, params);
+            // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(), facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
                 // Numerical filtering
@@ -1787,7 +1785,7 @@ public final class SearchHelper {
 
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
                 ((List<SolrDocument>) resp.getResults()).parallelStream().forEach(doc -> processSolrResult(doc, bmfc.getField(), bmfc.getSortField(),
-                        startsWith, terms, usedTerms));
+                        startsWith, terms, usedTerms, aggregateHits));
 
                 // Sequential processing
                 //                for (SolrDocument doc : resp.getResults()) {
@@ -1823,11 +1821,13 @@ public final class SearchHelper {
      * @param startsWith
      * @param terms Set of terms collected so far.
      * @param usedTerms Terms that are already in the terms map.
+     * @param aggregateHits
      */
     private static void processSolrResult(SolrDocument doc, String field, String sortField, String startsWith, Map<BrowseTerm, Boolean> terms,
-            Map<String, BrowseTerm> usedTerms) {
+            Map<String, BrowseTerm> usedTerms, boolean aggregateHits) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
         Collection<Object> termList = doc.getFieldValues(field);
+        String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         String sortTerm = (String) doc.getFieldValue(sortField);
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
         for (Object o : termList) {
@@ -1846,10 +1846,17 @@ public final class SearchHelper {
                     terms.put(browseTerm, true);
                     usedTerms.put(term, browseTerm);
                     usedTermsInCurrentDoc.add(term);
+                    browseTerm.getPiList().add(pi);
                 } else if (!usedTermsInCurrentDoc.contains(term)) {
                     // Only add to hit count if the same string is not in the same doc
-                    usedTerms.get(term).addToHitCount(1);
+                    BrowseTerm browseTerm = usedTerms.get(term);
+                    // If using aggregated search, do not count instances of records that already have been counted
+                    if (aggregateHits && browseTerm.getPiList().contains(pi)) {
+                        continue;
+                    }
+                    browseTerm.addToHitCount(1);
                     usedTermsInCurrentDoc.add(term);
+                    browseTerm.getPiList().add(pi);
                 }
             }
             sortTerm = null; // only use the sort term for the first term
