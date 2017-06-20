@@ -1,5 +1,5 @@
 /**
- * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -807,6 +807,17 @@ public class ConfigurationTest {
     @Test
     public void isSubthemeAutoSwitch_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch());
+    }
+
+
+    /**
+     * @see Configuration#isSubthemeAddFilterQuery()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSubthemeAddFilterQuery_shouldReturnCorrectValue() throws Exception {
+        //TODO auto-generated
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
     }
 
     /**

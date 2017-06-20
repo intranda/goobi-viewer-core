@@ -291,7 +291,7 @@
         </docstructTargetPageTypes>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" filterQueryVisible="false" />
+		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false" />
 	</viewer>
 
 	<search>

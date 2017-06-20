@@ -1,5 +1,5 @@
 /**
- * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -2361,6 +2361,15 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isSubthemeAutoSwitch() {
         return getLocalBoolean("viewer.theme[@autoSwitch]", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isSubthemeAddFilterQuery() {
+        return getLocalBoolean("viewer.theme[@addFilterQuery]", false);
     }
 
     /**

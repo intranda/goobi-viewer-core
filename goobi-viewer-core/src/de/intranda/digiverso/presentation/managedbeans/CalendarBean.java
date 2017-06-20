@@ -1,5 +1,5 @@
 /**
- * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -175,13 +175,13 @@ public class CalendarBean implements Serializable {
         rowList = new ArrayList<>();
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":[").append(yearStart).append(" TO ").append(yearEnd).append("] AND ")
-                    .append(SolrConstants.DC).append(':').append(collection).append('*').append(docstructFilterQuery);
+            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":[").append(yearStart).append(" TO ").append(yearEnd).append("] AND ").append(
+                    SolrConstants.DC).append(':').append(collection).append('*').append(docstructFilterQuery);
         } else {
             sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":[").append(yearStart).append(" TO ").append(yearEnd).append(']').append(
                     docstructFilterQuery);
         }
-        sbSearchString.append(SearchHelper.getAllSuffixes(true));
+        sbSearchString.append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
         //            logger.debug("searchString: " + searchString);
         QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), false);
         //            logger.debug("search end");
@@ -232,8 +232,7 @@ public class CalendarBean implements Serializable {
         } else {
             sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(currentYear.getName()).append(docstructFilterQuery);
         }
-        QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_MONTH),
-                false);
+        QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_MONTH), false);
         FacetField field = resp.getFacetField(SolrConstants._CALENDAR_MONTH);
         List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<Count>();
 
@@ -682,12 +681,12 @@ public class CalendarBean implements Serializable {
             fields.add(SolrConstants._CALENDAR_YEAR);
             StringBuilder sbSearchString = new StringBuilder();
             if (collection != null && !collection.isEmpty()) {
-                sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":* AND ").append(SolrConstants.DC).append(':').append(collection)
-                        .append('*').append(docstructFilterQuery);
+                sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":* AND ").append(SolrConstants.DC).append(':').append(collection).append(
+                        '*').append(docstructFilterQuery);
             } else {
                 sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(":*").append(docstructFilterQuery);
             }
-            sbSearchString.append(SearchHelper.getAllSuffixes(true));
+            sbSearchString.append(SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
 
             logger.trace("getAllActiveYears query: {}", sbSearchString.toString());
             QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, false);
@@ -771,8 +770,8 @@ public class CalendarBean implements Serializable {
 
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(" AND ").append(SolrConstants.DC).append(
-                    ':').append(collection).append('*').append(docstructFilterQuery);
+            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(" AND ").append(SolrConstants.DC).append(':')
+                    .append(collection).append('*').append(docstructFilterQuery);
         } else {
             sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(docstructFilterQuery);
         }

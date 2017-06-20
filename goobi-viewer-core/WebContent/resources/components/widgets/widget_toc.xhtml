@@ -23,10 +23,7 @@
                             <ul class="widget-toc-title-expand">
                                 <li>
                                     <h:commandLink styleClass="minus" action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
-                                        <span class="fa-stack">
-											<i class="fa fa-square-o fa-stack-2x"></i>
-											<i class="fa fa-minus fa-stack-1x"></i>
-										</span>
+                                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
 										<f:passThroughAttribute name="data-toggle" value="tooltip" />
 										<f:passThroughAttribute name="data-placement" value="top" />
 										<f:ajax render="widgetTocForm" />
@@ -34,10 +31,7 @@
                                 </li>
                                 <li>
                                     <h:commandLink styleClass="plus" action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
-										<span class="fa-stack">
-											<i class="fa fa-square-o fa-stack-2x"></i>
-											<i class="fa fa-plus fa-stack-1x"></i>
-										</span>
+										<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 										<f:passThroughAttribute name="data-toggle" value="tooltip" />
 										<f:passThroughAttribute name="data-placement" value="top" />
                                         <f:ajax render="widgetTocForm" />
@@ -59,17 +53,11 @@
     												<h:panelGroup rendered="#{tocElement.hasChild == true}">
     													<div class="widget-toc-elem-expand">
     														<h:commandLink styleClass="plus" action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{tocElement.visible and !tocElement.expanded}">
-																<span class="fa-stack">
-																	<i class="fa fa-square-o fa-stack-2x"></i> 
-																	<i class="fa fa-plus fa-stack-1x"></i>
-																</span>
+																<i class="fa fa-plus-square-o" aria-hidden="true"></i>
 																<f:ajax render="@form" />
     														</h:commandLink>
     														<h:commandLink styleClass="minus" action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.visible and tocElement.expanded}">
-    															<span class="fa-stack">
-																	<i class="fa fa-square-o fa-stack-2x"></i> 
-																	<i class="fa fa-minus fa-stack-1x"></i>
-																</span>
+    															<i class="fa fa-minus-square-o" aria-hidden="true"></i>
     															<f:ajax render="@form" />
     														</h:commandLink>
     													</div>

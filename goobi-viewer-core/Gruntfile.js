@@ -27,7 +27,7 @@ module.exports = function(grunt) {
                     paths: [ '<%=src.lessDevFolder%>' ],
                     compress: true,
                     banner: '/*!\n'
-                        + ' * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.\n'
+                        + ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
                         + ' *\n'
                         + ' * Visit these websites for more information.\n'
                         + ' * - http://www.intranda.com\n'
@@ -52,7 +52,7 @@ module.exports = function(grunt) {
                 separator: ';',
                 stripBanners: true,
                 banner: '/*!\n'
-                    + ' * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.\n'
+                    + ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
                     + ' *\n'
                     + ' * Visit these websites for more information.\n'
                     + ' * - http://www.intranda.com\n'
@@ -88,7 +88,7 @@ module.exports = function(grunt) {
         uglify: {
             options: {
                 banner: '/*!\n'
-                    + ' * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.\n'
+                    + ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
                     + ' *\n'
                     + ' * Visit these websites for more information.\n'
                     + ' * - http://www.intranda.com\n'

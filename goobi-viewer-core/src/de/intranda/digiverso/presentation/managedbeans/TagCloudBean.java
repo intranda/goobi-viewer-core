@@ -1,5 +1,5 @@
 /**
- * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -121,7 +121,7 @@ public class TagCloudBean implements Serializable {
 
             // int byzero = 1/0;
 
-            String suffix = SearchHelper.getAllSuffixes(true);
+            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
             if (StringUtils.isEmpty(query)) {
                 mytags = DataManager.getInstance().getSearchIndex().generateFilteredTagCloud(luceneField, suffix);
             } else {

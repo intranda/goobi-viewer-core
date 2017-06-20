@@ -1,5 +1,5 @@
 /**
- * This file is part of the Goobi Viewer - a content presentation and management application for digitized objects.
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
  *
  * Visit these websites for more information.
  *          - http://www.intranda.com
@@ -597,7 +597,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getDiscriminatorFieldFilterSuffix_shouldConstructSubqueryCorrectly() throws Exception {
         NavigationHelper nh = new NavigationHelper();
         nh.setSubThemeDiscriminatorValue("val");
-        Assert.assertEquals(" +fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
+        Assert.assertEquals(" AND fie:val", SearchHelper.getDiscriminatorFieldFilterSuffix(nh, "fie"));
     }
 
     /**
@@ -678,7 +678,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             String suffix = SearchHelper.getAllSuffixes(null, false, true);
             Assert.assertNotNull(suffix);
             System.out.println(suffix);
-            Assert.assertTrue(suffix.contains(" +" + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":dvalue"));
+            Assert.assertTrue(suffix.contains(" AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":dvalue"));
         } finally {
             // Reset the mock because otherwise the discriminator value will persist for other tests
             Mockito.reset(externalContext);
