@@ -1,20 +1,18 @@
-/*************************************************************************
- * 
- * Copyright intranda GmbH
- * 
- * ************************* CONFIDENTIAL ********************************
- * 
- * [2003] - [2017] intranda GmbH, Bertha-von-Suttner-Str. 9, 37085 Göttingen, Germany 
- * 
- * All Rights Reserved.
- * 
- * NOTICE: All information contained herein is protected by copyright. 
- * The source code contained herein is proprietary of intranda GmbH. 
- * The dissemination, reproduction, distribution or modification of 
- * this source code, without prior written permission from intranda GmbH, 
- * is expressly forbidden and a violation of international copyright law.
- * 
- *************************************************************************/
+/**
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.intranda.digiverso.presentation.controller;
 
 import java.util.ArrayList;
@@ -172,6 +170,25 @@ public abstract class AbstractConfiguration {
         List<HierarchicalConfiguration> ret = configLocal.configurationsAt(inPath);
         if (ret == null || ret.isEmpty()) {
             ret = config.configurationsAt(inPath);
+        }
+
+        return ret;
+    }
+
+    /**
+     * 
+     * @param inPath
+     * @return
+     */
+    HierarchicalConfiguration getLocalConfigurationAt(String inPath) {
+        HierarchicalConfiguration ret = null;
+        try {
+            ret = configLocal.configurationAt(inPath);
+            if (ret == null || ret.isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+        } catch (IllegalArgumentException e) {
+            ret = config.configurationAt(inPath);
         }
 
         return ret;
