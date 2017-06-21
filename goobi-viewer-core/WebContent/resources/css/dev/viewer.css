@@ -17,6 +17,19 @@
 /* COLORS READING MODE */
 /* MEDIA QUERY BREAK POINTS */
 /* ==============================================================
+   LESS Mixins
+   ==============================================================*/
+/* CLEARFIX */
+.mx-clearfloats:before,
+.mx-clearfloats:after {
+  content: " ";
+  display: table;
+}
+.mx-clearfloats:after {
+  clear: both;
+}
+/* BACKGROUND IMAGE */
+/* ==============================================================
    General styling
    ==============================================================*/
 html {
@@ -70,8 +83,6 @@ p {
   margin: 0 0 1.3125rem 0;
 }
 pre {
-  float: left;
-  width: 100%;
   padding: 0.5rem;
   font-family: monospace;
   border-radius: 0.25rem;
@@ -374,6 +385,57 @@ table,
   border-right: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   border-left: 1px solid #ccc;
+}
+/* ==============================================================
+   CSS Helper Classes
+   ==============================================================*/
+/* HORIZONTAL LIST */
+/* BLOCK */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.list:before,
+.list:after {
+  content: " ";
+  display: table;
+}
+.list:after {
+  clear: both;
+}
+.list li {
+  position: relative;
+}
+.list a {
+  display: block;
+}
+.list--horizontal li {
+  display: inline-block;
+  float: left;
+}
+.list--horizontal a {
+  padding: 6px 12px;
+}
+.list--center {
+  position: relative;
+  float: left;
+  left: 50%;
+}
+.list--center li {
+  right: 50%;
+}
+.list--divider li:after {
+  content: "\007c";
+  position: absolute;
+  display: block;
+  top: 5px;
+  right: -4px;
+}
+.list--divider li:last-child:after {
+  display: none;
 }
 /* BASIC COMPONENTS */
 /* ==============================================================
@@ -2935,7 +2997,12 @@ input[id*="cmdMoveTo"] {
   padding-left: 10px;
   border-left: 3px solid #ccc;
 }
-.styles__logos {
+.styles__logos,
+.styles__fonts,
+.styles__headings,
+.styles__typo,
+.styles__helper,
+.styles__mixins {
   margin-bottom: 15px;
 }
 .styles__logo {
@@ -2963,6 +3030,10 @@ input[id*="cmdMoveTo"] {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+.styles__helper-item {
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
 }
 /* MODIFICATION */
 .styles__logo--bw {

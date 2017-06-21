@@ -1,0 +1,22 @@
+/* ==============================================================
+   LESS Mixins
+   ==============================================================*/
+/* CLEARFIX */
+.mx-clearfloats {
+	&:before,
+    &:after {
+    	content: " ";
+		display: table;
+	}
+	&:after {
+		clear: both;
+	}
+}
+/* BACKGROUND IMAGE */
+.mx-bgi(@image; @pX: center; @pY: center; @size: auto) {
+	background-image: url( @image );
+	background-repeat: no-repeat;
+	background-position: @pX @pY;
+	-webkit-background-size: @size;
+	background-size: @size;
+}

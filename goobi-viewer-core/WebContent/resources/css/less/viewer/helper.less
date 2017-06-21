@@ -1,0 +1,48 @@
+/* ==============================================================
+   CSS Helper Classes
+   ==============================================================*/
+/* HORIZONTAL LIST */
+/* BLOCK */
+.list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	.mx-clearfloats;
+	/* ELEMENT */
+	li {
+		position: relative;
+	}
+	a {
+		display: block;
+	}
+	/* MODIFICATION */
+	&--horizontal {
+		li {
+			display: inline-block;
+			float: left;
+		}
+		a {
+			padding: 6px 12px;
+		}
+	}
+	&--center {
+		position: relative;
+        float: left;
+        left: 50%;
+        li {
+            right: 50%;
+        }
+	}
+	&--divider {
+		li:after {
+			content: "\007c";
+			position: absolute;
+			display: block;
+			top: 5px;
+    		right: -4px;
+		}
+		li:last-child:after {
+			display: none;
+		}
+	}
+}   
