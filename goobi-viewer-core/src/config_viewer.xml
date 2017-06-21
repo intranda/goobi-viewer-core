@@ -824,7 +824,7 @@
             </luceneField>
             <luceneField>MD_TITLE_UNTOKENIZED</luceneField>
             <!-- <luceneField sortField="SORT_TITLE" recordsAndAnchorsOnly="true" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</luceneField> -->
-            <luceneField>MD_SHELFMARK_UNTOKENIZED</luceneField>
+            <!-- <luceneField>MD_SHELFMARK_UNTOKENIZED</luceneField> -->
             <luceneField>DOCSTRCT</luceneField>
         </browsingMenu>
 
