@@ -2418,18 +2418,6 @@ input[id*="cmdMoveTo"] {
    Admin 
    global style declarations for admin backend
    ==============================================================*/
-#adminUser .nav-tabs li a,
-#adminUserGroup .nav-tabs li a,
-#adminIpRange .nav-tabs li a {
-  border-bottom: 1px solid #ccc;
-  background-color: #eee;
-}
-#adminUser .nav-tabs li.active a,
-#adminUserGroup .nav-tabs li.active a,
-#adminIpRange .nav-tabs li.active a {
-  border-bottom: 1px solid #fff;
-  background-color: #fff;
-}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -2543,14 +2531,6 @@ input[id*="cmdMoveTo"] {
    Admin IP-Range
    style declarations for adminIpRange.xhtml
    ==============================================================*/
-#adminIpRange .tab-content {
-  border: 1px solid #ddd;
-  border-top: none;
-  background-color: #fff;
-}
-#adminIpRange .tab-content .tab-pane {
-  padding: 15px;
-}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -2577,15 +2557,6 @@ input[id*="cmdMoveTo"] {
    Admin Add User
    style declarations for adminUser.xhtml
    ==============================================================*/
-#adminUser .tab-content {
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-top: none;
-  background-color: #fff;
-}
-#adminUser .tab-content .tab-pane {
-  padding: 15px;
-}
 #licenses p {
   text-align: right;
 }
@@ -2597,17 +2568,6 @@ input[id*="cmdMoveTo"] {
    Admin User Group
    style declarations for adminUserGroup.xhtml
    ==============================================================*/
-#adminUserGroup .tab-content {
-  border: 1px solid #ddd;
-  border-top: none;
-  background-color: #fff;
-}
-#adminUserGroup .tab-content .tab-pane {
-  padding: 15px;
-}
-#adminUserGroup .tab-content .tab-pane textarea {
-  resize: vertical;
-}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
