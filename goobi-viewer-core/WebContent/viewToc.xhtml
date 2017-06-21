@@ -146,70 +146,174 @@
 						<!-- TOC TREEVIEW -->
 						<h:panelGroup rendered="#{!activeDocumentBean.anchor and !activeDocumentBean.group}">
 							<c:set var="indent" value="#{configurationBean.tocIndentation}" scope="request" />
-
-							<nav class="toc__list">
-								<ul>
-									<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
-										<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
-											<div class="row">
-												<div class="col-xs-12 col-sm-10">
-													<!-- TITLE -->
-													<div class="toc__title">
-														<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
-															#{tocElement.label}
-														</h:outputLink>
-														<h:outputLink rendered="#{tocElement.pageNo != null}" title="#{tocElement.label}" value="#{tocElement.url}">
-															#{tocElement.label}
-														</h:outputLink>
-													</div>
-												</div>
-												<div class="col-xs-12 col-sm-2">
-													<!-- NUMBER -->
-													<div class="toc__number text-right">
-														<ul>
-															<h:panelGroup rendered="#{tocElement.label != null}">
-																<li>
-																	<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
-																</li>
-															</h:panelGroup>
-															<h:panelGroup rendered="#{tocElement.pageNo == null}">
-																<li>#{tocElement.pageNoLabel}</li>
-															</h:panelGroup>
-		
-															<!-- PDF DOWNLOAD -->
-															<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
-																<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
-																	<li>
-																		<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.pdfDownload}">
-																			<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-																		</a>
-																	</li>
-																</h:panelGroup>
-																<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
-																	<li>
-																		<a 
-																			href="#" 
-																			class="download-modal" 
-																			data-type="pdf" 
-																			data-title="#{tocElement.label}" 
-																			data-id="#{tocElement.logId}" 
-																			data-pi="#{tocElement.topStructPi}"
-																			title="#{msg.pdfDownload}">
-																			<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-																		</a>
-																	</li>
-																</h:panelGroup>
-															</h:panelGroup>
-														</ul>
-													</div>
-												</div>
-											</div>											
-
-											<div class="clearfix"></div>
+							<!-- EXPANDABLE TREEVIEW -->
+							<h:panelGroup rendered="#{configurationBean.isTocTreeView(activeDocumentBean.viewManager.topDocument.docStructType)}">
+								<!-- EXPAND ALL -->
+								<div class="toc__list-expandable-all clearfix">
+									<ul>
+										<li>
+											<h:commandLink action="#{activeDocumentBean.toc.collapseAll}" title="#{msg.allClose}">
+												<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+												<f:passThroughAttribute name="data-toggle" value="tooltip" />
+												<f:passThroughAttribute name="data-placement" value="top" />
+												<f:ajax render="tocForm" />
+											</h:commandLink>
 										</li>
-									</ui:repeat>
-								</ul>
-							</nav>
+										<li>
+											<h:commandLink action="#{activeDocumentBean.toc.expandAll}" title="#{msg.allOpen}">
+												<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+												<f:passThroughAttribute name="data-toggle" value="tooltip" />
+												<f:passThroughAttribute name="data-placement" value="top" />
+												<f:ajax render="tocForm" />
+											</h:commandLink>
+										</li>
+									</ul>
+								</div>
+
+								<nav class="toc__list-expandable clearfix">
+									<ul>
+										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
+											<h:panelGroup rendered="#{tocElement.visible}">
+												<li class="toc__list-expandable-elem #{tocElement.hasChild == true ? 'parent' : 'child' }" data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
+													<div class="row">
+														<div class="col-xs-12 col-sm-1">
+															<h:panelGroup rendered="#{tocElement.hasChild}">
+																<!-- EXPAND -->
+																<div class="toc__list-expandable-expand">
+																	<h:commandLink action="#{activeDocumentBean.setChildrenVisible(tocElement)}" rendered="#{!tocElement.expanded}">
+																		<i class="fa fa-plus-square-o" aria-hidden="true"></i>
+																		<f:ajax render="@form" />
+																	</h:commandLink>
+																	<h:commandLink action="#{activeDocumentBean.setChildrenInvisible(tocElement)}" rendered="#{tocElement.expanded}">
+																		<i class="fa fa-minus-square-o" aria-hidden="true"></i>
+																		<f:ajax render="@form" />
+																	</h:commandLink>
+																</div>
+															</h:panelGroup>
+														</div>
+														<div class="col-xs-12 col-sm-9">
+															<!-- TITLE -->
+															<div class="toc__list-expandable-title">
+																<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
+																		#{tocElement.label}
+																	</h:outputLink>
+																<h:outputLink rendered="#{tocElement.pageNo != null}" title="#{tocElement.label}" value="#{tocElement.url}">
+																		#{tocElement.label}
+																</h:outputLink>
+															</div>
+														</div>
+														<div class="col-xs-12 col-sm-2">
+															<!-- NUMBER -->
+															<div class="toc__list-expandable-number text-right">
+																<ul>
+																	<h:panelGroup rendered="#{tocElement.label != null}">
+																		<li>
+																			<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
+																		</li>
+																	</h:panelGroup>
+																	<h:panelGroup rendered="#{tocElement.pageNo == null}">
+																		<li>#{tocElement.pageNoLabel}</li>
+																	</h:panelGroup>
+	
+																	<!-- PDF DOWNLOAD -->
+																	<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
+																		<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
+																			<li>
+																				<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.pdfDownload}"> 
+																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																				</a>
+																			</li>
+																		</h:panelGroup>
+																		<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
+																			<li>
+																				<a 
+																					href="#" 
+																					class="download-modal" 
+																					data-type="pdf" 
+																					data-title="#{tocElement.label}" 
+																					data-id="#{tocElement.logId}" 
+																					data-pi="#{tocElement.topStructPi}" 
+																					title="#{msg.pdfDownload}"> 
+																					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																				</a>
+																			</li>
+																		</h:panelGroup>
+																	</h:panelGroup>
+																</ul>
+															</div>
+														</div>
+													</div>
+												</li>
+											</h:panelGroup>
+										</ui:repeat>
+									</ul>
+								</nav>
+							</h:panelGroup>
+
+							<!-- FULL TREEVIEW -->
+							<h:panelGroup rendered="#{!configurationBean.isTocTreeView(activeDocumentBean.viewManager.topDocument.docStructType)}">
+								<nav class="toc__list-full clearfix">
+									<ul>
+										<ui:repeat var="tocElement" value="#{activeDocumentBean.toc.treeView}">
+											<li data-iddoc="iddoc_#{tocElement.iddoc}" style="padding-left: #{tocElement.level * indent}px">
+												<div class="row">
+													<div class="col-xs-12 col-sm-10">
+														<!-- TITLE -->
+														<div class="toc__list-full-title">
+															<h:outputLink rendered="#{tocElement.pageNo == null}" title="#{tocElement.label}" value="#{tocElement.url}">
+																	#{tocElement.label}
+																</h:outputLink>
+															<h:outputLink rendered="#{tocElement.pageNo != null}" title="#{tocElement.label}" value="#{tocElement.url}">
+																	#{tocElement.label}
+															</h:outputLink>
+														</div>
+													</div>
+													<div class="col-xs-12 col-sm-2">
+														<!-- NUMBER -->
+														<div class="toc__list-full-number text-right">
+															<ul>
+																<h:panelGroup rendered="#{tocElement.label != null}">
+																	<li>
+																		<a href="#{tocElement.url}" title="#{tocElement.label}">#{tocElement.pageNoLabel}</a>
+																	</li>
+																</h:panelGroup>
+																<h:panelGroup rendered="#{tocElement.pageNo == null}">
+																	<li>#{tocElement.pageNoLabel}</li>
+																</h:panelGroup>
+
+																<!-- PDF DOWNLOAD -->
+																<h:panelGroup rendered="#{tocElement.pageNo != null and tocElement.accessPermissionPdf}">
+																	<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
+																		<li>
+																			<a href="#{tocElement.contentServerPdfUrl}" title="#{msg.pdfDownload}">
+																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																			</a>
+																		</li>
+																	</h:panelGroup>
+																	<h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
+																		<li>
+																			<a 
+																				href="#" 
+																				class="download-modal" 
+																				data-type="pdf" 
+																				data-title="#{tocElement.label}" 
+																				data-id="#{tocElement.logId}" 
+																				data-pi="#{tocElement.topStructPi}" 
+																				title="#{msg.pdfDownload}"> 
+																				<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+																			</a>
+																		</li>
+																	</h:panelGroup>
+																</h:panelGroup>
+															</ul>
+														</div>
+													</div>
+												</div>
+											</li>
+										</ui:repeat>
+									</ul>
+								</nav>
+							</h:panelGroup>
 						</h:panelGroup>
 					</h:form>
 				</div>

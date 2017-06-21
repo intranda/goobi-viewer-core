@@ -161,8 +161,25 @@
 	}
 	/* TOC TREEVIEW */
 	/* ELEMENT */
-	&__list {}
-	&__title {
+	&__list-expandable,
+	&__list-full {
+		border-top: 1px solid @middlegray;
+		li {
+			padding: 0 10px;
+			border-bottom: 1px solid @middlegray;
+			&:first-child {
+				padding-left: 5px !important;
+			}
+			&:hover {
+				background-color: @lightgray;
+				a {
+					color: @darkgray;
+				}
+			}
+		}
+	}
+	&__list-expandable-title,
+	&__list-full-title {
 		a {
 			display: block;
 			padding: 5px 0;
@@ -171,7 +188,8 @@
 			&:active {}
 		}
 	}
-	&__number {
+	&__list-expandable-number,
+	&__list-full-number {
 		li {
 			display: inline-block;
 			border: none;
@@ -185,6 +203,70 @@
 			&:active {
 				text-decoration: none;
 			}
+		}
+	}
+	/* EXPAND ALL */
+	&__list-expandable-all {
+		margin-top: 15px;
+		padding: 0 15px;
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		li {
+			display: inline-block;
+			float: right;
+		}
+		a {
+			display: block;
+			padding: 5px;
+		}
+	}
+	/* TOC EXPANDABLE */
+	&__list-expandable {}
+	&__list-expandable-elem {
+		&.parent {}
+		&.child {}
+	}
+	&__list-expandable-expand {
+		a {
+			display: block;
+			padding: 5px 0;
+		}
+	}
+	&__list-expandable-title {
+		a {
+			&:hover,
+			&:focus,
+			&:active {}
+		}
+	}
+	&__list-expandable-number {
+		li {}
+		a {
+			&:hover,
+			&:focus,
+			&:active {}
+		}
+	}
+	/* TOC FULL */
+	&__list-full {
+		margin-top: 15px;
+	}
+	&__list-full-title {
+		a {
+			&:hover,
+			&:focus,
+			&:active {}
+		}
+	}
+	&__list-full-number {
+		li {}
+		a {
+			&:hover,
+			&:focus,
+			&:active {}
 		}
 	}
 }

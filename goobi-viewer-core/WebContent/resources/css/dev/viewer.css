@@ -5850,6 +5850,9 @@ div.olMapViewport {
   /* ELEMENT */
   /* TOC TREEVIEW */
   /* ELEMENT */
+  /* EXPAND ALL */
+  /* TOC EXPANDABLE */
+  /* TOC FULL */
 }
 .toc__multi-volume {
   margin-top: 15px;
@@ -5897,23 +5900,74 @@ div.olMapViewport {
 .toc__mv-element-img {
   overflow: hidden;
 }
-.toc__title a {
+.toc__list-expandable,
+.toc__list-full {
+  border-top: 1px solid #ccc;
+}
+.toc__list-expandable li,
+.toc__list-full li {
+  padding: 0 10px;
+  border-bottom: 1px solid #ccc;
+}
+.toc__list-expandable li:first-child,
+.toc__list-full li:first-child {
+  padding-left: 5px !important;
+}
+.toc__list-expandable li:hover,
+.toc__list-full li:hover {
+  background-color: #eee;
+}
+.toc__list-expandable li:hover a,
+.toc__list-full li:hover a {
+  color: #4b4b4b;
+}
+.toc__list-expandable-title a,
+.toc__list-full-title a {
   display: block;
   padding: 5px 0;
 }
-.toc__number li {
+.toc__list-expandable-number li,
+.toc__list-full-number li {
   display: inline-block;
   border: none;
 }
-.toc__number a {
+.toc__list-expandable-number a,
+.toc__list-full-number a {
   display: block;
   padding: 5px 3px;
   text-decoration: none;
 }
-.toc__number a:hover,
-.toc__number a:focus,
-.toc__number a:active {
+.toc__list-expandable-number a:hover,
+.toc__list-full-number a:hover,
+.toc__list-expandable-number a:focus,
+.toc__list-full-number a:focus,
+.toc__list-expandable-number a:active,
+.toc__list-full-number a:active {
   text-decoration: none;
+}
+.toc__list-expandable-all {
+  margin-top: 15px;
+  padding: 0 15px;
+}
+.toc__list-expandable-all ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.toc__list-expandable-all li {
+  display: inline-block;
+  float: right;
+}
+.toc__list-expandable-all a {
+  display: block;
+  padding: 5px;
+}
+.toc__list-expandable-expand a {
+  display: block;
+  padding: 5px 0;
+}
+.toc__list-full {
+  margin-top: 15px;
 }
 /* DOWNLOAD MODAL */
 #reCaptchaWrapper {
