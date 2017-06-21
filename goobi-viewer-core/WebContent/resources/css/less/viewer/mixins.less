@@ -1,7 +1,7 @@
 /* ==============================================================
    LESS Mixins
    ==============================================================*/
-/* CLEARFIX */
+/* CLEARFLOATS */
 .mx-clearfloats {
 	&:before,
     &:after {
@@ -14,9 +14,25 @@
 }
 /* BACKGROUND IMAGE */
 .mx-bgi(@image; @pX: center; @pY: center; @size: auto) {
-	background-image: url( @image );
+	background-image: url(@image);
 	background-repeat: no-repeat;
 	background-position: @pX @pY;
 	-webkit-background-size: @size;
 	background-size: @size;
+}
+/* CSS TRIANGLE */
+.mx-triangle(@top: 0; @left: 0; @bWidth: 10px; @bcTop: transparent; @bcRight: transparent; @bcBottom: #000; @bcLeft: transparent;) {
+	position: relative;
+	&:after {
+		content: "";
+		display: block;
+		position: absolute;
+		top: @top;
+		left: @left;
+		width: 0;
+		height: 0;
+		border-width: @bWidth;
+		border-style: solid;
+		border-color: @bcTop @bcRight @bcBottom @bcLeft;
+	}
 }
