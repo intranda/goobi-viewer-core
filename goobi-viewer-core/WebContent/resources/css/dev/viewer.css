@@ -896,6 +896,11 @@ input.btn .ui-button-text,
   background: none;
   cursor: pointer;
 }
+#mobileToggleWrapper .btn-toggle:hover,
+#mobileToggleWrapper .btn-toggle:focus,
+#mobileToggleWrapper .btn-toggle:active {
+  outline: none;
+}
 #mobileToggleWrapper .sidebar {
   margin: 0;
 }
@@ -3274,20 +3279,6 @@ input[id*="cmdMoveTo"] {
 .search-calendar__input input {
   box-shadow: none;
 }
-.search-calendar__select-wrapper {
-  height: 34px;
-  padding: 6px;
-  font-size: 14px;
-  line-height: 1.42857143;
-  background-color: #fff;
-  background-image: none;
-  border: 1px solid #ccc;
-}
-.search-calendar__select-wrapper select {
-  padding: 0 6px;
-  border: none;
-  box-shadow: none;
-}
 .search-calendar__reset {
   text-align: right;
 }
@@ -3376,129 +3367,6 @@ input[id*="cmdMoveTo"] {
    SearchList
    style declarations for searchList.xhtml
    ==============================================================*/
-/* HITCOUNT */
-#slm_hitcount_wrapp {
-  float: right;
-  height: 21px;
-  line-height: 21px;
-  text-align: right;
-}
-#slm_hitcount_wrapp span,
-#slm_hitcount_wrapp a {
-  display: inline-block;
-}
-#slm_hitcount_wrapp a {
-  margin: 0 0 -0.125rem 0.3125rem;
-}
-#slm_hitcount_wrapp .icon-rss16x16 {
-  width: 14px;
-  height: 14px;
-  background-position: -19px -4px;
-}
-/* SAVE SEARCH */
-#slm_savesearch_wrapp {
-  margin: 0.875rem 0;
-  text-align: right;
-}
-#slm_savesearch_wrapp .btn {
-  margin: 0;
-}
-#saveSearchModal .modal-body .form-group {
-  width: 100%;
-}
-#saveSearchModal .modal-footer button {
-  color: #fff;
-  font-size: 14px;
-}
-/* SEARCHLIST ELEMENT */
-.sl_elem_wrapp .sl_elem {
-  float: left;
-  width: 100%;
-  margin-bottom: 0.875rem;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_title a {
-  font-size: 1.3125rem;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_cont {
-  float: left;
-  width: 70%;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_cont .dl-horizontal dt {
-  font-weight: normal;
-  text-align: left;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_thumb {
-  position: relative;
-  float: right;
-  width: 30%;
-  height: 120px;
-  text-align: center;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_thumb a img {
-  max-height: 120px;
-  border: 6px solid #fff;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  background: #fff;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_access {
-  float: left;
-  width: 100%;
-  font-weight: bold;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_docstruct_wrapp {
-  float: left;
-  width: 100%;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_docstruct_wrapp .sl_elem_docstruct ul li {
-  display: inline-block;
-  float: left;
-  height: 1.3125rem;
-  line-height: 1.3125rem;
-  margin-right: 0.3125rem;
-}
-.sl_elem_wrapp .sl_elem .sl_elem_docstruct_wrapp .sl_elem_docstruct ul li img {
-  margin-top: -0.125rem;
-}
-.stacked-thumbnail,
-.stacked-thumbnail-before,
-.stacked-thumbnail-after {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-.stacked-thumbnail {
-  border: 2px solid #fff;
-  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  background: #fff;
-  z-index: 10;
-}
-.stacked-thumbnail-before,
-.stacked-thumbnail-after {
-  border: 2px solid #fff;
-  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  -webkit-transform: rotate(-5deg);
-  -moz-transform: rotate(-5deg);
-  -o-transform: rotate(-5deg);
-  -ms-transform: rotate(-5deg);
-  transform: rotate(-5deg);
-  background: #eff4de;
-  z-index: 9;
-}
-.stacked-thumbnail-after {
-  -webkit-transform: rotate(4deg);
-  -moz-transform: rotate(4deg);
-  -o-transform: rotate(4deg);
-  -ms-transform: rotate(4deg);
-  transform: rotate(4deg);
-  background: #768590;
-}
-.stacked-thumbnail a img {
-  display: block;
-}
 /* SEARCH LIST */
 /* VARIABLES */
 /* BLOCK */
@@ -3626,10 +3494,6 @@ input[id*="cmdMoveTo"] {
 }
 .search-list__sorting .custom-control {
   border: 1px solid #ccc;
-}
-.search-list__sorting select {
-  padding-top: 6px;
-  padding-bottom: 6px;
 }
 .search-list__adv-search-info {
   margin-bottom: 10px;
@@ -3805,6 +3669,47 @@ input[id*="cmdMoveTo"] {
 }
 .search-list--highlight {
   background-color: rgba(255, 255, 0, 0.5);
+}
+/* STACKED MULTIVOLUME THUMBNAIL */
+.stacked-thumbnail,
+.stacked-thumbnail-before,
+.stacked-thumbnail-after {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.stacked-thumbnail {
+  border: 2px solid #fff;
+  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  z-index: 10;
+}
+.stacked-thumbnail-before,
+.stacked-thumbnail-after {
+  border: 2px solid #fff;
+  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  -webkit-transform: rotate(-5deg);
+  -moz-transform: rotate(-5deg);
+  -o-transform: rotate(-5deg);
+  -ms-transform: rotate(-5deg);
+  transform: rotate(-5deg);
+  background: #eff4de;
+  z-index: 9;
+}
+.stacked-thumbnail-after {
+  -webkit-transform: rotate(4deg);
+  -moz-transform: rotate(4deg);
+  -o-transform: rotate(4deg);
+  -ms-transform: rotate(4deg);
+  transform: rotate(4deg);
+  background: #768590;
+}
+.stacked-thumbnail a img {
+  display: block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -4105,7 +4010,7 @@ input[id*="cmdMoveTo"] {
   float: left;
 }
 .search-timeline__year {
-  width: 10%;
+  width: calc(10%);
 }
 .search-timeline__months {
   border-top: 1px solid #ccc;
@@ -4113,14 +4018,14 @@ input[id*="cmdMoveTo"] {
   background-color: #eee;
 }
 .search-timeline__month {
-  width: 8.33333333%;
+  width: calc(8.33333333%);
 }
 .search-timeline__days {
   margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
 }
 .search-timeline__day {
-  width: 3.22%;
+  width: calc(3.22580645%);
 }
 .search-timeline__day a,
 .search-timeline__day span {
@@ -4148,23 +4053,23 @@ input[id*="cmdMoveTo"] {
     padding: 5px;
   }
   .search-timeline__month {
-    width: 16.66666666%;
+    width: calc(16.66666667%);
   }
   .search-timeline__day {
-    width: 6.44%;
+    width: calc(6.4516129%);
   }
 }
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .search-timeline__year {
-    width: 20%;
+    width: calc(20%);
   }
   .search-timeline__month {
-    width: 33.33333333%;
+    width: calc(33.33333333%);
   }
   .search-timeline__day {
-    width: 12.88%;
+    width: calc(12.90322581%);
   }
 }
 /* USER VIEWS */

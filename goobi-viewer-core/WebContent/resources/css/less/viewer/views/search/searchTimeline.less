@@ -80,7 +80,7 @@
     &__years {
     }
     &__year {
-    	width: 10%;
+    	width: calc(100% / 10);
         a {}
     }
     &__months {
@@ -89,7 +89,7 @@
         background-color: @lightgray;
     }
     &__month {
-    	width: 8.33333333%;
+    	width: calc(100% / 12);
         a {}
     }
     &__days {
@@ -97,7 +97,7 @@
         border-bottom: 1px solid @middlegray;
     }
     &__day {
-        width: 3.22%;
+        width: calc(100% / 31);
         a,
         span {
             padding: 0;
@@ -142,10 +142,10 @@
 		padding: 5px;
 	}
 	.search-timeline__month {
-	    width: 16.66666666%;
+	    width: calc(100% / 6);
 	}
 	.search-timeline__day {
-	    width: 6.44%;
+	    width: calc(100% / 15.5);
 	}
 }
 
@@ -155,12 +155,12 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	.search-timeline__year {
-	    width: 20%;
+	    width: calc(100% / 5);
 	}
 	.search-timeline__month {
-	    width: 33.33333333%;
+	    width: calc(100% / 3);
 	}
 	.search-timeline__day {
-	    width: 12.88%;
+	    width: calc(100% / 7.75);
 	}
 }
