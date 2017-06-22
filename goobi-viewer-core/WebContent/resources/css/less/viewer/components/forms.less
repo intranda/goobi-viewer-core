@@ -74,44 +74,55 @@
     .fa-check-circle-o {
         display: none;
     }
-}
-/* MODIFICATION */
-.custom-control--checkbox {}
-.custom-control--radio {}
-.custom-control--select {
-    display: inline-block;
-    padding: 0;
-    &:after {
-        content: "";
-        position: absolute;
-        display: inline-block;
-        top: 50%;
-        right: 1.25rem;
-        width: 0;
-        height: 0;
-        margin-top: -.15rem;
-        pointer-events: none;
-        border-top: .35rem solid @black;
-        border-right: .35rem solid transparent;
-        border-bottom: .35rem solid transparent;
-        border-left: .35rem solid transparent;
-    }
-    select {
-        display: inline-block;
-        width: 100%;
-        margin: 0;
-        padding: .5rem 2.25rem .5rem 1rem;
-        line-height: 1.5;
-        color: @black;
-        border: 0;
-        border-radius: .25rem;
-        background-color: @white;
-        cursor: pointer;
-        outline: 0;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-    }
+	/* MODIFICATION */
+	&--checkbox {}
+	&--radio {}
+	&--select {
+		height: 34px;
+	    padding: 6px;
+	    font-size: 14px;
+	    line-height: 1.42857143;
+	    color: @black;
+	    background-color: @white;
+	    background-image: none;
+	    border: 1px solid @middlegray;
+	    &:after {
+	        content: "";
+	        position: absolute;
+	        display: inline-block;
+	        top: 50%;
+	        right: 1.25rem;
+	        width: 0;
+	        height: 0;
+	        margin-top: -.15rem;
+	        pointer-events: none;
+	        border-top: .35rem solid @black;
+	        border-right: .35rem solid transparent;
+	        border-bottom: .35rem solid transparent;
+	        border-left: .35rem solid transparent;
+	    }
+	    select {
+	        display: inline-block;
+	        width: 100%;
+	    	height: 100%;
+	        margin: 0;
+	        padding: 0;
+	        line-height: 1.5;
+	        color: @black;
+	        border: 0;
+	        border-radius: .25rem;
+	        background-color: @white;
+	        cursor: pointer;
+	        outline: 0;
+	        -webkit-appearance: none;
+	        -moz-appearance: none;
+	        appearance: none;
+	    }
+	    select[disabled="disabled"] {
+	        cursor: not-allowed;
+	        opacity: 0.5;
+	    }
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

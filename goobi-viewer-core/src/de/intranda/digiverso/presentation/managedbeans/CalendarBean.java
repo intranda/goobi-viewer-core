@@ -73,7 +73,7 @@ public class CalendarBean implements Serializable {
     private int yearEnd = 3000;
     private String collection;
 
-    private static final int NUMBER_OF_ITEMS_IN_ROW = 15;
+    private static final int NUMBER_OF_ITEMS_IN_ROW = 10;
     private int rowIndex;
 
     private CalendarRow monthRow = new CalendarRow();

@@ -61,24 +61,27 @@
     &__years,
     &__months,
     &__days {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
+		.mx-clearfloats;
         a,
         span {
             display: block;
             padding: 5px 10px;
             text-align: center;
+    		text-overflow: ellipsis;
+            overflow: hidden;
         }        
+    }
+    &__year,
+    &__month,
+    &__day {
+    	display: inline-block;
+    	float: left;
     }
     &__years {
     }
     &__year {
+    	width: 10%;
         a {}
-    }
-    &__months,
-    &__days {
-        justify-content: flex-start;
     }
     &__months {
         border-top: 1px solid @middlegray;
@@ -86,13 +89,15 @@
         background-color: @lightgray;
     }
     &__month {
+    	width: 8.33333333%;
         a {}
     }
     &__days {
+        margin-bottom: 10px;
         border-bottom: 1px solid @middlegray;
     }
     &__day {
-        padding: 0 5px;
+        width: 3.22%;
         a,
         span {
             padding: 0;
@@ -127,13 +132,35 @@
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOP */
-@media screen and (max-width: @mediumBreakpoint) {}
-
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-    .search-timeline__input { display: none; }
-    .search-timeline__years { justify-content: flex-start; }
+@media screen and (max-width: @mediumBreakpoint) {
+	.search-timeline__years a, 
+	.search-timeline__months a, 
+	.search-timeline__days a, 
+	.search-timeline__years span, 
+	.search-timeline__months span, 
+	.search-timeline__days span {
+		padding: 5px;
+	}
+	.search-timeline__month {
+	    width: 16.66666666%;
+	}
+	.search-timeline__day {
+	    width: 6.44%;
+	}
 }
 
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.search-timeline__year {
+	    width: 20%;
+	}
+	.search-timeline__month {
+	    width: 33.33333333%;
+	}
+	.search-timeline__day {
+	    width: 12.88%;
+	}
+}

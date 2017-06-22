@@ -670,6 +670,7 @@ table,
   color: #1a1a1a;
   cursor: pointer;
   /* ELEMENT */
+  /* MODIFICATION */
 }
 .custom-control input[type="checkbox"],
 .custom-control input[type="radio"] {
@@ -691,10 +692,15 @@ table,
 .custom-control .fa-check-circle-o {
   display: none;
 }
-/* MODIFICATION */
 .custom-control--select {
-  display: inline-block;
-  padding: 0;
+  height: 34px;
+  padding: 6px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #1a1a1a;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
 }
 .custom-control--select:after {
   content: "";
@@ -714,8 +720,9 @@ table,
 .custom-control--select select {
   display: inline-block;
   width: 100%;
+  height: 100%;
   margin: 0;
-  padding: .5rem 2.25rem .5rem 1rem;
+  padding: 0;
   line-height: 1.5;
   color: #1a1a1a;
   border: 0;
@@ -726,6 +733,10 @@ table,
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+.custom-control--select select[disabled="disabled"] {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -4061,12 +4072,19 @@ input[id*="cmdMoveTo"] {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
 }
-.search-timeline__years,
-.search-timeline__months,
-.search-timeline__days {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+.search-timeline__years:before,
+.search-timeline__months:before,
+.search-timeline__days:before,
+.search-timeline__years:after,
+.search-timeline__months:after,
+.search-timeline__days:after {
+  content: " ";
+  display: table;
+}
+.search-timeline__years:after,
+.search-timeline__months:after,
+.search-timeline__days:after {
+  clear: both;
 }
 .search-timeline__years a,
 .search-timeline__months a,
@@ -4077,21 +4095,32 @@ input[id*="cmdMoveTo"] {
   display: block;
   padding: 5px 10px;
   text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-.search-timeline__months,
-.search-timeline__days {
-  justify-content: flex-start;
+.search-timeline__year,
+.search-timeline__month,
+.search-timeline__day {
+  display: inline-block;
+  float: left;
+}
+.search-timeline__year {
+  width: 10%;
 }
 .search-timeline__months {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   background-color: #eee;
 }
+.search-timeline__month {
+  width: 8.33333333%;
+}
 .search-timeline__days {
+  margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
 }
 .search-timeline__day {
-  padding: 0 5px;
+  width: 3.22%;
 }
 .search-timeline__day a,
 .search-timeline__day span {
@@ -4109,16 +4138,35 @@ input[id*="cmdMoveTo"] {
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .search-timeline__input {
-    display: none;
+@media screen and (max-width: 992px) {
+  .search-timeline__years a,
+  .search-timeline__months a,
+  .search-timeline__days a,
+  .search-timeline__years span,
+  .search-timeline__months span,
+  .search-timeline__days span {
+    padding: 5px;
   }
-  .search-timeline__years {
-    justify-content: flex-start;
+  .search-timeline__month {
+    width: 16.66666666%;
+  }
+  .search-timeline__day {
+    width: 6.44%;
   }
 }
+/* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .search-timeline__year {
+    width: 20%;
+  }
+  .search-timeline__month {
+    width: 33.33333333%;
+  }
+  .search-timeline__day {
+    width: 12.88%;
+  }
+}
 /* USER VIEWS */
 /* ==============================================================
    User Backend Tables
