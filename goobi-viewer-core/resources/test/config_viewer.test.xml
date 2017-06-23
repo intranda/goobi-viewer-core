@@ -198,6 +198,10 @@
 			<pageBrowseStep>10</pageBrowseStep>
 		</pageBrowse>
 		
+		<doublePageMode>
+			<enabled>true</enabled>
+		</doublePageMode>
+		
 		<zoomImageView type="classic" tileImage="true"
 			footerHeight="50">
 			<useFor>

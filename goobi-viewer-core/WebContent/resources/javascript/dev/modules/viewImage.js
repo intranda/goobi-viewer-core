@@ -1659,7 +1659,6 @@ if(!Number.isNaN) {
             }
             
             var coordList = _defaults.getCoordinates( group );
-            
             if ( coordList ) {
                 for ( var index=0; index<coordList.coordinates.length; index++ ) {
                     var coords = coordList.coordinates[ index ];
@@ -1715,8 +1714,8 @@ if(!Number.isNaN) {
         },
         focusBox: function( group, id ) {
             if ( _debug ) {
-                console.log( 'osViewer.overlays.highlightBox: group - ' + group );
-                console.log( 'osViewer.overlays.highlightBox: id - ' + id );
+            	console.log( 'osViewer.overlays.highlightBox: group - ' + group );
+            	console.log( 'osViewer.overlays.highlightBox: id - ' + id );
             }
             _overlays.filter( function( overlay ) {
                 return overlay.group === group;
@@ -1941,12 +1940,13 @@ if(!Number.isNaN) {
             console.log("overlay: ", overlay);
         }
         var element = document.createElement( "div" );
+        $(element).attr("id", "overlay_" + overlay.id)
         var overlayStyle = _defaults.getOverlayGroup( overlay.group );
         if ( overlayStyle ) {
             if(_debug)console.log("overlay style", overlayStyle);
-            element.title = overlay.title;
-            $( element ).attr( "data-toggle", "tooltip" );
-            $( element ).attr( "data-placement", "auto left" );
+//            element.title = overlay.title;
+//            $( element ).attr( "data-toggle", "tooltip" );
+//            $( element ).attr( "data-placement", "auto top" );
             $( element ).addClass( overlayStyle.styleClass );
             
             if ( overlay.type === osViewer.overlays.overlayTypes.LINE ) {
@@ -1958,11 +1958,16 @@ if(!Number.isNaN) {
                 element.focus = function( focus ) {
                     if ( focus ) {
                         $( element ).addClass( _focusStyleClass );
-                        $( element ).tooltip( "show" );
+                        _createTooltip(element, overlay);
+                        
+//                        tooltip.height(100);
+//                        $( element ).tooltip( "show" );
                     }
                     else {
+                    	console.log(overlay.title, " lose focus");
                         $( element ).removeClass( _focusStyleClass );
-                        $( element ).tooltip( "hide" );
+                        $(".tooltipp#tooltip_" + overlay.id).remove();
+//                        $( element ).tooltip( "hide" );
                     }
                     if ( _overlayFocusHook ) {
                         _overlayFocusHook( overlay, focus );
@@ -1999,6 +2004,24 @@ if(!Number.isNaN) {
             overlay.element = element;
             osViewer.viewer.addOverlay( element, overlay.rect, 0 );
         }
+    }
+    
+    function _createTooltip(element, overlay) {
+    	if(overlay.title) {    		
+    		var top = $( element ).offset().top;
+    		var left = $( element ).offset().left;
+    		var bottom = top + $( element ).outerHeight();
+    		var right = left + $( element ).outerWidth();
+    		console.log("tooltip coords = ", left, top, right, bottom);
+    		var $tooltip = $("<div class='tooltipp'>" + overlay.title + "</div>");
+    		$("body").append($tooltip);
+    		var tooltipPadding = parseFloat($tooltip.css("padding-top"));
+    		console.log("padding = ", tooltipPadding);
+    		$tooltip.css("max-width",right-left);
+    		$tooltip.css("top", top-$tooltip.outerHeight()-tooltipPadding);
+    		$tooltip.css("left", left);
+    		$tooltip.attr("id", "tooltip_" + overlay.id);
+    	}
     }
     
     function _rotate( angle, mapElement ) {

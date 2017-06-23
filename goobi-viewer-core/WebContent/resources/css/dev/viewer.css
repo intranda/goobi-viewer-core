@@ -4795,6 +4795,21 @@ div.olMapViewport {
 #metaMusealWrapper .tab-content .tab-pane .dl-horizontal dt {
   text-align: left;
 }
+.tooltipp {
+  position: absolute;
+  padding: 0.3em;
+  color: #507ebf;
+  color: #fff;
+  background-color: rgba(80, 126, 191, 0.8);
+  z-index: 99999;
+  /* 	opacity: 0.4; */
+  /*     border-radius: 6px; */
+  /*     background-color: rgba(256,256,256,0.7); */
+  /* 	border: 2px solid #507ebf; */
+  /* 	background-color: #cccccc; */
+  /* 	border-radius: 3px; */
+  /* 	position: absolute; */
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */

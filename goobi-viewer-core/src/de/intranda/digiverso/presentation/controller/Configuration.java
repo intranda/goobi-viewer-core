@@ -3055,4 +3055,11 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplayEmptyTocInSidebar() {
         return getLocalBoolean("sidebar.sidebarToc.visibleIfEmpty", true);
     }
+
+    /**
+     * @return
+     */
+    public boolean isDoublePageModeEnabled() {
+        return getLocalBoolean("viewer.doublePageMode.enabled", false);
+    }
 }

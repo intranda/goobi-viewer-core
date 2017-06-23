@@ -5725,7 +5725,7 @@
          * Method which deletes a tag from the list.
          * 
          * @method deleteTag
-         * @param {Object} tag The current tag to delete. 
+         * @param {Object} tag The current tag to delete.
          */
         deleteTag: function( tag ) {
             if ( _debug ) {
@@ -6091,7 +6091,8 @@
     
     return cms;
     
-} )( cmsJS || {}, jQuery );;var cmsJS = ( function( cms ) {
+} )( cmsJS || {}, jQuery );
+;var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables

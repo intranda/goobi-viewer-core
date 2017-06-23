@@ -638,4 +638,8 @@ public class ConfigurationBean implements Serializable {
     public boolean isSearchExcelExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
+    
+    public boolean isDoublePageModeEnabled()  {
+        return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
+    }
 }

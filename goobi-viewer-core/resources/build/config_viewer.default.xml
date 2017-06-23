@@ -184,6 +184,10 @@
             <pageBrowseStep>5</pageBrowseStep>
             <pageBrowseStep>10</pageBrowseStep>
         </pageBrowse>
+        
+        <doublePageMode>
+			<enabled>true</enabled>
+		</doublePageMode>
 	
 		<!--zoomImageView and zoomFullscreenView: define the different viewer options 
 			for the standard view and fullscreen view, respecively. Possibilities for 

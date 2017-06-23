@@ -2304,4 +2304,9 @@ public class ConfigurationTest {
     public void testSidebarTocVisibleIfEmpty() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
     }
+    
+    @Test
+    public void testIsDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageModeEnabled());
+    }
 }
