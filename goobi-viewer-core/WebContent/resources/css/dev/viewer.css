@@ -1054,6 +1054,12 @@ div.mce-fullscreen {
   top: 0;
   left: 100%;
 }
+.navigation__submenu.level-2.left,
+.navigation__submenu.level-3.left,
+.navigation__submenu.level-4.left,
+.navigation__submenu.level-5.left {
+  left: -100%;
+}
 .navigation__megamenu-trigger {
   position: inherit !important;
 }

@@ -13,7 +13,7 @@
 	</composite:interface>
 
 	<composite:implementation>
-		<nav class="navigation">
+		<nav id="navigation" class="navigation">
 			<h:form id="navigationForm" prependId="false">
 				<ul>
 					<!-- STANDARD MENU -->
@@ -42,7 +42,7 @@
 											<ul>
 												<ui:repeat varStatus="count" var="child" value="#{parentItem.childItems}">
 													<h:panelGroup rendered="#{child.valid and child.shouldDisplay}">
-														<li class="#{navigationHelper.currentPage == child.itemLabel ? 'active' : ''}">
+														<li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
 															<!-- WITHOUT SUBMENU -->
 															<h:panelGroup rendered="#{child.childItems.isEmpty()}">
 																<h:outputLink value="#{child.navigationUrl}">
@@ -62,7 +62,7 @@
 																	<ul>
 																		<ui:repeat varStatus="count" var="child1" value="#{child.childItems}">
 																			<h:panelGroup rendered="#{child1.valid and child1.shouldDisplay}">
-																				<li class="#{navigationHelper.currentPage == child1.itemLabel ? 'active' : ''}">
+																				<li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
 																					<!-- WITHOUT SUBMENU -->
 																					<h:panelGroup rendered="#{child1.childItems.isEmpty()}">
 																						<h:outputLink value="#{child1.navigationUrl}">
@@ -82,7 +82,7 @@
 																							<ul>
 																								<ui:repeat varStatus="count" var="child2" value="#{child1.childItems}">
 																									<h:panelGroup rendered="#{child2.valid and child2.shouldDisplay}">
-																										<li class="#{navigationHelper.currentPage == child2.itemLabel ? 'active' : ''}">
+																										<li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
 																											<!-- WITHOUT SUBMENU -->
 																											<h:panelGroup rendered="#{child2.childItems.isEmpty()}">
 																												<h:outputLink value="#{child2.navigationUrl}">
@@ -102,7 +102,7 @@
 																													<ul>
 																														<ui:repeat varStatus="count" var="child3" value="#{child2.childItems}">
 																															<h:panelGroup rendered="#{child3.valid and child3.shouldDisplay}">
-																																<li class="#{navigationHelper.currentPage == child3.itemLabel ? 'active' : ''}">
+																																<li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
 																																	<!-- WITHOUT SUBMENU -->
 																																	<h:panelGroup rendered="#{child3.childItems.isEmpty()}">
 																																		<h:outputLink value="#{child3.navigationUrl}">
@@ -122,7 +122,7 @@
 																																			<ul>
 																																				<ui:repeat varStatus="count" var="child4" value="#{child3.childItems}">
 																																					<h:panelGroup rendered="#{child4.valid and child4.shouldDisplay}">
-																																						<li class="#{navigationHelper.currentPage == child4.itemLabel ? 'active' : ''}">
+																																						<li class="#{!navItem.childItems.isEmpty() ? 'navigation__submenu-trigger' : ''} #{navigationHelper.currentPage == navItem.itemLabel or navigationHelper.currentPage == navItem.pageUrl  ? 'active' : ''}">
 																																							<h:outputLink value="#{child4.navigationUrl}">
 																																								<h:outputText value="#{msg[child4.itemLabel]}" />
 																																							</h:outputLink>
@@ -305,63 +305,9 @@
 		</nav>
 		
 		<script type="text/javascript">
-			function resetMenus() {
-// 			    console.log('resetMenus');
-			    $( '.navigation__submenu-trigger' ).removeClass( 'active' );
-				$( '.navigation__submenu' ).removeClass( 'in' );
-				$( '.navigation__megamenu-trigger' ).removeClass( 'active' );
-				$( '.navigation__megamenu-wrapper' ).removeClass( 'in' );
-			}
+			var navigationConfig = {};
 			
-			function resetSubMenus() {
-			    $( 'div[class*="level-"' ).removeClass( 'in' );
-			}
-			
-			// TODO:
-			// - Submenüs > level 2 müssen resettet werden, wenn ein anderes Submenü > level 2 angeklickt wird
-			// - Submenüs müssen resettet werden, wenn man auf den Elternlink klickt
-			$( '[data-toggle="submenu"]' ).on( 'click', function() {
-				if ( $( this ).parents( '.navigation__submenu' ).hasClass( 'in' ) ) {
-        			$( this ).parent().addClass( 'active' );
-        			$( this ).next( '.navigation__submenu' ).addClass( 'in' );
-				}
-				else {
-        			resetMenus();
-        			$( this ).parent().addClass( 'active' );
-                    $( this ).next( '.navigation__submenu' ).addClass( 'in' );
-				}
-			} );
-			
-			$( '[data-toggle="megamenu"]' ).on( 'click', function() {
-			    resetMenus();
-			    
-				if ( $( this ).next( '.navigation__megamenu-wrapper' ).hasClass( 'in' ) ) {
-					$( this ).parent().removeClass( 'active' );
-					$( this ).next( '.navigation__megamenu-wrapper' ).removeClass( 'in' );
-				}
-				else {
-					$( '.navigation__megamenu-trigger' ).removeClass( 'active' );
-					$( '.navigation__megamenu-wrapper' ).removeClass( 'in' );
-					$( this ).parent().addClass( 'active' );
-					$( this ).next( '.navigation__megamenu-wrapper' ).addClass( 'in' );
-				}				
-			} );
-			
-			$( '[data-toggle="close"]' ).on( 'click', function() {
-				resetMenus();
-			} );
-			
-			if ( $( '.navigation__megamenu-wrapper' ).length > 0 ) {
-			    resetMenus();
-			}
-			
-			// TODO:
-			// - Menüs sollten resettet werden, egal wo man klickt
-			$( document ).ready( function() {
-				$( '#pageContent' ).on( 'click', function() {					
-					resetMenus();
-				} );				
-			} );
+			viewerJS.navigation.init( navigationConfig );
 		</script>
 	</composite:implementation>
 </ui:composition>
