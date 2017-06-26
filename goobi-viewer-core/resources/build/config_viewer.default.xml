@@ -891,7 +891,7 @@
 			<luceneField recordsAndAnchorsOnly="true" sortField="SORT_AUTHOR">MD_AUTHOR_UNTOKENIZED</luceneField>
 			<luceneField recordsAndAnchorsOnly="true" sortField="SORT_TITLE">MD_TITLE_UNTOKENIZED</luceneField>
 			<!-- <luceneField sortField="SORT_TITLE" recordsAndAnchorsOnly="true" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</luceneField> -->
-			<luceneField recordsAndAnchorsOnly="true" >MD_SHELFMARK</luceneField>
+			<!--luceneField recordsAndAnchorsOnly="true" >MD_SHELFMARK</luceneField-->
 		</browsingMenu>
 
 		<!-- htmlHeadDCMetadata: render dc meta data to html head -->
