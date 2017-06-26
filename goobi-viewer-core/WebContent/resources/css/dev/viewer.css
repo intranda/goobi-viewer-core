@@ -1,5 +1,5 @@
 /***************************************************************
- * viewer Stylesheet v3.1.0
+ * viewer Stylesheet v3.2.0
  * 
  * Write {LESS}, do more!
  *
@@ -966,57 +966,6 @@ div.mce-fullscreen {
   }
 }
 /* VIEWER COMPONENTS */
-/* ==============================================================
-   Template Navigation
-   style declarations for templateNavigation.xhtml
-   ==============================================================*/
-#mainnav {
-  position: relative;
-  float: left;
-  width: 100%;
-}
-#mainnav ul li {
-  display: inline-block;
-  float: left;
-  min-height: 1.75rem;
-  line-height: 1.75rem;
-  margin-right: 0.4375rem;
-}
-#mainnav ul li a {
-  display: block;
-}
-#mainnav ul li a.mainnav-active {
-  font-weight: bold;
-}
-#mainnav ul li:hover > ul {
-  display: block;
-}
-#mainnav ul li:last-child {
-  margin: 0;
-}
-#mainnav .mainsubnav {
-  display: none;
-  position: absolute;
-  padding: 0.5rem;
-  background-color: #fff;
-  z-index: 9999;
-}
-#mainnav .mainsubnav h3 {
-  margin: 0 0 0.875rem 0;
-}
-#mainnav .mainsubnav li {
-  float: left;
-  width: 100%;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  #mainnav {
-    display: none;
-  }
-}
-/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    Navigation
    style declarations for navigation.xhtml
