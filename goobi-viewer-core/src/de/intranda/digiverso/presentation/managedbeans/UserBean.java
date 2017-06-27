@@ -159,7 +159,7 @@ public class UserBean implements Serializable {
                     user.setActivationKey(null);
                     user.setActive(true);
                     if (DataManager.getInstance().getDao().updateUser(user)) {
-                        Messages.info(Helper.getTranslation("user_accountActivationSuccess", null));
+                        Messages.info(Helper.getTranslation("user_accountActivationSuccess", null));
                         logger.debug("User account successfully activated: " + user.getEmail());
                     } else {
                         Messages.error(Helper.getTranslation("errSave", null));
