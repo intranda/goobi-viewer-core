@@ -225,9 +225,11 @@ public class ActiveDocumentBean implements Serializable {
             logger.debug("update(): {} (thread {})", topDocumentIddoc, Thread.currentThread().getId());
             prevHit = null;
             nextHit = null;
+            boolean doublePageMode = false;
             titleBarMetadata.clear();
 
             if (viewManager != null && viewManager.getCurrentDocument() != null) {
+                doublePageMode = viewManager.isDoublePageMode();
                 if (!viewManager.getCurrentDocument().isExists()) {
                     logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
                             viewManager.getPi(), topDocumentIddoc);
@@ -308,6 +310,7 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             if (viewManager != null && viewManager.getCurrentDocument() != null) {
+                viewManager.setDoublePageMode(doublePageMode);
                 StructElement structElement = viewManager.getCurrentDocument();
                 if (!structElement.isExists()) {
                     logger.trace("StructElement {} is not marked as existing.", structElement.getLuceneId());
