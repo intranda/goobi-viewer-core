@@ -28,7 +28,7 @@
             <div class="form-group">
                 <h:outputLabel for="userGroupOwner" styleClass="col-sm-4 control-label" value="#{msg.userGroup_owner} *" />
                 <div class="col-sm-8">
-                    <div class="form-control__select">
+                    <div class="custom-control custom-control--select">
                         <h:selectOneMenu value="#{adminBean.currentUserGroup.owner}" id="userGroupOwner" converter="userConverter" required="true">
                             <f:selectItems value="#{adminBean.allUsers}" var="user" itemLabel="#{user.displayName}" />
                         </h:selectOneMenu>

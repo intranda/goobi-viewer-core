@@ -18,7 +18,7 @@
         <div class="form-group">
             <h:outputLabel for="name" styleClass="col-sm-4 control-label" value="#{msg.license_licenseType} *" />
             <div class="col-sm-8">
-                <div class="form-control__select">
+                <div class="custom-control custom-control--select">
                     <h:selectOneMenu id="name" value="#{adminBean.currentLicense.licenseType}" converter="licenseTypeConverter" required="true">
                         <f:selectItems value="#{adminBean.allLicenseTypes}" var="licenseType" itemLabel="#{msg[licenseType.name]}" />
                         <f:ajax render="@form" />
