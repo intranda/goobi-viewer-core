@@ -5474,14 +5474,18 @@ div.olMapViewport {
 }
 #timematrixCanvas {
   position: relative;
-  float: left;
-  width: 100%;
-  min-width: 18.75rem;
-  min-height: 600px;
   margin-bottom: 1.3125rem;
 }
 #timematrixCanvas .timematrix-box .timematrix-header h3 {
   margin: 0;
+}
+#timematrixCanvas .timematrix-box .timematrix-body:before,
+#timematrixCanvas .timematrix-box .timematrix-body:after {
+  content: " ";
+  display: table;
+}
+#timematrixCanvas .timematrix-box .timematrix-body:after {
+  clear: both;
 }
 #timematrixCanvas .timematrix-box .timematrix-body .timematrix-thumb {
   position: relative;

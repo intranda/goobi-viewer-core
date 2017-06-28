@@ -4802,6 +4802,16 @@
                     console.error( 'ERROR: viewer.timematrix.init - ', error );
                 } )
             } );
+            
+            // remove all popovers by clicking on body
+            $( 'body' ).on( 'click', function( event ) {
+                if ( $( event.target ).closest( '.timematrix-thumb' ).length ) {
+                    return;
+                }
+                else {
+                    _removePopovers();
+                }
+            } );
         }
     };
     
@@ -4942,6 +4952,20 @@
         }
         
         return '<div class="timematrix-slider-bubble-' + time + '">' + val + '</div>';
+    }
+    
+    /**
+     * Method which removes all popovers.
+     * 
+     * @method _removePopovers
+     */
+    function _removePopovers() {
+        if ( _debug ) {
+            console.log( '---------- _removePopovers() ----------' );
+        }
+        
+        $( '.timematrix-popover' ).remove();
+        $( '.timematrix-thumb' ).removeClass( 'marker' );
     }
     
     return viewer;
