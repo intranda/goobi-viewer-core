@@ -2992,75 +2992,166 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR SMARTPHONES */
 /* SEARCH VIEWS */
 /* ==============================================================
-   Search
-   style declarations for search.xhtml
+   Search Standard
+   style declarations for search.xhtml 
    ==============================================================*/
-.search-wrapp {
-  margin-bottom: 1.3125rem;
+/* SEARCH STANDARD */
+/* BLOCK */
+.search-standard {
+  margin-bottom: 21px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  /* ELEMENT */
+  /* MODIFICATION */
 }
-.search-wrapp .search-input {
-  margin: 0 0 15px 0;
+.search-standard__help {
+  font-size: 1.2rem;
 }
-.search-wrapp .search-input table tr td {
-  width: 33.33333%;
-  padding: 0 0.1875rem 0.1875rem 0;
+.search-standard__help button {
+  padding: 0;
+  border: none;
+  background: none;
 }
-.search-wrapp .search-input table tr td:last-child {
-  padding-right: 0;
+.search-standard__input-label,
+.search-standard__filter-label {
+  height: 1.75rem;
+  line-height: 1.75rem;
 }
-.search-wrapp .search-filter {
-  margin: 0 0 15px 0;
+.search-standard__input-autocomplete .ui-autocomplete {
+  position: relative;
+  display: block;
 }
-.search-wrapp .search-filter table tr td {
-  text-align: left;
-  vertical-align: middle;
+.search-standard__input-autocomplete .ui-autocomplete .ui-autocomplete-input {
+  width: 100%;
+  height: 1.75rem;
+  font-size: .9rem;
+  border: 1px solid #ccc;
+  background-image: none;
+  background-color: #fff;
 }
-.search-wrapp .search-filter table tr td input {
-  margin: 0 0.3125rem 0 0;
+.search-standard__filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-top: 7px;
+  padding-bottom: 15px;
 }
-.search-wrapp .search-filter table tr td label {
-  margin: 0;
+.search-standard__filter-radio {
+  /*         td { */
+  /*             position: relative; */
+  /*             padding-right: 15px; */
+  /*             text-align: left; */
+  /*             vertical-align: middle; */
+  /*         } */
+  /*         label { */
+  /*             margin: 0; */
+  /*             cursor: pointer; */
+  /*         } */
+  /*         .fa { */
+  /*             margin-right: 5px; */
+  /*             color: @blue; */
+  /*         } */
+  /*         .fa-check-circle-o { */
+  /*             display: none; */
+  /*         } */
+  /*         input[type="radio"] { */
+  /*             position: absolute; */
+  /*             width: 1px; */
+  /*             height: 1px; */
+  /*             margin: 0; */
+  /*             padding: 0; */
+  /*             border: 0; */
+  /*             clip: rect(1px 1px 1px 1px); */
+  /*             overflow: hidden; */
+  /*             &:checked ~ .fa-check-circle-o { */
+  /*                 display: inline-block; */
+  /*             } */
+  /*             &:checked ~ .fa-circle-o { */
+  /*                 display: none; */
+  /*             } */
+  /*         } */
 }
-.search-wrapp .search-action,
-.search-wrapp .search-reset {
+.search-standard__filter-link {
   text-align: right;
 }
-.search-wrapp .search-action .btn,
-.search-wrapp .search-reset .btn {
-  margin: 0 0 0 0.4375rem;
+.search-standard__action {
+  padding-top: 15px;
+  text-align: right;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Search Explanation Text
-   style declarations for searchOptions.xhtml 
-   ==============================================================*/
-#simpleSearchExplanationGroup .searchExplanationText {
-  display: none;
-  margin-bottom: 1.3125rem;
+.search-standard__action .btn {
+  margin: 0 0 0 5px;
 }
-#simpleSearchExplanationGroup .searchParagraphOpen,
-#simpleSearchExplanationGroup .searchParagraphClosed {
-  padding: 0.4375rem 0.4375rem 0.4375rem 1.75rem;
-  background-repeat: no-repeat;
-  background-position: left center;
-  cursor: pointer;
+/* AUTOCOMPLETE PANEL */
+.ui-autocomplete-panel {
+  border: 1px solid #eee;
+  border-radius: 0;
+  box-shadow: none;
 }
-#simpleSearchExplanationGroup .searchParagraphText {
-  display: none;
-  margin-bottom: 1.3125rem;
+.ui-autocomplete-panel ul.ui-autocomplete-items {
+  padding: 0;
 }
-#simpleSearchExplanationGroup .searchParagraphText .searchExample {
-  display: block;
-  margin: 0.4375rem 0;
-  padding: 0.4375rem;
-  font-style: italic;
+.ui-autocomplete-panel ul.ui-autocomplete-items li.ui-state-highlight {
+  color: #1a1a1a;
+  border: none;
+  border-radius: 0;
+  background: #eee;
+}
+/* SEARCH HELP MODAL */
+/* BLOCK */
+.search-help {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.search-help .panel-group .panel {
+  border-radius: 0;
+}
+.search-help .panel-heading {
+  border-radius: 0;
   background-color: #eee;
 }
-#simpleSearchExplanationGroup .searchParagraphTextFirst {
+.search-help .panel-title a {
   display: block;
+}
+.search-help .panel-title a:hover,
+.search-help .panel-title a:focus,
+.search-help .panel-title a:active {
+  text-decoration: none;
+}
+.search-help .panel-body p:last-child {
+  margin: 0;
+}
+.search-help .panel-body p span {
+  display: block;
+  margin: 5px 0 15px 0;
+  padding: 10px;
+  background-color: #eee;
+}
+/* SEARCH TILE */
+/* BLOCK */
+.search-tile {
+  margin-bottom: 21px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.search-tile__description {
+  min-height: 125px;
+}
+.search-tile__description h3 {
+  display: inline-block;
+}
+.search-tile__icon {
+  float: right;
+  margin: 0 0 10px 10px;
+  font-size: 3rem;
+}
+.search-tile__action {
+  padding-top: 15px;
+  text-align: right;
+}
+.search-tile__action .btn {
+  margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -3213,117 +3304,6 @@ input[id*="cmdMoveTo"] {
     width: 100%;
   }
 }
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Search Calendar
-   style declarations for searchCalendar.xhtml 
-   ==============================================================*/
-/* BLOCK */
-.search-calendar {
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.search-calendar .btn {
-  margin: 0 0 0 5px;
-}
-.search-calendar__toggle.btn {
-  margin: 0 0 21px 0;
-}
-.search-calendar__toggle:active,
-.search-calendar__toggle:focus {
-  outline: none;
-}
-.search-calendar__input {
-  padding: 21px;
-  border-top: 1px solid #ccc;
-  background-color: #eee;
-}
-.search-calendar__input input {
-  box-shadow: none;
-}
-.search-calendar__reset {
-  text-align: right;
-}
-.search-calendar__months {
-  margin-bottom: 21px;
-  padding: 21px 0;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-}
-.search-calendar__month {
-  margin-bottom: 15px;
-}
-.search-calendar__month-title {
-  padding: 5px;
-  font-style: italic;
-}
-.search-calendar__month-days,
-.search-calendar__month-week {
-  border-bottom: 1px solid #ccc;
-}
-.search-calendar__month-days span,
-.search-calendar__month-day,
-.search-calendar__month-day-empty {
-  float: left;
-  width: calc(14.28571429%);
-}
-.search-calendar__month-days span {
-  display: block;
-  padding: 5px;
-  font-weight: bold;
-  text-align: center;
-}
-.search-calendar__month-day {
-  text-align: center;
-  color: #ccc;
-}
-.search-calendar__month-day a,
-.search-calendar__month-day span {
-  display: block;
-  padding: 5px 10px;
-}
-.search-calendar__month-day-empty {
-  min-height: 1px;
-}
-.search-calendar__incomplete {
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-.search-calendar__incomplete .label {
-  padding: 7px 15px;
-  font-size: .9rem;
-}
-.search-calendar__month-day.active {
-  background-color: #ccc;
-}
-.search-calendar__month-day.active a {
-  font-weight: bold;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .search-calendar__input {
-    display: none;
-  }
-}
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   Search Controls
-   style declarations for searchOptions.xhtml 
-   ==============================================================*/
-#searchNavigation ul li {
-  display: inline-block;
-  text-align: center;
-}
-#searchNavigation ul li a,
-#searchNavigation ul li span {
-  display: block;
-  padding: 5px 10px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    SearchList
@@ -3704,170 +3684,98 @@ input[id*="cmdMoveTo"] {
   }
 }
 /* ==============================================================
-   Search Standard
-   style declarations for search.xhtml 
+   Search Calendar
+   style declarations for searchCalendar.xhtml 
    ==============================================================*/
-/* SEARCH STANDARD */
 /* BLOCK */
-.search-standard {
-  margin-bottom: 21px;
-  padding: 10px;
-  border: 1px solid #ccc;
+.search-calendar {
   /* ELEMENT */
   /* MODIFICATION */
 }
-.search-standard__help {
-  font-size: 1.2rem;
-}
-.search-standard__help button {
-  padding: 0;
-  border: none;
-  background: none;
-}
-.search-standard__input-label,
-.search-standard__filter-label {
-  height: 1.75rem;
-  line-height: 1.75rem;
-}
-.search-standard__input-autocomplete .ui-autocomplete {
-  position: relative;
-  display: block;
-}
-.search-standard__input-autocomplete .ui-autocomplete .ui-autocomplete-input {
-  width: 100%;
-  height: 1.75rem;
-  font-size: .9rem;
-  border: 1px solid #ccc;
-  background-image: none;
-  background-color: #fff;
-}
-.search-standard__filter {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding-top: 7px;
-  padding-bottom: 15px;
-}
-.search-standard__filter-radio {
-  /*         td { */
-  /*             position: relative; */
-  /*             padding-right: 15px; */
-  /*             text-align: left; */
-  /*             vertical-align: middle; */
-  /*         } */
-  /*         label { */
-  /*             margin: 0; */
-  /*             cursor: pointer; */
-  /*         } */
-  /*         .fa { */
-  /*             margin-right: 5px; */
-  /*             color: @blue; */
-  /*         } */
-  /*         .fa-check-circle-o { */
-  /*             display: none; */
-  /*         } */
-  /*         input[type="radio"] { */
-  /*             position: absolute; */
-  /*             width: 1px; */
-  /*             height: 1px; */
-  /*             margin: 0; */
-  /*             padding: 0; */
-  /*             border: 0; */
-  /*             clip: rect(1px 1px 1px 1px); */
-  /*             overflow: hidden; */
-  /*             &:checked ~ .fa-check-circle-o { */
-  /*                 display: inline-block; */
-  /*             } */
-  /*             &:checked ~ .fa-circle-o { */
-  /*                 display: none; */
-  /*             } */
-  /*         } */
-}
-.search-standard__filter-link {
-  text-align: right;
-}
-.search-standard__action {
-  padding-top: 15px;
-  text-align: right;
-}
-.search-standard__action .btn {
+.search-calendar .btn {
   margin: 0 0 0 5px;
 }
-/* AUTOCOMPLETE PANEL */
-.ui-autocomplete-panel {
-  border: 1px solid #eee;
-  border-radius: 0;
+.search-calendar__toggle.btn {
+  margin: 0 0 21px 0;
+}
+.search-calendar__toggle:active,
+.search-calendar__toggle:focus {
+  outline: none;
+}
+.search-calendar__input {
+  padding: 21px;
+  border-top: 1px solid #ccc;
+  background-color: #eee;
+}
+.search-calendar__input input {
   box-shadow: none;
 }
-.ui-autocomplete-panel ul.ui-autocomplete-items {
-  padding: 0;
-}
-.ui-autocomplete-panel ul.ui-autocomplete-items li.ui-state-highlight {
-  color: #1a1a1a;
-  border: none;
-  border-radius: 0;
-  background: #eee;
-}
-/* SEARCH HELP MODAL */
-/* BLOCK */
-.search-help {
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.search-help .panel-group .panel {
-  border-radius: 0;
-}
-.search-help .panel-heading {
-  border-radius: 0;
-  background-color: #eee;
-}
-.search-help .panel-title a {
-  display: block;
-}
-.search-help .panel-title a:hover,
-.search-help .panel-title a:focus,
-.search-help .panel-title a:active {
-  text-decoration: none;
-}
-.search-help .panel-body p:last-child {
-  margin: 0;
-}
-.search-help .panel-body p span {
-  display: block;
-  margin: 5px 0 15px 0;
-  padding: 10px;
-  background-color: #eee;
-}
-/* SEARCH TILE */
-/* BLOCK */
-.search-tile {
-  margin-bottom: 21px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.search-tile__description {
-  min-height: 125px;
-}
-.search-tile__description h3 {
-  display: inline-block;
-}
-.search-tile__icon {
-  float: right;
-  margin: 0 0 10px 10px;
-  font-size: 3rem;
-}
-.search-tile__action {
-  padding-top: 15px;
+.search-calendar__reset {
   text-align: right;
 }
-.search-tile__action .btn {
-  margin: 0;
+.search-calendar__months {
+  margin-bottom: 21px;
+  padding: 21px 0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.search-calendar__month {
+  margin-bottom: 15px;
+}
+.search-calendar__month-title {
+  padding: 5px;
+  font-style: italic;
+}
+.search-calendar__month-days,
+.search-calendar__month-week {
+  border-bottom: 1px solid #ccc;
+}
+.search-calendar__month-days span,
+.search-calendar__month-day,
+.search-calendar__month-day-empty {
+  float: left;
+  width: calc(14.28571429%);
+}
+.search-calendar__month-days span {
+  display: block;
+  padding: 5px;
+  font-weight: bold;
+  text-align: center;
+}
+.search-calendar__month-day {
+  text-align: center;
+  color: #ccc;
+}
+.search-calendar__month-day a,
+.search-calendar__month-day span {
+  display: block;
+  padding: 5px 10px;
+}
+.search-calendar__month-day-empty {
+  min-height: 1px;
+}
+.search-calendar__incomplete {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.search-calendar__incomplete .label {
+  padding: 7px 15px;
+  font-size: .9rem;
+}
+.search-calendar__month-day.active {
+  background-color: #ccc;
+}
+.search-calendar__month-day.active a {
+  font-weight: bold;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .search-calendar__input {
+    display: none;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    SearchTermList
@@ -4078,6 +3986,54 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
+   User Data
+   style declarations for user.xhtml
+   ==============================================================*/
+/* DEPRECATED SINCE 3.1 */
+#user #includeUserDataForm {
+  margin-bottom: 1.3125rem;
+}
+#user #includeUserDataForm .userdata-data-row .userdata-data-label,
+#user #includeUserDataForm .userdata-data-row .userdata-data-value {
+  height: 1.75rem;
+  line-height: 1.75rem;
+}
+#user #includeUserDataForm .userdata-change-data {
+  text-align: right;
+}
+#user #includeUserDataForm .userdata-change-data .btn {
+  margin: 0;
+}
+/* USERDATA */
+/* BLOCK */
+.userdata {
+  /* ELEMENT */
+}
+.userdata__gravatar img {
+  display: block;
+}
+.userdata__data {
+  overflow-x: auto;
+}
+.userdata__action {
+  text-align: right;
+}
+.userdata__action .btn {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .userdata__gravatar img {
+    margin: 0 auto;
+  }
+  .userdata__action {
+    text-align: center;
+  }
+}
+/* ==============================================================
    User Activity
    style declarations for userBackendActivity.xhtml
    ==============================================================*/
@@ -4204,114 +4160,6 @@ input[id*="cmdMoveTo"] {
 }
 #viewBookshelf #viewBookshelfControlsForm .btn {
   margin: 1.3125rem 0;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User create Account
-   style declarations for userCreateAccount.xhtml
-   ==============================================================*/
-#userCreateAccount #userCreateAccountForm {
-  float: left;
-  width: 100%;
-  margin-bottom: 1.3125rem;
-}
-#userCreateAccount #userCreateAccountForm p {
-  float: left;
-  width: 100%;
-}
-#userCreateAccount #userCreateAccountForm .btn {
-  float: right;
-  margin: 0;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User Data
-   style declarations for user.xhtml
-   ==============================================================*/
-/* DEPRECATED SINCE 3.1 */
-#user #includeUserDataForm {
-  margin-bottom: 1.3125rem;
-}
-#user #includeUserDataForm .userdata-data-row .userdata-data-label,
-#user #includeUserDataForm .userdata-data-row .userdata-data-value {
-  height: 1.75rem;
-  line-height: 1.75rem;
-}
-#user #includeUserDataForm .userdata-change-data {
-  text-align: right;
-}
-#user #includeUserDataForm .userdata-change-data .btn {
-  margin: 0;
-}
-/* USERDATA */
-/* BLOCK */
-.userdata {
-  /* ELEMENT */
-}
-.userdata__gravatar img {
-  display: block;
-}
-.userdata__data {
-  overflow-x: auto;
-}
-.userdata__action {
-  text-align: right;
-}
-.userdata__action .btn {
-  margin: 0;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  .userdata__gravatar img {
-    margin: 0 auto;
-  }
-  .userdata__action {
-    text-align: center;
-  }
-}
-/* ==============================================================
-   User edit Data
-   style declarations for userBackendEditData.xhtml
-   ==============================================================*/
-#editUserData #userEditDataForm {
-  margin-bottom: 1.3125rem;
-}
-#editUserData #userEditDataForm .form-group .btn {
-  float: right;
-  margin: 0 0 0 0.4375rem;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   User retrieve Account
-   style declarations for userRetrieveAccount.xhtml
-   ==============================================================*/
-#userRetrieveAccount #userRetrieveAccountForm {
-  margin-bottom: 1.3125rem;
-}
-#userRetrieveAccount #userRetrieveAccountForm .form-group label {
-  height: 1.75rem;
-  line-height: 1.75rem;
-  margin: 0 0.4375rem 0 0;
-}
-#userRetrieveAccount #userRetrieveAccountForm .form-group input {
-  width: 15.625rem;
-  height: 1.75rem;
-  margin-right: 0.4375rem;
-}
-#userRetrieveAccount #userRetrieveAccountForm .btn {
-  margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
