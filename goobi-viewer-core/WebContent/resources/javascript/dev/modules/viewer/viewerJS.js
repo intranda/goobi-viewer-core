@@ -290,6 +290,82 @@ var viewerJS = ( function() {
                 return false;
             }
         } );
+        
+        // init tinyMCE
+        var tinyConfig = {
+            language: currLang,
+        };
+        
+        if ( currentPage === 'adminCmsCreatePage' ) {
+            tinyConfig.setup = function( ed ) {
+                // listen to changes on tinymce input fields
+                ed.on( 'change input paste', function( e ) {
+                    tinymce.triggerSave();
+                    createPageConfig.prevBtn.attr( 'disabled', true );
+                    createPageConfig.prevDescription.show();
+                } );
+            };
+            // TODO: Für ZLB einbauen
+            // _tinyConfig.textcolor_map = [ "FFFFFF", "ZLB-Weiß", "333333",
+            // "ZLB-Schwarz", "dedede", "ZLB-Hellgrau", "727c87", "ZLB-Mittelgrau",
+            // "9a9a9a", "ZLB-Dunkelgrau",
+            // "CD0000", "ZLB-Rot", "92406d", "ZLB-Lila", "6f2c40", "ZLB-Bordeaux",
+            // "ffa100", "ZLB-Orange", "669933", "ZLB-Grün", "3e5d1e", "ZLB-Dunkelgrün",
+            // "a9d0f5",
+            // "ZLB-Hellblau", "28779f", "ZLB-Blau" ];
+        }
+        
+        // AJAX Loader Eventlistener for tinyMCE
+        if ( typeof jsf !== 'undefined' ) {
+            jsf.ajax.addOnEvent( function( data ) {
+                var ajaxstatus = data.status;
+                
+                switch ( ajaxstatus ) {
+                    case "success":
+                        if ( currentPage === 'overview' ) {
+                            tinyConfig.menubar = true;
+                            
+                            if ( $( '.overview__description-editor' ).length > 0 ) {
+                                tinyConfig.setup = function( editor ) {
+                                    editor.on( 'init', function( e ) {
+                                        $( '.overview__publication-action .btn' ).hide();
+                                    } );
+                                    editor.on( 'FullscreenStateChanged', function( e ) {
+                                        if ( e.state ) {
+                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
+                                        }
+                                        else {
+                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
+                                        }
+                                    } );
+                                };
+                            }
+                            else {
+                                tinyConfig.setup = function( editor ) {
+                                    editor.on( 'init', function( e ) {
+                                        $( '.overview__description-action .btn' ).hide();
+                                    } );
+                                    editor.on( 'FullscreenStateChanged', function( e ) {
+                                        if ( e.state ) {
+                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
+                                        }
+                                        else {
+                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
+                                        }
+                                    } );
+                                };
+                            }
+                        }
+                        
+                        viewerJS.tinyMce.init( tinyConfig );
+                        break;
+                }
+            } );
+        }
+        
+        if ( $( '.tinyMCE' ).length > 0 ) {
+            viewerJS.tinyMce.init( tinyConfig );
+        }
     };
     
     return viewer;
