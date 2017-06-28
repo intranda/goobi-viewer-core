@@ -35,7 +35,16 @@
         background-color: rgba(255,255,255,0.75);
         z-index: 10;
     }
-    &__connector {}
+    &__connector {
+    	.custom-control--select {
+    		display: inline-block;
+    		width: 70px;
+    		border: none;
+    		&:after {
+    			right: 10px;
+    		}
+    	}
+    }
     &__input-group {
         .form-control__select,
         input[type="text"] {
@@ -63,18 +72,11 @@
         }
         .custom-control--select {
             width: 100%;
-            border: 1px solid @middlegray;
             &.disabled {
             	display: none;
             	&:after {
 	                display: none;
 	            }
-            }
-            &:after {
-                right: 12px;
-            }
-            select {
-            	padding: 6px 12px;
             }
             select[disabled] {
                 border-radius: 0;

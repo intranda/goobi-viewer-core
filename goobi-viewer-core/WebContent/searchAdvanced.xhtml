@@ -43,8 +43,7 @@
                                 <div class="search-advanced__connector">
                                     #{msg.searchAdvanced_operatorItems}:
                                     <div class="custom-control custom-control--select">
-                                        <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}"
-                                            styleClass="custom-control custom-control--select" value="#{queryGroup.operator}">
+                                        <h:selectOneMenu id="advsearch_group_operator_#{statusGroup.count}" value="#{queryGroup.operator}">
                                             <f:selectItems value="#{queryGroup.availableOperators}" var="operator" itemValue="#{operator}" itemLabel="#{operator.label}" />
                                         </h:selectOneMenu>
                                     </div>
@@ -60,8 +59,7 @@
                                                 <!-- SELECT -->
                                                 <div class="search-advanced__input-col">
                                                     <div class="custom-control custom-control--select">
-                                                        <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" styleClass="form-control"
-                                                            value="#{queryItem.field}" valueChangeListener="#{queryItem.selectOneMenuListener}">
+                                                        <h:selectOneMenu id="advsearch_field_#{statusGroup.count}-#{status.count}" value="#{queryItem.field}" valueChangeListener="#{queryItem.selectOneMenuListener}">
                                                             <f:selectItems value="#{searchBean.advancedSearchAllowedFields}" var="field" itemValue="#{field}"
                                                                 itemLabel="#{msg[field]}" />
                                                             <f:ajax
@@ -92,9 +90,8 @@
                                                             </div>
                                                         </h:panelGroup>
                                                         <h:panelGroup rendered="#{queryItem.displaySelectItems}">
-                                                            <div class="form-control__select">
-                                                                <h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}"
-                                                                    styleClass="form-control" value="#{queryItem.value}">
+                                                            <div class="custom-control custom-control--select">
+                                                                <h:selectOneMenu id="advsearch_value_select_#{statusGroup.count}-#{status.count}" value="#{queryItem.value}">
                                                                     <c:forEach var="item" items="#{queryItem.selectItems}">
                                                                         <f:selectItem itemValue="#{item.one}" itemLabel="#{item.two}" />
                                                                     </c:forEach>
@@ -108,8 +105,7 @@
                                                 <!-- OPERATOR -->
                                                 <div id="advsearch_operator_#{statusGroup.count}-#{status.count}" class="search-advanced__input-col text-center">
                                                     <div class="custom-control custom-control--select">
-                                                        <h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}"
-                                                            styleClass="form-control" value="#{queryItem.operator}" disabled="#{queryItem.displaySelectItems}">
+                                                        <h:selectOneMenu id="advsearch_item_operator_#{statusGroup.count}-#{status.count}" value="#{queryItem.operator}" disabled="#{queryItem.displaySelectItems}">
                                                             <f:selectItems value="#{queryItem.availableOperators}" var="operator" itemValue="#{operator}"
                                                                 itemLabel="#{operator.label}" />
                                                         </h:selectOneMenu>

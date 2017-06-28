@@ -387,6 +387,19 @@ table,
   border-bottom: 1px solid #ccc;
   border-left: 1px solid #ccc;
 }
+.form-control {
+  border-radius: 0;
+  box-shadow: none;
+}
+.form-control:focus {
+  border-color: #428bca;
+  box-shadow: none;
+  outline: none;
+}
+.form-horizontal .form-group label {
+  padding-left: 0.9375rem;
+  text-align: left;
+}
 /* ==============================================================
    CSS Helper Classes
    ==============================================================*/
@@ -614,31 +627,9 @@ table,
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   Inputs
-   style declarations for input elements
-   ==============================================================*/
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
    Forms
    style declarations for forms
    ==============================================================*/
-/* BOOTSTRAP CLASSES */
-.form-control {
-  border-radius: 0;
-  box-shadow: none;
-}
-.form-control:focus {
-  border-color: #428bca;
-  box-shadow: none;
-  outline: none;
-}
-.form-horizontal .form-group label {
-  padding-left: 0.9375rem;
-  text-align: left;
-}
 /* INPUT MODIFICATIONS */
 .form-control__select {
   height: 34px;
@@ -707,7 +698,7 @@ table,
   position: absolute;
   display: inline-block;
   top: 50%;
-  right: 1.25rem;
+  right: 10px;
   width: 0;
   height: 0;
   margin-top: -0.15rem;
@@ -737,6 +728,25 @@ table,
 .custom-control--select select[disabled="disabled"] {
   cursor: not-allowed;
   opacity: 0.5;
+}
+/* INPUT PLACEHOLDER */
+/* WebKit, Blink, Edge */
+::-webkit-input-placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+/* Mozilla Firefox 4 to 18 */
+:-moz-placeholder {
+  color: rgba(0, 0, 0, 0.25);
+  opacity: 1;
+}
+/* Mozilla Firefox 19+ */
+::-moz-placeholder {
+  color: rgba(0, 0, 0, 0.25);
+  opacity: 1;
+}
+/* Internet Explorer 10-11 */
+:-ms-input-placeholder {
+  color: rgba(0, 0, 0, 0.25);
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -768,10 +778,7 @@ input.btn:active,
 .btn.ui-button {
   position: relative;
   display: inline-block;
-  min-height: 28px;
-  line-height: 28px;
-  padding: 0 7px;
-  margin: 0 7px 7px 0;
+  padding: 6px 12px;
   font-weight: bold;
   text-align: center;
   color: #1a1a1a;
@@ -780,7 +787,6 @@ input.btn:active,
   background: #eee;
   background-repeat: no-repeat;
   background-position: center center;
-  outline: none;
   cursor: pointer;
 }
 a.btn {
@@ -2690,6 +2696,7 @@ input[id*="cmdMoveTo"] {
   border: 1px solid #ccc;
   border-top: none;
   /* ELEMENT */
+  /* MODIFICATION */
 }
 .collection .row {
   margin: 0;
@@ -2721,7 +2728,6 @@ input[id*="cmdMoveTo"] {
 .collection__description {
   padding: 5px 15px;
 }
-/* MODIFICATION */
 .collection__item--level-0 {
   border-top: 1px solid #ccc;
 }
@@ -3098,6 +3104,14 @@ input[id*="cmdMoveTo"] {
   background-color: rgba(255, 255, 255, 0.75);
   z-index: 10;
 }
+.search-advanced__connector .custom-control--select {
+  display: inline-block;
+  width: 70px;
+  border: none;
+}
+.search-advanced__connector .custom-control--select:after {
+  right: 10px;
+}
 .search-advanced__input-group .form-control__select,
 .search-advanced__input-group input[type="text"] {
   width: 100%;
@@ -3124,19 +3138,12 @@ input[id*="cmdMoveTo"] {
 }
 .search-advanced__input-group .custom-control--select {
   width: 100%;
-  border: 1px solid #ccc;
 }
 .search-advanced__input-group .custom-control--select.disabled {
   display: none;
 }
 .search-advanced__input-group .custom-control--select.disabled:after {
   display: none;
-}
-.search-advanced__input-group .custom-control--select:after {
-  right: 12px;
-}
-.search-advanced__input-group .custom-control--select select {
-  padding: 6px 12px;
 }
 .search-advanced__input-group .custom-control--select select[disabled] {
   border-radius: 0;
@@ -3446,9 +3453,6 @@ input[id*="cmdMoveTo"] {
 .search-list__sorting {
   float: right;
   margin-bottom: 20px;
-}
-.search-list__sorting .custom-control {
-  border: 1px solid #ccc;
 }
 .search-list__adv-search-info {
   margin-bottom: 10px;
@@ -3793,7 +3797,7 @@ input[id*="cmdMoveTo"] {
 .ui-autocomplete-panel {
   border: 1px solid #eee;
   border-radius: 0;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
 }
 .ui-autocomplete-panel ul.ui-autocomplete-items {
   padding: 0;
@@ -4779,6 +4783,9 @@ div.olMapViewport {
   width: 100%;
   margin-bottom: 1.3125rem;
 }
+#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal {
+  margin: 0;
+}
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dt {
   width: 30%;
   text-align: left;
@@ -4790,6 +4797,9 @@ div.olMapViewport {
   display: block;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal {
+  margin: 0;
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dt {
   width: 30%;
