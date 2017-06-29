@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -32,6 +33,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.joda.time.DateTimeField;
 import org.joda.time.LocalDate;
+import org.joda.time.MutableDateTime;
 import org.joda.time.chrono.GregorianChronology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -564,6 +566,25 @@ public class CalendarBean implements Serializable {
         } else {
             this.currentDay = currentDay;
         }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public Date getCurrentDate() {
+        MutableDateTime date = new MutableDateTime();
+        if (currentYear != null) {
+            date.setYear(currentYear.getValue());
+        }
+        if (currentMonth != null) {
+            date.setMonthOfYear(currentMonth.getValue());
+        }
+        if (currentDay != null) {
+            date.setDayOfMonth(currentDay.getValue());
+        }
+
+        return date.toDate();
     }
 
     /**
