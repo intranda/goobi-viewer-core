@@ -292,7 +292,7 @@ var viewerJS = ( function() {
         } );
         
         // set tinymce language
-        this.tinyConfig.language = currLang;
+        this.tinyConfig.language = currentLang;
         
         if ( currentPage === 'adminCmsCreatePage' ) {
             this.tinyConfig.setup = function( ed ) {
