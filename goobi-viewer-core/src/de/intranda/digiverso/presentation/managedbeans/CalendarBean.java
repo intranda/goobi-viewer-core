@@ -81,7 +81,7 @@ public class CalendarBean implements Serializable {
     private CalendarRow monthRow = new CalendarRow();
     private CalendarRow dayRow = new CalendarRow();
 
-    private String docstructFilterQuery;
+    private String docstructFilterQuery = "";
     private String selectYear;
 
     private List<CalendarItemMonth> monthList;
@@ -94,31 +94,31 @@ public class CalendarBean implements Serializable {
     private void init() {
         // PostConstruct methods may not throw exceptions
         logger.trace("init");
-        StringBuilder sbQuery = new StringBuilder();
-        try {
-            List<String> list = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
-            if (!list.isEmpty()) {
-                sbQuery.append(" AND (");
-                for (String s : list) {
-                    if (StringUtils.isNotBlank(s)) {
-                        sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(ClientUtils.escapeQueryChars(s.trim())).append(" OR ");
-                    }
-                }
-                sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-                sbQuery.append(')');
-            }
-        } finally {
-            docstructFilterQuery = sbQuery.toString();
-            logger.trace("docstructFilterQuery: {}", docstructFilterQuery);
-        }
-        try {
-            getDefaultDates();
-            populateYearData();
-        } catch (PresentationException e) {
-            logger.debug("PresentationException thrown here");
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here");
-        }
+        //        StringBuilder sbQuery = new StringBuilder();
+        //        try {
+        //            List<String> list = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
+        //            if (!list.isEmpty()) {
+        //                sbQuery.append(" AND (");
+        //                for (String s : list) {
+        //                    if (StringUtils.isNotBlank(s)) {
+        //                        sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(ClientUtils.escapeQueryChars(s.trim())).append(" OR ");
+        //                    }
+        //                }
+        //                sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
+        //                sbQuery.append(')');
+        //            }
+        //        } finally {
+        //            docstructFilterQuery = sbQuery.toString();
+        //            logger.trace("docstructFilterQuery: {}", docstructFilterQuery);
+        //        }
+        //        try {
+        //            getDefaultDates();
+        //            populateYearData();
+        //        } catch (PresentationException e) {
+        //            logger.debug("PresentationException thrown here");
+        //        } catch (IndexUnreachableException e) {
+        //            logger.debug("IndexUnreachableException thrown here");
+        //        }
     }
 
     /**
@@ -752,7 +752,7 @@ public class CalendarBean implements Serializable {
             this.selectYear = selectYear;
             currentDay = null;
             currentMonth = null;
-            populateMonthsWithDays();
+            populateMonthsWithDays(selectYear, collection, docstructFilterQuery);
             // Set currentYear so that the number of hits is available for comparison
             for (CalendarItemYear year : getAllActiveYears()) {
                 if (year.getName().equals(selectYear)) {
@@ -779,11 +779,12 @@ public class CalendarBean implements Serializable {
      *
      */
     @SuppressWarnings("fallthrough")
-    public void populateMonthsWithDays() throws PresentationException, IndexUnreachableException {
-        monthList = new ArrayList<>();
+    public static List<CalendarItemMonth> populateMonthsWithDays(String selectYear, String collection, String filterQuery)
+            throws PresentationException, IndexUnreachableException {
+        List<CalendarItemMonth> monthList = new ArrayList<>();
         QueryResponse resp = null;
         if (StringUtils.isEmpty(selectYear)) {
-            return;
+            return monthList;
         }
         List<String> fields = new ArrayList<>();
         fields.add(SolrConstants._CALENDAR_DAY);
@@ -792,9 +793,9 @@ public class CalendarBean implements Serializable {
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
             sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(" AND ").append(SolrConstants.DC).append(':')
-                    .append(collection).append('*').append(docstructFilterQuery);
+                    .append(collection).append('*').append(filterQuery);
         } else {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(docstructFilterQuery);
+            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(filterQuery);
         }
 
         resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, false);
@@ -954,6 +955,8 @@ public class CalendarBean implements Serializable {
                 currentWeek.addDay(dayItem);
             }
         }
+
+        return monthList;
     }
 
     /**
@@ -999,7 +1002,7 @@ public class CalendarBean implements Serializable {
     public void setCollection(String collection) throws PresentationException, IndexUnreachableException {
         if (this.collection == null || !this.collection.equals(collection)) {
             this.collection = collection;
-            populateMonthsWithDays();
+            populateMonthsWithDays(selectYear, collection, docstructFilterQuery);
         }
     }
 
