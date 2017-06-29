@@ -282,13 +282,11 @@
             }
         } );
         
-        // init tinyMCE
-        var tinyConfig = {
-            language: currLang,
-        };
+        // set tinymce language
+        this.tinyConfig.language = currLang;
         
         if ( currentPage === 'adminCmsCreatePage' ) {
-            tinyConfig.setup = function( ed ) {
+            this.tinyConfig.setup = function( ed ) {
                 // listen to changes on tinymce input fields
                 ed.on( 'change input paste', function( e ) {
                     tinymce.triggerSave();
@@ -296,8 +294,8 @@
                     createPageConfig.prevDescription.show();
                 } );
             };
-            // TODO: Für ZLB einbauen
-            // _tinyConfig.textcolor_map = [ "FFFFFF", "ZLB-Weiß", "333333",
+            // TODO: Für ZLB in der custom.js einbauen
+            // viewerJS.tinyConfig.textcolor_map = [ "FFFFFF", "ZLB-Weiß", "333333",
             // "ZLB-Schwarz", "dedede", "ZLB-Hellgrau", "727c87", "ZLB-Mittelgrau",
             // "9a9a9a", "ZLB-Dunkelgrau",
             // "CD0000", "ZLB-Rot", "92406d", "ZLB-Lila", "6f2c40", "ZLB-Bordeaux",
@@ -314,10 +312,13 @@
                 switch ( ajaxstatus ) {
                     case "success":
                         if ( currentPage === 'overview' ) {
-                            tinyConfig.menubar = true;
+                            // activate menubar
+                            viewerJS.tinyConfig.menubar = true;
                             
+                            // check if description or publication editing is enabled and
+                            // set fullscreen options
                             if ( $( '.overview__description-editor' ).length > 0 ) {
-                                tinyConfig.setup = function( editor ) {
+                                viewerJS.tinyConfig.setup = function( editor ) {
                                     editor.on( 'init', function( e ) {
                                         $( '.overview__publication-action .btn' ).hide();
                                     } );
@@ -332,7 +333,7 @@
                                 };
                             }
                             else {
-                                tinyConfig.setup = function( editor ) {
+                                viewerJS.tinyConfig.setup = function( editor ) {
                                     editor.on( 'init', function( e ) {
                                         $( '.overview__description-action .btn' ).hide();
                                     } );
@@ -348,16 +349,20 @@
                             }
                         }
                         
-                        viewerJS.tinyMce.init( tinyConfig );
+                        viewerJS.tinyMce.init( viewerJS.tinyConfig );
                         break;
                 }
             } );
         }
         
+        // init tinymce if it exists
         if ( $( '.tinyMCE' ).length > 0 ) {
-            viewerJS.tinyMce.init( tinyConfig );
+            viewerJS.tinyMce.init( this.tinyConfig );
         }
     };
+    
+    // global object for tinymce config
+    viewer.tinyConfig = {};
     
     return viewer;
     
@@ -5050,7 +5055,7 @@
 ;var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
         currLang: 'de',
         selector: 'textarea.tinyMCE',
