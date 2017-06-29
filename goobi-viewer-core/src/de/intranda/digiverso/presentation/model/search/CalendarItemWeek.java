@@ -19,66 +19,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalendarItemWeek implements ICalendarItem, Serializable {
-
+public class CalendarItemWeek extends AbstractCalendarItem implements Serializable {
     private static final long serialVersionUID = -6938153715941936763L;
 
-    private String name;
-    private int value;
-    private int hits;
-    private boolean selected = false;
     private List<CalendarItemDay> daysOfWeek = new ArrayList<>();
 
     public CalendarItemWeek(String name, int value, int hits) {
-        this.name = name;
-        this.value = value;
-        this.hits = hits;
-
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public int getHits() {
-        return hits;
-    }
-
-    @Override
-    public void setHits(int hits) {
-        this.hits = hits;
-    }
-
-    @Override
-    public boolean isSelected() {
-        return selected;
-    }
-
-    @Override
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    @Override
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "CalendarItemWeek [Week=" + name + ", hits=" + hits + "]";
+        super(name, value, hits);
     }
 
     public List<CalendarItemDay> getDaysOfWeek() {
@@ -91,5 +38,10 @@ public class CalendarItemWeek implements ICalendarItem, Serializable {
 
     public void addDay(CalendarItemDay day) {
         daysOfWeek.add(day);
+    }
+
+    @Override
+    public String toString() {
+        return "CalendarItemWeek [Week=" + name + ", hits=" + hits + "]";
     }
 }

@@ -19,7 +19,7 @@ public interface ICalendarItem {
 
     public String getName();
 
-    public void setName(String name);
+    public int getValue();
 
     public int getHits();
 
@@ -29,7 +29,4 @@ public interface ICalendarItem {
 
     public void setSelected(boolean selected);
 
-    public int getValue();
-
-    public void setValue(int value);
 }

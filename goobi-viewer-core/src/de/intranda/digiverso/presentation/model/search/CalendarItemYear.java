@@ -18,41 +18,14 @@ package de.intranda.digiverso.presentation.model.search;
 import java.io.Serializable;
 import java.util.List;
 
-public class CalendarItemYear implements ICalendarItem, Serializable {
+public class CalendarItemYear extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = -3123380483405975449L;
 
-    private String name;
-    private int value;
-    private int hits;
-    private boolean selected = false;
     private List<CalendarItemMonth> monthsOfYear;
 
     public CalendarItemYear(String name, int value, int hits) {
-        this.name = name;
-        this.value = value;
-        this.hits = hits;
-
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public int getHits() {
-        return hits;
-    }
-
-    @Override
-    public void setHits(int hits) {
-        this.hits = hits;
+        super(name, value, hits);
     }
 
     public List<CalendarItemMonth> getMonthsOfYear() {
@@ -61,26 +34,6 @@ public class CalendarItemYear implements ICalendarItem, Serializable {
 
     public void setMonthsOfYear(List<CalendarItemMonth> monthsOfYear) {
         this.monthsOfYear = monthsOfYear;
-    }
-
-    @Override
-    public boolean isSelected() {
-        return selected;
-    }
-
-    @Override
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    @Override
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(int value) {
-        this.value = value;
     }
 
     @Override

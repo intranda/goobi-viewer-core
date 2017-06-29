@@ -17,70 +17,24 @@ package de.intranda.digiverso.presentation.model.search;
 
 import java.io.Serializable;
 
-public class CalendarItemDay implements ICalendarItem, Serializable {
+public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = 6482477938806267855L;
 
-    private String name;
-    private int value;
-    private int hits;
-    private boolean selected = false;
+    private final String url;
 
     private String dayOfWeek;
 
+    public CalendarItemDay(String name, int value, int hits, String url) {
+        super(name, value, hits);
+        this.url = url;
+    }
+
     /**
-     *
+     * @return the url
      */
-    public CalendarItemDay(String name, int value, int hits) {
-        this.name = name;
-        this.value = value;
-        this.hits = hits;
-
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public int getHits() {
-        return hits;
-    }
-
-    @Override
-    public void setHits(int hits) {
-        this.hits = hits;
-    }
-
-    @Override
-    public boolean isSelected() {
-        return selected;
-    }
-
-    @Override
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    @Override
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "CalendarItemDay [day=" + name + ", hits=" + hits + "]";
+    public String getUrl() {
+        return url;
     }
 
     public String getDayOfWeek() {
@@ -89,5 +43,10 @@ public class CalendarItemDay implements ICalendarItem, Serializable {
 
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
+    }
+
+    @Override
+    public String toString() {
+        return "CalendarItemDay [day=" + name + ", hits=" + hits + "]";
     }
 }

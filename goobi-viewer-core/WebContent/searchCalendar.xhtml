@@ -48,24 +48,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="selectcollection" class="col-sm-4 control-label">#{msg.collection}</label>
-                                    <div class="col-sm-8">
-                                        <div class="custom-control custom-control--select">
-                                            <h:selectOneMenu id="selectcollection" styleClass="form-control" value="#{calendarBean.collection}" onchange="submit();">
-                                                <f:selectItem itemLabel="#{msg.allCollections}" itemValue="" />
-                                                <f:selectItems var="item" value="#{searchBean.allCollections}" itemValue="#{item.one}"
-                                                    itemLabel="#{item.two}" />
-                                            </h:selectOneMenu>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- SEARCH CALENDAR RESET -->
-                            <div class="search-calendar__reset">
-                                <h:commandLink styleClass="btn" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
                             </div>
                         </div>
 
@@ -99,17 +81,13 @@
                                                         <ui:repeat var="day" value="#{week.daysOfWeek}">
                                                             <h:panelGroup rendered="#{day.name != ''}">
                                                                 <div
-                                                                    class="search-calendar__month-day #{day.hits != 0 and day.name == calendarBean.currentDay.name and month.name == calendarBean.currentMonth.name ? 'active' : ''}">
+                                                                    class="search-calendar__month-day">
                                                                     <h:panelGroup rendered="#{day.hits == 0}">
                                                                         <span>#{day.name}</span>
                                                                     </h:panelGroup>
                                                                     <h:commandLink value="#{day.name}" title="#{msg.currentHits}: #{day.hits}"
-                                                                        rendered="#{day.hits != 0 and !(day.name == calendarBean.currentDay.name and month.name == calendarBean.currentMonth.name)}">
-                                                                        <f:setPropertyActionListener target="#{calendarBean.currentMonth}" value="#{month}" />
-                                                                        <f:setPropertyActionListener target="#{calendarBean.currentDay}" value="#{day}" />
-                                                                    </h:commandLink>
-                                                                    <h:commandLink value="#{day.name}" title="#{msg.currentHits}: #{day.hits}"
-                                                                        rendered="#{day.hits != 0 and day.name == calendarBean.currentDay.name and month.name == calendarBean.currentMonth.name}">
+                                                                        rendered="#{day.hits != 0}"
+                                                                        action="#{calendarBean.searchCalendar(month, day)}">
                                                                         <f:setPropertyActionListener target="#{calendarBean.currentMonth}" value="#{month}" />
                                                                         <f:setPropertyActionListener target="#{calendarBean.currentDay}" value="#{day}" />
                                                                     </h:commandLink>
@@ -127,37 +105,6 @@
                                 </div>
                             </div>
                         </h:panelGroup>
-
-                        <!-- SEARCH CALENDAR ACTION -->
-                        <div class="search-calendar__action">
-                            <h:panelGroup rendered="#{calendarBean.selectYear != null}">
-                                <h:panelGroup rendered="#{calendarBean.countOfIncompleteData != 0}">
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <div class="search-calendar__incomplete">
-                                                <h:outputText value="#{msg.incompleteData}: " />
-                                                <h:commandLink title="#{msg.incompleteData}" value="#{calendarBean.countOfIncompleteData}"
-                                                    action="#{calendarBean.searchForIncompleteData}" styleClass="label label-warning" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </h:panelGroup>
-                                <div class="row">
-                                    <div class="col-xs-8 col-sm-9">
-                                        <h:outputText value="#{msg.currentSelection}: " />
-                                        <h:outputText value="#{calendarBean.currentDay.name}. " rendered="#{calendarBean.currentDay != null}" />
-                                        <h:outputText value="#{msg[calendarBean.currentMonth.name]} " rendered="#{calendarBean.currentMonth != null}" />
-                                        <h:outputText value="#{calendarBean.selectYear} " />
-                                    </div>
-                                    <div class="col-xs-4 col-sm-3">
-                                        <h:commandButton title="#{msg.search}" styleClass="btn pull-right" value="#{msg.search}"
-                                            action="#{calendarBean.searchCalendar}" rendered="#{calendarBean.selectYear != null}">
-                                            <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="3" />
-                                        </h:commandButton>
-                                    </div>
-                                </div>
-                            </h:panelGroup>
-                        </div>
                     </div>
                     
                     <script type="text/javascript">

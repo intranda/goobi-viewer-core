@@ -2220,8 +2220,10 @@ public final class SearchHelper {
                 // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                ret.add(SolrConstants.DEFAULT);
-                // TODO
+                // ret.add(SolrConstants.DEFAULT);
+                ret.add(SolrConstants._CALENDAR_DAY);
+                ret.add(SolrConstants._CALENDAR_MONTH);
+                ret.add(SolrConstants._CALENDAR_YEAR);
                 break;
             default:
                 if (searchFilter == null || searchFilter.equals(SEARCH_FILTER_ALL)) {
