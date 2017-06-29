@@ -307,6 +307,8 @@ public class SearchHit implements Comparable<SearchHit> {
             switch (fieldName) {
                 case SolrConstants.NORMDATATERMS:
                 case SolrConstants.UGCTERMS:
+                case SolrConstants._CALENDAR_DAY:
+                case SolrConstants._CALENDAR_MONTH:
                     break;
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
