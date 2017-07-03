@@ -11,6 +11,7 @@
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageTimeMatrix}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.timematrix,1)}" />
         </f:metadata>
     </ui:define>
 
