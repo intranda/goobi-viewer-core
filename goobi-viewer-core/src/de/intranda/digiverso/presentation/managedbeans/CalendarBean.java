@@ -111,14 +111,14 @@ public class CalendarBean implements Serializable {
         //            docstructFilterQuery = sbQuery.toString();
         //            logger.trace("docstructFilterQuery: {}", docstructFilterQuery);
         //        }
-        //        try {
-        //            getDefaultDates();
-        //            populateYearData();
-        //        } catch (PresentationException e) {
-        //            logger.debug("PresentationException thrown here");
-        //        } catch (IndexUnreachableException e) {
-        //            logger.debug("IndexUnreachableException thrown here");
-        //        }
+                try {
+                    getDefaultDates();
+                    populateYearData();
+                } catch (PresentationException e) {
+                    logger.debug("PresentationException thrown here");
+                } catch (IndexUnreachableException e) {
+                    logger.debug("IndexUnreachableException thrown here");
+                }
     }
 
     /**
@@ -748,11 +748,12 @@ public class CalendarBean implements Serializable {
      * @throws PresentationException
      */
     public void setSelectYear(String selectYear) throws PresentationException, IndexUnreachableException {
+        logger.trace("setSelectYear: {}", selectYear);
         if (this.selectYear == null || !this.selectYear.equals(selectYear)) {
             this.selectYear = selectYear;
             currentDay = null;
             currentMonth = null;
-            populateMonthsWithDays(selectYear, collection, docstructFilterQuery);
+            monthList = populateMonthsWithDays(selectYear, collection, docstructFilterQuery);
             // Set currentYear so that the number of hits is available for comparison
             for (CalendarItemYear year : getAllActiveYears()) {
                 if (year.getName().equals(selectYear)) {
@@ -909,7 +910,7 @@ public class CalendarBean implements Serializable {
                         dayItem.setDayOfWeek("Tuesday");
                         break;
                     case 4:
-                        dayItem.setDayOfWeek("Wednsday");
+                        dayItem.setDayOfWeek("Wednesday");
                         break;
                     case 5:
                         dayItem.setDayOfWeek("Thursday");
@@ -942,7 +943,7 @@ public class CalendarBean implements Serializable {
                             CalendarItemDay thu = new CalendarItemDay("", 0, 0, null);
                             currentWeek.addDay(thu);
                         case 4:
-                            // Wednsday
+                            // Wednesday
                             CalendarItemDay wed = new CalendarItemDay("", 0, 0, null);
                             currentWeek.addDay(wed);
                         case 3:
