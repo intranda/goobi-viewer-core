@@ -451,6 +451,17 @@ table,
 .list--divider li:last-child:after {
   display: none;
 }
+/* IMAGES */
+.faded {
+  position: relative;
+}
+.faded:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
