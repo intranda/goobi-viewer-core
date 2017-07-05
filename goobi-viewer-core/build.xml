@@ -42,11 +42,9 @@
 			<include name="*.jar" />
 		</fileset>
 	</path>
-
+	
 	<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath">
 	</taskdef>
-
-
 
 
 
@@ -255,7 +253,7 @@
 
 		<war destfile="${dir.build}/${dist.name}.war" webxml="${dir.build}/WEB-INF/web.xml">
 			<classes dir="${dir.build.classes}" />
-			<lib dir="WebContent/WEB-INF/lib" />
+			<lib dir="WebContent/WEB-INF/lib" excludes="*viewer-module-stub-*.jar" />
 			<fileset dir="${dir.build}">
 				<patternset>
 					<include name="menuUser/*.*" />
@@ -291,7 +289,7 @@
 
 		<war destfile="${dir.build}/${dist.name}.war" webxml="${dir.build}/WEB-INF/web.xml">
 			<classes dir="${dir.build.classes}" />
-			<lib dir="WebContent/WEB-INF/lib" />
+			<lib dir="WebContent/WEB-INF/lib" excludes="*viewer-module-stub-*.jar" />
 			<fileset dir="${dir.build}">
 				<patternset>
 					<include name="menuUser/*.*" />
@@ -327,7 +325,7 @@
 
 		<war destfile="${dir.build}/ROOT.war" webxml="${dir.build}/WEB-INF/web.xml">
 			<classes dir="${dir.build.classes}" />
-			<lib dir="WebContent/WEB-INF/lib" />
+			<lib dir="WebContent/WEB-INF/lib" excludes="*viewer-module-stub-*.jar" />
 			<fileset dir="${dir.build}">
 				<patternset>
 					<include name="menuUser/*.*" />
