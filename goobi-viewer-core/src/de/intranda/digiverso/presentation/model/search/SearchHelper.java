@@ -2234,6 +2234,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.UGCTERMS);
                     ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
                     ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+                    ret.add(SolrConstants._CALENDAR_DAY);
                 } else {
                     ret.add(searchFilter.getField());
                 }

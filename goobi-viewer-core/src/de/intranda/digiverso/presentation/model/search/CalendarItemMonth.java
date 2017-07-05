@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.search;
 import java.io.Serializable;
 import java.util.List;
 
+import de.intranda.digiverso.presentation.controller.Helper;
+
 public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = -4930440571977358495L;
@@ -38,11 +40,6 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
         this.daysOfMonth = daysOfMonth;
     }
 
-    @Override
-    public String toString() {
-        return "CalendarItemMonth [month=" + name + ", hits=" + hits + "]";
-    }
-
     public List<CalendarItemWeek> getWeeksOfMonth() {
         return weeksOfMonth;
     }
@@ -50,4 +47,10 @@ public class CalendarItemMonth extends AbstractCalendarItem implements Serializa
     public void setWeeksOfMonth(List<CalendarItemWeek> weeksOfMonth) {
         this.weeksOfMonth = weeksOfMonth;
     }
+
+    @Override
+    public String toString() {
+        return "CalendarItemMonth [month=" + name + ", hits=" + hits + "]";
+    }
+
 }

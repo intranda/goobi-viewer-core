@@ -16,6 +16,8 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
+import de.intranda.digiverso.presentation.controller.Helper;
+
 public abstract class AbstractCalendarItem implements ICalendarItem {
 
     protected final String name;
@@ -43,6 +45,15 @@ public abstract class AbstractCalendarItem implements ICalendarItem {
     @Override
     public int getValue() {
         return value;
+    }
+
+    /**
+     * Returns a two-digit string representation of this item's value.
+     * 
+     * @return
+     */
+    public String getFormattedValue() {
+        return (Helper.dfTwoDigitInteger.format(value));
     }
 
     /* (non-Javadoc)

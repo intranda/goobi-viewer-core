@@ -21,22 +21,28 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
 
     private static final long serialVersionUID = 6482477938806267855L;
 
-    private final String url;
+    private String query;
 
     private String dayOfWeek;
 
     private String info;
 
-    public CalendarItemDay(String name, int value, int hits, String url) {
+    public CalendarItemDay(String name, int value, int hits) {
         super(name, value, hits);
-        this.url = url;
     }
 
     /**
-     * @return the url
+     * @return the query
      */
-    public String getUrl() {
-        return url;
+    public String getQuery() {
+        return query;
+    }
+
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     /**

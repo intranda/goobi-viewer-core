@@ -67,14 +67,8 @@
                                                                     <h:panelGroup rendered="#{day.hits == 0}">
                                                                         <span>#{day.name}</span>
                                                                     </h:panelGroup>
-<!--                                                                     <h:commandLink value="#{day.name}" title="#{msg.currentHits}: #{day.hits}" -->
-<!--                                                                         rendered="#{day.hits != 0}" -->
-<!--                                                                         action="#{calendarBean.searchCalendar(month, day)}"> -->
-<!--                                                                         <f:setPropertyActionListener target="#{calendarBean.currentMonth}" value="#{month}" /> -->
-<!--                                                                         <f:setPropertyActionListener target="#{calendarBean.currentDay}" value="#{day}" /> -->
-<!--                                                                     </h:commandLink> -->
                                                                     <h:outputLink rendered="#{day.hits != 0}"
-                                                                        value="#{day.url}" title="#{day.info}">#{day.name}</h:outputLink>
+                                                                        value="#{navigationHelper.searchUrl}/-/#{day.query}/1/-/-/" title="#{day.info}">#{day.name}</h:outputLink>
                                                                 </div>
                                                             </h:panelGroup>
                                                             <h:panelGroup rendered="#{day.name == ''}">
