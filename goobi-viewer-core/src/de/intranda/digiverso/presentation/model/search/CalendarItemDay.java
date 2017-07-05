@@ -25,6 +25,8 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
 
     private String dayOfWeek;
 
+    private String info;
+
     public CalendarItemDay(String name, int value, int hits, String url) {
         super(name, value, hits);
         this.url = url;
@@ -37,12 +39,32 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
         return url;
     }
 
+    /**
+     * @return the dayOfWeek
+     */
     public String getDayOfWeek() {
         return dayOfWeek;
     }
 
+    /**
+     * @param dayOfWeek the dayOfWeek to set
+     */
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
+    }
+
+    /**
+     * @return the info
+     */
+    public String getInfo() {
+        return info;
+    }
+
+    /**
+     * @param info the info to set
+     */
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @Override

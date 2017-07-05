@@ -1424,6 +1424,15 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarPageLinkVisible() {
         return getLocalBoolean("sidebar.page.visible", true);
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarCalendarLinkVisible() {
+        return getLocalBoolean("sidebar.calendar.visible", true);
+    }
 
     /**
      * 

@@ -51,10 +51,12 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.CalendarBean;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.search.CalendarItemMonth;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
@@ -114,6 +116,8 @@ public class ViewManager implements Serializable {
     private boolean doublePageMode = false;
     private int firstPdfPage;
     private int lastPdfPage;
+    /** Calendar representation of this record's child elements. */
+    private List<CalendarItemMonth> calendarItems = new ArrayList<>();
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
             throws IndexUnreachableException {
@@ -145,6 +149,19 @@ public class ViewManager implements Serializable {
         }
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
+
+        try {
+            populateCalendar();
+        } catch (PresentationException e) {
+            logger.debug(e.getMessage());
+        }
+    }
+
+    private void populateCalendar() throws PresentationException, IndexUnreachableException {
+        logger.trace("populateCalendar");
+        calendarItems = CalendarBean.populateMonthsWithDays(topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR), null,
+                " AND " + SolrConstants.PI_TOPSTRUCT + ":" + pi);
+        logger.trace("Calendar items: {}", calendarItems.size());
     }
 
     public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException {
@@ -508,8 +525,7 @@ public class ViewManager implements Serializable {
             searchBean = (SearchBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("searchBean");
         }
         if (searchBean != null && (searchBean.getCurrentSearchFilterString() == null || searchBean.getCurrentSearchFilterString().equals(
-                SearchHelper.SEARCH_FILTER_ALL.getLabel()) || searchBean.getCurrentSearchFilterString().equals("filter_"
-                        + SolrConstants.FULLTEXT))) {
+                SearchHelper.SEARCH_FILTER_ALL.getLabel()) || searchBean.getCurrentSearchFilterString().equals("filter_" + SolrConstants.FULLTEXT))) {
             logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms().toString());
             coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), rotate);
         }
@@ -2075,4 +2091,19 @@ public class ViewManager implements Serializable {
             this.lastPdfPage = Integer.valueOf(lastPdfPage);
         }
     }
+
+    /**
+     * @return the calendarItems
+     */
+    public List<CalendarItemMonth> getCalendarItems() {
+        return calendarItems;
+    }
+
+    /**
+     * @param calendarItems the calendarItems to set
+     */
+    public void setCalendarItems(List<CalendarItemMonth> calendarItems) {
+        this.calendarItems = calendarItems;
+    }
+
 }

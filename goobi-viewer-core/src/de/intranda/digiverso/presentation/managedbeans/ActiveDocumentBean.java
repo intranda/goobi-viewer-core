@@ -57,6 +57,7 @@ import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
+import de.intranda.digiverso.presentation.model.search.CalendarItemYear;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.toc.TOC;
 import de.intranda.digiverso.presentation.model.toc.TOCElement;

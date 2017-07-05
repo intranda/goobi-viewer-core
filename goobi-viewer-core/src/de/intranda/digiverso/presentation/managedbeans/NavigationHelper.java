@@ -656,6 +656,23 @@ public class NavigationHelper implements Serializable {
 
         return "/viewImageFullscreen.xhtml";
     }
+    
+
+    public String getCalendarUrl() {
+        if (DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible()) {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
+        }
+
+        return null;
+    }
+
+    public String getCalendarActiveUrl() {
+        if (DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible()) {
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
+        }
+
+        return null;
+    }
 
     public String getTocUrl() {
         if (DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible()) {
