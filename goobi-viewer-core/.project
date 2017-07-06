@@ -8,7 +8,6 @@
 		<project>goobi-viewer-theme-bsh</project>
 		<project>goobi-viewer-theme-buw</project>
 		<project>goobi-viewer-theme-dipf3</project>
-		<project>goobi-viewer-theme-gei</project>
 		<project>goobi-viewer-theme-haab2</project>
 		<project>goobi-viewer-theme-hlbw2</project>
 		<project>goobi-viewer-theme-iai</project>
@@ -35,6 +34,7 @@
 		<project>goobi-viewer-module-crowdsourcing</project>
 		<project>goobi-viewer-theme-wuw</project>
 		<project>goobi-viewer-theme-hlbf</project>
+		<project>goobi-viewer-theme-geiwv</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

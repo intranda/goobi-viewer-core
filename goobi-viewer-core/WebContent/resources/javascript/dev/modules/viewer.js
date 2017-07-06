@@ -281,7 +281,88 @@
                 return false;
             }
         } );
+        
+        // set tinymce language
+        this.tinyConfig.language = currentLang;
+        
+        if ( currentPage === 'adminCmsCreatePage' ) {
+            this.tinyConfig.setup = function( ed ) {
+                // listen to changes on tinymce input fields
+                ed.on( 'change input paste', function( e ) {
+                    tinymce.triggerSave();
+                    createPageConfig.prevBtn.attr( 'disabled', true );
+                    createPageConfig.prevDescription.show();
+                } );
+            };
+            // TODO: Für ZLB in der custom.js einbauen
+            // viewerJS.tinyConfig.textcolor_map = [ "FFFFFF", "ZLB-Weiß", "333333",
+            // "ZLB-Schwarz", "dedede", "ZLB-Hellgrau", "727c87", "ZLB-Mittelgrau",
+            // "9a9a9a", "ZLB-Dunkelgrau",
+            // "CD0000", "ZLB-Rot", "92406d", "ZLB-Lila", "6f2c40", "ZLB-Bordeaux",
+            // "ffa100", "ZLB-Orange", "669933", "ZLB-Grün", "3e5d1e", "ZLB-Dunkelgrün",
+            // "a9d0f5",
+            // "ZLB-Hellblau", "28779f", "ZLB-Blau" ];
+        }
+        
+        // AJAX Loader Eventlistener for tinyMCE
+        if ( typeof jsf !== 'undefined' ) {
+            jsf.ajax.addOnEvent( function( data ) {
+                var ajaxstatus = data.status;
+                
+                switch ( ajaxstatus ) {
+                    case "success":
+                        if ( currentPage === 'overview' ) {
+                            // activate menubar
+                            viewerJS.tinyConfig.menubar = true;
+                            
+                            // check if description or publication editing is enabled and
+                            // set fullscreen options
+                            if ( $( '.overview__description-editor' ).length > 0 ) {
+                                viewerJS.tinyConfig.setup = function( editor ) {
+                                    editor.on( 'init', function( e ) {
+                                        $( '.overview__publication-action .btn' ).hide();
+                                    } );
+                                    editor.on( 'FullscreenStateChanged', function( e ) {
+                                        if ( e.state ) {
+                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
+                                        }
+                                        else {
+                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
+                                        }
+                                    } );
+                                };
+                            }
+                            else {
+                                viewerJS.tinyConfig.setup = function( editor ) {
+                                    editor.on( 'init', function( e ) {
+                                        $( '.overview__description-action .btn' ).hide();
+                                    } );
+                                    editor.on( 'FullscreenStateChanged', function( e ) {
+                                        if ( e.state ) {
+                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
+                                        }
+                                        else {
+                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
+                                        }
+                                    } );
+                                };
+                            }
+                        }
+                        
+                        viewerJS.tinyMce.init( viewerJS.tinyConfig );
+                        break;
+                }
+            } );
+        }
+        
+        // init tinymce if it exists
+        if ( $( '.tinyMCE' ).length > 0 ) {
+            viewerJS.tinyMce.init( this.tinyConfig );
+        }
     };
+    
+    // global object for tinymce config
+    viewer.tinyConfig = {};
     
     return viewer;
     
@@ -4967,6 +5048,66 @@
         $( '.timematrix-popover' ).remove();
         $( '.timematrix-thumb' ).removeClass( 'marker' );
     }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+;var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    var _debug = false;
+    var _defaults = {
+        currLang: 'de',
+        selector: 'textarea.tinyMCE',
+        width: '100%',
+        height: 400,
+        theme: 'modern',
+        plugins: [ "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
+                "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+                "save table contextmenu directionality emoticons template paste textcolor"
+
+        ],
+        toolbar: "bold italic underline | forecolor backcolor | fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist  | link | code preview",
+        menubar: false,
+        statusbar: false,
+        relative_urls: false,
+        force_br_newlines: false,
+        force_p_newlines: false,
+        forced_root_block: '',
+        language: 'de'
+    };
+    
+    viewer.tinyMce = {
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.tinyMce.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.tinyMce.init: config - ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // check current language
+            switch ( _defaults.currLang ) {
+                case 'de':
+                    _defaults.language = 'de';
+                    break;
+                case 'es':
+                    _defaults.language = 'es';
+                    break;
+                case 'pt':
+                    _defaults.language = 'pt_PT';
+                    break;
+                case 'ru':
+                    _defaults.language = 'ru';
+                    break;
+            }
+            
+            // init editor
+            tinymce.init( _defaults );
+        },
+    };
     
     return viewer;
     

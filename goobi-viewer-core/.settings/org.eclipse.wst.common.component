@@ -27,10 +27,6 @@
         <dependent-module archiveName="viewer-theme-dipf3.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dipf3/goobi-viewer-theme-dipf3">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- GEI -->
-        <dependent-module archiveName="viewer-theme-gei.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-gei/goobi-viewer-theme-gei">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <!--  HAAB 2 -->
         <dependent-module archiveName="viewer-theme-haab2.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-haab2/goobi-viewer-theme-haab2">
             <dependency-type>uses</dependency-type>
@@ -129,6 +125,10 @@
         </dependent-module>
         <!-- HLBF -->
         <dependent-module archiveName="goobi-viewer-theme-hlbf.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hlbf/goobi-viewer-theme-hlbf">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- GEI WordViews -->
+        <dependent-module archiveName="goobi-viewer-theme-geiwv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-geiwv/goobi-viewer-theme-geiwv">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
