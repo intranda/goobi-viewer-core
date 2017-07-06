@@ -179,85 +179,23 @@
 					<!-- end .row -->
 				</h:panelGroup>
 				<script type="text/javascript">
-                var createPageConfig = {
-                    selectedPageID: '#{cmsBean.selectedPage.id}',
-                    inputFields: $( '.content-input' ),
-                    prevBtn: $( '#preview-button' ),
-                    prevDescription: $( '#previewDescription' ),
-                    saveBtn: $( 'a[id*="save-button"]' ),
-                    sortablesConfig: {
-                        componentListInput: document.getElementById( "create_page_form:sidebar_editor_component:itemOrderInput" ),
-                        // 				        editButton: $('.ui-sortable li .glyphicon-edit'),
-                        editButton: $( '.widget-edit' ),
-                        availableItemList:  '#availableItemList' ,
-                        visibleItemList:  '#visibleItemList' 
-                    }
-                };
-                
-                var tinyConfig = {
-                    selector: 'textarea.tinyMCE',
-                    width: '100%',
-                    height: 200,
-                    theme: 'modern',
-                    plugins: [ 'advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker',
-                            'searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking',
-                            'save table contextmenu directionality emoticons template paste textcolor' ],
-                    toolbar: 'undo redo | insert | styleselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code',
-                    textcolor_map : [
-                        "FFFFFF", "ZLB-Weiß",
-                        "333333", "ZLB-Schwarz",
-                        "dedede", "ZLB-Hellgrau",
-                        "727c87", "ZLB-Mittelgrau",
-                        "9a9a9a", "ZLB-Dunkelgrau",
-                        "CD0000", "ZLB-Rot",
-                        "92406d", "ZLB-Lila",
-                        "6f2c40", "ZLB-Bordeaux",
-                        "ffa100", "ZLB-Orange",
-                        "669933", "ZLB-Grün",
-                        "3e5d1e", "ZLB-Dunkelgrün",
-                        "a9d0f5", "ZLB-Hellblau",
-                        "28779f", "ZLB-Blau"
-                    ],
-                    menubar: false,
-                    statusbar: false,
-                    relative_urls: false,
-                    force_br_newlines: false,
-                    force_p_newlines: false,
-                    forced_root_block: '',
-                    setup: function( ed ) {
-                        // listen to changes on tinymce input fields
-                        ed.on( 'change input paste', function( e ) {
-                            tinymce.triggerSave();
-                            createPageConfig.prevBtn.attr( 'disabled', true );
-                            createPageConfig.prevDescription.show();
-                        } );
-                    },
-                    language: tinyLang
-                };
-                // console.log("init sortables with config ", createPageConfig);
-                cmsJS.createPage.init( createPageConfig );
-                
-                tinymce.init( tinyConfig );
-                
-                //de- and reconstructs the tinymce so it doesn't get lost after ajax-calls
-                function evaluateTinyMce( e ) {
-                    console.log( "event status: " + e.status );
-                    if ( e.status == 'begin' ) {
-                        $( ".tinyMCE" ).each( function( index ) {
-                            tinymce.execCommand( 'mceRemoveControl', false, $( this ).attr( "id" ) );
-                        } );
-                    }
-                    if ( e.status == 'complete' ) {
-                    }
-                    if ( e.status == 'success' ) {
-                        $( ".tinyMCE" ).each( function( index ) {
-                            tinymce.execCommand( 'mceAddControl', false, $( this ).attr( "id" ) );
-                        } );
-                    }
-                    
-                    return true;
-                }
-            </script>
+	                var createPageConfig = {
+	                    selectedPageID: '#{cmsBean.selectedPage.id}',
+	                    inputFields: $( '.content-input' ),
+	                    prevBtn: $( '#preview-button' ),
+	                    prevDescription: $( '#previewDescription' ),
+	                    saveBtn: $( 'a[id*="save-button"]' ),
+	                    sortablesConfig: {
+	                        componentListInput: document.getElementById( "create_page_form:sidebar_editor_component:itemOrderInput" ),
+	                        // 				        editButton: $('.ui-sortable li .glyphicon-edit'),
+	                        editButton: $( '.widget-edit' ),
+	                        availableItemList:  '#availableItemList' ,
+	                        visibleItemList:  '#visibleItemList' 
+	                    }
+	                };
+	                
+	                cmsJS.createPage.init( createPageConfig );
+	            </script>
 			</h:panelGroup>
 
 		</h:panelGroup>

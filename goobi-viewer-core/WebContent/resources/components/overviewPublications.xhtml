@@ -122,37 +122,7 @@
 				<!-- EDITOR -->
 				<h:panelGroup rendered="#{userBean.user.mayEditOverviewPage and activeDocumentBean.overviewPage.editPublicationMode}">
 					<div class="overview__publication-editor">
-						<h:inputTextarea escape="false" value="#{activeDocumentBean.overviewPage.publicationText}"
-							styleClass="overview-publications" />
-
-						<script type="text/javascript">
-						//<![CDATA[
-                            var tinyConfigPublications = {
-                                selector: "textarea.overview-publications",
-                                plugins: "table link preview charmap code fullscreen pagebreak",
-                                menubar: "edit insert view format table tools",
-                                language: 'de',
-                                convert_urls: false,
-                                pagebreak_separator: '<span class="pagebreak"></span>',
-                                pagebreak_split_block: true,
-                                setup: function( editor ) {
-                                    editor.on( 'init', function (e) {
-                                        $( '.overview__description-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {                                        
-                                        if ( e.state ) {
-                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                }
-                            };
-                            
-                            tinymce.init( tinyConfigPublications );
-                        //]]>
-                        </script>
+						<h:inputTextarea escape="false" value="#{activeDocumentBean.overviewPage.publicationText}" styleClass="overview-publications tinyMCE" />
 					</div>
 				</h:panelGroup>
 			</h:form>

@@ -66,32 +66,8 @@
 	                <h:panelGroup rendered="#{userBean.user.mayEditOverviewPage}">
 	                    <h:panelGroup rendered="#{activeDocumentBean.overviewPage.editDescriptionMode}">
 	                        <div class="overview__description-editor">
-	                            <h:inputTextarea styleClass="overview-text" escape="false" value="#{activeDocumentBean.overviewPage.description}" />
+	                            <h:inputTextarea styleClass="overview-text tinyMCE" escape="false" value="#{activeDocumentBean.overviewPage.description}" />
 	                        </div>
-	                        <script type="text/javascript">
-	                            var tinyConfigDescription = {
-	                                selector: "textarea.overview-text",
-	                                plugins: "table link preview charmap code fullscreen",
-	                                menubar: "edit insert view format table tools",
-	                                language: tinyLang,
-	                                convert_urls: false,
-	                                setup: function( editor ) {
-	                                    editor.on( 'init', function (e) {
-	                                        $( '.overview__publication-action .btn' ).hide();
-	                                    } );
-	                                    editor.on( 'FullscreenStateChanged', function( e ) {
-	                                        if ( e.state ) {
-	                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
-	                                        }
-	                                        else {
-	                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
-	                                        }
-	                                    } );
-	                                }
-	                            };
-	                        
-	                            tinymce.init( tinyConfigDescription );
-	                        </script>
 	                    </h:panelGroup>
 	                </h:panelGroup>
 	            </h:panelGroup>

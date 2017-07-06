@@ -451,6 +451,17 @@ table,
 .list--divider li:last-child:after {
   display: none;
 }
+/* IMAGES */
+.faded {
+  position: relative;
+}
+.faded:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
@@ -464,10 +475,6 @@ table,
   width: 2rem;
   height: 2rem;
   margin: 0;
-  /* background-image is deprecated in 3.1 */
-  background-image: url("../../images/icons/icon-totop.png");
-  background-repeat: no-repeat;
-  background-position: center center;
   opacity: 0.25;
   cursor: pointer;
   z-index: 9999;
@@ -1159,23 +1166,6 @@ div.mce-fullscreen {
    Change Local
    style declarations for changeLocal.xhtml
    ==============================================================*/
-/* deprecated since 3.2 */
-#change_local ul li {
-  display: inline-block;
-  height: 1.75rem;
-  line-height: 1.75rem;
-  margin: 0 0.4375rem 0 0;
-}
-#change_local ul li a {
-  display: block;
-}
-#change_local ul li a img {
-  width: 1.3125rem;
-  margin: -0.125rem 0.25rem 0 0.25rem;
-}
-#change_local ul li a.activeLang {
-  font-weight: bold;
-}
 /* BLOCK */
 .change-local {
   /* ELEMENT */
@@ -1203,23 +1193,6 @@ div.mce-fullscreen {
    Breadcrumbs
    style declarations for breadcrumbs.xhtml
    ==============================================================*/
-/* deprecated since 3.2 */
-#breadcrumbsnav {
-  font-size: 0.75rem;
-}
-#breadcrumbsnav ul li {
-  display: inline-block;
-  min-height: 1.3125rem;
-  line-height: 1.3125rem;
-  margin-right: 0.1875rem;
-}
-#breadcrumbsnav ul li a,
-#breadcrumbsnav ul li span {
-  display: block;
-}
-#breadcrumbsnav ul li.breadcrumb-spacer:before {
-  content: "\203A";
-}
 /* BREADCRUMBS */
 /* BLOCK */
 .breadcrumbs-wrapper {
@@ -1359,11 +1332,6 @@ div.mce-fullscreen {
 }
 #titleWrapper .title-body form .dl-horizontal {
   margin: 0;
-  /* deprecated since 3.1 */
-}
-#titleWrapper .title-body form .dl-horizontal a[id*="titlePdfDownloadLink"] {
-  float: right;
-  margin: 0 0 1rem 1rem;
 }
 #titleWrapper .title-body form .dl-horizontal dt {
   width: 25%;
@@ -2596,87 +2564,6 @@ input[id*="cmdMoveTo"] {
    Browse
    style declarations for browse.xhtml
    ==============================================================*/
-/* deprecated since 3.2 */
-#collectionWrapp {
-  position: relative;
-  margin-bottom: 1.3125rem;
-}
-#collectionWrapp #AJAXLoader {
-  background-image: url("../../images/ajax_preloader.gif");
-  background-position: center center;
-  background-repeat: no-repeat;
-}
-#collectionWrapp ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-#collectionWrapp ul li {
-  min-height: 1.5rem;
-  line-height: 1.5rem;
-  margin: 0 0 0.25rem 0;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-structure,
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content {
-  float: left;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-structure {
-  width: 5%;
-  min-height: 1px;
-  font-size: 1.3125rem;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-structure a:hover {
-  text-decoration: none;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-structure a .fa {
-  margin-left: 5px;
-  color: #6f6f6f;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content {
-  width: 95%;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content.fullwidth {
-  width: 100%;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content a {
-  display: block;
-  float: left;
-  width: 90%;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content a.top-collection-elem {
-  font-size: 1.3125rem;
-  font-weight: bold;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content a .fa {
-  display: inline;
-  margin-right: 5px;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content .collection-elem-info {
-  float: right;
-  width: 10%;
-  font-size: 1.3125rem;
-  text-align: right;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content .collection-elem-info a {
-  display: inline;
-  float: none;
-  width: auto;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content .collection-elem-info a:hover {
-  text-decoration: none;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content .collection-elem-info a span .fa {
-  color: #6f6f6f;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content .collection-elem-info a .fa-rss-square {
-  color: #f08421;
-}
-#collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-description {
-  clear: both;
-  padding: 0.625rem 0 0.625rem 5%;
-}
 /* BROWSE */
 /* BLOCK */
 .collections {
@@ -2736,13 +2623,6 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
-  /* deprecated since 3.2 */
-  #collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-structure {
-    width: 10%;
-  }
-  #collectionWrapp ul li .collection-elem-content-wrapp .collection-elem-content {
-    width: 90%;
-  }
   /* BROWSE */
   .collection__structure a,
   .collection__title a,
@@ -3952,20 +3832,6 @@ input[id*="cmdMoveTo"] {
    User
    style declarations for user.xhtml
    ==============================================================*/
-/* DEPRECATED SINCE 3.1 */
-#user #userLoginWrapper {
-  margin-bottom: 1.3125rem;
-}
-#user #userLoginWrapper #userLoginLocal {
-  margin-bottom: 1.3125rem;
-}
-#user #userLoginWrapper #userLoginLocal #userLoginLocalForm {
-  margin-bottom: 0.875rem;
-}
-#user #userLoginWrapper #userLoginLocal #userLoginLocalForm .btn {
-  float: right;
-  margin: 0;
-}
 /* USER */
 /* BLOCK */
 .user {
@@ -3989,21 +3855,6 @@ input[id*="cmdMoveTo"] {
    User Data
    style declarations for user.xhtml
    ==============================================================*/
-/* DEPRECATED SINCE 3.1 */
-#user #includeUserDataForm {
-  margin-bottom: 1.3125rem;
-}
-#user #includeUserDataForm .userdata-data-row .userdata-data-label,
-#user #includeUserDataForm .userdata-data-row .userdata-data-value {
-  height: 1.75rem;
-  line-height: 1.75rem;
-}
-#user #includeUserDataForm .userdata-change-data {
-  text-align: right;
-}
-#user #includeUserDataForm .userdata-change-data .btn {
-  margin: 0;
-}
 /* USERDATA */
 /* BLOCK */
 .userdata {
@@ -4037,16 +3888,6 @@ input[id*="cmdMoveTo"] {
    User Activity
    style declarations for userBackendActivity.xhtml
    ==============================================================*/
-/* deprecated since 3.2 */
-#myActivity #userScoreTable tbody tr td:nth-child(1) {
-  width: 25%;
-}
-#myActivity #userScoreTable tbody tr td:nth-child(2) {
-  width: 75%;
-}
-#myActivity #myActivityTable thead tr th:nth-child(3) .popover {
-  font-weight: normal;
-}
 /* USER SCORE */
 /* BLOCK */
 .user-score {
@@ -5039,87 +4880,6 @@ div.olMapViewport {
    View Overview
    style declarations for viewOverview.xhtml 
    ==============================================================*/
-/* deprecated since 3.2 */
-#viewOverview {
-  /* preview image */
-  /* metadata */
-  /* description */
-  /* publication */
-  /* history */
-}
-#viewOverview #deletePageWrapper {
-  padding: 10px 0;
-  text-align: right;
-}
-#viewOverview #overviewImage img {
-  max-width: 100%;
-}
-#viewOverview #panelGroupMetadata {
-  float: left;
-  width: 100%;
-}
-#viewOverview #panelGroupMetadata .dl-horizontal {
-  margin: 0;
-}
-#viewOverview #panelGroupMetadata .dl-horizontal.edit-metadata {
-  padding: 0.4375rem;
-}
-#viewOverview #panelGroupMetadata .dl-horizontal.edit-metadata:hover {
-  background-color: #eee;
-}
-#viewOverview #panelGroupMetadata .dl-horizontal dt {
-  text-align: left;
-  width: 30%;
-}
-#viewOverview #panelGroupMetadata .dl-horizontal dd {
-  margin-left: 30%;
-  padding-left: 0.4375rem;
-}
-#viewOverview #panelGroupMetadata .dl-horizontal dd .remove-metadata {
-  float: right;
-}
-#viewOverview #panelGroupMetadata #addStructureType {
-  padding: 0.875rem 0.4375rem;
-}
-#viewOverview #panelGroupMetadata #addStructureType .btn {
-  float: right;
-}
-#viewOverview #panelGroupMetadata #btnSaveMetadata {
-  float: right;
-}
-#viewOverview #panelGroupDescriptionWrapper .btn {
-  margin-left: 5px;
-}
-#viewOverview #panelGroupDescriptionWrapper #overviewDescription,
-#viewOverview #panelGroupDescriptionWrapper #overviewDescriptionEditable {
-  clear: both;
-}
-#viewOverview #overviewPublicationWrapper #overviewPublicationNavigation {
-  height: 1.875rem;
-}
-#viewOverview #overviewPublicationWrapper #overviewPublicationNavigation ul li {
-  display: inline-block;
-  float: left;
-  min-width: 1.875rem;
-  height: 1.875rem;
-  line-height: 1.75rem;
-  margin-right: 0.4375rem;
-  text-align: center;
-}
-#viewOverview #overviewPublicationWrapper #overviewPublicationNavigation ul li a,
-#viewOverview #overviewPublicationWrapper #overviewPublicationNavigation ul li span {
-  margin: 0;
-}
-#viewOverview #overviewPublicationWrapper #overviewPublicationActions {
-  height: 1.875rem;
-}
-#viewOverview #overviewPublicationWrapper #overviewPublicationActions .btn {
-  margin-left: 5px;
-}
-#viewOverview #overviewPublicationWrapper #overviewPublicationDocument,
-#viewOverview #overviewPublicationWrapper #overviewPublicationDocumentEditor {
-  clear: both;
-}
 /* VIEW OVERVIEW */
 /* BLOCK */
 .overview {
@@ -5587,78 +5347,6 @@ div.olMapViewport {
    View Toc
    style declarations for viewToc.xhtml
    ==============================================================*/
-/* deprecated since 3.2 */
-#viewTocWrapper {
-  margin-bottom: 1.3125rem;
-  /* MULTIVOLUME VIEW */
-  /* SINGLE VIEW */
-}
-#viewTocWrapper h4 {
-  margin: 0;
-}
-#viewTocWrapper .toc-elem-group-wrapp {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 0.875rem;
-}
-#viewTocWrapper .toc-elem-group-wrapp .toc-elem-group-title {
-  flex: 5;
-}
-#viewTocWrapper .toc-elem-group-wrapp .toc-elem-group-link {
-  flex: 1;
-  align-self: flex-end;
-}
-#viewTocWrapper .toc-elem-group-wrapp .toc-elem-group-img {
-  flex: 1;
-}
-#viewTocWrapper #view_toc_nav ul li {
-  float: left;
-  width: 100%;
-  min-height: 1.75rem;
-  line-height: 1.75rem;
-}
-#viewTocWrapper #view_toc_nav ul li a {
-  display: block;
-}
-#viewTocWrapper #view_toc_nav ul li .toctreeview-elem-treebutton {
-  float: left;
-  width: 5%;
-}
-#viewTocWrapper #view_toc_nav ul li .toctreeview-elem-title {
-  float: left;
-  width: 80%;
-}
-#viewTocWrapper #view_toc_nav ul li .toctreeview-elem-number {
-  float: right;
-  width: 15%;
-}
-#viewTocWrapper #view_toc_nav ul li .toctreeview-elem-number .toctreeview-elem-number-nav ul li {
-  display: inline;
-  float: right;
-  width: auto;
-  margin-left: 0.3125rem;
-}
-#viewTocWrapper #view_toc_nav ul li .toctreeview-elem-number .toctreeview-elem-number-nav ul li a img {
-  width: 1rem;
-}
-#viewTocWrapper #view_toc_nav ul li .toc-elem-title {
-  float: left;
-  width: 85%;
-}
-#viewTocWrapper #view_toc_nav ul li .toc-elem-number {
-  float: right;
-  width: 15%;
-}
-#viewTocWrapper #view_toc_nav ul li .toc-elem-number .toc-elem-number-nav ul li {
-  display: inline;
-  float: right;
-  width: auto;
-  margin-left: 0.3125rem;
-}
-#viewTocWrapper #view_toc_nav ul li .toc-elem-number .toc-elem-number-nav ul li a img {
-  width: 1rem;
-}
 /* VIEW TOC */
 /* BLOCK */
 .toc {
@@ -5824,16 +5512,11 @@ div[id*="Modal"] .email-form .form-group p {
    Widgets
    style declarations for sidebar widgets
    ==============================================================*/
-.sidebar-widget {
-  margin-bottom: 1.3125rem;
-}
-.sidebar-widget ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+/* WIDGETS */
+/* BLOcK */
 .widget {
   margin-bottom: 1.3125rem;
+  /* ELEMENT */
 }
 .widget ul {
   list-style: none;
@@ -5976,36 +5659,6 @@ div[id*="Modal"] .email-form .form-group p {
    Widget Search Drill Down
    style declarations for widget_searchDrillDown.xhtml
    ==============================================================*/
-/* deprecated since 3.2 */
-#searchListDrillDownWrapper {
-  /* COLLAPSE DRILLDOWN */
-}
-#searchListDrillDownWrapper .active-facett .facett-text {
-  display: block;
-  text-overflow: ellipsis;
-  background-color: #eee;
-  overflow: hidden;
-}
-#searchListDrillDownWrapper .active-facett .facett-text .glyphicon {
-  float: right;
-  margin: 0.125rem 0 0;
-}
-#searchListDrillDownWrapper .sidebar-collection-more,
-#searchListDrillDownWrapper .sidebar-collection-less {
-  text-align: right;
-}
-#searchListDrillDownWrapper .sidebar-collection-more a .icon-more,
-#searchListDrillDownWrapper .sidebar-collection-less a .icon-more,
-#searchListDrillDownWrapper .sidebar-collection-more a .icon-less,
-#searchListDrillDownWrapper .sidebar-collection-less a .icon-less {
-  margin: 0.125rem 0 0 0.4375rem;
-}
-#searchListDrillDownWrapper .collapse-drilldown a {
-  display: block;
-  text-align: center;
-  color: #ccc;
-  background-color: #eee;
-}
 /* BLOCK */
 .widget-search-drilldown {
   /* ELEMENT */
