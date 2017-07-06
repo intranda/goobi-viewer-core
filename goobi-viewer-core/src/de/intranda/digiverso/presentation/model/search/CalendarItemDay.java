@@ -25,8 +25,6 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
 
     private String dayOfWeek;
 
-    private String info;
-
     public CalendarItemDay(String name, int value, int hits) {
         super(name, value, hits);
     }
@@ -57,20 +55,6 @@ public class CalendarItemDay extends AbstractCalendarItem implements Serializabl
      */
     public void setDayOfWeek(String dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
-    }
-
-    /**
-     * @return the info
-     */
-    public String getInfo() {
-        return info;
-    }
-
-    /**
-     * @param info the info to set
-     */
-    public void setInfo(String info) {
-        this.info = info;
     }
 
     @Override
