@@ -150,17 +150,19 @@ public class ViewManager implements Serializable {
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
 
-        try {
-            populateCalendar();
-        } catch (PresentationException e) {
-            logger.debug(e.getMessage());
+        if (topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR) != null) {
+            try {
+                populateCalendar();
+            } catch (PresentationException e) {
+                logger.debug(e.getMessage());
+            }
         }
     }
 
     private void populateCalendar() throws PresentationException, IndexUnreachableException {
         logger.trace("populateCalendar");
-        calendarItems = CalendarBean.populateMonthsWithDays(topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR), null,
-                " AND " + SolrConstants.PI_TOPSTRUCT + ":" + pi);
+        calendarItems = CalendarBean.populateMonthsWithDays(topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR), null, " AND "
+                + SolrConstants.PI_TOPSTRUCT + ":" + pi);
         logger.trace("Calendar items: {}", calendarItems.size());
     }
 
