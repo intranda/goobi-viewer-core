@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.cms;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,16 +74,22 @@ public class CMSPageTemplate {
      * @should load template correctly
      * @should throw IllegalArgumentException if file is null
      */
-    public static CMSPageTemplate loadFromXML(File file) throws FileNotFoundException, IOException, JDOMException {
+    public static CMSPageTemplate loadFromXML(Path file) {
         if (file == null) {
             throw new IllegalArgumentException("file may not be null");
         }
-        Document doc = FileTools.readXmlFile(file.getAbsolutePath());
+        Document doc;
+        try {
+            doc = FileTools.readXmlFile(file);
+        } catch (IOException | JDOMException e1) {
+           logger.error(e1.toString(), e1);
+           return null;
+        }
         if (doc != null) {
             Element root = doc.getRootElement();
             try {
                 CMSPageTemplate template = new CMSPageTemplate();
-                template.setTemplateFileName(file.getName());
+                template.setTemplateFileName(file.getFileName().toString());
                 template.setId(root.getAttributeValue("id"));
                 template.setVersion(root.getAttributeValue("version"));
                 template.setName(root.getChildText("name"));
@@ -100,7 +107,7 @@ public class CMSPageTemplate {
                             int order = Integer.parseInt(eleContentItem.getAttributeValue("order"));
                             item.setOrder(order);
                         } catch (NumberFormatException e) {
-                            logger.error("Error parsing order attribute of cms template {}. Value is {}", file.getName(), eleContentItem
+                            logger.error("Error parsing order attribute of cms template {}. Value is {}", file.getFileName(), eleContentItem
                                     .getAttributeValue("order"));
                         }
                     }
@@ -114,7 +121,7 @@ public class CMSPageTemplate {
                 template.validate();
                 return template;
             } catch (NullPointerException e) {
-                logger.error("Could not parse CMS template file '{}', check document structure.", file.getName());
+                logger.error("Could not parse CMS template file '{}', check document structure.", file.getFileName());
             }
         }
 
@@ -336,5 +343,6 @@ public class CMSPageTemplate {
     public void setDisplaySortingField(boolean displaySortingField) {
         this.displaySortingField = displaySortingField;
     }
+
 
 }
