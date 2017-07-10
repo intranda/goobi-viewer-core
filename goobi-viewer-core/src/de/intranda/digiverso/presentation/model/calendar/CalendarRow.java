@@ -13,31 +13,40 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.search;
+package de.intranda.digiverso.presentation.model.calendar;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-public class CalendarItemYear extends AbstractCalendarItem implements Serializable {
+import de.intranda.digiverso.presentation.model.search.ICalendarItem;
 
-    private static final long serialVersionUID = -3123380483405975449L;
+public class CalendarRow implements Serializable {
 
-    private List<CalendarItemMonth> monthsOfYear;
+    private static final long serialVersionUID = 1669202746505522856L;
 
-    public CalendarItemYear(String name, int value, int hits) {
-        super(name, value, hits);
+    private List<ICalendarItem> itemList = new ArrayList<>();
+
+    private boolean selected = false;
+
+    public List<ICalendarItem> getItemList() {
+        return itemList;
     }
 
-    public List<CalendarItemMonth> getMonthsOfYear() {
-        return monthsOfYear;
+    public void setItemList(List<ICalendarItem> itemList) {
+        this.itemList = itemList;
     }
 
-    public void setMonthsOfYear(List<CalendarItemMonth> monthsOfYear) {
-        this.monthsOfYear = monthsOfYear;
+    public void addItem(ICalendarItem item) {
+        itemList.add(item);
     }
 
-    @Override
-    public String toString() {
-        return "CalendarItemYear [year=" + name + ", hits=" + hits + "]";
+    public boolean isSelected() {
+        return selected;
     }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
 }

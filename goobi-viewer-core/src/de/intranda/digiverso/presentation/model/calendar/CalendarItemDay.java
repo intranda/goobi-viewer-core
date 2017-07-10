@@ -13,44 +13,54 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.search;
+package de.intranda.digiverso.presentation.model.calendar;
 
 import java.io.Serializable;
-import java.util.List;
 
-import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.model.search.AbstractCalendarItem;
 
-public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
+public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 
-    private static final long serialVersionUID = -4930440571977358495L;
+    private static final long serialVersionUID = 6482477938806267855L;
 
-    private List<CalendarItemWeek> weeksOfMonth;
+    private String query;
 
-    private List<CalendarItemDay> daysOfMonth;
+    private String dayOfWeek;
 
-    public CalendarItemMonth(String name, int value, int hits) {
+    public CalendarItemDay(String name, int value, int hits) {
         super(name, value, hits);
     }
 
-    public List<CalendarItemDay> getDaysOfMonth() {
-        return daysOfMonth;
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
     }
 
-    public void setDaysOfMonth(List<CalendarItemDay> daysOfMonth) {
-        this.daysOfMonth = daysOfMonth;
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
     }
 
-    public List<CalendarItemWeek> getWeeksOfMonth() {
-        return weeksOfMonth;
+    /**
+     * @return the dayOfWeek
+     */
+    public String getDayOfWeek() {
+        return dayOfWeek;
     }
 
-    public void setWeeksOfMonth(List<CalendarItemWeek> weeksOfMonth) {
-        this.weeksOfMonth = weeksOfMonth;
+    /**
+     * @param dayOfWeek the dayOfWeek to set
+     */
+    public void setDayOfWeek(String dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     @Override
     public String toString() {
-        return "CalendarItemMonth [month=" + name + ", hits=" + hits + "]";
+        return "CalendarItemDay [day=" + name + ", hits=" + hits + "]";
     }
-
 }

@@ -43,11 +43,11 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.search.CalendarItemDay;
-import de.intranda.digiverso.presentation.model.search.CalendarItemMonth;
-import de.intranda.digiverso.presentation.model.search.CalendarItemWeek;
-import de.intranda.digiverso.presentation.model.search.CalendarItemYear;
-import de.intranda.digiverso.presentation.model.search.CalendarRow;
+import de.intranda.digiverso.presentation.model.calendar.CalendarItemDay;
+import de.intranda.digiverso.presentation.model.calendar.CalendarItemMonth;
+import de.intranda.digiverso.presentation.model.calendar.CalendarItemWeek;
+import de.intranda.digiverso.presentation.model.calendar.CalendarItemYear;
+import de.intranda.digiverso.presentation.model.calendar.CalendarRow;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 
 /**

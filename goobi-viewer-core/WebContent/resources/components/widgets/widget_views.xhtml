@@ -45,7 +45,7 @@
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{fn:length(activeDocumentBean.viewManager.calendarItems) > 0}">
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.calendarView.display}">
 						<li class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
 							<h:outputLink value="#{navigationHelper.calendarActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.calendar}" />
