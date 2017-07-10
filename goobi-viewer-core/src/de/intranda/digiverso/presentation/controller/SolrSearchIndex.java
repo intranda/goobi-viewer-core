@@ -42,8 +42,6 @@ import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.TermsResponse;
-import org.apache.solr.client.solrj.response.TermsResponse.Term;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
@@ -64,7 +62,7 @@ public final class SolrSearchIndex {
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchIndex.class);
 
-    private static final int MIN_SCHEMA_VERSION = 20170607;
+    private static final int MIN_SCHEMA_VERSION = 20170710;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
     public static final int MAX_HITS = 1000000;
     private static final int TIMEOUT_SO = 30000;
