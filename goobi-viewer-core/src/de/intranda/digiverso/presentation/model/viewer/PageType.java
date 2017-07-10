@@ -77,20 +77,25 @@ public enum PageType {
         return this.handling.equals(PageTypeHandling.cms);
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean isDocumentPage() {
         switch (this) {
-            case viewFullscreen:
             case editContent:
             case editHistory:
             case editOcr:
+            case viewCalendar:
+            case viewFullscreen:
             case viewFulltext:
             case viewImage:
             case viewMetadata:
             case viewOverview:
             case viewPreview:
+            case viewReadingMode:
             case viewThumbs:
             case viewToc:
-            case viewReadingMode:
                 return true;
             default:
                 return false;
