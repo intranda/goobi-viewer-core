@@ -86,6 +86,12 @@ public class FileTools {
             return new SAXBuilder().build(is);
         }
     }
+    
+    public static Document readXmlFile(Path path) throws FileNotFoundException, IOException, JDOMException {
+        try (InputStream is = Files.newInputStream(path)) {
+            return new SAXBuilder().build(is);
+        }
+    }
 
     /**
      *

@@ -32,7 +32,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.configuration.beanutils.BeanHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -67,6 +69,7 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * CMS functions.
@@ -1097,9 +1100,10 @@ public class CmsBean {
     public void forwardToCMSPage(CMSPage page) throws IOException {
         setCurrentPage(page);
         String path = CMSTemplateManager.getInstance().getTemplateViewUrl(page.getTemplate());
+        path = path.replace("viewer/", "");
         if (StringUtils.isNotBlank(path)) {
-            logger.debug("Forwarding to " + path);
             FacesContext context = getFacesContext();
+            logger.debug("Forwarding to " + path);
             context.getExternalContext().dispatch(path);
             context.responseComplete();
         }

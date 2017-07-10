@@ -146,9 +146,6 @@ public class CMSContentResource {
 	   private static String createResponse(TargetType target, Long pageId, String language, String contentId) throws IOException, DAOException {
 			String output = null;
 			switch (target) {
-			    case PAGE:
-			        output = getPage(pageId);
-			        break;
 			    case CONTENT:
 			        output = getValue(pageId, contentId, language);
 			        break;
@@ -159,24 +156,6 @@ public class CMSContentResource {
 			}
 			return output;
 		}
-
-	    /**
-	     * @param request
-	     * @return
-	     * @throws IOException
-	     * @throws DAOException
-	     */
-	    private static String getPage(Long pageId) throws IOException, DAOException {
-	        try {
-	        	CMSPage page = DataManager.getInstance().getDao().getCMSPage(pageId);
-	            String pagePath = CMSTemplateManager.getInstance().getExternalTemplatePath(page.getTemplate());
-	            String content = FileTools.getStringFromFilePath(pagePath);
-	            return content;
-	        } catch (NumberFormatException e) {
-	            logger.error("Value of 'page' parameter is not a long: {}", e.getMessage());
-	            return null;
-	        }
-	    }
 
 	    /**
 	     * @param request
