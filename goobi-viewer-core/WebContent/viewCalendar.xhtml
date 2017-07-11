@@ -42,7 +42,7 @@
 	                                    <div class="col-sm-8">
 											<div class="custom-control custom-control--select">
 												<h:selectOneMenu id="selectyear" styleClass="form-control" value="#{activeDocumentBean.viewManager.calendarView.year}" immediate="true" onchange="submit();">
-													<f:selectItem itemDisabled="true" itemLabel="#{msg.select}" />
+													<f:selectItem itemDisabled="false" itemLabel="#{msg.select}" noSelectionOption="true" />
 													<f:selectItems var="year" itemLabel="#{year}" itemValue="#{year}" value="#{activeDocumentBean.viewManager.calendarView.volumeYears}" />
 												</h:selectOneMenu>
 											</div>
