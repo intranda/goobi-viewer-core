@@ -370,7 +370,7 @@
 ;var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _this = null;
     var _currApiCall = '';
     var _json = {};
@@ -378,6 +378,7 @@
     var _popoverContent = null;
     var _defaults = {
         appUrl: '',
+        calendarWrapperSelector: '.search-calendar__months',
         popoverTriggerSelector: '[data-popover-trigger="calendar-po-trigger"]',
         popoverTitle: 'Bitte übergeben Sie den Titel des Werks',
     };
@@ -393,6 +394,10 @@
             
             $.extend( true, _defaults, config );
             
+            // TODO: Fehlermeldung in der Konsole beseitigen, wenn man auf den Tag ein
+            // zweites Mal klickt.
+            
+            // show popover for current day
             $( _defaults.popoverTriggerSelector ).on( 'click', function() {
                 _this = $( this );
                 _currApiCall = encodeURI( _this.attr( 'data-api' ) );
@@ -403,15 +408,38 @@
                         placement: 'auto bottom',
                         title: _defaults.popoverTitle,
                         content: _popoverContent,
+                        viewport: {
+                            selector: _defaults.calendarWrapperSelector
+                        },
                         html: true
                     };
                     
-                    _this.off().popover( _popoverConfig );
+                    $( _defaults.popoverTriggerSelector ).popover( 'destroy' );
+                    _this.popover( _popoverConfig );
+                    _this.popover( 'show' );
                 } );
+            } );
+            
+            // remove all popovers by clicking on body
+            $( 'body' ).on( 'click', function( event ) {
+                if ( $( event.target ).closest( _defaults.popoverTriggerSelector ).length ) {
+                    return;
+                }
+                else {
+                    $( _defaults.popoverTriggerSelector ).popover( 'destroy' );
+                }
             } );
         }
     };
     
+    /**
+     * Method to render the popover content.
+     * 
+     * @method _getPopoverContent
+     * @param {Object} data A JSON-Object which contains the necessary data.
+     * @param {Object} config The config object of the module.
+     * @returns {String} The HTML-String of the popover content.
+     */
     function _getPopoverContent( data, config ) {
         if ( _debug ) {
             console.log( '---------- _getPopoverContent() ----------' );
