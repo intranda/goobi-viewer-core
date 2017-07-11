@@ -3600,6 +3600,7 @@ input[id*="cmdMoveTo"] {
   border-bottom: 1px solid #ccc;
 }
 .search-calendar__month {
+  min-height: 270px;
   margin-bottom: 15px;
 }
 .search-calendar__month-title {
@@ -3627,9 +3628,14 @@ input[id*="cmdMoveTo"] {
   color: #ccc;
 }
 .search-calendar__month-day a,
-.search-calendar__month-day span {
+.search-calendar__month-day span,
+.search-calendar__month-day button {
   display: block;
   padding: 5px 10px;
+}
+.search-calendar__month-day button {
+  color: #428bca;
+  text-decoration: underline;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
