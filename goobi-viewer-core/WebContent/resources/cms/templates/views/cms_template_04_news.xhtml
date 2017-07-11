@@ -46,11 +46,13 @@
     	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
     		<widgetComponent:widget_custom widget="#{element}"/>
     		<widgetComponent:widget_customDrillDown widget="#{element}" />
+    		<widgetComponent:widget_searchDrillDown widget="#{element}" />
             <widgetComponent:widget_searchField widget="#{element}"/>
             <widgetComponent:widget_browsing widget="#{element}"/>            
             <widgetComponent:widget_bookshelves widget="#{element}"/>
             <widgetComponent:widget_mySearches widget="#{element}"/>
             <widgetComponent:widget_user widget="#{element}"/>
+            <widgetComponent:widget_rssFeed widget="#{element}" />
     	</c:forEach>
     </ui:define>
 </ui:composition>
