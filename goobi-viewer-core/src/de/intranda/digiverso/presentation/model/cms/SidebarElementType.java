@@ -25,7 +25,8 @@ public enum SidebarElementType {
     bookshelves("widgetBookshelves"),
     crowdsourcing("widgetCrowdsourcing"),
     mySearches("widgetMySearches"),
-    fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery);
+    fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
+    rssFeed("widgetRssFeed");
 
     private final String label;
     private final Category type;
