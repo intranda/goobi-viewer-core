@@ -1,0 +1,36 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface>
+		<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+	</composite:interface>
+
+    <composite:implementation>
+    	<h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetRssFeed' or cc.attrs.widget.type == null)}">
+	    	<h:outputScript name="jquery.jfeed.js" library="javascript" />
+	        <h:outputScript name="jquery.aRSSFeed.js" library="javascript" />
+	
+	        <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget">
+	        	<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == 'FOLDOUT' or cc.attrs.widget.type == null}">
+		            <h3>
+		                #{msg.lastImports}
+		                <a href="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}" class="icon-rss16x16" title="#{msg.rssSubscribe}" target="_blank"></a>
+		            </h3>
+		            <div class="rss-wrapp" rssnum="5" rss_url="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}"
+		                lastImportsMsg="#{msg.importdate}:" weekDayNames="#{msg.weekDayNames}" monthNames="#{msg.monthNames}">
+		            </div>
+	            </h:panelGroup>
+	        </div>
+	        
+	        <script language="javascript" type="text/javascript">
+				$(document).ready(function() {
+					$('.rss-wrapp').aRSSFeed();
+				});
+			</script>
+		</h:panelGroup>
+    </composite:implementation>
+</ui:composition>
