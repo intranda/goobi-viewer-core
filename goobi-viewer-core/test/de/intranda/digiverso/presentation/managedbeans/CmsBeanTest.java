@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -44,7 +45,8 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        CMSTemplateManager.getInstance("WebContent/");
+        File webContent = new File("WebContent/").getAbsoluteFile();
+        CMSTemplateManager.getInstance(webContent.toURI().toString());
     }
 
     /**

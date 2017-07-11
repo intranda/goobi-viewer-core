@@ -74,14 +74,8 @@ public final class CMSTemplateManager {
                 ctm = instance;
                 if (ctm == null) {
                     try {
-                        //                         TODO set web root path w/o calling JSF classes
-                        ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-                        String webContentRoot = servletContext.getContextPath();
 
-                        //                        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                        //                        String servletPath = ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
-
-                        ctm = new CMSTemplateManager(webContentRoot);
+                        ctm = new CMSTemplateManager(null);
                         instance = ctm;
                     } catch (NullPointerException e) {
                         throw new IllegalStateException("Cannot access servlet context");
@@ -103,20 +97,30 @@ public final class CMSTemplateManager {
     }
 
     private CMSTemplateManager(String filesystemPath) throws PresentationException {
-        ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        ServletContext servletContext = null;
+        String webContentRoot = "";
+        if(filesystemPath == null && FacesContext.getCurrentInstance() != null) {         
+            servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+            webContentRoot = servletContext.getContextPath();
+        }
         List<Path> templateFiles = new ArrayList<>();
         //        if (filesystemPath == null) {
 
         try {
 
             this.templateFolderUrl = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
-            URL fileUrl = servletContext.getResource(this.templateFolderUrl);
+            URL fileUrl;
+            if(servletContext != null) {                
+                fileUrl = servletContext.getResource(this.templateFolderUrl);
+            } else {
+                fileUrl = new URL(filesystemPath + this.templateFolderUrl);
+            }
             if (fileUrl != null) {
                 try {
                     Map<String, String> env = new HashMap<>();
                     env.put("create", "true");
                     FileSystem zipfs = FileSystems.newFileSystem(fileUrl.toURI(), env);
-                } catch (FileSystemAlreadyExistsException e) {
+                } catch (FileSystemAlreadyExistsException | IllegalArgumentException e) {
                     //no comment...
                 }
                 if (Files.exists(Paths.get(fileUrl.toURI()))) {
@@ -132,7 +136,12 @@ public final class CMSTemplateManager {
         if (templateFiles.isEmpty()) {
             try {
                 this.templateFolderUrl = "resources/" + TEMPLATE_BASE_PATH;
-                URL fileUrl = servletContext.getResource(this.templateFolderUrl);
+                URL fileUrl;
+                if(servletContext != null) {                
+                    fileUrl = servletContext.getResource(this.templateFolderUrl);
+                } else {
+                    fileUrl = new URL(filesystemPath + this.templateFolderUrl);
+                }
                 if (fileUrl != null) {
                     try {
                         Map<String, String> env = new HashMap<>();
@@ -165,7 +174,7 @@ public final class CMSTemplateManager {
         //            }
         //        }
 
-        this.templateFolderUrl = filesystemPath + "/" + this.templateFolderUrl;
+        this.templateFolderUrl = webContentRoot + "/" + this.templateFolderUrl;
 
         //            this.relativeTemplateBasePath = "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
         //            this.absoluteTemplateBasePath = templateFolderPath + this.relativeTemplateBasePath;

@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.cms;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -44,7 +45,8 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
     @Before
 	public void setUp() throws Exception {
 		super.setUp();
-		CMSTemplateManager.getInstance("WebContent/");
+		File webContent = new File("WebContent/").getAbsoluteFile();
+        CMSTemplateManager.getInstance(webContent.toURI().toString());
 	}
 
 	/**
