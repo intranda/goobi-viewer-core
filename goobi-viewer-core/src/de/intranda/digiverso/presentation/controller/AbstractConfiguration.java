@@ -31,8 +31,8 @@ public abstract class AbstractConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 
-    XMLConfiguration config;
-    XMLConfiguration configLocal;
+    protected XMLConfiguration config;
+    protected XMLConfiguration configLocal;
 
     /**
      * 
@@ -40,7 +40,7 @@ public abstract class AbstractConfiguration {
      * @param inDefault
      * @return
      */
-    int getLocalInt(String inPath, int inDefault) {
+    protected int getLocalInt(String inPath, int inDefault) {
         try {
             return configLocal.getInt(inPath, config.getInt(inPath, inDefault));
         } catch (ConversionException e) {
@@ -57,7 +57,7 @@ public abstract class AbstractConfiguration {
      * @param inPath
      * @return
      */
-    float getLocalFloat(String inPath) {
+    protected float getLocalFloat(String inPath) {
         return configLocal.getFloat(inPath, config.getFloat(inPath));
     }
 
@@ -67,7 +67,7 @@ public abstract class AbstractConfiguration {
      * @param inDefault
      * @return
      */
-    String getLocalString(String inPath, String inDefault) {
+    protected String getLocalString(String inPath, String inDefault) {
         try {
             return configLocal.getString(inPath, config.getString(inPath, inDefault));
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public abstract class AbstractConfiguration {
      * @param inPath
      * @return
      */
-    String getLocalString(String inPath) {
+    protected String getLocalString(String inPath) {
         return configLocal.getString(inPath, config.getString(inPath));
     }
 
@@ -93,7 +93,7 @@ public abstract class AbstractConfiguration {
      * @param defaultList List of default values to return if none found in config
      * @return
      */
-    static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath, List<String> defaultList) {
+    protected static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath, List<String> defaultList) {
         if (config == null) {
             throw new IllegalArgumentException("config may not be null");
         }
@@ -114,7 +114,7 @@ public abstract class AbstractConfiguration {
      * @param inPath
      * @return
      */
-    List<Object> getLocalNodeList(String inPath) {
+    protected List<Object> getLocalNodeList(String inPath) {
         List<Object> objects = ((HierarchicalConfiguration) configLocal).getList(inPath, ((HierarchicalConfiguration) config).getList(inPath));
         if (objects != null && !objects.isEmpty()) {
             List<Object> ret = new ArrayList<>(objects.size());
@@ -133,7 +133,7 @@ public abstract class AbstractConfiguration {
      * @param defaultList
      * @return
      */
-    List<String> getLocalList(String inPath, List<String> defaultList) {
+    protected List<String> getLocalList(String inPath, List<String> defaultList) {
         return getLocalList(configLocal, config, inPath, defaultList);
     }
 
@@ -142,7 +142,7 @@ public abstract class AbstractConfiguration {
      * @param inPath
      * @return
      */
-    List<String> getLocalList(String inPath) {
+    protected List<String> getLocalList(String inPath) {
         return getLocalList(inPath, null);
     }
 
@@ -152,7 +152,7 @@ public abstract class AbstractConfiguration {
      * @param inDefault
      * @return
      */
-    boolean getLocalBoolean(String inPath, boolean inDefault) {
+    protected boolean getLocalBoolean(String inPath, boolean inDefault) {
         try {
             return configLocal.getBoolean(inPath, config.getBoolean(inPath, inDefault));
         } catch (Exception e) {
@@ -166,7 +166,7 @@ public abstract class AbstractConfiguration {
      * @param inPath
      * @return
      */
-    List<HierarchicalConfiguration> getLocalConfigurationsAt(String inPath) {
+    protected List<HierarchicalConfiguration> getLocalConfigurationsAt(String inPath) {
         List<HierarchicalConfiguration> ret = configLocal.configurationsAt(inPath);
         if (ret == null || ret.isEmpty()) {
             ret = config.configurationsAt(inPath);
@@ -180,7 +180,7 @@ public abstract class AbstractConfiguration {
      * @param inPath
      * @return
      */
-    HierarchicalConfiguration getLocalConfigurationAt(String inPath) {
+    protected HierarchicalConfiguration getLocalConfigurationAt(String inPath) {
         HierarchicalConfiguration ret = null;
         try {
             ret = configLocal.configurationAt(inPath);
