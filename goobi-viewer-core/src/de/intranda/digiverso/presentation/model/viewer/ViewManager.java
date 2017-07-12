@@ -148,7 +148,8 @@ public class ViewManager implements Serializable {
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
 
-        calendarView = new CalendarView(pi, topDocument.isAnchor(), topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR));
+        calendarView = new CalendarView(pi, topDocument.isAnchor(), topDocument.isAnchor() ? null : topDocument.getMetadataValue(
+                SolrConstants._CALENDAR_YEAR));
         if (topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR) != null) {
             try {
                 calendarView.populateCalendar();

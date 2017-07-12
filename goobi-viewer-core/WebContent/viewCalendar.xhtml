@@ -53,7 +53,7 @@
 						</h:panelGroup>
 
 						<!-- SEARCH CALENDAR MONTHS -->
-						<h:panelGroup rendered="#{fn:length(activeDocumentBean.viewManager.calendarView.calendarItems) gt 0}">
+						<h:panelGroup rendered="#{activeDocumentBean.viewManager.calendarView.year != null}">
 							<div class="search-calendar__months">
 								<div class="row">
 									<ui:repeat var="month" value="#{activeDocumentBean.viewManager.calendarView.calendarItems}">

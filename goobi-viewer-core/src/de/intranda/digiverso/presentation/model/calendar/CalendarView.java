@@ -45,8 +45,8 @@ public class CalendarView {
      * Constructor.
      * 
      * @param pi
-     * @param anchor
-     * @param year
+     * @param anchor true if this is an anchor; false otherwise
+     * @param year Year of a volume; null, if this is an anchor!
      */
     public CalendarView(String pi, boolean anchor, String year) {
         this.pi = pi;
