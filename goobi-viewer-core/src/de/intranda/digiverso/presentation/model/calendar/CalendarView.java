@@ -17,6 +17,7 @@
 package de.intranda.digiverso.presentation.model.calendar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class CalendarView {
     private static final Logger logger = LoggerFactory.getLogger(CalendarView.class);
 
     private final String pi;
-    private final boolean anchor;
+    private final String anchorPi;
     private String year;
     /** Calendar representation of this record's child elements. */
     private List<CalendarItemMonth> calendarItems = new ArrayList<>();
@@ -44,14 +45,20 @@ public class CalendarView {
     /**
      * Constructor.
      * 
-     * @param pi
-     * @param anchor true if this is an anchor; false otherwise
+     * @param pi Record identifier
+     * @param anchorPi Anchor record identifier (must be same as pi if this is an anchor)
      * @param year Year of a volume; null, if this is an anchor!
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public CalendarView(String pi, boolean anchor, String year) {
+    public CalendarView(String pi, String anchorPi, String year) throws IndexUnreachableException, PresentationException {
         this.pi = pi;
-        this.anchor = anchor;
+        this.anchorPi = anchorPi;
         this.year = year;
+
+        if (year != null) {
+            populateCalendar();
+        }
     }
 
     /**
@@ -60,7 +67,7 @@ public class CalendarView {
      * @return
      */
     public boolean isDisplay() {
-        return anchor || !calendarItems.isEmpty();
+        return pi.equals(anchorPi) || !calendarItems.isEmpty();
     }
 
     /**
@@ -70,12 +77,7 @@ public class CalendarView {
      * @throws IndexUnreachableException
      */
     public void populateCalendar() throws PresentationException, IndexUnreachableException {
-        logger.trace("populateCalendar");
-        if (anchor) {
-            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_ANCHOR + ":" + pi);
-        } else {
-            calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_TOPSTRUCT + ":" + pi);
-        }
+        calendarItems = CalendarBean.populateMonthsWithDays(year, null, " AND " + SolrConstants.PI_ANCHOR + ":" + anchorPi);
         logger.trace("Calendar items: {}", calendarItems.size());
     }
 
@@ -86,7 +88,11 @@ public class CalendarView {
      * @throws IndexUnreachableException
      */
     public List<String> getVolumeYears() throws PresentationException, IndexUnreachableException {
-        return SearchHelper.getFacetValues(SolrConstants.PI_PARENT + ":" + pi, SolrConstants._CALENDAR_YEAR, 1);
+        if (anchorPi != null) {
+            return SearchHelper.getFacetValues(SolrConstants.PI_PARENT + ":" + anchorPi, SolrConstants._CALENDAR_YEAR, 1);
+        }
+
+        return Collections.emptyList();
     }
 
     /**

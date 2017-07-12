@@ -118,7 +118,7 @@ public class ViewManager implements Serializable {
     private final CalendarView calendarView;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
-            throws IndexUnreachableException {
+            throws IndexUnreachableException, PresentationException {
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -148,15 +148,9 @@ public class ViewManager implements Serializable {
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
 
-        calendarView = new CalendarView(pi, topDocument.isAnchor(), topDocument.isAnchor() ? null : topDocument.getMetadataValue(
-                SolrConstants._CALENDAR_YEAR));
-        if (topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR) != null) {
-            try {
-                calendarView.populateCalendar();
-            } catch (PresentationException e) {
-                logger.debug(e.getMessage());
-            }
-        }
+        // Init calendar view
+        String anchorPi = anchorDocument != null ? anchorDocument.getPi() : (topDocument.isAnchor() ? pi : null);
+        calendarView = new CalendarView(pi, anchorPi, topDocument.isAnchor() ? null : topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR));
     }
 
     public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException {
