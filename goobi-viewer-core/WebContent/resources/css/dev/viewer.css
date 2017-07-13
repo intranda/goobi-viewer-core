@@ -30,6 +30,11 @@
 }
 /* BACKGROUND IMAGE */
 /* CSS TRIANGLE */
+/* HIDDEN */
+.mx-hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
 /* ==============================================================
    General styling
    ==============================================================*/
