@@ -40,10 +40,10 @@
 		<param-name>primefaces.THEME</param-name>
 		<param-value>none</param-value>
 	</context-param>
-    <context-param>
-        <param-name>com.ocpsoft.pretty.CONFIG_FILES</param-name>
-        <param-value>theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml</param-value>
-    </context-param>
+<!--     <context-param> -->
+<!--         <param-name>com.ocpsoft.pretty.CONFIG_FILES</param-name> -->
+<!--         <param-value>theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml</param-value> -->
+<!--     </context-param> -->
 	<!-- All f:convertDateTime widgets will use the server's time zone for output. 
 		Remove once the widgets are able to use the client's time zone. -->
 	<context-param>

@@ -15,6 +15,17 @@
  */
 package de.intranda.digiverso.presentation;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -58,7 +69,34 @@ public class ContextListener implements ServletContextListener {
         }
         //        createResources();
 
+        // Scan for all Pretty config files in module JARs
+        String webinfPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(webinfPath), "*-module-*.jar")) {
+            for (Path path : stream) {
+                logger.trace(path.toString());
+                try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
+                    while (true) {
+                        ZipEntry e = zip.getNextEntry();
+                        if (e == null)
+                            break;
+                        String[] nameSplit = e.getName().split("/");
+                        if (nameSplit.length > 0) {
+                            String name = nameSplit[nameSplit.length - 1];
+                            logger.trace(name);
+                            if (name.startsWith("pretty-")) {
+                                prettyConfigFiles += ", " + name;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+        
+        // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
+        logger.trace("Pretty config files: {}", prettyConfigFiles);
     }
 
     @Override
