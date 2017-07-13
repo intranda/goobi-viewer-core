@@ -1265,7 +1265,7 @@ div.mce-fullscreen {
    style declarations for simplePaginator.xhtml
    ==============================================================*/
 #numeric_paginator_nav {
-  margin: 1rem 0;
+  margin: 1rem 0 1.5rem 0;
   overflow: hidden;
 }
 #numeric_paginator_nav ul {
@@ -1594,6 +1594,7 @@ div.mce-fullscreen {
   text-align: center;
   color: #6f6f6f;
   border: 1px solid #6f6f6f;
+  cursor: pointer;
 }
 .image-control a:hover,
 .image-control span:hover {
