@@ -120,12 +120,15 @@
 		value="file:///home/goobi/metsRepository/" /> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<defaultRepositoryPathMets value="file:///opt/digiverso/viewer/indexed_mets/" />
 
-	<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ * configuration 
-		if titlepage for pdf file should be generated and * which config-file defines 
-		how the title page should look like * * sample: <defaultRepositoryPath value="file:///home/goobi/config/pdftitlepage.xml" 
-		/> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<pdfTitlePage use="false"
-		configFile="file:///opt/digiverso/viewer/config/config_pdfTitlePage.xml" />
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ * 
+		configuration if titlepage for pdf file should be generated. Each title page is build on a 
+		fo-template which is enriched by metadata from the mets/mods file.
+		All templates need to reside in the path given by @templateFolder. If no explicit template is 
+		given in the request, the file given in @defaultTemplate is used (with added extension ".fo")
+	/> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<pdfTitlePage use="true" fontFile="font.ttf"
+		templateFolder="file:///opt/digiverso/viewer/config/PDFTitlePage/"
+		defaultTemplate="default" />
 
 	<restapi use="true"></restapi>
 

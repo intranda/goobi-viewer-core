@@ -99,6 +99,7 @@ public class CmsBean {
     private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
     private List<CMSPage> createdPages;
+    private long numCreatedPages = 0;
     private int nestedPagesCount = 0;
     private boolean editMode = false;
     private Map<String, CollectionView> collections = new HashMap<>();
@@ -127,12 +128,9 @@ public class CmsBean {
 
                 @Override
                 public long getTotalNumberOfRecords() {
-                    try {
-                        return DataManager.getInstance().getDao().getCMSPageCount(lazyModelPages.getFiltersAsMap());
-                    } catch (DAOException e) {
-                        logger.error(e.getMessage(), e);
-                        return 0;
-                    }
+//                        return DataManager.getInstance().getDao().getCMSPageCount(lazyModelPages.getFiltersAsMap());
+                        return numCreatedPages;
+
                 }
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -234,7 +232,8 @@ public class CmsBean {
 
     public List<CMSPage> loadCreatedPages(int from, int to) throws DAOException {
         logger.debug("Loading created cms-pages from database");
-        createdPages = DataManager.getInstance().getDao().getCMSPages(from, to - from, null, false, null);
+//        createdPages = DataManager.getInstance().getDao().getCMSPages(from, to - from, null, false, null);
+        createdPages = DataManager.getInstance().getDao().getAllCMSPages();
         Iterator<CMSPage> pages = createdPages.iterator();
 
         while (pages.hasNext()) {
@@ -252,6 +251,8 @@ public class CmsBean {
                 }
             }
         }
+        numCreatedPages = createdPages.size();
+        createdPages = createdPages.subList(Math.min(from, createdPages.size()-1), Math.min(to, createdPages.size()));
         return createdPages;
     }
 
