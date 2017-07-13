@@ -1664,11 +1664,12 @@ public final class SearchHelper {
      *
      * @param query
      * @param facetFieldName
+     * @param minCount
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<String> getFacetValues(String query, String facetFieldName) throws PresentationException, IndexUnreachableException {
+    public static List<String> getFacetValues(String query, String facetFieldName, long minCount) throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
         }
@@ -1681,7 +1682,7 @@ public final class SearchHelper {
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
-            if (StringUtils.isNotEmpty(count.getName())) {
+            if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= minCount) {
                 ret.add(count.getName());
             }
         }
@@ -2220,8 +2221,10 @@ public final class SearchHelper {
                 // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                ret.add(SolrConstants.DEFAULT);
-                // TODO
+                // ret.add(SolrConstants.DEFAULT);
+                ret.add(SolrConstants._CALENDAR_DAY);
+                ret.add(SolrConstants._CALENDAR_MONTH);
+                ret.add(SolrConstants._CALENDAR_YEAR);
                 break;
             default:
                 if (searchFilter == null || searchFilter.equals(SEARCH_FILTER_ALL)) {
@@ -2232,6 +2235,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.UGCTERMS);
                     ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
                     ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+                    ret.add(SolrConstants._CALENDAR_DAY);
                 } else {
                     ret.add(searchFilter.getField());
                 }

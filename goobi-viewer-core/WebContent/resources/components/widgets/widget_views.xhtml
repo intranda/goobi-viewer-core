@@ -1,6 +1,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" 
     xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
@@ -44,14 +45,22 @@
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.activeDocument.lidoRecord}">
-						<li class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" />
-								<h:outputText value="#{msg.toc}" rendered="#{!activeDocumentBean.anchor}" />
+					<h:panelGroup rendered="#{activeDocumentBean.viewManager.calendarView.display}">
+						<li class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
+							<h:outputLink value="#{navigationHelper.calendarActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText value="#{msg.calendar}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
+					
+                    <h:panelGroup rendered="#{navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.activeDocument.lidoRecord}">
+                        <li class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
+                            <h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
+                                <h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" />
+                                <h:outputText value="#{msg.toc}" rendered="#{!activeDocumentBean.anchor}" />
+                            </h:outputLink>
+                        </li>
+                    </h:panelGroup>
 
 					<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.thumbsActiveUrl != null}">
 						<li class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">

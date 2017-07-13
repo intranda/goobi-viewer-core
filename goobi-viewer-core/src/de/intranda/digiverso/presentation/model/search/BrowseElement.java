@@ -544,6 +544,7 @@ public class BrowseElement implements Serializable {
             }
             switch (fieldName) {
                 case SolrConstants.NORMDATATERMS:
+                case SolrConstants.PI_ANCHOR:
                 case SolrConstants.UGCTERMS:
                     break;
                 //                case SolrConstants.OVERVIEWPAGE_DESCRIPTION:

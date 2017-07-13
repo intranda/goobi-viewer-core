@@ -19,6 +19,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.logging.log4j.LogManager;
+import org.goobi.viewer.modules.skeleton.SkeletonModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,8 @@ import de.intranda.digiverso.presentation.model.user.Role;
 public class ContextListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(ContextListener.class);
+    
+    private static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
     //    static {
     // ImageIO.scanForPlugins();
@@ -53,6 +56,9 @@ public class ContextListener implements ServletContextListener {
             logger.error(e.getMessage());
         }
         //        createResources();
+        
+        String prettyFiles =  "heme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml";
+        sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyFiles);
     }
 
     @Override

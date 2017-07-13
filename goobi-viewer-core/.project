@@ -31,7 +31,6 @@
 		<project>goobi-viewer-theme-ubwien</project>
 		<project>goobi-viewer-theme-unisammlungen</project>
 		<project>goobi-viewer-theme-zlb2</project>
-		<project>goobi-viewer-module-crowdsourcing</project>
 		<project>goobi-viewer-theme-wuw</project>
 		<project>goobi-viewer-theme-hlbf</project>
 		<project>goobi-viewer-theme-geiwv</project>
@@ -95,11 +94,4 @@
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 		<nature>org.openmrs.generatetestcases.bddNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>config_viewer.xml</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/opt/digiverso/viewer/config/config_viewer.xml</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

@@ -125,6 +125,22 @@
                         </div>
                     </h:panelGroup>
                     
+                    <!-- CALENDAR SEARCH INFO -->
+                    <h:panelGroup rendered="#{searchBean.activeSearchType == 3}">
+                        <div class="search-list__adv-search-info">
+                            (<h:outputText value="#{msg.date}: " escape="false">
+                            </h:outputText>
+                            <h:outputText value="#{calendarBean.currentDate}">
+                                <f:convertDateTime type="date" dateStyle="medium" timeStyle="short" />
+                            </h:outputText>)
+                            
+                            <!-- CALENDAR SEARCH -->
+                            <div class="search-list__adv-search-info-back text-right">
+                                <a href="#{request.contextPath}/searchcalendar/">#{msg.searchCalendarBack}</a>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    
                     <hr />
 
                     <!-- SEARCH LIST SORTING -->

@@ -13,48 +13,24 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.search;
+package de.intranda.digiverso.presentation.model.calendar;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class CalendarItemMonth implements ICalendarItem, Serializable {
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.model.search.AbstractCalendarItem;
+
+public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = -4930440571977358495L;
 
-    private String name;
-    private int value;
-    private int hits;
-    private boolean selected = false;
     private List<CalendarItemWeek> weeksOfMonth;
 
     private List<CalendarItemDay> daysOfMonth;
 
     public CalendarItemMonth(String name, int value, int hits) {
-        this.name = name;
-        this.value = value;
-        this.hits = hits;
-    }
-
-    @Override
-    public String getName() {
-
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public int getHits() {
-        return hits;
-    }
-
-    @Override
-    public void setHits(int hits) {
-        this.hits = hits;
+        super(name, value, hits);
     }
 
     public List<CalendarItemDay> getDaysOfMonth() {
@@ -65,31 +41,6 @@ public class CalendarItemMonth implements ICalendarItem, Serializable {
         this.daysOfMonth = daysOfMonth;
     }
 
-    @Override
-    public boolean isSelected() {
-        return selected;
-    }
-
-    @Override
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    @Override
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "CalendarItemMonth [month=" + name + ", hits=" + hits + "]";
-    }
-
     public List<CalendarItemWeek> getWeeksOfMonth() {
         return weeksOfMonth;
     }
@@ -97,4 +48,10 @@ public class CalendarItemMonth implements ICalendarItem, Serializable {
     public void setWeeksOfMonth(List<CalendarItemWeek> weeksOfMonth) {
         this.weeksOfMonth = weeksOfMonth;
     }
+
+    @Override
+    public String toString() {
+        return "CalendarItemMonth [month=" + name + ", hits=" + hits + "]";
+    }
+
 }

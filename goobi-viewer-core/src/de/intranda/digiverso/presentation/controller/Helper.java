@@ -137,6 +137,7 @@ public class Helper {
     public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
     public static DecimalFormat dfTwoDecimals = new DecimalFormat("0.00");
+    public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
     public static Namespace nsAlto = Namespace.getNamespace("alto", "http://www.loc.gov/standards/alto/ns-v2#");
     // TODO final namespaces

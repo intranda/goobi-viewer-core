@@ -255,10 +255,11 @@
              An optinal _DEFAULT configuration can be used for all docstruct types without an explicit configuration. -->
         <docstructTargetPageTypes>
             <Catalogue>toc</Catalogue>
+            <NewspaperVolume>calendar</NewspaperVolume>
         </docstructTargetPageTypes>
 
         <!-- theme: defines the theme that shall be used -->
-        <theme subTheme="false" mainTheme="reference2" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
+        <theme subTheme="false" mainTheme="hlbf" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
     </viewer>
 
     <search>
@@ -940,8 +941,13 @@
         <page>
             <visible>true</visible>
         </page>
+        
+        <!-- calendar: if false, the calendar view link is hidden -->
+        <calendar>
+            <visible>true</visible>
+        </calendar>
 
-        <!-- to/opt if false, the TOC link is hidden (This is the link to the TOC page in the work menu, not the sidebar TOC component!) -->
+        <!-- toc: if false, the TOC link is hidden (This is the link to the TOC page in the work menu, not the sidebar TOC component!) -->
         <toc>
             <visible>true</visible>
         </toc>

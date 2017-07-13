@@ -305,7 +305,10 @@ public class SearchHit implements Comparable<SearchHit> {
         boolean overviewPageFetched = false;
         for (String fieldName : searchTerms.keySet()) {
             switch (fieldName) {
+                case SolrConstants._CALENDAR_DAY:
+                case SolrConstants._CALENDAR_MONTH:
                 case SolrConstants.NORMDATATERMS:
+                case SolrConstants.PI_ANCHOR:
                 case SolrConstants.UGCTERMS:
                     break;
                 case SolrConstants.DEFAULT:

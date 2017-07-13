@@ -439,6 +439,31 @@
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	
+	<!-- calendar -->
+    <url-mapping id="calendar1">
+        <pattern
+            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="calendar2">
+        <pattern
+            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="calendar3">
+        <pattern
+            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="calendar3active">
+        <pattern
+            value="/!calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	
 	<!-- download -->
 	   <url-mapping id="download1">

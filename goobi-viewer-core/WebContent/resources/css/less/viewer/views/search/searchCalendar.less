@@ -45,6 +45,7 @@
         border-bottom: 1px solid @middlegray;
     }
     &__month {
+        min-height: 270px;
         margin-bottom: 15px;
     }
     &__month-title {
@@ -74,9 +75,14 @@
         text-align: center;
         color: @middlegray;
         a, 
-        span {
+        span,
+        button {
             display: block;
             padding: 5px 10px;
+        }
+        button {
+        	color: @blue;
+        	text-decoration: underline;
         }
     }
     &__month-day-empty {

@@ -13,20 +13,40 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.search;
+package de.intranda.digiverso.presentation.model.calendar;
 
-public interface ICalendarItem {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-    public String getName();
+import de.intranda.digiverso.presentation.model.search.ICalendarItem;
 
-    public int getValue();
+public class CalendarRow implements Serializable {
 
-    public int getHits();
+    private static final long serialVersionUID = 1669202746505522856L;
 
-    public void setHits(int hits);
+    private List<ICalendarItem> itemList = new ArrayList<>();
 
-    public boolean isSelected();
+    private boolean selected = false;
 
-    public void setSelected(boolean selected);
+    public List<ICalendarItem> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(List<ICalendarItem> itemList) {
+        this.itemList = itemList;
+    }
+
+    public void addItem(ICalendarItem item) {
+        itemList.add(item);
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
 }

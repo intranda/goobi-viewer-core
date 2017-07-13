@@ -4,6 +4,9 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/tools"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
+        <dependent-module archiveName="viewer-module-skeleton.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-skeleton/goobi-viewer-module-skeleton">
+            <dependency-type>uses</dependency-type>
+        </dependent-module> 
         <dependent-module archiveName="viewer-module-crowdsourcing.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/viewer-module-crowdsourcing/viewer-module-crowdsourcing">
             <dependency-type>uses</dependency-type>
         </dependent-module> 

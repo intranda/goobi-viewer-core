@@ -13,81 +13,54 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.search;
+package de.intranda.digiverso.presentation.model.calendar;
 
 import java.io.Serializable;
 
-public class CalendarItemDay implements ICalendarItem, Serializable {
+import de.intranda.digiverso.presentation.model.search.AbstractCalendarItem;
+
+public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = 6482477938806267855L;
 
-    private String name;
-    private int value;
-    private int hits;
-    private boolean selected = false;
+    private String query;
 
     private String dayOfWeek;
 
-    /**
-     *
-     */
     public CalendarItemDay(String name, int value, int hits) {
-        this.name = name;
-        this.value = value;
-        this.hits = hits;
-
+        super(name, value, hits);
     }
 
-    @Override
-    public String getName() {
-        return name;
+    /**
+     * @return the query
+     */
+    public String getQuery() {
+        return query;
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * @param query the query to set
+     */
+    public void setQuery(String query) {
+        this.query = query;
     }
 
-    @Override
-    public int getHits() {
-        return hits;
+    /**
+     * @return the dayOfWeek
+     */
+    public String getDayOfWeek() {
+        return dayOfWeek;
     }
 
-    @Override
-    public void setHits(int hits) {
-        this.hits = hits;
-    }
-
-    @Override
-    public boolean isSelected() {
-        return selected;
-    }
-
-    @Override
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-
-    @Override
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public void setValue(int value) {
-        this.value = value;
+    /**
+     * @param dayOfWeek the dayOfWeek to set
+     */
+    public void setDayOfWeek(String dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     @Override
     public String toString() {
         return "CalendarItemDay [day=" + name + ", hits=" + hits + "]";
-    }
-
-    public String getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    public void setDayOfWeek(String dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
     }
 }

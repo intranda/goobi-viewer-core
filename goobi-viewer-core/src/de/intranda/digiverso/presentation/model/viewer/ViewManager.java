@@ -55,6 +55,7 @@ import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.calendar.CalendarView;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
@@ -114,9 +115,10 @@ public class ViewManager implements Serializable {
     private boolean doublePageMode = false;
     private int firstPdfPage;
     private int lastPdfPage;
+    private final CalendarView calendarView;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
-            throws IndexUnreachableException {
+            throws IndexUnreachableException, PresentationException {
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -145,6 +147,10 @@ public class ViewManager implements Serializable {
         }
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
+
+        // Init calendar view
+        String anchorPi = anchorDocument != null ? anchorDocument.getPi() : (topDocument.isAnchor() ? pi : null);
+        calendarView = new CalendarView(pi, anchorPi, topDocument.isAnchor() ? null : topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR));
     }
 
     public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException {
@@ -508,8 +514,7 @@ public class ViewManager implements Serializable {
             searchBean = (SearchBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("searchBean");
         }
         if (searchBean != null && (searchBean.getCurrentSearchFilterString() == null || searchBean.getCurrentSearchFilterString().equals(
-                SearchHelper.SEARCH_FILTER_ALL.getLabel()) || searchBean.getCurrentSearchFilterString().equals("filter_"
-                        + SolrConstants.FULLTEXT))) {
+                SearchHelper.SEARCH_FILTER_ALL.getLabel()) || searchBean.getCurrentSearchFilterString().equals("filter_" + SolrConstants.FULLTEXT))) {
             logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms().toString());
             coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), rotate);
         }
@@ -2074,5 +2079,12 @@ public class ViewManager implements Serializable {
         if (lastPdfPage != null) {
             this.lastPdfPage = Integer.valueOf(lastPdfPage);
         }
+    }
+
+    /**
+     * @return the calendarView
+     */
+    public CalendarView getCalendarView() {
+        return calendarView;
     }
 }
