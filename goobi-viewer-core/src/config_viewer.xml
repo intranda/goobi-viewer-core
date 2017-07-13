@@ -259,7 +259,7 @@
         </docstructTargetPageTypes>
 
         <!-- theme: defines the theme that shall be used -->
-        <theme subTheme="false" mainTheme="hlbf" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
+        <theme subTheme="false" mainTheme="reference2" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
     </viewer>
 
     <search>
@@ -865,10 +865,12 @@
 	    <!-- labelConfig: Layout configuration for the label of TOC elements. The 
 		    configuration is analogous to a metadata template. -->
         <labelConfig>
-            <metadata label="" value="{LABEL}{MD_CREATOR}">
-                <param type="field" key="LABEL" />
-                <param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
-            </metadata>
+            <template name="_DEFAULT">
+                <metadata label="" value="{LABEL}{MD_CREATOR}">
+                    <param type="field" key="LABEL" />
+                    <param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
+                </metadata>
+            </template>
         </labelConfig>
 
         <!-- tocAnchorGroupElementsPerPage: Number of elements displayed per page 
