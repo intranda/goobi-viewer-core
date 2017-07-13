@@ -53,7 +53,6 @@ public class MetadataResource {
             IndexUnreachableException {
         JSONArray jsonArray = new JSONArray();
 
-        System.out.println(fields);
         String[] fieldsSplit = fields.split(",");
         SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, Integer.MAX_VALUE, null, Arrays.asList(fieldsSplit));
         if (result != null && !result.isEmpty()) {
