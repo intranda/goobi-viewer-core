@@ -60,7 +60,7 @@
         </script>
 
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="statistics" class="page-wrapp">
+            <div id="statistics">
                 <h2>#{msg.statisticsTitle}</h2>
                 <h:outputText rendered="#{statisticsBean.indexEmpty}">#{msg.statistics_noRecords}</h:outputText>
                 <h:panelGroup layout="block" class="statistics-grid" rendered="#{!statisticsBean.indexEmpty}">

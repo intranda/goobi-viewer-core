@@ -19,7 +19,7 @@
     </ui:define>
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="error" class="page-wrapp">
+			<div id="error">
                 <c:if test="#{type == null}">
 				    <c:set var="type" value="#{flash.keep.errorType}" scope="request" />
 				</c:if>

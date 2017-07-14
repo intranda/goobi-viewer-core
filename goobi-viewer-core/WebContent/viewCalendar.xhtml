@@ -23,7 +23,7 @@
 
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="viewCalendar" class="page-wrapp">
+			<div id="viewCalendar">
 				<h:form id="searchCalendarForm" prependId="false">
 					<div class="search-calendar">
 						<!-- TITLE -->
@@ -34,7 +34,7 @@
 						</ui:include>
 
 						<!-- YEAR SELECTION -->
-						<h:panelGroup rendered="#{activeDocumentBean.anchor or activeDocumentBean.volume}">
+						<h:panelGroup rendered="#{activeDocumentBean.anchor}">
 							<div class="search-calendar__input">
 								<div class="form-horizontal">
 	                                <div class="form-group">
@@ -53,7 +53,7 @@
 						</h:panelGroup>
 
 						<!-- SEARCH CALENDAR MONTHS -->
-						<h:panelGroup rendered="#{activeDocumentBean.viewManager.calendarView.year != null}">
+						<h:panelGroup rendered="#{fn:length(activeDocumentBean.viewManager.calendarView.calendarItems) gt 0}">
 							<div class="search-calendar__months">
 								<div class="row">
 									<ui:repeat var="month" value="#{activeDocumentBean.viewManager.calendarView.calendarItems}">

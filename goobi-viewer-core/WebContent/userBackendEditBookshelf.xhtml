@@ -18,7 +18,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <div id="editBookshelf" class="page-wrapp">
+        <div id="editBookshelf">
             <h:panelGroup rendered="#{userBean.loggedIn and bookshelfBean.currentBookshelfMine}">
                 <h:panelGroup rendered="#{bookshelfBean.newBookshelf}">
                     <h2>#{msg.bookshelf_newBookshelf}</h2>

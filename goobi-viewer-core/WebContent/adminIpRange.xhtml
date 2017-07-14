@@ -16,7 +16,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">			
-            <div id="adminIpRange" class="page-wrapp">
+            <div id="adminIpRange">
                 <h:panelGroup rendered="#{userBean.admin == true and adminBean.currentIpRange != null}">
                     <h2>
                         <h:outputText value="#{msg.ipRange_addNew}" rendered="#{adminBean.currentIpRange.id == null}" />

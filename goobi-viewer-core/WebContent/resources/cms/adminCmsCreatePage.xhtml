@@ -23,7 +23,7 @@
 
 	<ui:define name="content">
 		<h:panelGroup id="cmsCreatePageAccessControl" rendered="#{configurationBean.cmsEnabled}">
-			<h:panelGroup layout="block" id="cmsCreatePage" class="page-wrapp">
+			<h:panelGroup layout="block" id="cmsCreatePage">
 				<h:form rendered="#{userBean.admin and cmsBean.selectedPage == null}">
 					<h:commandLink action="pretty:adminCmsOverview">
 						<h:outputText value="#{msg.cms_backToOverview}" />
