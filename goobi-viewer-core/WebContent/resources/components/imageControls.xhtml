@@ -227,7 +227,6 @@
 		                </li>
 		                
 		                <!-- PDF -->
-		                <h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
 		                    <li class="image-control image-control__pdf">
 		                        <h:outputLink 
 		                            value="#{activeDocumentBean.viewManager.currentPage.imageToPdfUrl}" 
@@ -238,7 +237,6 @@
 		                            <f:passThroughAttribute name="data-placement" value="bottom" />    
 		                        </h:outputLink>
 		                    </li>
-		                </h:panelGroup>
 	                </h:panelGroup>
 	            </ul>
             </h:form>
