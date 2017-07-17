@@ -386,14 +386,16 @@ table,
 .list li {
   position: relative;
 }
-.list a {
+.list a,
+.list span {
   display: block;
 }
 .list--horizontal li {
   display: inline-block;
   float: left;
 }
-.list--horizontal a {
+.list--horizontal a,
+.list--horizontal span {
   padding: 6px 12px;
 }
 .list--center {
