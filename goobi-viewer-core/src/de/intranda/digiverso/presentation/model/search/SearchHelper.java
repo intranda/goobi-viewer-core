@@ -210,13 +210,11 @@ public final class SearchHelper {
             if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
-                logger.trace("Counting children START");
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
                 }
-                logger.trace("Counting chindren END");
             }
         }
 

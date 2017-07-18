@@ -67,7 +67,14 @@ public class CalendarView {
      * @return
      */
     public boolean isDisplay() {
-        return pi.equals(anchorPi) || !calendarItems.isEmpty();
+        boolean empty = true;
+        for (CalendarItemMonth item : calendarItems) {
+            if (item.getHits() > 0) {
+                empty = false;
+                break;
+            }
+        }
+        return pi.equals(anchorPi) || !empty;
     }
 
     /**
