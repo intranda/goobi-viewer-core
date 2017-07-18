@@ -20,10 +20,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemAlreadyExistsException;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -95,7 +97,6 @@ public final class CMSTemplateManager {
 
         return instance;
     }
-
     private CMSTemplateManager(String filesystemPath) throws PresentationException {
         ServletContext servletContext = null;
         String webContentRoot = "";
@@ -131,25 +132,23 @@ public final class CMSTemplateManager {
             }
         } catch (URISyntaxException | IOException e) {
             logger.error(e.toString(), e);
+        } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
+            logger.debug("Unable to scan theme-jar for cms-template files. Probably an older tomcat");
         }
 
         if (templateFiles.isEmpty()) {
             try {
                 this.templateFolderUrl = "resources/" + TEMPLATE_BASE_PATH;
                 URL fileUrl;
-                if(servletContext != null) {                
-                    fileUrl = servletContext.getResource(this.templateFolderUrl);
+                if(servletContext != null) {       
+                    String basePath = servletContext.getRealPath("/");
+                    fileUrl = Paths.get(basePath, this.templateFolderUrl).toFile().toURI().toURL();
+//                    fileUrl = servletContext.getResource(this.templateFolderUrl);
                 } else {
                     fileUrl = new URL(filesystemPath + this.templateFolderUrl);
                 }
                 if (fileUrl != null) {
-                    try {
-                        Map<String, String> env = new HashMap<>();
-                        env.put("create", "true");
-                        FileSystem zipfs = FileSystems.newFileSystem(fileUrl.toURI(), env);
-                    } catch (FileSystemAlreadyExistsException | IllegalArgumentException e) {
-                        //no comment...
-                    }
+
                     if (Files.exists(Paths.get(fileUrl.toURI()))) {
                         this.templateFolderPath = Paths.get(fileUrl.toURI());
                         templateFiles = Files.list(templateFolderPath).filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
@@ -161,36 +160,8 @@ public final class CMSTemplateManager {
             }
         }
 
-        //        } else {
-        //            this.templateFolderPath = Paths.get(filesystemPath, TEMPLATE_BASE_PATH);
-        //            try {
-        //                this.templateFolderUrl = templateFolderPath.toUri().toURL().toString();
-        //                if (Files.exists(templateFolderPath)) {
-        //                    templateFiles = Files.list(templateFolderPath).filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml")).peek(
-        //                            (file) -> logger.trace("Found cms template file " + file)).collect(Collectors.toList());
-        //                }
-        //            } catch (IOException e) {
-        //                logger.error(e.toString(), e);
-        //            }
-        //        }
-
         this.templateFolderUrl = webContentRoot + "/" + this.templateFolderUrl;
 
-        //            this.relativeTemplateBasePath = "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
-        //            this.absoluteTemplateBasePath = templateFolderPath + this.relativeTemplateBasePath;
-        //
-        //            File baseFolder = new File(this.absoluteTemplateBasePath);
-        //            if (!baseFolder.exists()) {
-        //                this.relativeTemplateBasePath = "/resources" + TEMPLATE_BASE_PATH;
-        //                this.absoluteTemplateBasePath = templateFolderPath + this.relativeTemplateBasePath;
-        //            }
-        //
-        //            baseFolder = new File(this.absoluteTemplateBasePath);
-        //            if (!baseFolder.exists()) {
-        //                throw new PresentationException("Not cms template files found");
-        //            }
-
-        //        }
         updateTemplates();
     }
 
