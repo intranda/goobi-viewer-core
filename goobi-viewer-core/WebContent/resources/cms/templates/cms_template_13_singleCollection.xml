@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateSingleCollection" version="2017-07-18">
+    <name>Einzelansicht einer Sammlung</name>
+    <description>Dieses Template zeigt eine Sammlung und deren Werke als Suchtreffer, sowie ein Bild und einen Beschreibungstext zur Sammlung.</description>
+    <icon>cms_template_13_singleCollection.png</icon>
+    <html>cms_template_13_singleCollection.xhtml</html>
+    <content>
+ 	    <item id="image" order="1" label="Sammlungsbild" type="MEDIA" mandatory="false" />
+ 	    <item id="text" order="2" label="Text" type="HTML" mandatory="false" />
+ 	    <item id="queryList" order="3" label="Werke" type="SOLRQUERY" mandatory="false" />
+    </content>
+</cms_page_template>
