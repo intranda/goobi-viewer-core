@@ -252,7 +252,9 @@ public class CmsBean {
             }
         }
         numCreatedPages = createdPages.size();
-        createdPages = createdPages.subList(Math.min(from, createdPages.size()-1), Math.min(to, createdPages.size()));
+        if(!createdPages.isEmpty()) {            
+            createdPages = createdPages.subList(Math.min(from, createdPages.size()-1), Math.min(to, createdPages.size()));
+        }
         return createdPages;
     }
 
