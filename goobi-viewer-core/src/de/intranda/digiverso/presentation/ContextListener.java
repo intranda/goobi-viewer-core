@@ -73,17 +73,17 @@ public class ContextListener implements ServletContextListener {
         String webinfPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(webinfPath), "*-module-*.jar")) {
             for (Path path : stream) {
-                logger.trace(path.toString());
+                logger.trace("Found module JAR: {}", path.getFileName().toString());
                 try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
                     while (true) {
                         ZipEntry e = zip.getNextEntry();
-                        if (e == null)
+                        if (e == null) {
                             break;
+                        }
                         String[] nameSplit = e.getName().split("/");
                         if (nameSplit.length > 0) {
                             String name = nameSplit[nameSplit.length - 1];
-                            logger.trace(name);
-                            if (name.startsWith("pretty-")) {
+                            if (name.startsWith("pretty-config-")) {
                                 prettyConfigFiles += ", " + name;
                             }
                         }
@@ -93,7 +93,7 @@ public class ContextListener implements ServletContextListener {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
-        
+
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.trace("Pretty config files: {}", prettyConfigFiles);
