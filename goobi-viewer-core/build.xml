@@ -1113,7 +1113,7 @@
                 <property name="solr.url" value="http://localhost:8080/solr/collection1" />
                 <property name="server.oai.maskedUrl" value="http%3A%2F%2F134.245.92.56%2Fviewer%2Foai" />
                 <property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-                <property name="theme" value="reference" />
+                <property name="theme" value="reference2" />
                 <property name="contentserver.color.red" value="255" />
                 <property name="contentserver.color.green" value="255" />
                 <property name="contentserver.color.blue" value="0" />
