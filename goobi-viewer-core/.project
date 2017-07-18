@@ -34,6 +34,7 @@
 		<project>goobi-viewer-theme-wuw</project>
 		<project>goobi-viewer-theme-hlbf</project>
 		<project>goobi-viewer-theme-geiwv</project>
+		<project>goobi-viewer-theme-zbw</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
