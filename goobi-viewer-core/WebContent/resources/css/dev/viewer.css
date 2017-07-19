@@ -1323,14 +1323,17 @@ div.mce-fullscreen {
   content: "\203A";
 }
 #downloadWrapper {
-  margin: 0 0 10px 10px;
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 #downloadWrapper nav ul li {
-  display: inline-block;
+  float: none;
+  margin-left: 5px;
 }
 #downloadWrapper nav ul li.download-title {
   font-size: 0.8rem;
+}
+#downloadWrapper nav ul li a {
+  padding: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
