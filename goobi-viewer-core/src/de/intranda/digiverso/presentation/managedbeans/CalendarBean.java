@@ -646,8 +646,9 @@ public class CalendarBean implements Serializable {
         builder.append(docstructFilterQuery);
         searchBean.resetSearchResults();
         searchBean.setCurrentPage(1);
-        searchBean.setCurrentCollection("-");
-        searchBean.setCurrentFacetString("-");
+        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
+        searchBean.getFacets().setCurrentFacetString("-");
         searchBean.setExactSearchString(builder.toString());
         searchBean.executeSearch();
         return "pretty:newSearch5";
@@ -1086,7 +1087,8 @@ public class CalendarBean implements Serializable {
         // builder.append(docstructFilterQuery);
         searchBean.resetSearchResults();
         searchBean.setCurrentPage(1);
-        searchBean.setCurrentCollection("-");
+        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.setExactSearchString(builder.toString());
         searchBean.executeSearch();
         return "pretty:newSearch5";
@@ -1176,7 +1178,8 @@ public class CalendarBean implements Serializable {
         }
 
         searchBean.setCurrentPage(1);
-        searchBean.setCurrentCollection("-");
+        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.setExactSearchString(getQueryForIncompleteData(year));
         searchBean.executeSearch();
         return "pretty:newSearch5";

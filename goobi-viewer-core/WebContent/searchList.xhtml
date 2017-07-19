@@ -119,7 +119,7 @@
                             
                             <!-- ADVANCED SEARCH -->
                             <div class="search-list__adv-search-info-back text-right">
-                                <a href="#{request.contextPath}/searchadvanced/#{searchBean.currentCollection}/">#{msg.searchAdvancedBack}</a>
+                                <a href="#{request.contextPath}/searchadvanced/#{searchBean.facets.currentCollection}/">#{msg.searchAdvancedBack}</a>
                             </div>
                         </div>
                     </h:panelGroup>
@@ -155,12 +155,12 @@
                                             <option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
                                             <ui:repeat var="sortField" value="#{configurationBean.sortFields}">
                                                 <option
-                                                    value="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.currentFacetString}/"
+                                                    value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/"
                                                     data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
                                                     <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
                                                 </option>
                                                 <option
-                                                    value="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.currentFacetString}/"
+                                                    value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.facets.currentFacetString}/"
                                                     data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
                                                     <h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
                                                 </option>
@@ -320,8 +320,8 @@
                 <viewerComponent:simplePaginator 
                     itemCount="#{searchBean.lastPage}" 
                     itemActive="#{searchBean.currentPage}"
-                    urlPrefix="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/"
-                    urlSuffix="#{searchBean.sortString}/#{searchBean.currentFacetString}/" />
+                    urlPrefix="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/"
+                    urlSuffix="#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/" />
                 
                 <div class="clearfix"></div>
             </div>

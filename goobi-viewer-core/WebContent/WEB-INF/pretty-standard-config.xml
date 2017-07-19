@@ -54,18 +54,20 @@
 		<pattern value="/search/" />
 		<view-id value="/search.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
     <url-mapping id="searchadvanced">
         <pattern value="/searchadvanced/" />
         <view-id value="/searchAdvanced.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
     </url-mapping>
         <url-mapping id="searchadvanced1">
-        <pattern value="/searchadvanced/#{currentCollection:searchBean.currentCollection}/" />
+        <pattern value="/searchadvanced/#{currentCollection:searchBean.facets.currentCollection}/" />
         <view-id value="/searchAdvanced.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
@@ -74,14 +76,16 @@
         <pattern value="/searchtimeline/" />
         <view-id value="/searchTimeline.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(2)}</action>
     </url-mapping>
     <url-mapping id="searchcalendar">
         <pattern value="/searchcalendar/" />
         <view-id value="/searchCalendar.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
     </url-mapping>
 	<url-mapping id="statistics">
@@ -141,7 +145,7 @@
 
 	<url-mapping id="browse5">
 		<pattern
-			value="/browse/#{dc:searchBean.currentCollection}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{filter:searchBean.currentFacetString}/" />
+			value="/browse/#{dc:searchBean.facets.currentCollection}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{filter:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.newSearch}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
@@ -162,33 +166,33 @@
 	</url-mapping>
 	<url-mapping id="newSearch1">
         <pattern
-            value="/search/#{dc:searchBean.currentCollection}/" />
+            value="/search/#{dc:searchBean.facets.currentCollection}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.newSearch}</action>
     </url-mapping>
 	<url-mapping id="newSearch3">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.searchString}/#{page:searchBean.currentPage}/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{dc:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.resetCurrentFacetString}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
 		<action onPostback="false">#{searchBean.newSearch}</action>
 	</url-mapping>
 	<url-mapping id="newSearch4">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{dc:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
 		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.resetCurrentFacetString}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
 		<action onPostback="false">#{searchBean.newSearch}</action>
 	</url-mapping>
 	<url-mapping id="newSearch5">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.currentFacetString}/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{dc:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.newSearch}</action>
 	</url-mapping>
 	<url-mapping id="search6">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.currentFacetString}/-/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{dc:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.newSearch}</action>
 	</url-mapping>

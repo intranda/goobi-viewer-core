@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import org.apache.poi.ddf.EscherColorRef.SysIndexSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
