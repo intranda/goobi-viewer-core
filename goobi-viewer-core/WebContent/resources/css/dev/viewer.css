@@ -3044,12 +3044,14 @@ input[id*="cmdMoveTo"] {
   background-color: rgba(255, 255, 255, 0.75);
   z-index: 10;
 }
-.search-advanced__connector .custom-control--select {
+.search-advanced__connector .custom-control--select,
+.search-advanced__connect-group .custom-control--select {
   display: inline-block;
   width: 70px;
   border: none;
 }
-.search-advanced__connector .custom-control--select:after {
+.search-advanced__connector .custom-control--select:after,
+.search-advanced__connect-group .custom-control--select:after {
   right: 10px;
 }
 .search-advanced__input-group .form-control__select,
@@ -5813,7 +5815,6 @@ div[id*="Modal"] .email-form .form-group p {
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand {
   float: left;
   width: 16px;
-  min-width: 0.75rem;
   min-height: 1px;
 }
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand a {
@@ -6810,8 +6811,7 @@ div[id*="Modal"] .email-form .form-group p {
    style declarations for adminCmsSelectTemplate.xhtml
    ==============================================================*/
 #cmsSelectTemplate #cmsSelectTemplateWrapper {
-  float: left;
-  width: 100%;
+  margin-top: 20px;
 }
 #cmsSelectTemplate #cmsSelectTemplateWrapper .row {
   margin-bottom: 14px;
