@@ -52,6 +52,12 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     private List<Metadata> metadata;
     private List<Metadata> sidebarMetadata;
 
+    /**
+     * 
+     * @param doc
+     * @param locale
+     * @throws IndexUnreachableException
+     */
     public EventElement(SolrDocument doc, Locale locale) throws IndexUnreachableException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);
         logger.debug("new EventElement: {}", (type == null ? "(no type)" : type));
@@ -92,9 +98,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
         checkDates();
         metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(type);
-        populateMetadata(metadata, type, doc, locale);
+        populateMetadata(metadata, type, doc, locale, null);
         sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
-        populateMetadata(sidebarMetadata, type, doc, locale);
+        populateMetadata(sidebarMetadata, type, doc, locale, null);
     }
 
     /*
@@ -116,12 +122,22 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return 0;
     }
 
-    private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale) throws IndexUnreachableException {
+    /**
+     * 
+     * @param metadata
+     * @param type
+     * @param doc
+     * @param locale
+     * @param recordLanguage
+     * @throws IndexUnreachableException
+     */
+    private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale, String recordLanguage)
+            throws IndexUnreachableException {
         // Get metadata list for the event type
         if (metadata != null) {
             logger.trace("Metadata for event '{}'", type);
             for (Metadata md : metadata) {
-                md.populate(SolrSearchIndex.getFieldValueMap(doc), locale);
+                md.populate(SolrSearchIndex.getFieldValueMap(doc), locale, recordLanguage);
                 if (md.getValues() != null && !md.getValues().isEmpty()) {
                     logger.trace("{}: {}", md.getLabel(), SolrSearchIndex.getFieldValueMap(doc).toString());
                 }

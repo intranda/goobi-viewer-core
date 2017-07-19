@@ -116,6 +116,8 @@ public class ViewManager implements Serializable {
     private int firstPdfPage;
     private int lastPdfPage;
     private final CalendarView calendarView;
+    /** Currently selected language for multilingual records. */
+    private String language;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
             throws IndexUnreachableException, PresentationException {
@@ -2086,5 +2088,19 @@ public class ViewManager implements Serializable {
      */
     public CalendarView getCalendarView() {
         return calendarView;
+    }
+
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

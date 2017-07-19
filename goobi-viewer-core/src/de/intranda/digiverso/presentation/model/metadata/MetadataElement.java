@@ -156,11 +156,12 @@ public class MetadataElement {
     /**
      * @param se {@link StructElement}
      * @param locale
+     * @param language
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public MetadataElement(StructElement se, Locale locale) throws PresentationException, IndexUnreachableException, DAOException {
+    public MetadataElement(StructElement se, Locale locale, String language) throws PresentationException, IndexUnreachableException, DAOException {
         if (se == null) {
             logger.error("StructElement not defined!");
             throw new PresentationException("errMetaRead");
@@ -182,9 +183,8 @@ public class MetadataElement {
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false, false);
         url = se.getUrl(pageType);
 
-        // Populate main metadata
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
-            if (metadata.populate(se.getMetadataFields(), locale)) {
+            if (metadata.populate(se.getMetadataFields(), locale, language)) {
                 if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
                     if (se.isWork() || se.isAnchor()) {
                         metadataList.add(metadata);
@@ -205,7 +205,7 @@ public class MetadataElement {
             // The component is only rendered if sidebarMetadataList != null
             sidebarMetadataList = new ArrayList<>();
             for (Metadata metadata : sidebarMetadataTempList) {
-                if (metadata.populate(se.getMetadataFields(), locale)) {
+                if (metadata.populate(se.getMetadataFields(), locale, language)) {
                     if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
                         // TODO remove bean retrieval
                         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();

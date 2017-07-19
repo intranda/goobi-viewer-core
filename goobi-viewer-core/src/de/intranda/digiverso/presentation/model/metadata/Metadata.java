@@ -63,11 +63,14 @@ public class Metadata implements Serializable {
     private List<MetadataValue> values;
     private List<MetadataParameter> params;
     private boolean group = false;
+    private String language;
 
     public Metadata(String label, List<MetadataValue> values, String masterValue) {
         this.label = label;
         this.masterValue = masterValue;
         this.values = values;
+        // TODO Check field name language
+        language = "";
     }
 
     public Metadata(String label, String masterValue, String paramValue) {
@@ -371,12 +374,14 @@ public class Metadata implements Serializable {
     /**
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
-     * @param se
+     * @param metadataMap
+     * @param locale User session locale
+     * @param recordLanguage Selected language version of the current record
      * @return
      * @throws IndexUnreachableException
      */
     @SuppressWarnings("unchecked")
-    public boolean populate(Map<String, List<String>> metadataMap, Locale locale) throws IndexUnreachableException {
+    public boolean populate(Map<String, List<String>> metadataMap, Locale locale, String recordLanguage) throws IndexUnreachableException {
         if (metadataMap == null) {
             return false;
         }
@@ -387,6 +392,11 @@ public class Metadata implements Serializable {
             if (metadataMap.get(label) == null) {
                 // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
                 return false;
+            }
+            // Skip metadata fields that are language-specific but do not match the given language
+            if(StringUtils.isNotEmpty(recordLanguage)) {
+                recordLanguage =  recordLanguage.toUpperCase();
+                // TODO identify mismatching language in field name and skip field
             }
             if (metadataMap.get(SolrConstants.IDDOC) != null && !metadataMap.get(SolrConstants.IDDOC).isEmpty()) {
                 String iddoc = metadataMap.get(SolrConstants.IDDOC).get(0);

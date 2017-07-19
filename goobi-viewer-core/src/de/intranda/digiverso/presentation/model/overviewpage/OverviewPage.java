@@ -309,7 +309,7 @@ public class OverviewPage implements Harvestable, Serializable {
                         description = config.getRootElement().getChildText("description", null);
                     }
                 }
-                 logger.trace("Description: {}", description);
+                logger.trace("Description: {}", description);
             }
             // Publication text (only load from XML if not yet in the database column)
             if (publicationText == null) {
@@ -332,7 +332,7 @@ public class OverviewPage implements Harvestable, Serializable {
      */
     private void fillMetadataValues(List<Metadata> metadata, Locale locale) throws IndexUnreachableException {
         for (Metadata md : metadata) {
-            md.populate(structElement.getMetadataFields(), locale);
+            md.populate(structElement.getMetadataFields(), locale, null);
         }
     }
 
