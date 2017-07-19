@@ -28,19 +28,19 @@
     		<div id="templateSingleCollectionHeader" class="tpl-single-collection">
     			<!-- HEADER -->
                 <h:panelGroup rendered="#{cmsPage.getContent('image') != ''}">
-                	<!-- IMAGE -->
-                	<div class="tpl-single-collection__image faded">
-                		<img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMediaName('image')}" />
-                	</div>
-                	
-                	<div class="container">
-	                	<!-- DESCRIPTION -->
-	                	<div class="tpl-single-collection__description">
-	                		<h2>#{cmsPage.title}</h2>
-	                		<ui:include src="#{cmsPage.getContent('text')}" />
-	                	</div>
-                	</div>
-                </h:panelGroup>
+					<div class="container">
+						<!-- IMAGE -->
+						<div class="tpl-single-collection__image faded">
+							<img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMediaName('image')}" />
+						</div>
+
+						<!-- DESCRIPTION -->
+						<div class="tpl-single-collection__description">
+							<h2>#{cmsPage.title}</h2>
+							<ui:include src="#{cmsPage.getContent('text')}" />
+						</div>
+					</div>
+				</h:panelGroup>
     		</div>
     	</f:view>
     </ui:define>
