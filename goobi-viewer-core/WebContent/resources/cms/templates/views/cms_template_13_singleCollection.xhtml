@@ -70,12 +70,41 @@
 											</h:outputLink>
 										</div>
 
-										<!-- TITLE -->
-										<div class="tpl-single-collection__collection-thumb-title">
-											<h:outputLink value="#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
-	            									#{msg[hit.browseElement.label]}
-	            								</h:outputLink>
-										</div>
+                                        <!-- TITLE -->
+                                        <div class="tpl-single-collection__collection-thumb-title">
+                                            <h:outputLink value="#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
+                                                #{msg[hit.browseElement.label]}
+                                            </h:outputLink>
+                                        </div>
+
+										<ui:repeat value="#{hit.browseElement.metadataList}"
+											var="browseElementMetadata">
+											<h:panelGroup rendered="#{!browseElementMetadata.blank}">
+												<div class="search-list__hit-text">
+													<h:outputText value="#{msg[browseElementMetadata.label]}: "
+														escape="false" rendered="#{!browseElementMetadata.blank}"
+														styleClass="search-list__hit-text-label" />
+													<ui:repeat var="val"
+														value="#{browseElementMetadata.values}">
+														<h:outputFormat
+															value="#{msg[browseElementMetadata.masterValue]}"
+															escape="false" rendered="#{!browseElementMetadata.blank}"
+															styleClass="search-list__hit-text-value">
+															<f:param value="#{val.getComboValueShort(0)}" />
+															<f:param value="#{val.getComboValueShort(1)}" />
+															<f:param value="#{val.getComboValueShort(2)}" />
+															<f:param value="#{val.getComboValueShort(3)}" />
+															<f:param value="#{val.getComboValueShort(4)}" />
+															<f:param value="#{val.getComboValueShort(5)}" />
+															<f:param value="#{val.getComboValueShort(6)}" />
+															<f:param value="#{val.getComboValueShort(7)}" />
+															<f:param value="#{val.getComboValueShort(8)}" />
+															<f:param value="#{val.getComboValueShort(9)}" />
+														</h:outputFormat>
+													</ui:repeat>
+												</div>
+											</h:panelGroup>
+										</ui:repeat>
 
 										<!-- DESCRIPTION -->
 										<!-- 											<div class="tpl-single-collection__collection-thumb-description"> -->
