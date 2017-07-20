@@ -3828,6 +3828,11 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .user__options {
+    margin-top: 10px;
+  }
+}
 /* ==============================================================
    User Data
    style declarations for user.xhtml
@@ -3855,7 +3860,7 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .userdata__gravatar img {
-    margin: 0 auto;
+    margin: 0 auto 15px auto;
   }
   .userdata__action {
     text-align: center;
