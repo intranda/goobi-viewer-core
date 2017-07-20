@@ -1177,7 +1177,7 @@ public class SearchBean implements Serializable {
      * @should add extra search query item if all items full
      * @should not replace query items already in use
      */
-    void mirrorAdvancedSearchCurrentHierarchicalFacets() {
+    public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets: {}", facets.getCurrentCollection());
         if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
             if (!advancedQueryGroups.isEmpty()) {
