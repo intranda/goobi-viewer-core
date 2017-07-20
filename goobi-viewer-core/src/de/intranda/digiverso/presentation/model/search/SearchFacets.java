@@ -324,12 +324,23 @@ public class SearchFacets {
     }
 
     /**
+     * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for
+     * currentHierarchicalFacets.
+     *
+     * @param currentFacetString
+     */
+    public void setCurrentHierarchicalFacetString(String currentHierarchicalFacetString) {
+        logger.trace("setCurrentHierarchicalFacetString: {}", currentHierarchicalFacetString);
+        parseFacetString(currentHierarchicalFacetString, currentHierarchicalFacets, true);
+        // do not mirror the values into the advanced query items here
+    }
+
+    /**
      * @param currentCollection the currentCollection to set
      */
+    @Deprecated
     public void setCurrentCollection(String currentCollection) {
-        logger.trace("setCurrentCollection: {}", currentCollection);
-        parseFacetString(currentCollection, currentHierarchicalFacets, true);
-        // do not mirror the values into the advanced query items here
+        setCurrentHierarchicalFacetString(currentCollection);
     }
 
     /**

@@ -58,18 +58,34 @@
                 
                 <viewerComponent:searchHitList />
 
-					<!-- paginator -->
-					<viewerComponent:simplePaginator 
-						itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('queryList'))}" 
-						itemActive="#{cmsPage.listPage}" 
-						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
 				<!-- PAGINATOR -->
                 <viewerComponent:simplePaginator 
                     itemCount="#{searchBean.lastPage}" 
                     itemActive="#{searchBean.currentPage}"
-                    urlPrefix="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/"
-                    urlSuffix="#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/" />
+                    urlPrefix="#{navigationHelper.applicationUrl}cms/#{cmsPage.id}/search/"
+                    urlSuffix="#{searchBean.facets.currentFacetString}/#{searchBean.facets.currentFacetString}/" />
 			</div>
+			
+            <script type="text/javascript">                
+                $( document ).ready( function() {
+                    var searchSortingDropdownConfig = {};
+                    var searchListConfig = {
+                        contextPath: '#{request.contextPath}',
+                        msg: {
+                            getMoreChildren: '#{msg.searchList_getMoreHits}'
+                        }
+                    };
+                    
+                    viewerJS.searchSortingDropdown.init( searchSortingDropdownConfig );
+                    viewerJS.searchList.init( searchListConfig );
+                } );
+                
+                $( window ).on( 'load', function() {
+                    var stackedThumbnailsConfig = {};
+                    
+                    viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
+                });
+            </script>
 		</f:view>
 	</ui:define>
 
