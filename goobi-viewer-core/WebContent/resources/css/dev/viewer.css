@@ -5666,6 +5666,10 @@ div[id*="Modal"] .email-form .form-group p {
   display: block;
   padding: 3px 5px;
 }
+.widget-search-drilldown__groups ul {
+  max-height: 400px;
+  overflow-y: auto;
+}
 .widget-search-drilldown__collapse a {
   display: block;
   text-align: center;
@@ -5715,6 +5719,10 @@ div[id*="Modal"] .email-form .form-group p {
 }
 #widgetSearchInCurrentItem .form-group .input-group {
   width: 100%;
+}
+#widgetSearchInCurrentItem .form-group .input-group input {
+  padding-right: 5px;
+  padding-left: 5px;
 }
 #widgetSearchInCurrentItem .form-group .input-group .input-group-addon {
   padding: 0;
