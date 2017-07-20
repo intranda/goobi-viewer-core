@@ -230,7 +230,7 @@ public class SearchBean implements Serializable {
             currentSearch.setHitsCount(0);
             currentSearch.getHits().clear();
         }
-        facets = new SearchFacets();
+        facets.reset();
 
         // Reset preferred record view when doing a new search
         if (navigationHelper != null) {

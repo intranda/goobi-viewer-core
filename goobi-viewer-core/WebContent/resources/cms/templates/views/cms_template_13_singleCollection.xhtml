@@ -92,8 +92,8 @@
 	<ui:define name="sidebar">
     	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
     		<widgetComponent:widget_custom widget="#{element}"/>
-    		<widgetComponent:widget_customDrillDown widget="#{element}" />
-    		<widgetComponent:widget_searchDrillDown widget="#{element}" />
+<!--     		<widgetComponent:widget_customDrillDown widget="#{element}" /> -->
+    		<widgetComponent:widget_searchDrillDownCMS widget="#{element}" />
             <widgetComponent:widget_browsing widget="#{element}"/>            
             <widgetComponent:widget_bookshelves widget="#{element}"/>
             <widgetComponent:widget_mySearches widget="#{element}"/>

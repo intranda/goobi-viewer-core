@@ -50,6 +50,13 @@ public class SearchFacets {
     protected final List<FacetItem> currentHierarchicalFacets = new ArrayList<>();
     private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
 
+    
+    public void reset() {
+        availableFacets.clear();
+        availableHierarchicalFacets.clear();
+        drillDownExpanded.clear();
+    }
+    
     /**
      * Returns a list of FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
      *
