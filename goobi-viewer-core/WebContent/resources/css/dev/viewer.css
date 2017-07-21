@@ -1323,14 +1323,17 @@ div.mce-fullscreen {
   content: "\203A";
 }
 #downloadWrapper {
-  margin: 0 0 10px 10px;
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 #downloadWrapper nav ul li {
-  display: inline-block;
+  float: none;
+  margin-left: 5px;
 }
 #downloadWrapper nav ul li.download-title {
   font-size: 0.8rem;
+}
+#downloadWrapper nav ul li a {
+  padding: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -3041,12 +3044,14 @@ input[id*="cmdMoveTo"] {
   background-color: rgba(255, 255, 255, 0.75);
   z-index: 10;
 }
-.search-advanced__connector .custom-control--select {
+.search-advanced__connector .custom-control--select,
+.search-advanced__connect-group .custom-control--select {
   display: inline-block;
   width: 70px;
   border: none;
 }
-.search-advanced__connector .custom-control--select:after {
+.search-advanced__connector .custom-control--select:after,
+.search-advanced__connect-group .custom-control--select:after {
   right: 10px;
 }
 .search-advanced__input-group .form-control__select,
@@ -3823,6 +3828,11 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .user__options {
+    margin-top: 10px;
+  }
+}
 /* ==============================================================
    User Data
    style declarations for user.xhtml
@@ -3850,7 +3860,7 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .userdata__gravatar img {
-    margin: 0 auto;
+    margin: 0 auto 15px auto;
   }
   .userdata__action {
     text-align: center;
@@ -5656,6 +5666,10 @@ div[id*="Modal"] .email-form .form-group p {
   display: block;
   padding: 3px 5px;
 }
+.widget-search-drilldown__groups ul {
+  max-height: 400px;
+  overflow-y: auto;
+}
 .widget-search-drilldown__collapse a {
   display: block;
   text-align: center;
@@ -5705,6 +5719,10 @@ div[id*="Modal"] .email-form .form-group p {
 }
 #widgetSearchInCurrentItem .form-group .input-group {
   width: 100%;
+}
+#widgetSearchInCurrentItem .form-group .input-group input {
+  padding-right: 5px;
+  padding-left: 5px;
 }
 #widgetSearchInCurrentItem .form-group .input-group .input-group-addon {
   padding: 0;
@@ -5810,7 +5828,6 @@ div[id*="Modal"] .email-form .form-group p {
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand {
   float: left;
   width: 16px;
-  min-width: 0.75rem;
   min-height: 1px;
 }
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand a {
@@ -6807,8 +6824,7 @@ div[id*="Modal"] .email-form .form-group p {
    style declarations for adminCmsSelectTemplate.xhtml
    ==============================================================*/
 #cmsSelectTemplate #cmsSelectTemplateWrapper {
-  float: left;
-  width: 100%;
+  margin-top: 20px;
 }
 #cmsSelectTemplate #cmsSelectTemplateWrapper .row {
   margin-bottom: 14px;
