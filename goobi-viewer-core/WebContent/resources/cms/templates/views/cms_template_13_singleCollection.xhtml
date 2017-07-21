@@ -19,44 +19,39 @@
 		</f:metadata>
 	</ui:define>
 
-<!--     <ui:define name="breadcrumbs"> -->
-<!--         <ui:include src="/resources/includes/breadcrumbs.xhtml" /> -->
-<!--     </ui:define> -->
-    
-    <ui:define name="fullwidthHeader">
-    	<f:view contentType="text/html" encoding="utf-8">
-    		<div id="templateSingleCollectionHeader" class="tpl-single-collection">
-    			<!-- HEADER -->
-                <h:panelGroup rendered="#{cmsPage.getContent('image') != ''}">
-					<div class="container">
-						<!-- IMAGE -->
-						<div class="tpl-single-collection__image faded">
-							<img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMediaName('image')}" />
-						</div>
-
-						<!-- DESCRIPTION -->
-						<div class="tpl-single-collection__description">
-							<h2>#{cmsPage.title}</h2>
-							<ui:include src="#{cmsPage.getContent('text')}" />
-						</div>
-					</div>
-				</h:panelGroup>
-    		</div>
-    	</f:view>
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
     <ui:define name="content">
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateSingleCollection" class="tpl-single-collection">
-                <!-- PAGE UNPUBLISHED -->
+                <!-- HEADER -->
+				<h:panelGroup rendered="#{cmsPage.getContent('image') != ''}">
+					<!-- IMAGE -->
+					<div class="tpl-single-collection__image faded">
+						<h2>#{cmsPage.title}</h2>
+						<img title="#{cmsPage.getMediaName('image')}" src="#{cmsPage.getContent('image')}" class="img-responsive" alt="#{cmsPage.getMediaName('image')}" />
+					</div>
+
+					<!-- DESCRIPTION -->
+					<div class="tpl-single-collection__description">
+						<ui:include src="#{cmsPage.getContent('text')}" />
+					</div>
+				</h:panelGroup>
+
+				<!-- PAGE UNPUBLISHED -->
                 <h:panelGroup rendered="#{!cmsPage.published}">
                     <div class="alert alert-warning" role="alert">
                         #{msg.cms_pagePreviewNotPublished}
                     </div>
                 </h:panelGroup>
                 
-                <viewerComponent:searchHitList />
+                <!-- SEARCH LIST -->
+                <div class="search-list">
+	                <viewerComponent:searchHitList />
+                </div>
 
 				<!-- PAGINATOR -->
                 <viewerComponent:simplePaginator 
