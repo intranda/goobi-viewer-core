@@ -332,7 +332,7 @@ public class OverviewPage implements Harvestable, Serializable {
      */
     private void fillMetadataValues(List<Metadata> metadata, Locale locale) throws IndexUnreachableException {
         for (Metadata md : metadata) {
-            md.populate(structElement.getMetadataFields(), locale, null);
+            md.populate(structElement.getMetadataFields(), locale);
         }
     }
 
@@ -506,6 +506,11 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     public List<Metadata> getMetadata() {
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null && adb.isRecordLoaded()) {
+            return Metadata.filterMetadataByLanguage(metadata, adb.getViewManager().getRecordLocale());
+        }
+
         return metadata;
     }
 

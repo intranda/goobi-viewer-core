@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -375,13 +377,12 @@ public class Metadata implements Serializable {
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
      * @param metadataMap
-     * @param locale User session locale
-     * @param recordLanguage Selected language version of the current record
+     * @param locale
      * @return
      * @throws IndexUnreachableException
      */
     @SuppressWarnings("unchecked")
-    public boolean populate(Map<String, List<String>> metadataMap, Locale locale, String recordLanguage) throws IndexUnreachableException {
+    public boolean populate(Map<String, List<String>> metadataMap, Locale locale) throws IndexUnreachableException {
         if (metadataMap == null) {
             return false;
         }
@@ -392,11 +393,6 @@ public class Metadata implements Serializable {
             if (metadataMap.get(label) == null) {
                 // If there is no plain value in the docstruct doc, then there shouldn't be a metadata Solr doc. In this case save time by skipping this field.
                 return false;
-            }
-            // Skip metadata fields that are language-specific but do not match the given language
-            if(StringUtils.isNotEmpty(recordLanguage)) {
-                recordLanguage =  recordLanguage.toUpperCase();
-                // TODO identify mismatching language in field name and skip field
             }
             if (metadataMap.get(SolrConstants.IDDOC) != null && !metadataMap.get(SolrConstants.IDDOC).isEmpty()) {
                 String iddoc = metadataMap.get(SolrConstants.IDDOC).get(0);
@@ -570,6 +566,49 @@ public class Metadata implements Serializable {
      */
     public void setGroup(boolean group) {
         this.group = group;
+    }
+
+    /**
+     * 
+     * @param metadataList
+     * @param recordLocale
+     * @return
+     * @should return language-specific version of a field
+     * @should return generic version if no language specific version is found
+     */
+    public static List<Metadata> filterMetadataByLanguage(List<Metadata> metadataList, Locale recordLocale) {
+        if (recordLocale == null || metadataList == null || metadataList.isEmpty()) {
+            return metadataList;
+        }
+
+        List<Metadata> ret = new ArrayList<>(metadataList.size());
+        // Fields that have no language code; will be addded to ret in case no language specific version is found
+        List<Metadata> backupList = new ArrayList<>(metadataList.size());
+        // Fields that have already been added to ret and can be skipped
+        Set<String> addedFields = new HashSet<>();
+        String languageCode = recordLocale.getLanguage().toUpperCase();
+        for (Metadata md : metadataList) {
+            if (md.getLabel().contains("_LANG_")) {
+                String lang = md.getLabel().substring(md.getLabel().length() - 2);
+                logger.trace("{}, {}", md.getLabel(), lang);
+                if (languageCode.equals(lang)) {
+                    ret.add(md);
+                    addedFields.add(md.getLabel().substring(0, md.getLabel().length() - 8));
+                }
+            } else if (!addedFields.contains(md.getLabel())) {
+                backupList.add(md);
+            }
+        }
+        // Add non-language fields
+        if (!backupList.isEmpty()) {
+            for (Metadata md : backupList) {
+                if (!addedFields.contains(md.getLabel())) {
+                    ret.add(md);
+                }
+            }
+        }
+
+        return ret;
     }
 
     @Override

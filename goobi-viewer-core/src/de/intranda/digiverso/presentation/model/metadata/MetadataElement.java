@@ -152,16 +152,17 @@ public class MetadataElement {
     private final boolean topElement;
     private final boolean anchor;
     private final boolean filesOnly;
+    private final Locale recordLocale;
 
     /**
      * @param se {@link StructElement}
-     * @param locale
-     * @param language
+     * @param sessionLocale
+     * @param recordLocale
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public MetadataElement(StructElement se, Locale locale, String language) throws PresentationException, IndexUnreachableException, DAOException {
+    public MetadataElement(StructElement se, Locale sessionLocale, Locale recordLocale) throws PresentationException, IndexUnreachableException, DAOException {
         if (se == null) {
             logger.error("StructElement not defined!");
             throw new PresentationException("errMetaRead");
@@ -179,12 +180,13 @@ public class MetadataElement {
         se.getPi(); // TODO why?
         anchor = se.isAnchor();
         filesOnly = "application".equalsIgnoreCase(getMimeType(se));
+        this.recordLocale = recordLocale;
 
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false, false);
         url = se.getUrl(pageType);
 
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
-            if (metadata.populate(se.getMetadataFields(), locale, language)) {
+            if (metadata.populate(se.getMetadataFields(), recordLocale != null ? recordLocale : sessionLocale)) {
                 if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
                     if (se.isWork() || se.isAnchor()) {
                         metadataList.add(metadata);
@@ -205,7 +207,7 @@ public class MetadataElement {
             // The component is only rendered if sidebarMetadataList != null
             sidebarMetadataList = new ArrayList<>();
             for (Metadata metadata : sidebarMetadataTempList) {
-                if (metadata.populate(se.getMetadataFields(), locale, language)) {
+                if (metadata.populate(se.getMetadataFields(), sessionLocale)) {
                     if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
                         // TODO remove bean retrieval
                         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -275,7 +277,7 @@ public class MetadataElement {
      * @return the oneMetadataList
      */
     public List<Metadata> getMetadataList() {
-        return metadataList;
+        return Metadata.filterMetadataByLanguage(metadataList, recordLocale);
     }
 
     /**

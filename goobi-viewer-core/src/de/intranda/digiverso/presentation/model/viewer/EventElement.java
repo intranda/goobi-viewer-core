@@ -32,6 +32,8 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 
 /**
@@ -98,9 +100,9 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
         checkDates();
         metadata = DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(type);
-        populateMetadata(metadata, type, doc, locale, null);
+        populateMetadata(metadata, type, doc, locale);
         sidebarMetadata = DataManager.getInstance().getConfiguration().getSidebarMetadataForTemplate(type);
-        populateMetadata(sidebarMetadata, type, doc, locale, null);
+        populateMetadata(sidebarMetadata, type, doc, locale);
     }
 
     /*
@@ -131,13 +133,12 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * @param recordLanguage
      * @throws IndexUnreachableException
      */
-    private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale, String recordLanguage)
-            throws IndexUnreachableException {
+    private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale) throws IndexUnreachableException {
         // Get metadata list for the event type
         if (metadata != null) {
             logger.trace("Metadata for event '{}'", type);
             for (Metadata md : metadata) {
-                md.populate(SolrSearchIndex.getFieldValueMap(doc), locale, recordLanguage);
+                md.populate(SolrSearchIndex.getFieldValueMap(doc), locale);
                 if (md.getValues() != null && !md.getValues().isEmpty()) {
                     logger.trace("{}: {}", md.getLabel(), SolrSearchIndex.getFieldValueMap(doc).toString());
                 }
@@ -223,6 +224,11 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * @return the metadata
      */
     public List<Metadata> getMetadata() {
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null && adb.isRecordLoaded()) {
+            return Metadata.filterMetadataByLanguage(metadata, adb.getViewManager().getRecordLocale());
+        }
+
         return metadata;
     }
 

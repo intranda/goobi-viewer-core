@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
@@ -117,7 +118,7 @@ public class ViewManager implements Serializable {
     private int lastPdfPage;
     private final CalendarView calendarView;
     /** Currently selected language for multilingual records. */
-    private String language;
+    private Locale recordLocale;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
             throws IndexUnreachableException, PresentationException {
@@ -2091,16 +2092,25 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @return the language
+     * @return the recordLocale
      */
-    public String getLanguage() {
-        return language;
+    public Locale getRecordLocale() {
+        return recordLocale;
     }
 
     /**
-     * @param language the language to set
+     * @param recordLocale the recordLocale to set
      */
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setRecordLocale(Locale recordLocale) {
+        this.recordLocale = recordLocale;
+    }
+
+    /**
+     * 
+     * @param language
+     */
+    public void setRecordLocaleString(String language) {
+        logger.trace("setRecordLocaleString: {}", language);
+        recordLocale = new Locale(language);
     }
 }

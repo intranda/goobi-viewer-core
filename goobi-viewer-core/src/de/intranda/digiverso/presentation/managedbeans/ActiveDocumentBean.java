@@ -330,7 +330,7 @@ public class ActiveDocumentBean implements Serializable {
                 StructElement topSe = viewManager.getCurrentDocument().getTopStruct();
                 // logger.debug("topSe: " + topSe.getId());
                 for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
-                    md.populate(topSe.getMetadataFields(), BeanUtils.getLocale(), null);
+                    md.populate(topSe.getMetadataFields(), BeanUtils.getLocale());
                     if (!md.isEmpty()) {
                         titleBarMetadata.add(md);
                     }
@@ -460,7 +460,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return titleBarMetadata;
+        return Metadata.filterMetadataByLanguage(titleBarMetadata, isRecordLoaded() ? viewManager.getRecordLocale() : null);
     }
 
     /**
