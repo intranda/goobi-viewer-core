@@ -130,6 +130,7 @@ public class SolrConstants {
     public static final String ISANCHOR = "ISANCHOR";
     public static final String ISWORK = "ISWORK";
     public static final String LABEL = "LABEL";
+    public static final String LANGUAGE = "LANGUAGE";
     public static final String LOGID = "LOGID";
     public static final String METADATATYPE = "METADATATYPE";
     public static final String NORMDATATERMS = "NORMDATATERMS";

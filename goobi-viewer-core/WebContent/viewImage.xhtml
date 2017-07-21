@@ -41,6 +41,8 @@
                     <ui:param name="purl" value="true" />
                     <ui:param name="displayCollectionAndPartnerID" value="false" />
                 </ui:include>
+                
+                <viewerComponent:changeRecordLocale />
 
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                     <a name="topDocAnchor"></a>

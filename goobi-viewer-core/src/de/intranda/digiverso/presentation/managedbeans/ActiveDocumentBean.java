@@ -19,10 +19,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -121,6 +124,10 @@ public class ActiveDocumentBean implements Serializable {
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
     private String lastReceivedIdentifier;
+    /** Available languages for this record. */
+    private List<String> recordLocales;
+    /** Currently selected language for multilingual records. */
+    private Locale currentRecordLocale;
 
     /** Empty constructor. */
     public ActiveDocumentBean() {
@@ -300,6 +307,7 @@ public class ActiveDocumentBean implements Serializable {
                         SolrConstants.IDDOC));
                 long subElementIddoc = 0;
                 if (!docList.isEmpty()) {
+                    logger.trace("vm3");
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
                     viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid, viewManager
@@ -342,6 +350,10 @@ public class ActiveDocumentBean implements Serializable {
                 logger.debug("ViewManager is null or ViewManager.currentDocument is null.");
                 throw new RecordNotFoundException(lastReceivedIdentifier);
             }
+
+            // Metadata language versions
+            //        recordLocales = topDocument.getMetadataValues(SolrConstants.LANGUAGE);
+            recordLocales = Arrays.asList(new String[] { "en", "de" });
 
             // Prepare a new bookshelf item
             if (bookshelfBean != null) {
@@ -460,7 +472,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return Metadata.filterMetadataByLanguage(titleBarMetadata, isRecordLoaded() ? viewManager.getRecordLocale() : null);
+        return Metadata.filterMetadataByLanguage(titleBarMetadata, currentRecordLocale);
     }
 
     /**
@@ -964,6 +976,44 @@ public class ActiveDocumentBean implements Serializable {
                 viewManager.setCurrentThumbnailPage(currentThumbnailPage);
             }
         }
+    }
+
+    /**
+     * @return the recordLocales
+     */
+    public List<String> getRecordLocales() {
+        return recordLocales;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isHasLocales() {
+        return recordLocales != null && !recordLocales.isEmpty();
+    }
+
+    /**
+     * @return the currentRecordLocale
+     */
+    public Locale getCurrentRecordLocale() {
+        return currentRecordLocale;
+    }
+
+    /**
+     * @param currentRecordLocale the currentRecordLocale to set
+     */
+    public void setCurrentRecordLocale(Locale currentRecordLocale) {
+        this.currentRecordLocale = currentRecordLocale;
+    }
+
+    /**
+     * 
+     * @param language
+     */
+    public void setCurrentRecordLocaleString(String language) {
+        logger.trace("setCurrentRecordLocaleString: {}", language);
+        currentRecordLocale = new Locale(language);
     }
 
     public boolean isAccessPermissionEpub() {
