@@ -875,7 +875,7 @@ public class CmsBean {
             searchBean.removeHierarchicalFacetAction(facetQuery);
         }
 
-        return cmsContextAction();
+        return "pretty:cmsOpenPageWithSearch";
     }
 
     /**
@@ -891,7 +891,7 @@ public class CmsBean {
             searchBean.removeFacetAction(facetQuery);
         }
 
-        return cmsContextAction();
+        return "pretty:cmsOpenPageWithSearch";
     }
 
     /**
