@@ -90,8 +90,8 @@ public class CMSPage {
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned
     private List<CMSPageLanguageVersion> languageVersions = new ArrayList<>();
-    
-    @Column(name="persistent_url", nullable = true)
+
+    @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
@@ -624,8 +624,6 @@ public class CMSPage {
         resetItemData();
         this.listPage = listPage;
     }
-    
-    
 
     /**
      * @return the persistentUrl
@@ -731,7 +729,7 @@ public class CMSPage {
      * @return
      */
     public String getRelativeUrlPath(boolean pretty) {
-        if(pretty && StringUtils.isNotBlank(getPersistentUrl())) {
+        if (pretty && StringUtils.isNotBlank(getPersistentUrl())) {
             return getPersistentUrl() + "/";
         }
         return "cms/" + getId() + "/";

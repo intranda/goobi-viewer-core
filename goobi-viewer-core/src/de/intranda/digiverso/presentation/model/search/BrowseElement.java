@@ -526,7 +526,7 @@ public class BrowseElement implements Serializable {
      * @should not add duplicates from default terms
      */
     void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms) {
-        logger.trace("addAdditionalMetadataContainingSearchTerms");
+        // logger.trace("addAdditionalMetadataContainingSearchTerms");
         if (searchTerms == null) {
             return;
         }

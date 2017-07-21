@@ -44,7 +44,7 @@
                                     <!-- AVAILABLE FACETS -->
                                     <ui:repeat value="#{searchBean.facets.getLimitedHierarchicalFacetListForField(field.key)}" var="facet">
                                         <li>
-                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
+                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.applicationUrl}cms/#{cmsPage.id}/search/#{cmsBean.currentPage.listPage}/#{searchBean.facets.currentFacetString}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/">
                                                 #{msg[facet.label]} (#{facet.count})
                                             </h:outputLink>
                                         </li>
@@ -100,7 +100,7 @@
                                     <!-- AVAILABLE FACETS -->
                                     <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                         <li>
-                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentHierarchicalFacetString}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.applicationUrl}cms/#{cmsPage.id}/search/#{cmsBean.currentPage.listPage}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/#{searchBean.facets.currentHierarchicalFacetString}/">
                                                 #{msg[facet.label]} (#{facet.count})
                                             </h:outputLink></li>
                                     </ui:repeat>
