@@ -654,18 +654,20 @@ public final class SearchHelper {
 
     /**
      *
-     * @param filterQuerySuffix
+     * @param query
      * @param facetFields
+     * @param facetMinCount
      * @param getFieldStatistics
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static QueryResponse searchCalendar(String query, List<String> facetFields, boolean getFieldStatistics) throws PresentationException,
-            IndexUnreachableException {
+    public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
+            throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
         StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
-        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, getFieldStatistics);
+        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount,
+                getFieldStatistics);
     }
 
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
@@ -677,7 +679,7 @@ public final class SearchHelper {
             sbSearchString.append(subQuery);
         }
         // logger.debug("searchString: {}", searchString);
-        QueryResponse resp = searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), true);
+        QueryResponse resp = searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
 
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Object min = info.getMin();
@@ -1662,12 +1664,13 @@ public final class SearchHelper {
      *
      * @param query
      * @param facetFieldName
-     * @param minCount
+     * @param facetMinCount
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<String> getFacetValues(String query, String facetFieldName, long minCount) throws PresentationException, IndexUnreachableException {
+    public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount) throws PresentationException,
+            IndexUnreachableException {
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
         }
@@ -1676,11 +1679,11 @@ public final class SearchHelper {
         }
 
         QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
-                false);
+                facetMinCount, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
-            if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= minCount) {
+            if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
                 ret.add(count.getName());
             }
         }

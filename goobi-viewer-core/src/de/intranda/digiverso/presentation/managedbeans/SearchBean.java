@@ -883,25 +883,6 @@ public class SearchBean implements Serializable {
                     phrase = phrase.replace("\"", "");
                     if (phrase.length() > 0) {
                         if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                            //                            // No filters defined or ALL: use DEFAULT + FULLTEXT + NORMDATATERMS + UGCTERMS
-                            //                            if (searchTerms.get(LuceneConstants.DEFAULT) == null) {
-                            //                                searchTerms.put(LuceneConstants.DEFAULT, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.FULLTEXT) == null) {
-                            //                                searchTerms.put(LuceneConstants.FULLTEXT, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.NORMDATATERMS) == null) {
-                            //                                searchTerms.put(LuceneConstants.NORMDATATERMS, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.UGCTERMS) == null) {
-                            //                                searchTerms.put(LuceneConstants.UGCTERMS, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.OVERVIEWPAGE_DESCRIPTION) == null) {
-                            //                                searchTerms.put(LuceneConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.OVERVIEWPAGE_PUBLICATIONTEXT) == null) {
-                            //                                searchTerms.put(LuceneConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<String>());
-                            //                            }
                             if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                                 sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
@@ -926,7 +907,22 @@ public class SearchBean implements Serializable {
                                 sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR");
                                 sb.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(\"").append(phrase).append("\")");
                             } else {
-                                sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                                if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                                    switch (currentSearchFilter.getField()) {
+                                        case SolrConstants.DEFAULT:
+                                            sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\")");
+                                            break;
+                                        case SolrConstants.FULLTEXT:
+                                            sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\")");
+                                            break;
+                                        default:
+                                            sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                                            break;
+                                    }
+                                } else {
+                                    sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                                }
+
                             }
                             searchTerms.get(currentSearchFilter.getField()).add(phrase);
                         }
@@ -1000,7 +996,21 @@ public class SearchBean implements Serializable {
                                 ')');
                     } else {
                         // Specific filter selected
-                        sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                        if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                            switch (currentSearchFilter.getField()) {
+                                case SolrConstants.DEFAULT:
+                                    sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                                case SolrConstants.FULLTEXT:
+                                    sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                                default:
+                                    sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                            }
+                        } else {
+                            sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                        }
                     }
                     searchString += sbOuter.toString();
                 }

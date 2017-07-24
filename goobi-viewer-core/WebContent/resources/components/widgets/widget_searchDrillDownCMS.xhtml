@@ -28,7 +28,7 @@
                                     <!-- ACTIVE FACETS -->
                                     <ui:repeat value="#{searchBean.facets.getCurrentHierarchicalFacetsForField(field.key)}" var="facet">
                                         <li class="active">
-                                            <h:commandLink action="#{searchBean.removeHierarchicalFacetAction(facet.link)}" title="#{msg.removeFacet}">
+                                            <h:commandLink action="#{cmsBean.removeHierarchicalFacetAction(facet.link)}" title="#{msg.removeFacet}">
 												<div class="row">
 													<div class="col-xs-11">#{msg[facet.value]}</div>
 													<div class="col-xs-1">
@@ -84,7 +84,7 @@
                                     <!-- ACTIVE FACETS -->
                                     <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">
                                         <li class="active">
-                                            <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
+                                            <h:commandLink action="#{cmsBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
 												<div class="row">
 													<div class="col-xs-11">#{msg[facet.value]}</div>
 													<div class="col-xs-1">
