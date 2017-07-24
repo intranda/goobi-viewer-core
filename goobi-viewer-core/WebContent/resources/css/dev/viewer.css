@@ -2327,6 +2327,43 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Search Help text
+   style declarations for searchHelpText.xhtml
+   ==============================================================*/
+/* SEARCH HELP TEXT */
+/* BLOCK */
+#searchHelpAccordion {
+  /* ELEMENT */
+}
+#searchHelpAccordion.panel-group .panel {
+  border-radius: 0;
+}
+#searchHelpAccordion .panel-heading {
+  border-radius: 0;
+  background-color: #eee;
+}
+#searchHelpAccordion .panel-title a {
+  display: block;
+}
+#searchHelpAccordion .panel-title a:hover,
+#searchHelpAccordion .panel-title a:focus,
+#searchHelpAccordion .panel-title a:active {
+  text-decoration: none;
+}
+#searchHelpAccordion .panel-body p:last-child {
+  margin: 0;
+}
+#searchHelpAccordion .panel-body p span {
+  display: block;
+  margin: 5px 0 15px 0;
+  padding: 10px;
+  background-color: #eee;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
 /* ==============================================================
    Admin 
@@ -2950,30 +2987,6 @@ input[id*="cmdMoveTo"] {
 .search-help {
   /* ELEMENT */
   /* MODIFICATION */
-}
-.search-help .panel-group .panel {
-  border-radius: 0;
-}
-.search-help .panel-heading {
-  border-radius: 0;
-  background-color: #eee;
-}
-.search-help .panel-title a {
-  display: block;
-}
-.search-help .panel-title a:hover,
-.search-help .panel-title a:focus,
-.search-help .panel-title a:active {
-  text-decoration: none;
-}
-.search-help .panel-body p:last-child {
-  margin: 0;
-}
-.search-help .panel-body p span {
-  display: block;
-  margin: 5px 0 15px 0;
-  padding: 10px;
-  background-color: #eee;
 }
 /* SEARCH TILE */
 /* BLOCK */
@@ -3629,11 +3642,6 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .search-calendar__input {
-    display: none;
-  }
-}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    SearchTermList
@@ -5659,6 +5667,8 @@ div[id*="Modal"] .email-form .form-group p {
 .widget-search-drilldown .widget li.active .col-xs-11,
 .widget-search-drilldown .widget li.active .col-xs-1 {
   padding: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .widget-search-drilldown .widget li.active .col-xs-1 {
   text-align: right;

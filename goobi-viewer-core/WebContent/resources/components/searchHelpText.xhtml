@@ -1,0 +1,77 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- interface options -->
+    <composite:interface>
+        <composite:attribute name="sidebarPosition" required="false" default="left" />
+    </composite:interface>
+
+    <!-- component content -->
+	<composite:implementation>
+		<div class="panel-group" id="searchHelpAccordion" role="tablist" aria-multiselectable="true">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingOne">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading01}</a>
+					</h4>
+				</div>
+				<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+					<div class="panel-body">
+						<h:outputText value="#{msg.searchExplanationText_paragraph01}" escape="false" />
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingTwo">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading02}</a>
+					</h4>
+				</div>
+				<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+					<div class="panel-body">
+						<h:outputText value="#{msg.searchExplanationText_paragraph02}" escape="false" />
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingThree">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading03}</a>
+					</h4>
+				</div>
+				<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+					<div class="panel-body">
+						<h:outputText value="#{msg.searchExplanationText_paragraph03}" escape="false" />
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingFour">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading04}</a>
+					</h4>
+				</div>
+				<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+					<div class="panel-body">
+						<h:outputText value="#{msg.searchExplanationText_paragraph04}" escape="false" />
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingFive">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading05}</a>
+					</h4>
+				</div>
+				<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+					<div class="panel-body">
+						<h:outputText value="#{msg.searchExplanationText_paragraph05}" escape="false" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</composite:implementation>
+</ui:composition>

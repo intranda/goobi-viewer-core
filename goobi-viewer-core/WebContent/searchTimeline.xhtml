@@ -28,12 +28,7 @@
                             </h2>
                         </div>
 
-                        <!-- SEARCH TIMELINE INPUT -->
-                        <button type="button" id="toggleSearchTimelineInput" class="search-timeline__toggle btn hidden-md hidden-lg">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                            <i class="fa fa-caret-down" aria-hidden="true"></i>
-                        </button>
-                        
+                        <!-- SEARCH TIMELINE INPUT -->                        
                         <div class="search-timeline__input">
                             <div class="form-horizontal">
                                 <div class="form-group">
@@ -169,13 +164,6 @@
                     </div>
                 </h:form>
             </div>
-
-            <script type="text/javascript">
-                $( '#toggleSearchTimelineInput' ).on( 'click', function() {
-                    $( this ).find( '.fa-caret-down' ).toggleClass( 'fa-caret-up' );
-                    $( '.search-timeline__input' ).slideToggle( 'fast' );
-                } );
-            </script>
         </f:view>
     </ui:define>
 

@@ -71,9 +71,10 @@ var viewerJS = ( function( viewer ) {
                 $( _defaults.saveSearchInputSelector ).focus();
             } );
             
-            // reset current search
+            // reset current search and redirect to standard search
             $( _defaults.resetSearchSelector ).on( 'click', function() {
                 $( _defaults.searchInputSelector ).val( '' );
+                location.href = _defaults.contextPath + '/search/';
             } );
             
             // show/hide loader for excel export

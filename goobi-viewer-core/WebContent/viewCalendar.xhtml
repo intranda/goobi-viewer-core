@@ -108,11 +108,6 @@
 						    appUrl: '#{navigationHelper.applicationUrl}',
 						    popoverTitle: '#{activeDocumentBean.titleBarLabel}',
 						};
-					
-                        $( '#toggleSearchCalendarInput' ).on( 'click', function() {
-                            $( this ).find( '.fa-caret-down' ).toggleClass( 'fa-caret-up' );
-                            $( '.search-calendar__input' ).slideToggle( 'fast' );
-                        } );
                         
                         viewerJS.calendarPopover.init( calendarPopoverConfig );
                     </script>
