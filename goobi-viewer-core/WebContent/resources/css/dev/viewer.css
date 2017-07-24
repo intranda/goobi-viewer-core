@@ -3308,6 +3308,7 @@ input[id*="cmdMoveTo"] {
   text-align: right;
 }
 .search-list__hit-thumbnail img {
+  width: 100%;
   max-width: 100px;
   max-height: 100px;
   border: 2px solid #fff;
@@ -3828,6 +3829,11 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .user__options {
+    margin-top: 10px;
+  }
+}
 /* ==============================================================
    User Data
    style declarations for user.xhtml
@@ -3855,7 +3861,7 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .userdata__gravatar img {
-    margin: 0 auto;
+    margin: 0 auto 15px auto;
   }
   .userdata__action {
     text-align: center;
@@ -5661,6 +5667,10 @@ div[id*="Modal"] .email-form .form-group p {
   display: block;
   padding: 3px 5px;
 }
+.widget-search-drilldown__groups ul {
+  max-height: 400px;
+  overflow-y: auto;
+}
 .widget-search-drilldown__collapse a {
   display: block;
   text-align: center;
@@ -5710,6 +5720,10 @@ div[id*="Modal"] .email-form .form-group p {
 }
 #widgetSearchInCurrentItem .form-group .input-group {
   width: 100%;
+}
+#widgetSearchInCurrentItem .form-group .input-group input {
+  padding-right: 5px;
+  padding-left: 5px;
 }
 #widgetSearchInCurrentItem .form-group .input-group .input-group-addon {
   padding: 0;
