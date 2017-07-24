@@ -717,7 +717,6 @@ public class CalendarBean implements Serializable {
             List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
             if (fieldValues != null) {
                 for (Count count : fieldValues) {
-                    logger.trace("YEAR: " + count.getName());
                     CalendarItemYear item = new CalendarItemYear(count.getName(), Integer.parseInt(count.getName()), (int) count.getCount());
                     allActiveYears.add(item);
                 }
