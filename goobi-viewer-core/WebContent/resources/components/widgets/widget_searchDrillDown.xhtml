@@ -6,7 +6,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components" 
-    xmlns:facelets="http://de.intranda.digiverso.presentation">
+    xmlns:facelets="http://de.intranda.digiverso.presentation"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
 
     <composite:interface>
         <composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
@@ -14,10 +15,11 @@
 
     <composite:implementation>
         <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null}">
+            <h:panelGroup rendered="#{searchBean.availableHierarchicalFacets.entrySet().toArray() != null and searchBean.availableFacets.entrySet().toArray() != null}">
             <div id="searchListDrillDownWrapper" class="widget-search-drilldown">
                 <h:form id="searchListDrillDownForm" prependId="false">
                     <!-- COLLECTION DRILL DOWN -->
-                    <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">
+ö                    <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">
                         <h:panelGroup 
                             id="collectionDrillDownPanelGroup_#{status.index}"
                             rendered="#{searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentHierarchicalFacetsSizeForField(field.key) > 0}">
@@ -26,7 +28,7 @@
                                 
                                 <ul>
                                     <!-- ACTIVE FACETS -->
-                                    <ui:repeat value="#{searchBean.facets.getCurrentHierarchicalFacetsForField(field.key)}" var="facet">
+	                                    <ui:repeat value="#{searchBean.facets.getCurrentHierarchicalFacetsForField(field.key)}" var="facet">
                                         <li class="active">
                                             <h:commandLink action="#{searchBean.removeHierarchicalFacetAction(facet.link)}" title="#{msg.removeFacet}">
 												<div class="row">
@@ -42,7 +44,7 @@
                                     </ui:repeat>
 
                                     <!-- AVAILABLE FACETS -->
-                                    <ui:repeat value="#{searchBean.facets.getLimitedHierarchicalFacetListForField(field.key)}" var="facet">
+	                                    <ui:repeat value="#{searchBean.facets.getLimitedHierarchicalFacetListForField(field.key)}" var="facet">
                                         <li>
                                             <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
                                                 #{msg[facet.label]} (#{facet.count})
@@ -128,6 +130,13 @@
                     </c:forEach>
                 </h:form>
             </div>
+        </h:panelGroup>
+            
+            <h:panelGroup rendered="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray() == null and searchBean.facets.availableFacets.entrySet().toArray() == null}">
+            	<div id="widgetSearchHelp" class="widget-searchhelp">
+            		<viewerComponent:searchHelpText />
+            	</div>
+            </h:panelGroup>
         </h:panelGroup>
     </composite:implementation>
 </ui:composition>

@@ -29,11 +29,6 @@
                         </div>
 
                         <!-- SEARCH CALENDAR INPUT -->
-                        <button type="button" id="toggleSearchCalendarInput" class="search-calendar__toggle btn hidden-md hidden-lg">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                            <i class="fa fa-caret-down" aria-hidden="true"></i>
-                        </button>
-                        
                         <div class="search-calendar__input">
                             <div class="form-horizontal">
                                 <div class="form-group">
@@ -53,7 +48,7 @@
 
 
                         <!-- SEARCH CALENDAR MONTHS -->
-                        <h:panelGroup rendered="#{calendarBean.currentYear.hits gt calendarBean.countOfIncompleteData}">
+                        <h:panelGroup rendered="#{calendarBean.currentYear.hits ge 1}">
                             <div class="search-calendar__months">
                                 <div class="row">
                                     <ui:repeat var="month" value="#{calendarBean.monthList}">
@@ -106,13 +101,6 @@
                             </div>
                         </h:panelGroup>
                     </div>
-                    
-                    <script type="text/javascript">
-                        $( '#toggleSearchCalendarInput' ).on( 'click', function() {
-                            $( this ).find( '.fa-caret-down' ).toggleClass( 'fa-caret-up' );
-                            $( '.search-calendar__input' ).slideToggle( 'fast' );
-                        } );
-                    </script>
                 </h:form>
             </div>
         </f:view>
