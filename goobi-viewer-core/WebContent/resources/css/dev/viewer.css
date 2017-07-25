@@ -1829,7 +1829,7 @@ div.mce-fullscreen {
   margin: 0;
   text-overflow: ellipsis;
   color: #fff;
-  overflow: hiddeen;
+  overflow: hidden;
 }
 #responsiveColumnGallery .rcg-col .rcg-image-container .rcg-image-body img {
   display: block;
