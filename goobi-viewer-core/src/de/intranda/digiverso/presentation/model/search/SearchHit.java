@@ -307,6 +307,8 @@ public class SearchHit implements Comparable<SearchHit> {
             switch (fieldName) {
                 case SolrConstants._CALENDAR_DAY:
                 case SolrConstants._CALENDAR_MONTH:
+                case SolrConstants.ISANCHOR:
+                case SolrConstants.ISWORK:
                 case SolrConstants.NORMDATATERMS:
                 case SolrConstants.PI_ANCHOR:
                 case SolrConstants.UGCTERMS:
