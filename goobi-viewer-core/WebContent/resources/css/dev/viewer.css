@@ -1772,6 +1772,7 @@ div.mce-fullscreen {
    Responsive Column Gallery
    style declarations for responsiveColumnGallery.xhtml
    ==============================================================*/
+/* RCG */
 #responsiveColumnGallery {
   float: left;
   width: 100%;
@@ -1873,6 +1874,7 @@ div.mce-fullscreen {
   margin: 2% 0;
   text-align: right;
 }
+/* RCG LIGHTBOX */
 .rcg-lightbox-overlay {
   display: none;
   position: fixed;
@@ -1935,6 +1937,11 @@ div.mce-fullscreen {
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: 992px) {
+  #responsiveColumnGallery .rcg-col.col-4 {
+    width: 33.33333333%;
+  }
+}
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   #responsiveColumnGallery .rcg-col.col-4 {
