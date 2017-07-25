@@ -18,6 +18,7 @@
     var _debug = false;
     var _defaults = {
         currentPage: '',
+        browser: '',
         sidebarSelector: '#sidebar',
         contentSelector: '#main',
         equalHeightRSSInterval: 1000,
@@ -42,7 +43,11 @@
         
         $.extend( true, _defaults, config );
         
+        // detect current browser
+        _defaults.browser = viewerJS.helper.getCurrentBrowser();
+        
         console.info( 'Current Page = ', _defaults.currentPage );
+        console.info( 'Current Browser = ', _defaults.browser );
         
         /*
          * ! IE10 viewport hack for Surface/desktop Windows 8 bug Copyright 2014-2015
@@ -358,6 +363,20 @@
         // init tinymce if it exists
         if ( $( '.tinyMCE' ).length > 0 ) {
             viewerJS.tinyMce.init( this.tinyConfig );
+        }
+        
+        // handle broken images
+        switch ( _defaults.browser ) {
+            case 'Chrome':
+                $( 'img' ).each( function() {
+                    $( this ).addClass( 'broken' );
+                } );
+                break;
+            case 'Firefox':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
         }
     };
     
@@ -1896,6 +1915,50 @@
                     }
                 }
             } );
+        },
+        
+        /**
+         * Method to get the current used browser.
+         * 
+         * @method getCurrentBrowser
+         * @returns {String} The name of the current Browser.
+         */
+        getCurrentBrowser: function() {
+            // Opera 8.0+
+            var isOpera = ( !!window.opr && !!opr.addons ) || !!window.opera || navigator.userAgent.indexOf( ' OPR/' ) >= 0;
+            // Firefox 1.0+
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+            // Safari 3.0+ "[object HTMLElementConstructor]"
+            var isSafari = /constructor/i.test( window.HTMLElement ) || ( function( p ) {
+                return p.toString() === "[object SafariRemoteNotification]";
+            } )( !window[ 'safari' ] || ( typeof safari !== 'undefined' && safari.pushNotification ) );
+            // Internet Explorer 6-11
+            var isIE = /* @cc_on!@ */false || !!document.documentMode;
+            // Edge 20+
+            var isEdge = !isIE && !!window.StyleMedia;
+            // Chrome 1+
+            var isChrome = !!window.chrome && !!window.chrome.webstore;
+            // Blink engine detection
+            // var isBlink = ( isChrome || isOpera ) && !!window.CSS;
+            
+            if ( isOpera ) {
+                return 'Opera';
+            }
+            else if ( isFirefox ) {
+                return 'Firefox';
+            }
+            else if ( isSafari ) {
+                return 'Safari';
+            }
+            else if ( isIE ) {
+                return 'IE';
+            }
+            else if ( isEdge ) {
+                return 'Edge';
+            }
+            else if ( isChrome ) {
+                return 'Chrome';
+            }
         },
     };
     

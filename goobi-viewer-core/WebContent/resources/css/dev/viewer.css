@@ -427,6 +427,40 @@ table,
   height: 100%;
   background-color: rgba(0, 0, 0, 0.25);
 }
+.broken {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: auto;
+  font-family: 'Helvetica', sans-serif;
+  font-weight: 300;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.broken:before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: -10px;
+  left: 0;
+  height: calc(110%);
+  width: 100%;
+  background-color: #ccc;
+}
+.broken:after {
+  content: "\f127" " " attr(alt);
+  position: absolute;
+  display: block;
+  top: 5px;
+  left: 0;
+  width: 100%;
+  font-size: 14px;
+  font-style: normal;
+  font-family: FontAwesome;
+  text-align: center;
+  color: #646464;
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
