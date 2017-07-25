@@ -17,12 +17,10 @@ package de.intranda.digiverso.presentation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.CodeSource;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -71,9 +69,10 @@ public class ContextListener implements ServletContextListener {
 
         // Scan for all Pretty config files in module JARs
         String webinfPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
+        logger.debug("Lib path: {}", webinfPath);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(webinfPath), "*-module-*.jar")) {
             for (Path path : stream) {
-                logger.trace("Found module JAR: {}", path.getFileName().toString());
+                logger.debug("Found module JAR: {}", path.getFileName().toString());
                 try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
                     while (true) {
                         ZipEntry e = zip.getNextEntry();
@@ -96,7 +95,7 @@ public class ContextListener implements ServletContextListener {
 
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
-        logger.trace("Pretty config files: {}", prettyConfigFiles);
+        logger.debug("Pretty config files: {}", prettyConfigFiles);
     }
 
     @Override

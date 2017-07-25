@@ -1105,9 +1105,11 @@ public class CmsBean {
         setCurrentPage(page);
         String path = CMSTemplateManager.getInstance().getTemplateViewUrl(page.getTemplate());
         logger.trace("forwardToCMSPage path 1: {}", path);
-        String appUrlSplit[] = navigationHelper.getApplicationUrl().split("/");
-        if (appUrlSplit.length > 0) {
-            path = path.replace(appUrlSplit[appUrlSplit.length - 1], "");
+        if (navigationHelper.getApplicationUrl() != null) {
+            String appUrlSplit[] = navigationHelper.getApplicationUrl().split("/");
+            if (appUrlSplit.length > 0) {
+                path = path.replace(appUrlSplit[appUrlSplit.length - 1], "");
+            }
         }
         logger.trace("forwardToCMSPage path 2: {}", path);
         if (StringUtils.isNotBlank(path)) {
