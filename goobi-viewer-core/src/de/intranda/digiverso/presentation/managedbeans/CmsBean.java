@@ -32,9 +32,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration.beanutils.BeanHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -69,7 +67,6 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * CMS functions.
@@ -1107,9 +1104,12 @@ public class CmsBean {
         logger.trace("forwardToCMSPage page: " + page);
         setCurrentPage(page);
         String path = CMSTemplateManager.getInstance().getTemplateViewUrl(page.getTemplate());
-        logger.trace("forwardToCMSPage path 1: " + path);
-        path = path.replace("viewer/", "");
-        logger.trace("forwardToCMSPage path 2: " + path);
+        logger.trace("forwardToCMSPage path 1: {}", path);
+        String appUrlSplit[] = navigationHelper.getApplicationUrl().split("/");
+        if (appUrlSplit.length > 0) {
+            path = path.replace(appUrlSplit[appUrlSplit.length - 1], "");
+        }
+        logger.trace("forwardToCMSPage path 2: {}", path);
         if (StringUtils.isNotBlank(path)) {
             FacesContext context = getFacesContext();
             logger.debug("Forwarding to " + path);
