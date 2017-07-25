@@ -1104,9 +1104,12 @@ public class CmsBean {
      * @throws IOException
      */
     public void forwardToCMSPage(CMSPage page) throws IOException {
+        logger.trace("forwardToCMSPage page: " + page);
         setCurrentPage(page);
         String path = CMSTemplateManager.getInstance().getTemplateViewUrl(page.getTemplate());
+        logger.trace("forwardToCMSPage path 1: " + path);
         path = path.replace("viewer/", "");
+        logger.trace("forwardToCMSPage path 2: " + path);
         if (StringUtils.isNotBlank(path)) {
             FacesContext context = getFacesContext();
             logger.debug("Forwarding to " + path);

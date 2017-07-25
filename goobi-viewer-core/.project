@@ -35,6 +35,8 @@
 		<project>goobi-viewer-theme-hlbf</project>
 		<project>goobi-viewer-theme-geiwv</project>
 		<project>goobi-viewer-theme-zbw</project>
+		<project>goobi-viewer-theme-mvp</project>
+		<project>goobi-viewer-theme-orka</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

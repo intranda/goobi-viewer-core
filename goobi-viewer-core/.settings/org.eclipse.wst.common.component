@@ -134,7 +134,16 @@
         <dependent-module archiveName="goobi-viewer-theme-geiwv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-geiwv/goobi-viewer-theme-geiwv">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- ZBW -->
         <dependent-module archiveName="goobi-viewer-theme-zbw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-zbw/goobi-viewer-theme-zbw">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- MVP -->
+        <dependent-module archiveName="goobi-viewer-theme-mvp.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mvp/goobi-viewer-theme-mvp">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- ORKA -->
+        <dependent-module archiveName="goobi-viewer-theme-orka.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-orka/goobi-viewer-theme-orka">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>

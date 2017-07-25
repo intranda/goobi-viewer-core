@@ -15,11 +15,11 @@
 
     <composite:implementation>
         <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null}">
-            <h:panelGroup rendered="#{searchBean.availableHierarchicalFacets.entrySet().toArray() != null and searchBean.availableFacets.entrySet().toArray() != null}">
+            <h:panelGroup rendered="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray() != null and searchBean.facets.availableFacets.entrySet().toArray() != null}">
             <div id="searchListDrillDownWrapper" class="widget-search-drilldown">
                 <h:form id="searchListDrillDownForm" prependId="false">
                     <!-- COLLECTION DRILL DOWN -->
-ö                    <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">
+                    <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">
                         <h:panelGroup 
                             id="collectionDrillDownPanelGroup_#{status.index}"
                             rendered="#{searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentHierarchicalFacetsSizeForField(field.key) > 0}">
