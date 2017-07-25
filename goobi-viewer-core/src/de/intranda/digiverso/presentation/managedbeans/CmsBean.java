@@ -128,8 +128,8 @@ public class CmsBean {
 
                 @Override
                 public long getTotalNumberOfRecords() {
-//                        return DataManager.getInstance().getDao().getCMSPageCount(lazyModelPages.getFiltersAsMap());
-                        return numCreatedPages;
+                    //                        return DataManager.getInstance().getDao().getCMSPageCount(lazyModelPages.getFiltersAsMap());
+                    return numCreatedPages;
 
                 }
             });
@@ -232,7 +232,7 @@ public class CmsBean {
 
     public List<CMSPage> loadCreatedPages(int from, int to) throws DAOException {
         logger.debug("Loading created cms-pages from database");
-//        createdPages = DataManager.getInstance().getDao().getCMSPages(from, to - from, null, false, null);
+        //        createdPages = DataManager.getInstance().getDao().getCMSPages(from, to - from, null, false, null);
         createdPages = DataManager.getInstance().getDao().getAllCMSPages();
         Iterator<CMSPage> pages = createdPages.iterator();
 
@@ -252,8 +252,8 @@ public class CmsBean {
             }
         }
         numCreatedPages = createdPages.size();
-        if(!createdPages.isEmpty()) {            
-            createdPages = createdPages.subList(Math.min(from, createdPages.size()-1), Math.min(to, createdPages.size()));
+        if (!createdPages.isEmpty()) {
+            createdPages = createdPages.subList(Math.min(from, createdPages.size() - 1), Math.min(to, createdPages.size()));
         }
         return createdPages;
     }
@@ -345,7 +345,8 @@ public class CmsBean {
     public String getPageUrl(Long pageId) {
         try {
             CMSPage page = getPage(pageId);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(page.getRelativeUrlPath(true)).toString();
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(page.getRelativeUrlPath(true))
+                    .toString();
         } catch (NullPointerException e) {
             return "pretty:index";
         } catch (DAOException e) {
@@ -665,10 +666,10 @@ public class CmsBean {
     public CMSPage getPage(CMSPage page) {
         return page == null ? currentPage : page;
     }
-    
+
     public CMSPage getPage(Long pageId) throws DAOException {
         for (CMSPage cmsPage : getCreatedPages()) {
-            if(cmsPage.getId().equals(pageId)) {
+            if (cmsPage.getId().equals(pageId)) {
                 return cmsPage;
             }
         }
@@ -851,6 +852,8 @@ public class CmsBean {
             if (item.getSolrSortFields() != null) {
                 searchBean.setSortString(item.getSolrSortFields());
             }
+            //            searchBean.getFacets().setCurrentFacetString();
+            //            searchBean.getFacets().setCurrentCollection();
             searchBean.newSearch();
         } else {
             logger.error("cannot search, SearchBean null: {}, item null: {}", searchBean == null, item == null);
@@ -872,7 +875,7 @@ public class CmsBean {
             searchBean.removeHierarchicalFacetAction(facetQuery);
         }
 
-        return cmsContextAction();
+        return "pretty:cmsOpenPageWithSearch";
     }
 
     /**
@@ -888,7 +891,7 @@ public class CmsBean {
             searchBean.removeFacetAction(facetQuery);
         }
 
-        return cmsContextAction();
+        return "pretty:cmsOpenPageWithSearch";
     }
 
     /**

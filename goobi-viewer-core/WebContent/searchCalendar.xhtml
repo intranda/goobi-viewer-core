@@ -48,7 +48,7 @@
 
 
                         <!-- SEARCH CALENDAR MONTHS -->
-                        <h:panelGroup rendered="#{calendarBean.currentYear.hits gt calendarBean.countOfIncompleteData}">
+                        <h:panelGroup rendered="#{calendarBean.currentYear.hits ge 1}">
                             <div class="search-calendar__months">
                                 <div class="row">
                                     <ui:repeat var="month" value="#{calendarBean.monthList}">

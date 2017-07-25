@@ -40,7 +40,7 @@
                             <h:outputText rendered="#{!searchBean.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
                             <h:panelGroup rendered="#{searchBean.searchInDcFlag}">
                                 <h:outputText value="#{msg.searchInDC}: " styleClass="searchInDC" />
-                                <h:outputText value="#{msg[searchBean.currentCollection]}" styleClass="searchInDC" />
+                                <h:outputText value="#{msg[searchBean.facets.currentCollection]}" styleClass="searchInDC" />
                             </h:panelGroup>
                         </h3>
                     </div>

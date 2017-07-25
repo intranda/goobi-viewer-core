@@ -750,6 +750,7 @@ public final class SolrSearchIndex {
      *
      * @param query The query to use.
      * @param facetFields List of facet fields.
+     * @param facetMinCount
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
      * @return
      * @throws PresentationException
@@ -758,8 +759,8 @@ public final class SolrSearchIndex {
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
      */
-    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, boolean getFieldStatistics) throws PresentationException,
-            IndexUnreachableException {
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
+            throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -772,7 +773,7 @@ public final class SolrSearchIndex {
                 solrQuery.setGetFieldStatistics(field);
             }
         }
-        solrQuery.setFacetMinCount(0);
+        solrQuery.setFacetMinCount(facetMinCount);
         solrQuery.setFacetLimit(-1); // no limit
         try {
             QueryResponse resp = server.query(solrQuery);

@@ -18,7 +18,7 @@
 					<ui:repeat var="sortField" value="#{configurationBean.sortFields}">
 						<li>
 							<h:outputLink
-								value="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.currentFacetString}/"
+								value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/"
 								rendered="#{searchBean.sortString != sortField}">
 								<h:outputText value="#{msg[sortField]}" />
 								<h:panelGroup rendered="#{searchBean.sortString == '!'.concat(sortField)}">
@@ -26,7 +26,7 @@
 								</h:panelGroup>
 							</h:outputLink> 
 							<h:outputLink
-								value="#{navigationHelper.searchUrl}/#{searchBean.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.currentFacetString}/"
+								value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/!#{sortField}/#{searchBean.facets.currentFacetString}/"
 								rendered="#{searchBean.sortString == sortField}">
 								<h:outputText value="#{msg[sortField]}" />
 								<h:graphicImage styleClass="sort_image" library="themes/#{navigationHelper.theme}/images/navigate/" name="arrow_up.png" />
