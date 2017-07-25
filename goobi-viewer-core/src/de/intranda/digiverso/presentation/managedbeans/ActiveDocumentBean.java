@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
@@ -836,9 +835,14 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel() {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTitleBarLabel() != null) {
-            return viewManager.getTitleBarLabel();
-        } else if (cmsBean != null) {
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
+            String label = viewManager.getTopDocument().getLabel(currentRecordLocale);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
+            }
+        }
+
+        if (cmsBean != null) {
             CMSPage cmsPage = cmsBean.getCurrentPage();
             if (cmsPage != null) {
                 String pageName = navigationHelper.getCurrentPage();
@@ -853,15 +857,14 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * LABEL value escaped for JavaScript.
+     * Title bar label value escaped for JavaScript.
      * 
      * @return
      */
     public String getLabelForJS() {
-        if (viewManager != null) {
-            String label = viewManager.getTitleBarLabel();
-            label = StringEscapeUtils.escapeJavaScript(label);
-            return label;
+        String label = getTitleBarLabel();
+        if (label != null) {
+            return StringEscapeUtils.escapeJavaScript(label);
         }
 
         return null;

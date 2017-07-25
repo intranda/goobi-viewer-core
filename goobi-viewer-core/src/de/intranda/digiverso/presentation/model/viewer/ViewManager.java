@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
@@ -56,6 +57,7 @@ import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.calendar.CalendarView;
+import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
@@ -1990,14 +1992,6 @@ public class ViewManager implements Serializable {
      */
     public void setDisplayImage(boolean displayImage) {
         this.displayImage = displayImage;
-    }
-
-    public String getTitleBarLabel() {
-        if (topDocument != null && StringUtils.isNotEmpty(topDocument.getLabel())) {
-            return topDocument.getLabel();
-        }
-
-        return null;
     }
 
     /**

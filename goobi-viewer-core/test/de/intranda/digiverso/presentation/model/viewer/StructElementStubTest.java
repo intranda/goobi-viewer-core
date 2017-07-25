@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
+import java.util.Collections;
 import java.util.Locale;
 
 import javax.faces.component.UIViewRoot;
@@ -32,7 +33,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.managedbeans.ContextMocker;
 
 public class StructElementStubTest extends AbstractSolrEnabledTest {
-    
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -51,7 +52,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
         Mockito.when(facesContext.getViewRoot()).thenReturn(viewRoot);
         Mockito.when(viewRoot.getLocale()).thenReturn(Locale.GERMAN);
     }
-    
+
     /**
      * @see StructElementStub#generateContextObject(String,StructElementStub)
      * @verifies generate string element correctly
@@ -65,5 +66,44 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(
                 "ctx_ver=Z39.88-2004&rft_val_fmt=info:ofi/fmt:kev:mtx:book&rft.title=Universit%C3%A4t+und+Technische+Hochschule&rft.au=Klein%2C+Felix&rft.tpages=16",
                 stub.generateContextObject(null, element.getTopStruct().createStub()));
+    }
+
+    /**
+     * @see StructElementStub#getLabel(Locale)
+     * @verifies return locale specific title if so requested
+     */
+    @Test
+    public void getLabel_shouldReturnLocaleSpecificTitleIfSoRequested() throws Exception {
+        StructElement element = new StructElement();
+        element.setLabel("label");
+        element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
+        element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
+        Assert.assertEquals("english title", element.getLabel(Locale.ENGLISH));
+    }
+
+    /**
+     * @see StructElementStub#getLabel(Locale)
+     * @verifies return label if no locale specific title found
+     */
+    @Test
+    public void getLabel_shouldReturnLabelIfNoLocaleSpecificTitleFound() throws Exception {
+        StructElement element = new StructElement();
+        element.setLabel("label");
+        element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
+        element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
+        Assert.assertEquals("label", element.getLabel(Locale.GERMAN));
+    }
+
+    /**
+     * @see StructElementStub#getLabel(Locale)
+     * @verifies return label if locale is null
+     */
+    @Test
+    public void getLabel_shouldReturnLabelIfLocaleIsNull() throws Exception {
+        StructElement element = new StructElement();
+        element.setLabel("label");
+        element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
+        element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
+        Assert.assertEquals("label", element.getLabel(null));
     }
 }

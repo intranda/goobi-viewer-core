@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -361,6 +362,27 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return the label
      */
     public String getLabel() {
+        return getLabel(null);
+    }
+
+    /**
+     * Returns a locale specific version of MD_TITLE, if available. If not available or if locale is null, the regular label is returned.
+     * 
+     * @param locale
+     * @return Locale-specific version of MD_TITLE if requested and found; label otherwise
+     * @should return locale specific title if so requested
+     * @should return label if no locale specific title found
+     * @should return label if locale is null
+     */
+    public String getLabel(Locale locale) {
+        if (locale != null) {
+            String mdField = SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase();
+            String label = getMetadataValue(mdField);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
+            }
+        }
+
         return label;
     }
 
