@@ -891,51 +891,7 @@ input.btn .ui-button-text,
 .container-fluid {
   padding: 0;
 }
-#mobileToggleWrapper {
-  display: none;
-  padding: 10px 24px;
-}
-#mobileToggleWrapper .customer-header-logo .img-responsive {
-  max-height: 2rem;
-}
-#mobileToggleWrapper .btn-toggle {
-  position: relative;
-  width: 2rem;
-  height: 2rem;
-  margin: 0 5px;
-  padding: 0;
-  border: 1px solid #eee;
-  background: none;
-  cursor: pointer;
-}
-#mobileToggleWrapper .btn-toggle:hover,
-#mobileToggleWrapper .btn-toggle:focus,
-#mobileToggleWrapper .btn-toggle:active {
-  outline: none;
-}
-#mobileToggleWrapper .sidebar {
-  margin: 0;
-}
-#mobileToggleWrapper .sidebar.pull-left {
-  margin-right: 10px;
-}
-#mobileToggleWrapper .sidebar.pull-right {
-  margin-left: 5px;
-}
-#mobileToggleWrapper .language.in:before,
-#mobileToggleWrapper .search.in:before {
-  content: "";
-  display: block;
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  width: 0;
-  height: 0;
-  margin-left: -10px;
-  border-width: 10px;
-  border-style: solid;
-  border-color: transparent transparent #eee transparent;
-}
+/* AJAX Loaders */
 #AJAXLoader,
 #AJAXLoaderSidebarToc {
   display: none;
@@ -960,23 +916,14 @@ input.btn .ui-button-text,
   background-repeat: no-repeat;
   background-position: center center;
 }
+/* tinyMCE */
 div.mce-fullscreen {
   z-index: 999;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  #mobileToggleWrapper {
-    display: block;
-  }
-}
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  #mobileToggleWrapper {
-    padding: 10px 18px 10px 15px;
-  }
-}
 /* VIEWER COMPONENTS */
 /* ==============================================================
    Navigation
@@ -1134,6 +1081,72 @@ div.mce-fullscreen {
   }
 }
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Mobile Toggle Wrapper
+   style declarations for mobileToggles.xhtml
+   ==============================================================*/
+/* MOBILE TOGGLE WRAPPER */
+/* BLOCK */
+#mobileToggleWrapper {
+  display: none;
+  padding: 10px 24px;
+  /* ELEMENT */
+}
+#mobileToggleWrapper .customer-header-logo .img {
+  max-height: 32px;
+}
+#mobileToggleWrapper .btn-toggle {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  margin: 0 5px;
+  padding: 0;
+  border: 1px solid #eee;
+  background: none;
+  cursor: pointer;
+}
+#mobileToggleWrapper .btn-toggle:hover,
+#mobileToggleWrapper .btn-toggle:focus,
+#mobileToggleWrapper .btn-toggle:active {
+  outline: none;
+}
+#mobileToggleWrapper .sidebar {
+  margin: 0;
+}
+#mobileToggleWrapper .sidebar.pull-left {
+  margin-right: 10px;
+}
+#mobileToggleWrapper .sidebar.pull-right {
+  margin-left: 5px;
+}
+#mobileToggleWrapper .language.in:before,
+#mobileToggleWrapper .search.in:before {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -10px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #eee transparent;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  #mobileToggleWrapper {
+    display: block;
+  }
+}
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  #mobileToggleWrapper {
+    padding: 10px 18px 10px 15px;
+  }
+}
 /* ==============================================================
    Mobile Navigation
    style declarations for mobileNavigation.xhtml
