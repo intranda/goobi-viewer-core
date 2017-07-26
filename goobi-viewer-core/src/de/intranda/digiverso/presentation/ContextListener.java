@@ -17,6 +17,9 @@ package de.intranda.digiverso.presentation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,28 +71,38 @@ public class ContextListener implements ServletContextListener {
         //        createResources();
 
         // Scan for all Pretty config files in module JARs
-        String webinfPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
-        logger.debug("Lib path: {}", webinfPath);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(webinfPath), "*-module-*.jar")) {
-            for (Path path : stream) {
-                logger.debug("Found module JAR: {}", path.getFileName().toString());
-                try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
-                    while (true) {
-                        ZipEntry e = zip.getNextEntry();
-                        if (e == null) {
-                            break;
-                        }
-                        String[] nameSplit = e.getName().split("/");
-                        if (nameSplit.length > 0) {
-                            String name = nameSplit[nameSplit.length - 1];
-                            if (name.startsWith("pretty-config-")) {
-                                prettyConfigFiles += ", " + name;
+        try {
+            URL libUrl = sce.getServletContext().getResource("/WEB-INF/lib");
+            if (libUrl != null) {
+                logger.debug("Lib URL: {}", libUrl);
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libUrl.toURI()), "*viewer-module-*.jar")) {
+                    for (Path path : stream) {
+                        logger.debug("Found module JAR: {}", path.getFileName().toString());
+                        try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
+                            while (true) {
+                                ZipEntry e = zip.getNextEntry();
+                                if (e == null) {
+                                    break;
+                                }
+                                String[] nameSplit = e.getName().split("/");
+                                if (nameSplit.length > 0) {
+                                    String name = nameSplit[nameSplit.length - 1];
+                                    if (name.startsWith("pretty-config-")) {
+                                        prettyConfigFiles += ", " + name;
+                                    }
+                                }
                             }
                         }
                     }
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (URISyntaxException e) {
+                    logger.error(e.getMessage(), e);
                 }
+            } else {
+                logger.error("Resource '/WEB-INF/lib' not found.");
             }
-        } catch (IOException e) {
+        } catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);
         }
 
