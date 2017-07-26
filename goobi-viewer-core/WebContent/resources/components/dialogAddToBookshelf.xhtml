@@ -34,12 +34,14 @@
                                         <h:outputLabel value="#{msg.bookshelf_bookshelf}:" />
                                     </label>
                                     <div class="col-sm-9">
-                                        <h:selectOneListbox id="selectBookshelf" styleClass="form-control" value="#{bookshelfBean.currentBookshelf}"
-                                            converter="bookshelfConverter" required="true"
-                                            size="1">
-                                            <f:selectItems var="bookshelf" value="#{bookshelfBean.getBookshelvesForUser(userBean.user)}"
-                                                itemLabel="#{bookshelf.name}"></f:selectItems>
-                                        </h:selectOneListbox>
+                                    	<div class="custom-control custom-control--select">
+	                                        <h:selectOneListbox id="selectBookshelf" styleClass="form-control" value="#{bookshelfBean.currentBookshelf}"
+	                                            converter="bookshelfConverter" required="true"
+	                                            size="1">
+	                                            <f:selectItems var="bookshelf" value="#{bookshelfBean.getBookshelvesForUser(userBean.user)}"
+	                                                itemLabel="#{bookshelf.name}"></f:selectItems>
+	                                        </h:selectOneListbox>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
