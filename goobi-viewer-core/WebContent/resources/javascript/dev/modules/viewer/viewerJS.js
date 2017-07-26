@@ -377,11 +377,26 @@ var viewerJS = ( function() {
         // handle broken images
         switch ( _defaults.browser ) {
             case 'Chrome':
-                $( 'img' ).each( function() {
+                $( 'img' ).error( function() {
                     $( this ).addClass( 'broken' );
                 } );
                 break;
             case 'Firefox':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'IE':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Edge':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Safari':
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
