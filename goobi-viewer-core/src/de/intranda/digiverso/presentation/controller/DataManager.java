@@ -111,10 +111,25 @@ public final class DataManager {
     /**
      * 
      * @param module
+     * @should not add module if it's already registered
      */
-    public void registerModule(IModule module) {
+    public boolean registerModule(IModule module) {
+        if (module == null) {
+            throw new IllegalArgumentException("module may not be null");
+        }
+
+        for (IModule m : modules) {
+            if (m.getId().equals(module.getId())) {
+                logger.warn(
+                        "Module rejected because a module with the same ID is already registered.\nRegistered module: {} ({}) v{}\nRejected module: {} ({}) v{}",
+                        m.getId(), m.getName(), m.getVersion(), module.getId(), module.getName(), module.getVersion());
+                return false;
+            }
+        }
+
         modules.add(module);
         logger.info("Module registered: {} ({}) v{}", module.getId(), module.getName(), module.getVersion());
+        return true;
     }
 
     /**
