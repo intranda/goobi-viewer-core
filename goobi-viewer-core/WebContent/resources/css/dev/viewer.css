@@ -3376,8 +3376,7 @@ input[id*="cmdMoveTo"] {
 }
 .search-list__hit-thumbnail img {
   width: 100%;
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 80px;
   border: 2px solid #fff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
