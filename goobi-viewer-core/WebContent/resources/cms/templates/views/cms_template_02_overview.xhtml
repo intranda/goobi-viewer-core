@@ -15,7 +15,7 @@
 	<ui:define name="metadata">
 		<f:metadata>
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle)}" />
-			
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.currentPage.menuTitle, 1)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
 		</f:metadata>
 	</ui:define>
@@ -62,7 +62,9 @@
                                 <!-- IMAGE -->
                                 <div class="col-xs-12 col-sm-4">
                                     <figure class="tpl-news-overview__list-image">
-                                        <img src="#{subPage.getContent('image01')}" class="img-responsive" title="#{subPage.getMediaName('image01')}" />
+                                        <a href="#{cmsBean.getPageUrl(subPage.id)}">
+	                                        <img src="#{subPage.getContent('image01')}" class="img-responsive" title="#{subPage.getMediaName('image01')}" />
+                                        </a>
                                         <figcaption></figcaption>
                                     </figure>
                                 </div>
@@ -80,7 +82,7 @@
                                         
                                         <div class="tpl-news-overview__preview-text">
                                             <ui:include src="#{subPage.getContent('preview01')}" />
-                                            <a href="#{cmsBean.getPageUrl(subPage.id)}" class="tpl-news-overview__preview-continue" target="_blank">[#{msg.more}...]</a>
+                                            <a href="#{cmsBean.getPageUrl(subPage.id)}" class="tpl-news-overview__preview-continue">[#{msg.more}...]</a>
                                         </div>        
                                     </div>
                                 </div>

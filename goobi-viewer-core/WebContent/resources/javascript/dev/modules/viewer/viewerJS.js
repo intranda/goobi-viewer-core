@@ -27,6 +27,7 @@ var viewerJS = ( function() {
     var _debug = false;
     var _defaults = {
         currentPage: '',
+        browser: '',
         sidebarSelector: '#sidebar',
         contentSelector: '#main',
         equalHeightRSSInterval: 1000,
@@ -51,7 +52,11 @@ var viewerJS = ( function() {
         
         $.extend( true, _defaults, config );
         
+        // detect current browser
+        _defaults.browser = viewerJS.helper.getCurrentBrowser();
+        
         console.info( 'Current Page = ', _defaults.currentPage );
+        console.info( 'Current Browser = ', _defaults.browser );
         
         /*
          * ! IE10 viewport hack for Surface/desktop Windows 8 bug Copyright 2014-2015
@@ -367,6 +372,35 @@ var viewerJS = ( function() {
         // init tinymce if it exists
         if ( $( '.tinyMCE' ).length > 0 ) {
             viewerJS.tinyMce.init( this.tinyConfig );
+        }
+        
+        // handle broken images
+        switch ( _defaults.browser ) {
+            case 'Chrome':
+                $( 'img' ).error( function() {
+                    $( this ).addClass( 'broken' );
+                } );
+                break;
+            case 'Firefox':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'IE':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Edge':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Safari':
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
         }
     };
     

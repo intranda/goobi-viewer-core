@@ -94,7 +94,7 @@
 				<h:panelGroup rendered="#{configurationBean.showSidebarEventMetadata and fn:length(metadataBean.events) > 0}">
 					<dl>
 						<c:forEach items="#{metadataBean.events}" var="event">
-						    <h:panelGroup rendered="#{fn.length(event.sidebarMetadata) > 0}">
+						    <h:panelGroup rendered="#{fn:length(event.sidebarMetadata) > 0}">
 							<dt>
 								<h:outputText value="#{msg[event.label]}" escape="false" />
 							</dt>
