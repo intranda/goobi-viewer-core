@@ -432,8 +432,6 @@ table,
   display: inline-block;
   width: 100%;
   height: auto;
-  font-family: 'Helvetica', sans-serif;
-  font-weight: 300;
   text-align: center;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -444,8 +442,8 @@ table,
   position: absolute;
   top: -10px;
   left: 0;
-  height: calc(110%);
   width: 100%;
+  height: calc(100% + 10px);
   background-color: #ccc;
 }
 .broken:after {
