@@ -87,7 +87,7 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- THEME BOILERPLATE -->
-        <dependent-module archiveName="viewer-theme-themeBoilerplate.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-themeBoilerplate/goobi-viewer-theme-themeBoilerplate">
+        <dependent-module archiveName="goobi-viewer-theme-tbp.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-tbp/goobi-viewer-theme-tbp">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- TIB 2 -->
