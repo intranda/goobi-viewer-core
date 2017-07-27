@@ -37,7 +37,7 @@
                                         <div class="custom-control custom-control--select">
                                             <h:selectOneMenu id="selectyear" styleClass="form-control" value="#{calendarBean.selectYear}" immediate="true" onchange="submit();">
                                                 <f:selectItem itemDisabled="true" itemLabel="#{msg.select}" />
-                                                <f:selectItems var="year" itemLabel="#{year.name}, #{msg.currentHits}: #{year.hits}"
+                                                <f:selectItems var="year" itemLabel="#{year.name}, #{msg.currentHitsForYear}: #{year.hits}"
                                                     itemValue="#{year.name}" value="#{calendarBean.allActiveYears}" />
                                             </h:selectOneMenu>
                                         </div>

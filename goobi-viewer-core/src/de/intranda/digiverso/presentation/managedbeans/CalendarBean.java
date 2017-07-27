@@ -19,7 +19,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -702,8 +704,9 @@ public class CalendarBean implements Serializable {
             allActiveYears = new ArrayList<>();
             List<String> fields = new ArrayList<>();
             fields.add(SolrConstants._CALENDAR_YEAR);
+            fields.add(SolrConstants._CALENDAR_DAY);
             StringBuilder sbSearchString = new StringBuilder();
-            sbSearchString.append("{!join from=PI_TOPSTRUCT to=PI}");
+            //            sbSearchString.append("{!join from=PI_TOPSTRUCT to=PI}");
             if (collection != null && !collection.isEmpty()) {
                 sbSearchString.append(SolrConstants._CALENDAR_DAY).append(":* AND ").append(SolrConstants.DC).append(':').append(collection).append(
                         '*').append(docstructFilterQuery);
@@ -714,13 +717,24 @@ public class CalendarBean implements Serializable {
 
             logger.trace("getAllActiveYears query: {}", sbSearchString.toString());
             QueryResponse resp = SearchHelper.searchCalendar(sbSearchString.toString(), fields, 1, false);
-            FacetField field = resp.getFacetField(SolrConstants._CALENDAR_YEAR);
-            List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
-            if (fieldValues != null) {
-                for (Count count : fieldValues) {
-                    CalendarItemYear item = new CalendarItemYear(count.getName(), Integer.parseInt(count.getName()), (int) count.getCount());
-                    allActiveYears.add(item);
+
+            FacetField facetFieldDay = resp.getFacetField(SolrConstants._CALENDAR_DAY);
+            List<Count> dayCounts = facetFieldDay.getValues() != null ? facetFieldDay.getValues() : new ArrayList<>();
+            Map<Integer, Integer> yearCountMap = new HashMap<>();
+            for (Count day : dayCounts) {
+                int year = Integer.valueOf(day.getName().substring(0, 4));
+                Integer count = yearCountMap.get(year);
+                if (count == null) {
+                    count = 0;
                 }
+                yearCountMap.put(year, (int) (count + day.getCount()));
+            }
+
+            List<Integer> years = new ArrayList<>(yearCountMap.keySet());
+            Collections.sort(years);
+            for (int year : years) {
+                CalendarItemYear item = new CalendarItemYear(String.valueOf(year), year, yearCountMap.get(year));
+                allActiveYears.add(item);
             }
         }
 
