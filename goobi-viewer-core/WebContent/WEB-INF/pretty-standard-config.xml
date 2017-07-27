@@ -468,6 +468,12 @@
         <view-id value="/viewCalendar.xhtml" />
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
+    <url-mapping id="calendar4">
+        <pattern
+            value="/calendar/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	
 	<!-- download -->
 	   <url-mapping id="download1">
