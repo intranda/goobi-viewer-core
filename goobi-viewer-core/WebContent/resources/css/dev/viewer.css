@@ -460,6 +460,10 @@ table,
   text-align: center;
   color: #646464;
 }
+/* TYPO */
+.uppercase {
+  text-transform: uppercase;
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
