@@ -549,6 +549,7 @@ public class BrowseElement implements Serializable {
                 case SolrConstants.ISWORK:
                 case SolrConstants.NORMDATATERMS:
                 case SolrConstants.PI_ANCHOR:
+                case SolrConstants.PI_TOPSTRUCT:
                 case SolrConstants.UGCTERMS:
                     break;
                 //                case SolrConstants.OVERVIEWPAGE_DESCRIPTION:

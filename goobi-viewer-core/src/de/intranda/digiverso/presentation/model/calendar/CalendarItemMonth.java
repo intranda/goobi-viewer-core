@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.model.search.AbstractCalendarItem;
 
 public class CalendarItemMonth extends AbstractCalendarItem implements Serializable {
 
