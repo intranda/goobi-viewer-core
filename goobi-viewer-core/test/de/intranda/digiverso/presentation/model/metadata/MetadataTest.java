@@ -18,7 +18,7 @@ public class MetadataTest {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
-        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, Locale.ENGLISH);
+        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
         Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
     }
@@ -32,7 +32,7 @@ public class MetadataTest {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("MD_TITLE_LANG_DE", "", "foo"));
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
-        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, Locale.ENGLISH);
+        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
         Assert.assertEquals("MD_TITLE", filteredList.get(0).getLabel());
     }

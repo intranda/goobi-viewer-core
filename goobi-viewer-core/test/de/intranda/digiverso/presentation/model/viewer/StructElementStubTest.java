@@ -78,7 +78,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
         element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
-        Assert.assertEquals("english title", element.getLabel(Locale.ENGLISH));
+        Assert.assertEquals("english title", element.getLabel("en"));
     }
 
     /**
@@ -91,7 +91,7 @@ public class StructElementStubTest extends AbstractSolrEnabledTest {
         element.setLabel("label");
         element.getMetadataFields().put("MD_TITLE", Collections.singletonList("title"));
         element.getMetadataFields().put("MD_TITLE_LANG_EN", Collections.singletonList("english title"));
-        Assert.assertEquals("label", element.getLabel(Locale.GERMAN));
+        Assert.assertEquals("label", element.getLabel("de"));
     }
 
     /**

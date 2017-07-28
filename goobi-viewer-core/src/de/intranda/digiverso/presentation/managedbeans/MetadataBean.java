@@ -100,14 +100,14 @@ public class MetadataBean {
             logger.trace("loadMetadata for: {}", currentElement.getLabel());
             try {
                 Locale locale = BeanUtils.getLocale();
-                MetadataElement metadataElement = new MetadataElement(currentElement, locale, activeDocumentBean.getCurrentRecordLocale());
+                MetadataElement metadataElement = new MetadataElement(currentElement, locale, activeDocumentBean.getSelectedRecordLanguage());
                 metadataElementList.add(metadataElement);
 
                 // Retrieve any struct elements above the current and generate metadata for each of them
                 StructElement se = currentElement;
                 while (se.getParent() != null) {
                     se = se.getParent();
-                    metadataElementList.add(new MetadataElement(se, locale, activeDocumentBean.getCurrentRecordLocale()));
+                    metadataElementList.add(new MetadataElement(se, locale, activeDocumentBean.getSelectedRecordLanguage()));
                 }
                 Collections.reverse(metadataElementList);
 

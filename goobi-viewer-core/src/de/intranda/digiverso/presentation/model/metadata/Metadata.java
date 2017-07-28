@@ -571,14 +571,14 @@ public class Metadata implements Serializable {
     /**
      * 
      * @param metadataList
-     * @param recordLocale
+     * @param recordLanguage
      * @return
      * @should return language-specific version of a field
      * @should return generic version if no language specific version is found
      */
-    public static List<Metadata> filterMetadataByLanguage(List<Metadata> metadataList, Locale recordLocale) {
-        logger.trace("filterMetadataByLanguage: {}", recordLocale);
-        if (recordLocale == null || metadataList == null || metadataList.isEmpty()) {
+    public static List<Metadata> filterMetadataByLanguage(List<Metadata> metadataList, String recordLanguage) {
+        logger.trace("filterMetadataByLanguage: {}", recordLanguage);
+        if (recordLanguage == null || metadataList == null || metadataList.isEmpty()) {
             return metadataList;
         }
 
@@ -587,7 +587,7 @@ public class Metadata implements Serializable {
         List<Metadata> backupList = new ArrayList<>(metadataList.size());
         // Fields that have already been added to ret and can be skipped
         Set<String> addedFields = new HashSet<>();
-        String languageCode = recordLocale.getLanguage().toUpperCase();
+        String languageCode = recordLanguage.toUpperCase();
         for (Metadata md : metadataList) {
             if (md.getLabel().contains("_LANG_")) {
                 String lang = md.getLabel().substring(md.getLabel().length() - 2);
@@ -610,7 +610,7 @@ public class Metadata implements Serializable {
         }
 
         return ret;
-    } 
+    }
 
     @Override
     public String toString() {

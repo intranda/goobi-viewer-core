@@ -152,17 +152,18 @@ public class MetadataElement {
     private final boolean topElement;
     private final boolean anchor;
     private final boolean filesOnly;
-    private final Locale recordLocale;
+    private final String selectedRecordLanguage;
 
     /**
      * @param se {@link StructElement}
      * @param sessionLocale
-     * @param recordLocale
+     * @param selectedRecordLanguage
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public MetadataElement(StructElement se, Locale sessionLocale, Locale recordLocale) throws PresentationException, IndexUnreachableException, DAOException {
+    public MetadataElement(StructElement se, Locale sessionLocale, String selectedRecordLanguage) throws PresentationException,
+            IndexUnreachableException, DAOException {
         if (se == null) {
             logger.error("StructElement not defined!");
             throw new PresentationException("errMetaRead");
@@ -180,13 +181,13 @@ public class MetadataElement {
         se.getPi(); // TODO why?
         anchor = se.isAnchor();
         filesOnly = "application".equalsIgnoreCase(getMimeType(se));
-        this.recordLocale = recordLocale;
+        this.selectedRecordLanguage = selectedRecordLanguage;
 
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false, false);
         url = se.getUrl(pageType);
 
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
-            if (metadata.populate(se.getMetadataFields(), recordLocale != null ? recordLocale : sessionLocale)) {
+            if (metadata.populate(se.getMetadataFields(), sessionLocale)) {
                 if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
                     if (se.isWork() || se.isAnchor()) {
                         metadataList.add(metadata);
@@ -277,7 +278,7 @@ public class MetadataElement {
      * @return the oneMetadataList
      */
     public List<Metadata> getMetadataList() {
-        return Metadata.filterMetadataByLanguage(metadataList, recordLocale);
+        return Metadata.filterMetadataByLanguage(metadataList, selectedRecordLanguage);
     }
 
     /**

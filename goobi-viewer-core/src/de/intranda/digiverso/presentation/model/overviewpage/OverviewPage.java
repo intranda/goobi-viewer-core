@@ -508,7 +508,7 @@ public class OverviewPage implements Harvestable, Serializable {
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null && adb.isRecordLoaded()) {
-            return Metadata.filterMetadataByLanguage(metadata, adb.getCurrentRecordLocale());
+            return Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
         }
 
         return metadata;

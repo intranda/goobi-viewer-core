@@ -11,19 +11,19 @@
 
 	<composite:implementation>
 
-		<h:panelGroup rendered="#{activeDocumentBean.hasLocales}">
+		<h:panelGroup rendered="#{activeDocumentBean.hasLanguages}">
 			<h:form id="changeRecordLocaleForm1" prependId="false">
 				<div class="search-standard__filter">
-					<ui:repeat var="locale" value="#{activeDocumentBean.recordLocales}">
+					<ui:repeat var="lang" value="#{activeDocumentBean.recordLanguages}">
 						<li><h:commandLink actionListener="index"
-								styleClass="#{activeDocumentBean.currentRecordLocale.language == locale?'activeLang':''}">
+								styleClass="#{activeDocumentBean.selectedRecordLanguage == lang ? 'activeLang':''}">
 								<h:graphicImage
 									library="themes/#{navigationHelper.theme}/images/lang"
-									name="flag_#{locale}.gif" />
-								<h:outputText value="#{msg[locale]}" />
+									name="flag_#{lang}.gif" />
+								<h:outputText value="#{msg[lang]}" />
 								<f:setPropertyActionListener
-									target="#{activeDocumentBean.currentRecordLocaleString}"
-									value="#{locale}" />
+									target="#{activeDocumentBean.selectedRecordLanguage}"
+									value="#{lang}" />
 							</h:commandLink></li>
 					</ui:repeat>
 				</div>

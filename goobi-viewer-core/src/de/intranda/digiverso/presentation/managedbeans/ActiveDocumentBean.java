@@ -124,9 +124,9 @@ public class ActiveDocumentBean implements Serializable {
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
     private String lastReceivedIdentifier;
     /** Available languages for this record. */
-    private List<String> recordLocales;
+    private List<String> recordLanguages;
     /** Currently selected language for multilingual records. */
-    private Locale currentRecordLocale;
+    private String selectedRecordLanguage;
 
     /** Empty constructor. */
     public ActiveDocumentBean() {
@@ -351,8 +351,8 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Metadata language versions
-            //        recordLocales = topDocument.getMetadataValues(SolrConstants.LANGUAGE);
-            recordLocales = Arrays.asList(new String[] { "en", "de" });
+            recordLanguages = viewManager.getTopDocument().getMetadataValues(SolrConstants.LANGUAGE);
+            //            recordLanguages = Arrays.asList(new String[] { "en", "de" });
 
             // Prepare a new bookshelf item
             if (bookshelfBean != null) {
@@ -471,7 +471,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return Metadata.filterMetadataByLanguage(titleBarMetadata, currentRecordLocale);
+        return Metadata.filterMetadataByLanguage(titleBarMetadata, selectedRecordLanguage);
     }
 
     /**
@@ -836,7 +836,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getTitleBarLabel() {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
         if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
-            String label = viewManager.getTopDocument().getLabel(currentRecordLocale);
+            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
             if (StringUtils.isNotEmpty(label)) {
                 return label;
             }
@@ -982,41 +982,39 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * @return the recordLocales
-     */
-    public List<String> getRecordLocales() {
-        return recordLocales;
-    }
-
-    /**
      * 
      * @return
      */
-    public boolean isHasLocales() {
-        return recordLocales != null && !recordLocales.isEmpty();
+    public boolean isHasLanguages() {
+        return recordLanguages != null && !recordLanguages.isEmpty();
     }
 
     /**
-     * @return the currentRecordLocale
+     * @return the recordLanguages
      */
-    public Locale getCurrentRecordLocale() {
-        return currentRecordLocale;
+    public List<String> getRecordLanguages() {
+        return recordLanguages;
     }
 
     /**
-     * @param currentRecordLocale the currentRecordLocale to set
+     * @param recordLanguages the recordLanguages to set
      */
-    public void setCurrentRecordLocale(Locale currentRecordLocale) {
-        this.currentRecordLocale = currentRecordLocale;
+    public void setRecordLanguages(List<String> recordLanguages) {
+        this.recordLanguages = recordLanguages;
     }
 
     /**
-     * 
-     * @param language
+     * @return the selectedRecordLanguage
      */
-    public void setCurrentRecordLocaleString(String language) {
-        logger.trace("setCurrentRecordLocaleString: {}", language);
-        currentRecordLocale = new Locale(language);
+    public String getSelectedRecordLanguage() {
+        return selectedRecordLanguage;
+    }
+
+    /**
+     * @param selectedRecordLanguage the selectedRecordLanguage to set
+     */
+    public void setSelectedRecordLanguage(String selectedRecordLanguage) {
+        this.selectedRecordLanguage = selectedRecordLanguage;
     }
 
     public boolean isAccessPermissionEpub() {
