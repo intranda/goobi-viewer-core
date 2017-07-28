@@ -17,8 +17,6 @@ package de.intranda.digiverso.presentation.model.calendar;
 
 import java.io.Serializable;
 
-import de.intranda.digiverso.presentation.model.search.AbstractCalendarItem;
-
 public class CalendarItemDay extends AbstractCalendarItem implements Serializable {
 
     private static final long serialVersionUID = 6482477938806267855L;
