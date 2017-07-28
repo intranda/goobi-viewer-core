@@ -19,8 +19,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.intranda.digiverso.presentation.model.search.ICalendarItem;
-
 public class CalendarRow implements Serializable {
 
     private static final long serialVersionUID = 1669202746505522856L;
