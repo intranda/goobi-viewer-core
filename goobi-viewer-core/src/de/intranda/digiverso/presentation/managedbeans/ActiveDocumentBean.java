@@ -352,7 +352,10 @@ public class ActiveDocumentBean implements Serializable {
 
             // Metadata language versions
             recordLanguages = viewManager.getTopDocument().getMetadataValues(SolrConstants.LANGUAGE);
-            //            recordLanguages = Arrays.asList(new String[] { "en", "de" });
+            // If the record has metadata language versions, pre-select the current locale as the record language
+            if (!recordLanguages.isEmpty()) {
+                selectedRecordLanguage = navigationHelper.getLocaleString();
+            }
 
             // Prepare a new bookshelf item
             if (bookshelfBean != null) {

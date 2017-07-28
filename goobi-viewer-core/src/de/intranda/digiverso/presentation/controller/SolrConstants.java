@@ -171,6 +171,7 @@ public class SolrConstants {
 
     public static final String GROUPID_ = "GROUPID_";
     public static final String GROUPORDER_ = "GROUPORDER_";
+    public static final String _LANG_ = "_LANG_";
     public static final String _NOESCAPE = "_NOESCAPE";
     public static final String _UNTOKENIZED = "_UNTOKENIZED";
     public static final String _DRILLDOWN_SUFFIX = "_DD";

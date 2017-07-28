@@ -13,19 +13,22 @@
 
 		<h:panelGroup rendered="#{activeDocumentBean.hasLanguages}">
 			<h:form id="changeRecordLocaleForm1" prependId="false">
-				<div class="search-standard__filter">
-					<ui:repeat var="lang" value="#{activeDocumentBean.recordLanguages}">
-						<li><h:commandLink actionListener="index"
-								styleClass="#{activeDocumentBean.selectedRecordLanguage == lang ? 'activeLang':''}">
-								<h:graphicImage
-									library="themes/#{navigationHelper.theme}/images/lang"
-									name="flag_#{lang}.gif" />
-								<h:outputText value="#{msg[lang]}" />
-								<f:setPropertyActionListener
-									target="#{activeDocumentBean.selectedRecordLanguage}"
-									value="#{lang}" />
-							</h:commandLink></li>
-					</ui:repeat>
+				<div class="view-image__info-text-language">
+					<ul class="list list--horizontal">
+						<ui:repeat var="lang"
+							value="#{activeDocumentBean.recordLanguages}">
+							<li
+								class="#{activeDocumentBean.selectedRecordLanguage == lang ? 'activeLang':''}">
+								<h:commandLink actionListener="index">
+									<h:outputText value="[#{msg[lang]}]" />
+									<f:setPropertyActionListener
+										target="#{activeDocumentBean.selectedRecordLanguage}"
+										value="#{lang}" />
+								</h:commandLink>
+							</li>
+						</ui:repeat>
+					</ul>
+
 				</div>
 			</h:form>
 		</h:panelGroup>

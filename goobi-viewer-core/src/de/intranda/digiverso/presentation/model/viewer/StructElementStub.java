@@ -421,6 +421,25 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
     }
 
     /**
+     * Returns the first meetadata value for the language speciic version of the given field name. If no value is found, the value of the generic
+     * version is returned.
+     * 
+     * @param fieldName Solr field name
+     * @param language ISO 639-1 language code
+     * @return
+     */
+    public String getMetadataValueForLanguage(String fieldName, String language) {
+        if (StringUtils.isNotEmpty(language)) {
+            String value = getMetadataValue(fieldName + SolrConstants._LANG_ + language.toUpperCase());
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return getMetadataValue(fieldName);
+    }
+
+    /**
      * Returns the first meetadata value for the given field name.
      *
      * @param fieldName Solr field name.
