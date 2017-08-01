@@ -106,29 +106,30 @@
 		    											    <dd>
 		    											         <ui:repeat value="#{metadata.values}" var="val">
 		    												         <span class="overview__metadata-value">
-			    												         <h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
-                                                                             <f:param value="#{val.paramLabels[0] != null ? val.getParamLabelWithColon(0) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(0)}" />
-                                                                             <f:param value="#{val.paramLabels[1] != null ? val.getParamLabelWithColon(1) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(1)}" />
-                                                                             <f:param value="#{val.paramLabels[2] != null ? val.getParamLabelWithColon(2) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(2)}" />
-                                                                             <f:param value="#{val.paramLabels[3] != null ? val.getParamLabelWithColon(3) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(3)}" />
-                                                                             <f:param value="#{val.paramLabels[4] != null ? val.getParamLabelWithColon(4) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(4)}" />
-                                                                             <f:param value="#{val.paramLabels[5] != null ? val.getParamLabelWithColon(5) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(5)}" />
-                                                                             <f:param value="#{val.paramLabels[6] != null ? val.getParamLabelWithColon(6) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(6)}" />
-                                                                             <f:param value="#{val.paramLabels[7] != null ? val.getParamLabelWithColon(7) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(7)}" />
-                                                                             <f:param value="#{val.paramLabels[8] != null ? val.getParamLabelWithColon(8) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(8)}" />
-                                                                             <f:param value="#{val.paramLabels[9] != null ? val.getParamLabelWithColon(9) : ''}" />
-                                                                             <f:param value="#{val.getComboValueShort(9)}" />
-			    												         </h:outputFormat>
-		    												         </span>
+		    												             <h:outputFormat
+																			value="#{msg[metadata.masterValue]}" escape="false">
+																			<f:param value="#{val.getParamLabelWithColon(0)}" />
+																			<f:param value="#{val.getComboValueShort(0)}" />
+																			<f:param value="#{val.getParamLabelWithColon(1)}" />
+																			<f:param value="#{val.getComboValueShort(1)}" />
+																			<f:param value="#{val.getParamLabelWithColon(2)}" />
+																			<f:param value="#{val.getComboValueShort(2)}" />
+																			<f:param value="#{val.getParamLabelWithColon(3)}" />
+																			<f:param value="#{val.getComboValueShort(3)}" />
+																			<f:param value="#{val.getParamLabelWithColon(4)}" />
+																			<f:param value="#{val.getComboValueShort(4)}" />
+																			<f:param value="#{val.getParamLabelWithColon(5)}" />
+																			<f:param value="#{val.getComboValueShort(5)}" />
+																			<f:param value="#{val.getParamLabelWithColon(6)}" />
+																			<f:param value="#{val.getComboValueShort(6)}" />
+																			<f:param value="#{val.getParamLabelWithColon(7)}" />
+																			<f:param value="#{val.getComboValueShort(7)}" />
+																			<f:param value="#{val.getParamLabelWithColon(8)}" />
+																			<f:param value="#{val.getComboValueShort(8)}" />
+																			<f:param value="#{val.getParamLabelWithColon(9)}" />
+																			<f:param value="#{val.getComboValueShort(9)}" />
+																		</h:outputFormat>
+																	</span>
 		    													
 		    													     <!-- DELETE -->
 		    													     <h:commandLink
