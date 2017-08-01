@@ -268,6 +268,26 @@ public class MetadataElement {
     }
 
     /**
+     * Returns the first instance of a Metadata object whose label matches the given field name.
+     * 
+     * @param name
+     * @return
+     */
+    public Metadata getMetadata(String name) {
+        if (StringUtils.isNotEmpty(name) && metadataList != null && !metadataList.isEmpty()) {
+            for (Metadata md : metadataList) {
+                logger.trace("Found field: {}", md.getLabel());
+                if (md.getLabel().equals(name)) {
+
+                    return md;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param metadataList the metadataList to set
      */
     public void setMetadataList(List<Metadata> metadataList) {

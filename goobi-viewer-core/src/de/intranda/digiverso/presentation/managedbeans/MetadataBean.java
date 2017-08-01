@@ -148,6 +148,14 @@ public class MetadataBean {
         return metadataElementList;
     }
 
+    public MetadataElement getTopMetadataElement() {
+        if (metadataElementList != null && !metadataElementList.isEmpty()) {
+            return metadataElementList.get(0);
+        }
+
+        return null;
+    }
+
     /**
      * Returns the last element in <code>metadataElementList</code>, which is the bottom element in the hierarchy. If the element contains no side bar
      * metadata, the next higher element is checked until an element with sidebar metadata is found. TODO for some reason this method is called 6-15

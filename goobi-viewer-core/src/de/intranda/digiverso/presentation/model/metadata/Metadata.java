@@ -313,7 +313,7 @@ public class Metadata implements Serializable {
             mdValue.getParamUrls().add(paramIndex, url);
             if (normDataUrl != null) {
                 mdValue.getNormDataUrls().putAll(normDataUrl);
-                logger.debug("added norm data url: " + normDataUrl.toString());
+                // logger.trace("added norm data url: {}", normDataUrl.toString());
             }
         }
     }
