@@ -55,30 +55,19 @@ public class Metadata implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
     /** Label from messages.properties. */
-    private String label = null;
-
+    private final String label;
     /** Value from messages.properties (with placeholders) */
-    private String masterValue = null;
-    private String valueLink = null;
+    private final String masterValue;
+    private final String valueLink = null;
     private int type = 0;
     private int number = -1;
-    private List<MetadataValue> values;
-    private List<MetadataParameter> params;
+    private final List<MetadataValue> values = new ArrayList<>();
+    private final List<MetadataParameter> params = new ArrayList<>();
     private boolean group = false;
-    private String language;
-
-    public Metadata(String label, List<MetadataValue> values, String masterValue) {
-        this.label = label;
-        this.masterValue = masterValue;
-        this.values = values;
-        // TODO Check field name language
-        language = "";
-    }
 
     public Metadata(String label, String masterValue, String paramValue) {
         this.label = label;
         this.masterValue = masterValue;
-        this.values = new ArrayList<>();
         values.add(new MetadataValue());
         values.get(0).getParamValues().add(paramValue);
     }
@@ -86,9 +75,7 @@ public class Metadata implements Serializable {
     public Metadata(String label, String masterValue, MetadataParameter param, String paramValue) {
         this.label = label;
         this.masterValue = masterValue;
-        this.params = new ArrayList<>();
         params.add(param);
-        this.values = new ArrayList<>();
         values.add(new MetadataValue());
         values.get(0).getParamValues().add(paramValue);
     }
@@ -97,7 +84,7 @@ public class Metadata implements Serializable {
         this.label = label;
         this.masterValue = masterValue;
         this.type = type;
-        this.params = params;
+        this.params.addAll(params);
         this.group = group;
     }
 
@@ -105,7 +92,7 @@ public class Metadata implements Serializable {
         this.label = label;
         this.masterValue = masterValue;
         this.type = type;
-        this.params = params;
+        this.params.addAll(params);
         this.group = group;
         this.number = number;
     }
@@ -169,13 +156,6 @@ public class Metadata implements Serializable {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
             // if (values != null && !values.isEmpty() && values.get(0) != null) {
@@ -187,22 +167,11 @@ public class Metadata implements Serializable {
         return masterValue;
     }
 
-    public void setMasterValue(String value) {
-        this.masterValue = value;
-    }
-
     /**
      * @return the valueLink
      */
     public String getValueLink() {
         return valueLink;
-    }
-
-    /**
-     * @param valueLink the valueLink to set
-     */
-    public void setValueLink(String valueLink) {
-        this.valueLink = valueLink;
     }
 
     /**
@@ -226,18 +195,8 @@ public class Metadata implements Serializable {
         return values;
     }
 
-    /**
-     * @param values the values to set
-     */
-    public void setValues(List<MetadataValue> values) {
-        this.values = values;
-    }
-
     public void setParamValue(int valueIndex, int paramIndex, String value, String label, String url, Map<String, String> normDataUrl,
             Locale locale) {
-        if (values == null) {
-            values = new ArrayList<>();
-        }
         if (value != null) {
             value = value.trim();
             if (params.get(paramIndex).getType() != null) {
@@ -323,13 +282,6 @@ public class Metadata implements Serializable {
      */
     public List<MetadataParameter> getParams() {
         return params;
-    }
-
-    /**
-     * @param params the params to set
-     */
-    public void setParams(List<MetadataParameter> params) {
-        this.params = params;
     }
 
     public boolean hasParam(String paramName) {

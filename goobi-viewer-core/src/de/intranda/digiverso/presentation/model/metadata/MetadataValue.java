@@ -36,12 +36,12 @@ public class MetadataValue implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MetadataValue.class);
 
-    private List<String> paramLabels = new ArrayList<>();
-    private List<String> paramValues = new ArrayList<>();
-    private List<String> paramPrefixes = new ArrayList<>();
-    private List<String> paramSuffixes = new ArrayList<>();
-    private List<String> paramUrls = new ArrayList<>();
-    private Map<String, String> normDataUrls = new HashMap<>();
+    private final List<String> paramLabels = new ArrayList<>();
+    private final List<String> paramValues = new ArrayList<>();
+    private final List<String> paramPrefixes = new ArrayList<>();
+    private final List<String> paramSuffixes = new ArrayList<>();
+    private final List<String> paramUrls = new ArrayList<>();
+    private final Map<String, String> normDataUrls = new HashMap<>();
 
     /**
      *
@@ -99,24 +99,10 @@ public class MetadataValue implements Serializable {
     }
 
     /**
-     * @param paramLabels the paramLabels to set
-     */
-    public void setParamLabels(List<String> paramLabels) {
-        this.paramLabels = paramLabels;
-    }
-
-    /**
      * @return the paramValues
      */
     public List<String> getParamValues() {
         return paramValues;
-    }
-
-    /**
-     * @param paramValues the paramValues to set
-     */
-    public void setParamValues(List<String> paramValues) {
-        this.paramValues = paramValues;
     }
 
     /**

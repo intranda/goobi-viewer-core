@@ -276,9 +276,8 @@ public class MetadataElement {
     public Metadata getMetadata(String name) {
         if (StringUtils.isNotEmpty(name) && metadataList != null && !metadataList.isEmpty()) {
             for (Metadata md : metadataList) {
-                logger.trace("Found field: {}", md.getLabel());
                 if (md.getLabel().equals(name)) {
-
+                    logger.trace("{}: {}", name, md.getValues().size());
                     return md;
                 }
             }
