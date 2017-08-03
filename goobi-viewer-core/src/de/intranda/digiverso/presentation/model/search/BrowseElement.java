@@ -124,11 +124,22 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private String sidebarNextUrl;
 
-    // Constructor for unit tests and special instances.
-    public BrowseElement(String label, String fulltext) {
+    /**
+     * Constructor for unit tests and special instances.
+     * 
+     * @param label
+     * @param fulltext
+     * @param useOverviewPage
+     * @should build overview page url correctly
+     */
+    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage) {
+        this.pi = pi;
+        this.imageNo = imageNo;
         this.label = label;
         this.fulltext = fulltext;
+        this.useOverviewPage = useOverviewPage;
         this.metadataList = new ArrayList<>();
+        this.url = generateUrl();
     }
 
     /**
@@ -144,7 +155,7 @@ public class BrowseElement implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
+    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
             Map<String, Set<String>> searchTerms) throws PresentationException, IndexUnreachableException, DAOException {
         this.metadataList = metadataList;
         this.fulltext = fulltext;
@@ -994,7 +1005,8 @@ public class BrowseElement implements Serializable {
                         originalFieldName).append(":\"").append(label).append("\"/1/-/-/");
             }
         } else {
-            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/');
+            //            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+            sb.append('/');
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
                     useOverviewPage, false);
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId

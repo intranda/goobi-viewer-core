@@ -39,8 +39,10 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Wrapper class for search hits. Contains the corresponding <code>BrowseElement</code>
@@ -94,7 +96,7 @@ public class SearchHit implements Comparable<SearchHit> {
     private final Map<String, Set<String>> searchTerms;
     /** Docstruct metadata that matches the search terms. */
     private final List<StringPair> foundMetadata = new ArrayList<>();
-    private String url;
+    private final String url;
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
@@ -106,14 +108,14 @@ public class SearchHit implements Comparable<SearchHit> {
     private int hitsPopulated = 0;
 
     /**
-     * Constructor.
+     * Private constructor. Use createSearchHit() from other classes.
      * 
      * @param type
      * @param browseElement
      * @param searchTerms
      * @param locale
      */
-    public SearchHit(HitType type, BrowseElement browseElement, Map<String, Set<String>> searchTerms, Locale locale) {
+    private SearchHit(HitType type, BrowseElement browseElement, Map<String, Set<String>> searchTerms, Locale locale) {
         this.type = type;
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
@@ -121,6 +123,56 @@ public class SearchHit implements Comparable<SearchHit> {
         if (searchTerms != null) {
             addLabelHighlighting();
         }
+        if (browseElement != null) {
+            this.url = browseElement.getUrl();
+        } else {
+            this.url = null;
+        }
+    }
+
+    /**
+     * 
+     * @param doc
+     * @param ownerDoc
+     * @param locale
+     * @param fulltext Optional fulltext (page docs only).
+     * @param searchTerms
+     * @param exportFields Optional fields for (Excel) export purposes.
+     * @param useThumbnail
+     * @param matchTermsToMetadataValues
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should add export fields correctly
+     */
+    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
+            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail) throws PresentationException,
+            IndexUnreachableException, DAOException {
+        String fulltextFragment = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
+                DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
+        StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
+        String docstructType = se.getDocStructType();
+        if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
+            docstructType = DocType.METADATA.name();
+        }
+        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
+        BrowseElement browseElement = new BrowseElement(se, metadataList, locale, fulltextFragment, useThumbnail, searchTerms);
+        // Add additional metadata fields that aren't configured for search hits but contain search term values
+        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        SearchHit hit = new SearchHit(HitType.getByName(se.getMetadataValue(SolrConstants.DOCTYPE)), browseElement, searchTerms, locale);
+        hit.populateFoundMetadata(doc);
+
+        // Export fields for Excel export
+        if (exportFields != null && !exportFields.isEmpty()) {
+            for (String field : exportFields) {
+                String value = se.getMetadataValue(field);
+                if (value != null) {
+                    hit.getExportMetadata().put(field, value);
+                }
+            }
+        }
+        return hit;
     }
 
     /**
@@ -181,17 +233,17 @@ public class SearchHit implements Comparable<SearchHit> {
                     }
                     if (descriptionText != null || publicationText != null) {
                         int count = 0;
-                        SearchHit overviewPageHit = new SearchHit(HitType.METADATA, new BrowseElement(Helper.getTranslation("overviewPage", locale),
-                                null), searchTerms, locale);
+                        SearchHit overviewPageHit = new SearchHit(HitType.METADATA, new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation(
+                                "overviewPage", locale), null, true), searchTerms, locale);
                         children.add(overviewPageHit);
                         if (descriptionText != null) {
-                            overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement("viewOverviewDescription",
-                                    descriptionText), searchTerms, locale));
+                            overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
+                                    "viewOverviewDescription", descriptionText, true), searchTerms, locale));
                             count++;
                         }
                         if (publicationText != null) {
-                            overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement("viewOverviewPublication_publication",
-                                    publicationText), searchTerms, locale));
+                            overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
+                                    "viewOverviewPublication_publication", publicationText, true), searchTerms, locale));
                             count++;
                         }
                         hitTypeCounts.put(HitType.OVERVIEWPAGE, count);
@@ -243,7 +295,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ownerHit == null) {
                             SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                             if (ownerDoc != null) {
-                                ownerHit = SearchHelper.createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false);
+                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false);
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
@@ -254,10 +306,8 @@ public class SearchHit implements Comparable<SearchHit> {
                             logger.error("No document found for IDDOC {}", ownerIddoc);
                             continue;
                         } {
-                        SearchHit childHit = SearchHelper.createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null,
-                                false);
+                        SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false);
                         ownerHit.getChildren().add(childHit);
-                        childHit.url = childHit.getBrowseElement().getUrl();
                         hitsPopulated++;
                     }
                         break;
@@ -265,11 +315,10 @@ public class SearchHit implements Comparable<SearchHit> {
                         // Docstruct hits are immediate children of the main hit
                         String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                         if (!ownerHits.containsKey(iddoc)) {
-                            SearchHit childHit = SearchHelper.createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false);
+                            SearchHit childHit = createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
-                            childHit.url = childHit.getBrowseElement().getUrl();
                             hitsPopulated++;
                         }
                         break;
@@ -476,13 +525,6 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public String getUrl() {
         return url;
-    }
-
-    /**
-     * @param url the url to set
-     */
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     /**
