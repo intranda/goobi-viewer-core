@@ -134,14 +134,14 @@
             						<div class="solr-query-collection__thumb">
             							<!-- IMAGE -->
                                         <div class="solr-query-collection__image">
-            								<h:outputLink value="#{hit.browseElement.url}" rendered="#{!hit.browseElement.anchor}">
+            								<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{!hit.browseElement.anchor}">
             									<h:graphicImage url="#{hit.browseElement.thumbnailUrl}" styleClass="img-responsive" title="#{hit.browseElement.label}" />
             								</h:outputLink>
             							</div>
             
             							<!-- TITLE -->
                                         <div class="solr-query-collection__title">
-                                            <h:outputLink value="#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
+                                            <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
             									#{msg[hit.browseElement.label]}
             								</h:outputLink>
                                         </div>

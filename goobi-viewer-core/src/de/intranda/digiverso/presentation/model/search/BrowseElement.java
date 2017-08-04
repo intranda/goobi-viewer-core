@@ -966,6 +966,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * Returns the search hint URL (without the application root!).
+     * 
      * @return the url
      */
     public String getUrl() {
