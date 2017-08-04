@@ -231,12 +231,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getIIPImageServer();
     }
 
-    public String getPtifFolder() {
-        return "/opt/digiverso/viewer/ptif/";
-        // TODO change it in production
-        // return DataManager.getInstance().getConfiguration().getPtifFolder();
-    }
-
     public boolean isShowSidebarEventMetadata() {
         return DataManager.getInstance().getConfiguration().isShowSidebarEventMetadata();
     }

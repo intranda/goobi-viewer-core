@@ -1424,7 +1424,7 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isSidebarPageLinkVisible() {
         return getLocalBoolean("sidebar.page.visible", true);
     }
-    
+
     /**
      * 
      * @return
@@ -2224,15 +2224,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getDocstructTargetPageType(String docstruct) {
         return getLocalString("viewer.docstructTargetPageTypes." + docstruct);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getPtifFolder() {
-        return getLocalString("ptifFolder");
     }
 
     /**

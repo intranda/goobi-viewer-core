@@ -628,15 +628,6 @@ public class NavigationHelper implements Serializable {
         String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
         logger.trace("Detected display mode: {}", imageDisplayType);
         if (StringUtils.isNotEmpty(imageDisplayType)) {
-            // the actual physical image exists in the tile format
-            if (imageDisplayType.equalsIgnoreCase("openlayersiipi") && BeanUtils.getActiveDocumentBean().getViewManager() != null && BeanUtils
-                    .getActiveDocumentBean().getViewManager().getCurrentPage() != null && BeanUtils.getActiveDocumentBean().getViewManager()
-                            .getCurrentPage().isTilesExist()) {
-                String path = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme()
-                        + "/urlMappings/viewImageFullscreenZoomify.xhtml";
-                logger.debug("Found tiles for the current image. Redirect to the Zoomify Fullscreen view: " + path);
-                return path;
-            }
             // MIX data exists
             if (imageDisplayType.equalsIgnoreCase("openlayersimage") && BeanUtils.getActiveDocumentBean().getViewManager() != null && BeanUtils
                     .getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
@@ -656,7 +647,6 @@ public class NavigationHelper implements Serializable {
 
         return "/viewImageFullscreen.xhtml";
     }
-    
 
     public String getCalendarUrl() {
         if (DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible()) {

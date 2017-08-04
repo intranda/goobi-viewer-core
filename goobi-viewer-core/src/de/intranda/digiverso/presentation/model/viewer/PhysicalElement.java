@@ -98,10 +98,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private final String physId;
     private final String filePath;
     private String fileName;
-    private String fileNameTiled0;
-    private String fileNameTiled90;
-    private String fileNameTiled180;
-    private String fileNameTiled270;
     private String fileIdRoot;
     private long fileSize = 0;
     /** Physical page number of this element in the list of all pages (this value is always 1 below the ORDER value in the METS file). */
@@ -331,7 +327,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getUrl(int width, int height, int rotate, boolean showWatermark, boolean fullscreen, List<String> highlightCoords,
-            String watermarkId) throws IndexUnreachableException, ConfigurationException {
+            String watermarkId) throws IndexUnreachableException {
         String iiifUrl = getModifiedIIIFFUrl(filePath, width, height);
         if (!iiifUrl.equals(filePath)) {
             return iiifUrl;
@@ -341,42 +337,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             fileName = determineFileName(filePath);
         }
 
-        boolean useTiles = (DataManager.getInstance().getConfiguration().useTiles() && this.isTilesExist());
-        if (fullscreen) {
-            useTiles = DataManager.getInstance().getConfiguration().useTilesFullscreen() && this.isTilesExist();
-        }
-
         String localFilename = fileName;
 
         switch (mimeType) {
             case MIME_TYPE_IMAGE: {
                 String actionString = "?action=image&sourcepath=";
-                //check if we display tiles
-                if (useTiles) {
-                    actionString = "?Zoomify=";
-                    if (isRotationTilesExist()) {
-                        switch (rotate) {
-                            case 0:
-                                localFilename = this.getFileNameTiled0();
-                                break;
-                            case 90:
-                                localFilename = this.getFileNameTiled90();
-                                break;
-                            case 180:
-                                localFilename = this.getFileNameTiled180();
-                                break;
-                            case 270:
-                                localFilename = this.getFileNameTiled270();
-                                break;
-                            default:
-                                localFilename = this.getFileNameTiled0();
-                        }
-                        //                localFilename = this.getFileNameBase() + "_" + rotate + "degree.tif";
-                    } else {
-                        localFilename = this.getFileNameTiled0();
-                    }
-                }
-
                 String url = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
                 if (StringUtils.isEmpty(url)) {
                     url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").toString();
@@ -391,45 +356,41 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                             : "").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append("/")
                             .append(DataManager.getInstance().getConfiguration().getMediaFolder()).append("/");
                 }
-                if (useTiles) {
-                    urlBuilder.append(pi).append("/").append(localFilename).append("/");
-                } else {
-                    urlBuilder.append(pi).append('/').append(localFilename);
+                urlBuilder.append(pi).append('/').append(localFilename);
 
-                    if (width > 0) {
-                        urlBuilder.append("&width=").append(width);
-                    }
-
-                    if (height > 0) {
-                        urlBuilder.append("&height=").append(height);
-                    }
-
-                    urlBuilder.append("&rotate=").append(rotate).append("&resolution=72").append(DataManager.getInstance().getConfiguration()
-                            .isForceJpegConversion() ? "&format=jpg" : "");
-
-                    if (watermarkTextConfiguration != null && watermarkTextConfiguration.size() > 0 && showWatermark) {
-                        // Add watermark text as configured
-                        urlBuilder.append(getWatermarkText());
-
-                    } else {
-                        urlBuilder.append("&ignoreWatermark");
-                    }
-                    //                urlBuilder.append("&ignoreCache=true");
-
-                    if (highlightCoords != null && !highlightCoords.isEmpty()) {
-                        urlBuilder.append("&highlight=");
-                        for (String s : highlightCoords) {
-                            urlBuilder.append(s).append('$');
-                        }
-                        urlBuilder.deleteCharAt(urlBuilder.length() - 1);
-                    }
-
-                    if (watermarkId != null) {
-                        urlBuilder.append("&watermarkId=").append(watermarkId);
-                    }
-                    //                urlBuilder.append("&ignoreCache=true");
-
+                if (width > 0) {
+                    urlBuilder.append("&width=").append(width);
                 }
+
+                if (height > 0) {
+                    urlBuilder.append("&height=").append(height);
+                }
+
+                urlBuilder.append("&rotate=").append(rotate).append("&resolution=72").append(DataManager.getInstance().getConfiguration()
+                        .isForceJpegConversion() ? "&format=jpg" : "");
+
+                if (watermarkTextConfiguration != null && watermarkTextConfiguration.size() > 0 && showWatermark) {
+                    // Add watermark text as configured
+                    urlBuilder.append(getWatermarkText());
+
+                } else {
+                    urlBuilder.append("&ignoreWatermark");
+                }
+                //                urlBuilder.append("&ignoreCache=true");
+
+                if (highlightCoords != null && !highlightCoords.isEmpty()) {
+                    urlBuilder.append("&highlight=");
+                    for (String s : highlightCoords) {
+                        urlBuilder.append(s).append('$');
+                    }
+                    urlBuilder.deleteCharAt(urlBuilder.length() - 1);
+                }
+
+                if (watermarkId != null) {
+                    urlBuilder.append("&watermarkId=").append(watermarkId);
+                }
+                //                urlBuilder.append("&ignoreCache=true");
+
                 logger.trace("Image URL: {}", urlBuilder.toString());
                 return urlBuilder.toString();
             }
@@ -674,62 +635,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * @return the fileNameTiled0
-     */
-    public String getFileNameTiled0() {
-        return fileNameTiled0;
-    }
-
-    /**
-     * @param fileNameTiled0 the fileNameTiled0 to set
-     */
-    public void setFileNameTiled0(String fileNameTiled0) {
-        this.fileNameTiled0 = fileNameTiled0;
-    }
-
-    /**
-     * @return the fileNameTiled90
-     */
-    public String getFileNameTiled90() {
-        return fileNameTiled90;
-    }
-
-    /**
-     * @param fileNameTiled90 the fileNameTiled90 to set
-     */
-    public void setFileNameTiled90(String fileNameTiled90) {
-        this.fileNameTiled90 = fileNameTiled90;
-    }
-
-    /**
-     * @return the fileNameTiled180
-     */
-    public String getFileNameTiled180() {
-        return fileNameTiled180;
-    }
-
-    /**
-     * @param fileNameTiled180 the fileNameTiled180 to set
-     */
-    public void setFileNameTiled180(String fileNameTiled180) {
-        this.fileNameTiled180 = fileNameTiled180;
-    }
-
-    /**
-     * @return the fileNameTiled270
-     */
-    public String getFileNameTiled270() {
-        return fileNameTiled270;
-    }
-
-    /**
-     * @param fileNameTiled270 the fileNameTiled270 to set
-     */
-    public void setFileNameTiled270(String fileNameTiled270) {
-        this.fileNameTiled270 = fileNameTiled270;
-    }
-
-    /**
      * @return the fileIdRoot
      */
     public String getFileIdRoot() {
@@ -927,10 +832,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     public String getImageToPdfUrl() {
         StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-        sb.append("?action=pdf")
-        .append("&images=").append(pi).append("/").append(fileName)
-        .append("&metsFile=").append(pi).append(".xml")
-        .append("&targetFileName=").append(pi).append("_").append(order).append(".pdf");
+        sb.append("?action=pdf").append("&images=").append(pi).append("/").append(fileName).append("&metsFile=").append(pi).append(".xml").append(
+                "&targetFileName=").append(pi).append("_").append(order).append(".pdf");
         return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
                 + "&targetFileName=" + pi + "_" + order + ".pdf";
     }
@@ -1175,14 +1078,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         return "viewImage";
-    }
-
-    public boolean isTilesExist() {
-        return fileNameTiled0 != null;
-    }
-
-    public boolean isRotationTilesExist() {
-        return fileNameTiled90 != null && fileNameTiled180 != null && fileNameTiled270 != null;
     }
 
     /**

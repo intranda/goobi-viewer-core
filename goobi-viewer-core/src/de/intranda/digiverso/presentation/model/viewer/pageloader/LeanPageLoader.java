@@ -149,8 +149,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
         try {
             String pi = topElement.getPi();
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE)
-                    .append(':').append(DocType.PAGE);
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
+                    ':').append(DocType.PAGE);
             SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections
                     .singletonList(new StringPair(SolrConstants.ORDER, "asc")), Arrays.asList(SELECT_ITEM_FIELDS));
             if (result == null || result.isEmpty()) {
@@ -188,8 +188,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
     protected final void setFirstAndLastPageOrder() throws IndexUnreachableException {
         try {
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE)
-                    .append(':').append(DocType.PAGE);
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
+                    ':').append(DocType.PAGE);
             SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, Collections.singletonList(
                     new StringPair(SolrConstants.ORDER, "asc")), Collections.singletonList(SolrConstants.ORDER));
             if (!result.isEmpty()) {
@@ -235,8 +235,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
         }
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
-                ':').append(DocType.PAGE);
+        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
+                .append(DocType.PAGE);
         if (pageNumber >= 0) {
             sbQuery.append(" AND ").append(SolrConstants.ORDER).append(':').append(pageNumber);
         }
@@ -359,20 +359,6 @@ public class LeanPageLoader implements IPageLoader, Serializable {
             // METS file ID root
             if (doc.getFieldValue(SolrConstants.FILEIDROOT) != null) {
                 pe.setFileIdRoot((String) doc.getFieldValue(SolrConstants.FILEIDROOT));
-            }
-
-            // Pyramid TIFF file names
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_0) != null) {
-                pe.setFileNameTiled0((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_0));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_90) != null) {
-                pe.setFileNameTiled90((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_90));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_180) != null) {
-                pe.setFileNameTiled180((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_180));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_270) != null) {
-                pe.setFileNameTiled270((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_270));
             }
 
             // File size

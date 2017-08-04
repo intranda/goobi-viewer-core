@@ -47,6 +47,7 @@ public enum PageType {
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sites("sites"),
+    // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),

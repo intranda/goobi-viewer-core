@@ -321,20 +321,6 @@ public class EagerPageLoader implements IPageLoader, Serializable {
                 pe.setFileIdRoot((String) doc.getFieldValue(SolrConstants.FILEIDROOT));
             }
 
-            // Pyramid TIFF file names
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_0) != null) {
-                pe.setFileNameTiled0((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_0));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_90) != null) {
-                pe.setFileNameTiled90((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_90));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_180) != null) {
-                pe.setFileNameTiled180((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_180));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_270) != null) {
-                pe.setFileNameTiled270((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_270));
-            }
-
             // File size
             if (doc.getFieldValue("MDNUM_FILESIZE") != null) {
                 pe.setFileSize((long) doc.getFieldValue("MDNUM_FILESIZE"));
