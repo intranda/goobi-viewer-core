@@ -50,7 +50,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
-        BrowseElement be = new BrowseElement("label", null);
+        BrowseElement be = new BrowseElement(null, 1, "label", null, false);
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR"));
@@ -86,7 +86,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromDefaultTerms() throws Exception {
-        BrowseElement be = new BrowseElement("FROM FOO TO BAR", null);
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false);
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label

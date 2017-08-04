@@ -21,9 +21,6 @@
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
 	<mediaFolder>mediaFolder_value</mediaFolder>
-	<!-- ptifFolder: contains pyramidal tiffs that should be displayed in the 
-		tiles fullscreen view -->
-	<ptifFolder>ptifFolder_value</ptifFolder>
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the intranda viewer (see <content> also) -->
 	<origContentFolder>origContentFolder_value</origContentFolder>

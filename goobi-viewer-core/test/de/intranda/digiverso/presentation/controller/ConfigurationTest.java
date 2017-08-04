@@ -507,15 +507,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getPtifFolder()
-     * @verifies return correct value
-     */
-    @Test
-    public void getPtifFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("ptifFolder_value", DataManager.getInstance().getConfiguration().getPtifFolder());
-    }
-
-    /**
      * @see Configuration#getRssCopyrightText()
      * @verifies return correct value
      */
@@ -2304,7 +2295,7 @@ public class ConfigurationTest {
     public void testSidebarTocVisibleIfEmpty() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
     }
-    
+
     @Test
     public void testIsDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageModeEnabled());

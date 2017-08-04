@@ -18,8 +18,6 @@
     <indexedLidoFolder>indexed_lido</indexedLidoFolder>
     <!-- mediaFolder: contains media files that are displayed in the intranda viewer (images, audio, video) -->
     <mediaFolder>media</mediaFolder>
-    <!-- ptifFolder: contains pyramidal tiffs that should be displayed in the tiles fullscreen view -->
-    <ptifFolder>ptif</ptifFolder>
     <!-- sourceContentFolder: contains born-digital material that was uploaded in the intranda viewer (see <content> also) -->
     <origContentFolder>source</origContentFolder>
     <!-- overviewFolder: contains the configuration file for overview pages -->

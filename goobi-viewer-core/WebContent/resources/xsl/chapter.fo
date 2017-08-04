@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:fn="http://www.w3.org/2005/xpath-functions"
+	xmlns:cs="http://www.goobi.org/contentServer" xmlns:goobi="http://www.goobi.org/logfile">
+	<fo:layout-master-set>
+		<fo:simple-page-master master-name="A4-portrait"
+			page-width="21cm" page-height="29.7cm" margin-left="1cm"
+			margin-top="1cm" margin-right="1cm" margin-bottom="0cm">
+			<fo:region-body />
+			<fo:region-before extent="3cm" region-name="Header" />
+			<fo:region-after extent="3cm" region-name="Footer" />
+		</fo:simple-page-master>
+	</fo:layout-master-set>
+	<fo:page-sequence master-reference="A4-portrait">
+		<fo:static-content flow-name="Header">
+			<fo:block >
+				<fo:table>
+					<fo:table-column column-number="1" column-width="50%" />
+					<fo:table-column column-number="2" column-width="50%" />
+					<fo:table-body>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block text-align="left">
+									<fo:external-graphic content-height="1cm"
+										src="/opt/digiverso/git/intrandaContentServer/intrandaContentServer/WebContent/images/watermark/intranda_logo.png" />
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block text-align="right">
+									<fo:external-graphic content-height="1cm"
+										src="/opt/digiverso/git/intrandaContentServer/intrandaContentServer/WebContent/images/watermark/book.png" />
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</fo:table-body>
+				</fo:table>
+			</fo:block>
+		</fo:static-content>
+		<fo:static-content flow-name="Footer">
+		<fo:block></fo:block>
+			<!-- <fo:block
+				background-color="#436b9a">
+				<fo:table>
+					<fo:table-column column-number="1" column-width="50%" />
+					<fo:table-column column-number="2" column-width="50%" />
+					<fo:table-body>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block text-align="left" margin-top="3px"
+									margin-left="10px">
+									<fo:external-graphic content-height="2cm"
+										src="/opt/digiverso/git/intrandaContentServer/intrandaContentServer/WebContent/images/watermark/intranda_gray_bright.png" />
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block margin-top="3px" margin-right="8px"
+									text-align="right">
+									<fo:external-graphic content-height="2cm"
+										src="/opt/digiverso/git/intrandaContentServer/intrandaContentServer/WebContent/images/watermark/book.png" />
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</fo:table-body>
+				</fo:table>
+			</fo:block> -->
+		</fo:static-content>
+		<fo:flow flow-name="xsl-region-body">
+			<fo:block text-align="center" font-family="sans-serif"
+				font-weight="bold" font-size="24pt" margin-top="1.5cm">
+				<cs:meta from="DIV">@LABEL
+				<cs:alt from="DIV">@TYPE</cs:alt>
+				</cs:meta>
+			</fo:block>
+
+			<fo:block border-top-width="2pt" border-top-style="solid"
+				border-top-color="black" margin-top="10pt" margin-bottom="10pt" />
+
+			<fo:block>
+				<cs:block>
+
+					<fo:block font-size="14pt" margin-top="10pt" line-height="18pt">
+					<fo:table>
+						<fo:table-column column-width="6cm" />
+						<fo:table-column column-width="13cm" />
+							<fo:table-body>
+								<fo:table-row>
+									<fo:table-cell>
+										<fo:block>
+											Seiten:
+										</fo:block>
+									</fo:table-cell>
+									<fo:table-cell>
+										<fo:block font-weight="bold">
+											<cs:meta from="DIV_START_PAGE">@ORDER</cs:meta>
+											(
+											<cs:meta from="DIV_START_PAGE">@ORDERLABEL</cs:meta>
+											) -
+											<cs:meta from="DIV_END_PAGE">@ORDER</cs:meta>
+											(
+											<cs:meta from="DIV_END_PAGE">@ORDERLABEL</cs:meta>
+											)
+										</fo:block>
+									</fo:table-cell>
+								</fo:table-row>
+								<cs:block>
+									<fo:table-row>
+										<fo:table-cell>
+											<fo:block>
+												Autor:
+											</fo:block>
+										</fo:table-cell>
+										<fo:table-cell>
+											<fo:block font-weight="bold">
+												<cs:meta from="DIV">mods:mods/mods:name[mods:role/mods:roleTerm='aut']/mods:displayForm
+												</cs:meta>
+											</fo:block>
+										</fo:table-cell>
+									</fo:table-row>
+								</cs:block>
+								<cs:block>
+									<fo:table-row>
+										<fo:table-cell>
+											<fo:block>
+												URN:
+											</fo:block>
+										</fo:table-cell>
+										<fo:table-cell>
+											<fo:block font-weight="bold">
+												<cs:meta from="DIV">@CONTENTIDS</cs:meta>
+											</fo:block>
+										</fo:table-cell>
+									</fo:table-row>
+								</cs:block>
+							</fo:table-body>
+						</fo:table>
+
+						<fo:block border-top-width="2pt" border-top-style="solid"
+							border-top-color="black" margin-top="10pt" margin-bottom="10pt" />
+					</fo:block>
+				</cs:block>
+			</fo:block>
+
+			<fo:block margin-top="20px" text-align="center">
+				<cs:graphic content-height="20cm" from="DIV_START_FILE"
+					fileGroup="PRESENTATION">http://localhost:8081/ics/iiif/image/{-2}/{-1}/full/900,/0/default.jpg</cs:graphic>
+			</fo:block>
+			<fo:block text-align="center" font-size="10pt">
+				<cs:meta from="DIV_START_PAGE">@CONTENTIDS</cs:meta>
+			</fo:block>
+
+
+
+		</fo:flow>
+	</fo:page-sequence>
+</fo:root>

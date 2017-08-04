@@ -1960,6 +1960,7 @@ public class ViewManager implements Serializable {
             return false;
         }
         List<TranskribusJob> jobs = DataManager.getInstance().getDao().getTranskribusJobs(pi, session.getUserId(), null);
+        
         return jobs != null && !jobs.isEmpty();
     }
 
@@ -1968,7 +1969,8 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return false;
         }
-        return DataManager.getInstance().getConfiguration().useTiles() && currentPage.isTilesExist();
+        
+        return DataManager.getInstance().getConfiguration().useTiles();
     }
 
     public boolean useTilesFullscreen() throws IndexUnreachableException, DAOException, ConfigurationException {
@@ -1977,7 +1979,7 @@ public class ViewManager implements Serializable {
             return false;
         }
 
-        return DataManager.getInstance().getConfiguration().useTilesFullscreen() && currentPage.isTilesExist();
+        return DataManager.getInstance().getConfiguration().useTilesFullscreen();
     }
 
     /**

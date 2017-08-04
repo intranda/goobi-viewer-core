@@ -322,12 +322,12 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     @Deprecated
     public String getCollectionViewUri() {
-        String baseUri = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse;
+        String baseUri = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
         return baseUri + "/" + PageType.expandCollection + "/" + SolrConstants.DC + ':' + getCollectionName() + "/";
     }
 
     public String getCollectionSearchUri() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse + "/" + SolrConstants.DC + ':' + getCollectionName()
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + SolrConstants.DC + ':' + getCollectionName()
                 + "/-/1/-/-/";
     }
 

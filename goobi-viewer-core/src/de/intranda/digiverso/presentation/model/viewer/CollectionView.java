@@ -600,17 +600,17 @@ public class CollectionView {
             return collection.getInfo().getLinkURI().toString();
         } else if (collection.isOpensInNewWindow()) {
             String baseUri = BeanUtils.getRequest().getRequestURL().toString();
-            int cutoffIndex = baseUri.indexOf(PageType.expandCollection.name());
+            int cutoffIndex = baseUri.indexOf(PageType.expandCollection.getName());
             if (cutoffIndex > 0) {
                 baseUri = baseUri.substring(0, cutoffIndex - 1);
             }
-            return baseUri + "/" + PageType.expandCollection + "/" + collection.getName() + "/";
+            return baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
         } else if (collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field + "/"
                     + collection.getLuceneName() + "/";
         } else {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse + "/" + field + ':' + collection.getLuceneName()
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + field + ':' + collection.getLuceneName()
                     + "/-/1/" + collection.getSortField() + "/-/";
         }
     }

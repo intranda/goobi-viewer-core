@@ -65,7 +65,6 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.search.SearchHit.HitType;
 import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.user.IpRange;
@@ -75,7 +74,6 @@ import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
-import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Search utility class. Static methods only.
@@ -162,7 +160,7 @@ public final class SearchHelper {
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit = createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true);
+            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true);
             ret.add(hit);
         }
 
@@ -201,7 +199,7 @@ public final class SearchHelper {
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
-            SearchHit hit = createSearchHit(doc, null, locale, null, searchTerms, exportFields, true);
+            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true);
             ret.add(hit);
             hit.addOverviewPageChild();
 
@@ -219,51 +217,6 @@ public final class SearchHelper {
         }
 
         return ret;
-    }
-
-    /**
-     * 
-     * @param doc
-     * @param ownerDoc
-     * @param locale
-     * @param fulltext Optional fulltext (page docs only).
-     * @param searchTerms
-     * @param exportFields Optional fields for (Excel) export purposes.
-     * @param useThumbnail
-     * @param matchTermsToMetadataValues
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @should add export fields correctly
-     */
-    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail) throws PresentationException,
-            IndexUnreachableException, DAOException {
-        String fulltextFragment = fulltext == null ? null : truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext, DataManager
-                .getInstance().getConfiguration().getFulltextFragmentLength());
-        StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
-        String docstructType = se.getDocStructType();
-        if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
-            docstructType = DocType.METADATA.name();
-        }
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
-        BrowseElement browseElement = new BrowseElement(se, metadataList, locale, fulltextFragment, useThumbnail, searchTerms);
-        // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
-        SearchHit hit = new SearchHit(HitType.getByName(se.getMetadataValue(SolrConstants.DOCTYPE)), browseElement, searchTerms, locale);
-        hit.populateFoundMetadata(doc);
-
-        // Export fields for Excel export
-        if (exportFields != null && !exportFields.isEmpty()) {
-            for (String field : exportFields) {
-                String value = se.getMetadataValue(field);
-                if (value != null) {
-                    hit.getExportMetadata().put(field, value);
-                }
-            }
-        }
-        return hit;
     }
 
     /**

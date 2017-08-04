@@ -4478,7 +4478,7 @@
         hitSetTitle = $( '<div class="search-list__struct-title" />' );
         hitSetTitleH5 = $( '<h5 />' );
         hitSetTitleLink = $( '<a />' );
-        hitSetTitleLink.attr( 'href', _defaults.contextPath + data.url );
+        hitSetTitleLink.attr( 'href', _defaults.contextPath + '/' + data.url );
         hitSetTitleLink.append( data.labelShort );
         hitSetTitleH5.append( hitSetTitleLink );
         hitSetTitle.append( hitSetTitleH5 );
@@ -4571,7 +4571,7 @@
         }
         hitSetChildrenDd = $( '<dd />' );
         hitSetChildrenLink = $( '<a />' );
-        hitSetChildrenLink.attr( 'href', _defaults.contextPath + data.url );
+        hitSetChildrenLink.attr( 'href', _defaults.contextPath + '/' + data.url );
         switch ( type ) {
             case 'PAGE':
                 hitSetChildrenLink.append( data.fulltextForHtml );

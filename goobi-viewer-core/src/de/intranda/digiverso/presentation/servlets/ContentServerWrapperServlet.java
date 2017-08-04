@@ -102,8 +102,6 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
         String dataRepository = null;
         String mediaFilePath = null;
         String contentFileName = null;
-        String zoomifyPath = "";
-        String zoomifyUrlParam = null;
 
         int imageWidth = 600;
         boolean access = true;
@@ -165,49 +163,6 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                         case "targetFileName":
                             // pdfFileName = values[0];
                             break;
-                        case "Zoomify":
-                            // http://viewertest.fritz.box/mvpOpenLayers/content?Zoomify=/opt/digiverso/viewer/ptif/PPN407/00000001_0.tif/TileGroup0/1-1-0.jpg
-                            action = "zoomify";
-                            zoomifyUrlParam = values[0];
-                            String ptifFolder = DataManager.getInstance().getConfiguration().getPtifFolder();
-                            if (ptifFolder != null) {
-                                // delete the last /
-                                int endIndex = ptifFolder.lastIndexOf('/');
-                                if (endIndex > 0) {
-                                    ptifFolder = ptifFolder.substring(0, endIndex);
-                                }
-                            }
-                            zoomifyPath = zoomifyUrlParam.replaceAll(ptifFolder + "/", "");
-                            String[] tmp = zoomifyPath.split("/");
-                            contentFileName = tmp[1];
-                            contentFileName = contentFileName.replace("_0degree", "");
-                            contentFileName = contentFileName.replace("_90degree", "");
-                            contentFileName = contentFileName.replace("_180degree", "");
-                            contentFileName = contentFileName.replace("_270degree", "");
-                            pi = tmp[0];
-
-                            zoomifyUrlParam.split("/");
-                            // tileGroup = tmpTileGroup[tmpTileGroup.length - 1];
-                            logger.debug("Found: {} PPN in the Zoomify url parameter.", pi);
-                            try {
-                                dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-                            } catch (PresentationException e) {
-                                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                                return;
-                            } catch (IndexUnreachableException e) {
-                                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                                return;
-                            }
-                            if (StringUtils.isNotEmpty(dataRepository)) {
-                                zoomifyUrlParam = new StringBuilder(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(
-                                        dataRepository).append('/').append(zoomifyUrlParam).toString();
-                            } else {
-                                zoomifyUrlParam = new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager
-                                        .getInstance().getConfiguration().getPtifFolder()).append('/').append(zoomifyUrlParam).toString();
-                            }
-                            break;
                         default:
                             urlArgs.append('&').append(s).append('=').append(values[0]);
                     }
@@ -241,8 +196,8 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 if ("image".equals(action) && pi != null) {
                     // Search for the real file name in Lucene
                     String watermarkIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-                    String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(
-                            SolrConstants.FILENAME).append(':').append(imageFileNameSplit[0]).append('*').toString();
+                    String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.FILENAME)
+                            .append(':').append(imageFileNameSplit[0]).append('*').toString();
                     String[] fieldNameFilter = { SolrConstants.FILENAME, SolrConstants.IMAGEURN, watermarkIdField };
                     SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, Arrays.asList(
                             fieldNameFilter));
@@ -576,10 +531,9 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
         if (pi == null) {
             throw new IllegalArgumentException("pi may not be null");
         }
-        
+
         switch (action) {
             case "image":
-            case "zoomify":
             case "application":
                 switch (FilenameUtils.getExtension(contentFileName).toLowerCase()) {
                     // This check is needed so that the "application" action cannot be abused to download images w/o the proper permission

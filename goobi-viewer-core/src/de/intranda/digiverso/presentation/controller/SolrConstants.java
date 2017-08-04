@@ -115,10 +115,6 @@ public class SolrConstants {
     public static final String FILENAME_MPEG3 = "FILENAME_MPEG3";
     public static final String FILENAME_MP4 = "FILENAME_MP4";
     public static final String FILENAME_OGG = "FILENAME_OGG";
-    public static final String FILENAME_TILED_0 = "FILENAME_TILED_0";
-    public static final String FILENAME_TILED_90 = "FILENAME_TILED_90";
-    public static final String FILENAME_TILED_180 = "FILENAME_TILED_180";
-    public static final String FILENAME_TILED_270 = "FILENAME_TILED_270";
     public static final String FILENAME_WEBM = "FILENAME_WEBM";
     public static final String FULLTEXT = "FULLTEXT";
     public static final String FULLTEXTAVAILABLE = "FULLTEXTAVAILABLE";
