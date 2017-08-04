@@ -519,7 +519,7 @@ public class BrowseElement implements Serializable {
             useOverviewPage = true;
         }
 
-        url = generateUrl();
+        this.url = generateUrl();
         sidebarPrevUrl = generateSidebarUrl("prevHit");
         sidebarNextUrl = generateSidebarUrl("nextHit");
 
@@ -1006,13 +1006,14 @@ public class BrowseElement implements Serializable {
             }
         } else {
             //            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            sb.append('/');
+            //            sb.append('/');
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
                     useOverviewPage, false);
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId
                     : '-').append('/');
         }
 
+        // logger.trace("generateUrl: {}", sb.toString());
         return sb.toString();
     }
 

@@ -65,7 +65,6 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.search.SearchHit.HitType;
 import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.user.IpRange;
@@ -75,7 +74,6 @@ import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
-import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Search utility class. Static methods only.
