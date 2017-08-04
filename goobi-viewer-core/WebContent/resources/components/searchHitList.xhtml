@@ -94,12 +94,12 @@
 									<!-- THUMBNAIL -->
 									<figure class="search-list__hit-thumbnail">
 										<!-- SINGLEVOLUME -->
-										<h:outputLink value="#{hit.browseElement.url}" rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
+										<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
 											<img src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" />
 										</h:outputLink>
 
 										<!-- MULTIVOLUME -->
-										<h:outputLink value="#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
+										<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
 											<h:graphicImage url="#{hit.browseElement.thumbnailUrl}" title="#{hit.browseElement.label}" styleClass="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" />
 											<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">
 												<div class="stacked-thumbnail-before"></div>
