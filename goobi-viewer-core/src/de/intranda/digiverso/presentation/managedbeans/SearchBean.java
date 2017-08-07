@@ -904,7 +904,7 @@ public class SearchBean implements Serializable {
                                 searchTerms.put(SolrConstants.FULLTEXT, terms);
                             }
                             if (currentSearchFilter.getField().equals(SolrConstants.OVERVIEWPAGE)) {
-                                sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR");
+                                sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(\"").append(phrase).append("\")");
                             } else {
                                 if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
@@ -980,8 +980,7 @@ public class SearchBean implements Serializable {
                 if (sbInner.length() > 0) {
                     StringBuilder sbOuter = new StringBuilder();
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                        // No filters defined or ALL: use DEFAULT + FULLTEXT +
-                        // UGCTERMS
+                        // No filters defined or ALL
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                             sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString());
                             sbOuter.append(") OR ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString());
@@ -1003,6 +1002,14 @@ public class SearchBean implements Serializable {
                                     break;
                                 case SolrConstants.FULLTEXT:
                                     sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                                case SolrConstants.OVERVIEWPAGE:
+                                    if (currentSearchFilter.getField().equals(SolrConstants.OVERVIEWPAGE)) {
+                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString()).append(
+                                                ") OR ");
+                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(").append(sbInner.toString()).append(
+                                                ')');
+                                    }
                                     break;
                                 default:
                                     sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
