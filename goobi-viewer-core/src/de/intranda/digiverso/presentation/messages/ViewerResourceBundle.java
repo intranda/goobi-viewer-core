@@ -38,14 +38,43 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
 
-    private static ResourceBundle bundle = null;
-    private static ResourceBundle localBundle = null;
+    /** Viewer-supplied resource bundle for the default language (as set in faces-properties.xml). */
+    private static ResourceBundle defaultLocaleDefaultBundle = null;
+    /** Viewer-supplied resource bundle for the current language. */
+    private static ResourceBundle currentLocaleDefaultBundle = null;
+    /** Local resource bundle for the default language (as set in faces-properties.xml). */
+    protected static ResourceBundle defaultLocaleLocalBundle = null;
+    /** Local resource bundle for the current language. */
+    protected static ResourceBundle currentLocaleLocalBundle = null;
 
     /**
+     * Loads default resource bundles if not yet loaded.
+     */
+    private static synchronized void checkAndLoadDefaultResourceBundles() {
+        if (defaultLocaleDefaultBundle != null && defaultLocaleLocalBundle != null) {
+            return;
+        }
+        Locale locale;
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+            locale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+        } else {
+            locale = Locale.ENGLISH;
+        }
+        if (defaultLocaleDefaultBundle == null) {
+            defaultLocaleDefaultBundle = ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale);
+        }
+        if (defaultLocaleLocalBundle == null) {
+            defaultLocaleLocalBundle = loadLocalResourceBundle(locale);
+        }
+
+    }
+
+    /**
+     * Loads resource bundles for the current locale and reloads them if the locale has since changed.
      * 
      * @param inLocale
      */
-    private static synchronized void loadResourceBundle(Locale inLocale) {
+    private static synchronized void checkAndLoadResourceBundles(Locale inLocale) {
         Locale locale;
         if (inLocale != null) {
             locale = inLocale;
@@ -54,12 +83,14 @@ public class ViewerResourceBundle extends ResourceBundle {
         } else {
             locale = Locale.ENGLISH;
         }
-        if (bundle == null || !bundle.getLocale().equals(locale)) {
-            bundle = ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale);
+        // Reload default bundle if the locale is different
+        if (currentLocaleDefaultBundle == null || !currentLocaleDefaultBundle.getLocale().equals(locale)) {
+            currentLocaleDefaultBundle = ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale);
         }
-        if (localBundle == null || !localBundle.getLocale().equals(locale)) {
+        // Reload local bundle if the locale is different
+        if (currentLocaleLocalBundle == null || !currentLocaleLocalBundle.getLocale().equals(locale)) {
             logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
-            localBundle = loadLocalResourceBundle(locale);
+            currentLocaleLocalBundle = loadLocalResourceBundle(locale);
         }
     }
 
@@ -68,7 +99,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param locale
      * @return
      */
-    private static ResourceBundle loadLocalResourceBundle(Locale locale) {
+    private static ResourceBundle loadLocalResourceBundle(final Locale locale) {
         File file = new File(DataManager.getInstance().getConfiguration().getLocalRessourceBundleFile());
         if (file.exists()) {
             try {
@@ -89,7 +120,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * This is the method that is called for HTML translations.
      */
     @Override
-    protected Object handleGetObject(String key) {
+    protected Object handleGetObject(final String key) {
         return getTranslation(key, FacesContext.getCurrentInstance().getViewRoot().getLocale());
     }
 
@@ -99,10 +130,19 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param locale
      * @return
      */
-    public static String getTranslation(String text, Locale locale) {
-        //        logger.trace("Translation for: {}", text);
-        loadResourceBundle(locale);
-        return getTranslation(text, bundle, localBundle);
+    public static String getTranslation(final String key, final Locale locale) {
+        //        logger.trace("Translation for: {}", key);
+        checkAndLoadDefaultResourceBundles();
+        checkAndLoadResourceBundles(locale);
+        String value = getTranslation(key, currentLocaleDefaultBundle, currentLocaleLocalBundle);
+        if (value == null && currentLocaleDefaultBundle != null && !defaultLocaleDefaultBundle.getLocale().equals(locale)) {
+            value = getTranslation(key, defaultLocaleDefaultBundle, defaultLocaleLocalBundle);
+        }
+        if (value == null) {
+            value = key;
+        }
+
+        return value;
     }
 
     /**
@@ -132,7 +172,9 @@ public class ViewerResourceBundle extends ResourceBundle {
                     return cleanUpTranslation(value);
                 }
                 try {
-                    return cleanUpTranslation(fallbackBundle.getString(key));
+                    if (fallbackBundle.containsKey(key)) {
+                        return cleanUpTranslation(fallbackBundle.getString(key));
+                    }
                 } catch (MissingResourceException e) {
                     // There is a MissingResourceException when calling this from the RSS feed
                 }
@@ -141,7 +183,7 @@ public class ViewerResourceBundle extends ResourceBundle {
             logger.warn("globalBundle is null");
         }
 
-        return key;
+        return null;
     }
 
     /**
