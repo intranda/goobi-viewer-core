@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
@@ -41,9 +42,10 @@ public class ViewerResourceBundle extends ResourceBundle {
     private static ResourceBundle localBundle = null;
 
     /**
-     * laden des ResourceBundle(general_xx.properties), abhängig davon was im FacesContext Lokalisirungsstring steht.
+     * 
+     * @param inLocale
      */
-    public static synchronized void loadResourceBundle(Locale inLocale) {
+    private static synchronized void loadResourceBundle(Locale inLocale) {
         Locale locale;
         if (inLocale != null) {
             locale = inLocale;
@@ -61,6 +63,11 @@ public class ViewerResourceBundle extends ResourceBundle {
         }
     }
 
+    /**
+     * 
+     * @param locale
+     * @return
+     */
     private static ResourceBundle loadLocalResourceBundle(Locale locale) {
         File file = new File(DataManager.getInstance().getConfiguration().getLocalRessourceBundleFile());
         if (file.exists()) {
@@ -78,6 +85,9 @@ public class ViewerResourceBundle extends ResourceBundle {
         return null;
     }
 
+    /**
+     * This is the method that is called for HTML translations.
+     */
     @Override
     protected Object handleGetObject(String key) {
         return getTranslation(key, FacesContext.getCurrentInstance().getViewRoot().getLocale());
@@ -96,119 +106,128 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
+     * Translation method with ResourceBundle parameters. It can be overridden from inheriting classes which may pass their own bundles.
      * 
-     * @param key
-     * @param globalBundle
-     * @param localBundle
+     * @param key Message key
+     * @param fallbackBundle Fallback bundle if no value is found in preferredBundle
+     * @param preferredBundle Check for a translation in this bundle first
      * @return
      */
-    protected static String getTranslation(String key, ResourceBundle globalBundle, ResourceBundle localBundle) {
+    protected static String getTranslation(String key, ResourceBundle fallbackBundle, ResourceBundle preferredBundle) {
         if (key != null) {
             // Remove trailing asterisk
             if (key.endsWith("*")) {
                 key = key.substring(0, key.length() - 1);
             }
 
-            if (localBundle != null) {
-                if (localBundle.containsKey(key)) {
-                    return localBundle.getString(key);
-                }
-                // Remove trailing _DD (collection names for drill-down)
-                if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
-                    String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
-                }
-                // Remove trailing _UNTOKENIZED
-                if (key.endsWith(SolrConstants._UNTOKENIZED)) {
-                    String newKey = key.replace(SolrConstants._UNTOKENIZED, "");
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
-                }
-                // Remove leading MD_ (metadata fields)
-                if (key.startsWith("MD_")) {
-                    String newKey = key.substring(3);
-                    if (newKey.endsWith(SolrConstants._UNTOKENIZED)) {
-                        newKey = newKey.replace(SolrConstants._UNTOKENIZED, "");
-                    }
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
-                }
-                // Remove leading SORT_
-                if (key.startsWith("SORT_")) {
-                    String newKey = key.replace("SORT_", "");
-                    if (localBundle.containsKey("MD_" + newKey)) {
-                        return localBundle.getString("MD_" + newKey);
-                    }
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
+            if (preferredBundle != null) {
+                String value = getTranslationFromBundle(key, preferredBundle);
+                if (value != null) {
+                    return cleanUpTranslation(value);
                 }
             }
-            if (globalBundle != null) {
+            if (fallbackBundle != null) {
+                String value = getTranslationFromBundle(key, fallbackBundle);
+                if (value != null) {
+                    return cleanUpTranslation(value);
+                }
                 try {
-                    if (globalBundle.containsKey(key)) {
-                        return globalBundle.getString(key);
-                    }
-                    // Remove trailing _DD (collection names for drill-down)
-                    if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
-                        String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove trailing _UNTOKENIZED
-                    if (key.endsWith(SolrConstants._UNTOKENIZED)) {
-                        String newKey = key.replace(SolrConstants._UNTOKENIZED, "");
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove leading MD_ (metadata fields)
-                    if (key.startsWith("MD_")) {
-                        String newKey = key.substring(3);
-                        if (newKey.endsWith(SolrConstants._UNTOKENIZED)) {
-                            newKey = newKey.replace(SolrConstants._UNTOKENIZED, "");
-                        }
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove leading SORT_
-                    if (key.startsWith("SORT_")) {
-                        String newKey = key.replace("SORT_", "");
-                        if (globalBundle.containsKey("MD_" + newKey)) {
-                            return globalBundle.getString("MD_" + newKey);
-                        }
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove leading FACET_
-                    if (key.startsWith("FACET_")) {
-                        String newKey = key.replace("FACET_", "");
-                        if (globalBundle.containsKey("MD_" + newKey)) {
-                            return globalBundle.getString("MD_" + newKey);
-                        }
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    return globalBundle.getString(key);
-                } catch (RuntimeException e) {
-                    // This is needed for some reason
+                    return cleanUpTranslation(fallbackBundle.getString(key));
+                } catch (MissingResourceException e) {
+                    // There is a MissingResourceException when calling this from the RSS feed
                 }
-            } else {
-                logger.warn("globalBundle is null");
             }
+        } else {
+            logger.warn("globalBundle is null");
         }
 
         return key;
     }
 
+    /**
+     * 
+     * @param key
+     * @param bundle
+     * @return
+     */
+    private static String getTranslationFromBundle(String key, ResourceBundle bundle) {
+        if (key == null) {
+            throw new IllegalArgumentException("key may not be null");
+        }
+        if (bundle == null) {
+            throw new IllegalArgumentException("bundle may not be null");
+        }
+
+        if (bundle.containsKey(key)) {
+            return bundle.getString(key);
+        }
+        // Remove trailing _DD (collection names for drill-down)
+        if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
+            String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove trailing _UNTOKENIZED
+        if (key.endsWith(SolrConstants._UNTOKENIZED)) {
+            String newKey = key.replace(SolrConstants._UNTOKENIZED, "");
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading MD_ (metadata fields)
+        if (key.startsWith("MD_")) {
+            String newKey = key.substring(3);
+            if (newKey.endsWith(SolrConstants._UNTOKENIZED)) {
+                newKey = newKey.replace(SolrConstants._UNTOKENIZED, "");
+            }
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading SORT_
+        if (key.startsWith("SORT_")) {
+            String newKey = key.replace("SORT_", "");
+            if (bundle.containsKey("MD_" + newKey)) {
+                return bundle.getString("MD_" + newKey);
+            }
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading FACET_
+        if (key.startsWith("FACET_")) {
+            String newKey = key.replace("FACET_", "");
+            if (bundle.containsKey("MD_" + newKey)) {
+                return bundle.getString("MD_" + newKey);
+            }
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Removes the " zzz" marker from the given string.
+     * 
+     * @param value
+     * @return
+     */
+    private static String cleanUpTranslation(String value) {
+        if (value == null) {
+            return null;
+        }
+        return value.replace(" zzz", "");
+    }
+
+    /**
+     * 
+     * @param locale
+     * @param keyPrefix
+     * @return
+     */
     public static List<String> getMessagesValues(Locale locale, String keyPrefix) {
         ResourceBundle rb = loadLocalResourceBundle(locale);
         List<String> res = new ArrayList<>();
