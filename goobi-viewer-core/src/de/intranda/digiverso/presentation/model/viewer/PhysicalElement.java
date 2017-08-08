@@ -702,8 +702,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     if (doc.getFieldValue("MD_FULLTEXT") != null) {
                         // Prefer the unescaped MD_FULLTEXT
                         fullText = SolrSearchIndex.getAsString(doc.getFieldValue("MD_FULLTEXT"));
-                    } else if (doc.getFieldValue(SolrConstants.FULLTEXT) != null) {
-                        fullText = (String) doc.getFieldValue(SolrConstants.FULLTEXT);
                         return true;
                     }
                 }
@@ -767,19 +765,27 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws JDOMException
      */
     public boolean loadAlto() throws JDOMException, IOException {
-
         if (altoText == null) {
             try {
                 StringBuilder sbQuery = new StringBuilder();
                 sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi).append(" AND ").append(SolrConstants.ORDER).append(":").append(
                         order);
                 logger.trace("loadAlto: {}", sbQuery.toString());
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), Collections.singletonList(
-                        SolrConstants.ALTO));
-                if (doc != null && doc.getFieldValue(SolrConstants.ALTO) != null) {
-                    logger.trace("Lazy loaded ALTO");
-                    wordCoordsFormat = CoordsFormat.ALTO;
-                    return setAlto((String) doc.getFieldValue(SolrConstants.ALTO));
+                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), Arrays.asList(new String[] {
+                        SolrConstants.DATAREPOSITORY, SolrConstants.FILENAME_ALTO }));
+                if (doc != null) {
+                    if (doc.getFieldValue(SolrConstants.FILENAME_ALTO) != null) {
+                        String fileName = (String) doc.getFieldValue(SolrConstants.FILENAME_ALTO);
+                        if (StringUtils.isNotEmpty(fileName)) {
+                            String filePath = Helper.getTextFilePath(fileName, (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY),
+                                    SolrConstants.FILENAME_ALTO);
+                            String altoText = FileTools.getStringFromFilePath(filePath);
+                            wordCoordsFormat = CoordsFormat.ALTO;
+                            logger.trace("Lazy loaded ALTO (from crowdsourcing)");
+                            return setAlto(altoText);
+                        }
+                        logger.error("{} value not found in {}", SolrConstants.FILENAME_ALTO, pi);
+                    }
                 }
                 logger.trace("ALTO not found for {}", pi);
             } catch (PresentationException e) {

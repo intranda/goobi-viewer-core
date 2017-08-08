@@ -719,7 +719,7 @@ public class Helper {
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
-                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.ALTO, SolrConstants.FULLTEXT,
+                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.FULLTEXT,
                         SolrConstants.UGCTERMS }));
 
         if (doc == null) {
@@ -982,6 +982,32 @@ public class Helper {
                 break;
             case SolrConstants._LIDO:
                 sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
+                break;
+        }
+        sb.append('/').append(fileName);
+
+        return sb.toString();
+    }
+
+    /**
+     * 
+     * @param fileName
+     * @param dataRepository
+     * @param format
+     * @return
+     */
+    public static String getTextFilePath(String fileName, String dataRepository, String format) {
+        if (StringUtils.isEmpty(fileName)) {
+            throw new IllegalArgumentException("fileName may not be null or empty");
+        }
+
+        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+        switch (format) {
+            case SolrConstants.FILENAME_ALTO:
+                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
+                break;
+            case SolrConstants.FILENAME_FULLTEXT:
+                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
                 break;
         }
         sb.append('/').append(fileName);

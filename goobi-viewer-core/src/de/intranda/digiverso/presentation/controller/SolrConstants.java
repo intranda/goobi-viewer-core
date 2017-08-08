@@ -89,7 +89,7 @@ public class SolrConstants {
     }
 
     public static final String ACCESSCONDITION = "ACCESSCONDITION";
-    public static final String ALTO = "ALTO";
+    //    public static final String ALTO = "ALTO";
     public static final String CURRENTNO = "CURRENTNO";
     public static final String CURRENTNOSORT = "CURRENTNOSORT";
     public static final String DATAREPOSITORY = "DATAREPOSITORY";
@@ -110,6 +110,8 @@ public class SolrConstants {
     public static final String DATEUPDATED = "DATEUPDATED";
     public static final String FILEIDROOT = "FILEIDROOT";
     public static final String FILENAME = "FILENAME";
+    public static final String FILENAME_ALTO = "FILENAME_ALTO";
+    public static final String FILENAME_FULLTEXT = "FILENAME_FULLTEXT";
     public static final String FILENAME_HTML_SANDBOXED = "FILENAME_HTML-SANDBOXED";
     public static final String FILENAME_MPEG = "FILENAME_MPEG";
     public static final String FILENAME_MPEG3 = "FILENAME_MPEG3";

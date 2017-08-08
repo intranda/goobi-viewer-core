@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.ner;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -39,6 +42,8 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.ALTOTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -112,16 +117,16 @@ public class NERTagResource {
     private static DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize) throws PresentationException,
             IndexUnreachableException {
         StringBuilder query = new StringBuilder();
-        query.append("PI_TOPSTRUCT:").append(pi);
+        query.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
 
         if (start != null && end != null) {
-            query.append(" AND ").append("ORDER:[").append(start).append(" TO ").append(end).append("]");
+            query.append(" AND ").append(SolrConstants.ORDER).append(":[").append(start).append(" TO ").append(end).append("]");
         } else if (start != null) {
-            query.append(" AND ").append("ORDER:[").append(start).append(" TO *]");
+            query.append(" AND ").append(SolrConstants.ORDER).append(":[").append(start).append(" TO *]");
         } else if (end != null) {
-            query.append(" AND ").append("ORDER:[* TO ").append(end).append("]");
+            query.append(" AND ").append(SolrConstants.ORDER).append(":[* TO ").append(end).append("]");
         } else {
-            query.append(" AND ").append("DOCTYPE:PAGE");
+            query.append(" AND ").append(SolrConstants.DOCTYPE).append(":PAGE");
         }
 
         return getNERTagsByQuery(query.toString(), type, rangeSize);
@@ -245,8 +250,9 @@ public class NERTagResource {
 
     /**
      * 
-     * 
      * @param query must return a set of PAGE documents within a single topStruct
+     * @param typeString
+     * @param rangeSize
      * @return
      * @throws PresentationException if there is an error parsing the alto documents or if the search doesn't result in PAGE documents from a single
      *             topStruct
@@ -254,18 +260,25 @@ public class NERTagResource {
      */
     private static DocumentReference getNERTagsByQuery(String query, String typeString, int rangeSize) throws PresentationException,
             IndexUnreachableException {
-        List<String> fieldList = Arrays.asList(new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
-                SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.ALTO });
+        final List<String> fieldList = Arrays.asList(new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
+                SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME_ALTO });
         SolrDocumentList solrDocuments = DataManager.getInstance().getSearchIndex().search(query, fieldList);
         Collections.sort(solrDocuments, docOrderComparator);
 
         NERTag.Type type = NERTag.Type.getType(typeString);
 
         if (solrDocuments != null && !solrDocuments.isEmpty()) {
-
+            String dataRepository = null;
             String topStructPi = null;
             if (solrDocuments.get(0).containsKey(SolrConstants.PI_TOPSTRUCT)) {
                 topStructPi = SolrSearchIndex.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
+
+                // Determine data repository name
+                SolrDocument topSolrDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ':' + topStructPi, Collections
+                        .singletonList(SolrConstants.DATAREPOSITORY));
+                if (topSolrDoc != null && topSolrDoc.containsKey(SolrConstants.DATAREPOSITORY)) {
+                    dataRepository = (String) topSolrDoc.get(SolrConstants.DATAREPOSITORY);
+                }
             }
             DocumentReference doc = new DocumentReference(topStructPi);
 
@@ -273,15 +286,28 @@ public class NERTagResource {
                 List<SolrDocument> rangeList = solrDocuments.subList(index, Math.min(index + rangeSize, solrDocuments.size()));
                 TagGroup range = createPageReference(rangeList);
                 for (SolrDocument solrDoc : rangeList) {
-                    String altoString = (String) solrDoc.getFieldValue(SolrConstants.ALTO);
-                    Integer pageOrder = getPageOrder(solrDoc);
-                    List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
-                    for (TagCount tagCount : tags) {
-                        for (ElementReference reference : tagCount.getReferences()) {
-                            reference.setPage(pageOrder);
-                        }
+                    String altoFileName = (String) solrDoc.getFieldValue(SolrConstants.FILENAME_ALTO);
+                    if (altoFileName == null) {
+                        logger.error("{}, page {} has no {} value.", topStructPi, solrDoc.getFieldValue(SolrConstants.ORDER),
+                                SolrConstants.FILENAME_ALTO);
+                        continue;
                     }
-                    range.addTags(tags);
+                    String altoFilePath = Helper.getTextFilePath(altoFileName, dataRepository, SolrConstants.FILENAME_ALTO);
+                    try {
+                        String altoString = FileTools.getStringFromFilePath(altoFilePath);
+                        Integer pageOrder = getPageOrder(solrDoc);
+                        List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
+                        for (TagCount tagCount : tags) {
+                            for (ElementReference reference : tagCount.getReferences()) {
+                                reference.setPage(pageOrder);
+                            }
+                        }
+                        range.addTags(tags);
+                    } catch (FileNotFoundException e) {
+                        logger.error(e.getMessage());
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 }
                 Collections.sort(range.getTags());
                 Collections.reverse(range.getTags());
