@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,7 +136,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         checkAndLoadDefaultResourceBundles();
         checkAndLoadResourceBundles(locale);
         String value = getTranslation(key, currentLocaleDefaultBundle, currentLocaleLocalBundle);
-        if (value == null && currentLocaleDefaultBundle != null && !defaultLocaleDefaultBundle.getLocale().equals(locale)) {
+        if (StringUtils.isEmpty(value) && currentLocaleDefaultBundle != null && !defaultLocaleDefaultBundle.getLocale().equals(locale)) {
             value = getTranslation(key, defaultLocaleDefaultBundle, defaultLocaleLocalBundle);
         }
         if (value == null) {
@@ -252,7 +253,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     /**
-     * Removes the " zzz" marker from the given string.
+     * Removes the "zzz" marker from the given string.
      * 
      * @param value
      * @return
@@ -261,7 +262,10 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (value == null) {
             return null;
         }
-        return value.replace(" zzz", "");
+        if (value.endsWith("zzz")) {
+            return value.replace(" zzz", "").replace("zzz", "");
+        }
+        return value;
     }
 
     /**
