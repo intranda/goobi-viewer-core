@@ -80,14 +80,20 @@ public class ViewerResourceBundle extends ResourceBundle {
         // Reload default bundle if the locale is different
         if (!defaultBundles.containsKey(locale)) {
             synchronized (lock) {
-                defaultBundles.put(locale, ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale));
+                // Bundle could have been initialized by a different thread in the meanwhile
+                if (!defaultBundles.containsKey(locale)) {
+                    defaultBundles.put(locale, ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale));
+                }
             }
         }
         // Reload local bundle if the locale is different
         if (!localBundles.containsKey(locale)) {
             synchronized (lock) {
-                logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
-                localBundles.put(locale, loadLocalResourceBundle(locale));
+                // Bundle could have been initialized by a different thread in the meanwhile
+                if (!localBundles.containsKey(locale)) {
+                    logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
+                    localBundles.put(locale, loadLocalResourceBundle(locale));
+                }
             }
         }
 
