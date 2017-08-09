@@ -92,7 +92,12 @@ public class ViewerResourceBundle extends ResourceBundle {
                 // Bundle could have been initialized by a different thread in the meanwhile
                 if (!localBundles.containsKey(locale)) {
                     logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
-                    localBundles.put(locale, loadLocalResourceBundle(locale));
+                    ResourceBundle localBundle = loadLocalResourceBundle(locale);
+                    if (localBundle != null) {
+                        localBundles.put(locale, localBundle);
+                    } else {
+                        logger.warn("Could not load local resource bundle.");
+                    }
                 }
             }
         }
