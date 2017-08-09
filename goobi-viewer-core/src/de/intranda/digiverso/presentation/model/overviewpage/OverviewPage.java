@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -309,7 +310,7 @@ public class OverviewPage implements Harvestable, Serializable {
                         description = config.getRootElement().getChildText("description", null);
                     }
                 }
-                 logger.trace("Description: {}", description);
+                logger.trace("Description: {}", description);
             }
             // Publication text (only load from XML if not yet in the database column)
             if (publicationText == null) {
@@ -950,7 +951,9 @@ public class OverviewPage implements Harvestable, Serializable {
         }
 
         Path overviewPageDir = Paths.get(hotfolderPath, namingScheme + "_overview");
-        Files.createDirectory(overviewPageDir);
+        if (!Files.isDirectory(overviewPageDir)) {
+            Files.createDirectory(overviewPageDir);
+        }
         logger.trace("Created overview page subdirectory: {}", overviewPageDir.toAbsolutePath().toString());
         if (StringUtils.isNotEmpty(description)) {
             File file = new File(overviewPageDir.toFile(), "description.xml");

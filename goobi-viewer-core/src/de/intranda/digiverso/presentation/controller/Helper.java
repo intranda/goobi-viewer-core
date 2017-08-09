@@ -670,7 +670,7 @@ public class Helper {
             try {
                 overviewPage.exportTextData(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
         }
 
