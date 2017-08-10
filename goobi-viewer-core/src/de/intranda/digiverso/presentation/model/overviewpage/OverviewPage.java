@@ -958,7 +958,7 @@ public class OverviewPage implements Harvestable, Serializable {
         if (StringUtils.isNotEmpty(description)) {
             File file = new File(overviewPageDir.toFile(), "description.xml");
             try {
-                FileUtils.writeStringToFile(file, description, Charset.forName(Helper.DEFAULT_ENCODING));
+                FileUtils.writeStringToFile(file, description, Helper.DEFAULT_ENCODING);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
@@ -966,7 +966,7 @@ public class OverviewPage implements Harvestable, Serializable {
         if (StringUtils.isNotEmpty(publicationText)) {
             File file = new File(overviewPageDir.toFile(), "publicationtext.xml");
             try {
-                FileUtils.writeStringToFile(file, publicationText, Charset.forName(Helper.DEFAULT_ENCODING));
+                FileUtils.writeStringToFile(file, publicationText, Helper.DEFAULT_ENCODING);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
