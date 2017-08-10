@@ -292,7 +292,7 @@ public class NERTagResource {
                                 SolrConstants.FILENAME_ALTO);
                         continue;
                     }
-                    String altoFilePath = Helper.getTextFilePath(altoFileName, dataRepository, SolrConstants.FILENAME_ALTO);
+                    String altoFilePath = Helper.getTextFilePath(topStructPi, altoFileName, dataRepository, SolrConstants.FILENAME_ALTO);
                     try {
                         String altoString = FileTools.getStringFromFilePath(altoFilePath);
                         Integer pageOrder = getPageOrder(solrDoc);

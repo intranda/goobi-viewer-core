@@ -777,7 +777,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     if (doc.getFieldValue(SolrConstants.FILENAME_ALTO) != null) {
                         String fileName = (String) doc.getFieldValue(SolrConstants.FILENAME_ALTO);
                         if (StringUtils.isNotEmpty(fileName)) {
-                            String filePath = Helper.getTextFilePath(fileName, (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY),
+                            String filePath = Helper.getTextFilePath(pi, fileName, (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY),
                                     SolrConstants.FILENAME_ALTO);
                             String altoText = FileTools.getStringFromFilePath(filePath);
                             wordCoordsFormat = CoordsFormat.ALTO;
@@ -841,8 +841,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         sb.append("?action=pdf").append("&images=").append(pi).append("/").append(fileName).append("&metsFile=").append(pi).append(".xml").append(
                 "&targetFileName=").append(pi).append("_").append(order).append(".pdf");
         return sb.toString();
-//        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
-//                + "&targetFileName=" + pi + "_" + order + ".pdf";
+        //        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
+        //                + "&targetFileName=" + pi + "_" + order + ".pdf";
     }
 
     /**

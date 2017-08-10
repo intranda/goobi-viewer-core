@@ -1165,6 +1165,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getTeiFolder() {
+        return getLocalString("teiFolder");
+    }
 
     /**
      * 

@@ -90,7 +90,7 @@ public class HelperTest {
     @Test
     public void getImageUrl_shouldBuildURLCorrectlyWithRepository() throws Exception {
         Assert.assertEquals(
-                "contentServerWrapper_value?action=image&sourcepath=file:/resources/test/data/viewer/data/REPO/mediaFolder_value/PPN123456789/00000001.tif&width=600&height=800&rotate=180&resolution=72&format=jpg&thumbnail=true&ignoreWatermark=true",
+                "contentServerWrapper_value?action=image&sourcepath=file:/resources/test/data/viewer/data/REPO/media/PPN123456789/00000001.tif&width=600&height=800&rotate=180&resolution=72&format=jpg&thumbnail=true&ignoreWatermark=true",
                 Helper.getImageUrl("PPN123456789", "00000001.tif", "REPO", 600, 800, 180, true, true));
     }
 
@@ -159,6 +159,20 @@ public class HelperTest {
     @Test(expected = IllegalArgumentException.class)
     public void getDataFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() throws Exception {
         Helper.getDataFilePath(null, null, SolrConstants._METS);
+    }
+
+    /**
+     * @see Helper#getTextFilePath(String,String,String,String)
+     * @verifies return correct path
+     */
+    @Test
+    public void getTextFilePath_shouldReturnCorrectPath() throws Exception {
+        Assert.assertEquals("resources/test/data/viewer/data/1/alto/PPN123/1.xml", Helper.getTextFilePath("PPN123", "1.xml", "1",
+                SolrConstants.FILENAME_ALTO));
+        Assert.assertEquals("resources/test/data/viewer/data/1/fulltext/PPN123/1.txt", Helper.getTextFilePath("PPN123", "1.txt", "1",
+                SolrConstants.FILENAME_FULLTEXT));
+        Assert.assertEquals("resources/test/data/viewer/data/1/tei/PPN123/1.xml", Helper.getTextFilePath("PPN123", "1.xml", "1",
+                SolrConstants.FILENAME_TEI));
     }
 
     /**

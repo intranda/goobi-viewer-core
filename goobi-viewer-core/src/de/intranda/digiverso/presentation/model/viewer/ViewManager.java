@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.viewer;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -27,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -45,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
@@ -57,7 +60,6 @@ import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.calendar.CalendarView;
-import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
@@ -1426,34 +1428,45 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public String getFulltext() throws IndexUnreachableException, DAOException {
-        return getFulltext(true);
+        return getFulltext(true, null);
     }
 
     /**
      *
      * @param escapeHtml If true HTML tags will be escaped to prevent pseudo-HTML from breaking the text.
+     * @param language
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    public String getFulltext(boolean escapeHtml) throws IndexUnreachableException, DAOException {
-        // Use existing string, if not null (this method gets called 8 times per
-        // page load!)
+    public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException {
         String currentFulltext = null;
 
-        // logger.debug("getFulltext() START");
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-            // Check permissions first
-            boolean access = SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
-                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            if (access) {
-                currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
-            } else {
-                currentFulltext = "ACCESS DENIED";
+        if (StringUtils.isNotEmpty(language) && topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language)) {
+            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language);
+            String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
+            currentFulltext = Helper.loadTeiFulltext(filePath);
+        } else if (topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI)) {
+            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI);
+            String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
+            currentFulltext = Helper.loadTeiFulltext(filePath);
+        } else {
+            // Current page fulltext
+            PhysicalElement currentImg = getCurrentPage();
+            if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
+                // Check permissions first
+                boolean access = SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
+                        .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(),
+                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                if (access) {
+                    currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
+                } else {
+                    currentFulltext = "ACCESS DENIED";
+                }
             }
         }
-        // logger.debug("getFulltext() END");
 
         return currentFulltext;
     }
@@ -1960,7 +1973,7 @@ public class ViewManager implements Serializable {
             return false;
         }
         List<TranskribusJob> jobs = DataManager.getInstance().getDao().getTranskribusJobs(pi, session.getUserId(), null);
-        
+
         return jobs != null && !jobs.isEmpty();
     }
 
@@ -1969,7 +1982,7 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return false;
         }
-        
+
         return DataManager.getInstance().getConfiguration().useTiles();
     }
 

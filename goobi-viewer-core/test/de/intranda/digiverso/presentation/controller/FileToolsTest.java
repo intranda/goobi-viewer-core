@@ -158,6 +158,20 @@ public class FileToolsTest {
     }
 
     /**
+     * @see FileTools#getDocumentFromFile(File)
+     * @verifies build document correctly
+     */
+    @Test
+    public void getDocumentFromFile_shouldBuildDocumentCorrectly() throws Exception {
+        File file = new File("resources/test/data/sample_alto.xml");
+        Assert.assertTrue(file.isFile());
+        Document doc = FileTools.getDocumentFromFile(file);
+        Assert.assertNotNull(doc);
+        Assert.assertNotNull(doc.getRootElement());
+        Assert.assertEquals("alto", doc.getRootElement().getName());
+    }
+
+    /**
      * @see FileTools#getDocumentFromString(String,String)
      * @verifies build document correctly
      */
@@ -173,14 +187,25 @@ public class FileToolsTest {
     }
 
     /**
-     * @see FileTools#getStringFromDocument(Document,String)
-     * @verifies return XML string correctly
+     * @see FileTools#getStringFromElement(Object,String)
+     * @verifies return XML string correctly for documents
      */
     @Test
-    public void getStringFromDocument_shouldReturnXMLStringCorrectly() throws Exception {
+    public void getStringFromElement_shouldReturnXMLStringCorrectlyForDocuments() throws Exception {
         Document doc = new Document();
         doc.setRootElement(new Element("root"));
-        String xml = FileTools.getStringFromDocument(doc, null);
+        String xml = FileTools.getStringFromElement(doc, null);
+        Assert.assertNotNull(xml);
+        Assert.assertTrue(xml.contains("<root></root>"));
+    }
+
+    /**
+     * @see FileTools#getStringFromElement(Object,String)
+     * @verifies return XML string correctly for elements
+     */
+    @Test
+    public void getStringFromElement_shouldReturnXMLStringCorrectlyForElements() throws Exception {
+        String xml = FileTools.getStringFromElement(new Element("root"), null);
         Assert.assertNotNull(xml);
         Assert.assertTrue(xml.contains("<root></root>"));
     }
@@ -227,5 +252,4 @@ public class FileToolsTest {
         String concat = FileTools.getStringFromFile(file, null);
         Assert.assertEquals("XYZ", concat);
     }
-
 }

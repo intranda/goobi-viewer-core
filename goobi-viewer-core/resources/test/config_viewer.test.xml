@@ -20,26 +20,28 @@
 	<indexedLidoFolder>indexed_lido</indexedLidoFolder>
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
-	<mediaFolder>mediaFolder_value</mediaFolder>
+	<mediaFolder>media</mediaFolder>
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the intranda viewer (see <content> also) -->
-	<origContentFolder>origContentFolder_value</origContentFolder>
+	<origContentFolder>src</origContentFolder>
 	<!-- overviewFolder: contains the configuration file for overview pages -->
-	<overviewFolder>overviewFolder_value</overviewFolder>
+	<overviewFolder>overview</overviewFolder>
 	<!-- altoFolder: contains ALTO files -->
 	<altoFolder>alto</altoFolder>
 	<!-- abbyyFolder: contains ABBYY XML files -->
-	<abbyyFolder>abbyyFolder_value</abbyyFolder>
+	<abbyyFolder>abbyy</abbyyFolder>
 	<!-- fulltextFolder: contains plain full-text files -->
-	<fulltextFolder>fulltextFolder_value</fulltextFolder>
+	<fulltextFolder>fulltext</fulltextFolder>
+	<!-- teiFolder: contains TEI metadata/fulltext files -->
+    <teiFolder>tei</teiFolder>
 	<!-- wcFolder: contains TEI word coordinate files -->
-	<wcFolder>wcFolder_value</wcFolder>
+	<wcFolder>wc</wcFolder>
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
-	<hotfolder>hotfolder_value</hotfolder>
+	<hotfolder>hotfolder</hotfolder>
 	<!-- tempFolder: defines a temp folder for the processing of born-digital-material 
 		(see <content> also) -->
-	<tempFolder>tempFolder_value</tempFolder>
+	<tempFolder>temp</tempFolder>
 	<!-- Folders for generated download files -->
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>resources/test/stopwords.txt</stopwordsFile>

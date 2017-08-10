@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -74,6 +75,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.solr.common.SolrDocument;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -991,12 +995,14 @@ public class Helper {
 
     /**
      * 
+     * @param pi
      * @param fileName
      * @param dataRepository
      * @param format
      * @return
+     * @should return correct path
      */
-    public static String getTextFilePath(String fileName, String dataRepository, String format) {
+    public static String getTextFilePath(String pi, String fileName, String dataRepository, String format) {
         if (StringUtils.isEmpty(fileName)) {
             throw new IllegalArgumentException("fileName may not be null or empty");
         }
@@ -1009,10 +1015,43 @@ public class Helper {
             case SolrConstants.FILENAME_FULLTEXT:
                 sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
                 break;
+            case SolrConstants.FILENAME_TEI:
+                sb.append(DataManager.getInstance().getConfiguration().getTeiFolder());
+                break;
         }
-        sb.append('/').append(fileName);
+        sb.append('/').append(pi).append('/').append(fileName);
 
         return sb.toString();
+    }
+
+    /**
+     * 
+     * @param filePath
+     * @return
+     */
+    public static String loadTeiFulltext(String filePath) {
+        try {
+            Document doc = FileTools.getDocumentFromFile(new File(filePath));
+            if (doc != null && doc.getRootElement() != null) {
+                Element eleText = doc.getRootElement().getChild("text", null);
+                if (eleText != null && eleText.getChild("body", null) != null) {
+                    Element eleBody = eleText.getChild("body", null);
+                    Element eleNewRoot = new Element("tempRoot");
+                    for (Element ele : eleBody.getChildren()) {
+                        eleNewRoot.addContent(ele.clone());
+                    }
+                    String html = FileTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
+                }
+            }
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (JDOMException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 
     /**
