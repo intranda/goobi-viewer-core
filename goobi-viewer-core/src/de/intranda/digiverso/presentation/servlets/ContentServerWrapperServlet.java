@@ -113,60 +113,61 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
         if (request.getParameterMap().size() > 0) {
             // Regular URLs
             Set<String> keys = request.getParameterMap().keySet();
-            
-            if(request.getParameterMap().get("action") != null) {
-                action = request.getParameterMap().get("action")[0];
-                keys.remove("action");
-            }
-            if(request.getParameterMap().get("format") != null) {
-                format = request.getParameterMap().get("format")[0];
-                keys.remove("format");
-            }
-            if(request.getParameterMap().get("mimeType") != null) {
-                mimeType = request.getParameterMap().get("mimeType")[0];
-                keys.remove("mimeType");
-            }
-            if(request.getParameterMap().get("sourcepath") != null) {
-                String sourcepath = request.getParameterMap().get("sourcepath")[0];
-                if (!sourcepath.startsWith("file") && !sourcepath.startsWith("http")) {
-                    mediaFilePath = sourcepath;
-                    String[] pathSplit = sourcepath.split("[/]");
-                    if (pathSplit.length > 1) {
-                        if (pathSplit.length < 3) {
-                            pi = pathSplit[0];
-                            contentFileName = pathSplit[1];
-                        } else {
-                            pi = pathSplit[1];
-                            contentFileName = pathSplit[2];
-                        }
-                        if (pi.contains("http") || pi.contains(":")) {
-                            logger.warn("Parsed invalid PI: {}", pi);
-                        }
-                    } else {
-                        contentFileName = mediaFilePath;
-                    }
-                    // metsFileNameSplit = mediaFileName.split("[.]");
-                    keys.remove("sourcepath");
-                }
-            }
-            if(request.getParameterMap().get("identifier") != null) {
-                pi = request.getParameterMap().get("identifier")[0];
-                keys.remove("identifier");
-            }
-            if(request.getParameterMap().get("width") != null) {
-                imageWidth = Integer.valueOf(request.getParameterMap().get("width")[0]);
-            }
-            if(request.getParameterMap().get("targetFileName") != null) {
-                keys.remove("targetFileName");
-            }
-            if(request.getParameterMap().get("metsFile") != null && request.getParameterMap().get("images") == null) {
-                csType = "gcs";
-            }
-
             for (String s : keys) {
                 String[] values = request.getParameterMap().get(s);
                 if (values[0] != null) {
-                    urlArgs.append('&').append(s).append('=').append(values[0]);
+                    switch (s) {
+                        case "metsFile":
+                            if(request.getParameterMap().get("images") == null) {                                
+                                csType = "gcs";
+                            }
+                            urlArgs.append('&').append(s).append('=').append(values[0]);
+                            break;
+                        case "action":
+                            action = values[0];
+                            break;
+                        case "format":
+                            format = values[0];
+                            break;
+                        case "mimeType":
+                            mimeType = values[0];
+                            break;
+                        case "sourcepath":
+                            if (!values[0].startsWith("file") && !values[0].startsWith("http")) {
+                                mediaFilePath = values[0];
+                                String[] pathSplit = values[0].split("[/]");
+                                if (pathSplit.length > 1) {
+                                    if (pathSplit.length < 3) {
+                                        pi = pathSplit[0];
+                                        contentFileName = pathSplit[1];
+                                    } else {
+                                        pi = pathSplit[1];
+                                        contentFileName = pathSplit[2];
+                                    }
+                                    if (pi.contains("http") || pi.contains(":")) {
+                                        logger.warn("Parsed invalid PI: {}", pi);
+                                    }
+                                } else {
+                                    contentFileName = mediaFilePath;
+                                }
+                                // metsFileNameSplit = mediaFileName.split("[.]");
+                            } else {
+                                urlArgs.append('&').append(s).append('=').append(values[0]);
+                            }
+                            break;
+                        case "identifier":
+                            pi = values[0];
+                            break;
+                        case "width":
+                            imageWidth = Integer.valueOf(values[0]);
+                            urlArgs.append('&').append(s).append('=').append(values[0]);
+                            break;
+                        case "targetFileName":
+                            // pdfFileName = values[0];
+                            break;
+                        default:
+                            urlArgs.append('&').append(s).append('=').append(values[0]);
+                    }
                 }
             }
         } else {
