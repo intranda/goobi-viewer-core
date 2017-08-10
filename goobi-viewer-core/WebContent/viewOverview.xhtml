@@ -58,6 +58,14 @@
 						</h:panelGroup>
 						
 						<h2>#{activeDocumentBean.titleBarLabel}</h2>
+
+                                                <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_SCIENTIFICADVISOR') != null}">
+                                                        <div class="overview__subtitle" style="margin-top: -20px; margin-bottom: 20px;">
+                                                                #{msg.MD_SCIENTIFICADVISOR}: #{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_SCIENTIFICADVISOR')}
+                                                        </div>
+                                                </h:panelGroup>
+
+
 						
 						<!-- OVERVIEW METADATA -->
 						<div class="row">
