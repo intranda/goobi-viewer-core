@@ -448,11 +448,11 @@ public class TOC implements Serializable {
 
         return 1;
     }
-    
+
     public boolean hasChildren() {
-        if(tocElements.get(DEFAULT_GROUP).isEmpty()) {
+        if (tocElements.get(DEFAULT_GROUP) == null || tocElements.get(DEFAULT_GROUP).isEmpty()) {
             return false;
-        } else if(tocElements.get(DEFAULT_GROUP).size() == 1 &&  !tocElements.get(DEFAULT_GROUP).get(0).isHasChild()) {
+        } else if (tocElements.get(DEFAULT_GROUP).size() == 1 && !tocElements.get(DEFAULT_GROUP).get(0).isHasChild()) {
             return false;
         } else {
             return true;
