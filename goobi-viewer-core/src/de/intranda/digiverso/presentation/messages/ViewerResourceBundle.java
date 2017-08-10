@@ -23,8 +23,10 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.faces.context.FacesContext;
 
@@ -39,43 +41,34 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
 
-    /** Viewer-supplied resource bundle for the default language (as set in faces-properties.xml). */
-    private static ResourceBundle defaultLocaleDefaultBundle = null;
-    /** Viewer-supplied resource bundle for the current language. */
-    private static ResourceBundle currentLocaleDefaultBundle = null;
-    /** Local resource bundle for the default language (as set in faces-properties.xml). */
-    protected static ResourceBundle defaultLocaleLocalBundle = null;
-    /** Local resource bundle for the current language. */
-    protected static ResourceBundle currentLocaleLocalBundle = null;
+    private static final Object lock = new Object();
+    private static final Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
+    protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
+    protected static volatile Locale defaultLocale;
 
     /**
      * Loads default resource bundles if not yet loaded.
      */
-    private static synchronized void checkAndLoadDefaultResourceBundles() {
-        if (defaultLocaleDefaultBundle != null && defaultLocaleLocalBundle != null) {
-            return;
+    private static void checkAndLoadDefaultResourceBundles() {
+        if (defaultLocale == null) {
+            synchronized (lock) {
+                if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+                    defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+                } else {
+                    defaultLocale = Locale.ENGLISH;
+                }
+                checkAndLoadResourceBundles(defaultLocale);
+            }
         }
-        Locale locale;
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            locale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
-        } else {
-            locale = Locale.ENGLISH;
-        }
-        if (defaultLocaleDefaultBundle == null) {
-            defaultLocaleDefaultBundle = ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale);
-        }
-        if (defaultLocaleLocalBundle == null) {
-            defaultLocaleLocalBundle = loadLocalResourceBundle(locale);
-        }
-
     }
 
     /**
      * Loads resource bundles for the current locale and reloads them if the locale has since changed.
      * 
      * @param inLocale
+     * @return The selected locale
      */
-    private static synchronized void checkAndLoadResourceBundles(Locale inLocale) {
+    private static Locale checkAndLoadResourceBundles(Locale inLocale) {
         Locale locale;
         if (inLocale != null) {
             locale = inLocale;
@@ -85,14 +78,31 @@ public class ViewerResourceBundle extends ResourceBundle {
             locale = Locale.ENGLISH;
         }
         // Reload default bundle if the locale is different
-        if (currentLocaleDefaultBundle == null || !currentLocaleDefaultBundle.getLocale().equals(locale)) {
-            currentLocaleDefaultBundle = ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale);
+        if (!defaultBundles.containsKey(locale)) {
+            synchronized (lock) {
+                // Bundle could have been initialized by a different thread in the meanwhile
+                if (!defaultBundles.containsKey(locale)) {
+                    defaultBundles.put(locale, ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale));
+                }
+            }
         }
         // Reload local bundle if the locale is different
-        if (currentLocaleLocalBundle == null || !currentLocaleLocalBundle.getLocale().equals(locale)) {
-            logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
-            currentLocaleLocalBundle = loadLocalResourceBundle(locale);
+        if (!localBundles.containsKey(locale)) {
+            synchronized (lock) {
+                // Bundle could have been initialized by a different thread in the meanwhile
+                if (!localBundles.containsKey(locale)) {
+                    logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
+                    ResourceBundle localBundle = loadLocalResourceBundle(locale);
+                    if (localBundle != null) {
+                        localBundles.put(locale, localBundle);
+                    } else {
+                        logger.warn("Could not load local resource bundle.");
+                    }
+                }
+            }
         }
+
+        return locale;
     }
 
     /**
@@ -131,13 +141,13 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param locale
      * @return
      */
-    public static String getTranslation(final String key, final Locale locale) {
+    public static String getTranslation(final String key, Locale locale) {
         //        logger.trace("Translation for: {}", key);
         checkAndLoadDefaultResourceBundles();
-        checkAndLoadResourceBundles(locale);
-        String value = getTranslation(key, currentLocaleDefaultBundle, currentLocaleLocalBundle);
-        if (StringUtils.isEmpty(value) && currentLocaleDefaultBundle != null && !defaultLocaleDefaultBundle.getLocale().equals(locale)) {
-            value = getTranslation(key, defaultLocaleDefaultBundle, defaultLocaleLocalBundle);
+        locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
+        String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
+        if (StringUtils.isEmpty(value) && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
+            value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale));
         }
         if (value == null) {
             value = key;

@@ -840,8 +840,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
         sb.append("?action=pdf").append("&images=").append(pi).append("/").append(fileName).append("&metsFile=").append(pi).append(".xml").append(
                 "&targetFileName=").append(pi).append("_").append(order).append(".pdf");
-        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
-                + "&targetFileName=" + pi + "_" + order + ".pdf";
+        return sb.toString();
+//        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
+//                + "&targetFileName=" + pi + "_" + order + ".pdf";
     }
 
     /**

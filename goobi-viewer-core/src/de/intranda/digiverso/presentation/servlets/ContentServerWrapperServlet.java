@@ -118,7 +118,9 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 if (values[0] != null) {
                     switch (s) {
                         case "metsFile":
-                            csType = "gcs";
+                            if(request.getParameterMap().get("images") == null) {                                
+                                csType = "gcs";
+                            }
                             urlArgs.append('&').append(s).append('=').append(values[0]);
                             break;
                         case "action":

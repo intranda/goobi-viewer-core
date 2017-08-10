@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -955,12 +956,14 @@ public class OverviewPage implements Harvestable, Serializable {
         }
 
         Path overviewPageDir = Paths.get(hotfolderPath, namingScheme + "_overview");
-        Files.createDirectory(overviewPageDir);
+        if (!Files.isDirectory(overviewPageDir)) {
+            Files.createDirectory(overviewPageDir);
+        }
         logger.trace("Created overview page subdirectory: {}", overviewPageDir.toAbsolutePath().toString());
         if (StringUtils.isNotEmpty(description)) {
             File file = new File(overviewPageDir.toFile(), "description.xml");
             try {
-                FileUtils.writeStringToFile(file, description, Charset.forName(Helper.DEFAULT_ENCODING));
+                FileUtils.writeStringToFile(file, description, Helper.DEFAULT_ENCODING);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
@@ -968,7 +971,7 @@ public class OverviewPage implements Harvestable, Serializable {
         if (StringUtils.isNotEmpty(publicationText)) {
             File file = new File(overviewPageDir.toFile(), "publicationtext.xml");
             try {
-                FileUtils.writeStringToFile(file, publicationText, Charset.forName(Helper.DEFAULT_ENCODING));
+                FileUtils.writeStringToFile(file, publicationText, Helper.DEFAULT_ENCODING);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
