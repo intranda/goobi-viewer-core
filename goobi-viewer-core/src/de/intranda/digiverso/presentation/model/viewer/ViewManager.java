@@ -1444,13 +1444,15 @@ public class ViewManager implements Serializable {
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException {
         String currentFulltext = null;
 
-        if (StringUtils.isNotEmpty(language) && topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language)) {
-            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language);
+        if (StringUtils.isNotEmpty(language) && topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase())) {
+            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase());
             String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
+            logger.trace("Loading {}", filePath);
             currentFulltext = Helper.loadTeiFulltext(filePath);
         } else if (topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI)) {
             String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI);
             String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
+            logger.trace("Loading {}", filePath);
             currentFulltext = Helper.loadTeiFulltext(filePath);
         } else {
             // Current page fulltext
@@ -1468,6 +1470,7 @@ public class ViewManager implements Serializable {
             }
         }
 
+        logger.trace(currentFulltext);
         return currentFulltext;
     }
 

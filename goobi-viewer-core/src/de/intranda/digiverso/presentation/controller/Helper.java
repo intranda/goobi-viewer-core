@@ -92,6 +92,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 import de.intranda.digiverso.presentation.Version;
+import de.intranda.digiverso.presentation.controller.TeiToHtmlConverter.ConverterMode;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -1025,6 +1026,7 @@ public class Helper {
     }
 
     /**
+     * Loads TEI full-text from the given file path. The text portion is cut out of the main document and its markup is converted to HTML.
      * 
      * @param filePath
      * @return
@@ -1041,6 +1043,7 @@ public class Helper {
                         eleNewRoot.addContent(ele.clone());
                     }
                     String html = FileTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
+                    return new TeiToHtmlConverter(ConverterMode.resource).convert(html);
                 }
             }
         } catch (FileNotFoundException e) {
