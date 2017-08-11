@@ -46,7 +46,7 @@ public class ContextListener implements ServletContextListener {
 
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
-    public static volatile String prettyConfigFiles = "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml";
+    public static volatile String prettyConfigFiles = "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-skeleton.xml";
 
     //    static {
     // ImageIO.scanForPlugins();
