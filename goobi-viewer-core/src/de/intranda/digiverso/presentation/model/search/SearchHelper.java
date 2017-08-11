@@ -1512,8 +1512,8 @@ public final class SearchHelper {
         }
 
         StringBuilder sb = new StringBuilder();
-        String normalizedPhrase = phrase.toLowerCase().replaceAll("[^a-zA-Z0-9#]+", " ");
-        String normalizedTerm = term.toLowerCase().replaceAll("[^a-zA-Z0-9#]+", " ");
+        String normalizedPhrase = phrase.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
+        String normalizedTerm = term.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
         int startIndex = normalizedPhrase.indexOf(normalizedTerm);
         if (startIndex == -1) {
             return phrase;
