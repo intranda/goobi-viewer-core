@@ -749,7 +749,7 @@ public final class SearchHelper {
      * Returns a Solr query suffix that filters out collections defined in the collection blacklist. This suffix is only generated once per
      * application lifecycle.
      *
-     * @param field
+     * @param fiel
      * @return
      */
     public static String getCollectionBlacklistFilterSuffix(String field) {
@@ -1501,6 +1501,7 @@ public final class SearchHelper {
      * @param term
      * @return
      * @should apply highlighting to all occurrences of term
+     * @should ignore special characters
      */
     static String applyHighlightingToPhrase(String phrase, String term) {
         if (phrase == null) {
@@ -1511,7 +1512,9 @@ public final class SearchHelper {
         }
 
         StringBuilder sb = new StringBuilder();
-        int startIndex = phrase.toLowerCase().indexOf(term.toLowerCase());
+        String normalizedPhrase = phrase.toLowerCase().replaceAll("[^a-zA-Z0-9#]+", " ");
+        String normalizedTerm = term.toLowerCase().replaceAll("[^a-zA-Z0-9#]+", " ");
+        int startIndex = normalizedPhrase.indexOf(normalizedTerm);
         if (startIndex == -1) {
             return phrase;
         }
@@ -1915,7 +1918,6 @@ public final class SearchHelper {
             }
         }
 
-        logger.trace("extracted terms: {}", ret.toString());
         return ret;
     }
 
