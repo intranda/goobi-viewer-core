@@ -59,16 +59,16 @@ public class TeiToHtmlConverter {
         // text = text.replace("<p />", "").replace("<p/>", "").replace("<p></p>", "");
 
         // replace bold
-        for (MatchResult r : findRegexMatches("<hi rend=\\\"bold\\\">>(.*?)<//hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">(.*?)</hi>", text)) {
             text = text.replace(r.group(), "<strong>" + r.group(1) + "</strong>");
         }
         // replace italic
-        for (MatchResult r : findRegexMatches("<hi rend=\\\"italic\\\">>(.*?)<//hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"italic\">(.*?)</hi>", text)) {
             text = text.replace(r.group(), "<em>" + r.group(1) + "</em>");
         }
         // replace underline
-        for (MatchResult r : findRegexMatches("<hi rend=\\\"underline\\\">>(.*?)<//hi>", text)) {
-            text = text.replace(r.group(), "<span style=\\\"text-decoration: underline;\\\">" + r.group(1) + "</span>");
+        for (MatchResult r : findRegexMatches("<hi rend=\"underline\">(.*?)</hi>", text)) {
+            text = text.replace(r.group(), "<span style=\"text-decoration: underline;\">" + r.group(1) + "</span>");
         }
 
         // TODO replace anm
@@ -76,26 +76,28 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<note type=\"editorial\"><p>" + r.group(1) + "</p></note>");
         }
 
-        // TODO tables
-        text = text.replaceAll("<table.*?>", "<table>").replace("<tbody>", "").replace("</tbody>", "");
-        text = text.replace("<caption>", "<head>").replace("</caption>", "</head>");
-        text = text.replace("<tbody>", "").replace("</tbody>", "");
-        text = text.replace("<thead>", "").replace("</thead>", "");
-        text = text.replaceAll("<tr.*?>", "<row>").replace("<tr>", "<row>").replace("</tr>", "</row>");
-        text = text.replaceAll("<td.*?>", "<cell>").replace("</td>", "</cell>");
+        // tables
+        //        text = text.replaceAll("<table.*?>", "<table>").replace("<tbody>", "").replace("</tbody>", "");
+        text = text.replace("<head>", "<caption>").replace("</head>", "</caption>");
+        //        text = text.replace("<tbody>", "").replace("</tbody>", "");
+        //        text = text.replace("<thead>", "").replace("</thead>", "");
+        text = text.replaceAll("<row>", "<tr>").replace("<tr>", "<row>").replace("</row>", "</tr>");
+        text = text.replaceAll("<cell>", "<td>").replace("</cell>", "</td>");
 
-        // TODO lists
-        if (mode.equals(ConverterMode.annotation)) {
-            text = text.replaceAll("<list rend=\"bulleted\">", "<ul>").replace("</list>", "</ul>");
-            text = text.replace("<item>", "<li>").replace("</item>", "</li>");
-            text = text.replaceAll("<list rend=\"alphabetical\">", "<ol>").replace("</list>", "</ol>");
-            //            text = text.replaceAll("<list rend=\"alphabetical\">", "<ol.*?style=\".*?-greek.*?>").replace( "</list>", "</ol>");
-            text = text.replaceAll("<list rend=\"numbered\">", "<ol>").replace("</list>", "</ol>");
-        } else {
-            text = text.replaceAll("<list>", "<ul>").replace("</list>", "</ul>");
-            text = text.replace("<li>", "<item>").replace("</li>", "</item>");
-            //			text = text.replace("<ol>", "<list>").replace("</ol>", "</list>");
-            // text = text.replaceAll("<ol.*?>", "<list>").replace("</ol>", "</list>");
+        //  lists
+        //            text = text.replaceAll("<list rend=\"bulleted\">", "<ul>").replace("</list>", "</ul>");
+        for (MatchResult r : findRegexMatches("<list rend=\"bulleted\">(.*?)</list>", text)) {
+            text = text.replace(r.group(), "<ul>" + r.group(1) + "</ul>");
+        }
+        text = text.replace("<item>", "<li>").replace("</item>", "</li>");
+        //            text = text.replaceAll("<list rend=\"alphabetical\">", "<ol style=\"list-style-type: alpha\">").replace("</list>", "</ol>");
+        //            text = text.replaceAll("<list rend=\"alphabetical\">", "<ol.*?style=\".*?-greek.*?>").replace( "</list>", "</ol>");
+        for (MatchResult r : findRegexMatches("<list rend=\"alphabetical\">(.*?)</list>", text)) {
+            text = text.replace(r.group(), "<ol style=\"list-style-type: alpha\">" + r.group(1) + "</ol>");
+        }
+        //            text = text.replaceAll("<list rend=\"numbered\">", "<ol>").replace("</list>", "</ol>");
+        for (MatchResult r : findRegexMatches("<list rend=\"numbered\">(.*?)</list>", text)) {
+            text = text.replace(r.group(), "<ol>" + r.group(1) + "</ol>");
         }
 
         // images
