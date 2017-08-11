@@ -323,8 +323,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
-        Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -"
-                + SolrConstants.ACCESSCONDITION + ":\"license type 3 name\"", suffix);
+        Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -" + SolrConstants.ACCESSCONDITION
+                + ":\"license type 3 name\"", suffix);
     }
 
     /**
@@ -698,8 +698,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.webm");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_WEBM + ":\"00000001.webm\"",
-                    result[0]);
+            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_WEBM + ":\"00000001.webm\"", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME_WEBM, result[1]);
         }
         {
@@ -709,8 +708,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         {
             String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.mp3");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_MPEG3 + ":\"00000001.mp3\"",
-                    result[0]);
+            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_MPEG3 + ":\"00000001.mp3\"", result[0]);
             Assert.assertEquals(SolrConstants.FILENAME_MPEG3, result[1]);
         }
         {
@@ -873,6 +871,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
                 + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
                 + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase2);
+    }
+
+    /**
+     * @see SearchHelper#applyHighlightingToPhrase(String,String)
+     * @verifies ignore special characters
+     */
+    @Test
+    public void applyHighlightingToPhrase_shouldIgnoreSpecialCharacters() throws Exception {
+        String phrase = "FOO BAR Foo Bar foo bar";
+        String highlightedPhrase1 = SearchHelper.applyHighlightingToPhrase(phrase, "foo-bar");
+        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO BAR" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Foo Bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase1);
     }
 
     /**
