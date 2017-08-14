@@ -1486,8 +1486,8 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (String term : terms) {
-            String normalizedPhrase = phrase.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
-            String normalizedTerm = term.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
+            String normalizedPhrase = normalizeString(phrase);
+            String normalizedTerm = normalizeString(term);
             if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
             }
@@ -1514,8 +1514,8 @@ public final class SearchHelper {
         }
 
         StringBuilder sb = new StringBuilder();
-        String normalizedPhrase = phrase.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
-        String normalizedTerm = term.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
+        String normalizedPhrase = normalizeString(phrase);
+        String normalizedTerm = normalizeString(term);
         int startIndex = normalizedPhrase.indexOf(normalizedTerm);
         if (startIndex == -1) {
             return phrase;
@@ -1526,6 +1526,19 @@ public final class SearchHelper {
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
+    }
+
+    /**
+     * 
+     * @param string
+     * @return
+     */
+    static String normalizeString(String string) {
+        if (string == null) {
+            return null;
+        }
+
+        return string.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
     }
 
     /**
