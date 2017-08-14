@@ -1486,7 +1486,9 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (String term : terms) {
-            if (StringUtils.containsIgnoreCase(phrase, term)) {
+            String normalizedPhrase = phrase.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
+            String normalizedTerm = term.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
+            if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
             }
         }
