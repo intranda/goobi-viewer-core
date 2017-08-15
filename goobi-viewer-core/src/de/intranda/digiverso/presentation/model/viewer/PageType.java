@@ -119,7 +119,7 @@ public enum PageType {
             return null;
         }
         for (PageType p : PageType.values()) {
-            if (p.getName().equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
+            if (p.name.equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
                 return p;
             }
         }
