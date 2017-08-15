@@ -75,14 +75,17 @@
                                                     <div class="search-calendar__month-week clearfix">
                                                         <ui:repeat var="day" value="#{week.daysOfWeek}">
                                                             <h:panelGroup rendered="#{day.name != ''}">
-                                                                <div
-                                                                    class="search-calendar__month-day">
+                                                                <div class="search-calendar__month-day">
                                                                     <h:panelGroup rendered="#{day.hits == 0}">
                                                                         <span>#{day.name}</span>
                                                                     </h:panelGroup>
-                                                                    <h:commandLink value="#{day.name}" title="#{day.hits} #{msg.currentHitsForDay}"
+                                                                    <h:commandLink 
+                                                                    	value="#{day.name}"
                                                                         rendered="#{day.hits != 0}"
-                                                                        action="#{calendarBean.searchCalendar(month, day)}">
+                                                                        action="#{calendarBean.searchCalendar(month, day)}"
+                                                                        styleClass="search-calendar__month-day-link"
+                                                                        tabindex="0"
+                                                                        role="button">
                                                                         <f:setPropertyActionListener target="#{calendarBean.currentMonth}" value="#{month}" />
                                                                         <f:setPropertyActionListener target="#{calendarBean.currentDay}" value="#{day}" />
                                                                     </h:commandLink>
@@ -91,8 +94,22 @@
                                                             <h:panelGroup rendered="#{day.name == ''}">
                                                                 <div class="search-calendar__month-day-empty"></div>
                                                             </h:panelGroup>
+
+		                                                    <script>
+													            $( '.search-calendar__month-day-link' ).popover({
+													                placement: 'auto bottom',
+													                title: '#{msg.currentHitsForDay}',
+													                content: '#{day.hits}',
+													                trigger: 'hover',
+													                viewport: {
+													                    selector: '#searchTimeline'
+													                },
+													                html: true
+													            } );
+												            </script>
                                                         </ui:repeat>
                                                     </div>
+                                                    
                                                 </ui:repeat>
                                             </div>
                                         </div>
@@ -102,7 +119,7 @@
                         </h:panelGroup>
                     </div>
                 </h:form>
-            </div>
+            </div>            
         </f:view>
     </ui:define>
 
