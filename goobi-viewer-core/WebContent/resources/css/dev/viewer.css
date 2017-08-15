@@ -3678,9 +3678,20 @@ input[id*="cmdMoveTo"] {
   display: block;
   padding: 5px 10px;
 }
+.search-calendar__month-day a,
 .search-calendar__month-day button {
   color: #428bca;
   text-decoration: underline;
+}
+.search-calendar__month-day a:hover,
+.search-calendar__month-day button:hover,
+.search-calendar__month-day a:focus,
+.search-calendar__month-day button:focus,
+.search-calendar__month-day a:active,
+.search-calendar__month-day button:active {
+  text-decoration: none;
+  color: #fff;
+  background-color: #428bca;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
