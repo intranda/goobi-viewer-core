@@ -860,6 +860,14 @@ public class ActiveDocumentBean implements Serializable {
         return imageContainerWidth;
     }
 
+    public int getNumberOfImages() throws IndexUnreachableException {
+        if (viewManager != null) {
+            return viewManager.getImagesCount();
+        }
+
+        return 0;
+    }
+
     /**
      * @return Not this.topDocumentIddoc but ViewManager.topDocumentIddoc
      */
