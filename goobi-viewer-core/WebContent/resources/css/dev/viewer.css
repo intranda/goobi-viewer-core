@@ -419,6 +419,17 @@ table,
 .list--divider li:last-child:after {
   display: none;
 }
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .list--horizontal li {
+    display: block;
+    float: none;
+    text-align: center;
+  }
+}
 /* IMAGES */
 .faded {
   position: relative;
