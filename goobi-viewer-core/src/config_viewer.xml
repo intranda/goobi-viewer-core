@@ -1098,17 +1098,6 @@
 		</notificationEmailAddress>
 	</userComments>
 
-    <crowdsourcing>
-        <!-- enabled: enables crowdsourcing functionality globally (default is false) -->
-        <enabled>true</enabled>
-        <!-- editFullText: enables crowdsourcing functions for full-texts (default is true) -->
-        <editFullText>true</editFullText>
-        <!-- editUG/opt enables crowdsourcing functions for user-generated content (default is true) -->
-        <editUGC>true</editUGC>
-        <!--  reindexOnSave: if true, the work is reindexed after every save of fulltext and user generated content 
-        Otherwise reindexing is only performed upon page completion-->
-        <reindexOnSave>false</reindexOnSave>
-    </crowdsourcing>
     <cms>
         <!-- enabled: enables cms functionality globally (default is false) -->
         <enabled>true</enabled>
