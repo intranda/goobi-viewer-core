@@ -363,6 +363,9 @@ table,
   padding-left: 0.9375rem;
   text-align: left;
 }
+.popover-content {
+  color: #1a1a1a;
+}
 /* ==============================================================
    CSS Helper Classes
    ==============================================================*/
@@ -415,6 +418,17 @@ table,
 }
 .list--divider li:last-child:after {
   display: none;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .list--horizontal li {
+    display: block;
+    float: none;
+    text-align: center;
+  }
 }
 /* IMAGES */
 .faded {
@@ -3678,9 +3692,20 @@ input[id*="cmdMoveTo"] {
   display: block;
   padding: 5px 10px;
 }
+.search-calendar__month-day a,
 .search-calendar__month-day button {
   color: #428bca;
   text-decoration: underline;
+}
+.search-calendar__month-day a:hover,
+.search-calendar__month-day button:hover,
+.search-calendar__month-day a:focus,
+.search-calendar__month-day button:focus,
+.search-calendar__month-day a:active,
+.search-calendar__month-day button:active {
+  text-decoration: none;
+  color: #fff;
+  background-color: #428bca;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;

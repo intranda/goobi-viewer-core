@@ -282,6 +282,11 @@ var viewerJS = ( function() {
             } );
         }
         
+        // disable submit button on feedback
+        if ( currentPage === 'feedback' ) {
+            $( '#submitFeedbackBtn' ).attr( 'disabled', true );
+        }
+        
         // set sidebar position for NER-Widget
         if ( $( '#widgetNerFacetting' ).length > 0 ) {
             nerFacettingConfig.sidebarRight = _defaults.widgetNerSidebarRight;

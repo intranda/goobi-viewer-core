@@ -47,6 +47,24 @@
 	}
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+	.list--horizontal li {
+	    display: block;
+	    float: none;
+	    text-align: center;
+	}
+}
+
 /* IMAGES */
 .faded {
 	position: relative;

@@ -80,9 +80,17 @@
             display: block;
             padding: 5px 10px;
         }
+        a,
         button {
         	color: @blue;
         	text-decoration: underline;
+        	&:hover,
+        	&:focus,
+        	&:active {
+        		text-decoration: none;
+        		color: @white;
+        		background-color: @blue;
+        	}
         }
     }
     &__month-day-empty {

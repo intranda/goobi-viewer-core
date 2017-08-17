@@ -398,7 +398,7 @@
 			for later re-use. Default is true. -->
 		<searchSavingEnabled>false</searchSavingEnabled>
 		<!-- boostTopLevelDocstructs: If true, anchors receive a factor 10 boost, 
-			volumes and standalone records a factore 5 boost. This results in anchors 
+			volumes and standalone records a factor 5 boost. This results in anchors 
 			appearing on top, followed by other records, followed by lower level docstructs, 
 			when sorting by relevance. Default is true. -->
 		<boostTopLevelDocstructs>false</boostTopLevelDocstructs>

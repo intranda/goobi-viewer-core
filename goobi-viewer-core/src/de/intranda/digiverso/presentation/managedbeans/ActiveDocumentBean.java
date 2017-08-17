@@ -643,8 +643,8 @@ public class ActiveDocumentBean implements Serializable {
         page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
         page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
 
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/').append(getPersistentIdentifier())
-                .append('/').append(page).append('/');
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/').append(page).append('/');
 
         return sbUrl.toString();
     }
@@ -662,7 +662,7 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(pageType).append('/').append(getPersistentIdentifier())
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/').append(getPersistentIdentifier())
                 .append('/');
 
         return sbUrl.toString();

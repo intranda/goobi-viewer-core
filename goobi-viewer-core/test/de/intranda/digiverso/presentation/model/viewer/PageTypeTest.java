@@ -16,10 +16,20 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
+
 public class PageTypeTest {
-    
+
+    @Before
+    public void setUp() throws Exception {
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
+
     /**
      * @see PageType#determinePageType(String,String,String,boolean,boolean,boolean,boolean)
      * @verifies return overview page type if preferOverviewPage true
@@ -72,5 +82,32 @@ public class PageTypeTest {
     @Test
     public void determinePageType_shouldReturnMedatataPageTypeIfNothingElseMatches() throws Exception {
         Assert.assertEquals(PageType.viewMetadata, PageType.determinePageType("Monograph", null, false, false, false, false));
+    }
+
+    /**
+     * @see PageType#getByName(String)
+     * @verifies return correct type for raw names
+     */
+    @Test
+    public void getByName_shouldReturnCorrectTypeForRawNames() throws Exception {
+        Assert.assertEquals(PageType.viewFulltext, PageType.getByName("fulltext"));
+    }
+
+    /**
+     * @see PageType#getByName(String)
+     * @verifies return correct type for mapped names
+     */
+    @Test
+    public void getByName_shouldReturnCorrectTypeForMappedNames() throws Exception {
+        Assert.assertEquals(PageType.viewImage, PageType.getByName("image"));
+    }
+
+    /**
+     * @see PageType#getByName(String)
+     * @verifies return correct type for enum names
+     */
+    @Test
+    public void getByName_shouldReturnCorrectTypeForEnumNames() throws Exception {
+        Assert.assertEquals(PageType.viewFulltext, PageType.getByName("viewFulltext"));
     }
 }
