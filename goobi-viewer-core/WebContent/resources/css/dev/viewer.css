@@ -1110,8 +1110,14 @@ div.mce-fullscreen {
 /* MOBILE TOGGLE WRAPPER */
 /* BLOCK */
 #mobileToggleWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: none;
   padding: 10px 24px;
+  background-color: #fff;
+  z-index: 999;
   /* ELEMENT */
 }
 #mobileToggleWrapper .customer-header-logo img {
@@ -1175,7 +1181,10 @@ div.mce-fullscreen {
    ==============================================================*/
 #mobileNav {
   display: none;
-  position: absolute;
+  position: fixed;
+  top: 52px;
+  left: 0;
+  right: 0;
   width: 100%;
   max-height: 250px;
   padding: 0 15px;
