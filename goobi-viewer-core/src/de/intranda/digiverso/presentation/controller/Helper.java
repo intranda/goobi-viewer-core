@@ -96,7 +96,6 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
-import de.intranda.digiverso.presentation.modules.CrowdsourcingModule;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 /**
