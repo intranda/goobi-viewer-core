@@ -17,9 +17,6 @@ package de.intranda.digiverso.presentation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
@@ -48,7 +45,7 @@ public class ContextListener implements ServletContextListener {
 
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
-    public static volatile String prettyConfigFiles = "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-skeleton.xml";
+    public static volatile String prettyConfigFiles = "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
     // ImageIO.scanForPlugins();
