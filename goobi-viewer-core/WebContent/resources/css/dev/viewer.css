@@ -4588,11 +4588,13 @@ div.olMapViewport {
 #metadataElementWrapper .glyphicon {
   margin-right: 5px;
 }
+/* DOWNLOADS */
 #viewMetadataDownloads {
   margin-bottom: 1.3125rem;
 }
 #viewMetadataDownloads ul li {
   display: inline-block;
+  margin-bottom: 4px;
   /* BLOCK */
 }
 #viewMetadataDownloads ul li.dl-links {
