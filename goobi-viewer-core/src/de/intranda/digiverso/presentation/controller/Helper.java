@@ -91,9 +91,12 @@ import de.intranda.digiverso.presentation.Version;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.modules.CrowdsourcingModule;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 /**
@@ -609,7 +612,39 @@ public class Helper {
     }
 
     /**
-     *
+     * Re-index in background thread to significantly decrease saving times.
+     * 
+     * @param pageCompleted
+     * @return
+     * @throws ModuleMissingException
+     */
+    public static void triggerReIndexRecord(String pi, String recordType, OverviewPage overviewPage) {
+        Thread backgroundThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    if (!Helper.reIndexRecord(pi, recordType, overviewPage)) {
+                        logger.error("Failed to re-index  record {}", pi);
+                        Messages.error("reIndexRecordFailure");
+                    } else {
+                        Messages.info("reIndexRecordSuccess");
+                    }
+                } catch (DAOException e) {
+                    logger.error("Failed to reindex record " + pi + ": " + e.getMessage(), e);
+                    Messages.error("reIndexRecordFailure");
+                }
+            }
+        });
+
+        logger.debug("Re-indexing record {}", pi);
+        backgroundThread.start();
+    }
+
+    /**
+     * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
+     * performance is of importance, use <code>triggerReIndexRecord</code> instead.
+     * 
      * @param pi
      * @param recordType
      * @param overviewPage
