@@ -377,6 +377,8 @@ public class SearchHit implements Comparable<SearchHit> {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                highlightedValue = highlightedValue.replaceAll("(\\W)(" + fieldValue + ")(\\W)", "$1" + translatedValue + "$3");
                                 foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
                             }
                         }
@@ -390,6 +392,8 @@ public class SearchHit implements Comparable<SearchHit> {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
+                                String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                highlightedValue = highlightedValue.replaceAll("(\\W)(" + fieldValue + ")(\\W)", "$1" + translatedValue + "$3");
                                 foundMetadata.add(new StringPair(Helper.getTranslation(fieldName, locale), highlightedValue));
                             }
                         }
