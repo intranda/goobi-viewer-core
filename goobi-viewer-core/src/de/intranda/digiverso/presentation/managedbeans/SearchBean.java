@@ -513,12 +513,12 @@ public class SearchBean implements Serializable {
                     switch (queryItem.getOperator()) {
                         case IS:
                         case PHRASE:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"").append(queryItem
-                                    .getValue()).append('"');
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"")
+                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append('"');
                             break;
                         default:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ").append(queryItem
-                                    .getValue());
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ")
+                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
 
                     // Add item query part to the group query

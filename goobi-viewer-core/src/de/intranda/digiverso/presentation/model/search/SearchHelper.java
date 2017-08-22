@@ -1506,6 +1506,7 @@ public final class SearchHelper {
      * @should ignore special characters
      */
     static String applyHighlightingToPhrase(String phrase, String term) {
+                
         if (phrase == null) {
             throw new IllegalArgumentException("phrase may not be null");
         }
