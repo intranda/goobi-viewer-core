@@ -1602,17 +1602,18 @@ if(!Number.isNaN) {
                     $( event.element ).remove();
                 }
             });
-            
-            osViewer.observables.viewerOpen.subscribe( function( data ) {
-                
-            	for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
-                    var highlightCoords = _defaults.image.highlightCoords[ index ];
-                    osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip );
-                }
-                if ( _initializedCallback ) {
-                    _initializedCallback();
-                }
-            } );
+            if(_defaults.image.highlightCoords) {
+               	osViewer.observables.viewerOpen.subscribe( function( data ) {
+            		
+            		for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
+            			var highlightCoords = _defaults.image.highlightCoords[ index ];
+            			osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip );
+            		}
+            		if ( _initializedCallback ) {
+            			_initializedCallback();
+            		}
+            	} );
+            }
         },
         onInitialized: function( callback ) {
             var oldCallback = _initializedCallback;
