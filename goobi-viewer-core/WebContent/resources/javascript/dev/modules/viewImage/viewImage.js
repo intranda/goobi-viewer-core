@@ -523,8 +523,18 @@ var viewImage = ( function() {
                 return observer.onNext(event);
             } );
         });
+        observables.animationComplete = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation-finish', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
         observables.viewportUpdate = Rx.Observable.create(function(observer) {
             viewer.addHandler( 'update-viewport', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.animation = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation', function( event ) {
                 return observer.onNext(event);
             } );
         });

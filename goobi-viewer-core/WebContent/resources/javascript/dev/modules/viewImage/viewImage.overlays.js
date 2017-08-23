@@ -404,7 +404,6 @@ var viewImage = ( function( osViewer ) {
             }
             
             if ( overlayStyle.interactive ) {
-                
                 element.focus = function( focus ) {
                     if ( focus ) {
                         $( element ).addClass( _focusStyleClass );
@@ -414,10 +413,8 @@ var viewImage = ( function( osViewer ) {
 //                        $( element ).tooltip( "show" );
                     }
                     else {
-                    	console.log(overlay.title, " lose focus");
                         $( element ).removeClass( _focusStyleClass );
                         $(".tooltipp#tooltip_" + overlay.id).remove();
-//                        $( element ).tooltip( "hide" );
                     }
                     if ( _overlayFocusHook ) {
                         _overlayFocusHook( overlay, focus );
@@ -458,19 +455,38 @@ var viewImage = ( function( osViewer ) {
     
     function _createTooltip(element, overlay) {
     	if(overlay.title) {    		
+    		var canvasCorner = osViewer.sizes.$container.offset();
+    		
     		var top = $( element ).offset().top;
     		var left = $( element ).offset().left;
     		var bottom = top + $( element ).outerHeight();
     		var right = left + $( element ).outerWidth();
-    		console.log("tooltip coords = ", left, top, right, bottom);
+//    		console.log("Tooltip at ", left, top, right, bottom);
+
+    		
     		var $tooltip = $("<div class='tooltipp'>" + overlay.title + "</div>");
     		$("body").append($tooltip);
     		var tooltipPadding = parseFloat($tooltip.css("padding-top"));
-    		console.log("padding = ", tooltipPadding);
     		$tooltip.css("max-width",right-left);
-    		$tooltip.css("top", top-$tooltip.outerHeight()-tooltipPadding);
-    		$tooltip.css("left", left);
+    		$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
+    		$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
     		$tooltip.attr("id", "tooltip_" + overlay.id);
+//    		console.log("tooltip width = ", $tooltip.width());
+    		
+    		//listener for zoom
+    		
+    		osViewer.observables.animation
+    		.do(function() {
+//    			console.log("element at: ", $(element).offset());  
+    			var top = Math.max($( element ).offset().top, canvasCorner.top);
+        		var left = Math.max($( element ).offset().left, canvasCorner.left);
+    			$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
+    			$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
+    		})
+    		.takeWhile(function() {
+    			return $(".tooltipp").length > 0;
+    		})
+    		.subscribe();
     	}
     }
     
