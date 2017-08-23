@@ -2089,4 +2089,18 @@ public class ViewManager implements Serializable {
     public CalendarView getCalendarView() {
         return calendarView;
     }
+    
+    /**
+     * @return the firstPageOrientation
+     */
+    public PageOrientation getFirstPageOrientation() {
+        return firstPageOrientation;
+    }
+    
+    /**
+     * @param firstPageOrientation the firstPageOrientation to set
+     */
+    public void setFirstPageOrientation(PageOrientation firstPageOrientation) {
+        this.firstPageOrientation = firstPageOrientation;
+    }
 }

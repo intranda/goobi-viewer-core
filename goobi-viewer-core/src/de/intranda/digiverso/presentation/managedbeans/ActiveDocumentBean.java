@@ -65,6 +65,7 @@ import de.intranda.digiverso.presentation.model.toc.export.pdf.TocWriter;
 import de.intranda.digiverso.presentation.model.toc.export.pdf.WriteTocException;
 import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.PageOrientation;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
@@ -303,8 +304,10 @@ public class ActiveDocumentBean implements Serializable {
                 if (!docList.isEmpty()) {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
+                    PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid, viewManager
                             .getMainMimeType());
+                    viewManager.setFirstPageOrientation(firstPageOrientation);
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
                 }
