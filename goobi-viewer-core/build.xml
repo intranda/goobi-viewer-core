@@ -1229,7 +1229,7 @@
 		<property name="contentserver.color.green" value="0" />
 		<property name="contentserver.color.blue" value="28" />
 		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
+		<antcall target="war-internal" />
 	</target>
 
 </project>
