@@ -2103,4 +2103,17 @@ public class ViewManager implements Serializable {
     public void setFirstPageOrientation(PageOrientation firstPageOrientation) {
         this.firstPageOrientation = firstPageOrientation;
     }
+    
+    /**
+     * @return 1 if we are in double page mode and the current page is the right page. 0 otherwise
+     * @throws DAOException 
+     * @throws IndexUnreachableException 
+     */
+    public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
+        if(isDoublePageMode()) {
+            return getCurrentRightPage().equals(getCurrentPage()) ? 1 : 0;
+        } else {
+            return 0;
+        }
+    }
 }

@@ -340,35 +340,38 @@ var viewImage = ( function() {
             return null;
         },
         getScaleToOriginalSize: function(imageNo) {
-        	if(!imageNo) {
-        		imageNo = 0;
-        	}
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
+        	return 1.0;
+//        	if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
         },
         scaleToOriginalSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         scaleToImageSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToImageSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToImageSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         close: function() {
             if ( _debug ) {

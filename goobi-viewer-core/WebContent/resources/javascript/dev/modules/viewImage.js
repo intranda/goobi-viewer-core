@@ -330,35 +330,38 @@
             return null;
         },
         getScaleToOriginalSize: function(imageNo) {
-        	if(!imageNo) {
-        		imageNo = 0;
-        	}
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
+        	return 1.0;
+//        	if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
         },
         scaleToOriginalSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         scaleToImageSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToImageSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToImageSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         close: function() {
             if ( _debug ) {
@@ -1586,7 +1589,7 @@ if(!Number.isNaN) {
 ;var viewImage = ( function( osViewer ) {
     'use strict';
     
-    var _debug = false;
+    var _debug = true;
     var _focusStyleClass = 'focus';
     var _highlightStyleClass = 'highlight';
     var _overlayFocusHook = null;
@@ -1614,10 +1617,10 @@ if(!Number.isNaN) {
             });
             if(_defaults.image.highlightCoords) {
                	osViewer.observables.viewerOpen.subscribe( function( data ) {
-            		
             		for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
             			var highlightCoords = _defaults.image.highlightCoords[ index ];
-            			osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip );
+            			var imageIndex = highlightCoords.pageIndex;
+            			osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip, imageIndex);
             		}
             		if ( _initializedCallback ) {
             			_initializedCallback();
@@ -1663,10 +1666,11 @@ if(!Number.isNaN) {
                 return overlay.type === osViewer.overlays.overlayTypes.LINE
             } ).slice();
         },
-        draw: function( group, displayTitle ) {
+        draw: function( group, displayTitle, imageIndex ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.draw: group - ' + group );
                 console.log( 'osViewer.overlays.draw: displayTitle - ' + displayTitle );
+                console.log( 'osViewer.overlays.draw: imageIndex - ' + imageIndex );
             }
             
             var coordList = _defaults.getCoordinates( group );
@@ -1675,7 +1679,7 @@ if(!Number.isNaN) {
                     var coords = coordList.coordinates[ index ];
                     var title = displayTitle && coords.length > 4 ? coords[ 4 ] : '';
                     var id = coords.length > 5 ? coords[ 5 ] : index;
-                    _createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group );
+                    _createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group, imageIndex );
                 }
             }
         },
@@ -1883,7 +1887,7 @@ if(!Number.isNaN) {
         
         y1 += length / 2 * Math.sin( angle * Math.PI / 180 );
         x1 -= length / 2 * Math.sin( angle * Math.PI / 180 ) / Math.tan( beta * Math.PI / 180 );
-        
+ 
         var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x1, y1, length, 1 );
         var p1Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p1 );
         var p2Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p2 );
@@ -1908,7 +1912,7 @@ if(!Number.isNaN) {
     /**
      * coordinates are in original image space
      */
-    function _createRectangle( x, y, width, height, title, id, group ) {
+    function _createRectangle( x, y, width, height, title, id, group, imageIndex ) {
         if ( _debug ) {
             console.log( '------------------------------' );
             console.log( 'Overlays _createRectangle: x - ' + x );
@@ -1918,25 +1922,35 @@ if(!Number.isNaN) {
             console.log( 'Overlays _createRectangle: title - ' + title );
             console.log( 'Overlays _createRectangle: id - ' + id );
             console.log( 'Overlays _createRectangle: group - ' + group );
+            console.log( 'Overlays _createRectangle: imageIndex - ' + imageIndex );
             console.log( '------------------------------' );
         }
         x = osViewer.scaleToImageSize( x );
         y = osViewer.scaleToImageSize( y );
         width = osViewer.scaleToImageSize( width );
         height = osViewer.scaleToImageSize( height );
-        var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height );
-        var overlay = {
-            type: osViewer.overlays.overlayTypes.RECTANGLE,
-            rect: rectangle,
-            group: group,
-            id: id,
-            title: title
-        };
-        var overlayStyle = _defaults.getOverlayGroup( overlay.group );
-        if ( !overlayStyle.hidden ) {
-            _drawOverlay( overlay );
+        
+        if(!imageIndex) {
+        	imageIndex = 0;
         }
-        _overlays.push( overlay );
+			var tiledImage = osViewer.viewer.world.getItemAt(imageIndex);
+			var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
+			console.log("Found rect ", rectangle); 
+//			var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height );
+			var overlay = {
+					type: osViewer.overlays.overlayTypes.RECTANGLE,
+					rect: rectangle,
+					group: group,
+					id: id,
+					title: title
+			};
+			var overlayStyle = _defaults.getOverlayGroup( overlay.group );
+			if ( !overlayStyle.hidden ) {
+				_drawOverlay( overlay );
+			}
+			_overlays.push( overlay );
+
+        
         
     }
     
