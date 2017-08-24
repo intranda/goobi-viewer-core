@@ -1,17 +1,20 @@
-/*!
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
- *
- * Visit these websites for more information.
- * - http://www.intranda.com
- * - http://digiverso.com
- *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+/*
+ * ! This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */var viewImage = ( function() {
     'use strict';
     
@@ -331,37 +334,37 @@
         },
         getScaleToOriginalSize: function(imageNo) {
         	return 1.0;
-//        	if(!imageNo) {
-//        		imageNo = 0;
-//        	}
-//            var displaySize = osViewer.viewer.viewport._contentSize.x;
-//            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
+// if(!imageNo) {
+// imageNo = 0;
+// }
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
         },
         scaleToOriginalSize: function( value, imageNo ) {
         	return value;
-//            if ( _debug ) {
-//                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
-//            }
+// if ( _debug ) {
+// console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
+// }
 //            
-//            if(!imageNo) {
-//        		imageNo = 0;
-//        	}
+// if(!imageNo) {
+// imageNo = 0;
+// }
 //            
-//            var displaySize = osViewer.viewer.viewport._contentSize.x;
-//            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         scaleToImageSize: function( value, imageNo ) {
         	return value;
-//            if ( _debug ) {
-//                console.log( 'Overlays _scaleToImageSize: value - ' + value );
-//            }
+// if ( _debug ) {
+// console.log( 'Overlays _scaleToImageSize: value - ' + value );
+// }
 //            
-//            if(!imageNo) {
-//        		imageNo = 0;
-//        	}
+// if(!imageNo) {
+// imageNo = 0;
+// }
 //            
-//            var displaySize = osViewer.viewer.viewport._contentSize.x;
-//            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         close: function() {
             if ( _debug ) {
@@ -1589,7 +1592,7 @@ if(!Number.isNaN) {
 ;var viewImage = ( function( osViewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _focusStyleClass = 'focus';
     var _highlightStyleClass = 'highlight';
     var _overlayFocusHook = null;
@@ -1936,7 +1939,8 @@ if(!Number.isNaN) {
 			var tiledImage = osViewer.viewer.world.getItemAt(imageIndex);
 			var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
 			console.log("Found rect ", rectangle); 
-//			var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height );
+// var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height
+// );
 			var overlay = {
 					type: osViewer.overlays.overlayTypes.RECTANGLE,
 					rect: rectangle,
@@ -1969,9 +1973,9 @@ if(!Number.isNaN) {
         var overlayStyle = _defaults.getOverlayGroup( overlay.group );
         if ( overlayStyle ) {
             if(_debug)console.log("overlay style", overlayStyle);
-//            element.title = overlay.title;
-//            $( element ).attr( "data-toggle", "tooltip" );
-//            $( element ).attr( "data-placement", "auto top" );
+// element.title = overlay.title;
+// $( element ).attr( "data-toggle", "tooltip" );
+// $( element ).attr( "data-placement", "auto top" );
             $( element ).addClass( overlayStyle.styleClass );
             
             if ( overlay.type === osViewer.overlays.overlayTypes.LINE ) {
@@ -1984,8 +1988,8 @@ if(!Number.isNaN) {
                         $( element ).addClass( _focusStyleClass );
                         _createTooltip(element, overlay);
                         
-//                        tooltip.height(100);
-//                        $( element ).tooltip( "show" );
+// tooltip.height(100);
+// $( element ).tooltip( "show" );
                     }
                     else {
                         $( element ).removeClass( _focusStyleClass );
@@ -2036,7 +2040,7 @@ if(!Number.isNaN) {
     		var left = $( element ).offset().left;
     		var bottom = top + $( element ).outerHeight();
     		var right = left + $( element ).outerWidth();
-//    		console.log("Tooltip at ", left, top, right, bottom);
+// console.log("Tooltip at ", left, top, right, bottom);
 
     		
     		var $tooltip = $("<div class='tooltipp'>" + overlay.title + "</div>");
@@ -2046,13 +2050,13 @@ if(!Number.isNaN) {
     		$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
     		$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
     		$tooltip.attr("id", "tooltip_" + overlay.id);
-//    		console.log("tooltip width = ", $tooltip.width());
+// console.log("tooltip width = ", $tooltip.width());
     		
-    		//listener for zoom
+    		// listener for zoom
     		
     		osViewer.observables.animation
     		.do(function() {
-//    			console.log("element at: ", $(element).offset());  
+// console.log("element at: ", $(element).offset());
     			var top = Math.max($( element ).offset().top, canvasCorner.top);
         		var left = Math.max($( element ).offset().left, canvasCorner.left);
     			$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));

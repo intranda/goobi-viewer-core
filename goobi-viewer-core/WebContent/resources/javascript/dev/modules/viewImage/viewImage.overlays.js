@@ -25,7 +25,7 @@
 var viewImage = ( function( osViewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _focusStyleClass = 'focus';
     var _highlightStyleClass = 'highlight';
     var _overlayFocusHook = null;
@@ -372,7 +372,8 @@ var viewImage = ( function( osViewer ) {
 			var tiledImage = osViewer.viewer.world.getItemAt(imageIndex);
 			var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
 			console.log("Found rect ", rectangle); 
-//			var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height );
+// var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height
+// );
 			var overlay = {
 					type: osViewer.overlays.overlayTypes.RECTANGLE,
 					rect: rectangle,
@@ -405,9 +406,9 @@ var viewImage = ( function( osViewer ) {
         var overlayStyle = _defaults.getOverlayGroup( overlay.group );
         if ( overlayStyle ) {
             if(_debug)console.log("overlay style", overlayStyle);
-//            element.title = overlay.title;
-//            $( element ).attr( "data-toggle", "tooltip" );
-//            $( element ).attr( "data-placement", "auto top" );
+// element.title = overlay.title;
+// $( element ).attr( "data-toggle", "tooltip" );
+// $( element ).attr( "data-placement", "auto top" );
             $( element ).addClass( overlayStyle.styleClass );
             
             if ( overlay.type === osViewer.overlays.overlayTypes.LINE ) {
@@ -420,8 +421,8 @@ var viewImage = ( function( osViewer ) {
                         $( element ).addClass( _focusStyleClass );
                         _createTooltip(element, overlay);
                         
-//                        tooltip.height(100);
-//                        $( element ).tooltip( "show" );
+// tooltip.height(100);
+// $( element ).tooltip( "show" );
                     }
                     else {
                         $( element ).removeClass( _focusStyleClass );
@@ -472,7 +473,7 @@ var viewImage = ( function( osViewer ) {
     		var left = $( element ).offset().left;
     		var bottom = top + $( element ).outerHeight();
     		var right = left + $( element ).outerWidth();
-//    		console.log("Tooltip at ", left, top, right, bottom);
+// console.log("Tooltip at ", left, top, right, bottom);
 
     		
     		var $tooltip = $("<div class='tooltipp'>" + overlay.title + "</div>");
@@ -482,13 +483,13 @@ var viewImage = ( function( osViewer ) {
     		$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
     		$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
     		$tooltip.attr("id", "tooltip_" + overlay.id);
-//    		console.log("tooltip width = ", $tooltip.width());
+// console.log("tooltip width = ", $tooltip.width());
     		
-    		//listener for zoom
+    		// listener for zoom
     		
     		osViewer.observables.animation
     		.do(function() {
-//    			console.log("element at: ", $(element).offset());  
+// console.log("element at: ", $(element).offset());
     			var top = Math.max($( element ).offset().top, canvasCorner.top);
         		var left = Math.max($( element ).offset().left, canvasCorner.left);
     			$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
