@@ -854,6 +854,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#applyHighlightingToPhrase(String,Set)
+     * @verifies skip single character terms
+     */
+    @Test
+    public void applyHighlightingToPhrase_shouldSkipSingleCharacterTerms() throws Exception {
+        String phrase = "FOO BAR Foo Bar foo bar";
+        Set<String> terms = new HashSet<>();
+        terms.add("o");
+        String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+        Assert.assertEquals(phrase, highlightedPhrase);
+    }
+
+    /**
      * @see SearchHelper#applyHighlightingToPhrase(String,String)
      * @verifies apply highlighting to all occurrences of term
      */

@@ -1475,6 +1475,7 @@ public final class SearchHelper {
      * @param terms
      * @return
      * @should apply highlighting for all terms
+     * @should skip single character terms
      */
     public static String applyHighlightingToPhrase(String phrase, Set<String> terms) {
         if (phrase == null) {
@@ -1486,6 +1487,10 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (String term : terms) {
+            // Highlighting single-character terms can take a long time, so skip them
+            if (term.length() < 2) {
+                continue;
+            }
             String normalizedPhrase = normalizeString(phrase);
             String normalizedTerm = normalizeString(term);
             if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
@@ -1504,14 +1509,19 @@ public final class SearchHelper {
      * @return
      * @should apply highlighting to all occurrences of term
      * @should ignore special characters
+     * @should skip single character terms
      */
     static String applyHighlightingToPhrase(String phrase, String term) {
-                
         if (phrase == null) {
             throw new IllegalArgumentException("phrase may not be null");
         }
         if (term == null) {
             throw new IllegalArgumentException("term may not be null");
+        }
+
+        // Highlighting single-character terms can take a long time, so skip them
+        if (term.length() < 2) {
+            return phrase;
         }
 
         StringBuilder sb = new StringBuilder();
