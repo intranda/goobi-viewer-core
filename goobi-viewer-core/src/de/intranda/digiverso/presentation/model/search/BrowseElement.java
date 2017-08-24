@@ -626,19 +626,27 @@ public class BrowseElement implements Serializable {
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
+                                logger.trace("added " + docFieldName + " : " + highlightedValue);
                             }
                         }
                     }
                     break;
                 default:
-                    // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
-                    if (structElement.getMetadataFields().containsKey(fieldName)) {
+                    // Skip fields that are already in the list
+                    for (Metadata md : metadataList) {
+                        if (md.getLabel().equals(fieldName)) {
+                            skip = true;
+                        }
+                    }
+                    // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
+                    if (!skip && structElement.getMetadataFields().containsKey(fieldName)) {
                         List<String> fieldValues = structElement.getMetadataFields().get(fieldName);
                         for (String fieldValue : fieldValues) {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(fieldName, "", highlightedValue));
+                                logger.trace("added " + fieldName + " : " + highlightedValue);
                             }
                         }
                     }
