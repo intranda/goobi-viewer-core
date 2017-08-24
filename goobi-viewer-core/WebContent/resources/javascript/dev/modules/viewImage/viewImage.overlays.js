@@ -51,17 +51,18 @@ var viewImage = ( function( osViewer ) {
                     $( event.element ).remove();
                 }
             });
-            
-            osViewer.observables.viewerOpen.subscribe( function( data ) {
-                
-            	for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
-                    var highlightCoords = _defaults.image.highlightCoords[ index ];
-                    osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip );
-                }
-                if ( _initializedCallback ) {
-                    _initializedCallback();
-                }
-            } );
+            if(_defaults.image.highlightCoords) {
+               	osViewer.observables.viewerOpen.subscribe( function( data ) {
+            		for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
+            			var highlightCoords = _defaults.image.highlightCoords[ index ];
+            			var imageIndex = highlightCoords.pageIndex;
+            			osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip, imageIndex);
+            		}
+            		if ( _initializedCallback ) {
+            			_initializedCallback();
+            		}
+            	} );
+            }
         },
         onInitialized: function( callback ) {
             var oldCallback = _initializedCallback;
@@ -101,10 +102,11 @@ var viewImage = ( function( osViewer ) {
                 return overlay.type === osViewer.overlays.overlayTypes.LINE
             } ).slice();
         },
-        draw: function( group, displayTitle ) {
+        draw: function( group, displayTitle, imageIndex ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.draw: group - ' + group );
                 console.log( 'osViewer.overlays.draw: displayTitle - ' + displayTitle );
+                console.log( 'osViewer.overlays.draw: imageIndex - ' + imageIndex );
             }
             
             var coordList = _defaults.getCoordinates( group );
@@ -113,7 +115,7 @@ var viewImage = ( function( osViewer ) {
                     var coords = coordList.coordinates[ index ];
                     var title = displayTitle && coords.length > 4 ? coords[ 4 ] : '';
                     var id = coords.length > 5 ? coords[ 5 ] : index;
-                    _createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group );
+                    _createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group, imageIndex );
                 }
             }
         },
@@ -321,7 +323,7 @@ var viewImage = ( function( osViewer ) {
         
         y1 += length / 2 * Math.sin( angle * Math.PI / 180 );
         x1 -= length / 2 * Math.sin( angle * Math.PI / 180 ) / Math.tan( beta * Math.PI / 180 );
-        
+ 
         var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x1, y1, length, 1 );
         var p1Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p1 );
         var p2Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p2 );
@@ -346,7 +348,7 @@ var viewImage = ( function( osViewer ) {
     /**
      * coordinates are in original image space
      */
-    function _createRectangle( x, y, width, height, title, id, group ) {
+    function _createRectangle( x, y, width, height, title, id, group, imageIndex ) {
         if ( _debug ) {
             console.log( '------------------------------' );
             console.log( 'Overlays _createRectangle: x - ' + x );
@@ -356,25 +358,36 @@ var viewImage = ( function( osViewer ) {
             console.log( 'Overlays _createRectangle: title - ' + title );
             console.log( 'Overlays _createRectangle: id - ' + id );
             console.log( 'Overlays _createRectangle: group - ' + group );
+            console.log( 'Overlays _createRectangle: imageIndex - ' + imageIndex );
             console.log( '------------------------------' );
         }
         x = osViewer.scaleToImageSize( x );
         y = osViewer.scaleToImageSize( y );
         width = osViewer.scaleToImageSize( width );
         height = osViewer.scaleToImageSize( height );
-        var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height );
-        var overlay = {
-            type: osViewer.overlays.overlayTypes.RECTANGLE,
-            rect: rectangle,
-            group: group,
-            id: id,
-            title: title
-        };
-        var overlayStyle = _defaults.getOverlayGroup( overlay.group );
-        if ( !overlayStyle.hidden ) {
-            _drawOverlay( overlay );
+        
+        if(!imageIndex) {
+        	imageIndex = 0;
         }
-        _overlays.push( overlay );
+			var tiledImage = osViewer.viewer.world.getItemAt(imageIndex);
+			var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
+			console.log("Found rect ", rectangle); 
+// var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height
+// );
+			var overlay = {
+					type: osViewer.overlays.overlayTypes.RECTANGLE,
+					rect: rectangle,
+					group: group,
+					id: id,
+					title: title
+			};
+			var overlayStyle = _defaults.getOverlayGroup( overlay.group );
+			if ( !overlayStyle.hidden ) {
+				_drawOverlay( overlay );
+			}
+			_overlays.push( overlay );
+
+        
         
     }
     
@@ -393,9 +406,9 @@ var viewImage = ( function( osViewer ) {
         var overlayStyle = _defaults.getOverlayGroup( overlay.group );
         if ( overlayStyle ) {
             if(_debug)console.log("overlay style", overlayStyle);
-//            element.title = overlay.title;
-//            $( element ).attr( "data-toggle", "tooltip" );
-//            $( element ).attr( "data-placement", "auto top" );
+// element.title = overlay.title;
+// $( element ).attr( "data-toggle", "tooltip" );
+// $( element ).attr( "data-placement", "auto top" );
             $( element ).addClass( overlayStyle.styleClass );
             
             if ( overlay.type === osViewer.overlays.overlayTypes.LINE ) {
@@ -403,20 +416,17 @@ var viewImage = ( function( osViewer ) {
             }
             
             if ( overlayStyle.interactive ) {
-                
                 element.focus = function( focus ) {
                     if ( focus ) {
                         $( element ).addClass( _focusStyleClass );
                         _createTooltip(element, overlay);
                         
-//                        tooltip.height(100);
-//                        $( element ).tooltip( "show" );
+// tooltip.height(100);
+// $( element ).tooltip( "show" );
                     }
                     else {
-                    	console.log(overlay.title, " lose focus");
                         $( element ).removeClass( _focusStyleClass );
                         $(".tooltipp#tooltip_" + overlay.id).remove();
-//                        $( element ).tooltip( "hide" );
                     }
                     if ( _overlayFocusHook ) {
                         _overlayFocusHook( overlay, focus );
@@ -457,19 +467,38 @@ var viewImage = ( function( osViewer ) {
     
     function _createTooltip(element, overlay) {
     	if(overlay.title) {    		
+    		var canvasCorner = osViewer.sizes.$container.offset();
+    		
     		var top = $( element ).offset().top;
     		var left = $( element ).offset().left;
     		var bottom = top + $( element ).outerHeight();
     		var right = left + $( element ).outerWidth();
-    		console.log("tooltip coords = ", left, top, right, bottom);
+// console.log("Tooltip at ", left, top, right, bottom);
+
+    		
     		var $tooltip = $("<div class='tooltipp'>" + overlay.title + "</div>");
     		$("body").append($tooltip);
     		var tooltipPadding = parseFloat($tooltip.css("padding-top"));
-    		console.log("padding = ", tooltipPadding);
     		$tooltip.css("max-width",right-left);
-    		$tooltip.css("top", top-$tooltip.outerHeight()-tooltipPadding);
-    		$tooltip.css("left", left);
+    		$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
+    		$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
     		$tooltip.attr("id", "tooltip_" + overlay.id);
+// console.log("tooltip width = ", $tooltip.width());
+    		
+    		// listener for zoom
+    		
+    		osViewer.observables.animation
+    		.do(function() {
+// console.log("element at: ", $(element).offset());
+    			var top = Math.max($( element ).offset().top, canvasCorner.top);
+        		var left = Math.max($( element ).offset().left, canvasCorner.left);
+    			$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
+    			$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
+    		})
+    		.takeWhile(function() {
+    			return $(".tooltipp").length > 0;
+    		})
+    		.subscribe();
     	}
     }
     

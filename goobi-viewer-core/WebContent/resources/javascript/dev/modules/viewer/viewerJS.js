@@ -282,6 +282,11 @@ var viewerJS = ( function() {
             } );
         }
         
+        // disable submit button on feedback
+        if ( currentPage === 'feedback' ) {
+            $( '#submitFeedbackBtn' ).attr( 'disabled', true );
+        }
+        
         // set sidebar position for NER-Widget
         if ( $( '#widgetNerFacetting' ).length > 0 ) {
             nerFacettingConfig.sidebarRight = _defaults.widgetNerSidebarRight;
@@ -374,29 +379,38 @@ var viewerJS = ( function() {
             viewerJS.tinyMce.init( this.tinyConfig );
         }
         
-        // handle broken images
+        // handle browser bugs
         switch ( _defaults.browser ) {
             case 'Chrome':
+                /* BROKEN IMAGES */
                 $( 'img' ).error( function() {
                     $( this ).addClass( 'broken' );
                 } );
                 break;
             case 'Firefox':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
+                /* 1px BUG */
+                if ( $( '.image-doublePageView' ).length > 0 ) {
+                    $( '.image-doublePageView' ).addClass( 'oneUp' );
+                }
                 break;
             case 'IE':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
                 break;
             case 'Edge':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
                 break;
             case 'Safari':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );

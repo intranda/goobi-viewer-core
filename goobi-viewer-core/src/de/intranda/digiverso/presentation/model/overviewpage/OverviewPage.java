@@ -827,7 +827,7 @@ public class OverviewPage implements Harvestable, Serializable {
             }
 
             // Re-index record
-            Helper.reIndexRecord(pi, structElement.getSourceDocFormat(), this);
+            Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), this);
 
             // Serialize for Goobi
             if (exportToGoobi && StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getGoobiWebApiUrl())) {

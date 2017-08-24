@@ -363,6 +363,9 @@ table,
   padding-left: 0.9375rem;
   text-align: left;
 }
+.popover-content {
+  color: #1a1a1a;
+}
 /* ==============================================================
    CSS Helper Classes
    ==============================================================*/
@@ -416,6 +419,17 @@ table,
 .list--divider li:last-child:after {
   display: none;
 }
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .list--horizontal li {
+    display: block;
+    float: none;
+    text-align: center;
+  }
+}
 /* IMAGES */
 .faded {
   position: relative;
@@ -463,6 +477,11 @@ table,
 /* TYPO */
 .uppercase {
   text-transform: uppercase;
+}
+/* FIREFOX LAYOUT FIXES */
+.oneUp {
+  position: relative;
+  top: -1px;
 }
 /* BASIC COMPONENTS */
 /* ==============================================================
@@ -1096,11 +1115,17 @@ div.mce-fullscreen {
 /* MOBILE TOGGLE WRAPPER */
 /* BLOCK */
 #mobileToggleWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: none;
   padding: 10px 24px;
+  background-color: #fff;
+  z-index: 999;
   /* ELEMENT */
 }
-#mobileToggleWrapper .customer-header-logo .img {
+#mobileToggleWrapper .customer-header-logo img {
   max-height: 32px;
 }
 #mobileToggleWrapper .btn-toggle {
@@ -1161,7 +1186,10 @@ div.mce-fullscreen {
    ==============================================================*/
 #mobileNav {
   display: none;
-  position: absolute;
+  position: fixed;
+  top: 52px;
+  left: 0;
+  right: 0;
   width: 100%;
   max-height: 250px;
   padding: 0 15px;
@@ -3678,9 +3706,20 @@ input[id*="cmdMoveTo"] {
   display: block;
   padding: 5px 10px;
 }
+.search-calendar__month-day a,
 .search-calendar__month-day button {
   color: #428bca;
   text-decoration: underline;
+}
+.search-calendar__month-day a:hover,
+.search-calendar__month-day button:hover,
+.search-calendar__month-day a:focus,
+.search-calendar__month-day button:focus,
+.search-calendar__month-day a:active,
+.search-calendar__month-day button:active {
+  text-decoration: none;
+  color: #fff;
+  background-color: #428bca;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
@@ -4554,11 +4593,13 @@ div.olMapViewport {
 #metadataElementWrapper .glyphicon {
   margin-right: 5px;
 }
+/* DOWNLOADS */
 #viewMetadataDownloads {
   margin-bottom: 1.3125rem;
 }
 #viewMetadataDownloads ul li {
   display: inline-block;
+  margin-bottom: 4px;
   /* BLOCK */
 }
 #viewMetadataDownloads ul li.dl-links {
@@ -5251,6 +5292,9 @@ div.olMapViewport {
   border-radius: 0;
   background: #eee;
   cursor: pointer;
+}
+#timeMatrix .timematrix-selection #slider-range .ui-slider-handle:focus {
+  outline: none;
 }
 #timeMatrix .timematrix-selection #slider-range .ui-slider-handle .timematrix-slider-bubble-startDate,
 #timeMatrix .timematrix-selection #slider-range .ui-slider-handle .timematrix-slider-bubble-endDate {

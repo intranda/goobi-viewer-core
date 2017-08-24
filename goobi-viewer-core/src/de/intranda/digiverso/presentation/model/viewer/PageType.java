@@ -114,12 +114,20 @@ public enum PageType {
         return cmsPages;
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     * @should return correct type for raw names
+     * @should return correct type for mapped names
+     * @should return correct type for enum names
+     */
     public static PageType getByName(String name) {
         if (name == null) {
             return null;
         }
         for (PageType p : PageType.values()) {
-            if (p.getName().equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
+            if (p.getName().equalsIgnoreCase(name) || p.name.equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
                 return p;
             }
         }

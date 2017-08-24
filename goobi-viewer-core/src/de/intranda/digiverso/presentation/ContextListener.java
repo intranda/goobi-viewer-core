@@ -17,13 +17,12 @@ package de.intranda.digiverso.presentation;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.ProviderNotFoundException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -46,7 +45,7 @@ public class ContextListener implements ServletContextListener {
 
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
-    public static volatile String prettyConfigFiles = "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml";
+    public static volatile String prettyConfigFiles = "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
     // ImageIO.scanForPlugins();
@@ -72,10 +71,10 @@ public class ContextListener implements ServletContextListener {
 
         // Scan for all Pretty config files in module JARs
         try {
-            URL libUrl = sce.getServletContext().getResource("/WEB-INF/lib");
-            if (libUrl != null) {
-                logger.debug("Lib URL: {}", libUrl);
-                try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libUrl.toURI()), "*viewer-module-*.jar")) {
+            String libPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
+            if (libPath != null) {
+                logger.debug("Lib path: {}", libPath);
+                try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libPath), "*viewer-module-*.jar")) {
                     for (Path path : stream) {
                         logger.debug("Found module JAR: {}", path.getFileName().toString());
                         try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
@@ -94,17 +93,20 @@ public class ContextListener implements ServletContextListener {
                             }
                         }
                     }
+                    System.out.println("Found pretty files" + prettyConfigFiles);
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
-                } catch (URISyntaxException e) {
-                    logger.error(e.getMessage(), e);
+//                } catch (URISyntaxException e) {
+//                    logger.error(e.getMessage(), e);
+                } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
+                    logger.error("Unable to scan theme-jar for pretty config files. Probably an older tomcat");
                 }
             } else {
                 logger.error("Resource '/WEB-INF/lib' not found.");
             }
-        } catch (MalformedURLException e) {
-            logger.error(e.getMessage(), e);
-        }
+//        } catch (MalformedURLException e) {
+//            logger.error(e.getMessage(), e);
+        } finally {}
 
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);

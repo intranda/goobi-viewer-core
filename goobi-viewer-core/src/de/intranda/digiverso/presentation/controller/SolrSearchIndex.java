@@ -325,7 +325,7 @@ public final class SolrSearchIndex {
      * @should return correct doc
      */
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
-        logger.trace("getDocumentByIddoc: {}", iddoc);
+        // logger.trace("getDocumentByIddoc: {}", iddoc);
         SolrDocument ret = null;
         SolrDocumentList hits = search(new StringBuilder(SolrConstants.IDDOC).append(':').append(iddoc).toString(), 0, 1, null, null, null)
                 .getResults();
@@ -438,7 +438,7 @@ public final class SolrSearchIndex {
      * @should retrieve correct IDDOC
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
-        logger.trace("getIddocFromIdentifier: {}", identifier);
+        // logger.trace("getIddocFromIdentifier: {}", identifier);
         SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(identifier).toString(), 1, null, Collections
                 .singletonList(SolrConstants.IDDOC));
         if (!docs.isEmpty()) {

@@ -282,13 +282,13 @@ var viewerJS = ( function( viewer ) {
                 metadataKey = $( '<dt />' );
                 metadataKeyIcon = $( '<i class="fa fa-bookmark-o" aria-hidden="true" />' );
                 metadataKeyLink = $( '<a />' );
-                metadataKeyLink.attr( 'href', _defaults.contextPath + url );
+                metadataKeyLink.attr( 'href', _defaults.contextPath + '/' + url );
                 metadataKeyLink.append( item.one + ':' );
                 metadataKey.append( metadataKeyIcon ).append( metadataKeyLink );
                 // build metadata value
                 metadataValue = $( '<dd />' );
                 metadataValueLink = $( '<a />' );
-                metadataValueLink.attr( 'href', _defaults.contextPath + url );
+                metadataValueLink.attr( 'href', _defaults.contextPath + '/' +  url );
                 metadataValueLink.append( item.two );
                 metadataValue.append( metadataValueLink );
                 // build metadata list

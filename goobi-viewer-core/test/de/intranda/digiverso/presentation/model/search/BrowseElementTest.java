@@ -25,14 +25,25 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 public class BrowseElementTest extends AbstractSolrEnabledTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see BrowseElement#getFirstVolumeThumbnailPath(String)
@@ -97,6 +108,27 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
 
         be.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
         Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
+    }
+
+
+    /**
+     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map)
+     * @verifies not add duplicates from explicit terms
+     */
+    @Test
+    public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false);
+        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+        
+        StructElement se = new StructElement();
+        se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
+        Assert.assertEquals(1, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
+
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        Assert.assertEquals(1, be.getMetadataList("MD_TITLE").size());
     }
 
 }

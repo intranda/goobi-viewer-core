@@ -513,12 +513,12 @@ public class SearchBean implements Serializable {
                     switch (queryItem.getOperator()) {
                         case IS:
                         case PHRASE:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"").append(queryItem
-                                    .getValue()).append('"');
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"")
+                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append('"');
                             break;
                         default:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ").append(queryItem
-                                    .getValue());
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ")
+                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
 
                     // Add item query part to the group query
@@ -1353,7 +1353,9 @@ public class SearchBean implements Serializable {
      * @param hitsCount the hitsCount to set
      */
     public void setHitsCount(long hitsCount) {
-        currentSearch.setHitsCount(hitsCount);
+        if (currentSearch != null) {
+            currentSearch.setHitsCount(hitsCount);
+        }
     }
 
     /**
@@ -1371,7 +1373,7 @@ public class SearchBean implements Serializable {
     }
 
     public void increaseCurrentHitIndex() {
-        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
+        if (currentSearch != null && currentHitIndex < currentSearch.getHitsCount() - 1) {
             currentHitIndex++;
         }
     }

@@ -114,9 +114,9 @@
 
 					<h:panelGroup rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
 						<li>
-							<h:outputLink value="#{activeDocumentBean.viewManager.opacUrl}" target="_blank">
+							<a href="#{activeDocumentBean.viewManager.opacUrl}" target="_blank">
 								#{msg.opacLink}
-							</h:outputLink>
+							</a>
 						</li>
 					</h:panelGroup>
 					

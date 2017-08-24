@@ -66,6 +66,7 @@ import de.intranda.digiverso.presentation.model.toc.export.pdf.TocWriter;
 import de.intranda.digiverso.presentation.model.toc.export.pdf.WriteTocException;
 import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.PageOrientation;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
@@ -309,8 +310,10 @@ public class ActiveDocumentBean implements Serializable {
                     logger.trace("vm3");
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
+                    PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid, viewManager
                             .getMainMimeType());
+                    viewManager.setFirstPageOrientation(firstPageOrientation);
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
                 }
@@ -656,8 +659,8 @@ public class ActiveDocumentBean implements Serializable {
         page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
         page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
 
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/').append(getPersistentIdentifier())
-                .append('/').append(page).append('/');
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/').append(page).append('/');
 
         return sbUrl.toString();
     }
@@ -675,7 +678,7 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(pageType).append('/').append(getPersistentIdentifier())
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/').append(getPersistentIdentifier())
                 .append('/');
 
         return sbUrl.toString();

@@ -273,6 +273,11 @@
             } );
         }
         
+        // disable submit button on feedback
+        if ( currentPage === 'feedback' ) {
+            $( '#submitFeedbackBtn' ).attr( 'disabled', true );
+        }
+        
         // set sidebar position for NER-Widget
         if ( $( '#widgetNerFacetting' ).length > 0 ) {
             nerFacettingConfig.sidebarRight = _defaults.widgetNerSidebarRight;
@@ -365,29 +370,38 @@
             viewerJS.tinyMce.init( this.tinyConfig );
         }
         
-        // handle broken images
+        // handle browser bugs
         switch ( _defaults.browser ) {
             case 'Chrome':
+                /* BROKEN IMAGES */
                 $( 'img' ).error( function() {
                     $( this ).addClass( 'broken' );
                 } );
                 break;
             case 'Firefox':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
+                /* 1px BUG */
+                if ( $( '.image-doublePageView' ).length > 0 ) {
+                    $( '.image-doublePageView' ).addClass( 'oneUp' );
+                }
                 break;
             case 'IE':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
                 break;
             case 'Edge':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
                 break;
             case 'Safari':
+                /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();
                 } );
@@ -3477,6 +3491,9 @@
             // first level click
             $( '.normdataLink' ).on( 'click', function() {
                 _$this = $( this );
+                
+                _$this.off( 'focus' );
+                
                 _renderPopoverAction( _$this, _defaults.id );
             } );
         },
@@ -3521,6 +3538,9 @@
         $( document ).find( '#normdataPopover-' + id ).hide().fadeIn( 'fast', function() {
             // disable source button
             $Obj.attr( 'disabled', 'disabled' ).addClass( 'disabled' );
+            
+            // hide tooltip
+            $Obj.tooltip( 'hide' );
             
             // set event for nth level popovers
             $( '.normdataDetailLink' ).off( 'click' ).on( 'click', function() {
@@ -3703,7 +3723,7 @@
                 } );
                 
                 // set trigger to enable
-                $Obj.removeAttr( 'disabled' ).removeClass( 'disabled' );
+                $( '.normdataLink' ).removeAttr( 'disabled' ).removeClass( 'disabled' );
             } );
         }
         else {
@@ -4518,13 +4538,13 @@
                 metadataKey = $( '<dt />' );
                 metadataKeyIcon = $( '<i class="fa fa-bookmark-o" aria-hidden="true" />' );
                 metadataKeyLink = $( '<a />' );
-                metadataKeyLink.attr( 'href', _defaults.contextPath + url );
+                metadataKeyLink.attr( 'href', _defaults.contextPath + '/' + url );
                 metadataKeyLink.append( item.one + ':' );
                 metadataKey.append( metadataKeyIcon ).append( metadataKeyLink );
                 // build metadata value
                 metadataValue = $( '<dd />' );
                 metadataValueLink = $( '<a />' );
-                metadataValueLink.attr( 'href', _defaults.contextPath + url );
+                metadataValueLink.attr( 'href', _defaults.contextPath + '/' +  url );
                 metadataValueLink.append( item.two );
                 metadataValue.append( metadataValueLink );
                 // build metadata list

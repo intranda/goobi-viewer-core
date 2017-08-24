@@ -2099,4 +2099,31 @@ public class ViewManager implements Serializable {
     public CalendarView getCalendarView() {
         return calendarView;
     }
+    
+    /**
+     * @return the firstPageOrientation
+     */
+    public PageOrientation getFirstPageOrientation() {
+        return firstPageOrientation;
+    }
+    
+    /**
+     * @param firstPageOrientation the firstPageOrientation to set
+     */
+    public void setFirstPageOrientation(PageOrientation firstPageOrientation) {
+        this.firstPageOrientation = firstPageOrientation;
+    }
+    
+    /**
+     * @return 1 if we are in double page mode and the current page is the right page. 0 otherwise
+     * @throws DAOException 
+     * @throws IndexUnreachableException 
+     */
+    public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
+        if(isDoublePageMode()) {
+            return getCurrentRightPage().equals(getCurrentPage()) ? 1 : 0;
+        } else {
+            return 0;
+        }
+    }
 }

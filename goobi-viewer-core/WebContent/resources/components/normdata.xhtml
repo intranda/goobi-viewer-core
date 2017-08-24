@@ -14,7 +14,8 @@
                     type="button"
                     data-remotecontent="#{request.contextPath}/api?action=normdata&amp;url=#{val.getNormDataUrl(normDataCollection)}&amp;lang=#{navigationHelper.localeString}"
                     data-toggle="tooltip" 
-                    data-placement="top" 
+                    data-placement="top"
+                    data-trigger="hover" 
                     title="#{msg.normdataExpand}"
                     class="normdataLink"> 
                     <i class="fa fa-list-ul" aria-hidden="true"></i> 
@@ -24,7 +25,7 @@
 <!--                 <button type="button" class="sortPopovers" data-toggle="tooltip" data-placement="top" title="#{msg.normdataPopoverSort}"> -->
 <!--                     <i class="fa fa-th" aria-hidden="true" ></i> -->
 <!--                 </button> -->
-                <i class="fa fa-times closeAllPopovers" aria-hidden="true" data-toggle="tooltip" data-placement="top" title="#{msg.normdataPopoverCloseAll}"></i>
+                <i class="fa fa-times closeAllPopovers" aria-hidden="true" data-toggle="tooltip" data-placement="top" data-trigger="hover" title="#{msg.normdataPopoverCloseAll}"></i>
             </ui:repeat>
         </h:panelGroup>
     </composite:implementation>

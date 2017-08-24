@@ -1,17 +1,20 @@
-/*!
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
- *
- * Visit these websites for more information.
- * - http://www.intranda.com
- * - http://digiverso.com
- *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+/*
+ * ! This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
  */var viewImage = ( function() {
     'use strict';
     
@@ -330,35 +333,38 @@
             return null;
         },
         getScaleToOriginalSize: function(imageNo) {
-        	if(!imageNo) {
-        		imageNo = 0;
-        	}
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
+        	return 1.0;
+// if(!imageNo) {
+// imageNo = 0;
+// }
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
         },
         scaleToOriginalSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+// if ( _debug ) {
+// console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
+// }
+//            
+// if(!imageNo) {
+// imageNo = 0;
+// }
+//            
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         scaleToImageSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToImageSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+// if ( _debug ) {
+// console.log( 'Overlays _scaleToImageSize: value - ' + value );
+// }
+//            
+// if(!imageNo) {
+// imageNo = 0;
+// }
+//            
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         close: function() {
             if ( _debug ) {
@@ -513,8 +519,18 @@
                 return observer.onNext(event);
             } );
         });
+        observables.animationComplete = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation-finish', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
         observables.viewportUpdate = Rx.Observable.create(function(observer) {
             viewer.addHandler( 'update-viewport', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.animation = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation', function( event ) {
                 return observer.onNext(event);
             } );
         });
@@ -1602,17 +1618,18 @@ if(!Number.isNaN) {
                     $( event.element ).remove();
                 }
             });
-            
-            osViewer.observables.viewerOpen.subscribe( function( data ) {
-                
-            	for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
-                    var highlightCoords = _defaults.image.highlightCoords[ index ];
-                    osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip );
-                }
-                if ( _initializedCallback ) {
-                    _initializedCallback();
-                }
-            } );
+            if(_defaults.image.highlightCoords) {
+               	osViewer.observables.viewerOpen.subscribe( function( data ) {
+            		for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
+            			var highlightCoords = _defaults.image.highlightCoords[ index ];
+            			var imageIndex = highlightCoords.pageIndex;
+            			osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip, imageIndex);
+            		}
+            		if ( _initializedCallback ) {
+            			_initializedCallback();
+            		}
+            	} );
+            }
         },
         onInitialized: function( callback ) {
             var oldCallback = _initializedCallback;
@@ -1652,10 +1669,11 @@ if(!Number.isNaN) {
                 return overlay.type === osViewer.overlays.overlayTypes.LINE
             } ).slice();
         },
-        draw: function( group, displayTitle ) {
+        draw: function( group, displayTitle, imageIndex ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.draw: group - ' + group );
                 console.log( 'osViewer.overlays.draw: displayTitle - ' + displayTitle );
+                console.log( 'osViewer.overlays.draw: imageIndex - ' + imageIndex );
             }
             
             var coordList = _defaults.getCoordinates( group );
@@ -1664,7 +1682,7 @@ if(!Number.isNaN) {
                     var coords = coordList.coordinates[ index ];
                     var title = displayTitle && coords.length > 4 ? coords[ 4 ] : '';
                     var id = coords.length > 5 ? coords[ 5 ] : index;
-                    _createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group );
+                    _createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group, imageIndex );
                 }
             }
         },
@@ -1872,7 +1890,7 @@ if(!Number.isNaN) {
         
         y1 += length / 2 * Math.sin( angle * Math.PI / 180 );
         x1 -= length / 2 * Math.sin( angle * Math.PI / 180 ) / Math.tan( beta * Math.PI / 180 );
-        
+ 
         var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x1, y1, length, 1 );
         var p1Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p1 );
         var p2Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p2 );
@@ -1897,7 +1915,7 @@ if(!Number.isNaN) {
     /**
      * coordinates are in original image space
      */
-    function _createRectangle( x, y, width, height, title, id, group ) {
+    function _createRectangle( x, y, width, height, title, id, group, imageIndex ) {
         if ( _debug ) {
             console.log( '------------------------------' );
             console.log( 'Overlays _createRectangle: x - ' + x );
@@ -1907,25 +1925,36 @@ if(!Number.isNaN) {
             console.log( 'Overlays _createRectangle: title - ' + title );
             console.log( 'Overlays _createRectangle: id - ' + id );
             console.log( 'Overlays _createRectangle: group - ' + group );
+            console.log( 'Overlays _createRectangle: imageIndex - ' + imageIndex );
             console.log( '------------------------------' );
         }
         x = osViewer.scaleToImageSize( x );
         y = osViewer.scaleToImageSize( y );
         width = osViewer.scaleToImageSize( width );
         height = osViewer.scaleToImageSize( height );
-        var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height );
-        var overlay = {
-            type: osViewer.overlays.overlayTypes.RECTANGLE,
-            rect: rectangle,
-            group: group,
-            id: id,
-            title: title
-        };
-        var overlayStyle = _defaults.getOverlayGroup( overlay.group );
-        if ( !overlayStyle.hidden ) {
-            _drawOverlay( overlay );
+        
+        if(!imageIndex) {
+        	imageIndex = 0;
         }
-        _overlays.push( overlay );
+			var tiledImage = osViewer.viewer.world.getItemAt(imageIndex);
+			var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
+			console.log("Found rect ", rectangle); 
+// var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height
+// );
+			var overlay = {
+					type: osViewer.overlays.overlayTypes.RECTANGLE,
+					rect: rectangle,
+					group: group,
+					id: id,
+					title: title
+			};
+			var overlayStyle = _defaults.getOverlayGroup( overlay.group );
+			if ( !overlayStyle.hidden ) {
+				_drawOverlay( overlay );
+			}
+			_overlays.push( overlay );
+
+        
         
     }
     
@@ -1944,9 +1973,9 @@ if(!Number.isNaN) {
         var overlayStyle = _defaults.getOverlayGroup( overlay.group );
         if ( overlayStyle ) {
             if(_debug)console.log("overlay style", overlayStyle);
-//            element.title = overlay.title;
-//            $( element ).attr( "data-toggle", "tooltip" );
-//            $( element ).attr( "data-placement", "auto top" );
+// element.title = overlay.title;
+// $( element ).attr( "data-toggle", "tooltip" );
+// $( element ).attr( "data-placement", "auto top" );
             $( element ).addClass( overlayStyle.styleClass );
             
             if ( overlay.type === osViewer.overlays.overlayTypes.LINE ) {
@@ -1954,20 +1983,17 @@ if(!Number.isNaN) {
             }
             
             if ( overlayStyle.interactive ) {
-                
                 element.focus = function( focus ) {
                     if ( focus ) {
                         $( element ).addClass( _focusStyleClass );
                         _createTooltip(element, overlay);
                         
-//                        tooltip.height(100);
-//                        $( element ).tooltip( "show" );
+// tooltip.height(100);
+// $( element ).tooltip( "show" );
                     }
                     else {
-                    	console.log(overlay.title, " lose focus");
                         $( element ).removeClass( _focusStyleClass );
                         $(".tooltipp#tooltip_" + overlay.id).remove();
-//                        $( element ).tooltip( "hide" );
                     }
                     if ( _overlayFocusHook ) {
                         _overlayFocusHook( overlay, focus );
@@ -2008,19 +2034,38 @@ if(!Number.isNaN) {
     
     function _createTooltip(element, overlay) {
     	if(overlay.title) {    		
+    		var canvasCorner = osViewer.sizes.$container.offset();
+    		
     		var top = $( element ).offset().top;
     		var left = $( element ).offset().left;
     		var bottom = top + $( element ).outerHeight();
     		var right = left + $( element ).outerWidth();
-    		console.log("tooltip coords = ", left, top, right, bottom);
+// console.log("Tooltip at ", left, top, right, bottom);
+
+    		
     		var $tooltip = $("<div class='tooltipp'>" + overlay.title + "</div>");
     		$("body").append($tooltip);
     		var tooltipPadding = parseFloat($tooltip.css("padding-top"));
-    		console.log("padding = ", tooltipPadding);
     		$tooltip.css("max-width",right-left);
-    		$tooltip.css("top", top-$tooltip.outerHeight()-tooltipPadding);
-    		$tooltip.css("left", left);
+    		$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
+    		$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
     		$tooltip.attr("id", "tooltip_" + overlay.id);
+// console.log("tooltip width = ", $tooltip.width());
+    		
+    		// listener for zoom
+    		
+    		osViewer.observables.animation
+    		.do(function() {
+// console.log("element at: ", $(element).offset());
+    			var top = Math.max($( element ).offset().top, canvasCorner.top);
+        		var left = Math.max($( element ).offset().left, canvasCorner.left);
+    			$tooltip.css("top", Math.max(canvasCorner.top + tooltipPadding, top-$tooltip.outerHeight()-tooltipPadding));
+    			$tooltip.css("left", Math.max(canvasCorner.left + tooltipPadding, left));
+    		})
+    		.takeWhile(function() {
+    			return $(".tooltipp").length > 0;
+    		})
+    		.subscribe();
     	}
     }
     

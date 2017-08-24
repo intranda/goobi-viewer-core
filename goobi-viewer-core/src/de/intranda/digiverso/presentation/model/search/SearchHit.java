@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.solr.common.SolrDocument;
@@ -376,6 +377,12 @@ public class SearchHit implements Comparable<SearchHit> {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
                             if (!highlightedValue.equals(fieldValue)) {
+                                // Translate values for certain fields
+                                if (SolrConstants.DC.equals(docFieldName) || SolrConstants.DOCSTRCT.equals(docFieldName)) {
+                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
+                                            + translatedValue + "$3");
+                                }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
                             }
@@ -389,6 +396,12 @@ public class SearchHit implements Comparable<SearchHit> {
                         for (String fieldValue : fieldValues) {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
                             if (!highlightedValue.equals(fieldValue)) {
+                                // Translate values for certain fields
+                                if (SolrConstants.DC.equals(fieldName) || SolrConstants.DOCSTRCT.equals(fieldName)) {
+                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
+                                            + translatedValue + "$3");
+                                }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 foundMetadata.add(new StringPair(Helper.getTranslation(fieldName, locale), highlightedValue));
                             }
