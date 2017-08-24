@@ -3491,6 +3491,9 @@
             // first level click
             $( '.normdataLink' ).on( 'click', function() {
                 _$this = $( this );
+                
+                _$this.off( 'focus' );
+                
                 _renderPopoverAction( _$this, _defaults.id );
             } );
         },
@@ -3535,6 +3538,9 @@
         $( document ).find( '#normdataPopover-' + id ).hide().fadeIn( 'fast', function() {
             // disable source button
             $Obj.attr( 'disabled', 'disabled' ).addClass( 'disabled' );
+            
+            // hide tooltip
+            $Obj.tooltip( 'hide' );
             
             // set event for nth level popovers
             $( '.normdataDetailLink' ).off( 'click' ).on( 'click', function() {
@@ -3717,7 +3723,7 @@
                 } );
                 
                 // set trigger to enable
-                $Obj.removeAttr( 'disabled' ).removeClass( 'disabled' );
+                $( '.normdataLink' ).removeAttr( 'disabled' ).removeClass( 'disabled' );
             } );
         }
         else {
