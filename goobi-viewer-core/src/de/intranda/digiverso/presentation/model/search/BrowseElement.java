@@ -533,8 +533,8 @@ public class BrowseElement implements Serializable {
      * @param searchTerms
      * @param locale
      * @should add metadata fields that match search terms
-     * @should add
      * @should not add duplicates from default terms
+     * @should not add duplicates from explicit terms
      */
     void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
@@ -610,6 +610,7 @@ public class BrowseElement implements Serializable {
                         for (Metadata md : metadataList) {
                             if (md.getLabel().equals(docFieldName)) {
                                 skip = true;
+                                break;
                             }
                         }
                         if (skip) {
@@ -626,19 +627,28 @@ public class BrowseElement implements Serializable {
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
+                                logger.trace("added " + docFieldName + " : " + highlightedValue);
                             }
                         }
                     }
                     break;
                 default:
-                    // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
-                    if (structElement.getMetadataFields().containsKey(fieldName)) {
+                    // Skip fields that are already in the list
+                    for (Metadata md : metadataList) {
+                        if (md.getLabel().equals(fieldName)) {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
+                    if (!skip && structElement.getMetadataFields().containsKey(fieldName)) {
                         List<String> fieldValues = structElement.getMetadataFields().get(fieldName);
                         for (String fieldValue : fieldValues) {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(fieldName, "", highlightedValue));
+                                logger.trace("added " + fieldName + " : " + highlightedValue);
                             }
                         }
                     }
