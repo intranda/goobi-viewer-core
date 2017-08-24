@@ -627,7 +627,6 @@ public class BrowseElement implements Serializable {
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
-                                logger.trace("added " + docFieldName + " : " + highlightedValue);
                             }
                         }
                     }
@@ -648,7 +647,6 @@ public class BrowseElement implements Serializable {
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(fieldName, "", highlightedValue));
-                                logger.trace("added " + fieldName + " : " + highlightedValue);
                             }
                         }
                     }
