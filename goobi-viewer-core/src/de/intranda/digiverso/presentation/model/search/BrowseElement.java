@@ -533,8 +533,8 @@ public class BrowseElement implements Serializable {
      * @param searchTerms
      * @param locale
      * @should add metadata fields that match search terms
-     * @should add
      * @should not add duplicates from default terms
+     * @should not add duplicates from explicit terms
      */
     void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
@@ -610,6 +610,7 @@ public class BrowseElement implements Serializable {
                         for (Metadata md : metadataList) {
                             if (md.getLabel().equals(docFieldName)) {
                                 skip = true;
+                                break;
                             }
                         }
                         if (skip) {
@@ -636,6 +637,7 @@ public class BrowseElement implements Serializable {
                     for (Metadata md : metadataList) {
                         if (md.getLabel().equals(fieldName)) {
                             skip = true;
+                            break;
                         }
                     }
                     // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
