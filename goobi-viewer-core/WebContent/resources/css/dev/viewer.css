@@ -5293,6 +5293,9 @@ div.olMapViewport {
   background: #eee;
   cursor: pointer;
 }
+#timeMatrix .timematrix-selection #slider-range .ui-slider-handle:focus {
+  outline: none;
+}
 #timeMatrix .timematrix-selection #slider-range .ui-slider-handle .timematrix-slider-bubble-startDate,
 #timeMatrix .timematrix-selection #slider-range .ui-slider-handle .timematrix-slider-bubble-endDate {
   position: absolute;
