@@ -31,6 +31,7 @@ import javax.faces.bean.SessionScoped;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.joda.time.DateTimeField;
 import org.joda.time.LocalDate;
@@ -808,10 +809,10 @@ public class CalendarBean implements Serializable {
 
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(" AND ").append(SolrConstants.DC).append(':')
+            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(" AND ").append(SolrConstants.DC).append(':')
                     .append(collection).append('*').append(filterQuery);
         } else {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(selectYear).append(filterQuery);
+            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(filterQuery);
         }
 
         resp = SearchHelper.searchCalendar(sbSearchString.toString(), facetFields, 0, false);
