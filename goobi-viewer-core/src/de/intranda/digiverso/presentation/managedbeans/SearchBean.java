@@ -513,12 +513,12 @@ public class SearchBean implements Serializable {
                     switch (queryItem.getOperator()) {
                         case IS:
                         case PHRASE:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"")
-                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append('"');
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"").append(Helper
+                                    .getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append('"');
                             break;
                         default:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ")
-                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ").append(Helper
+                                    .getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
 
                     // Add item query part to the group query
@@ -1779,14 +1779,18 @@ public class SearchBean implements Serializable {
     }
 
     public String getRssUrl() {
-        try {
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append("?q=")
-                    .append(URLEncoder.encode(currentQuery, URL_ENCODING)).toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Could not encode query '{}' for URL", currentQuery);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append("?q=")
-                    .append(currentQuery).toString();
+        if (currentQuery != null) {
+            try {
+                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append(
+                        "?q=").append(URLEncoder.encode(currentQuery, URL_ENCODING)).toString();
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("Could not encode query '{}' for URL", currentQuery);
+                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append(
+                        "?q=").append(currentQuery).toString();
+            }
         }
+
+        return null;
     }
 
     /**
