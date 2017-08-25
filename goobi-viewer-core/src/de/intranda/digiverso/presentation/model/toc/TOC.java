@@ -450,7 +450,7 @@ public class TOC implements Serializable {
     }
 
     public boolean hasChildren() {
-        if (tocElements.get(DEFAULT_GROUP) == null || tocElements.get(DEFAULT_GROUP).isEmpty()) {
+        if (tocElements == null || tocElements.get(DEFAULT_GROUP) == null || tocElements.get(DEFAULT_GROUP).isEmpty()) {
             return false;
         } else if (tocElements.get(DEFAULT_GROUP).size() == 1 && !tocElements.get(DEFAULT_GROUP).get(0).isHasChild()) {
             return false;
