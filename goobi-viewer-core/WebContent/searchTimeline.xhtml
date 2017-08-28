@@ -30,6 +30,7 @@
 
                         <!-- SEARCH TIMELINE INPUT -->                        
                         <div class="search-timeline__input">
+                            <h:outputText rendered="#{!configurationBean.timelineSearchEnabled}" value="#{msg.errFunctionalityDisabled}" />
                             <h:panelGroup rendered="#{configurationBean.timelineSearchEnabled}">
                             <div class="form-horizontal">
                                 <div class="form-group">
@@ -65,7 +66,6 @@
                                     styleClass="btn" />
                             </div>
                             </h:panelGroup>
-                            <h:outputText rendered="#{!configurationBean.timelineSearchEnabled}" value="#{msg.errFunctionalityDisabled}" />
                         </div>
 
                         <!-- SEARCH TIMELINE RESULT -->
