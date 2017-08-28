@@ -363,8 +363,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isCalendarSearchEnabled() {
-//        return DataManager.getInstance().getConfiguration().isCalendarSearchEnabled();
-        return false;
+        return DataManager.getInstance().getConfiguration().isCalendarSearchEnabled();
     }
 
     public boolean isDisplayBreadcrumbs() {
