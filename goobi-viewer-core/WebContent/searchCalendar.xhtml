@@ -34,11 +34,12 @@
 								<h:outputText value="#{msg.errFunctionalityDisabled}" />
 							</div>
 						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
 
 						<!-- SEARCH CALENDAR INPUT -->
                         <div class="search-calendar__input">
                             <div class="form-horizontal">
-                                <h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
 									<div class="form-group">
 										<label for="selectyear" class="col-sm-4 control-label">#{msg.selectYear}</label>
 										<div class="col-sm-8">
@@ -55,7 +56,6 @@
 											</div>
 										</div>
 									</div>
-								</h:panelGroup>
                             </div>
                         </div>
 
@@ -128,6 +128,7 @@
                                     </ui:repeat>
                                 </div>
                             </div>
+                        </h:panelGroup>
                         </h:panelGroup>
                     </div>
                 </h:form>

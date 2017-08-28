@@ -34,10 +34,11 @@
 								<h:outputText value="#{msg.errFunctionalityDisabled}" />
 							</div>
 						</h:panelGroup>
+						
+						<h:panelGroup rendered="#{configurationBean.timelineSearchEnabled}">
 
                         <!-- SEARCH TIMELINE INPUT -->                        
                         <div class="search-timeline__input">
-                            <h:panelGroup rendered="#{configurationBean.timelineSearchEnabled}">
                             <div class="form-horizontal">
                                 <div class="form-group">
                                     <label for="yearStart" class="col-sm-4 control-label">#{msg.yearStart}</label>
@@ -71,12 +72,9 @@
                                 <h:commandButton title="#{msg.limitSearch}" value="#{msg.limitSearch}" action="#{calendarBean.limitSearch}"
                                     styleClass="btn" />
                             </div>
-                            </h:panelGroup>
                         </div>
 
-                        <!-- SEARCH TIMELINE RESULT -->
-                        <h:panelGroup rendered="#{configurationBean.timelineSearchEnabled}">
-                        
+                        <!-- SEARCH TIMELINE RESULT --> 
                         <div class="search-timeline__result">
                             <ui:repeat var="row" value="#{calendarBean.rowList}" varStatus="rowindex">
                                 <div class="search-timeline__years">
