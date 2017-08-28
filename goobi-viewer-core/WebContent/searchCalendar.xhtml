@@ -31,24 +31,31 @@
                         <!-- SEARCH CALENDAR INPUT -->
                         <div class="search-calendar__input">
                             <div class="form-horizontal">
-                                <div class="form-group">
-                                    <label for="selectyear" class="col-sm-4 control-label">#{msg.selectYear}</label>
-                                    <div class="col-sm-8">
-                                        <div class="custom-control custom-control--select">
-                                            <h:selectOneMenu id="selectyear" styleClass="form-control" value="#{calendarBean.selectYear}" immediate="true" onchange="submit();">
-                                                <f:selectItem itemDisabled="true" itemLabel="#{msg.select}" />
-                                                <f:selectItems var="year" itemLabel="#{year.name}, #{msg.currentHitsForYear}: #{year.hits}"
-                                                    itemValue="#{year.name}" value="#{calendarBean.allActiveYears}" />
-                                            </h:selectOneMenu>
-                                        </div>
-                                    </div>
-                                </div>
+								<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
+									<div class="form-group">
+										<label for="selectyear" class="col-sm-4 control-label">#{msg.selectYear}</label>
+										<div class="col-sm-8">
+											<div class="custom-control custom-control--select">
+												<h:selectOneMenu id="selectyear" styleClass="form-control"
+													value="#{calendarBean.selectYear}" immediate="true"
+													onchange="submit();">
+													<f:selectItem itemDisabled="true" itemLabel="#{msg.select}" />
+													<f:selectItems var="year"
+														itemLabel="#{year.name}, #{msg.currentHitsForYear}: #{year.hits}"
+														itemValue="#{year.name}"
+														value="#{calendarBean.allActiveYears}" />
+												</h:selectOneMenu>
+											</div>
+										</div>
+									</div>
+								</h:panelGroup>
+								<h:outputText rendered="#{!configurationBean.calendarSearchEnabled}" value="#{msg.errFunctionalityDisabled}" />
                             </div>
                         </div>
 
 
                         <!-- SEARCH CALENDAR MONTHS -->
-                        <h:panelGroup rendered="#{calendarBean.currentYear.hits ge 1}">
+                        <h:panelGroup rendered="#{configurationBean.calendarSearchEnabled and calendarBean.currentYear.hits ge 1}">
                             <div class="search-calendar__months">
                                 <div class="row">
                                     <ui:repeat var="month" value="#{calendarBean.monthList}">

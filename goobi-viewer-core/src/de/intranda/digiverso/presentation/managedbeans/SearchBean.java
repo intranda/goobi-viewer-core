@@ -732,6 +732,7 @@ public class SearchBean implements Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
                     }
                     break;
                 case 2:
@@ -739,6 +740,7 @@ public class SearchBean implements Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
                     }
                     break;
                 case 3:
@@ -746,6 +748,7 @@ public class SearchBean implements Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
                     }
                     break;
                 default:
