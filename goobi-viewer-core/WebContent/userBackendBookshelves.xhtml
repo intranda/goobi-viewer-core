@@ -21,6 +21,15 @@
     <ui:define name="content">    
         <div id="myBookshelves">
             <h2>#{msg.bookshelf_myBookshelves}</h2>
+            
+            <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
+                <!-- TODO: Add proper CSS class -->
+                <div class="search-advanced__group">
+                    <h:outputText value="#{msg.errFunctionalityDisabled}" />
+                </div>
+            </h:panelGroup>
+            
+            <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
 
 			<!-- warning if no bookshelf exists -->
 			<h:panelGroup rendered="#{bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
@@ -76,10 +85,12 @@
 		            </h:commandButton>
 				</div>
 			</div>
-
+			
+			</h:panelGroup>
         </div>
 
 		<!-- add new bookshelf modal -->
+		<h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
 		<div class="modal fade" id="addNewBookshelfModal" tabindex="-1" role="dialog" aria-labelledby="addNewBookshelfLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -125,6 +136,7 @@
 				</div>
 			</div>
 		</div>
+		</h:panelGroup>
 	</ui:define>
 
     <ui:define name="sidebar">
