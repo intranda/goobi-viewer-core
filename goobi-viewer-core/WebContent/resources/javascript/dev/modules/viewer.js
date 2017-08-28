@@ -1140,7 +1140,7 @@
     'use strict';
     
     // default variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -1152,6 +1152,11 @@
         path: '',
         apiUrl: '',
         userEmail: null,
+        workInfo: {
+            title: '',
+            type: '',
+            fileSize: ''
+        },
         modal: {
             id: '',
             label: '',
@@ -1163,10 +1168,16 @@
             }
         },
         messages: {
-            reCaptchaText: 'Bitte bestätigen Sie uns, dass Sie ein Mensch sind.',
+            downloadInfo: {
+                text: 'Informationen zum angeforderten Download',
+                title: 'Werk',
+                type: 'Strukturtyp',
+                fileSize: 'Größe'
+            },
+            reCaptchaText: 'Um die Generierung von Dokumenten durch Suchmaschinen zu verhindern bestätigen Sie bitte das reCAPTCHA.',
             rcInvalid: 'Die Überprüfung war nicht erfolgreich. Bitte bestätigen Sie die reCAPTCHA Anfrage.',
             rcValid: 'Vielen Dank. Sie können nun ihre ausgewählte Datei generieren lassen.',
-            eMailText: 'Wenn Sie über den Fortschritt ihrer Datei informiert werden möchten, dann teilen Sie uns ihre E-Mail Adresse mit.',
+            eMailText: 'Um per E-Mail informiert zu werden sobald der Download zur Verfügung steht, können Sie hier optional Ihre E-Mail Adresse hinterlassen',
             eMailTextLoggedIn: 'Sie werden über Ihre registrierte E-Mail Adresse von uns über den Fortschritt des Downloads informiert.',
             eMail: ''
         }
@@ -1239,11 +1250,11 @@
                 _defaults.dataPi = $( this ).attr( 'data-pi' );
                 
                 _defaults.modal = {
-                    id: _defaults.dataId + 'Modal',
-                    label: _defaults.dataId + 'Label',
+                    id: _defaults.dataPi + '-Modal',
+                    label: _defaults.dataPi + '-Label',
                     string: {
                         title: _defaults.dataTitle,
-                        body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.dataTitle ),
+                        body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.workInfo ),
                         closeBtn: _defaults.messages.closeBtn,
                         saveBtn: _defaults.messages.saveBtn,
                     }
@@ -1346,11 +1357,11 @@
          * @param {String} title The title of the current download file.
          * @returns {String} The HTML-String to render the download modal body.
          */
-        renderModalBody: function( type, title ) {
+        renderModalBody: function( type, infos ) {
             if ( _debug ) {
                 console.log( '---------- viewer.downloadModal.renderModalBody() ----------' );
                 console.log( 'viewer.downloadModal.renderModalBody: type = ', type );
-                console.log( 'viewer.downloadModal.renderModalBody: title = ', title );
+                console.log( 'viewer.downloadModal.renderModalBody: infos = ', infos );
             }
             var rcResponse = null;
             var modalBody = '';
@@ -1362,16 +1373,27 @@
             if ( type === 'pdf' ) {
                 modalBody += '<h4>';
                 modalBody += '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF-Download: ';
-                modalBody += title + '</h4>';
+                modalBody += '</h4>';
             }
             else {
                 modalBody += '<h4>';
                 modalBody += '<i class="fa fa-file-text-o" aria-hidden="true"></i> ePub-Download: ';
-                modalBody += title + '</h4>';
+                modalBody += '</h4>';
             }
+            modalBody += '<p>' + _defaults.messages.downloadInfo.text + ':</p>';
+            modalBody += '<dl class="dl-horizontal">';
+            modalBody += '<dt>' + _defaults.messages.downloadInfo.title + ':</dt>';
+            modalBody += '<dd>' + infos.title + '</dd>';
+            modalBody += '<dt>' + _defaults.messages.downloadInfo.type + ':</dt>';
+            modalBody += '<dd>' + infos.type + '</dd>';
+            modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+            modalBody += '<dd>' + infos.fileSize + '</dd>';
+            modalBody += '</dl>';
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
-                modalBody += '<p>' + _defaults.messages.reCaptchaText + '</p>';
+                modalBody += '<hr />';
+                modalBody += '<p><strong>reCAPTCHA</strong></p>';
+                modalBody += '<p>' + _defaults.messages.reCaptchaText + ':</p>';
                 modalBody += '<div id="reCaptchaWrapper"></div>';
             }
             // E-Mail
@@ -1380,12 +1402,12 @@
             modalBody += '<div class="form-group">';
             modalBody += '<label for="recallEMail">' + _defaults.messages.eMail + '</label>';
             if ( _defaults.userEmail != undefined ) {
-                modalBody += '<input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
                 modalBody += '<p class="help-block">' + _defaults.messages.eMailTextLoggedIn + '</p>';
+                modalBody += '<input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
             }
             else {
+                modalBody += '<p class="help-block">' + _defaults.messages.eMailText + ':</p>';
                 modalBody += '<input type="email" class="form-control" id="recallEMail" />';
-                modalBody += '<p class="help-block">' + _defaults.messages.eMailText + '</p>';
             }
             modalBody += '</div>';
             modalBody += '</form>';

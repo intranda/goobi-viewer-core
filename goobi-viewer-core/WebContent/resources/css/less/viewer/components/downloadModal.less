@@ -1,0 +1,43 @@
+/* ==============================================================
+   Download Modal
+   style declarations for external PDF, ePub and Toc download 
+   ==============================================================*/
+/* DOWNLOAD MODAL */
+#reCaptchaWrapper {
+    margin-bottom: 1.3125rem;
+}
+
+div[id*="-Modal"] {
+    p {
+        color: @gray;
+        strong {
+        	color: @black;
+        }
+    }
+    .dl-horizontal {
+   		dt, dd {
+   			padding: 3px 0;
+   		}
+    	dt {
+    		text-align: left;
+    	}
+    }
+    .email-form {
+        .form-group {
+            margin: 1.3125rem 0 0 0;
+            p {}
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

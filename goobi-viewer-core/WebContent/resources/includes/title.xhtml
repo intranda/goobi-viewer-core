@@ -53,9 +53,9 @@
                                             </h:panelGroup>
                                             <h:panelGroup rendered="#{configurationBean.generatePdfInTaskManager}">
                                                 <li>
-                                                    <a 
-                                                        href="#" 
-                                                        class="download-modal" 
+                                                    <button
+                                                    	type="button" 
+                                                        class="btn-clean download-modal" 
                                                         data-toggle="tooltip"
                                                         data-placement="top" 
                                                         data-type="pdf" 
@@ -64,7 +64,7 @@
                                                         data-pi="#{activeDocumentBean.viewManager.pi}" 
                                                         title="#{msg.pdfDownloadTitle}">
                                                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                                                    </a>
+                                                    </button>
                                                 </li>
                                             </h:panelGroup>
                                         </h:panelGroup>
@@ -72,9 +72,9 @@
                                         <!-- EPUB DOWNLOAD -->
                                         <h:panelGroup rendered="#{activeDocumentBean.accessPermissionEpub}">
                                             <li>
-                                                <a 
-                                                    href="#" 
-                                                    class="download-modal" 
+                                                <button
+                                                	type="button"
+                                                   	class="btn-clean download-modal" 
                                                     data-toggle="tooltip"
                                                     data-placement="top"
                                                     data-type="epub" 
@@ -83,7 +83,7 @@
                                                     data-pi="#{activeDocumentBean.viewManager.pi}" 
                                                     title="#{msg.epubDownload}"> 
                                                     <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                                </a>
+                                                </button>
                                             </li>
                                         </h:panelGroup>
                                         
@@ -94,7 +94,7 @@
     												<i class="fa fa-list" aria-hidden="true"></i>
                                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                     <f:passThroughAttribute name="data-placement" value="top" />
-    												</h:commandLink>
+    											</h:commandLink>
                                             </li>
                                         </h:panelGroup>
                                         
