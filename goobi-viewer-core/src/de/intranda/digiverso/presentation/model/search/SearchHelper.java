@@ -114,6 +114,7 @@ public final class SearchHelper {
      * @param rows {@link Integer} bis
      * @param sortFields
      * @param resultFields
+     * @param filterQueries
      * @param params
      * @param searchTerms
      * @param exportFields
@@ -124,10 +125,11 @@ public final class SearchHelper {
      * @throws DAOException
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale) throws PresentationException,
-            IndexUnreachableException, DAOException {
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
+            throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, params);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries,
+                params);
         if (resp.getResults() == null) {
             return Collections.emptyList();
         }
@@ -175,6 +177,7 @@ public final class SearchHelper {
      * @param rows {@link Integer} bis
      * @param sortFields
      * @param resultFields
+     * @param filterQueries
      * @param params
      * @param searchTerms
      * @param exportFields
@@ -186,9 +189,10 @@ public final class SearchHelper {
      * @should return all hits
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale) throws PresentationException,
-            IndexUnreachableException, DAOException {
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, params);
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
+            throws PresentationException, IndexUnreachableException, DAOException {
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries,
+                params);
         if (resp.getResults() == null) {
             return new ArrayList<>();
         }
@@ -300,13 +304,14 @@ public final class SearchHelper {
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      */
-    public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, Map<String, String> params,
-            Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws PresentationException, IndexUnreachableException,
-            DAOException {
+    public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws PresentationException,
+            IndexUnreachableException, DAOException {
         // logger.debug("getBrowseElement(): " + query);
         String finalQuery = buildFinalQuery(query, aggregateHits);
-        List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, params, searchTerms, null,
-                locale) : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, params, searchTerms, null, locale);
+        List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params,
+                searchTerms, null, locale) : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, filterQueries, params,
+                        searchTerms, null, locale);
         if (!hits.isEmpty()) {
             return hits.get(0).getBrowseElement();
         }
@@ -371,8 +376,7 @@ public final class SearchHelper {
         }
 
         logger.debug("query: {}", sbQuery.toString());
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, null, null,
-                null);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, null, null);
         logger.trace("query done");
 
         if (resp.getResults().size() > 0) {
@@ -457,26 +461,8 @@ public final class SearchHelper {
             }
 
             logger.debug("query: {}", sbQuery.toString());
-            // String query = "(ISWORK:true OR ISANCHOR:true) AND (DOCSTRCT:Monograph OR DOCSTRCT:monograph OR
-            // DOCSTRCT:MultiVolumeWork OR DOCSTRCT:Periodical OR DOCSTRCT:VolumeRun OR DOCSTRCT:Deed OR DOCSTRCT:Picture OR
-            // DOCSTRCT:Sequence OR DOCSTRCT:Seal OR DOCSTRCT:Map OR DOCSTRCT:SingleRecord OR DOCSTRCT:library_object OR
-            // DOCSTRCT:museum_object OR DOCSTRCT:Record OR DOCSTRCT:SingleLetter OR DOCSTRCT:Video OR DOCSTRCT:Audio OR
-            // DOCSTRCT:MusicSupplies OR DOCSTRCT:manuscript OR DOCSTRCT:Incunable OR DOCSTRCT:Drawing OR DOCSTRCT:Painting
-            // OR DOCSTRCT:Newspaper OR DOCSTRCT:Botanik OR DOCSTRCT:Illustration OR DOCSTRCT:pathologisches_Präparat OR
-            // DOCSTRCT:PathologicalSpecimen OR DOCSTRCT:Plastisches_Objekt OR DOCSTRCT:Abzug OR DOCSTRCT:Ansichtskarte OR
-            // DOCSTRCT:Deckfarbe OR DOCSTRCT:Faltprospekt OR DOCSTRCT:Formstein OR DOCSTRCT:Kreidezeichnung OR
-            // DOCSTRCT:Münze OR DOCSTRCT:Coin OR DOCSTRCT:Painting OR DOCSTRCT:Plastik OR DOCSTRCT:Portalpfosten OR
-            // DOCSTRCT:Puppe OR DOCSTRCT:Relief OR DOCSTRCT:Reliefbild OR DOCSTRCT:Tisch OR
-            // DOCSTRCT:Wendeltreppe_\\(Modell\\) OR DOCSTRCT:Zeichnung) AND NOT ((ACCESSCONDITION:\"test\")) AND NOT
-            // (DC:mmmsammlungen.500unigreifswald.030anatomischesammlungen* OR
-            // DC:mmmsammlungen.500unigreifswald.050botanischesammlungen* OR
-            // DC:mmmsammlungen.500unigreifswald.080dalmansammlung OR
-            // DC:mmmsammlungen.500unigreifswald.200vorgeschichtlichesammlung OR
-            // DC:mmmsammlungen.500unigreifswald.250zoologischesammlung OR
-            // DC:institutfrpathologiederernstmoritzarndtuniversittgreifswald OR
-            // DC:mmmsammlungen500unigreifswald030anatomischesammlungen200vergleichendanatomischesammlung)";
             QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, Collections
-                    .singletonList(facetField), Collections.singletonList(luceneField), null);
+                    .singletonList(facetField), Collections.singletonList(luceneField), null, null);
             logger.trace("query done");
 
             // Construct splitting regex
@@ -1188,7 +1174,7 @@ public final class SearchHelper {
     @SuppressWarnings("unchecked")
     public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
             String privilegeType) throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap");
+        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap");
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
@@ -1727,7 +1713,7 @@ public final class SearchHelper {
                 params.put(GroupParams.GROUP_MAIN, "true");
                 params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
             }
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, null, fieldList, params);
+            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, fieldList, null, params);
             // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(), facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
@@ -1947,6 +1933,10 @@ public final class SearchHelper {
         return ret;
     }
 
+    /**
+     * 
+     * @return
+     */
     public static Map<String, String> generateQueryParams() {
         Map<String, String> params = new HashMap<>();
         if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
@@ -1956,8 +1946,7 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
         }
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
-            // Add a boost query to promote anchors and works to the top of the list (Extended Dismax query parser is
-            // required for this)
+            // Add a boost query to promote anchors and works to the top of the list (Extended Dismax query parser is required for this)
             params.put("defType", "edismax");
             params.put("bq", "ISANCHOR:true^10 OR ISWORK:true^5");
         }
@@ -2272,6 +2261,7 @@ public final class SearchHelper {
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
      * @param sortFields
      * @param resultFields
+     * @param filterQueries
      * @param params
      * @return
      * @throws IndexUnreachableException
@@ -2279,9 +2269,9 @@ public final class SearchHelper {
      * @throws PresentationException
      * @should create excel workbook correctly
      */
-    public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, Map<String, String> params,
-            Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws IndexUnreachableException, DAOException,
-            PresentationException {
+    public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws IndexUnreachableException,
+            DAOException, PresentationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
         List<SXSSFSheet> sheets = new ArrayList<>();
         int currentSheetIndex = 0;
@@ -2329,9 +2319,9 @@ public final class SearchHelper {
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch;
             if (aggregateHits) {
-                batch = searchWithAggregation(query, first, batchSize, sortFields, null, params, searchTerms, exportFields, locale);
+                batch = searchWithAggregation(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale);
             } else {
-                batch = searchWithFulltext(query, first, batchSize, sortFields, null, params, searchTerms, exportFields, locale);
+                batch = searchWithFulltext(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale);
             }
             for (SearchHit hit : batch) {
                 // Create row
