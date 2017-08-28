@@ -20,10 +20,10 @@
                 </h2>
 
                 <!-- MESSAGE -->
-                <h:panelGroup rendered="#{!browseBean.browsingMenuEnabled}">
-                    <div class="search-termlist__message">
-                         <h:outputText value="#{msg.errFunctionalityDisabled}" />
-                    </div>
+                <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
+                	<div class="alert alert-warning" role="alert">
+                        <h:outputText value="#{msg.errFunctionalityDisabled}" />                	
+                	</div>
                 </h:panelGroup>
                 
 				<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">

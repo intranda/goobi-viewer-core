@@ -28,11 +28,17 @@
                             </h2>
                         </div>
 
-                        <!-- SEARCH CALENDAR INPUT -->
+						<!-- MESSAGE -->
+						<h:panelGroup rendered="#{!configurationBean.calendarSearchEnabled}">
+							<div class="alert alert-warning" role="alert">
+								<h:outputText value="#{msg.errFunctionalityDisabled}" />
+							</div>
+						</h:panelGroup>
+
+						<!-- SEARCH CALENDAR INPUT -->
                         <div class="search-calendar__input">
                             <div class="form-horizontal">
-                                <h:outputText rendered="#{!configurationBean.calendarSearchEnabled}" value="#{msg.errFunctionalityDisabled}" />
-								<h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
+                                <h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
 									<div class="form-group">
 										<label for="selectyear" class="col-sm-4 control-label">#{msg.selectYear}</label>
 										<div class="col-sm-8">

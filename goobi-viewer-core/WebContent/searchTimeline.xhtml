@@ -27,10 +27,16 @@
                                 <h:outputText value="#{msg.searchTimeline}" />
                             </h2>
                         </div>
+                        
+                        <!-- MESSAGE -->
+						<h:panelGroup rendered="#{!configurationBean.timelineSearchEnabled}">
+							<div class="alert alert-warning" role="alert">
+								<h:outputText value="#{msg.errFunctionalityDisabled}" />
+							</div>
+						</h:panelGroup>
 
                         <!-- SEARCH TIMELINE INPUT -->                        
                         <div class="search-timeline__input">
-                            <h:outputText rendered="#{!configurationBean.timelineSearchEnabled}" value="#{msg.errFunctionalityDisabled}" />
                             <h:panelGroup rendered="#{configurationBean.timelineSearchEnabled}">
                             <div class="form-horizontal">
                                 <div class="form-group">

@@ -21,71 +21,69 @@
     <ui:define name="content">    
         <div id="myBookshelves">
             <h2>#{msg.bookshelf_myBookshelves}</h2>
-            
-            <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
-                <!-- TODO: Add proper CSS class -->
-                <div class="search-advanced__group">
-                    <h:outputText value="#{msg.errFunctionalityDisabled}" />
-                </div>
-            </h:panelGroup>
-            
-            <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
 
-			<!-- warning if no bookshelf exists -->
-			<h:panelGroup rendered="#{bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
-				<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookshelvesWarning}</div>
-			</h:panelGroup>
-			
-			<!-- bookshelftable -->
-			<h:panelGroup rendered="#{!bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
-				<h:form id="myBookshelvesForm" prependId="false">
-					<h:dataTable 
-						id="user_bookshelf_data_table" 
-						value="#{bookshelfBean.getBookshelvesForUser(userBean.user)}" 
-						var="bookshelf"
-						styleClass="table table-condensed user-backend-table">
-						<h:column>
-							<f:facet name="header">
-								<h:outputText styleClass="tableHeader" value="#{msg.name}" />
-							</f:facet>
-							<h:commandLink title="#{bookshelf.name} #{bookshelf.publicString}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}"
-								value="#{bookshelf.name} #{bookshelf.publicString}">
-							</h:commandLink>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{msg.description}" />
-							</f:facet>
-							#{bookshelf.description}
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="#{msg.action}" />
-							</f:facet>
-							<h:commandLink title="#{msg.show}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}">
-								<i class="fa fa-eye" aria-hidden="true"></i>
-								<f:passThroughAttribute name="data-toggle" value="tooltip" />
-								<f:passThroughAttribute name="data-placement" value="top" />
-							</h:commandLink>
-							<h:commandLink title="#{msg.edit}" action="#{bookshelfBean.editBookshelfAction(bookshelf)}">
-								<i class="fa fa-pencil" aria-hidden="true"></i>
-								<f:passThroughAttribute name="data-toggle" value="tooltip" />
-								<f:passThroughAttribute name="data-placement" value="top" />
-							</h:commandLink>
-						</h:column>
-					</h:dataTable>
-				</h:form>
-			</h:panelGroup>
-			
-			<div class="row">
-				<div class="col-xs-12 add-new-bookshelf-action">
-					<h:commandButton type="button" action="#{bookshelfBean.createNewBookshelfAction}" value="#{msg.bookshelf_newBookshelf}" styleClass="btn">
-		            	<f:passThroughAttribute name="data-toggle" value="modal" />
-		            	<f:passThroughAttribute name="data-target" value="#addNewBookshelfModal" />
-		            </h:commandButton>
+			<!-- MESSAGE -->
+			<h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
+				<div class="alert alert-warning" role="alert">
+					<h:outputText value="#{msg.errFunctionalityDisabled}" />
 				</div>
-			</div>
-			
+			</h:panelGroup>
+
+			<h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
+				<!-- warning if no bookshelf exists -->
+				<h:panelGroup rendered="#{bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
+					<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookshelvesWarning}</div>
+				</h:panelGroup>
+				
+				<!-- bookshelftable -->
+				<h:panelGroup rendered="#{!bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
+					<h:form id="myBookshelvesForm" prependId="false">
+						<h:dataTable 
+							id="user_bookshelf_data_table" 
+							value="#{bookshelfBean.getBookshelvesForUser(userBean.user)}" 
+							var="bookshelf"
+							styleClass="table table-condensed user-backend-table">
+							<h:column>
+								<f:facet name="header">
+									<h:outputText styleClass="tableHeader" value="#{msg.name}" />
+								</f:facet>
+								<h:commandLink title="#{bookshelf.name} #{bookshelf.publicString}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}"
+									value="#{bookshelf.name} #{bookshelf.publicString}">
+								</h:commandLink>
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg.description}" />
+								</f:facet>
+								#{bookshelf.description}
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg.action}" />
+								</f:facet>
+								<h:commandLink title="#{msg.show}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}">
+									<i class="fa fa-eye" aria-hidden="true"></i>
+									<f:passThroughAttribute name="data-toggle" value="tooltip" />
+									<f:passThroughAttribute name="data-placement" value="top" />
+								</h:commandLink>
+								<h:commandLink title="#{msg.edit}" action="#{bookshelfBean.editBookshelfAction(bookshelf)}">
+									<i class="fa fa-pencil" aria-hidden="true"></i>
+									<f:passThroughAttribute name="data-toggle" value="tooltip" />
+									<f:passThroughAttribute name="data-placement" value="top" />
+								</h:commandLink>
+							</h:column>
+						</h:dataTable>
+					</h:form>
+				</h:panelGroup>
+				
+				<div class="row">
+					<div class="col-xs-12 add-new-bookshelf-action">
+						<h:commandButton type="button" action="#{bookshelfBean.createNewBookshelfAction}" value="#{msg.bookshelf_newBookshelf}" styleClass="btn">
+			            	<f:passThroughAttribute name="data-toggle" value="modal" />
+			            	<f:passThroughAttribute name="data-target" value="#addNewBookshelfModal" />
+			            </h:commandButton>
+					</div>
+				</div>			
 			</h:panelGroup>
         </div>
 

@@ -3750,11 +3750,6 @@ input[id*="cmdMoveTo"] {
 .search-termlist {
   /* ELEMENT */
 }
-.search-termlist__message {
-  margin-bottom: 1.3125rem;
-  padding: 15px;
-  background-color: #eee;
-}
 .search-termlist__list {
   margin-bottom: 1.3125rem;
 }

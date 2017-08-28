@@ -23,11 +23,11 @@
 			<h:panelGroup rendered="#{userBean.loggedIn}">
 				<h2>#{msg.bookshelf_changeBookshelfText}: #{bookshelfBean.currentBookshelf.name}</h2>
 				
+                <!-- MESSAGE -->
                 <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
-                    <!-- TODO: Add proper CSS class -->
-                    <div class="search-advanced__group">
-                        <h:outputText value="#{msg.errFunctionalityDisabled}" />
-                    </div>
+                	<div class="alert alert-warning" role="alert">
+                        <h:outputText value="#{msg.errFunctionalityDisabled}" />                	
+                	</div>
                 </h:panelGroup>
 
                 <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
