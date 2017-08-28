@@ -3746,10 +3746,19 @@ input[id*="cmdMoveTo"] {
    SearchTermList
    style declarations for searchTermList.xhtml
    ==============================================================*/
-#search_termlistnav {
+/* BLOCK */
+.search-termlist {
+  /* ELEMENT */
+}
+.search-termlist__message {
+  margin-bottom: 1.3125rem;
+  padding: 15px;
+  background-color: #eee;
+}
+.search-termlist__list {
   margin-bottom: 1.3125rem;
 }
-#search_termlistnav ul li a {
+.search-termlist__list a {
   display: block;
   padding: 5px 10px;
   text-overflow: ellipsis;
