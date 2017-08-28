@@ -498,7 +498,7 @@ table,
   margin: 0;
   opacity: 0.25;
   cursor: pointer;
-  z-index: 9999;
+  z-index: 998;
 }
 .icon-totop:hover {
   opacity: 1;
