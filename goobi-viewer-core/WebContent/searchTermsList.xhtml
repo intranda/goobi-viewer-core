@@ -19,28 +19,39 @@
                     <h:outputText value="#{msg.browseBy} #{msg[browseBean.browsingMenuField]}" />
                 </h2>
 
-                <viewerComponent:alphabeticPaginator />
+                <h:panelGroup rendered="#{!browseBean.browsingMenuEnabled}">
+                    <!-- TODO: Add proper CSS class -->
+                    <div class="search-advanced__group">
+                         <h:outputText value="#{msg.errFunctionalityDisabled}" />
+                    </div>
+                </h:panelGroup>
+				<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+					<viewerComponent:alphabeticPaginator />
 
-				<nav id="search_termlistnav">
-					<ul>
-						<c:forEach items="#{browseBean.browseTermListEscaped}" var="term" varStatus="status">
-							<li>
-								<h:outputLink value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}:&quot;#{term}&quot;/1/-/-/" title="#{browseBean.browseTermList[status.count-1]}">
-									<h:outputText value="#{browseBean.browseTermList[status.count-1]}" escape="true" />
-	                                <span>(#{browseBean.browseTermHitCountList[status.count-1]})</span>
-                                </h:outputLink>
-                            </li>
-						</c:forEach>
-					</ul>
-				</nav>
-				
-				<div class="clearfix"></div>
+					<nav id="search_termlistnav">
+						<ul>
+							<c:forEach items="#{browseBean.browseTermListEscaped}" var="term"
+								varStatus="status">
+								<li><h:outputLink
+										value="#{navigationHelper.searchUrl}/-/#{browseBean.browsingMenuField}:&quot;#{term}&quot;/1/-/-/"
+										title="#{browseBean.browseTermList[status.count-1]}">
+										<h:outputText
+											value="#{browseBean.browseTermList[status.count-1]}"
+											escape="true" />
+										<span>(#{browseBean.browseTermHitCountList[status.count-1]})</span>
+									</h:outputLink></li>
+							</c:forEach>
+						</ul>
+					</nav>
 
-				<viewerComponent:simplePaginator 
-					itemCount="#{browseBean.lastPage}" 
-					itemActive="#{browseBean.currentPage}"
-                    urlPrefix="#{navigationHelper.termUrl}/#{browseBean.browsingMenuField}/#{browseBean.currentStringFilter}/" />
-            </div>
+					<div class="clearfix"></div>
+
+					<viewerComponent:simplePaginator itemCount="#{browseBean.lastPage}"
+						itemActive="#{browseBean.currentPage}"
+						urlPrefix="#{navigationHelper.termUrl}/#{browseBean.browsingMenuField}/#{browseBean.currentStringFilter}/" />
+
+				</h:panelGroup>
+			</div>
         </f:view>
     </ui:define>
 
