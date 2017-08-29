@@ -143,6 +143,7 @@ public class PDFDownloadJob extends DownloadJob {
         int priority = 10;
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
+        logger.trace("Calling taskManager at " + taskManagerUrl);
         File metsFile = new File(mediaRepository + "/indexed_mets", pi + ".xml");
         HttpPost post = OcrClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,
                 title, mediaRepository.getAbsolutePath(), "VIEWERPDF", downloadIdentifier, "noServerTypeInTaskClient", "", "", "", "", false);
