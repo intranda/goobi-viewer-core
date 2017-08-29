@@ -478,7 +478,7 @@ public class SearchFacets {
      */
     public void resetCurrentCollection() {
         logger.trace("resetCurrentCollection");
-        setCurrentCollection("-");
+        setCurrentHierarchicalFacetString("-");
     }
 
     /**
@@ -545,7 +545,7 @@ public class SearchFacets {
         logger.trace("currentCollection: {}", currentCollection);
         if (currentCollection.contains(facetQuery)) {
             currentCollection = currentCollection.replaceAll("(" + facetQuery + ")(?=;|(?=/))", "").replace(";;;;", ";;");
-            setCurrentCollection(currentCollection);
+            setCurrentHierarchicalFacetString(currentCollection);
         }
 
         return ret;

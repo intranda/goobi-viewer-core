@@ -2042,15 +2042,12 @@ public final class SearchHelper {
      */
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms) {
         StringBuilder sbOuter = new StringBuilder();
-        // sbOuter.append("NOT(").append(LuceneConstants.ISWORK).append(":true OR
-        // ").append(LuceneConstants.ISANCHOR).append(":true)");
         if (!searchTerms.isEmpty()) {
             logger.trace("fields: {}", fields.toString());
             logger.trace("searchTerms: {}", searchTerms.toString());
             boolean moreThanOne = false;
             for (String field : fields) {
-                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return
-                // every single doc}
+                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
                 switch (field) {
                     case SolrConstants.PI_TOPSTRUCT:
                     case SolrConstants.DC:
@@ -2094,8 +2091,6 @@ public final class SearchHelper {
      */
     public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups) {
         StringBuilder sbOuter = new StringBuilder();
-        // sbOuter.append("NOT(").append(LuceneConstants.ISWORK).append(":true OR
-        // ").append(LuceneConstants.ISANCHOR).append(":true)");
         if (!groups.isEmpty()) {
             for (SearchQueryGroup group : groups) {
                 StringBuilder sbGroup = new StringBuilder();

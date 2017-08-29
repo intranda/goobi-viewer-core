@@ -641,11 +641,12 @@ public class SearchBean implements Serializable {
                                 searchTerms);
                 logger.trace("Expand query: {}", expandQuery);
                 if (StringUtils.isNotEmpty(expandQuery)) {
-                    params.put(ExpandParams.EXPAND_Q, expandQuery);
                     params.put(ExpandParams.EXPAND, "true");
+                    params.put(ExpandParams.EXPAND_Q, expandQuery);
                     params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
                     params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
                     params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
+                    params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
                 }
             }
             List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits() ? SearchHelper.searchWithAggregation(query, from,
