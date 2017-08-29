@@ -1140,7 +1140,7 @@
     'use strict';
     
     // default variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -1150,13 +1150,10 @@
         reCaptchaSiteKey: '',
         useReCaptcha: true,
         path: '',
+        iiifPath: '',
         apiUrl: '',
         userEmail: null,
-        workInfo: {
-            title: '',
-            type: '',
-            fileSize: ''
-        },
+        workInfo: {},
         modal: {
             id: '',
             label: '',
@@ -1171,7 +1168,7 @@
             downloadInfo: {
                 text: 'Informationen zum angeforderten Download',
                 title: 'Werk',
-                type: 'Strukturtyp',
+                part: 'Teil',
                 fileSize: 'Größe'
             },
             reCaptchaText: 'Um die Generierung von Dokumenten durch Suchmaschinen zu verhindern bestätigen Sie bitte das reCAPTCHA.',
@@ -1246,41 +1243,49 @@
             _defaults.downloadBtn.on( 'click', function() {
                 _defaults.dataType = $( this ).attr( 'data-type' );
                 _defaults.dataTitle = $( this ).attr( 'data-title' );
-                _defaults.dataId = $( this ).attr( 'data-id' );
-                _defaults.dataPi = $( this ).attr( 'data-pi' );
-                
-                _defaults.modal = {
-                    id: _defaults.dataPi + '-Modal',
-                    label: _defaults.dataPi + '-Label',
-                    string: {
-                        title: _defaults.dataTitle,
-                        body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.workInfo ),
-                        closeBtn: _defaults.messages.closeBtn,
-                        saveBtn: _defaults.messages.saveBtn,
-                    }
-                };
-                
-                // check datatype
-                if ( _defaults.dataType === 'pdf' ) {
-                    if ( _debug ) {
-                        console.log( '---------- PDF Download ----------' );
-                        console.log( 'Title = ', _defaults.dataTitle );
-                        console.log( 'ID = ', _defaults.dataId );
-                        console.log( 'PI = ', _defaults.dataPi );
-                    }
-                    
-                    viewer.downloadModal.initModal( _defaults );
+                if ( $( this ).attr( 'data-id' ) !== '' ) {
+                    _defaults.dataId = $( this ).attr( 'data-id' );
                 }
                 else {
-                    if ( _debug ) {
-                        console.log( '---------- ePub Download ----------' );
-                        console.log( 'Title = ', _defaults.dataTitle );
-                        console.log( 'ID = ', _defaults.dataId );
-                        console.log( 'PI = ', _defaults.dataPi );
-                    }
-                    
-                    viewer.downloadModal.initModal( _defaults );
+                    _defaults.dataId = '-';
                 }
+                _defaults.dataPi = $( this ).attr( 'data-pi' );
+                _getWorkInfo( _defaults.dataPi, _defaults.dataId ).done( function( info ) {
+                    _defaults.workInfo = info;
+                    
+                    _defaults.modal = {
+                        id: _defaults.dataPi + '-Modal',
+                        label: _defaults.dataPi + '-Label',
+                        string: {
+                            title: _defaults.dataTitle,
+                            body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.workInfo ),
+                            closeBtn: _defaults.messages.closeBtn,
+                            saveBtn: _defaults.messages.saveBtn,
+                        }
+                    };
+                    
+                    // check datatype
+                    if ( _defaults.dataType === 'pdf' ) {
+                        if ( _debug ) {
+                            console.log( '---------- PDF Download ----------' );
+                            console.log( 'Title = ', _defaults.dataTitle );
+                            console.log( 'ID = ', _defaults.dataId );
+                            console.log( 'PI = ', _defaults.dataPi );
+                        }
+                        
+                        viewer.downloadModal.initModal( _defaults );
+                    }
+                    else {
+                        if ( _debug ) {
+                            console.log( '---------- ePub Download ----------' );
+                            console.log( 'Title = ', _defaults.dataTitle );
+                            console.log( 'ID = ', _defaults.dataId );
+                            console.log( 'PI = ', _defaults.dataPi );
+                        }
+                        
+                        viewer.downloadModal.initModal( _defaults );
+                    }
+                } );
             } );
         },
         /**
@@ -1380,14 +1385,17 @@
                 modalBody += '<i class="fa fa-file-text-o" aria-hidden="true"></i> ePub-Download: ';
                 modalBody += '</h4>';
             }
+            // Info
             modalBody += '<p>' + _defaults.messages.downloadInfo.text + ':</p>';
             modalBody += '<dl class="dl-horizontal">';
             modalBody += '<dt>' + _defaults.messages.downloadInfo.title + ':</dt>';
             modalBody += '<dd>' + infos.title + '</dd>';
-            modalBody += '<dt>' + _defaults.messages.downloadInfo.type + ':</dt>';
-            modalBody += '<dd>' + infos.type + '</dd>';
+            if ( infos.div !== null ) {
+                modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
+                modalBody += '<dd>' + infos.div + '</dd>';
+            }
             modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            modalBody += '<dd>' + infos.fileSize + '</dd>';
+            modalBody += '<dd>' + infos.size + '</dd>';
             modalBody += '</dl>';
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
@@ -1483,9 +1491,46 @@
             }
             
             return encodeURI( url );
-        },
-    
+        }
     };
+    
+    /**
+     * Method which returns a promise if the work info has been reached.
+     * 
+     * @method getWorkInfo
+     * @param {String} pi The PI of the work.
+     * @param {String} logid The LOG_ID of the work.
+     * @returns {Promise} A promise object if the info has been reached.
+     */
+    function _getWorkInfo( pi, logid ) {
+        if ( _debug ) {
+            console.log( '---------- _getWorkInfo() ----------' );
+            console.log( '_getWorkInfo: pi = ', pi );
+            console.log( '_getWorkInfo: logid = ', logid );
+        }
+        
+        var restCall = '';
+        var workInfo = {};
+        
+        if ( logid !== '' || logid !== undefined ) {
+            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/' + logid + '/';
+            
+            if ( _debug ) {
+                console.log( 'if' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        else {
+            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/-/';
+            
+            if ( _debug ) {
+                console.log( 'else' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        
+        return viewerJS.helper.getRemoteData( restCall );
+    }
     
     return viewer;
     
