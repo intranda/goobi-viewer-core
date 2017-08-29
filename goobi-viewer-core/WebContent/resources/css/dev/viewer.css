@@ -2600,6 +2600,10 @@ input[id*="cmdMoveTo"] {
 #licenses p {
   text-align: right;
 }
+/* EDIT USER */
+#editUserGeneral .btn {
+  margin-left: 5px;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
