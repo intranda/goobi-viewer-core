@@ -1415,8 +1415,14 @@ div.mce-fullscreen {
 #downloadWrapper nav ul li.download-title {
   font-size: 0.8rem;
 }
-#downloadWrapper nav ul li a {
+#downloadWrapper nav ul li a,
+#downloadWrapper nav ul li button {
   padding: 0;
+  color: #428bca;
+}
+#downloadWrapper nav ul li a:hover,
+#downloadWrapper nav ul li button:hover {
+  color: #1a1a1a;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -2453,6 +2459,34 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Download Modal
+   style declarations for external PDF, ePub and Toc download 
+   ==============================================================*/
+/* DOWNLOAD MODAL */
+#reCaptchaWrapper {
+  margin-bottom: 1.3125rem;
+}
+div[id*="-Modal"] p {
+  color: #6f6f6f;
+}
+div[id*="-Modal"] p strong {
+  color: #1a1a1a;
+}
+div[id*="-Modal"] .dl-horizontal dt,
+div[id*="-Modal"] .dl-horizontal dd {
+  padding: 3px 0;
+}
+div[id*="-Modal"] .dl-horizontal dt {
+  text-align: left;
+}
+div[id*="-Modal"] .email-form .form-group {
+  margin: 1.3125rem 0 0 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
 /* ==============================================================
    Admin 
@@ -2599,6 +2633,10 @@ input[id*="cmdMoveTo"] {
    ==============================================================*/
 #licenses p {
   text-align: right;
+}
+/* EDIT USER */
+#editUserGeneral .btn {
+  margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -3746,10 +3784,14 @@ input[id*="cmdMoveTo"] {
    SearchTermList
    style declarations for searchTermList.xhtml
    ==============================================================*/
-#search_termlistnav {
+/* BLOCK */
+.search-termlist {
+  /* ELEMENT */
+}
+.search-termlist__list {
   margin-bottom: 1.3125rem;
 }
-#search_termlistnav ul li a {
+.search-termlist__list a {
   display: block;
   padding: 5px 10px;
   text-overflow: ellipsis;
@@ -5568,19 +5610,6 @@ div.olMapViewport {
 }
 .toc__list-full {
   margin-top: 15px;
-}
-/* DOWNLOAD MODAL */
-#reCaptchaWrapper {
-  margin-bottom: 1.3125rem;
-}
-div[id*="Modal"] p {
-  color: #737373;
-}
-div[id*="Modal"] .email-form .form-group {
-  margin: 1.3125rem 0 0 0;
-}
-div[id*="Modal"] .email-form .form-group p {
-  margin-bottom: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

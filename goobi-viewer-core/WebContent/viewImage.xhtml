@@ -236,7 +236,18 @@
                     userEmail: $( '#userEmail' ).val(),
                     useReCaptcha: #{configurationBean.useReCaptcha},
                     reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
+                    workInfo: {
+                        title: '#{activeDocumentBean.titleBarLabel}',
+                        type: '[Einband]',
+                        fileSize: '[48MB]' 
+                    },
                     messages: {
+                        downloadInfo: {
+                            text: '#{msg.downloadInfoText}',
+                            title: '#{msg.downloadInfoTitle}',
+                            type: '#{msg.downloadInfoType}',
+                            fileSize: '#{msg.downloadInfoFileSize}'
+                        },
                         reCaptchaText: '#{msg.downloadReCaptchaText}',
                         rcInvalid: '#{msg.downloadRcInvalid}',
                         rcValid: '#{msg.downloadRcValid}',
@@ -247,6 +258,7 @@
                         saveBtn: '#{msg.downloadGenerateFile}',
                     }
                 };
+                
                 viewerJS.downloadModal.init( downloadModalConfig );
             </script>
 		</f:view>

@@ -891,22 +891,18 @@ public final class SolrSearchIndex {
     public List<String> getAllFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
-
         LukeResponse lukeResponse = lukeRequest.process(server);
-
         Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if (info.getType().toLowerCase().contains("string") || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase()
-                    .contains("tlong")) {
+            if (info != null && info.getType() != null && info.getType().toLowerCase().contains("string") || info.getType().toLowerCase().contains(
+                    "text") || info.getType().toLowerCase().contains("tlong")) {
                 list.add(name);
             }
         }
 
         return list;
-        //        return new ArrayList<String>(fieldInfoMap.keySet());
-
     }
 }

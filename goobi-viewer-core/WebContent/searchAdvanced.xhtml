@@ -24,6 +24,14 @@
 
                 <!-- SEARCH ADVANCED -->
                 <div class="search-advanced">
+					<!-- MESSAGE -->
+					<h:panelGroup rendered="#{!configurationBean.advancedSearchEnabled}">
+						<div class="alert alert-warning" role="alert">
+							<h:outputText value="#{msg.errFunctionalityDisabled}" />
+						</div>
+					</h:panelGroup>
+
+					<h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
                     <h:form id="searchAdvancedForm" prependId="false">
                         <c:forEach var="queryGroup" items="#{searchBean.advancedQueryGroups}" varStatus="statusGroup">
                             <div class="search-advanced__group">
@@ -174,6 +182,7 @@
                             </h:commandButton>
                         </div>
                     </h:form>
+                    </h:panelGroup>
                 </div>
             </div>
 
