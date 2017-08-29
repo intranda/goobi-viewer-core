@@ -361,6 +361,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 case SolrConstants.ISWORK:
                 case SolrConstants.NORMDATATERMS:
                 case SolrConstants.PI_ANCHOR:
+                case SolrConstants.PI_TOPSTRUCT:
                 case SolrConstants.UGCTERMS:
                     break;
                 case SolrConstants.DEFAULT:
