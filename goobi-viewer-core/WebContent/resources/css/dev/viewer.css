@@ -5619,11 +5619,24 @@ div.olMapViewport {
    View Download
    style declarations for viewDownload.xhtml
    ==============================================================*/
-#viewDownload .download-license-text {
-  width: 100%;
+/* DOWNLOAD */
+/* BLOCK */
+.download {
+  /* ELEMENT */
+}
+.download__status-loader:before,
+.download__status-loader:after {
+  content: " ";
+  display: table;
+}
+.download__status-loader:after {
+  clear: both;
+}
+.download__status-loader img {
+  float: right;
+}
+.download__status-license-text {
   height: 200px;
-  padding: 10px;
-  border: 1px solid #428bca;
   background-color: #fff;
   overflow-y: auto;
 }
