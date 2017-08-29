@@ -230,22 +230,18 @@
             </h:panelGroup>
     
             <script type="text/javascript">
-                var downloadModalConfig = {
-                    downloadBtn: $( '.download-modal' ),
+            	var downloadModalConfig = {
+                	downloadBtn: $( '.download-modal' ),
                     path: '#{navigationHelper.applicationUrl}',
+                    iiifPath: '#{configurationBean.iiifApiUrl}',
                     userEmail: $( '#userEmail' ).val(),
                     useReCaptcha: #{configurationBean.useReCaptcha},
                     reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
-                    workInfo: {
-                        title: '#{activeDocumentBean.titleBarLabel}',
-                        type: '[Einband]',
-                        fileSize: '[48MB]' 
-                    },
                     messages: {
                         downloadInfo: {
                             text: '#{msg.downloadInfoText}',
                             title: '#{msg.downloadInfoTitle}',
-                            type: '#{msg.downloadInfoType}',
+                            part: '#{msg.downloadInfoPart}',
                             fileSize: '#{msg.downloadInfoFileSize}'
                         },
                         reCaptchaText: '#{msg.downloadReCaptchaText}',
