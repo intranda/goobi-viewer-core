@@ -105,22 +105,22 @@
             		var interval;
 
 					function updateJobStatus() {
-						var status = $('#jobStatusField').val();
+						var status = $( '#jobStatusField' ).val();
 
-						switch (status) {
+						switch ( status ) {
 							case 'ERROR':
 								break;
 							case 'WAITING':
-								if (!interval) {
+								if ( !interval ) {
 									interval = setInterval( function() {
-										$('#viewDownload').load( document.URL + ' #viewDownload .download__status', function() {
+										$( '#viewDownload' ).load( document.URL + ' #viewDownload .download__status', function() {
 											updateJobStatus();
 										});
-									}, 5000);
+									}, 5000 );
 								}
 								break;
 							case 'READY':
-								clearInterval(interval);
+								clearInterval( interval );
 								viewerJS.download.init();
 								break;
 						}
