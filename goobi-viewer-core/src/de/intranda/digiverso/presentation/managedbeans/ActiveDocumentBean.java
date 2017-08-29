@@ -50,7 +50,6 @@ import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.model.calendar.CalendarItemYear;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
