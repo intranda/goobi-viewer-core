@@ -78,7 +78,8 @@ public abstract class DownloadJob implements Serializable {
     public enum JobStatus {
         WAITING,
         READY,
-        ERROR;
+        ERROR,
+        UNDEFINED;
 
         public static JobStatus getByName(String name) {
             if (name != null) {
@@ -89,6 +90,8 @@ public abstract class DownloadJob implements Serializable {
                         return READY;
                     case "ERROR":
                         return ERROR;
+                    case "UNDEFINED":
+                        return JobStatus.UNDEFINED;
                 }
             }
 
@@ -130,7 +133,7 @@ public abstract class DownloadJob implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    protected JobStatus status;
+    protected JobStatus status = JobStatus.UNDEFINED;
 
     /** Description field for stack traces, etc. */
     @Column(name = "description", columnDefinition = "LONGTEXT")
@@ -189,6 +192,8 @@ public abstract class DownloadJob implements Serializable {
         if (!controlIdentifier.equals(downloadIdentifier)) {
             throw new IllegalArgumentException("wrong downloadIdentifier");
         }
+        
+        logger.debug("Checking download of job " + controlIdentifier);
 
         try {
             /*Get or create job*/
@@ -530,6 +535,9 @@ public abstract class DownloadJob implements Serializable {
      * @return the status
      */
     public JobStatus getStatus() {
+        if(status == null) {
+            status = JobStatus.UNDEFINED;
+        }
         return status;
     }
 

@@ -89,7 +89,7 @@ public class DownloadBean implements Serializable {
 
     public String openDownloadAction() throws DAOException {
         downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
-        downloadJob.updateStatus();
+//        downloadJob.updateStatus();
         if (downloadJob == null) {
             Messages.error("downloadErrorNotFound");
         }

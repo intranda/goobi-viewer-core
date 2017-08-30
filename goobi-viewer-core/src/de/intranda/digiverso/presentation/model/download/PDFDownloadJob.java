@@ -139,6 +139,7 @@ public class PDFDownloadJob extends DownloadJob {
             throw new DownloadException("Cannot create download folder: " + targetFolder);
         }
         String title = pi + "_" + logId;
+        logger.debug("Trigger pdf generation for " + title);
 
         int priority = 10;
         HttpClient client = HttpClients.createDefault();

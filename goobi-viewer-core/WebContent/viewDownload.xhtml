@@ -44,7 +44,7 @@
 	                    </h:panelGroup>
 	
 	                    <!-- DOWNLOAD QUEUE -->
-	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'WAITING'}">
+	                    <h:panelGroup rendered="#{downloadBean.downloadJob.status == 'WAITING' or downloadBean.downloadJob.status == 'UNDEFINED'}">
 	                        <div class="panel panel-info">
 	                            <div class="panel-heading">
 	                                <h3 class="panel-title">#{msg.downloadQueueTitle}</h3>
@@ -102,27 +102,29 @@
                 </div>
 
 				<script>
-            		var interval;
+					updateJobStatus();
+            		var interval = setInterval( function() {
+						$( '#viewDownload' ).load( document.URL + ' #viewDownload .download__status', function() {
+							updateJobStatus();
+						});
+					}, 5000 );
+            		
 
 					function updateJobStatus() {
 						var status = $( '#jobStatusField' ).val();
 
 						switch ( status ) {
 							case 'ERROR':
-								break;
-							case 'WAITING':
-								if ( !interval ) {
-									interval = setInterval( function() {
-										$( '#viewDownload' ).load( document.URL + ' #viewDownload .download__status', function() {
-											updateJobStatus();
-										});
-									}, 5000 );
-								}
+								clearInterval( interval );
 								break;
 							case 'READY':
 								clearInterval( interval );
 								viewerJS.download.init();
 								break;
+							case 'UNDEFINED':
+								console.log("Download job status is undefined. Keep checking...");
+							case 'WAITING':
+							default:
 						}
 					}
 
