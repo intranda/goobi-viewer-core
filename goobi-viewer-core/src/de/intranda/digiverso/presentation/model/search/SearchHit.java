@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jsoup.Jsoup;
@@ -286,8 +287,11 @@ public class SearchHit implements Comparable<SearchHit> {
                 switch (docType) {
                     case PAGE:
                         fulltext = (String) childDoc.getFirstValue("MD_FULLTEXT");
-                        if (fulltext == null) {
-                            fulltext = (String) childDoc.getFieldValue(SolrConstants.FULLTEXT);
+                        if("1499441345893".equals(childDoc.getFieldValue("IDDOC")))
+                        logger.trace("IDDOC: {}, fulltext:\n'{}'", childDoc.getFieldValue("IDDOC"), fulltext);
+                        // Skip page hits without an proper full-text
+                        if (StringUtils.isBlank(fulltext) || fulltext.trim().isEmpty()) {
+                            continue;
                         }
                     case METADATA:
                     case EVENT:

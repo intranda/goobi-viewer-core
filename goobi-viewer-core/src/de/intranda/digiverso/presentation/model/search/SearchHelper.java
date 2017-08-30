@@ -2051,6 +2051,7 @@ public final class SearchHelper {
                 switch (field) {
                     case SolrConstants.PI_TOPSTRUCT:
                     case SolrConstants.DC:
+                    case SolrConstants.DOCSTRCT:
                         continue;
                 }
                 Set<String> terms = searchTerms.get(field);
@@ -2094,12 +2095,28 @@ public final class SearchHelper {
         if (!groups.isEmpty()) {
             for (SearchQueryGroup group : groups) {
                 StringBuilder sbGroup = new StringBuilder();
+                
+                // Identify any fields that only exist in page docs and enable the page search mode
+                boolean searchInPageDocs = false;
                 for (SearchQueryItem item : group.getQueryItems()) {
-                    // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
-                    // return every single doc}
                     if (item.getField() == null) {
                         continue;
                     }
+                    switch (item.getField()) {
+                        case SolrConstants.FULLTEXT:
+                            searchInPageDocs = true;
+                            break;
+                    }
+                    if (searchInPageDocs) {
+                        break;
+                    }
+                }
+
+                for (SearchQueryItem item : group.getQueryItems()) {
+                    if (item.getField() == null) {
+                        continue;
+                    }
+                    // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
                     switch (item.getField()) {
                         case SolrConstants.PI_TOPSTRUCT:
                         case SolrConstants.DC:
@@ -2108,7 +2125,12 @@ public final class SearchHelper {
                     String itemQuery = item.generateQuery(new HashSet<String>(), false);
                     if (StringUtils.isNotEmpty(itemQuery)) {
                         if (sbGroup.length() > 0) {
-                            sbGroup.append(" OR ");
+                            if (searchInPageDocs) {
+                                // When also searching in page document fields, the operator must be 'OR'
+                                sbGroup.append(" OR ");
+                            } else {
+                                sbGroup.append(' ').append(group.getOperator().name()).append(' ');
+                            }
                         }
                         sbGroup.append(itemQuery);
                     }
