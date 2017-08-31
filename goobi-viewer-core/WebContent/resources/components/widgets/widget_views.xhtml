@@ -53,7 +53,7 @@
 						</li>
 					</h:panelGroup>
 					
-                    <h:panelGroup rendered="#{navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.activeDocument.lidoRecord}">
+                    <h:panelGroup rendered="#{navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.activeDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
                         <li class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
                                 <h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" />
