@@ -18,58 +18,135 @@ package de.intranda.digiverso.presentation.controller;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TeiToHtmlConverter {
 
-    private static final Logger logger = Logger.getLogger(TeiToHtmlConverter.class);
+    public static enum ConverterMode {
+        annotation,
+        resource
+    }
 
-    private static final int HEADER_HIERARCHY_DEPTH = 9;
-    private static final String HEADER_DIV_REGEX = "(<hx[\\S\\s]*?)(?=((<h\\d)|$))";
+    private static final Logger logger = LoggerFactory.getLogger(TeiToHtmlConverter.class);
 
-    private ConverterMode mode;
+    private final ConverterMode mode;
+    private final Map<Integer, Integer> hierarchyLevels = new HashMap<>();
 
     public TeiToHtmlConverter(ConverterMode mode) {
         this.mode = mode;
     }
 
+    /**
+     * 
+     * @param text
+     * @should map hierarchy levels correctly
+     */
+    void populateHierarchyLevels(String text) {
+        if (text == null) {
+            throw new IllegalArgumentException("text may not be null");
+        }
+
+        hierarchyLevels.clear();
+        final Set<Integer> divOpenedIndexes = new HashSet<>();
+        final Set<Integer> divClosedIndexes = new HashSet<>();
+        for (MatchResult r : findRegexMatches("<div.*?>", text)) {
+            divOpenedIndexes.add(r.start());
+            //            logger.trace("start at {}-{}", r.start(), r.end());
+        }
+        for (MatchResult r : findRegexMatches("</div>", text)) {
+            divClosedIndexes.add(r.end() - 1);
+            logger.trace("end at {}-{}", r.start(), r.end() - 1);
+        }
+        logger.trace(text);
+        List<Integer> allIndexes = new ArrayList<>();
+        allIndexes.addAll(divOpenedIndexes);
+        allIndexes.addAll(divClosedIndexes);
+        Collections.sort(allIndexes);
+        int level = 0;
+        logger.trace("index: {}-{}", allIndexes.get(0), allIndexes.get(allIndexes.size() - 1));
+        for (int i = allIndexes.get(0); i <= allIndexes.get(allIndexes.size() - 1); ++i) {
+            if (divOpenedIndexes.contains(i)) {
+                level++;
+                logger.trace("increase at {}: {}", i, level);
+            } else if (divClosedIndexes.contains(i)) {
+                level--;
+                logger.trace("decrease at {}: {}", i, level);
+            }
+            hierarchyLevels.put(i, level);
+        }
+
+    }
+
+    int getHierarchyLevel(int index) {
+        logger.trace("getHierarchyLevel: {}", index);
+        return hierarchyLevels.get(index);
+    }
+
     public String convert(String text) {
         text = removeUrlEncoding(text);
         text = TeiToHtmlConverter.removeComments(text);
-        // text = "<div xmlns=\"http://www.tei-c.org/ns/1.0\">" + text + "</div>";
 
-        for (int i = HEADER_HIERARCHY_DEPTH; i > 0; i--) {
-            String regex = HEADER_DIV_REGEX.replace("x", Integer.toString(i));
-            for (MatchResult r : findRegexMatches(regex, text)) {
-                text = text.replace(r.group(), "<div>" + r.group() + "</div>");
-            }
-            // TODO replace header
-            for (MatchResult r : findRegexMatches("<h" + i + ".*?>(.*?)</h" + i + ">", text)) {
-                text = text.replace(r.group(), "<head>" + r.group(1) + "</head>");
-            }
-        }
+        // Remove TEI namespace from divs
+        text = text.replace(" xmlns=\"http://www.tei-c.org/ns/1.0\"", "");
+
+        // Remove type attributes from divs
+//        text = text.replaceAll("<div type=\"(.*?)\">", "<div>");
 
         // remove empty <p>'s
         // text = text.replace("<p />", "").replace("<p/>", "").replace("<p></p>", "");
 
-        // replace bold
-        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">(.*?)</hi>", text)) {
+        // headers
+        populateHierarchyLevels(text);
+        for (MatchResult r : findRegexMatches("<head>[\\s]*(.*?)|[\\s]*</head>", text)) {
+            int level = getHierarchyLevel(r.start());
+            // Replace <head> tags with placeholder tags of the same length so that the hierarchy level indexes are still valid
+            text = text.replace(r.group(), "<~h~" + level + ">" + r.group(1) + "</~h~" + level + ">");
+        }
+        // replace placeholders with <h> tags
+        text = text.replace("~h~", "h");
+
+        // bold+italic+underline
+        for (MatchResult r : findRegexMatches(
+                "<hi rend=\"bold\">[\\s]*<hi rend=\"italic\">[\\s]*<hi rend=\"underline\">(.*?)</hi>[\\s]*</hi>[\\s]*</hi>", text)) {
+            text = text.replace(r.group(), "<strong><em><span style=\"text-decoration: underline;\">" + r.group(1) + "</span></em></strong>");
+        }
+        // bold
+        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">[\\s]*(.*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<strong>" + r.group(1) + "</strong>");
         }
-        // replace italic
-        for (MatchResult r : findRegexMatches("<hi rend=\"italic\">(.*?)</hi>", text)) {
+        // italic
+        for (MatchResult r : findRegexMatches("<hi rend=\"italic\">[\\s]*(.*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<em>" + r.group(1) + "</em>");
         }
-        // replace underline
-        for (MatchResult r : findRegexMatches("<hi rend=\"underline\">(.*?)</hi>", text)) {
+        // underline
+        for (MatchResult r : findRegexMatches("<hi rend=\"underline\">[\\s]*(.*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<span style=\"text-decoration: underline;\">" + r.group(1) + "</span>");
         }
+        // strikethrough
+        for (MatchResult r : findRegexMatches("<hi rend=\"strikethrough\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+            text = text.replace(r.group(), "<s>" + r.group(1) + "</s>");
+        }
+        // blockCapitals
+        for (MatchResult r : findRegexMatches("<hi rend=\"blockCapitals\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+            text = text.replace(r.group(), "<span style=\"text-transform: uppercase;\">" + r.group(1) + "</span>");
+        }
+        // smallCapitals
+        for (MatchResult r : findRegexMatches("<hi rend=\"smallCapitals\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+            text = text.replace(r.group(), "<span style=\"font-variant: small-caps;\">" + r.group(1) + "</span>");
+        }
+        // TODO spaceOut
 
         // TODO replace anm
         for (MatchResult r : findRegexMatches("\\[anm\\](.*?)\\[/anm\\]", text)) {
@@ -78,7 +155,7 @@ public class TeiToHtmlConverter {
 
         // tables
         //        text = text.replaceAll("<table.*?>", "<table>").replace("<tbody>", "").replace("</tbody>", "");
-        text = text.replace("<head>", "<caption>").replace("</head>", "</caption>");
+        // text = text.replace("<head>", "<h2>").replace("</head>", "</h2>");
         //        text = text.replace("<tbody>", "").replace("</tbody>", "");
         //        text = text.replace("<thead>", "").replace("</thead>", "");
         text = text.replaceAll("<row>", "<tr>").replace("<tr>", "<row>").replace("</row>", "</tr>");
@@ -167,10 +244,19 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), r.group(2));
         }
 
-        // text = text.replace("<br />", "");
+        // page breaks
+        for (MatchResult r : findRegexMatches("<pb n=\"(.*?)\"></pb>", text)) {
+            text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">" + r.group(1)
+                    + "</p>");
+        }
+
+        // line breaks
+        text = text.replace("<lb />", "<br />").replace("<lb></lb>", "<br />");
+
         // text = text.replace("<p />", "");
 
         return text.trim();
+
     }
 
     public static String removeComments(String text) {
@@ -215,10 +301,4 @@ public class TeiToHtmlConverter {
         }
         return results;
     }
-
-    public static enum ConverterMode {
-        annotation,
-        resource
-    }
-
 }

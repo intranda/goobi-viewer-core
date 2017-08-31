@@ -1470,7 +1470,7 @@ public class ViewManager implements Serializable {
             }
         }
 
-        logger.trace(currentFulltext);
+        // logger.trace(currentFulltext);
         return currentFulltext;
     }
 
