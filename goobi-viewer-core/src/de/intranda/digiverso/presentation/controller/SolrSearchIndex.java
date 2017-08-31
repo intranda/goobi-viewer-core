@@ -119,6 +119,7 @@ public final class SolrSearchIndex {
      * @param facetFields
      * @param facetSort
      * @param fieldList If not null, only the fields in the list will be returned.
+     * @param filterQueries
      * @param params Additional query parameters.
      * @return {@link QueryResponse}
      * @throws PresentationException
@@ -130,7 +131,7 @@ public final class SolrSearchIndex {
      * @should filter fields correctly
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
-            List<String> fieldList, Map<String, String> params) throws PresentationException, IndexUnreachableException {
+            List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(first);
         solrQuery.setRows(rows);
@@ -164,6 +165,11 @@ public final class SolrSearchIndex {
                 if (StringUtils.isNotEmpty(field)) {
                     solrQuery.addField(field);
                 }
+            }
+        }
+        if (filterQueries != null && !filterQueries.isEmpty()) {
+            for (String fq : filterQueries) {
+                solrQuery.addFilterQuery(fq);
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -222,15 +228,16 @@ public final class SolrSearchIndex {
      * @param sortFields
      * @param facetFields
      * @param fieldList If not null, only the fields in the list will be returned.
+     * @param filterQueries
      * @param params
      * @return {@link QueryResponse}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
-            Map<String, String> params) throws PresentationException, IndexUnreachableException {
+            List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
-        return search(query, first, rows, sortFields, facetFields, null, fieldList, params);
+        return search(query, first, rows, sortFields, facetFields, null, fieldList, filterQueries, params);
     }
 
     /**
@@ -248,7 +255,7 @@ public final class SolrSearchIndex {
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
-        return search(query, first, rows, sortFields, facetFields, fieldList, null);
+        return search(query, first, rows, sortFields, facetFields, fieldList, null, null);
     }
 
     /**
@@ -891,22 +898,18 @@ public final class SolrSearchIndex {
     public List<String> getAllFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
-
         LukeResponse lukeResponse = lukeRequest.process(server);
-
         Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if (info.getType().toLowerCase().contains("string") || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase()
-                    .contains("tlong")) {
+            if (info != null && info.getType() != null && info.getType().toLowerCase().contains("string") || info.getType().toLowerCase().contains(
+                    "text") || info.getType().toLowerCase().contains("tlong")) {
                 list.add(name);
             }
         }
 
         return list;
-        //        return new ArrayList<String>(fieldInfoMap.keySet());
-
     }
 }

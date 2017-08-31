@@ -50,13 +50,95 @@ public class SearchFacets {
     protected final List<FacetItem> currentHierarchicalFacets = new ArrayList<>();
     private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
 
-    
     public void reset() {
         availableFacets.clear();
         availableHierarchicalFacets.clear();
         drillDownExpanded.clear();
     }
-    
+
+    /**
+     * Generates a list containing filter queries for the selected regular and hierarchical facets.
+     * 
+     * @param advancedSearchGroupOperator
+     * @return
+     */
+    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator) {
+        List<String> ret = new ArrayList<>(2);
+
+        // Add hierarchical facets
+        String hierarchicalQuery = generateHierarchicalFacetFilterQuery(advancedSearchGroupOperator);
+        if (StringUtils.isNotEmpty(hierarchicalQuery)) {
+            ret.add(hierarchicalQuery);
+        }
+
+        // Add regular facets
+        String regularQuery = generateFacetFilterQuery();
+        if (StringUtils.isNotEmpty(regularQuery)) {
+            ret.add(regularQuery);
+        }
+
+        return ret;
+    }
+
+    /**
+     * Generates a filter query for the selected hierarchical facets.
+     * 
+     * @param advancedSearchGroupOperator
+     * @return
+     * @should generate query correctly
+     * @should return null if facet list is empty
+     */
+    String generateHierarchicalFacetFilterQuery(int advancedSearchGroupOperator) {
+        if (!currentHierarchicalFacets.isEmpty()) {
+            StringBuilder sbQuery = new StringBuilder();
+            int count = 0;
+            for (FacetItem facetItem : currentHierarchicalFacets) {
+                if (count > 0) {
+                    if (advancedSearchGroupOperator == 1) {
+                        sbQuery.append(" OR ");
+                    } else {
+                        sbQuery.append(" AND ");
+                    }
+                }
+                sbQuery.append('(').append(facetItem.getField()).append(':').append(facetItem.getValue()).append(" OR ").append(facetItem.getField())
+                        .append(':').append(facetItem.getValue()).append(".*)");
+                count++;
+            }
+
+            return sbQuery.toString();
+        }
+
+        return null;
+    }
+
+    /**
+     * Generates a filter query for the selected non-hierarchical facets.
+     * 
+     * @return
+     * @should generate query correctly
+     * @should return null if facet list is empty
+     */
+    String generateFacetFilterQuery() {
+        if (!currentFacets.isEmpty()) {
+            StringBuilder sbQuery = new StringBuilder();
+            if (sbQuery.length() > 0) {
+                sbQuery.insert(0, '(');
+                sbQuery.append(')');
+            }
+            for (FacetItem facetItem : currentFacets) {
+                if (sbQuery.length() > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append(facetItem.getQueryEscapedLink());
+                logger.trace("Added facet: {}", facetItem.getLink());
+            }
+
+            return sbQuery.toString();
+        }
+
+        return null;
+    }
+
     /**
      * Returns a list of FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
      *
@@ -396,7 +478,7 @@ public class SearchFacets {
      */
     public void resetCurrentCollection() {
         logger.trace("resetCurrentCollection");
-        setCurrentCollection("-");
+        setCurrentHierarchicalFacetString("-");
     }
 
     /**
@@ -463,7 +545,7 @@ public class SearchFacets {
         logger.trace("currentCollection: {}", currentCollection);
         if (currentCollection.contains(facetQuery)) {
             currentCollection = currentCollection.replaceAll("(" + facetQuery + ")(?=;|(?=/))", "").replace(";;;;", ";;");
-            setCurrentCollection(currentCollection);
+            setCurrentHierarchicalFacetString(currentCollection);
         }
 
         return ret;

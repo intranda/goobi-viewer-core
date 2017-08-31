@@ -164,7 +164,7 @@ public class SearchFacetsTest {
     @Test
     public void removeHierarchicalFacetAction_shouldRemoveFacetCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentCollection("DC:a;;DC:aa;;");
+        facets.setCurrentHierarchicalFacetString("DC:a;;DC:aa;;");
         Assert.assertEquals(2, facets.getCurrentHierarchicalFacets().size());
         facets.removeHierarchicalFacetAction("DC:a", null);
         Assert.assertEquals(1, facets.getCurrentHierarchicalFacets().size());
@@ -199,5 +199,48 @@ public class SearchFacetsTest {
         facets.setCurrentFacetString("FIELD:aU002FbU005Cc");
         Assert.assertEquals(1, facets.getCurrentFacets().size());
         Assert.assertEquals("a/b\\c", facets.getCurrentFacets().get(0).getValue());
+    }
+
+    /**
+     * @see SearchFacets#generateFacetFilterQuery()
+     * @verifies generate query correctly
+     */
+    @Test
+    public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;FIELD3:c");
+        Assert.assertEquals("FIELD1:a AND FIELD2:b AND FIELD3:c", facets.generateFacetFilterQuery());
+    }
+
+    /**
+     * @see SearchFacets#generateFacetFilterQuery()
+     * @verifies return null if facet list is empty
+     */
+    @Test
+    public void generateFacetFilterQuery_shouldReturnNullIfFacetListIsEmpty() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assert.assertNull(facets.generateFacetFilterQuery());
+    }
+
+    /**
+     * @see SearchFacets#generateHierarchicalFacetFilterQuery(int)
+     * @verifies generate query correctly
+     */
+    @Test
+    public void generateHierarchicalFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setCurrentHierarchicalFacetString("DC:a;;DC:aa;;");
+        Assert.assertEquals("(DC:a OR DC:a.*) AND (DC:aa OR DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(0));
+        Assert.assertEquals("(DC:a OR DC:a.*) OR (DC:aa OR DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(1));
+    }
+
+    /**
+     * @see SearchFacets#generateHierarchicalFacetFilterQuery(int)
+     * @verifies return null if facet list is empty
+     */
+    @Test
+    public void generateHierarchicalFacetFilterQuery_shouldReturnNullIfFacetListIsEmpty() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assert.assertNull(facets.generateHierarchicalFacetFilterQuery(1));
     }
 }

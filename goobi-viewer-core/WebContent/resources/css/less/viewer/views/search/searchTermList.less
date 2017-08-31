@@ -2,18 +2,20 @@
    SearchTermList
    style declarations for searchTermList.xhtml
    ==============================================================*/
-#search_termlistnav {
-    margin-bottom: 1.3125rem;
-    ul {
-        li {
-            a {
-                display: block;
-                padding: 5px 10px;
-                text-overflow: ellipsis;
-                overflow: hidden;
-            }
-        }
-    }
+/* BLOCK */
+.search-termlist {
+	/* ELEMENT */
+	&__list {
+	    margin-bottom: 1.3125rem;
+	    ul {}
+	    li {}
+	    a {
+	    	display: block;
+	    	padding: 5px 10px;
+	    	text-overflow: ellipsis;
+	    	overflow: hidden;
+	    }
+	}	
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

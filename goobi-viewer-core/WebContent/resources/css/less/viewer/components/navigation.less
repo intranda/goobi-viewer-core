@@ -27,11 +27,12 @@
         display: block;
         position: relative;
         float: left;
-        &.active > a {
+        &.active > a,
+        &.active > button {
             background-color: @lightgray;
         }
     }
-    a {
+    a, button {
         display: block;
         position: relative;
         padding: 6px 12px;
@@ -72,7 +73,7 @@
                 background-color: @middlegray;
             }
         }
-        a {}
+        a, button {}
         &.in {
             display: block;
         }

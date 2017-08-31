@@ -651,7 +651,7 @@ public class CalendarBean implements Serializable {
         builder.append(docstructFilterQuery);
         searchBean.resetSearchResults();
         searchBean.setCurrentPage(1);
-        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.getFacets().setCurrentHierarchicalFacetString("-");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.getFacets().setCurrentFacetString("-");
         searchBean.setExactSearchString(builder.toString());
@@ -809,8 +809,8 @@ public class CalendarBean implements Serializable {
 
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(" AND ").append(SolrConstants.DC).append(':')
-                    .append(collection).append('*').append(filterQuery);
+            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(" AND ").append(
+                    SolrConstants.DC).append(':').append(collection).append('*').append(filterQuery);
         } else {
             sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(filterQuery);
         }
@@ -1103,7 +1103,7 @@ public class CalendarBean implements Serializable {
         // builder.append(docstructFilterQuery);
         searchBean.resetSearchResults();
         searchBean.setCurrentPage(1);
-        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.getFacets().setCurrentHierarchicalFacetString("-");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.setExactSearchString(builder.toString());
         searchBean.executeSearch();
@@ -1194,7 +1194,7 @@ public class CalendarBean implements Serializable {
         }
 
         searchBean.setCurrentPage(1);
-        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.getFacets().setCurrentHierarchicalFacetString("-");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.setExactSearchString(getQueryForIncompleteData(year));
         searchBean.executeSearch();

@@ -498,7 +498,7 @@ table,
   margin: 0;
   opacity: 0.25;
   cursor: pointer;
-  z-index: 9999;
+  z-index: 998;
 }
 .icon-totop:hover {
   opacity: 1;
@@ -987,17 +987,22 @@ div.mce-fullscreen {
   position: relative;
   float: left;
 }
-.navigation li.active > a {
+.navigation li.active > a,
+.navigation li.active > button {
   background-color: #eee;
 }
-.navigation a {
+.navigation a,
+.navigation button {
   display: block;
   position: relative;
   padding: 6px 12px;
 }
 .navigation a:hover,
+.navigation button:hover,
 .navigation a:focus,
-.navigation a:active {
+.navigation button:focus,
+.navigation a:active,
+.navigation button:active {
   text-decoration: none;
   background-color: #eee;
   outline: none !important;
@@ -2600,6 +2605,10 @@ input[id*="cmdMoveTo"] {
 #licenses p {
   text-align: right;
 }
+/* EDIT USER */
+#editUserGeneral .btn {
+  margin-left: 5px;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -3746,10 +3755,14 @@ input[id*="cmdMoveTo"] {
    SearchTermList
    style declarations for searchTermList.xhtml
    ==============================================================*/
-#search_termlistnav {
+/* BLOCK */
+.search-termlist {
+  /* ELEMENT */
+}
+.search-termlist__list {
   margin-bottom: 1.3125rem;
 }
-#search_termlistnav ul li a {
+.search-termlist__list a {
   display: block;
   padding: 5px 10px;
   text-overflow: ellipsis;
