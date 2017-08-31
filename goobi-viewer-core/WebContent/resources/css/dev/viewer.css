@@ -987,7 +987,8 @@ div.mce-fullscreen {
   position: relative;
   float: left;
 }
-.navigation li.active > a {
+.navigation li.active > a,
+.navigation li.active > button {
   background-color: #eee;
 }
 .navigation a,
