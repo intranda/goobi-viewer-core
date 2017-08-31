@@ -62,7 +62,7 @@
                         </li>
                     </h:panelGroup>
 
-					<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.thumbsActiveUrl != null}">
+					<h:panelGroup rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.thumbsActiveUrl != null}">
 						<li class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
 							<h:outputLink value="#{navigationHelper.thumbsActiveUrl}#{activeDocumentBean.thumbPart}">
 								<h:outputText value="#{msg.thumbGal}" />
