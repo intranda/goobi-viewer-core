@@ -990,14 +990,18 @@ div.mce-fullscreen {
 .navigation li.active > a {
   background-color: #eee;
 }
-.navigation a {
+.navigation a,
+.navigation button {
   display: block;
   position: relative;
   padding: 6px 12px;
 }
 .navigation a:hover,
+.navigation button:hover,
 .navigation a:focus,
-.navigation a:active {
+.navigation button:focus,
+.navigation a:active,
+.navigation button:active {
   text-decoration: none;
   background-color: #eee;
   outline: none !important;

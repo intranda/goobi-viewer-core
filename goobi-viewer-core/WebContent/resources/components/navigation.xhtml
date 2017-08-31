@@ -29,10 +29,10 @@
 									</h:panelGroup>
 									<!-- WITH SUBMENU --> 
 									<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
-										<a href="#" data-toggle="submenu" role="button">
+										<button type="button" class="btn-clean" data-toggle="submenu">
 											#{msg[navItem.itemLabel]}
 											<span class="caret"></span>
-										</a>
+										</button>
 									</h:panelGroup>
 									<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
 										<ui:param name="parentItem" value="#{navItem}" />
@@ -51,10 +51,10 @@
 															</h:panelGroup>
 															<!-- WITH SUBMENU --> 
 															<h:panelGroup rendered="#{!child.childItems.isEmpty()}">
-																<a href="#" data-toggle="submenu" role="button">
+																<button type="button" class="btn-clean" data-toggle="submenu">
 																	#{msg[child.itemLabel]}
 																	<span class="caret"></span>
-																</a>
+																</button>
 															</h:panelGroup> 
 															<h:panelGroup rendered="#{!child.childItems.isEmpty()}">
 																<!-- LEVEL 2 -->
@@ -71,10 +71,10 @@
 																					</h:panelGroup>
 																					<!-- WITH SUBMENU --> 
 																					<h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
-																						<a href="#" data-toggle="submenu" role="button">
+																						<button type="button" class="btn-clean" data-toggle="submenu">
 																							#{msg[child1.itemLabel]}
 																							<span class="caret"></span>
-																						</a>
+																						</button>
 																					</h:panelGroup> 
 																					<h:panelGroup rendered="#{!child1.childItems.isEmpty()}">
 																						<!-- LEVEL 3 -->
@@ -91,10 +91,10 @@
 																											</h:panelGroup>
 																											<!-- WITH SUBMENU --> 
 																											<h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
-																												<a href="#" data-toggle="submenu" role="button">
+																												<button type="button" class="btn-clean" data-toggle="submenu">
 																													#{msg[child2.itemLabel]}
 																													<span class="caret"></span>
-																												</a>
+																												</button>
 																											</h:panelGroup> 
 																											<h:panelGroup rendered="#{!child2.childItems.isEmpty()}">
 																												<!-- LEVEL 4 -->
@@ -111,10 +111,10 @@
 																																	</h:panelGroup>
 																																	<!-- WITH SUBMENU --> 
 																																	<h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
-																																		<a href="#" data-toggle="submenu" role="button">
+																																		<button type="button" class="btn-clean" data-toggle="submenu">
 																																			#{msg[child3.itemLabel]}
 																																			<span class="caret"></span>
-																																		</a>
+																																		</button>
 																																	</h:panelGroup> 
 																																	<h:panelGroup rendered="#{!child3.childItems.isEmpty()}">
 																																		<!-- LEVEL 5 -->
@@ -242,10 +242,10 @@
                                              navigationHelper.currentPage == 'adminLicenseTypes' or
                                              navigationHelper.currentPage == 'adminUserComments' or
                                              navigationHelper.currentPage == 'adminUserActivity' ? 'active' : ''}">
-							<a href="#" data-toggle="submenu" role="button">
+							<button type="button" class="btn-clean" data-toggle="submenu">
 								#{msg.admin}
 								<span class="caret"></span>
-							</a>
+							</button>
 							<div class="navigation__submenu level-1">
 								<ul>
 									<li class="#{navigationHelper.currentPage == 'adminAllUsers' ? 'active' : ''}">
@@ -272,10 +272,10 @@
                                     </c:forEach>
 									<li role="separator" class="divider"></li>
 									<li>
-										<a href="#" data-toggle="submenu" role="button">
+										<button type="button" class="btn-clean" data-toggle="submenu">
 											#{msg.cms_title_menu}
 											<span class="caret"></span>
-										</a>
+										</button>
 										<div class="navigation__submenu level-2">
 											<ul>
 												<li class="#{navigationHelper.currentPage == 'adminCmsOverview' ? 'active' : ''}">
