@@ -29,7 +29,7 @@
                     <div class="search-list__title">
                         <h3 class="pull-left">
                             <h:outputText rendered="#{searchBean.activeSearchType == 0}" value="#{msg.searchResults}:" />
-                            <h:outputText rendered="#{searchBean.activeSearchType == 1}" value="#{msg.searchResultsAdvanced}:" />
+                            <h:outputText rendered="#{searchBean.activeSearchType == 1 or searchBean.activeSearchType == 3}" value="#{msg.searchResultsAdvanced}:" />
                         </h3>
 
                         <!-- SEARCH LIST OPTIONS -->
