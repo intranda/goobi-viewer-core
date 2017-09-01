@@ -106,10 +106,16 @@ public class TeiToHtmlConverter {
 
         // remove empty <p>'s
         // text = text.replace("<p />", "").replace("<p/>", "").replace("<p></p>", "");
+        
+        // images
+        // <img src="none" alt="Bildbeschriftung" />
+        for (MatchResult r : findRegexMatches("<figure><head>(.*?)</head><graphic url=\"(.*?)\" /></figure>", text)) {
+            text = text.replace(r.group(), "\"<img src=\"" + r.group(2) + "\" alt=\"" + r.group(1) + "\"/>");
+        }
 
-        // headers
+        // headers (after images)
         populateHierarchyLevels(text);
-        for (MatchResult r : findRegexMatches("<head>[\\s]*(.*?)|[\\s]*</head>", text)) {
+        for (MatchResult r : findRegexMatches("<head>[\\s]*(.*?)[\\s]*</head>", text)) {
             int level = getHierarchyLevel(r.start());
             // Replace <head> tags with placeholder tags of the same length so that the hierarchy level indexes are still valid
             text = text.replace(r.group(), "<~h~" + level + ">" + r.group(1) + "</~h~" + level + ">");
@@ -175,12 +181,6 @@ public class TeiToHtmlConverter {
         //            text = text.replaceAll("<list rend=\"numbered\">", "<ol>").replace("</list>", "</ol>");
         for (MatchResult r : findRegexMatches("<list rend=\"numbered\">(.*?)</list>", text)) {
             text = text.replace(r.group(), "<ol>" + r.group(1) + "</ol>");
-        }
-
-        // images
-        // <img src="none" alt="Bildbeschriftung" />
-        for (MatchResult r : findRegexMatches("<figure><head>(.*?)</head><graphic url=\"(.*?)\" /></figure>", text)) {
-            text = text.replace(r.group(), "\"<img src=\"" + r.group(2) + "\" alt=\"" + r.group(1) + "\"/>");
         }
 
         // TODO Blockquote (old)
