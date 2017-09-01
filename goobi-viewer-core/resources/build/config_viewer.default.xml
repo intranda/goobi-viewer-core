@@ -300,7 +300,7 @@
 			hitlist or when opening a collection -->
 		<hitsPerPage>10</hitsPerPage>
 		<!-- fulltextFragmentLength: Approximate length of the full-text fragment displayed in search hits. Default is 200. -->
-        <fulltextFragmentLength>200</fulltextFragmentLength>
+        <fulltextFragmentLength>120</fulltextFragmentLength>
 		<!-- filters: Filter definitions for the regular search. Each definition 
 			will be rendered as a radio button. Syntax is "filter_" + Solr field name 
 			(so that individual labels can be added). -->
