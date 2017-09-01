@@ -995,6 +995,7 @@ div.mce-fullscreen {
 .navigation button {
   display: block;
   position: relative;
+  text-align: left;
   padding: 6px 12px;
 }
 .navigation a:hover,
