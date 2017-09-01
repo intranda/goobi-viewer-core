@@ -1068,10 +1068,10 @@ div.mce-fullscreen {
   display: block;
 }
 .navigation__megamenu-close {
-  position: absolute;
+  position: absolute !important;
   top: 0;
   right: 0;
-  padding: 10px 15px;
+  padding: 10px 15px !important;
   z-index: 999;
 }
 .navigation__megamenu-close .fa {
