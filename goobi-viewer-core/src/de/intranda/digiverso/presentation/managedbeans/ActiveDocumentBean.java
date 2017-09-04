@@ -664,22 +664,30 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/').append(getPersistentIdentifier())
-                .append('/');
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/');
 
         return sbUrl.toString();
     }
 
     public String getFirstPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        }
+
+        return null;
     }
 
     public String getLastPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        }
+
+        return null;
     }
 
     public String getPreviousPageUrl(int step) throws IndexUnreachableException {
-        if (viewManager.isDoublePageMode()) {
+        if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
         int number = imageToShow - step;
