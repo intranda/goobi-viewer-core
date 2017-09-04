@@ -20,7 +20,7 @@
 						<div class="col-sm-6">
 							<div class="form-control__select">
 								<h:selectOneMenu styleClass="form-control content-input" value="#{contentItem.collectionField}">
-									<f:selectItems value="#{cmsBean.getLuceneFields()}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+									<f:selectItems value="#{cmsBean.getLuceneFields(true, true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />
 									<f:ajax render="baseCollectionMenu" />
 								</h:selectOneMenu>
 							</div>

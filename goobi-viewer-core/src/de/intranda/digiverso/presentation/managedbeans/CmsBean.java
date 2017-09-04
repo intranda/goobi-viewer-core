@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -996,10 +997,20 @@ public class CmsBean {
     }
 
     public static List<String> getLuceneFields() {
-        return getLuceneFields(false);
+        return getLuceneFields(false, false);
     }
 
     public static List<String> getLuceneFields(boolean includeUntokenized) {
+        return getLuceneFields(includeUntokenized, false);
+    }
+
+    /**
+     * 
+     * @param includeUntokenized
+     * @param excludeTokenizedMetadataFields
+     * @return
+     */
+    public static List<String> getLuceneFields(boolean includeUntokenized, boolean excludeTokenizedMetadataFields) {
         List<String> constants;
         try {
             constants = DataManager.getInstance().getSearchIndex().getAllFieldNames();
@@ -1007,7 +1018,8 @@ public class CmsBean {
             while (iterator.hasNext()) {
                 String name = iterator.next();
                 if (name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_") || (!includeUntokenized && name.endsWith(
-                        "_UNTOKENIZED"))) {
+                        SolrConstants._UNTOKENIZED)) || (excludeTokenizedMetadataFields && name.startsWith("MD_") && !name.endsWith(
+                                SolrConstants._UNTOKENIZED))) {
                     iterator.remove();
                 }
             }
