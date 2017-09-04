@@ -358,19 +358,19 @@ public final class SearchHelper {
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
         sbQuery.append(" AND (").append(luceneField).append(":").append(value).append(" OR ").append(luceneField).append(":").append(value
                 + separatorString + "*)");
-        List<String> blacklist = new ArrayList<>();
+        Set<String> blacklist = new HashSet<>();
         if (filterForBlacklist) {
             String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
             switch (blacklistMode) {
                 case "all":
-                    blacklist = new ArrayList<>();
+                    blacklist = new HashSet<>();
                     sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
                     break;
                 case "dcList":
-                    blacklist = DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField);
+                    blacklist = new HashSet<>(DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField));
                     break;
                 default:
-                    blacklist = new ArrayList<>();
+                    blacklist = new HashSet<>();
                     break;
             }
         }
@@ -421,6 +421,7 @@ public final class SearchHelper {
      */
     public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, boolean filterForWhitelist,
             boolean filterForBlacklist, boolean filterForWorks, boolean filterForAnchors) throws IndexUnreachableException {
+        logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, Long> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
@@ -443,110 +444,101 @@ public final class SearchHelper {
                 sbQuery.append(getDocstrctWhitelistFilterSuffix());
             }
             sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
-            List<String> blacklist = new ArrayList<>();
+            Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
                 String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
                 switch (blacklistMode) {
                     case "all":
-                        blacklist = new ArrayList<>();
+                        blacklist = new HashSet<>();
                         sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
                         break;
                     case "dcList":
-                        blacklist = DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField);
+                        blacklist = new HashSet<>(DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField));
                         break;
                     default:
-                        blacklist = new ArrayList<>();
+                        blacklist = new HashSet<>();
                         break;
                 }
             }
 
-            logger.debug("query: {}", sbQuery.toString());
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, Collections
-                    .singletonList(facetField), Collections.singletonList(luceneField), null, null);
-            logger.trace("query done");
-
-            // Construct splitting regex
-            // String splitRegex = BrowseDcElement.split;
-            // if (BrowseDcElement.split.equals(".")) {
-            // splitRegex = "[.]";
-            // }
-
-            // Fill the map from the facet (faster, but unfortunately, precise parent collection size cannot be determined
-            // this way)
-            // if (resp.getFacetField(LuceneConstants.DC) != null && resp.getFacetField(LuceneConstants.DC).getValues() !=
-            // null) {
-            // for (Count count : resp.getFacetField(LuceneConstants.DC).getValues()) {
-            // Long recordCount = ret.get(count.getName());
-            // if (recordCount == null) {
-            // recordCount = 0L;
-            // }
-            // ret.put(count.getName(), recordCount + count.getCount());
-            //
-            // // Add count to parent collections
-            // String[] nameSplit = count.getName().split(splitRegex);
-            // if (nameSplit.length > 1) {
-            // for (int i = 0; i < nameSplit.length; ++i) {
-            // StringBuilder sbParentName = new StringBuilder();
-            // for (int j = 0; j <= i; ++j) {
-            // if (sbParentName.length() > 0) {
-            // sbParentName.append(BrowseDcElement.split);
-            // }
-            // sbParentName.append(nameSplit[j]);
-            // }
-            // String parentName = sbParentName.toString();
-            // if (parentName.length() < count.getName().length()) {
-            // Long parentRecordCount = ret.get(parentName);
-            // if (parentRecordCount == null) {
-            // parentRecordCount = 0L;
-            // }
-            // ret.put(parentName, parentRecordCount + count.getCount());
-            // if(nameSplit[0].equals("belletristik"))
-            // logger.debug(count.getName() + " parent '" + parentName + "' count is now " + ret.get(parentName));
-            // }
-            // }
-            // }
-            // }
-            // }
+            // Fill the map from the facet (faster, but unfortunately, precise parent collection size cannot be determined this way)
+            {
+                //              logger.debug("query: {}", sbQuery.toString());
+                //            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null, Collections.singletonList(
+                //                    facetField), null, null, null);
+                //              logger.trace("query done");
+                //                if (resp.getFacetField(facetField) != null && resp.getFacetField(facetField).getValues() != null) {
+                //                    for (Count count : resp.getFacetField(facetField).getValues()) {
+                //                        if (count.getName() == null || (!blacklist.isEmpty() && checkCollectionInBlacklist(count.getName(), blacklist))) {
+                //                            continue;
+                //                        }
+                //                        Long recordCount = ret.get(count.getName());
+                //                        if (recordCount == null) {
+                //                            recordCount = 0L;
+                //                        }
+                //                        ret.put(count.getName(), recordCount + count.getCount());
+                //
+                //                        // Add count to parent collections
+                //                        if (count.getName().contains(BrowseDcElement.split)) {
+                //                            String parent = count.getName();
+                //                            while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
+                //                                parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
+                //                                Long parentRecordCount = ret.get(parent);
+                //                                if (parentRecordCount == null) {
+                //                                    parentRecordCount = 0L;
+                //                                }
+                //                                ret.put(parent, parentRecordCount + count.getCount());
+                //                            }
+                //                        }
+                //                    }
+                //                }
+            }
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
-            for (SolrDocument doc : resp.getResults()) {
-                Set<String> dcDoneForThisRecord = new HashSet<>();
-                Collection<Object> fieldList = doc.getFieldValues(luceneField);
-                if (fieldList != null) {
-                    for (Object o : fieldList) {
-                        String dc = (String) o;
-                        if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
-                            continue;
-                        }
-                        {
-                            Long count = ret.get(dc);
-                            if (count == null) {
-                                count = 0L;
+            {
+                logger.debug("query: {}", sbQuery.toString());
+                // No faceting needed when fetching field names manually (faceting adds to the total execution time)
+                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), Collections.singletonList(
+                        luceneField));
+                logger.trace("query done");
+                for (SolrDocument doc : results) {
+                    Set<String> dcDoneForThisRecord = new HashSet<>();
+                    Collection<Object> fieldList = doc.getFieldValues(luceneField);
+                    if (fieldList != null) {
+                        for (Object o : fieldList) {
+                            String dc = (String) o;
+                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
+                                continue;
                             }
-                            count++;
-                            ret.put(dc, count);
-                            dcDoneForThisRecord.add(dc);
-                        }
+                            {
+                                Long count = ret.get(dc);
+                                if (count == null) {
+                                    count = 0L;
+                                }
+                                count++;
+                                ret.put(dc, count);
+                                dcDoneForThisRecord.add(dc);
+                            }
 
-                        if (dc.contains(BrowseDcElement.split)) {
-                            String parent = dc;
-                            while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
-                                parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
-                                if (!dcDoneForThisRecord.contains(parent)) {
-                                    Long count = ret.get(parent);
-                                    if (count == null) {
-                                        count = 0L;
+                            if (dc.contains(BrowseDcElement.split)) {
+                                String parent = dc;
+                                while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
+                                    parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
+                                    if (!dcDoneForThisRecord.contains(parent)) {
+                                        Long count = ret.get(parent);
+                                        if (count == null) {
+                                            count = 0L;
+                                        }
+                                        count++;
+                                        ret.put(parent, count);
+                                        dcDoneForThisRecord.add(parent);
                                     }
-                                    count++;
-                                    ret.put(parent, count);
-                                    dcDoneForThisRecord.add(parent);
                                 }
                             }
                         }
                     }
                 }
             }
-
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -566,7 +558,7 @@ public final class SearchHelper {
      * @should throw IllegalArgumentException if dc is null
      * @should throw IllegalArgumentException if blacklist is null
      */
-    protected static boolean checkCollectionInBlacklist(String dc, List<String> blacklist) {
+    protected static boolean checkCollectionInBlacklist(String dc, Set<String> blacklist) {
         if (dc == null) {
             throw new IllegalArgumentException("dc may not be null");
         }
@@ -1568,6 +1560,7 @@ public final class SearchHelper {
      * @param indexOfTerm
      * @return
      */
+    @SuppressWarnings("unused")
     private static String getTextFragmentStatic(String fulltext, int targetFragmentLength, String fulltextFragment, String searchTerm,
             int indexOfTerm) {
         if (fulltextFragment.length() == 0) {
@@ -1613,6 +1606,7 @@ public final class SearchHelper {
      * @param halfLength
      * @return
      */
+    @SuppressWarnings("unused")
     private static String getTextFragmentFromLine(String fulltext, String searchTerm, int indexOfTerm, int fragmentLength) {
         String fulltextFragment;
         String stringBefore = fulltext.substring(0, indexOfTerm);
@@ -2095,7 +2089,7 @@ public final class SearchHelper {
         if (!groups.isEmpty()) {
             for (SearchQueryGroup group : groups) {
                 StringBuilder sbGroup = new StringBuilder();
-                
+
                 // Identify any fields that only exist in page docs and enable the page search mode
                 boolean searchInPageDocs = false;
                 for (SearchQueryItem item : group.getQueryItems()) {

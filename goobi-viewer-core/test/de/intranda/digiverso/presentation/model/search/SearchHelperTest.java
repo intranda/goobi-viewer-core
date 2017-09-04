@@ -314,6 +314,63 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         // First, make sure the docstruct whitelist and the collection blacklist always come from the same config file;
         Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, true, true, true, true);
         Assert.assertEquals(16, collections.size());
+        List<String> keys = new ArrayList<>(collections.keySet());
+        // Collections.sort(keys);
+        for (String key : keys) {
+            switch (key) {
+                case ("a"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b.c"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b.c.d"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("alle"):
+                    Assert.assertEquals(Long.valueOf(13), collections.get(key));
+                    break;
+                case ("mehrbaendigeswerk"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("monographie"):
+                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
+                    break;
+                case ("multimedia"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("ocr"):
+                    Assert.assertEquals(Long.valueOf(6), collections.get(key));
+                    break;
+                case ("ocr.antiqua"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                case ("ocr.fraktur"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                case ("paedagogik"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("sonstiges"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("sonstiges.langestoc"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("sonstiges.querformat"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("zeitschrift"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                default:
+                    Assert.fail("Unknown collection name: " + key);
+                    break;
+            }
+        }
     }
 
     /**
@@ -552,12 +609,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void checkCollectionInBlacklist_shouldMatchSimpleCollectionsCorrectly() throws Exception {
-        List<String> blacklist = Collections.singletonList("a");
-        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist));
-        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist));
-        blacklist = Collections.singletonList("a.b.c.d");
-        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
-        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist));
+        {
+            Set<String> blacklist = new HashSet<>(Collections.singletonList("a"));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist));
+        }
+        {
+            Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b.c.d"));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist));
+        }
     }
 
     /**
@@ -566,7 +627,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void checkCollectionInBlacklist_shouldMatchSubcollectionsCorrectly() throws Exception {
-        List<String> blacklist = Collections.singletonList("a.b");
+        Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b"));
         Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
         Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.z", blacklist));
     }
@@ -577,7 +638,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void checkCollectionInBlacklist_shouldThrowIllegalArgumentExceptionIfDcIsNull() throws Exception {
-        SearchHelper.checkCollectionInBlacklist(null, Collections.singletonList("a*"));
+        SearchHelper.checkCollectionInBlacklist(null, new HashSet<>(Collections.singletonList("a*")));
     }
 
     /**

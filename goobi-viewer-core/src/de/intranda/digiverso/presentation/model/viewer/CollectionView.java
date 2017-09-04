@@ -56,11 +56,12 @@ public class CollectionView {
     public void populateCollectionList() throws IndexUnreachableException {
         synchronized (this) {
             try {
-                logger.debug("populateDcList");
+                logger.debug("populateCollectionList");
                 Map<String, Long> dcStrings = dataProvider.getData();
+                logger.trace("Creating browse elements...");
                 completeCollectionList = new ArrayList<>(); // this has to be null and not empty at first; make sure it is initialized after the call to Solr
                 HierarchicalBrowseDcElement lastElement = null;
-                ArrayList<String> list = new ArrayList<>(dcStrings.keySet());
+                List<String> list = new ArrayList<>(dcStrings.keySet());
                 Collections.sort(list);
                 for (String dcName : list) {
                     String collectionName = dcName.intern();
@@ -86,7 +87,7 @@ public class CollectionView {
                 }
                 //            Collections.sort(completeCollectionList);
                 calculateVisibleDcElements();
-                logger.debug("populateDcList end");
+                logger.debug("populateCollectionList end");
             } catch (PresentationException e) {
                 logger.error("Failed to initialize collection: " + e.toString());
             }
@@ -120,6 +121,7 @@ public class CollectionView {
     }
 
     public void calculateVisibleDcElements(boolean loadDescriptions) {
+        logger.trace("calculateVisibleDcElements: {}", loadDescriptions);
         if (completeCollectionList == null) {
             return;
         }
@@ -192,6 +194,7 @@ public class CollectionView {
     }
 
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
+        logger.trace("getVisibleDcElements");
         return visibleCollectionList;
     }
 
@@ -610,8 +613,8 @@ public class CollectionView {
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field + "/"
                     + collection.getLuceneName() + "/";
         } else {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + field + ':' + collection.getLuceneName()
-                    + "/-/1/" + collection.getSortField() + "/-/";
+            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + field + ':' + collection
+                    .getLuceneName() + "/-/1/" + collection.getSortField() + "/-/";
         }
     }
 
