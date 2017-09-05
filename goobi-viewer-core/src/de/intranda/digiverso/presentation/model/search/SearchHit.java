@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.search;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -141,7 +142,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param searchTerms
      * @param exportFields Optional fields for (Excel) export purposes.
      * @param useThumbnail
-     * @param matchTermsToMetadataValues
+     * @param ignoreAdditionalFields
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -149,7 +150,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should add export fields correctly
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail) throws PresentationException,
+            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields) throws PresentationException,
             IndexUnreachableException, DAOException {
         String fulltextFragment = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
                 DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
@@ -161,9 +162,9 @@ public class SearchHit implements Comparable<SearchHit> {
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
         BrowseElement browseElement = new BrowseElement(se, metadataList, locale, fulltextFragment, useThumbnail, searchTerms);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields);
         SearchHit hit = new SearchHit(HitType.getByName(se.getMetadataValue(SolrConstants.DOCTYPE)), browseElement, searchTerms, locale);
-        hit.populateFoundMetadata(doc);
+        hit.populateFoundMetadata(doc, ignoreAdditionalFields);
 
         // Export fields for Excel export
         if (exportFields != null && !exportFields.isEmpty()) {
@@ -275,6 +276,7 @@ public class SearchHit implements Comparable<SearchHit> {
             if (number > childDocs.size()) {
                 number = childDocs.size();
             }
+            Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
             for (int i = 0; i < number; ++i) {
                 SolrDocument childDoc = childDocs.get(i);
                 String fulltext = null;
@@ -287,8 +289,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 switch (docType) {
                     case PAGE:
                         fulltext = (String) childDoc.getFirstValue("MD_FULLTEXT");
-                        if("1499441345893".equals(childDoc.getFieldValue("IDDOC")))
-                        logger.trace("IDDOC: {}, fulltext:\n'{}'", childDoc.getFieldValue("IDDOC"), fulltext);
+                        if ("1499441345893".equals(childDoc.getFieldValue("IDDOC")))
+                            logger.trace("IDDOC: {}, fulltext:\n'{}'", childDoc.getFieldValue("IDDOC"), fulltext);
                         // Skip page hits without an proper full-text
                         if (StringUtils.isBlank(fulltext) || fulltext.trim().isEmpty()) {
                             continue;
@@ -300,7 +302,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ownerHit == null) {
                             SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                             if (ownerDoc != null) {
-                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false);
+                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields);
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
@@ -311,7 +313,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             logger.error("No document found for IDDOC {}", ownerIddoc);
                             continue;
                         } {
-                        SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false);
+                        SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false, ignoreFields);
                         ownerHit.getChildren().add(childHit);
                         hitsPopulated++;
                     }
@@ -320,7 +322,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         // Docstruct hits are immediate children of the main hit
                         String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                         if (!ownerHits.containsKey(iddoc)) {
-                            SearchHit childHit = createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false);
+                            SearchHit childHit = createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
@@ -348,26 +350,24 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * 
      * @param doc
+     * @param ignoreFields Fields to be skipped
      * @should add field values pairs that match search terms
      * @should add MD fields that contain terms from DEFAULT
      * @should not add duplicate values
+     * @should not add ignored fields
      */
-    public void populateFoundMetadata(SolrDocument doc) {
+    public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields) {
         if (searchTerms == null) {
             return;
         }
+
         boolean overviewPageFetched = false;
         for (String fieldName : searchTerms.keySet()) {
+            // Skip fields that are in the ignore list
+            if (ignoreFields != null && ignoreFields.contains(fieldName)) {
+                continue;
+            }
             switch (fieldName) {
-                case SolrConstants._CALENDAR_DAY:
-                case SolrConstants._CALENDAR_MONTH:
-                case SolrConstants.ISANCHOR:
-                case SolrConstants.ISWORK:
-                case SolrConstants.NORMDATATERMS:
-                case SolrConstants.PI_ANCHOR:
-                case SolrConstants.PI_TOPSTRUCT:
-                case SolrConstants.UGCTERMS:
-                    break;
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {

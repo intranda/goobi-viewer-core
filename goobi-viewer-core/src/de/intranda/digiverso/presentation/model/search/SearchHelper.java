@@ -136,6 +136,7 @@ public final class SearchHelper {
         if (params != null) {
             logger.trace("params: {}", params.toString());
         }
+        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         for (SolrDocument doc : resp.getResults()) {
@@ -162,7 +163,7 @@ public final class SearchHelper {
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true);
+            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields);
             ret.add(hit);
         }
 
@@ -196,6 +197,7 @@ public final class SearchHelper {
         if (resp.getResults() == null) {
             return new ArrayList<>();
         }
+        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         for (SolrDocument doc : resp.getResults()) {
@@ -203,7 +205,7 @@ public final class SearchHelper {
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
-            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true);
+            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields);
             ret.add(hit);
             hit.addOverviewPageChild();
 

@@ -2291,6 +2291,29 @@ public class ConfigurationTest {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isAggregateHits());
     }
 
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataIgnoreFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataIgnoreFields_shouldReturnCorrectValues() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled());
+    }
+
+    /**
+     * @see Configuration#isDisplayAdditionalMetadataEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayAdditionalMetadataEnabled_shouldReturnCorrectValue() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(3, results.size());
+        Assert.assertEquals(SolrConstants.ISANCHOR, results.get(0));
+        Assert.assertEquals(SolrConstants.ISWORK, results.get(1));
+        Assert.assertEquals(SolrConstants.PI_TOPSTRUCT, results.get(2));
+    }
+
     @Test
     public void testSidebarTocVisibleIfEmpty() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
