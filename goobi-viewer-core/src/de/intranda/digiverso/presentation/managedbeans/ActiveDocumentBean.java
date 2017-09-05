@@ -832,11 +832,21 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * 
      * @return
+     * @throws IndexUnreachableException
      */
-    public String getTitleBarLabel() {
+    public String getTitleBarLabel() throws IndexUnreachableException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTitleBarLabel() != null) {
-            return viewManager.getTitleBarLabel();
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
+            // Prefer the label of the current TOC element
+            if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
+                String label = toc.getLabel(viewManager.getPi());
+                if (label != null) {
+                    return label;
+                }
+            }
+            if (viewManager.getTitleBarLabel() != null) {
+                return viewManager.getTitleBarLabel();
+            }
         } else if (cmsBean != null) {
             CMSPage cmsPage = cmsBean.getCurrentPage();
             if (cmsPage != null) {

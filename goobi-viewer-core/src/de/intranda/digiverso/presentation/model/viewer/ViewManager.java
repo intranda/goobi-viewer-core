@@ -289,7 +289,7 @@ public class ViewManager implements Serializable {
         return urlBuilder.append("footer/full/!{width},{height}/0/default." + format + "?watermarkId=" + getFooterId()).toString();
     }
 
-    public String getCurrentPreviewUrl() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getCurrentPreviewUrl() throws IndexUnreachableException, DAOException {
         int width = DataManager.getInstance().getConfiguration().getPreviewWidth();
         int previewHeightPercentage = DataManager.getInstance().getConfiguration().getPreviewHeightPercentage();
         PhysicalElement currentImg = getCurrentPage();
@@ -311,7 +311,7 @@ public class ViewManager implements Serializable {
         return currentImg.getThumbnailUrl(width, height);
     }
 
-    public String getNeighbourPreviewUrl(int step) throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getNeighbourPreviewUrl(int step) throws IndexUnreachableException, DAOException {
         PhysicalElement page = getPage(currentImageOrder + step);
         if (page != null) {
             int width = DataManager.getInstance().getConfiguration().getPreviewWidth();
@@ -334,24 +334,24 @@ public class ViewManager implements Serializable {
         return "";
     }
 
-    public String getCurrentImageUrl() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getCurrentImageUrl() throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(false, false);
     }
 
-    public String getCurrentImageUrlLarge() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getCurrentImageUrlLarge() throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(false, true);
 
     }
 
-    public String getCurrentImageUrlFullscreen() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getCurrentImageUrlFullscreen() throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(true, false);
     }
 
-    public String getCurrentImageUrlFullscreenLarge() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getCurrentImageUrlFullscreenLarge() throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(true, true);
     }
 
-    public String getCurrentImageUrl(boolean fullscreen, boolean enlarged) throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getCurrentImageUrl(boolean fullscreen, boolean enlarged) throws IndexUnreachableException, DAOException {
         logger.trace("getCurrentImageUrl");
         PhysicalElement currentImg = getCurrentPage();
         if (currentImageOrder != -1 && currentImg != null) {
@@ -1958,7 +1958,7 @@ public class ViewManager implements Serializable {
             return false;
         }
         List<TranskribusJob> jobs = DataManager.getInstance().getDao().getTranskribusJobs(pi, session.getUserId(), null);
-        
+
         return jobs != null && !jobs.isEmpty();
     }
 
@@ -1967,7 +1967,7 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return false;
         }
-        
+
         return DataManager.getInstance().getConfiguration().useTiles();
     }
 
@@ -2089,31 +2089,31 @@ public class ViewManager implements Serializable {
     public CalendarView getCalendarView() {
         return calendarView;
     }
-    
+
     /**
      * @return the firstPageOrientation
      */
     public PageOrientation getFirstPageOrientation() {
         return firstPageOrientation;
     }
-    
+
     /**
      * @param firstPageOrientation the firstPageOrientation to set
      */
     public void setFirstPageOrientation(PageOrientation firstPageOrientation) {
         this.firstPageOrientation = firstPageOrientation;
     }
-    
+
     /**
      * @return 1 if we are in double page mode and the current page is the right page. 0 otherwise
-     * @throws DAOException 
-     * @throws IndexUnreachableException 
+     * @throws DAOException
+     * @throws IndexUnreachableException
      */
     public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
-        if(isDoublePageMode()) {
+        if (isDoublePageMode()) {
             return getCurrentRightPage().equals(getCurrentPage()) ? 1 : 0;
-        } else {
-            return 0;
         }
+
+        return 0;
     }
 }
