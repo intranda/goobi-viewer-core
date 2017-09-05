@@ -19,11 +19,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -678,22 +676,30 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/').append(getPersistentIdentifier())
-                .append('/');
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/');
 
         return sbUrl.toString();
     }
 
     public String getFirstPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        }
+
+        return null;
     }
 
     public String getLastPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        }
+
+        return null;
     }
 
     public String getPreviousPageUrl(int step) throws IndexUnreachableException {
-        if (viewManager.isDoublePageMode()) {
+        if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
         int number = imageToShow - step;
@@ -838,8 +844,9 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * 
      * @return
+     * @throws IndexUnreachableException
      */
-    public String getTitleBarLabel() {
+    public String getTitleBarLabel() throws IndexUnreachableException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
         if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
             String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
@@ -847,8 +854,19 @@ public class ActiveDocumentBean implements Serializable {
                 return label;
             }
         }
-
-        if (cmsBean != null) {
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
+            // Prefer the label of the current TOC element
+            if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
+                String label = toc.getLabel(viewManager.getPi());
+                if (label != null) {
+                    return label;
+                }
+            }
+            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
+            }
+        } else if (cmsBean != null) {
             CMSPage cmsPage = cmsBean.getCurrentPage();
             if (cmsPage != null) {
                 String pageName = navigationHelper.getCurrentPage();
@@ -866,8 +884,9 @@ public class ActiveDocumentBean implements Serializable {
      * Title bar label value escaped for JavaScript.
      * 
      * @return
+     * @throws IndexUnreachableException 
      */
-    public String getLabelForJS() {
+    public String getLabelForJS() throws IndexUnreachableException {
         String label = getTitleBarLabel();
         if (label != null) {
             return StringEscapeUtils.escapeJavaScript(label);

@@ -349,6 +349,22 @@
         <groupDuplicateHits>true</groupDuplicateHits>
         <!-- aggregateHits: If true, only topstructs will be returned as hits, with child docstructs and pages being retrieved in an extra search. Default is true. -->
         <aggregateHits>true</aggregateHits>
+        <!-- displayAdditionalMetadata: Add relevant metadata fields and values to the search hits if they contain requested search terms. Default is enabled=true. -->
+        <displayAdditionalMetadata>
+            <enabled>true</enabled>
+            <!-- ignoreField: Fields that add no value to the search hits but take up space (e.g. PI_TOPSTRUCT, DOCSTRCT)
+                can be configured to not be added as additional metadata. This element can be repeated. -->
+            <ignoreField>DC</ignoreField>
+            <ignoreField>DOCTYPE</ignoreField>
+            <ignoreField>ISANCHOR</ignoreField>
+            <ignoreField>ISWORK</ignoreField>
+            <ignoreField>NORMDATATERMS</ignoreField>
+            <ignoreField>PI_ANCHOR</ignoreField>
+            <ignoreField>PI_TOPSTRUCT</ignoreField>
+            <ignoreField>UGCTERMS</ignoreField>
+            <ignoreField>YEARMONTH</ignoreField>
+            <ignoreField>YEARMONTHDAY</ignoreField>
+        </displayAdditionalMetadata>
         <!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
         <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
         <!-- versioning: 'previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version, 'nextVersionIdentifierField' defines the Solr field that contains the identifier for the succeeding version -->

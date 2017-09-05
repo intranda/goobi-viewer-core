@@ -309,7 +309,7 @@ public class AdminBean implements Serializable {
                     Messages.error("user_passwordMismatch");
                     return "adminUser";
                 }
-                getCurrentUser().setNewPassword(passwordOne);
+                currentUser.setNewPassword(passwordOne);
             }
             if (DataManager.getInstance().getDao().updateUser(getCurrentUser())) {
                 Messages.info("user_saveSuccess");
@@ -319,6 +319,12 @@ public class AdminBean implements Serializable {
             }
         } else {
             // New user
+            if (DataManager.getInstance().getDao().getUserByEmail(currentUser.getEmail()) != null) {
+                // Do not allow the same email address being used for multiple users
+                Messages.error("newUserExist");
+                logger.debug("User account already exists for '" + currentUser.getEmail() + "'.");
+                return "adminUser";
+            }
             if (StringUtils.isEmpty(passwordOne) || StringUtils.isEmpty(passwordTwo)) {
                 Messages.error("newUserPasswordOneRequired");
                 return "adminUser";

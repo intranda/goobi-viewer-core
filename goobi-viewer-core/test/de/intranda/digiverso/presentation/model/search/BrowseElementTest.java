@@ -28,7 +28,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -72,7 +71,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
         searchTerms.put("MD_YEARPUBLISH", new HashSet<>(Arrays.asList(new String[] { "1984" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null);
 
         {
             String field = "MD_TITLE";
@@ -106,10 +105,9 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null);
         Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
     }
-
 
     /**
      * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map)
@@ -119,7 +117,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
         BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false);
         be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
-        
+
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
         Assert.assertEquals(1, se.getMetadataFields().size());
@@ -127,8 +125,28 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null);
         Assert.assertEquals(1, be.getMetadataList("MD_TITLE").size());
+    }
+
+    /**
+     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set)
+     * @verifies not add ignored fields
+     */
+    @Test
+    public void addAdditionalMetadataContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false);
+        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+
+        StructElement se = new StructElement();
+        se.getMetadataFields().put("MD_IGNOREME", Collections.singletonList("foo ignores bar"));
+        Assert.assertEquals(1, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
+
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, new HashSet<>(Collections.singletonList("MD_IGNOREME")));
+        Assert.assertEquals(0, be.getMetadataList("MD_IGNOREME").size());
     }
 
 }

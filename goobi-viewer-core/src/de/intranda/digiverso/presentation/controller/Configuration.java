@@ -1020,6 +1020,24 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isDisplayAdditionalMetadataEnabled() {
+        return getLocalBoolean("search.displayAdditionalMetadata.enabled", true);
+    }
+
+    /**
+     * 
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataIgnoreFields() {
+        return getLocalList("search.displayAdditionalMetadata.ignoreField", Collections.emptyList());
+    }
+
+    /**
+     * 
      * @param field
      * @return
      * @should return correct value

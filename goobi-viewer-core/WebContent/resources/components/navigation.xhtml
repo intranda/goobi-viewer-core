@@ -174,10 +174,10 @@
 									</h:panelGroup>
 									<!-- WITH SUBMENU --> 
 									<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">										
-										<a href="#" data-toggle="megamenu" role="button">
+										<button type="button" class="btn-clean" data-toggle="megamenu">
 											#{msg[navItem.itemLabel]}
 											<span class="caret"></span>
-										</a>
+										</button>
 										<h:panelGroup rendered="#{!navItem.childItems.isEmpty()}">
 											<ui:param name="parentItem" value="#{navItem}" />
 											

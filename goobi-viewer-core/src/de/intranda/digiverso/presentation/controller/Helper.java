@@ -779,14 +779,9 @@ public class Helper {
 
         // Create trigger file in hotfolder
         Path triggerFile = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".docupdate");
-        try {
-            Files.createFile(triggerFile);
-            return true;
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return false;
+        Files.createFile(triggerFile);
+        
+        return true;
     }
 
     /**
