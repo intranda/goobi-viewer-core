@@ -842,7 +842,7 @@ public class CmsBean {
      */
     public String searchAction(CMSContentItem item) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("searchAction");
-        if (searchBean != null && item != null && item.getSolrQuery() != null) {
+        if (searchBean != null && item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setExactSearchStringResetGui(item.getSolrQuery());
@@ -855,11 +855,18 @@ public class CmsBean {
             searchBean.newSearch();
         } else {
             logger.error("cannot search, SearchBean null: {}, item null: {}", searchBean == null, item == null);
+            if(searchBean != null) {
+                searchBean.resetSearchAction();
+            }
         }
 
         return "";
     }
-
+    
+    public boolean hasSearchResults() {
+        return searchBean != null && searchBean.getCurrentSearch() != null && searchBean.getCurrentSearch().getHitsCount() > 0;
+    }
+    
     /**
      * 
      * @param facetQuery
