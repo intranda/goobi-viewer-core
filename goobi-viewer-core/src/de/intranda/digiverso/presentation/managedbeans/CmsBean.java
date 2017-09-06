@@ -856,7 +856,7 @@ public class CmsBean {
         } else {
             logger.error("cannot search, SearchBean null: {}, item null: {}", searchBean == null, item == null);
             if(searchBean != null) {
-                searchBean.resetSearchAction();
+                searchBean.resetSearchResults();
             }
         }
 
