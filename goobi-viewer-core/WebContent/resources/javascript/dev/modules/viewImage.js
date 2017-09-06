@@ -1883,7 +1883,7 @@ if(!Number.isNaN) {
         
         var angle = _calculateAngle( p1, p2 );
         var beta = ( 180 - angle ) / 2;
-        console.log( "drawing line with length = " + length + " and angle = " + angle );
+//        console.log( "drawing line with length = " + length + " and angle = " + angle );
         
         y1 += length / 2 * Math.sin( angle * Math.PI / 180 );
         x1 -= length / 2 * Math.sin( angle * Math.PI / 180 ) / Math.tan( beta * Math.PI / 180 );
@@ -1935,7 +1935,7 @@ if(!Number.isNaN) {
         }
 			var tiledImage = osViewer.viewer.world.getItemAt(imageIndex);
 			var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
-			console.log("Found rect ", rectangle); 
+//			console.log("Found rect ", rectangle); 
 // var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height
 // );
 			var overlay = {
