@@ -642,9 +642,10 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("current view: {}", pageType);
         }
 
-        page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
-        page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
-
+        if (viewManager != null) {
+            page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
+            page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
+        }
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
                 .append(getPersistentIdentifier()).append('/').append(page).append('/');
 
