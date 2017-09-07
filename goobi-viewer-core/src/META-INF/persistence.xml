@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
     version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence">
     <persistence-unit name="intranda_viewer_tomcat" transaction-type="JTA">
-        <jta-data-source>java:comp/env/viewertmp</jta-data-source>
+        <jta-data-source>java:comp/env/viewer</jta-data-source>
         
         <!-- <class>de.intranda.digiverso.presentation.model.annotation.AnnotationElement</class> -->
         <class>de.intranda.digiverso.presentation.model.annotation.Comment</class>
