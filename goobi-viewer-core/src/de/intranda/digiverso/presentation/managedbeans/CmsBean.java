@@ -854,7 +854,7 @@ public class CmsBean {
             //            searchBean.getFacets().setCurrentCollection();
             searchBean.newSearch();
         } else {
-            logger.error("cannot search, SearchBean null: {}, item null: {}", searchBean == null, item == null);
+            logger.debug("cannot search, SearchBean null: {}, item null: {}, query: {}", searchBean == null, item == null, item != null ? item.getSolrQuery(): null);
             if(searchBean != null) {
                 searchBean.resetSearchResults();
             }
