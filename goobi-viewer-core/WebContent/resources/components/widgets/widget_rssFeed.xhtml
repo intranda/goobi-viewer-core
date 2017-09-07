@@ -11,8 +11,8 @@
 
     <composite:implementation>
     	<h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetRssFeed' or cc.attrs.widget.type == null)}">
-	    	<h:outputScript name="jquery.jfeed.js" library="javascript" />
-	        <h:outputScript name="jquery.aRSSFeed.js" library="javascript" />
+	    	<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.aRSSFeed.js"></script>
+		<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.jfeed.js"></script>
 	
 	        <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget">
 	        	<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == 'FOLDOUT' or cc.attrs.widget.type == null}">

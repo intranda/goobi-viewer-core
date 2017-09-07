@@ -1110,8 +1110,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
-        if (DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible() && topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS
-                .equals(topDocument.getSourceDocFormat()) && isHasPages()) {
+        if (topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS.equals(topDocument.getSourceDocFormat()) && isHasPages()) {
             try {
                 StringBuilder sbPath = new StringBuilder();
                 sbPath.append(DataManager.getInstance().getConfiguration().getViewerDfgViewerUrl());
@@ -1316,7 +1315,7 @@ public class ViewManager implements Serializable {
      * @return
      */
     public String getOpacUrl() {
-        if (currentDocument != null && DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible() && opacUrl == null) {
+        if (currentDocument != null && opacUrl == null) {
             try {
                 StructElement topStruct = currentDocument.getTopStruct();
                 if (topStruct != null) {

@@ -22,7 +22,7 @@
 								rendered="#{searchBean.sortString != sortField}">
 								<h:outputText value="#{msg[sortField]}" />
 								<h:panelGroup rendered="#{searchBean.sortString == '!'.concat(sortField)}">
-									<h:graphicImage styleClass="sort_image" library="themes/#{navigationHelper.theme}/images/navigate/" name="arrow_down.png" />
+									<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/navigate/arrow_down.png" class="sort_image" />
 								</h:panelGroup>
 							</h:outputLink> 
 							<h:outputLink

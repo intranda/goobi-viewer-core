@@ -19,8 +19,12 @@
         			<div class="col-xs-12 col-sm-2">
         				<!-- GRAVATAR -->
         				<div class="userdata__gravatar">
-        					<h:graphicImage rendered="#{user.useGravatar}" value="#{user.getGravatarUrl(96)}" alt="User Gravatar" />
-							<h:graphicImage rendered="#{!user.useGravatar}" library="themes/#{navigationHelper.theme}/images" name="thumbnail_person.jpg" alt="User Gravatar" />
+        					<h:panelGroup rendered="#{user.useGravatar}">
+        						<img src="#{user.getGravatarUrl(96)}" alt="User Gravatar" />
+        					</h:panelGroup>
+        					<h:panelGroup rendered="#{!user.useGravatar}">
+        						<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images" alt="User Gravatar" />
+        					</h:panelGroup>
         				</div>
         			</div>
         			<div class="col-xs-12 col-sm-10">

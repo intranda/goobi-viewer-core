@@ -14,34 +14,6 @@
 	</composite:interface>
 
 	<f:view contentType="text/html" encoding="utf-8">
-
-		<!--		
-			<div class="men_elem_wrapp">
-				<ui:repeat value="#{facelets:getCollections(cc.attrs.partnerId)}" var="collection" >
-					<div class="men_elem">
-					 	<h:outputLink
-							value="#{navigationHelper.browseUrl}/#{collection}/-/1/-/-/">
-							<h:outputText value="" />
-						</h:outputLink>
-		    -->
-		<!-- 
-						<h:outputLink value="#{navigationHelper.browseUrl}/#{collection}/-/1/-/-/">
-									 
-									<h:graphicImage
-									library="themes/#{navigationHelper.theme}/#{cc.attrs.partnerId}/collectionImages"
-									name="#{collection}.jpg" title="#{msg.firstImage}" />
-									 
-						</h:outputLink>
-						-->
-		<!--
-						<div id="description">
-								<h:outputText value="#{facelets:getCollectionText(collection)}" />
-						</div>
-						</div>
-				</ui:repeat>
-					</div>
-			 -->
-
 		<div class="men_elem_wrapper">
 			<ui:repeat
 				value="#{facelets:getDrillDown('DC', searchBean.docstrctWhitelistFilterSuffix, 0)}"
@@ -62,7 +34,5 @@
 				</div>
 			</ui:repeat>
 		</div>
-
-
 	</f:view>
 </ui:composition>

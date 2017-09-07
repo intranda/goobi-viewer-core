@@ -842,7 +842,11 @@ public class CmsBean {
      */
     public String searchAction(CMSContentItem item) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("searchAction");
-        if (searchBean != null && item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
+        if (searchBean == null) {
+            logger.error("Cannot search: SearchBean is null");
+            return "";
+        }
+        if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setExactSearchStringResetGui(item.getSolrQuery());
@@ -859,14 +863,35 @@ public class CmsBean {
                 searchBean.resetSearchResults();
             }
         }
+        if (item == null) {
+            logger.error("Cannot search: item is null");
+            searchBean.resetSearchResults();
+            return "";
+        }
+        if (StringUtils.isBlank(item.getSolrQuery())) {
+            logger.error("Cannot search, item Solr query is empty");
+            searchBean.resetSearchResults();
+            return "";
+        }
+        
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+        searchBean.setHitsPerPage(item.getElementsPerPage());
+        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+        searchBean.setCurrentPage(item.getListPage());
+        if (item.getSolrSortFields() != null) {
+            searchBean.setSortString(item.getSolrSortFields());
+        }
+        //            searchBean.getFacets().setCurrentFacetString();
+        //            searchBean.getFacets().setCurrentCollection();
+        searchBean.newSearch();
 
         return "";
     }
-    
+
     public boolean hasSearchResults() {
         return searchBean != null && searchBean.getCurrentSearch() != null && searchBean.getCurrentSearch().getHitsCount() > 0;
     }
-    
+
     /**
      * 
      * @param facetQuery

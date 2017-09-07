@@ -514,8 +514,7 @@ public class BrowseElement implements Serializable {
         }
 
         // Only topstructs should be openened with their overview page view (if they have one)
-        if (DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible() && (structElement.isWork() || structElement.isAnchor())
-                && OverviewPage.loadOverviewPage(structElement, locale) != null) {
+        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
             useOverviewPage = true;
         }
 
