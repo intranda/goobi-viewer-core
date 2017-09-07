@@ -27,13 +27,15 @@
         display: block;
         position: relative;
         float: left;
-        &.active > a {
+        &.active > a,
+        &.active > button {
             background-color: @lightgray;
         }
     }
-    a {
+    a, button {
         display: block;
         position: relative;
+        text-align: left;
         padding: 6px 12px;
         &:hover, 
         &:focus, 
@@ -72,7 +74,7 @@
                 background-color: @middlegray;
             }
         }
-        a {}
+        a, button {}
         &.in {
             display: block;
         }
@@ -105,10 +107,10 @@
         }
     }
     &__megamenu-close {
-        position: absolute;
+        position: absolute !important;
         top: 0;
         right: 0;
-        padding: 10px 15px;
+        padding: 10px 15px !important;
         z-index: 999;
         .fa {
             cursor: pointer;

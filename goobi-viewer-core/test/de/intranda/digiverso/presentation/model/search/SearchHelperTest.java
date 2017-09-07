@@ -314,6 +314,63 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         // First, make sure the docstruct whitelist and the collection blacklist always come from the same config file;
         Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, true, true, true, true);
         Assert.assertEquals(16, collections.size());
+        List<String> keys = new ArrayList<>(collections.keySet());
+        // Collections.sort(keys);
+        for (String key : keys) {
+            switch (key) {
+                case ("a"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b.c"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b.c.d"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("alle"):
+                    Assert.assertEquals(Long.valueOf(13), collections.get(key));
+                    break;
+                case ("mehrbaendigeswerk"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("monographie"):
+                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
+                    break;
+                case ("multimedia"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("ocr"):
+                    Assert.assertEquals(Long.valueOf(6), collections.get(key));
+                    break;
+                case ("ocr.antiqua"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                case ("ocr.fraktur"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                case ("paedagogik"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("sonstiges"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("sonstiges.langestoc"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("sonstiges.querformat"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("zeitschrift"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                default:
+                    Assert.fail("Unknown collection name: " + key);
+                    break;
+            }
+        }
     }
 
     /**
@@ -552,12 +609,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void checkCollectionInBlacklist_shouldMatchSimpleCollectionsCorrectly() throws Exception {
-        List<String> blacklist = Collections.singletonList("a");
-        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist));
-        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist));
-        blacklist = Collections.singletonList("a.b.c.d");
-        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
-        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist));
+        {
+            Set<String> blacklist = new HashSet<>(Collections.singletonList("a"));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist));
+        }
+        {
+            Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b.c.d"));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist));
+        }
     }
 
     /**
@@ -566,7 +627,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void checkCollectionInBlacklist_shouldMatchSubcollectionsCorrectly() throws Exception {
-        List<String> blacklist = Collections.singletonList("a.b");
+        Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b"));
         Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
         Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.z", blacklist));
     }
@@ -577,7 +638,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void checkCollectionInBlacklist_shouldThrowIllegalArgumentExceptionIfDcIsNull() throws Exception {
-        SearchHelper.checkCollectionInBlacklist(null, Collections.singletonList("a*"));
+        SearchHelper.checkCollectionInBlacklist(null, new HashSet<>(Collections.singletonList("a*")));
     }
 
     /**
@@ -777,7 +838,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
         String query = "DOCSTRCT:Monograph AND MD_YEARPUBLISH:19*";
         SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query + " AND NOT(DC:forbidden)", query, Collections.singletonList(new StringPair(
-                "SORT_YEARPUBLISH", "asc")), null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false);
+                "SORT_YEARPUBLISH", "asc")), null, null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false);
         String[] cellValues0 = new String[] { "Persistent identifier", "PPN728566745", "b18029048", "AC01054587", "1592397" };
         String[] cellValues1 = new String[] { "Label", "Vaterländische Handels- und Verkehrsgeographie",
                 "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
@@ -808,11 +869,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, false), 0, 10, null, null, null, null, null,
-                Locale.ENGLISH);
+                null, Locale.ENGLISH);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, Locale.ENGLISH, false);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, false);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -825,11 +886,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, true), 0, 10, null, null, null, null, null,
-                Locale.ENGLISH);
+                null, Locale.ENGLISH);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, Locale.ENGLISH, true);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }

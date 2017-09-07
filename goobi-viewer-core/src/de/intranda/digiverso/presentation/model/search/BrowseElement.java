@@ -514,8 +514,7 @@ public class BrowseElement implements Serializable {
         }
 
         // Only topstructs should be openened with their overview page view (if they have one)
-        if (DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible() && (structElement.isWork() || structElement.isAnchor())
-                && OverviewPage.loadOverviewPage(structElement, locale) != null) {
+        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
             useOverviewPage = true;
         }
 
@@ -531,40 +530,34 @@ public class BrowseElement implements Serializable {
      * 
      * @param structElement
      * @param searchTerms
-     * @param locale
+     * @param ignoreFields Fields to be skipped
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms
      * @should not add duplicates from explicit terms
+     * @should not add ignored fields
      */
-    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms) {
+    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, Set<String> ignoreFields) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
         if (searchTerms == null) {
             return;
         }
         boolean overviewPageFetched = false;
-        for (String fieldName : searchTerms.keySet()) {
+        for (String termsFieldName : searchTerms.keySet()) {
+            // Skip fields that are in the ignore list
+            if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
+                continue;
+            }
             // Skip fields that are already in the list
             boolean skip = false;
             for (Metadata md : metadataList) {
-                if (md.getLabel().equals(fieldName)) {
+                if (md.getLabel().equals(termsFieldName)) {
                     continue;
                 }
             }
             if (skip) {
                 continue;
             }
-            switch (fieldName) {
-                case SolrConstants._CALENDAR_DAY:
-                case SolrConstants._CALENDAR_MONTH:
-                case SolrConstants.ISANCHOR:
-                case SolrConstants.ISWORK:
-                case SolrConstants.NORMDATATERMS:
-                case SolrConstants.PI_ANCHOR:
-                case SolrConstants.PI_TOPSTRUCT:
-                case SolrConstants.UGCTERMS:
-                case SolrConstants.DC:
-                case SolrConstants.DOCTYPE:
-                    break;
+            switch (termsFieldName) {
                 //                case SolrConstants.OVERVIEWPAGE_DESCRIPTION:
                 //                case SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT:
                 //                    if (!overviewPageFetched && (structElement.isWork() || structElement.isAnchor())) {
@@ -603,6 +596,10 @@ public class BrowseElement implements Serializable {
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : structElement.getMetadataFields().keySet()) {
+                        // Skip fields that are in the ignore list
+                        if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
+                            continue;
+                        }
                         if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
                             continue;
                         }
@@ -623,7 +620,7 @@ public class BrowseElement implements Serializable {
                             if (fieldValue.equals(label)) {
                                 continue;
                             }
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
+                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
@@ -634,19 +631,19 @@ public class BrowseElement implements Serializable {
                 default:
                     // Skip fields that are already in the list
                     for (Metadata md : metadataList) {
-                        if (md.getLabel().equals(fieldName)) {
+                        if (md.getLabel().equals(termsFieldName)) {
                             skip = true;
                             break;
                         }
                     }
                     // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
-                    if (!skip && structElement.getMetadataFields().containsKey(fieldName)) {
-                        List<String> fieldValues = structElement.getMetadataFields().get(fieldName);
+                    if (!skip && structElement.getMetadataFields().containsKey(termsFieldName)) {
+                        List<String> fieldValues = structElement.getMetadataFields().get(termsFieldName);
                         for (String fieldValue : fieldValues) {
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
+                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                metadataList.add(new Metadata(fieldName, "", highlightedValue));
+                                metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
                             }
                         }
                     }

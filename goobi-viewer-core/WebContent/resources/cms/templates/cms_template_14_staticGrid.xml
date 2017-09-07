@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateStaticGrid" version="2017-09-04">
+    <name>Statische Kacheln</name>
+    <description>Dieses Template zeigt CMS-Medien in Form eines gekachelten Rasters an. Das Raster besteht dabei aus einzelnen Elementen mit fester Größe.</description>
+    <icon>cms_template_14_staticGrid.png</icon>
+    <html>cms_template_14_staticGrid.xhtml</html>
+    <content>
+ 	    <item id="text" label="Text" type="HTML" order="1"/>
+        <item id="grid" label="Kacheln" type="TILEGRID" order="2"/>
+    </content>
+</cms_page_template>

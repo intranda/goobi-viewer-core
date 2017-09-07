@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -841,22 +842,37 @@ public class CmsBean {
      */
     public String searchAction(CMSContentItem item) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("searchAction");
-        if (searchBean != null && item != null && item.getSolrQuery() != null) {
-            searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-            searchBean.setHitsPerPage(item.getElementsPerPage());
-            searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-            searchBean.setCurrentPage(item.getListPage());
-            if (item.getSolrSortFields() != null) {
-                searchBean.setSortString(item.getSolrSortFields());
-            }
-            //            searchBean.getFacets().setCurrentFacetString();
-            //            searchBean.getFacets().setCurrentCollection();
-            searchBean.newSearch();
-        } else {
-            logger.error("cannot search, SearchBean null: {}, item null: {}", searchBean == null, item == null);
+        if (searchBean == null) {
+            logger.error("Cannot search: SearchBean is null");
+            return "";
         }
+        if (item == null) {
+            logger.error("Cannot search: item is null");
+            searchBean.resetSearchResults();
+            return "";
+        }
+        if (StringUtils.isBlank(item.getSolrQuery())) {
+            logger.error("Cannot search, item Solr query is empty");
+            searchBean.resetSearchResults();
+            return "";
+        }
+        
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+        searchBean.setHitsPerPage(item.getElementsPerPage());
+        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+        searchBean.setCurrentPage(item.getListPage());
+        if (item.getSolrSortFields() != null) {
+            searchBean.setSortString(item.getSolrSortFields());
+        }
+        //            searchBean.getFacets().setCurrentFacetString();
+        //            searchBean.getFacets().setCurrentCollection();
+        searchBean.newSearch();
 
         return "";
+    }
+
+    public boolean hasSearchResults() {
+        return searchBean != null && searchBean.getCurrentSearch() != null && searchBean.getCurrentSearch().getHitsCount() > 0;
     }
 
     /**
@@ -996,10 +1012,20 @@ public class CmsBean {
     }
 
     public static List<String> getLuceneFields() {
-        return getLuceneFields(false);
+        return getLuceneFields(false, false);
     }
 
     public static List<String> getLuceneFields(boolean includeUntokenized) {
+        return getLuceneFields(includeUntokenized, false);
+    }
+
+    /**
+     * 
+     * @param includeUntokenized
+     * @param excludeTokenizedMetadataFields
+     * @return
+     */
+    public static List<String> getLuceneFields(boolean includeUntokenized, boolean excludeTokenizedMetadataFields) {
         List<String> constants;
         try {
             constants = DataManager.getInstance().getSearchIndex().getAllFieldNames();
@@ -1007,7 +1033,8 @@ public class CmsBean {
             while (iterator.hasNext()) {
                 String name = iterator.next();
                 if (name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_") || (!includeUntokenized && name.endsWith(
-                        "_UNTOKENIZED"))) {
+                        SolrConstants._UNTOKENIZED)) || (excludeTokenizedMetadataFields && name.startsWith("MD_") && !name.endsWith(
+                                SolrConstants._UNTOKENIZED))) {
                     iterator.remove();
                 }
             }

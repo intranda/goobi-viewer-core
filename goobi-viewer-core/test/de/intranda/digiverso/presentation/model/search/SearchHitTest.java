@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -23,11 +24,20 @@ import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 
 public class SearchHitTest {
+    
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see SearchHit#populateFoundMetadata(SolrDocument)
@@ -54,7 +64,7 @@ public class SearchHitTest {
         doc.addField("MD_2", "bla blup");
         doc.addField("MD_3", "none of the above");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Title", hit.getFoundMetadata().get(0).getOne());
@@ -84,7 +94,7 @@ public class SearchHitTest {
         doc.addField("MD_SUBTITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
         doc.addField("MD_2", "bla blup");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
         Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
@@ -112,7 +122,34 @@ public class SearchHitTest {
         doc.addField("MD_AUTHOR", "Doe, John");
         doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null);
+        Assert.assertNotNull(hit);
+        Assert.assertEquals(1, hit.getFoundMetadata().size());
+        Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
+        Assert.assertEquals("Doe, <span class=\"search-list--highlight\">John</span>", hit.getFoundMetadata().get(0).getTwo());
+    }
+
+    /**
+     * @see SearchHit#populateFoundMetadata(SolrDocument,Set)
+     * @verifies not add ignored fields
+     */
+    @Test
+    public void populateFoundMetadata_shouldNotAddIgnoredFields() throws Exception {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        {
+            Set<String> terms = new HashSet<>();
+            searchTerms.put(SolrConstants.DEFAULT, terms);
+            terms.add("john");
+        }
+
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField("MD_AUTHOR", "Doe, John");
+        doc.addField("MD_AUTHOR" + SolrConstants._UNTOKENIZED, "Doe, John");
+        doc.addField("T-1000", "Call to John now.");
+
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, new HashSet<>(Collections.singletonList(
+                "T-1000")));
         Assert.assertNotNull(hit);
         Assert.assertEquals(1, hit.getFoundMetadata().size());
         Assert.assertEquals("Author", hit.getFoundMetadata().get(0).getOne());
@@ -136,7 +173,7 @@ public class SearchHitTest {
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField("MD_TITLE", SearchHelperTest.LOREM_IPSUM);
 
-        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false);
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null);
         Assert.assertNotNull(hit);
         hit.addLabelHighlighting();
         Assert.assertTrue(hit.getBrowseElement().getLabelShort().startsWith(

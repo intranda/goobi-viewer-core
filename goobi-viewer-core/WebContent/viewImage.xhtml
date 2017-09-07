@@ -30,8 +30,8 @@
             </h:panelGroup>
     
             <!-- OPEN SEADRAGON -->
-			<h:outputScript library="javascript/openseadragon" name="openseadragon.js" />
-			<h:outputScript library="javascript/openseadragon" name="openseadragon-viewerinputhook.js" />
+			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
 			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
             
             <div id="view_image">
@@ -86,7 +86,7 @@
 									$(document).ready(function() {
 										
 										if ( access && openSeadragonVisible) {
-											console.log("load image with config ", configViewer);
+											// console.log("load image with config ", configViewer);
 										    viewImage.init( configViewer )
 										    .then(function(osViewer) {
 										        //TODO: Hide loader?

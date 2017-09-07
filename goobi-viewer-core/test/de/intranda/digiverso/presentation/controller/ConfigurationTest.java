@@ -1187,6 +1187,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#isSidebarCalendarLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible());
+    }
+
+    /**
      * @see Configuration#isSidebarThumbsLinkVisible()
      * @verifies return correct value
      */
@@ -2289,6 +2298,29 @@ public class ConfigurationTest {
     @Test
     public void isAggregateHits_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isAggregateHits());
+    }
+
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataIgnoreFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataIgnoreFields_shouldReturnCorrectValues() throws Exception {
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled());
+    }
+
+    /**
+     * @see Configuration#isDisplayAdditionalMetadataEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayAdditionalMetadataEnabled_shouldReturnCorrectValue() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(3, results.size());
+        Assert.assertEquals(SolrConstants.ISANCHOR, results.get(0));
+        Assert.assertEquals(SolrConstants.ISWORK, results.get(1));
+        Assert.assertEquals(SolrConstants.PI_TOPSTRUCT, results.get(2));
     }
 
     @Test

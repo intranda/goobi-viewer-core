@@ -50,7 +50,6 @@ import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.model.calendar.CalendarItemYear;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
@@ -643,9 +642,10 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("current view: {}", pageType);
         }
 
-        page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
-        page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
-
+        if (viewManager != null) {
+            page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
+            page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
+        }
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
                 .append(getPersistentIdentifier()).append('/').append(page).append('/');
 
@@ -665,22 +665,30 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/').append(getPersistentIdentifier())
-                .append('/');
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/');
 
         return sbUrl.toString();
     }
 
     public String getFirstPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        }
+
+        return null;
     }
 
     public String getLastPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        }
+
+        return null;
     }
 
     public String getPreviousPageUrl(int step) throws IndexUnreachableException {
-        if (viewManager.isDoublePageMode()) {
+        if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
         int number = imageToShow - step;
@@ -825,11 +833,21 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * 
      * @return
+     * @throws IndexUnreachableException
      */
-    public String getTitleBarLabel() {
+    public String getTitleBarLabel() throws IndexUnreachableException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTitleBarLabel() != null) {
-            return viewManager.getTitleBarLabel();
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
+            // Prefer the label of the current TOC element
+            if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
+                String label = toc.getLabel(viewManager.getPi());
+                if (label != null) {
+                    return label;
+                }
+            }
+            if (viewManager.getTitleBarLabel() != null) {
+                return viewManager.getTitleBarLabel();
+            }
         } else if (cmsBean != null) {
             CMSPage cmsPage = cmsBean.getCurrentPage();
             if (cmsPage != null) {

@@ -152,7 +152,7 @@
 	                </li>
 	                
 	                <!-- DUOBLEPAGEVIEW -->
-	                <h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
+	                <h:panelGroup rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
 		                <li class="image-control image-control__double-page-view">
 		                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
 		                    	<i class="image-doublePageView"></i>

@@ -31,8 +31,9 @@ import javax.faces.bean.SessionScoped;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeField;
 import org.joda.time.LocalDate;
 import org.joda.time.MutableDateTime;
@@ -651,7 +652,7 @@ public class CalendarBean implements Serializable {
         builder.append(docstructFilterQuery);
         searchBean.resetSearchResults();
         searchBean.setCurrentPage(1);
-        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.getFacets().setCurrentHierarchicalFacetString("-");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.getFacets().setCurrentFacetString("-");
         searchBean.setExactSearchString(builder.toString());
@@ -809,8 +810,8 @@ public class CalendarBean implements Serializable {
 
         StringBuilder sbSearchString = new StringBuilder();
         if (collection != null && !collection.isEmpty()) {
-            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(" AND ").append(SolrConstants.DC).append(':')
-                    .append(collection).append('*').append(filterQuery);
+            sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(" AND ").append(
+                    SolrConstants.DC).append(':').append(collection).append('*').append(filterQuery);
         } else {
             sbSearchString.append(SolrConstants._CALENDAR_YEAR).append(':').append(ClientUtils.escapeQueryChars(selectYear)).append(filterQuery);
         }
@@ -915,57 +916,60 @@ public class CalendarBean implements Serializable {
                 }
                 date = new LocalDate(Integer.parseInt(selectYear), monthItem.getValue(), day, calendar);
                 switch (date.getDayOfWeek()) {
-                    case 1:
-                        dayItem.setDayOfWeek("Sunday");
-                        break;
-                    case 2:
+                    case DateTimeConstants.MONDAY:
                         dayItem.setDayOfWeek("Monday");
                         if (!currentWeek.getDaysOfWeek().isEmpty()) {
                             currentWeek = new CalendarItemWeek("", 0, 0);
                             weeksOfMonth.add(currentWeek);
                         }
                         break;
-                    case 3:
+                    case DateTimeConstants.TUESDAY:
                         dayItem.setDayOfWeek("Tuesday");
                         break;
-                    case 4:
+                    case DateTimeConstants.WEDNESDAY:
                         dayItem.setDayOfWeek("Wednesday");
                         break;
-                    case 5:
+                    case DateTimeConstants.THURSDAY:
                         dayItem.setDayOfWeek("Thursday");
                         break;
-                    case 6:
+                    case DateTimeConstants.FRIDAY:
                         dayItem.setDayOfWeek("Friday");
                         break;
-                    default:
+                    case DateTimeConstants.SATURDAY:
                         dayItem.setDayOfWeek("Saturday");
+                        break;
+                    case DateTimeConstants.SUNDAY:
+                        dayItem.setDayOfWeek("Sunday");
+                        break;
+                    default:
+                        dayItem.setDayOfWeek("unknown");
                         break;
                 }
 
-                if (date.getDayOfMonth() == 1 && date.getDayOfWeek() != 2) {
+                if (date.getDayOfMonth() == 1 && date.getDayOfWeek() != DateTimeConstants.MONDAY) {
                     // fill first week with empty day items
                     switch (date.getDayOfWeek()) {
-                        case 1:
-                            // Sunday,
+                        case 7:
+                            // Sunday
                             CalendarItemDay sun = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(sun);
-                        case 7:
+                        case 6:
                             // Saturday
                             CalendarItemDay sat = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(sat);
-                        case 6:
+                        case 5:
                             // Friday
                             CalendarItemDay fri = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(fri);
-                        case 5:
+                        case 4:
                             // Thursday
                             CalendarItemDay thu = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(thu);
-                        case 4:
+                        case 3:
                             // Wednesday
                             CalendarItemDay wed = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(wed);
-                        case 3:
+                        case 2:
                             // Tuesday
                             CalendarItemDay tue = new CalendarItemDay("", 0, 0);
                             currentWeek.addDay(tue);
@@ -1103,7 +1107,7 @@ public class CalendarBean implements Serializable {
         // builder.append(docstructFilterQuery);
         searchBean.resetSearchResults();
         searchBean.setCurrentPage(1);
-        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.getFacets().setCurrentHierarchicalFacetString("-");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.setExactSearchString(builder.toString());
         searchBean.executeSearch();
@@ -1194,7 +1198,7 @@ public class CalendarBean implements Serializable {
         }
 
         searchBean.setCurrentPage(1);
-        searchBean.getFacets().setCurrentCollection("-");
+        searchBean.getFacets().setCurrentHierarchicalFacetString("-");
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.setExactSearchString(getQueryForIncompleteData(year));
         searchBean.executeSearch();

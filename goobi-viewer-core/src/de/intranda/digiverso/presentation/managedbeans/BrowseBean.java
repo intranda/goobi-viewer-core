@@ -557,6 +557,7 @@ public class BrowseBean implements Serializable {
      * @param sortField
      */
     public void initializeCollection(final String collectionField, final String facetField) {
+        logger.trace("initializeCollection: {}", collectionField);
         collections.put(collectionField, new CollectionView(collectionField, new BrowseDataProvider() {
 
             @Override

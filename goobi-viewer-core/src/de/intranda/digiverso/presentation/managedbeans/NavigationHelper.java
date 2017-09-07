@@ -592,16 +592,8 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewImage.getName();
     }
 
-    public String getReadingModeUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewReadingMode.getName();
-    }
-
     public String getImageActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
     }
 
     public String getPreviewUrl() {
@@ -609,11 +601,11 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getPreviewActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarPreviewLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewPreview.getName();
-        }
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewPreview.getName();
+    }
 
-        return null;
+    public String getReadingModeUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewReadingMode.getName();
     }
 
     /**
@@ -649,83 +641,43 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getCalendarUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
     }
 
     public String getCalendarActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
     }
 
     public String getTocUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
     }
 
     public String getTocActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
     }
 
     public String getThumbsUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewThumbs.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewThumbs.getName();
     }
 
     public String getThumbsActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewThumbs.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewThumbs.getName();
     }
 
     public String getMetadataUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewMetadata.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewMetadata.getName();
     }
 
     public String getMetadataActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMetadata.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMetadata.getName();
     }
 
     public String getFulltextUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFulltext.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFulltext.getName();
     }
 
     public String getFulltextActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
     }
 
     public String getSearchUrl() {
@@ -742,11 +694,6 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getSortUrl() {
-        // logger.debug("currentPage: " + getCurrentPage());
-        // if (browsePage.equals(getCurrentPage())) {
-        // return getBrowseUrl();
-        // }
-
         return getSearchUrl();
     }
 
