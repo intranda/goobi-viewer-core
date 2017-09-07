@@ -67,24 +67,31 @@
             viewerJS.nerFulltext.init( nerConfig );
             
             var downloadModalConfig = {
-                downloadBtn: $( '.download-modal' ),
-                path: '#{navigationHelper.applicationUrl}',
-                userEmail: $( '#userEmail' ).val(),
-                useReCaptcha: #{configurationBean.useReCaptcha},
-                reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
-                messages: {
-                    reCaptchaText: '#{msg.downloadReCaptchaText}',
-                    rcInvalid: '#{msg.downloadRcInvalid}',
-                    rcValid: '#{msg.downloadRcValid}',
-                    eMailText: '#{msg.downloadEMailText}',
-                    eMailTextLoggedIn: '#{msg.downloadEMailTextLoggedIn}',
-                    eMail: '#{msg.downloadEmail}',
-                    closeBtn: '#{msg.downloadCloseModal}',
-                    saveBtn: '#{msg.downloadGenerateFile}',
-                }
-            };
+                	downloadBtn: $( '.download-modal' ),
+                    path: '#{navigationHelper.applicationUrl}',
+                    iiifPath: '#{configurationBean.iiifApiUrl}',
+                    userEmail: $( '#userEmail' ).val(),
+                    useReCaptcha: #{configurationBean.useReCaptcha},
+                    reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
+                    messages: {
+                        downloadInfo: {
+                            text: '#{msg.downloadInfoText}',
+                            title: '#{msg.downloadInfoTitle}',
+                            part: '#{msg.downloadInfoPart}',
+                            fileSize: '#{msg.downloadInfoFileSize}'
+                        },
+                        reCaptchaText: '#{msg.downloadReCaptchaText}',
+                        rcInvalid: '#{msg.downloadRcInvalid}',
+                        rcValid: '#{msg.downloadRcValid}',
+                        eMailText: '#{msg.downloadEMailText}',
+                        eMailTextLoggedIn: '#{msg.downloadEMailTextLoggedIn}',
+                        eMail: '#{msg.downloadEmail}',
+                        closeBtn: '#{msg.downloadCloseModal}',
+                        saveBtn: '#{msg.downloadGenerateFile}',
+                    }
+                };
             
-            viewerJS.downloadModal.init( downloadModalConfig );
+                viewerJS.downloadModal.init( downloadModalConfig );
         </script>
 	</ui:define>
 
