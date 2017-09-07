@@ -30,6 +30,22 @@ div[id*="-Modal"] {
     }
 }
 
+.dl-modal {
+	&__overlay {
+		display: none;
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-color: rgba(0,0,0,.5);
+		background-image: url("@{images}/AJAX_preloader_white.svg");
+		background-repeat: no-repeat;
+		background-position: center center;
+		z-index: 999;
+	}
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {}
 

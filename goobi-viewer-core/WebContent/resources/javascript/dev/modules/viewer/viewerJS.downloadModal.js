@@ -66,6 +66,7 @@ var viewerJS = ( function( viewer ) {
             eMail: ''
         }
     };
+    var _loadingOverlay = null;
     
     viewer.downloadModal = {
         /**
@@ -127,7 +128,15 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
+            // build loading overlay
+            _loadingOverlay = $( '<div />' );
+            _loadingOverlay.addClass( 'dl-modal__overlay' );
+            $( 'body' ).append( _loadingOverlay );
+            
             _defaults.downloadBtn.on( 'click', function() {
+                // show loading overlay
+                $( '.dl-modal__overlay' ).fadeIn( 'fast' );
+                
                 _defaults.dataType = $( this ).attr( 'data-type' );
                 _defaults.dataTitle = $( this ).attr( 'data-title' );
                 if ( $( this ).attr( 'data-id' ) !== '' ) {
@@ -151,27 +160,11 @@ var viewerJS = ( function( viewer ) {
                         }
                     };
                     
-                    // check datatype
-                    if ( _defaults.dataType === 'pdf' ) {
-                        if ( _debug ) {
-                            console.log( '---------- PDF Download ----------' );
-                            console.log( 'Title = ', _defaults.dataTitle );
-                            console.log( 'ID = ', _defaults.dataId );
-                            console.log( 'PI = ', _defaults.dataPi );
-                        }
-                        
-                        viewer.downloadModal.initModal( _defaults );
-                    }
-                    else {
-                        if ( _debug ) {
-                            console.log( '---------- ePub Download ----------' );
-                            console.log( 'Title = ', _defaults.dataTitle );
-                            console.log( 'ID = ', _defaults.dataId );
-                            console.log( 'PI = ', _defaults.dataPi );
-                        }
-                        
-                        viewer.downloadModal.initModal( _defaults );
-                    }
+                    // hide loading overlay
+                    $( '.dl-modal__overlay' ).fadeOut( 'fast' );
+                    
+                    // init modal
+                    viewer.downloadModal.initModal( _defaults );
                 } );
             } );
         },
