@@ -958,6 +958,11 @@
             <visible>true</visible>
         </page>
         
+        <!-- image preview: if false, the preview view is hidden -->
+        <preview>
+            <visible>true</visible>
+        </preview>
+        
         <!-- calendar: if false, the calendar view link is hidden -->
         <calendar>
             <visible>true</visible>
@@ -973,10 +978,6 @@
             <visible>true</visible>
         </thumbs>
 
-        <!-- image preview: if false, the preview view is hidden -->
-        <preview>
-            <visible>true</visible>
-        </preview>
         
         <!-- search in current item: if false, the widget is hidden -->
         <searchInItem>

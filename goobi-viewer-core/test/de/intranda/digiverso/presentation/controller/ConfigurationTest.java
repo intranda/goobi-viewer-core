@@ -1187,6 +1187,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#isSidebarCalendarLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible());
+    }
+
+    /**
      * @see Configuration#isSidebarThumbsLinkVisible()
      * @verifies return correct value
      */

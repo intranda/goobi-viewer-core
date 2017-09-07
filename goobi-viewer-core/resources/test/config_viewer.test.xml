@@ -798,6 +798,16 @@
 		<page>
 			<visible>false</visible>
 		</page>
+		
+        <!-- image preview: if false, the preview view is hidden -->
+        <preview>
+            <visible>true</visible>
+        </preview>
+		
+        <!-- calendar: if false, the calendar view link is hidden -->
+        <calendar>
+            <visible>false</visible>
+        </calendar>
 
 		<!-- toc: if false, the TOC link is hidden (This is the link to the TOC 
 			page in the work menu, not the sidebar TOC component!) -->

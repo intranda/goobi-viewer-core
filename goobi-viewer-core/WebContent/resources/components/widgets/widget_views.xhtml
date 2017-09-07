@@ -1,139 +1,186 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{metadataBean.loadMetadata}" />
-        </f:metadata>
-    </ui:define>
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{metadataBean.loadMetadata}" />
+		</f:metadata>
+	</ui:define>
 
-    <composite:interface>
-        <composite:attribute name="pageType" required="false" />
-        <composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
-    </composite:interface>
+	<composite:interface>
+		<composite:attribute name="pageType" required="false" />
+		<composite:attribute name="widget"
+			type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement"
+			required="true" />
+	</composite:interface>
 
-    <composite:implementation>
-        <div id="widgetViews" class="widget">
-        	<h:form id="widgetViewsForm">
-                <h3>#{msg.view}</h3>
+	<composite:implementation>
+		<div id="widgetViews" class="widget">
+			<h:form id="widgetViewsForm">
+				<h3>#{msg.view}</h3>
 				<ul>
-					<h:panelGroup rendered="#{activeDocumentBean.overviewPage != null}">
-						<li class="#{navigationHelper.currentPage == 'overview' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.overviewActiveUrl}#{activeDocumentBean.logPart}">
+					<!-- Overview page -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarOverviewLinkVisible and activeDocumentBean.overviewPage != null}">
+						<li
+							class="#{navigationHelper.currentPage == 'overview' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.overviewActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.viewOverview}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.imageActiveUrl != null}">
-						<li class="#{navigationHelper.currentPage == 'image' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.imageActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText value="#{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
+					<!-- Image -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarPageLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
+						<li
+							class="#{navigationHelper.currentPage == 'image' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.imageActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText
+									value="#{msg[activeDocumentBean.viewManager.currentPage.pageLinkLabel]}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.previewActiveUrl != null}">
-						<li class="#{navigationHelper.currentPage == 'preview' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.previewActiveUrl}#{activeDocumentBean.logPart}">
+					<!-- Preview -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarPreviewLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
+						<li
+							class="#{navigationHelper.currentPage == 'preview' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.previewActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.viewPreview}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.calendarView.display}">
-						<li class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.calendarActiveUrl}#{activeDocumentBean.logPart}">
+					<!-- Calendar -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">
+						<li
+							class="#{navigationHelper.currentPage == 'calendar' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.calendarActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText value="#{msg.calendar}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
-					
-                    <h:panelGroup rendered="#{navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.activeDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
-                        <li class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
-                            <h:outputLink value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
-                                <h:outputText value="#{msg.tocAnchor}" rendered="#{activeDocumentBean.anchor}" />
-                                <h:outputText value="#{msg.toc}" rendered="#{!activeDocumentBean.anchor}" />
-                            </h:outputLink>
-                        </li>
-                    </h:panelGroup>
 
-					<h:panelGroup rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly and navigationHelper.thumbsActiveUrl != null}">
-						<li class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.thumbsActiveUrl}#{activeDocumentBean.thumbPart}">
+					<!-- TOC -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarTocLinkVisible and navigationHelper.tocActiveUrl != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.activeDocument.lidoRecord and (activeDocumentBean.toc.hasChildren() or configurationBean.displayEmptyTocInSidebar)}">
+						<li
+							class="#{navigationHelper.currentPage == 'toc' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.tocActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText value="#{msg.tocAnchor}"
+									rendered="#{activeDocumentBean.anchor}" />
+								<h:outputText value="#{msg.toc}"
+									rendered="#{!activeDocumentBean.anchor}" />
+							</h:outputLink>
+						</li>
+					</h:panelGroup>
+
+					<!-- Thumbnails -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarThumbsLinkVisible and activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
+						<li
+							class="#{navigationHelper.currentPage == 'thumbs' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.thumbsActiveUrl}#{activeDocumentBean.thumbPart}">
 								<h:outputText value="#{msg.thumbGal}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{!activeDocumentBean.group and navigationHelper.metadataActiveUrl != null}">
-						<li class="#{navigationHelper.currentPage == 'metadata' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.metadataActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText rendered="#{!activeDocumentBean.viewManager.activeDocument.lidoRecord}" value="#{msg.bibData}" />
-								<h:outputText rendered="#{activeDocumentBean.viewManager.activeDocument.lidoRecord}" value="#{msg.metadata}" />
+					<!-- Metadata -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarMetadataLinkVisible and !activeDocumentBean.group}">
+						<li
+							class="#{navigationHelper.currentPage == 'metadata' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.metadataActiveUrl}#{activeDocumentBean.logPart}">
+								<h:outputText
+									rendered="#{!activeDocumentBean.viewManager.activeDocument.lidoRecord}"
+									value="#{msg.bibData}" />
+								<h:outputText
+									rendered="#{activeDocumentBean.viewManager.activeDocument.lidoRecord}"
+									value="#{msg.metadata}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.activeDocument.fulltextAvailable and !activeDocumentBean.viewManager.filesOnly and navigationHelper.fulltextActiveUrl != null}">
-						<li class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
-							<h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
+					<!-- Full-text -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarFulltextLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.activeDocument.fulltextAvailable and !activeDocumentBean.viewManager.filesOnly}">
+						<li
+							class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
+							<h:outputLink
+								value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
 								<h:outputText value="#{msg.fulltext}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
-					
-                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT') != null}">
-                        <li class="">
-                            <h:outputLink value="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
-                                 target="_blank">
-                                <h:outputText value="#{msg.fulltextExternal}" />
-                            </h:outputLink>
-                        </li>
-                    </h:panelGroup>
-                    
-                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.nerAvailable}">
-                        <li class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
-                            <h:outputLink value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
-                                <h:outputText value="#{msg.widgetNerFacetting}" />
-                            </h:outputLink>
-                        </li>
-                    </h:panelGroup>
 
-					<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.linkForDFGViewer != null}">
-						<li>
-							<h:outputLink value="#{activeDocumentBean.viewManager.linkForDFGViewer}" target="_blank">
-								#{msg.dfgViewerLink}
+					<!-- External full-text URL -->
+					<h:panelGroup
+						rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT') != null}">
+						<li class=""><h:outputLink
+								value="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALFULLTEXT')}"
+								target="_blank">
+								<h:outputText value="#{msg.fulltextExternal}" />
+							</h:outputLink></li>
+					</h:panelGroup>
+
+					<!-- NER -->
+					<h:panelGroup
+						rendered="#{activeDocumentBean.viewManager.activeDocument.nerAvailable}">
+						<li
+							class="#{navigationHelper.currentPage == 'nerfacetting' ? 'active' : ''}">
+							<h:outputLink
+								value="#{request.contextPath}/ner/#{activeDocumentBean.persistentIdentifier}/">
+								<h:outputText value="#{msg.widgetNerFacetting}" />
 							</h:outputLink>
 						</li>
 					</h:panelGroup>
 
-					<h:panelGroup rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
-						<li>
-							<a href="#{activeDocumentBean.viewManager.opacUrl}" target="_blank">
-								#{msg.opacLink}
-							</a>
+					<!-- DFG Viewer -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarDfgLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and activeDocumentBean.viewManager.linkForDFGViewer != null}">
+						<li><h:outputLink
+								value="#{activeDocumentBean.viewManager.linkForDFGViewer}"
+								target="_blank">
+								#{msg.dfgViewerLink}
+							</h:outputLink></li>
+					</h:panelGroup>
+
+					<!-- OPAC -->
+					<h:panelGroup
+						rendered="#{configurationBean.sidebarOpacLinkVisible and activeDocumentBean.viewManager.opacUrl != null}">
+						<li><a href="#{activeDocumentBean.viewManager.opacUrl}"
+							target="_blank"> #{msg.opacLink} </a></li>
+					</h:panelGroup>
+
+					<!-- External URL -->
+					<h:panelGroup
+						rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
+						<li class="">
+							<!--                             <h:outputLink value="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}" -->
+							<!--                                  target="_blank"> --> <!--                                 <h:outputText value="#{msg.externalRepository}" /> -->
+							<!--                             </h:outputLink> --> <a
+							href="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}"
+							target="_blank"> #{msg.externalRepository} </a>
 						</li>
 					</h:panelGroup>
-					
-                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER') != null}">
-                        <li class="">
-<!--                             <h:outputLink value="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}" -->
-<!--                                  target="_blank"> -->
-<!--                                 <h:outputText value="#{msg.externalRepository}" /> -->
-<!--                             </h:outputLink> -->
-                            <a href="#{activeDocumentBean.viewManager.activeDocument.getMetadataValue('MD_LOCATION_URL_EXTERNALRESOLVER')}" target="_blank">
-                                #{msg.externalRepository}
-                            </a>
-                        </li>
-                    </h:panelGroup>
-					
+
 				</ul>
-	        </h:form>
+			</h:form>
 		</div>
-    </composite:implementation>
+	</composite:implementation>
 </ui:composition>
