@@ -298,11 +298,9 @@
         <drillDown>
             <hierarchicalField initialElementNumber="4">DC</hierarchicalField>
             <field initialElementNumber="3">DOCSTRCT</field>
-            <field initialElementNumber="3">MD_CREATOR</field>
-            <field initialElementNumber="3">MD_PLACEPUBLISH</field>
-            <field>MD_YEARPUBLISH</field>
-            <!-- initialElementNumber: sets the initial number of drill-down elements to be displayed (any field including DC). Default is 20. -->
-            <initialElementNumber>3</initialElementNumber>
+            <field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
+	    <field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
+            <field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
         </drillDown>
         <advanced>
             <!-- Enables the advanced search (default is true) -->
@@ -881,7 +879,7 @@
         <labelConfig>
             <template name="_DEFAULT">
                 <metadata label="" value="{LABEL}{MD_CREATOR}">
-                    <param type="field" key="LABEL" />
+                    <param type="translatedfield" key="LABEL" />
                     <param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
                 </metadata>
             </template>
