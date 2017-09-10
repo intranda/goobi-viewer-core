@@ -22,7 +22,7 @@
                     <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">
                         <h:panelGroup 
                             id="collectionDrillDownPanelGroup_#{status.index}"
-                            rendered="#{searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentHierarchicalFacetsSizeForField(field.key) > 0}">
+			    rendered="#{(searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentHierarchicalFacetsSizeForField(field.key) > 0}) and searchBean.collectionDrilldownEnabled}">
                             <div class="widget widget-search-drilldown__collection">
                                 <h3>#{msg[field.key]}</h3>
                                 
