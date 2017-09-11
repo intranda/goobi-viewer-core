@@ -39,6 +39,7 @@
 		<project>goobi-viewer-theme-orka</project>
 		<project>goobi-viewer-theme-grimm</project>
 		<project>goobi-viewer-theme-haab</project>
+		<project>goobi-viewer-theme-hub</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
