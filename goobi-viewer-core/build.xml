@@ -1232,4 +1232,19 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
+	<target name="lux">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="https://lux01.intranda.com/viewer/" />
+		<property name="solr.url" value="https://lux01.intranda.com/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Flux01.intranda.com%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+		<property name="theme" value="reference2" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 </project>
