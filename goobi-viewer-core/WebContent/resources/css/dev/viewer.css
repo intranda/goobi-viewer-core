@@ -4102,9 +4102,17 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for userBackendEditBookshelf.xhtml
    ==============================================================*/
 #editBookshelf #userEditBookshelfForm {
-  float: left;
-  width: 100%;
   margin-bottom: 1.3125rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+#editBookshelf #userEditBookshelfForm:before,
+#editBookshelf #userEditBookshelfForm:after {
+  content: " ";
+  display: table;
+}
+#editBookshelf #userEditBookshelfForm:after {
+  clear: both;
 }
 #editBookshelf #userEditBookshelfForm .btn {
   float: right;
