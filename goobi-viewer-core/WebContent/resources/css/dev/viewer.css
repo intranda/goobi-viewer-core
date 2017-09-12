@@ -1843,20 +1843,26 @@ div.mce-fullscreen {
   margin: 0;
   padding: 0;
   list-style: none;
+  border: 1px solid #ccc;
 }
 #ePubWrapper ul li {
-  min-height: 28px;
+  padding: 0 10px;
+  border-bottom: 1px solid #ccc;
+}
+#ePubWrapper ul li:last-child {
+  border-bottom: none;
 }
 #ePubWrapper ul li .dl-horizontal {
+  margin: 0;
+}
+#ePubWrapper ul li .dl-horizontal dt,
+#ePubWrapper ul li .dl-horizontal dd {
   min-height: 28px;
-  margin-bottom: 3px;
+  line-height: 28px;
 }
 #ePubWrapper ul li .dl-horizontal dt {
   font-weight: normal;
   text-align: left;
-}
-#ePubWrapper ul li .dl-horizontal dt a img {
-  height: 21px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
