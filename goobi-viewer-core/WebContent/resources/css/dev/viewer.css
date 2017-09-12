@@ -3784,6 +3784,9 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
   background-color: #428bca;
 }
+.search-calendar__month-day .popover-title {
+  line-height: normal;
+}
 .search-calendar__month-day-empty {
   min-height: 1px;
 }
