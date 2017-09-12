@@ -330,14 +330,13 @@
 			<luceneField>DATECREATED</luceneField>
 			<luceneField>SORT_YEARPUBLISH</luceneField>
 		</sorting>
-		<drillDown>
-            <hierarchicalField>DC</hierarchicalField>
-			<field>DOCSTRCT</field>
-			<field>MD_PLACEPUBLISH_UNTOKENIZED</field>
-			<!-- initialElementNumber: sets the initial number of drill-down elements 
-				to be displayed (any field including DC). Default is 20. -->
-			<initialElementNumber>3</initialElementNumber>
-		</drillDown>
+	        <drillDown>
+	        	<hierarchicalField initialElementNumber="4">DC</hierarchicalField>
+	        	<field initialElementNumber="3">DOCSTRCT</field>
+	        	<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
+	        	<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
+	        	<field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
+	        </drillDown>
 		<advanced>
 			<!-- Enables the advanced search (default is true) -->
 			<enabled>true</enabled>
@@ -943,8 +942,9 @@
             configuration is analogous to a metadata template. -->
         <labelConfig>
             <template name="_DEFAULT">
-                <metadata label="" value="{LABEL}">
-                    <param type="field" key="LABEL" />
+		    <metadata label="" value="{LABEL}{CURRENTNO}">
+                    <param type="translatedfield" key="LABEL" />
+		    <param type="field" key="CURRENTNO" prefix="_SPACE_(" suffix=")" />
                 </metadata>
             </template>
         </labelConfig>

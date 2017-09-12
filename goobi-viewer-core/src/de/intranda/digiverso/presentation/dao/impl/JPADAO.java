@@ -109,20 +109,21 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @throws DAOException 
+     * @throws DAOException
      * 
      */
     private void createDiscriminatorRow() throws DAOException {
         try {
             preQuery();
             em.getTransaction().begin();
-            Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName() + "' WHERE element.widgetType IS NULL");
+            Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName()
+                    + "' WHERE element.widgetType IS NULL");
             q.executeUpdate();
             em.getTransaction().commit();
         } catch (DAOException e) {
             throw new DAOException(e.getMessage());
         }
-        
+
     }
 
     /*
@@ -2551,7 +2552,7 @@ public class JPADAO implements IDAO {
     public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         List<CMSNavigationItem> list = q.getResultList();
         Collections.sort(list);
         return list;
