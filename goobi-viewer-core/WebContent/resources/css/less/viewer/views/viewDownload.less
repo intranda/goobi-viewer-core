@@ -2,13 +2,19 @@
    View Download
    style declarations for viewDownload.xhtml
    ==============================================================*/
-#viewDownload {
-    h2 {}
-    .download-license-text {
-        width: 100%;
+/* DOWNLOAD */
+/* BLOCK */
+.download {
+	/* ELEMENT */
+	&__status {}
+	&__status-loader {
+		.mx-clearfloats;
+		img {
+			float: right;
+		}
+	}
+	&__status-license-text {
         height: 200px;
-        padding: 10px;
-        border: 1px solid @blue;
         background-color: @white;
         overflow-y: auto;
     }

@@ -10,19 +10,23 @@
         margin: 0;
         padding: 0;
         list-style: none;
+        border: 1px solid @middlegray;
         li {
-            min-height: 28px;
+            padding: 0 10px;
+        	border-bottom: 1px solid @middlegray;
+        	&:last-child {
+        		border-bottom: none;
+        	}
             .dl-horizontal {
-                min-height: 28px;
-                margin-bottom: 3px;
+            	margin: 0;
+            	dt, dd {
+            		min-height: 28px;
+            		line-height: 28px;
+            	}
                 dt {
                     font-weight: normal;
                     text-align: left;
-                    a {
-                        img {
-                            height: 21px;
-                        }
-                    }
+                    a {}
                 }
                 dd {}
             }

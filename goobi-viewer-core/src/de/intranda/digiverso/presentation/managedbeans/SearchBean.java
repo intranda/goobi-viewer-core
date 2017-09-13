@@ -1958,5 +1958,11 @@ public class SearchBean implements Serializable {
             return downloadReady;
         }
     }
+    
+    
+    public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
+        String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
+        return DataManager.getInstance().getSearchIndex().count(query);
+    }
 
 }

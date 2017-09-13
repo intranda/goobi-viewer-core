@@ -303,6 +303,11 @@ public final class SolrSearchIndex {
         //        logger.trace("search: {}", query);
         return search(query, 0, MAX_HITS, null, null, null).getResults();
     }
+    
+    public long count(String query) throws PresentationException, IndexUnreachableException {
+        //        logger.trace("search: {}", query);
+        return search(query, 0, 0, null, null, null).getResults().getNumFound();
+    }
 
     /**
      *

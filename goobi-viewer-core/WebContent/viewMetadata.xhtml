@@ -280,12 +280,19 @@
             viewerJS.normdata.init( normdataConfig );
             
             var downloadModalConfig = {
-                    downloadBtn: $( '.download-modal' ),
+                	downloadBtn: $( '.download-modal' ),
                     path: '#{navigationHelper.applicationUrl}',
+                    iiifPath: '#{configurationBean.iiifApiUrl}',
                     userEmail: $( '#userEmail' ).val(),
                     useReCaptcha: #{configurationBean.useReCaptcha},
                     reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
                     messages: {
+                        downloadInfo: {
+                            text: '#{msg.downloadInfoText}',
+                            title: '#{msg.downloadInfoTitle}',
+                            part: '#{msg.downloadInfoPart}',
+                            fileSize: '#{msg.downloadInfoFileSize}'
+                        },
                         reCaptchaText: '#{msg.downloadReCaptchaText}',
                         rcInvalid: '#{msg.downloadRcInvalid}',
                         rcValid: '#{msg.downloadRcValid}',
@@ -297,7 +304,7 @@
                     }
                 };
             
-            viewerJS.downloadModal.init( downloadModalConfig );
+                viewerJS.downloadModal.init( downloadModalConfig );
         </script>
 	</ui:define>
 

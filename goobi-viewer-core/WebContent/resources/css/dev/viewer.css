@@ -1421,8 +1421,14 @@ div.mce-fullscreen {
 #downloadWrapper nav ul li.download-title {
   font-size: 0.8rem;
 }
-#downloadWrapper nav ul li a {
+#downloadWrapper nav ul li a,
+#downloadWrapper nav ul li button {
   padding: 0;
+  color: #428bca;
+}
+#downloadWrapper nav ul li a:hover,
+#downloadWrapper nav ul li button:hover {
+  color: #1a1a1a;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -1837,20 +1843,26 @@ div.mce-fullscreen {
   margin: 0;
   padding: 0;
   list-style: none;
+  border: 1px solid #ccc;
 }
 #ePubWrapper ul li {
-  min-height: 28px;
+  padding: 0 10px;
+  border-bottom: 1px solid #ccc;
+}
+#ePubWrapper ul li:last-child {
+  border-bottom: none;
 }
 #ePubWrapper ul li .dl-horizontal {
+  margin: 0;
+}
+#ePubWrapper ul li .dl-horizontal dt,
+#ePubWrapper ul li .dl-horizontal dd {
   min-height: 28px;
-  margin-bottom: 3px;
+  line-height: 28px;
 }
 #ePubWrapper ul li .dl-horizontal dt {
   font-weight: normal;
   text-align: left;
-}
-#ePubWrapper ul li .dl-horizontal dt a img {
-  height: 21px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -2454,6 +2466,47 @@ input[id*="cmdMoveTo"] {
   margin: 5px 0 15px 0;
   padding: 10px;
   background-color: #eee;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Download Modal
+   style declarations for external PDF, ePub and Toc download 
+   ==============================================================*/
+/* DOWNLOAD MODAL */
+#reCaptchaWrapper {
+  margin-bottom: 1.3125rem;
+}
+div[id*="-Modal"] p {
+  color: #6f6f6f;
+}
+div[id*="-Modal"] p strong {
+  color: #1a1a1a;
+}
+div[id*="-Modal"] .dl-horizontal dt,
+div[id*="-Modal"] .dl-horizontal dd {
+  padding: 3px 0;
+}
+div[id*="-Modal"] .dl-horizontal dt {
+  text-align: left;
+}
+div[id*="-Modal"] .email-form .form-group {
+  margin: 1.3125rem 0 0 0;
+}
+.dl-modal__overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  background-image: url("../../images/AJAX_preloader_white.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  z-index: 999;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -3731,6 +3784,9 @@ input[id*="cmdMoveTo"] {
   color: #fff;
   background-color: #428bca;
 }
+.search-calendar__month-day .popover-title {
+  line-height: normal;
+}
 .search-calendar__month-day-empty {
   min-height: 1px;
 }
@@ -4055,9 +4111,17 @@ input[id*="cmdMoveTo"] {
    style declarations for userBackendEditBookshelf.xhtml
    ==============================================================*/
 #editBookshelf #userEditBookshelfForm {
-  float: left;
-  width: 100%;
   margin-bottom: 1.3125rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+#editBookshelf #userEditBookshelfForm:before,
+#editBookshelf #userEditBookshelfForm:after {
+  content: " ";
+  display: table;
+}
+#editBookshelf #userEditBookshelfForm:after {
+  clear: both;
 }
 #editBookshelf #userEditBookshelfForm .btn {
   float: right;
@@ -5583,19 +5647,6 @@ div.olMapViewport {
 .toc__list-full {
   margin-top: 15px;
 }
-/* DOWNLOAD MODAL */
-#reCaptchaWrapper {
-  margin-bottom: 1.3125rem;
-}
-div[id*="Modal"] p {
-  color: #737373;
-}
-div[id*="Modal"] .email-form .form-group {
-  margin: 1.3125rem 0 0 0;
-}
-div[id*="Modal"] .email-form .form-group p {
-  margin-bottom: 0;
-}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -5604,11 +5655,24 @@ div[id*="Modal"] .email-form .form-group p {
    View Download
    style declarations for viewDownload.xhtml
    ==============================================================*/
-#viewDownload .download-license-text {
-  width: 100%;
+/* DOWNLOAD */
+/* BLOCK */
+.download {
+  /* ELEMENT */
+}
+.download__status-loader:before,
+.download__status-loader:after {
+  content: " ";
+  display: table;
+}
+.download__status-loader:after {
+  clear: both;
+}
+.download__status-loader img {
+  float: right;
+}
+.download__status-license-text {
   height: 200px;
-  padding: 10px;
-  border: 1px solid #428bca;
   background-color: #fff;
   overflow-y: auto;
 }

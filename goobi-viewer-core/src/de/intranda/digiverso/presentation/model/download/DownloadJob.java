@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +47,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.joda.time.MutableDateTime;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +78,8 @@ public abstract class DownloadJob implements Serializable {
     public enum JobStatus {
         WAITING,
         READY,
-        ERROR;
+        ERROR,
+        UNDEFINED;
 
         public static JobStatus getByName(String name) {
             if (name != null) {
@@ -81,6 +90,8 @@ public abstract class DownloadJob implements Serializable {
                         return READY;
                     case "ERROR":
                         return ERROR;
+                    case "UNDEFINED":
+                        return JobStatus.UNDEFINED;
                 }
             }
 
@@ -122,7 +133,7 @@ public abstract class DownloadJob implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    protected JobStatus status;
+    protected JobStatus status = JobStatus.UNDEFINED;
 
     /** Description field for stack traces, etc. */
     @Column(name = "description", columnDefinition = "LONGTEXT")
@@ -181,6 +192,8 @@ public abstract class DownloadJob implements Serializable {
         if (!controlIdentifier.equals(downloadIdentifier)) {
             throw new IllegalArgumentException("wrong downloadIdentifier");
         }
+        
+        logger.debug("Checking download of job " + controlIdentifier);
 
         try {
             /*Get or create job*/
@@ -522,6 +535,9 @@ public abstract class DownloadJob implements Serializable {
      * @return the status
      */
     public JobStatus getStatus() {
+        if(status == null) {
+            status = JobStatus.UNDEFINED;
+        }
         return status;
     }
 
@@ -573,4 +589,46 @@ public abstract class DownloadJob implements Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
+    
+    
+    /**
+    *
+    * @param identtifier The identifier/has of the last job to count
+    * @return
+    */
+   public static String getJobStatus(String identifier) {
+       StringBuilder url = new StringBuilder();
+       url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
+       url.append("/viewerpdf/info/");
+       url.append(identifier);
+       ResponseHandler<String> handler = new BasicResponseHandler();
+       HttpGet httpGet = new HttpGet(url.toString());
+       try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+           CloseableHttpResponse response = httpclient.execute(httpGet);
+           String ret = handler.handleResponse(response);
+           logger.trace("TaskManager response: {}", ret);
+           return ret;
+       } catch (Throwable e) {
+           logger.error("Error getting response from TaskManager", e);
+           return "";
+       }
+   }
+   
+   public void updateStatus() {
+       String ret =  PDFDownloadJob.getJobStatus(identifier);
+       try {
+        JSONObject object = new JSONObject(ret);
+        String statusString = object.getString("status");
+        JobStatus status = JobStatus.getByName(statusString);
+        setStatus(status);
+        if(JobStatus.ERROR.equals(status)) {            
+            String errorMessage = object.getString("errorMessage");
+            setMessage(errorMessage);
+        }
+    } catch (ParseException e) {
+        setStatus(JobStatus.ERROR);
+        setMessage("Unable to parse TaskManager response");
+    }
+
+   }
 }
