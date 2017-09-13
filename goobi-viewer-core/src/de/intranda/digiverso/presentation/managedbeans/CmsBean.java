@@ -857,11 +857,6 @@ public class CmsBean {
             //            searchBean.getFacets().setCurrentFacetString();
             //            searchBean.getFacets().setCurrentCollection();
             searchBean.newSearch();
-        } else {
-            logger.debug("cannot search, SearchBean null: {}, item null: {}, query: {}", searchBean == null, item == null, item != null ? item.getSolrQuery(): null);
-            if(searchBean != null) {
-                searchBean.resetSearchResults();
-            }
         }
         if (item == null) {
             logger.error("Cannot search: item is null");
@@ -869,7 +864,6 @@ public class CmsBean {
             return "";
         }
         if (StringUtils.isBlank(item.getSolrQuery())) {
-            logger.error("Cannot search, item Solr query is empty");
             searchBean.resetSearchResults();
             return "";
         }
