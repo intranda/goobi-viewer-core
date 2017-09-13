@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +56,7 @@ public class RSSFeed {
             SolrConstants.DOCTYPE, SolrConstants.FILENAME, SolrConstants.FULLTEXT, SolrConstants.IDDOC, SolrConstants.LABEL,
             SolrConstants.IDDOC_PARENT, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE,
             SolrConstants.PERSON_ONEFIELD, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH,
-            SolrConstants.PUBLISHER, SolrConstants.TITLE, SolrConstants.THUMBNAIL, SolrConstants.URN, SolrConstants.YEARPUBLISH };
+            SolrConstants.PUBLISHER, SolrConstants.TITLE, SolrConstants.THUMBNAIL, SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
      *
@@ -239,32 +240,7 @@ public class RSSFeed {
                     placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
                 }
 
-                String imageUrl = null;
-                if (ePublication) {
-                    // E-publication thumbnail
-                    imageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                            "?action=image&sourcepath=").append(rootPath).append("/resources/themes/").append(DataManager.getInstance()
-                                    .getConfiguration().getTheme()).append("/images/thumbnail_epub.jpg").append("&width=").append(thumbWidth).append(
-                                            "&height=").append(thumbHeight).append("&rotate=0&format=png&resolution=72&ignoreWatermark=true")
-                            .toString();
-                } else if (anchor && StringUtils.isEmpty(thumbnail)) {
-                    // Anchor thumbnail
-                    imageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                            "?action=image&sourcepath=").append(rootPath).append("/resources/themes/").append(DataManager.getInstance()
-                                    .getConfiguration().getTheme()).append("/images/multivolume_thumbnail.jpg").append("&width=").append(thumbWidth)
-                            .append("&height=").append(thumbHeight).append("&rotate=0&format=png&resolution=72&ignoreWatermark=true").toString();
-
-                } else if (StringUtils.isNotEmpty(thumbnail)) {
-                    StringBuilder sbImageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                            "?action=image&sourcepath=");
-                    if (!thumbnail.startsWith("http")) {
-                        sbImageUrl.append(pi).append('/');
-                    }
-                    sbImageUrl.append(thumbnail).append("&width=").append(thumbWidth).append("&height=").append(thumbHeight).append(
-                            "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
-                                    .isForceJpegConversion() ? "&format=jpg" : "").toString();
-                    imageUrl = sbImageUrl.toString();
-                }
+                String imageUrl = createImageUrl(rootPath, anchor, ePublication, pi, thumbnail, thumbWidth, thumbHeight);
 
                 String imageHtmlElement = null;
                 if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
@@ -307,6 +283,277 @@ public class RSSFeed {
         //
 
         return feed;
+    }
+    
+    public static Channel createRssFeed(String rootPath, String query, int rssFeedItems) throws PresentationException, IndexUnreachableException, DAOException {
+        return createRssFeed(rootPath, query, rssFeedItems, null);
+    }
+
+    public static Channel createRssFeed(String rootPath, String query, int rssFeedItems, String language) throws PresentationException, IndexUnreachableException,
+            DAOException {
+        String feedType = "rss_2.0";
+
+        Locale locale = null;
+        if (StringUtils.isNotBlank(language)) {
+            locale = Locale.forLanguageTag(language);
+        }
+        if (locale == null) {
+            locale = Locale.GERMANY;
+        }
+
+        logger.trace("RSS query: {}", query);
+
+        Channel feed = new Channel();
+        feed.setTitle(DataManager.getInstance().getConfiguration().getRssTitle());
+        feed.setLink(rootPath);
+        feed.setDescription(DataManager.getInstance().getConfiguration().getRssDescription());
+        feed.setLanguage(locale.getLanguage());
+        feed.setCopyright(DataManager.getInstance().getConfiguration().getRssCopyrightText());
+        feed.setPubDate(new Date());
+        
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(
+                SolrConstants.DATECREATED, "desc")), null, Arrays.asList(FIELDS)).getResults();
+        if (docs != null) {
+            for (SolrDocument doc : docs) {
+                boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
+                boolean child = !anchor && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(
+                        SolrConstants.LOGID) != null) && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(
+                                SolrConstants.ISWORK)));
+                boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
+                boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
+                SolrDocument topDoc = null;
+                SolrDocument ownerDoc = null;
+                if (child || page) {
+                    // Find top level docstruct to extract metadata such as DATECREATED
+                    List<SolrDocument> topDocs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(':')
+                            .append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(), 0, 1, null, null, Arrays.asList(FIELDS))
+                            .getResults();
+                    if (!topDocs.isEmpty()) {
+                        topDoc = topDocs.get(0);
+                    }
+                    if (page) {
+                        // Find page owner docstruct to extract its metadata
+                        List<SolrDocument> ownerDocs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC)
+                                .append(':').append(doc.getFieldValue(SolrConstants.IDDOC_PARENT)).toString(), 0, 1, null, null, Arrays.asList(
+                                        FIELDS)).getResults();
+                        if (!ownerDocs.isEmpty()) {
+                            ownerDoc = ownerDocs.get(0);
+                        }
+                    }
+                }
+
+                String pi = (String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT);
+                RssItem entry = new RssItem();
+                Description description = new Description();
+                String label = "";
+                Long modified = null;
+                String author = "";
+                String authorRss = "";
+                String publisher = "";
+                String placeAndTime = "";
+                String descValue = "";
+                String thumbnail = "";
+                String urn = "";
+                String urnLink = "";
+                String bookSeries = "";
+                String shelfmark = "";
+                int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+                int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+                boolean hasImages = isHasImages(doc);
+                String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+                String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+                // If the document has an overview page, use the overview view
+                boolean hasOverviewPage = false;
+                if (pi != null && DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible() && DataManager.getInstance().getDao()
+                        .getOverviewPageForRecord(pi, null, null) != null) {
+                    hasOverviewPage = true;
+                }
+                PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, hasOverviewPage, false);
+
+                for (String field : FIELDS) {
+                    Object value = doc.getFirstValue(field);
+                    // If the doc has no field value, try the owner doc (in case of pages)
+                    if (value == null && ownerDoc != null) {
+                        value = ownerDoc.getFirstValue(field);
+                    }
+                    // If there is still no value, try the root doc
+                    if (value == null && topDoc != null) {
+                        value = topDoc.getFirstValue(field);
+                    }
+                    if (value != null) {
+                        switch (field) {
+                            case SolrConstants.LABEL:
+                                // It is important that LABEL comes before IDDOC_PARENT in the static field list!
+                                label = (String) value;
+                                break;
+                            case SolrConstants.IDDOC_PARENT:
+                                // TODO This query is executed O(size of feed) times.
+                                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC)
+                                        .append(':').append(value).toString(), 1, null, Collections.singletonList(SolrConstants.LABEL));
+                                if (hits != null && hits.getNumFound() > 0) {
+                                    SolrDocument parent = hits.get(0);
+                                    Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
+                                    if (fieldParentLabel != null) {
+                                        label = new StringBuilder((String) fieldParentLabel).append("; ").append(label).toString();
+                                        bookSeries = fieldParentLabel.toString();
+                                    }
+                                }
+                                break;
+                            case SolrConstants.PERSON_ONEFIELD:
+                                authorRss = (String) value;
+                                author = value.toString();
+                                break;
+                            case SolrConstants.PUBLISHER:
+                                publisher = value.toString();
+                                break;
+                            case SolrConstants.DATECREATED:
+                                modified = (Long) value;
+                                break;
+                            case SolrConstants.YEARPUBLISH:
+                            case SolrConstants.PLACEPUBLISH:
+                                if(StringUtils.isBlank(placeAndTime)) {                                    
+                                    placeAndTime = value.toString();
+                                } else {
+                                    placeAndTime = placeAndTime + ", " + value;
+                                }
+                                break;
+                            case SolrConstants.URN:
+                                urn = value.toString();
+                                urnLink = new StringBuilder().append(rootPath).append("/resolver?urn=").append(value).toString();
+                                break;
+                            case SolrConstants.PI:
+                                pi = (String) value;
+                                break;
+                            case SolrConstants.TITLE:
+                                if (StringUtils.isEmpty(label)) {
+                                    label = (String) value;
+                                }
+                                break;
+                            case SolrConstants.FILENAME:
+                            case SolrConstants.THUMBNAIL:
+                                if (StringUtils.isEmpty(thumbnail)) {
+                                    thumbnail = (String) value;
+                                }
+                                break;
+                            case SolrConstants.DOCSTRCT:
+                                if (StringUtils.isEmpty(label)) {
+                                    label = (String) value;
+                                    label = ViewerResourceBundle.getTranslation(label, locale);
+                                }
+                                break;
+                            case "MD_SHELFMARK":
+                                shelfmark = value.toString();
+                                break;
+                            default: // nothing
+                        }
+                    }
+                }
+                
+                String link = createLink(rootPath, pi, pageType);
+                
+                description.setImage(createImageUrl(rootPath, anchor, ePublication, pi, thumbnail, thumbWidth, thumbHeight));
+                
+                if(StringUtils.isNotBlank(placeAndTime)) {                    
+                    description.addMetadata(new RssMetadata("Published", placeAndTime));
+                }
+                if(StringUtils.isNotBlank(bookSeries)) {                    
+                    description.addMetadata(new RssMetadata("Book series", bookSeries));
+                }
+                if(StringUtils.isNotBlank(author)) {                    
+                    description.addMetadata(new RssMetadata("Author", author));
+                }
+                if(StringUtils.isNotBlank(publisher)) {                    
+                    description.addMetadata(new RssMetadata("Publisher", publisher));
+                }
+                if(StringUtils.isNotBlank(urn)) {                    
+                    description.addMetadata(new RssMetadata("URL", urn, urnLink));
+                }
+                if(StringUtils.isNotBlank(shelfmark)) {                    
+                    description.addMetadata(new RssMetadata("Shelfmark", shelfmark));
+                }
+                entry.setDescription(description);
+                
+                if(StringUtils.isNotBlank(authorRss)) {                    
+                    entry.setCreator(authorRss);
+                }
+                entry.setTitle(label);
+                entry.setLink(link);
+                if (modified != null) {
+                    try {
+                        entry.setPubDate(new Date(modified));
+                    } catch (NumberFormatException e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+
+                feed.addItem(entry);
+            }
+        }
+
+        // // TODO read information from config file
+
+        // Image digiversoLogo = new Image();
+        // // TODO ico funktioniert nicht, muss gif/png sein
+        // digiversoLogo.setURL("http://www.intranda.com/images/favicon.ico");
+        // digiversoLogo.setTitle("digiverso");
+        // digiversoLogo.setLink("http://intranda.com");
+        // myChannel.setImage(digiversoLogo);
+        //
+        Collections.sort(feed.getItems());
+        
+        return feed;
+    }
+
+    /**
+     * @param rootPath
+     * @param pi
+     * @param pageType
+     */
+    public static String createLink(String rootPath, String pi, PageType pageType) {
+        StringBuilder link = new StringBuilder();
+        link.append(rootPath).append('/').append(pageType.getName()).append('/').append(pi)
+        .append('/').append("1").append('/');
+        return link.toString();
+    }
+
+    /**
+     * @param rootPath
+     * @param anchor
+     * @param ePublication
+     * @param pi
+     * @param thumbnail
+     * @param thumbWidth
+     * @param thumbHeight
+     */
+    public static String createImageUrl(String rootPath, boolean anchor, boolean ePublication, String pi, String thumbnail, int thumbWidth,
+            int thumbHeight) {
+        String imageUrl = null;
+        if (ePublication) {
+            // E-publication thumbnail
+            imageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
+                    "?action=image&sourcepath=").append(rootPath).append("/resources/themes/").append(DataManager.getInstance()
+                            .getConfiguration().getTheme()).append("/images/thumbnail_epub.jpg").append("&width=").append(thumbWidth).append(
+                                    "&height=").append(thumbHeight).append("&rotate=0&format=png&resolution=72&ignoreWatermark=true")
+                    .toString();
+        } else if (anchor && StringUtils.isEmpty(thumbnail)) {
+            // Anchor thumbnail
+            imageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
+                    "?action=image&sourcepath=").append(rootPath).append("/resources/themes/").append(DataManager.getInstance()
+                            .getConfiguration().getTheme()).append("/images/multivolume_thumbnail.jpg").append("&width=").append(thumbWidth)
+                    .append("&height=").append(thumbHeight).append("&rotate=0&format=png&resolution=72&ignoreWatermark=true").toString();
+
+        } else if (StringUtils.isNotEmpty(thumbnail)) {
+            StringBuilder sbImageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
+                    "?action=image&sourcepath=");
+            if (!thumbnail.startsWith("http")) {
+                sbImageUrl.append(pi).append('/');
+            }
+            sbImageUrl.append(thumbnail).append("&width=").append(thumbWidth).append("&height=").append(thumbHeight).append(
+                    "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
+                            .isForceJpegConversion() ? "&format=jpg" : "").toString();
+            imageUrl = sbImageUrl.toString();
+        }
+        return imageUrl;
     }
 
     /**
