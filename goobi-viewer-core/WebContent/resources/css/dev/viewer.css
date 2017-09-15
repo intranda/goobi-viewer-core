@@ -3470,6 +3470,8 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
 }
 .search-list__hit-thumbnail {
+  position: relative;
+  min-height: 120px;
   text-align: right;
 }
 .search-list__hit-thumbnail img {
