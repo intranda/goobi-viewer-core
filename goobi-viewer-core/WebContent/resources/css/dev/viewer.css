@@ -2755,6 +2755,12 @@ div[id*="-Modal"] .email-form .form-group {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+.collection__description-toggle a,
+.collection__rss a {
+  display: inline-block;
+  padding: 10px;
+  text-align: center;
+}
 .collection__title div.col-xs-12 {
   padding-left: 15px;
 }
