@@ -40,6 +40,7 @@
 		<project>goobi-viewer-theme-grimm</project>
 		<project>goobi-viewer-theme-haab</project>
 		<project>goobi-viewer-theme-hub</project>
+		<project>goobi-viewer-theme-bsz</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
