@@ -93,6 +93,9 @@ public class CMSPage {
 
     @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
+    
+    @Column(name = "subtheme_discriminator", nullable = true)
+    private String subThemeDiscriminatorValue = null;    
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -445,6 +448,20 @@ public class CMSPage {
 
     public void setPageSorting(Long pageSorting) {
         this.pageSorting = pageSorting;
+    }
+    
+    /**
+     * @return the subThemeDiscriminatorValue
+     */
+    public String getSubThemeDiscriminatorValue() {
+        return subThemeDiscriminatorValue;
+    }
+    
+    /**
+     * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
+     */
+    public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
+        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue;
     }
 
     public String getMediaName(String contentId) {
