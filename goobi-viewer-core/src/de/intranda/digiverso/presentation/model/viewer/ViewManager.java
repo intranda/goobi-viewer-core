@@ -115,7 +115,7 @@ public class ViewManager implements Serializable {
     private boolean doublePageMode = false;
     private int firstPdfPage;
     private int lastPdfPage;
-    private final CalendarView calendarView;
+    private CalendarView calendarView;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
             throws IndexUnreachableException, PresentationException {
@@ -148,9 +148,13 @@ public class ViewManager implements Serializable {
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
 
+    }
+    
+    public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
         String anchorPi = anchorDocument != null ? anchorDocument.getPi() : (topDocument.isAnchor() ? pi : null);
-        calendarView = new CalendarView(pi, anchorPi, topDocument.isAnchor() ? null : topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR));
+        return  new CalendarView(pi, anchorPi, topDocument.isAnchor() ? null : topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR));
+
     }
 
     public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException {
@@ -2084,8 +2088,13 @@ public class ViewManager implements Serializable {
 
     /**
      * @return the calendarView
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
      */
-    public CalendarView getCalendarView() {
+    public CalendarView getCalendarView() throws IndexUnreachableException, PresentationException {
+        if(calendarView == null) {
+            calendarView = createCalendarView();
+        }
         return calendarView;
     }
 

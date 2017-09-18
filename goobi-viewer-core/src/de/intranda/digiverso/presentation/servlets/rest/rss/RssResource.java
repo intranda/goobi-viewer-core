@@ -62,6 +62,22 @@ public class RssResource {
     private HttpServletResponse servletResponse;
 
     @GET
+    @Path("/{language}/{numhits}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Channel getTagsForPageJson(@PathParam("numhits") int numHits, @PathParam("language") String language) throws PresentationException, IndexUnreachableException, DAOException {
+        
+        Long bookshelfId = null;
+        String query = null;
+        String partnerId = null;
+        
+        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), createQuery(query, bookshelfId, partnerId), numHits, language);
+           
+        servletResponse.setContentType("application/json");
+        
+        return rss;
+    }
+    
+    @GET
     @Path("/{language}/{partnerId}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Channel getTagsForPageJson(@PathParam("numhits") int numHits, @PathParam("language") String language, @PathParam("partnerId") String partnerId) throws PresentationException, IndexUnreachableException, DAOException {
