@@ -86,8 +86,8 @@
         <dependent-module archiveName="viewer-theme-sulb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sulb/goobi-viewer-theme-sulb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- THEME BOILERPLATE -->
-        <dependent-module archiveName="goobi-viewer-theme-tbp.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-tbp/goobi-viewer-theme-tbp">
+        <!-- BOILERPLATE -->
+        <dependent-module archiveName="goobi-viewer-theme-boilerplate.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-boilerplate/goobi-viewer-theme-boilerplate">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- TIB 2 -->
@@ -156,6 +156,10 @@
         </dependent-module>
         <!-- HUB -->
         <dependent-module archiveName="goobi-viewer-theme-hub.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hub/goobi-viewer-theme-hub">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- BSZ -->
+        <dependent-module archiveName="goobi-viewer-theme-bsz.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-bsz/goobi-viewer-theme-bsz">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
