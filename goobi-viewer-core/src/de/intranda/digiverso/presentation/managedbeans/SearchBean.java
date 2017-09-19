@@ -1469,10 +1469,6 @@ public class SearchBean implements Serializable {
         currentHitIndex = -1;
     }
 
-    public boolean isCollectionDrilldownEnabled() {
-        return DataManager.getInstance().getConfiguration().isCollectionDrilldownEnabled();
-    }
-
     public boolean isSortingEnabled() {
         return DataManager.getInstance().getConfiguration().isSortingEnabled();
     }
