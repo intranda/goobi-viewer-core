@@ -1035,6 +1035,15 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataIgnoreFields() {
         return getLocalList("search.displayAdditionalMetadata.ignoreField", Collections.emptyList());
     }
+    
+    /**
+     * 
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataTranslateFields() {
+        return getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+    }
 
     /**
      * 

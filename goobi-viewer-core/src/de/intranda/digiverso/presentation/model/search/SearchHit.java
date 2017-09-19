@@ -143,6 +143,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param exportFields Optional fields for (Excel) export purposes.
      * @param useThumbnail
      * @param ignoreAdditionalFields
+     * @param translateAdditionalFields
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -150,8 +151,8 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should add export fields correctly
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields) throws PresentationException,
-            IndexUnreachableException, DAOException {
+            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
+            Set<String> translateAdditionalFields) throws PresentationException, IndexUnreachableException, DAOException {
         String fulltextFragment = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
                 DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
@@ -162,9 +163,9 @@ public class SearchHit implements Comparable<SearchHit> {
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
         BrowseElement browseElement = new BrowseElement(se, metadataList, locale, fulltextFragment, useThumbnail, searchTerms);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields);
+        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
         SearchHit hit = new SearchHit(HitType.getByName(se.getMetadataValue(SolrConstants.DOCTYPE)), browseElement, searchTerms, locale);
-        hit.populateFoundMetadata(doc, ignoreAdditionalFields);
+        hit.populateFoundMetadata(doc, ignoreAdditionalFields, translateAdditionalFields);
 
         // Export fields for Excel export
         if (exportFields != null && !exportFields.isEmpty()) {
@@ -237,16 +238,16 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (descriptionText != null || publicationText != null) {
                         int count = 0;
                         SearchHit overviewPageHit = new SearchHit(HitType.METADATA, new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation(
-                                "overviewPage", locale), null, true), searchTerms, locale);
+                                "overviewPage", locale), null, true, locale), searchTerms, locale);
                         children.add(overviewPageHit);
                         if (descriptionText != null) {
                             overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
-                                    "viewOverviewDescription", descriptionText, true), searchTerms, locale));
+                                    "viewOverviewDescription", descriptionText, true, locale), searchTerms, locale));
                             count++;
                         }
                         if (publicationText != null) {
                             overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
-                                    "viewOverviewPublication_publication", publicationText, true), searchTerms, locale));
+                                    "viewOverviewPublication_publication", publicationText, true, locale), searchTerms, locale));
                             count++;
                         }
                         hitTypeCounts.put(HitType.OVERVIEWPAGE, count);
@@ -277,6 +278,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 number = childDocs.size();
             }
             Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+            Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
             for (int i = 0; i < number; ++i) {
                 SolrDocument childDoc = childDocs.get(i);
                 String fulltext = null;
@@ -302,7 +304,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ownerHit == null) {
                             SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                             if (ownerDoc != null) {
-                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields);
+                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields);
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
@@ -313,7 +315,8 @@ public class SearchHit implements Comparable<SearchHit> {
                             logger.error("No document found for IDDOC {}", ownerIddoc);
                             continue;
                         } {
-                        SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false, ignoreFields);
+                        SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
+                                ignoreFields, translateFields);
                         ownerHit.getChildren().add(childHit);
                         hitsPopulated++;
                     }
@@ -322,7 +325,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         // Docstruct hits are immediate children of the main hit
                         String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                         if (!ownerHits.containsKey(iddoc)) {
-                            SearchHit childHit = createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields);
+                            SearchHit childHit = createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields,
+                                    translateFields);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);
@@ -351,23 +355,25 @@ public class SearchHit implements Comparable<SearchHit> {
      * 
      * @param doc
      * @param ignoreFields Fields to be skipped
+     * @param translateFields Fields to be translated
      * @should add field values pairs that match search terms
      * @should add MD fields that contain terms from DEFAULT
      * @should not add duplicate values
      * @should not add ignored fields
+     * @should translate configured field values correctly
      */
-    public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields) {
+    public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {
         if (searchTerms == null) {
             return;
         }
 
         boolean overviewPageFetched = false;
-        for (String fieldName : searchTerms.keySet()) {
+        for (String termsFieldName : searchTerms.keySet()) {
             // Skip fields that are in the ignore list
-            if (ignoreFields != null && ignoreFields.contains(fieldName)) {
+            if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
                 continue;
             }
-            switch (fieldName) {
+            switch (termsFieldName) {
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
@@ -380,10 +386,10 @@ public class SearchHit implements Comparable<SearchHit> {
                             if (fieldValue.equals(browseElement.getLabel())) {
                                 continue;
                             }
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
+                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields
-                                if (SolrConstants.DC.equals(docFieldName) || SolrConstants.DOCSTRCT.equals(docFieldName)) {
+                                if (translateFields != null && translateFields.contains(docFieldName)) {
                                     String translatedValue = Helper.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
                                             + translatedValue + "$3");
@@ -396,19 +402,19 @@ public class SearchHit implements Comparable<SearchHit> {
                     break;
                 default:
                     // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
-                    if (doc.containsKey(fieldName)) {
-                        List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, fieldName);
+                    if (doc.containsKey(termsFieldName)) {
+                        List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, termsFieldName);
                         for (String fieldValue : fieldValues) {
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
+                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields
-                                if (SolrConstants.DC.equals(fieldName) || SolrConstants.DOCSTRCT.equals(fieldName)) {
+                                if (translateFields != null && translateFields.contains(termsFieldName)) {
                                     String translatedValue = Helper.getTranslation(fieldValue, locale);
                                     highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
                                             + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                foundMetadata.add(new StringPair(Helper.getTranslation(fieldName, locale), highlightedValue));
+                                foundMetadata.add(new StringPair(Helper.getTranslation(termsFieldName, locale), highlightedValue));
                             }
                         }
                     }
