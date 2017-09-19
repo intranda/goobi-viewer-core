@@ -340,9 +340,6 @@
 			<luceneField>SORT_YEARPUBLISH</luceneField>
 		</sorting>
 		<drillDown>
-			<!-- collectionDrilldownEnabled: if false, the collection drill down is 
-				hidden -->
-			<collectionDrilldownEnabled>false</collectionDrilldownEnabled>
 			<field>FIELD1</field>
 			<field>FIELD2</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 

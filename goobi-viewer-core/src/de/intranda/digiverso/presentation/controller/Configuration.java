@@ -1035,7 +1035,7 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getDisplayAdditionalMetadataIgnoreFields() {
         return getLocalList("search.displayAdditionalMetadata.ignoreField", Collections.emptyList());
     }
-    
+
     /**
      * 
      * @return List of configured fields; empty list if none found.
@@ -1624,15 +1624,6 @@ public final class Configuration extends AbstractConfiguration {
 
         logger.trace("Tree view for {} not allowed", docStructType);
         return false;
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isCollectionDrilldownEnabled() {
-        return getLocalBoolean("search.drillDown.collectionDrilldownEnabled", true);
     }
 
     /**

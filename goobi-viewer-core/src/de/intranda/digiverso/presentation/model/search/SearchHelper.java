@@ -1959,9 +1959,6 @@ public final class SearchHelper {
         if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
             facetFields.add(SolrConstants.GROUPFIELD);
         }
-        // if (DataManager.getInstance().getConfiguration().isCollectionDrilldownEnabled()) {
-        // facetFields.add(LuceneConstants.FACET_DC);
-        // }
         for (String field : DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields()) {
             if (!facetFields.contains(field)) {
                 facetFields.add(field);

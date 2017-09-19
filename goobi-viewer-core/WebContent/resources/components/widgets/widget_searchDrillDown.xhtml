@@ -18,16 +18,16 @@
             <h:panelGroup rendered="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray() != null and searchBean.facets.availableFacets.entrySet().toArray() != null}">
             <div id="searchListDrillDownWrapper" class="widget-search-drilldown">
                 <h:form id="searchListDrillDownForm" prependId="false">
-                    <!-- COLLECTION DRILL DOWN -->
+                    <!-- HIERARCHICAL DRILL DOWN -->
                     <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">
                         <h:panelGroup 
                             id="collectionDrillDownPanelGroup_#{status.index}"
-			    rendered="#{(searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentHierarchicalFacetsSizeForField(field.key) > 0) and searchBean.collectionDrilldownEnabled}">
+			                rendered="#{(searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentHierarchicalFacetsSizeForField(field.key) > 0)}">
                             <div class="widget widget-search-drilldown__collection">
                                 <h3>#{msg[field.key]}</h3>
                                 
                                 <ul>
-                                    <!-- ACTIVE FACETS -->
+                                    <!-- ACTIVE HIERARCHICAL FACETS -->
 	                                    <ui:repeat value="#{searchBean.facets.getCurrentHierarchicalFacetsForField(field.key)}" var="facet">
                                         <li class="active">
                                             <h:commandLink action="#{searchBean.removeHierarchicalFacetAction(facet.link)}" title="#{msg.removeFacet}">
@@ -43,7 +43,7 @@
 										</li>
                                     </ui:repeat>
 
-                                    <!-- AVAILABLE FACETS -->
+                                    <!-- AVAILABLE HIERARCHICAL FACETS -->
 	                                    <ui:repeat value="#{searchBean.facets.getLimitedHierarchicalFacetListForField(field.key)}" var="facet">
                                         <li>
                                             <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
@@ -53,7 +53,7 @@
                                     </ui:repeat>
                                 </ul>
                                 
-                                <!-- COLLAPSE DRILLDOWN -->
+                                <!-- COLLAPSE HIERARCHICAL DRILLDOWN -->
                                 <div class="widget-search-drilldown__collapse">
                                     <h:commandLink 
                                         rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(field.key)}"
