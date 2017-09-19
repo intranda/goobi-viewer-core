@@ -25,9 +25,7 @@
     </ui:define>
 
     <ui:define name="content">
-    	<h:panelGroup rendered="#{cmsPage.subThemeDiscriminatorValue != null and cmsPage.subThemeDiscriminatorValue != '-'}">
-		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{cmsPage.subThemeDiscriminatorValue}.min.css" />
-    </h:panelGroup>
+    
         <f:view contentType="text/html" encoding="utf-8">
 			<div id="templateNews" class="tpl-news">
 				<h1>#{cmsPage.title}</h1>

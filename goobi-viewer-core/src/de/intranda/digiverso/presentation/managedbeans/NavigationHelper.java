@@ -523,24 +523,33 @@ public class NavigationHelper implements Serializable {
             // Automatically set the sub-theme discriminator value to the
             // current record's value, if configured to do so
             ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
-            if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null) {
-
-                if (getCurrentPagerType().isDocumentPage()) {
+            if (activeDocumentBean != null) {
+                String subThemeDiscriminatorValue = "";
+                if (activeDocumentBean.getViewManager() != null && getCurrentPagerType().isDocumentPage()) {
                     // If a record is loaded, get the value from the record's value
                     // in discriminatorField
 
                     String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-                    String subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
+                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
                     if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                         logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
                         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
                     }
-                } 
+                } else if(isCmsPage()) {
+                    CmsBean cmsBean = BeanUtils.getCmsBean();
+                    if(cmsBean != null && cmsBean.getCurrentPage() != null){
+                        subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
+                        if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
+                            logger.trace("Setting discriminator value from cms page: '{}'", subThemeDiscriminatorValue);
+                            return subThemeDiscriminatorValue;
+                        }
+                    }
+                }
             }
         }
 
         String ret = StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
-        // logger.trace("getSubThemeDiscriminatorValue: {}", ret);
+//         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
         return ret;
     }
 

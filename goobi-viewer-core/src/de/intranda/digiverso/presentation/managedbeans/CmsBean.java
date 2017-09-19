@@ -692,15 +692,9 @@ public class CmsBean {
         this.currentPage = currentPage;
         if (currentPage != null) {
             this.currentPage.setListPage(1);
+            BeanUtils.getNavigationHelper().setCmsPage(true);
             logger.trace("Set current cms page to " + this.currentPage.getMenuTitle());
         }
-        // if
-        // (DataManager.getInstance().getDao().getCMSPage(currentPage.getId())
-        // != null) {
-        // this.currentPage =
-        // DataManager.getInstance().getDao().getCMSPage(currentPage.getId());
-        // }
-        // }
     }
 
     public void updatePage() {
@@ -1177,5 +1171,15 @@ public class CmsBean {
             }
         }
         return null;
+    }
+    
+    public List<String> getSubThemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
+        String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+        if(StringUtils.isNotBlank(subThemeDiscriminatorField)) {    
+            subThemeDiscriminatorField = subThemeDiscriminatorField + "_UNTOKENIZED";
+            List<String> values = SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
+            return values;
+        }
+        return Collections.EMPTY_LIST;
     }
 }

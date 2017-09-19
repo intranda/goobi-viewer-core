@@ -26,9 +26,7 @@
     </ui:define>
 
 	<ui:define name="content">
-		<h:panelGroup rendered="#{cmsPage.subThemeDiscriminatorValue != null and cmsPage.subThemeDiscriminatorValue != '-'}">
-		<link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/css/dist/#{cmsPage.subThemeDiscriminatorValue}.min.css" />
-    </h:panelGroup>
+	
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateSearchList">

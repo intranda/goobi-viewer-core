@@ -164,7 +164,12 @@
 																		</button>
 																	</label>
 																	<div class="col-sm-9">
-																		<h:inputText value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}" styleClass="form-control content-input" />
+																		<h:selectOneMenu styleClass="form-control" id="page_subthemediscriminator_select" value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}">
+																			<f:selectItem itemLabel="-" itemValue=""></f:selectItem>
+																			<f:selectItems value="#{cmsBean.subThemeDiscriminatorValues}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+																			<f:ajax render="@none"></f:ajax>
+																		</h:selectOneMenu>
+<!-- 																		<h:inputText value="#{cmsBean.selectedPage.subThemeDiscriminatorValue}" styleClass="form-control content-input" /> -->
 																	</div>
 																</div>
 																
