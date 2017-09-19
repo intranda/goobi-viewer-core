@@ -18,7 +18,7 @@
 
     <composite:implementation>
 		<h:panelGroup
-			rendered="#{(cc.attrs.widget.type == 'widgetBookshelves' or cc.attrs.widget == null) and userBean.loggedIn and cc.attrs.bookshelfDisplay and !activeDocumentBean.anchor and (configurationBean.bookshelvesEnabled or userBean.user.maySetRepresentativeImage)}">
+			rendered="#{configurationBean.bookshelvesEnabled and (cc.attrs.widget.type == 'widgetBookshelves' or cc.attrs.widget == null) and userBean.loggedIn and cc.attrs.bookshelfDisplay and !activeDocumentBean.anchor}">
 			<div id="widgetBookshelves" class="widget">
 				<h:form id="widgetBookshelvesForm">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget == null}">
