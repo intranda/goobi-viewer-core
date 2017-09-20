@@ -82,7 +82,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         return COLLECTION;
                     case "TILEGRID":
                         return TILEGRID;
-                    case "PERIODICAL":
+                    case "TOC":
                         return CMSContentItemType.TOC;
                     default:
                         return null;
