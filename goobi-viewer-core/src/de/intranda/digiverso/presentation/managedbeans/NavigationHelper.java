@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -34,6 +35,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +57,7 @@ import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * This bean contains useful navigation parameters.
@@ -981,6 +984,25 @@ public class NavigationHelper implements Serializable {
      */
     public PageType getCurrentPagerType() {
         return PageType.getByName(getCurrentPage());
+    }
+    
+    public String getPreviousViewUrl() throws IOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = UrlRedirectUtils.getPreviousView(request);
+        if(StringUtils.isBlank(previousUrl)) {
+            previousUrl = getApplicationUrl();
+        }
+        return previousUrl;
+    }
+    
+    public void redirectToPreviousView() throws IOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = UrlRedirectUtils.getPreviousView(request);
+        if(StringUtils.isBlank(previousUrl)) {
+            previousUrl = homePage();
+        }
+        UrlRedirectUtils.redirectToUrl(previousUrl);
+
     }
 
 }

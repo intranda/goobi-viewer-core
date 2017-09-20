@@ -17,6 +17,8 @@ package de.intranda.digiverso.presentation.filters;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,7 +28,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +39,10 @@ import com.ocpsoft.pretty.PrettyContext;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.user.User;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
+import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * Filter class for redirecting from protected pages that either require a user login or superuser privileges to the login page.
@@ -60,7 +64,12 @@ public class LoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        // Create new personal filter query suffix
+        // Create new personal filter query suffix        
+        
+        //save current View to session map
+        UrlRedirectUtils.setCurrentView(request);
+
+        
         if (httpRequest.getSession().getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
             try {
                 SearchHelper.updateFilterQuerySuffix(httpRequest);
@@ -103,6 +112,7 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response); // continue
         }
     }
+
 
     /**
      * Checks whether the given URI requires a logged in user.
