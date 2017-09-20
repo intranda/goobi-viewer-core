@@ -222,7 +222,7 @@ public class TagLib {
     }
 
     /**
-     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by partnerId).
+     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by a subquery).
      *
      * @param field
      * @param subQuery
@@ -237,20 +237,18 @@ public class TagLib {
     }
 
     /**
-     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by partnerId).
+     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by a subquery).
      *
      * @param field
      * @param subQuery
      * @param resultLimit
-     * @param sortDescending
+     * @param sortDescending If true, the facet items are sorted in a descending order
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit, boolean reverseOrder) throws PresentationException,
             IndexUnreachableException {
-        // long hitsCount = 0;
-
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)").append(
                 getDiscriminatorQuery());
@@ -266,9 +264,6 @@ public class TagLib {
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null, Collections.singletonList(field),
                 Collections.singletonList(SolrConstants.IDDOC));
         // TODO Filter with the docstruct whitelist?
-        // if (resp != null) {
-        // hitsCount = resp.getResults().getNumFound();
-        // }
         if (resp != null && resp.getFacetField(field) != null && resp.getFacetField(field).getValues() != null) {
             Map<String, Long> result = new TreeMap<>();
             int resultIndex = 0;
