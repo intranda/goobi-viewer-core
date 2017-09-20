@@ -40,6 +40,9 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TocFunctionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TrivialFunctionality;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
@@ -59,7 +62,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         SOLRQUERY,
         PAGELIST,
         COLLECTION,
-        TILEGRID;
+        TILEGRID,
+        TOC;
 
         public static CMSContentItemType getByName(String name) {
             if (name != null) {
@@ -78,12 +82,26 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         return COLLECTION;
                     case "TILEGRID":
                         return TILEGRID;
+                    case "PERIODICAL":
+                        return CMSContentItemType.TOC;
                     default:
                         return null;
                 }
             }
 
             return null;
+        }
+
+        /**
+         * @return
+         */
+        public Functionality createFunctionality(CMSContentItem item) {
+            switch(this) {
+                case TOC: 
+                    return new TocFunctionality(item.getTocPI());
+                default: 
+                    return new TrivialFunctionality();
+            }   
         }
     }
 
@@ -161,6 +179,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /** whether this collection should open with all subcollections expanded. Base levels don't expand */
     @Column(name = "base_collection")
     private String baseCollection = null;
+    
+    @Column(name = "toc_pi")
+    private String tocPI = "";
 
     /**
      * For TileGrid
@@ -179,6 +200,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Column(name = "tile_count")
     private int numberOfTiles = 9;
+    
+    @Transient
+    private Functionality functionality = null;
 
     @Transient
     private CollectionView collection = null;
@@ -195,8 +219,51 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Transient
     private int order = 0;
     
+    /**
+     * 
+     */
+    public CMSContentItem() {
+        // TODO Auto-generated constructor stub
+    }
     
+    public CMSContentItem(CMSContentItem blueprint) {
+        this.setItemId(blueprint.itemId);
+        this.setItemLabel(blueprint.itemLabel);
+        this.setType(blueprint.type);
+        this.setMandatory(blueprint.mandatory);
+        this.setOrder(blueprint.order);
+        this.setHtmlFragment(blueprint.getHtmlFragment());
+        this.setElementsPerPage(blueprint.elementsPerPage);
+        this.setBaseCollection(blueprint.getBaseCollection());
+        this.setCollectionBaseLevels(blueprint.getCollectionBaseLevels());
+        this.setCollectionField(blueprint.getCollectionField());
+        this.setCollectionOpenExpanded(blueprint.isCollectionOpenExpanded());
+        this.setBaseCollection(blueprint.getBaseCollection());
+        this.setMediaItem(blueprint.getMediaItem());
+        this.setPageClassification(blueprint.getPageClassification());
+    }
 
+    /**
+     * @return the functionality
+     */
+    public Functionality getFunctionality() {
+        if(functionality == null) {
+            initFunctionality();
+        }
+        return functionality;
+    }
+    
+    /**
+     * @param type2
+     */
+    public CMSContentItem(CMSContentItemType type) {
+        this.type = type;
+    }
+
+    public void initFunctionality() {
+        this.functionality = getType().createFunctionality(this);
+    }
+    
     /*
      * (non-Javadoc)
      *
@@ -220,21 +287,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Override
     public CMSContentItem clone() {
-        CMSContentItem clone = new CMSContentItem();
-        clone.setItemId(itemId);
-        clone.setItemLabel(itemLabel);
-        clone.setType(type);
-        clone.setMandatory(mandatory);
-        clone.setOrder(order);
-        clone.setHtmlFragment(getHtmlFragment());
-        clone.setElementsPerPage(elementsPerPage);
-        clone.setBaseCollection(getBaseCollection());
-        clone.setCollectionBaseLevels(getCollectionBaseLevels());
-        clone.setCollectionField(getCollectionField());
-        clone.setCollectionOpenExpanded(isCollectionOpenExpanded());
-        clone.setBaseCollection(getBaseCollection());
-        clone.setMediaItem(getMediaItem());
-        clone.setPageClassification(getPageClassification());
+        CMSContentItem clone = new CMSContentItem(this);
         return clone;
     }
 
@@ -643,6 +696,21 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public void setNumberOfTiles(int numberOfTiles) {
         this.numberOfTiles = numberOfTiles;
+    }
+    
+    /**
+     * @return the piPeriodical
+     */
+    public String getTocPI() {
+        return tocPI;
+    }
+    
+    /**
+     * @param piPeriodical the piPeriodical to set
+     */
+    public void setTocPI(String pi) {
+        this.tocPI = pi;
+        initFunctionality();
     }
 
     @Override

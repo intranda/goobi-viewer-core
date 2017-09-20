@@ -341,9 +341,13 @@ public class CmsBean {
      * @return
      */
     public String getPageUrl(Long pageId) {
+        return getPageUrl(pageId, true);
+    }
+    
+    public String getPageUrl(Long pageId, boolean pretty) {
         try {
             CMSPage page = getPage(pageId);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(page.getRelativeUrlPath(true))
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(page.getRelativeUrlPath(pretty))
                     .toString();
         } catch (NullPointerException e) {
             return "pretty:index";

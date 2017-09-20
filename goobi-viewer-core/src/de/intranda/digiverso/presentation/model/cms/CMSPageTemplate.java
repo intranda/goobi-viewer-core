@@ -97,10 +97,10 @@ public class CMSPageTemplate {
                 template.setIconFileName(root.getChildText("icon"));
                 template.setHtmlFileName(root.getChildText("html"));
                 for (Element eleContentItem : root.getChild("content").getChildren("item")) {
-                    CMSContentItem item = new CMSContentItem();
+                    CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
+                    CMSContentItem item = new CMSContentItem(type);
                     item.setItemId(eleContentItem.getAttributeValue("id"));
                     item.setItemLabel(eleContentItem.getAttributeValue("label"));
-                    item.setType(CMSContentItemType.getByName(eleContentItem.getAttributeValue("type")));
                     item.setMandatory(Boolean.valueOf(eleContentItem.getAttributeValue("mandatory")));
                     if (eleContentItem.getAttribute("order") != null) {
                         try {

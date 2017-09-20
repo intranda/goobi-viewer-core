@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -189,7 +190,10 @@ public class TOCElement implements Serializable {
         if (accessPermissionPdf == null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             try {
-                accessPermissionPdf = SearchHelper.checkAccessPermissionByIdentifierAndLogId(topStructPi, logId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
+                accessPermissionPdf = SearchHelper.checkAccessPermissionByIdentifierAndLogId(
+                        topStructPi,
+                        logId,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
                         request);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -211,6 +215,23 @@ public class TOCElement implements Serializable {
         //        }
 
         return thumbnailUrl;
+    }
+
+    public String getThumbnailUrl(int width, int height) {
+        String url = new String(thumbnailUrl);
+        if (StringUtils.isNotBlank(url)) {
+            if (url.contains("width=")) {
+                url = url.replaceAll("width=\\d+", "width=" + width);
+            } else {
+                url = url + "&width=" + width;
+            }
+            if (url.contains("height=")) {
+                url = url.replaceAll("height=\\d+", "height=" + height);
+            } else {
+                url = url + "&height=" + height;
+            }
+        }
+        return url;
     }
 
     /*********************************** Getter and Setter ***************************************/

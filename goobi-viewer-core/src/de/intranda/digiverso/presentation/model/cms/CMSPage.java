@@ -640,6 +640,8 @@ public class CMSPage {
     public void setListPage(int listPage) {
         resetItemData();
         this.listPage = listPage;
+        this.getContentItems().forEach(item -> item.getFunctionality().setPageNo(listPage));
+        
     }
 
     /**
