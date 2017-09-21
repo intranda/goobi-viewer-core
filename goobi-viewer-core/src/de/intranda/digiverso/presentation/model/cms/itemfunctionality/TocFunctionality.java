@@ -90,9 +90,13 @@ public class TocFunctionality implements Functionality {
      * @throws PresentationException 
      */
     private StructElement createDocStruct() throws IndexUnreachableException, PresentationException {
-        long topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(getPiPeriodical());
-        StructElement struct = new StructElement(topDocumentIddoc);
-        return struct;
+        if(StringUtils.isNotBlank(getPi())) {            
+            long topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(getPi());
+            StructElement struct = new StructElement(topDocumentIddoc);
+            return struct;
+        } else {
+            return new StructElement();
+        }
     }
 
     /**
@@ -119,8 +123,8 @@ public class TocFunctionality implements Functionality {
     /**
      * @return the piPeriodical
      */
-    public String getPiPeriodical() {
-        return pi;
+    public String getPi() {
+        return pi == null ? "" : pi;
     }
 
     /* (non-Javadoc)
