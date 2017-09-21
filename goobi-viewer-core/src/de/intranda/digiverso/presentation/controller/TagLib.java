@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.TagCloudBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.rss.RSSFeed;
@@ -219,20 +221,34 @@ public class TagLib {
         return ret;
     }
 
-
     /**
-     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by partnerId).
+     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by a subquery).
      *
      * @param field
-     * @param partnerId
+     * @param subQuery
+     * @param resultLimit
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit) throws PresentationException,
             IndexUnreachableException {
-        // long hitsCount = 0;
+        return getDrillDown(field, subQuery, resultLimit, false);
+    }
 
+    /**
+     * Returns a list of FilterLink elements for the given field over all documents in the index (optionally filtered by a subquery).
+     *
+     * @param field
+     * @param subQuery
+     * @param resultLimit
+     * @param sortDescending If true, the facet items are sorted in a descending order
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit, boolean reverseOrder) throws PresentationException,
+            IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)").append(
                 getDiscriminatorQuery());
@@ -248,9 +264,6 @@ public class TagLib {
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null, Collections.singletonList(field),
                 Collections.singletonList(SolrConstants.IDDOC));
         // TODO Filter with the docstruct whitelist?
-        // if (resp != null) {
-        // hitsCount = resp.getResults().getNumFound();
-        // }
         if (resp != null && resp.getFacetField(field) != null && resp.getFacetField(field).getValues() != null) {
             Map<String, Long> result = new TreeMap<>();
             int resultIndex = 0;
@@ -258,13 +271,18 @@ public class TagLib {
                 if (count.getName().charAt(0) != 1) {
                     // Only non-inverted values
                     result.put(count.getName(), count.getCount());
-                    if(resultLimit > 0 && resultLimit <= ++resultIndex) {
+                    if (resultLimit > 0 && resultLimit <= ++resultIndex) {
                         break;
                     }
                 }
             }
             List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
-            return FacetItem.generateFacetItems(field, result, true, hierarchicalFields.contains(field) ? true : false);
+            Locale locale = null;
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            if (nh != null) {
+                locale = nh.getLocale();
+            }
+            return FacetItem.generateFacetItems(field, result, true, reverseOrder, hierarchicalFields.contains(field) ? true : false, locale);
         }
 
         return Collections.emptyList();

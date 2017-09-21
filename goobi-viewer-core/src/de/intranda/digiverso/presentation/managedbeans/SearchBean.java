@@ -578,9 +578,9 @@ public class SearchBean implements Serializable {
         QueryResponse resp = null;
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
-        for(String fq: facetFilterQueries) {
-            logger.trace("Filter query: {}", fq);
-        }
+        //        for(String fq: facetFilterQueries) {
+        //            logger.trace("Filter query: {}", fq);
+        //        }
         if (currentSearch.getHitsCount() == 0) {
             logger.trace("Final main query: {}", query);
             resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields, Collections.singletonList(
@@ -1954,8 +1954,7 @@ public class SearchBean implements Serializable {
             return downloadReady;
         }
     }
-    
-    
+
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
         String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
         return DataManager.getInstance().getSearchIndex().count(query);
