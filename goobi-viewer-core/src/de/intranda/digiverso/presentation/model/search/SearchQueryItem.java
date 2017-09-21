@@ -214,17 +214,28 @@ public class SearchQueryItem implements Serializable {
         List<String> fields = new ArrayList<>();
         if (ADVANCED_SEARCH_ALL_FIELDS.equals(field)) {
             // Search everywhere
-            fields.add(aggregateHits ? SolrConstants.SUPERDEFAULT : SolrConstants.DEFAULT);
-            fields.add(aggregateHits ? SolrConstants.SUPERFULLTEXT : SolrConstants.FULLTEXT);
+            if (aggregateHits) {
+                // When doing an aggregated search, make sure to include both SUPER and regular fields (because sub-elements don't have the SUPER)
+                fields.add(SolrConstants.SUPERDEFAULT);
+                fields.add(SolrConstants.SUPERFULLTEXT);
+            }
+            fields.add(SolrConstants.DEFAULT);
+            fields.add(SolrConstants.FULLTEXT);
             fields.add(SolrConstants.NORMDATATERMS);
             fields.add(SolrConstants.UGCTERMS);
             fields.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
             fields.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
         } else {
-            if (aggregateHits && (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field))) {
-                fields.add(SolrConstants.SUPERDEFAULT);
-            } else if (aggregateHits && (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field))) {
-                fields.add(SolrConstants.SUPERFULLTEXT);
+            if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
+                if (aggregateHits) {
+                    fields.add(SolrConstants.SUPERDEFAULT);
+                }
+                fields.add(SolrConstants.DEFAULT);
+            } else if (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field)) {
+                if (aggregateHits) {
+                    fields.add(SolrConstants.SUPERFULLTEXT);
+                }
+                fields.add(SolrConstants.FULLTEXT);
             } else if (SolrConstants.OVERVIEWPAGE.equals(field)) {
                 fields.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
                 fields.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);

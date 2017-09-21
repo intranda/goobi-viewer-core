@@ -846,12 +846,12 @@ public class SearchBean implements Serializable {
                     if (phrase.length() > 0) {
                         if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                             if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                                // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                                 sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
-                            } else {
-                                sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                             }
+                            sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
+                            sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR ");
@@ -946,10 +946,12 @@ public class SearchBean implements Serializable {
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                             sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString());
                             sbOuter.append(") OR ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString());
-                        } else {
-                            sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
-                            sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
+                            sbOuter.append(") OR ");
                         }
+                        //                        else {
+                        sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
+                        sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
+                        //                        }
                         sbOuter.append(") OR ").append(SolrConstants.NORMDATATERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString());
