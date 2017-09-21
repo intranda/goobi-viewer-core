@@ -16,20 +16,23 @@
 package de.intranda.digiverso.presentation.servlets.utils;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyContext;
-import com.sun.swing.internal.plaf.synth.resources.synth;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 
 /**
  * @author Florian Alpers
@@ -37,10 +40,15 @@ import com.sun.swing.internal.plaf.synth.resources.synth;
  */
 public class UrlRedirectUtils {
 
+    private static Logger logger = LoggerFactory.getLogger(UrlRedirectUtils.class);
+
     /**
      * 
      */
     private static final String VIEW_REGEX = "https?://.*?/.*?/.*?/";
+    private static final String VIEWERBASE_REGEX = "https?:\\/\\/.*?\\/[^\\/]+";
+    private static final String CMSPAGE_REGEX = "https?://.*?/.*?/cms/.*";
+    private static final String CMSID_REGEX = "https?://.*?/.*?/cms/(.*?)/.*";
     private static final String PREVIOUS_URL = "previousURL";
     private static final String CURRENT_URL = "currentURL";
 
@@ -49,8 +57,11 @@ public class UrlRedirectUtils {
      * current view
      * 
      * @param request
+     * @throws DAOException
      */
-    public synchronized static void setCurrentView(ServletRequest request) {
+    public synchronized static void setCurrentView(final ServletRequest request) {
+        
+        try {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpSession session = httpRequest.getSession();
@@ -61,18 +72,41 @@ public class UrlRedirectUtils {
                 if (context != null && context.getRequestURL() != null) {
                     currentURL = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
                 }
-                if(!currentURL.endsWith(".xhtml")) {                    
+                try {
+                    if (currentURL.matches(CMSPAGE_REGEX)) {
+                        String cmsPageId = getMatch(currentURL, CMSID_REGEX, 1);
+                        if (StringUtils.isNotBlank(cmsPageId)) {
+                            final String requestURL = currentURL;
+                            currentURL = DataManager.getInstance().getDao().getAllCMSPages().stream()
+                                    .filter(cmsPage -> cmsPage.getId().toString().equals(cmsPageId))
+                                    .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getPersistentUrl()))
+                                    .map(CMSPage::getPersistentUrl)
+                                    .map(url -> getMatch(requestURL, VIEWERBASE_REGEX, 0) + "/" + url + "/")
+                                    .findFirst()
+                                    .orElseGet(() -> requestURL);
+                        }
+                    }
+                } catch (DAOException e) {
+                    logger.warn("Unable to map cms url to persistent url ", e);
+                }
+                if (!currentURL.endsWith(".xhtml")) {
                     String previousURL = (String) session.getAttribute(CURRENT_URL);
                     previousURL = previousURL == null ? "" : previousURL;
                     session.setAttribute(CURRENT_URL, currentURL);
+                    logger.trace("Set session attribute {} to {}", CURRENT_URL, currentURL);
                     if (isDifferentView(previousURL, currentURL)) {
                         session.setAttribute(PREVIOUS_URL, previousURL);
+                        logger.trace("Set session attribute {} to {}", PREVIOUS_URL, previousURL);
                     }
                 }
             }
         }
+        } catch(Throwable e) {
+            //catch all throwables to avoid constant redirects to error
+            logger.error("Error saving page url", e);
+        }
     }
-    
+
     public synchronized static String getPreviousView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -84,9 +118,9 @@ public class UrlRedirectUtils {
         }
         return "";
     }
-    
+
     public synchronized static void redirectToUrl(String url) throws IOException {
-        
+
         FacesContext.getCurrentInstance().getExternalContext().getFlash().setRedirect(true);
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
@@ -109,9 +143,9 @@ public class UrlRedirectUtils {
      * @return
      */
     private static boolean isDifferentView(String previousURL, String currentURL) {
-            previousURL = getMatch(previousURL, VIEW_REGEX);
-            currentURL = getMatch(currentURL, VIEW_REGEX);
-            return !previousURL.equals(currentURL);
+        previousURL = getMatch(previousURL, VIEW_REGEX, 0);
+        currentURL = getMatch(currentURL, VIEW_REGEX, 0);
+        return !previousURL.equals(currentURL);
     }
 
     /**
@@ -119,13 +153,13 @@ public class UrlRedirectUtils {
      * @param string
      * @return
      */
-    private static String getMatch(String text, String pattern) {
+    private static String getMatch(String text, String pattern, int group) {
         Pattern p = Pattern.compile(pattern);
         Matcher matcher = p.matcher(text);
         if (matcher.find()) {
-            return matcher.group();
+            return matcher.group(group);
         }
         return "";
     }
-    
+
 }
