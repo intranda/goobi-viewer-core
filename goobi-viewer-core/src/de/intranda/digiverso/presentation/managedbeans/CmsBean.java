@@ -269,9 +269,10 @@ public class CmsBean {
         } else {
             //remove page with content items that don't match the template's content items
             for (CMSContentItem templateItem : template.getContentItems()) {
-                if (page.getContentItem(templateItem.getItemId()) == null) {
-                    logger.warn("Found template item that doesn't exists in page");
-                    pageValid = false;
+                if (!page.hasContentItem(templateItem.getItemId())) {
+                    page.addContentItem(new CMSContentItem(templateItem));
+//                    logger.warn("Found template item that doesn't exists in page");
+//                    pageValid = false;
                 }
             }
         }
