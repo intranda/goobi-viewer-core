@@ -256,6 +256,8 @@ public class CMSPageLanguageVersion {
 				return;
 			}
 		}
+		item.setOwnerPageLanguageVersion(this);
 		contentItems.add(item);
+		generateCompleteContentItemList();
 	}
 }
