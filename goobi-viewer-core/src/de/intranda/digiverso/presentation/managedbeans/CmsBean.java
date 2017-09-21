@@ -689,6 +689,9 @@ public class CmsBean {
     }
 
     public CMSPage getCurrentPage() {
+        if(currentPage == null) {
+            return new CMSPage();
+        }
         return currentPage;
     }
 
