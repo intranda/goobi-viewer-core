@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -154,7 +156,7 @@ public class CMSPageLanguageVersion {
 	 *            the title to set
 	 */
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = Normalizer.normalize(title, Form.NFC);
 	}
 
 	/**
@@ -169,7 +171,7 @@ public class CMSPageLanguageVersion {
 	 *            the menuTitle to set
 	 */
 	public void setMenuTitle(String menuTitle) {
-		this.menuTitle = menuTitle;
+		this.menuTitle = Normalizer.normalize(menuTitle, Form.NFC);
 	}
 
 	/**
