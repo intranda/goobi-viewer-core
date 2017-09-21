@@ -247,7 +247,7 @@ public class TagLib {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit, boolean reverseOrder) throws PresentationException,
+    public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit, Boolean reverseOrder) throws PresentationException,
             IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
         sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)").append(
@@ -282,7 +282,7 @@ public class TagLib {
             if (nh != null) {
                 locale = nh.getLocale();
             }
-            return FacetItem.generateFacetItems(field, result, true, reverseOrder, hierarchicalFields.contains(field) ? true : false, locale);
+            return FacetItem.generateFacetItems(field, result, true, reverseOrder == null ? false : reverseOrder, hierarchicalFields.contains(field) ? true : false, locale);
         }
 
         return Collections.emptyList();

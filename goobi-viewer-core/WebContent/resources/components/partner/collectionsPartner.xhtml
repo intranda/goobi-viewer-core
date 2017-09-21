@@ -16,7 +16,7 @@
 	<f:view contentType="text/html" encoding="utf-8">
 		<div class="men_elem_wrapper">
 			<ui:repeat
-				value="#{facelets:getDrillDown('DC', searchBean.docstrctWhitelistFilterSuffix, 0)}"
+				value="#{facelets:getDrillDown('DC', searchBean.docstrctWhitelistFilterSuffix, 0, false)}"
 				var="filterLink">
 				<div class="men_elem_wrapp">
 					<h:outputLink
