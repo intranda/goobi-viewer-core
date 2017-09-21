@@ -32,7 +32,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 @FacesValidator("piValidator")
 public class PIValidator implements Validator {
 
-    private static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@' };
+    private static final char[] ILLEGAL_CHARS = { '!', '?', '/', '\\', ':', ';', '(', ')', '@', '"', '\'' };
 
     /* (non-Javadoc)
      * @see javax.faces.validator.Validator#validate(javax.faces.context.FacesContext, javax.faces.component.UIComponent, java.lang.Object)
