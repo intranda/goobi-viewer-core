@@ -35,7 +35,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     @Column(name = "additional_query")
     private String additionalQuery = "";
 
-    @Column(name = "descending_order", nullable = false)
+    @Column(name = "descending_order")
     private boolean descendingOrder = false;
 
     /**
