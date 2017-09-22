@@ -407,7 +407,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @param htmlFragment the htmlFragment to set
      */
     public void setHtmlFragment(String htmlFragment) {
-        this.htmlFragment = Normalizer.normalize(htmlFragment, Form.NFC);
+        this.htmlFragment = htmlFragment != null ? Normalizer.normalize(htmlFragment, Form.NFC) : "";
     }
 
     /**

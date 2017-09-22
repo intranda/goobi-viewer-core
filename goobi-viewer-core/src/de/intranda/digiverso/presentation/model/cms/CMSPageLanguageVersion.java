@@ -156,7 +156,7 @@ public class CMSPageLanguageVersion {
 	 *            the title to set
 	 */
 	public void setTitle(String title) {
-		this.title = Normalizer.normalize(title, Form.NFC);
+		this.title = title != null ? Normalizer.normalize(title, Form.NFC) : title;
 	}
 
 	/**
@@ -171,7 +171,7 @@ public class CMSPageLanguageVersion {
 	 *            the menuTitle to set
 	 */
 	public void setMenuTitle(String menuTitle) {
-		this.menuTitle = Normalizer.normalize(menuTitle, Form.NFC);
+		this.menuTitle = menuTitle != null ? Normalizer.normalize(menuTitle, Form.NFC) : "";
 	}
 
 	/**

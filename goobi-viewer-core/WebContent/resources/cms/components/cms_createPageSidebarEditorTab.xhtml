@@ -107,8 +107,8 @@
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_sortOrder}:</label>
 																			<h:selectOneRadio id="sortOrderRadioTable" value="#{element.descendingOrder}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																				<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="false"></f:selectItem>
-																				<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="true"></f:selectItem>
+																				<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="#{false}"></f:selectItem>
+																				<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="#{true}"></f:selectItem>
 																			</h:selectOneRadio>
 																		</div>
 																	</h:panelGroup>
@@ -189,8 +189,8 @@
 								                                        <div class="form-group">
 																			<label>#{msg.cms_sidebarElement_sortOrder}:</label>
 																			<h:selectOneRadio id="sortOrderRadioTable" value="#{element.descendingOrder}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																				<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="false"></f:selectItem>
-																				<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="true"></f:selectItem>
+																				<f:selectItem id="select_ascending" itemLabel="#{msg.cms_sidebarElement_sortAscending}" itemValue="#{false}"></f:selectItem>
+																				<f:selectItem id="select_descending" itemLabel="#{msg.cms_sidebarElement_sortDescending}" itemValue="#{true}"></f:selectItem>
 																			</h:selectOneRadio>
 																		</div>
 								                                    </h:panelGroup>

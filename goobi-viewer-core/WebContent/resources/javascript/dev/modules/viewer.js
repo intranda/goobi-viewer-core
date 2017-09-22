@@ -6007,12 +6007,24 @@
             console.log( 'cmsJS.sortableList _handleBeforeDropFromAvailable: ui - ', ui );
         }
         
-        var item = $( ui.item );
-        var firstCheckbox = item.find( "td input" ).get( 0 );
-        var secondCheckbox = item.find( "td input" ).get( 1 );
-        if ( firstCheckbox && secondCheckbox && !$( firstCheckbox ).prop( 'checked' ) && !$( secondCheckbox ).prop( 'checked' ) ) {
-            $( firstCheckbox ).prop( 'checked', true );
-        }
+        var $item = $( ui.item );
+        
+        var $radioMenues = $item.find("td");
+        $radioMenues.each(function(index, element) {
+        	var $checkboxes = $(element).find("input");
+        	if($checkboxes.length > 0) {
+        		var anychecked = false;
+        		$checkboxes.each(function(index, element) {
+        			if($(element).prop('checked')) {
+        				anychecked = true;
+        				return false;
+        			}
+        		})
+        		if(!anychecked) {
+        			$($checkboxes.get(0)).prop('checked', true);
+        		}
+        	}
+        })
         if ( _allowMultipleOccurances && item.parent().attr( "id" ) === "visibleItemList" ) {
             item.clone().appendTo( $( "#availableItemList" ) );
         }
