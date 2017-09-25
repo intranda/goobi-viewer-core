@@ -360,6 +360,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should add MD fields that contain terms from DEFAULT
      * @should not add duplicate values
      * @should not add ignored fields
+     * @should not add field values that equal the label
      * @should translate configured field values correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {

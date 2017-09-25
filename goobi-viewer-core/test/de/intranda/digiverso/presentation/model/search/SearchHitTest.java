@@ -49,7 +49,7 @@ public class SearchHitTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
-            searchTerms.put("MD_TITLE", terms);
+            searchTerms.put("MD_SUBTITLE", terms);
             terms.add("foo");
             terms.add("bar");
         }
@@ -62,14 +62,15 @@ public class SearchHitTest {
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
         doc.addField("MD_TITLE", "FROM FOO TO BAR");
+        doc.addField("MD_SUBTITLE", "FROM BAR TO FOO");
         doc.addField("MD_2", "bla blup");
         doc.addField("MD_3", "none of the above");
 
         SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null, null);
         Assert.assertNotNull(hit);
         Assert.assertEquals(2, hit.getFoundMetadata().size());
-        Assert.assertEquals("Title", hit.getFoundMetadata().get(0).getOne());
-        Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>", hit
+        Assert.assertEquals("Subtitle", hit.getFoundMetadata().get(0).getOne());
+        Assert.assertEquals("FROM <span class=\"search-list--highlight\">BAR</span> TO <span class=\"search-list--highlight\">FOO</span>", hit
                 .getFoundMetadata().get(0).getTwo());
         Assert.assertEquals("MD_2", hit.getFoundMetadata().get(1).getOne());
         Assert.assertEquals("bla <span class=\"search-list--highlight\">blup</span>", hit.getFoundMetadata().get(1).getTwo());
@@ -159,6 +160,32 @@ public class SearchHitTest {
 
     /**
      * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set)
+     * @verifies not add field values that equal the label
+     */
+    @Test
+    public void populateFoundMetadata_shouldNotAddFieldValuesThatEqualTheLabel() throws Exception {
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        {
+            Set<String> terms = new HashSet<>();
+            searchTerms.put(SolrConstants.DEFAULT, terms);
+            terms.add("foo");
+            terms.add("bar");
+            terms.add("blup");
+        }
+
+        SolrDocument doc = new SolrDocument();
+        doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField("MD_TITLE", "FROM FOO TO BAR"); // do not use MD_TITLE because values == label will be skipped
+        doc.addField("MD_2", "bla blup");
+
+        SearchHit hit = SearchHit.createSearchHit(doc, null, Locale.ENGLISH, null, searchTerms, null, false, null, null);
+        Assert.assertNotNull(hit);
+        Assert.assertEquals(1, hit.getFoundMetadata().size());
+        Assert.assertEquals("MD_2", hit.getFoundMetadata().get(0).getOne());
+    }
+
+    /**
+     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set)
      * @verifies translate configured field values correctly
      */
     @Test
@@ -177,6 +204,7 @@ public class SearchHitTest {
 
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.IDDOC, "1");
+        doc.addField(SolrConstants.TITLE, "title for label");
         doc.addField(SolrConstants.DC, "admin");
         doc.addField(SolrConstants.DOCSTRCT, "monograph");
 
