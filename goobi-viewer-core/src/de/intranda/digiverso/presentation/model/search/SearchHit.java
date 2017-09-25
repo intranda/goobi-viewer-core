@@ -405,6 +405,10 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (doc.containsKey(termsFieldName)) {
                         List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, termsFieldName);
                         for (String fieldValue : fieldValues) {
+                            // Skip values that are equal to the hit label
+                            if (fieldValue.equals(browseElement.getLabel())) {
+                                continue;
+                            }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields
