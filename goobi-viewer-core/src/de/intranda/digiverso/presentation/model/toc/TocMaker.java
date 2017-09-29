@@ -298,7 +298,7 @@ public class TocMaker {
                 }
                 
                 String footerIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-                String footerId = (String) doc.getFieldValue(footerIdField);
+                String footerId = getFirstFieldValue(doc, footerIdField);
 
                 int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
                 int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
@@ -426,7 +426,7 @@ public class TocMaker {
                 }
                 
                 String footerIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-                String footerId = (String) volumeDoc.getFieldValue(footerIdField);
+                String footerId = getFirstFieldValue(volumeDoc, footerIdField);
 
                 String docStructType = (String) volumeDoc.getFieldValue(SolrConstants.DOCSTRCT);
                 TOCElement tocElement = new TOCElement(StringEscapeUtils.unescapeHtml(volumeLabel), "1", null, volumeIddoc, volumeLogId, 1,
@@ -468,7 +468,7 @@ public class TocMaker {
         }
         // Add anchor document
         String footerIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-        String footerId = (String) anchorDoc.getFieldValue(footerIdField);
+        String footerId = getFirstFieldValue(anchorDoc, footerIdField);
         ret.get(TOC.DEFAULT_GROUP).add(0, new TOCElement(label, null, null, String.valueOf(iddoc), logId, 0, topStructPiLocal, null,
                 sourceFormatPdfAllowed, true, mimeType, anchorDocstructType, footerId));
 
@@ -595,7 +595,7 @@ public class TocMaker {
         }
 
         String footerIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-        String footerId = (String) doc.getFieldValue(footerIdField);
+        String footerId = getFirstFieldValue(doc, footerIdField);
         
         TOCElement tocElement = new TOCElement(label, pageNo, pageNoLabel, iddoc, logId, level, pi, null, sourceFormatPdfAllowed, isAnchor, mimeType,
                 docstructType, footerId);
@@ -614,6 +614,30 @@ public class TocMaker {
                 }
             }
         }
+    }
+
+    /**
+     * @param doc
+     * @param footerIdField
+     * @return
+     */
+    public static String getFirstFieldValue(SolrDocument doc, String footerIdField) {
+        Object object =  doc.getFieldValue(footerIdField);
+        if(object == null) {
+            return null;
+        }
+        if(object instanceof String) {
+            return (String) object;
+        } else if(object instanceof List) {
+            List list = (List)object;
+            if(list.isEmpty()) {
+                return null;
+            }
+            if(list.get(0) instanceof String) {
+                return (String) list.get(0);
+            }
+        }
+        throw new IllegalArgumentException("Unable to parse string result from " + object);
     }
 
     /**
