@@ -59,7 +59,7 @@ The installation can be done on any operating system as the software is based on
 
 ## Release History
 Detailed release note descriptions can be found using this URL:  
-<http://www.intranda.com/en/digiverso/intranda-viewer/history/>
+<http://www.intranda.com/en/digiverso/goobi-viewer/history/>
 
 ## Developer team
 intranda GmbH  
