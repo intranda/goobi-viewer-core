@@ -66,6 +66,7 @@ public class TOCElement implements Serializable {
     private boolean visible = true;
     private int id = 0;
     private int parentId = 0;
+    private String footerId = "";
     /** Element is expanded or collapsed. */
     private boolean expanded = false;
     /** Element has child elements. TODO: this might be unnecessary */
@@ -91,7 +92,7 @@ public class TOCElement implements Serializable {
      * @should set correct view url for given docStructType
      */
     public TOCElement(String label, String pageNo, String pageNoLabel, String iddoc, String logId, int level, String topStructPi, String thumbnailUrl,
-            boolean sourceFormatPdfAllowed, boolean anchorOrGroup, String recordMimeType, String docStructType) {
+            boolean sourceFormatPdfAllowed, boolean anchorOrGroup, String recordMimeType, String docStructType, String footerId) {
         this.label = label;
         this.pageNo = pageNo;
         this.pageNoLabel = pageNoLabel;
@@ -103,6 +104,7 @@ public class TOCElement implements Serializable {
         this.sourceFormatPdfAllowed = sourceFormatPdfAllowed;
         this.anchorOrGroup = anchorOrGroup;
         this.recordMimeType = recordMimeType;
+        this.footerId = footerId;
 
         pageType = PageType.determinePageType(docStructType, recordMimeType, anchorOrGroup, true, false, false);
         view = pageType.getName();
@@ -173,9 +175,16 @@ public class TOCElement implements Serializable {
         String name = label;
         name = name.replaceAll("[\\s]", "_");
         name = name.replaceAll("[\\W]", "") + ".pdf";
-        String url = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=")
-                .append(topStructPi).append(".xml&targetFileName=").append(name).append("&divID=").append(logId).toString();
-        return url;
+        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=")
+                .append(topStructPi).append(".xml&targetFileName=").append(name).append("&divID=").append(logId);
+        if(StringUtils.isNotBlank(getFooterId())) {
+            urlBuilder.append("&watermarkId=").append(getFooterId());
+        }
+        return urlBuilder.toString();
+    }
+    
+    private String getFooterId() {
+        return this.footerId;
     }
 
     /**
