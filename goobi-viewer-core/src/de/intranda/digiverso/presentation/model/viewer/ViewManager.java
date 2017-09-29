@@ -111,7 +111,7 @@ public class ViewManager implements Serializable {
     private String opacUrl = null;
     private String contextObject = null;
     private List<String> versionHistory = null;
-    private PageOrientation firstPageOrientation = PageOrientation.left;
+    private PageOrientation firstPageOrientation = PageOrientation.right;
     private boolean doublePageMode = false;
     private int firstPdfPage;
     private int lastPdfPage;
