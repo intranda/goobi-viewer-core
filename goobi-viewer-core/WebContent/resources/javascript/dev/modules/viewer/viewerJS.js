@@ -323,6 +323,12 @@ var viewerJS = ( function() {
             // "ZLB-Hellblau", "28779f", "ZLB-Blau" ];
         }
         
+        if ( currentPage === 'overview' ) {
+            // activate menubar
+            viewerJS.tinyConfig.menubar = true;
+            viewerJS.tinyMce.overview();
+        }
+        
         // AJAX Loader Eventlistener for tinyMCE
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {
@@ -331,41 +337,7 @@ var viewerJS = ( function() {
                 switch ( ajaxstatus ) {
                     case "success":
                         if ( currentPage === 'overview' ) {
-                            // activate menubar
-                            viewerJS.tinyConfig.menubar = true;
-                            
-                            // check if description or publication editing is enabled and
-                            // set fullscreen options
-                            if ( $( '.overview__description-editor' ).length > 0 ) {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__publication-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
-                            else {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__description-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
+                            viewerJS.tinyMce.overview();
                         }
                         
                         viewerJS.tinyMce.init( viewerJS.tinyConfig );
