@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.meterware.pseudoserver.HttpRequest;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 
 /**
@@ -47,11 +49,12 @@ public class HttpResponseFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-
+        
         if (preventProxyCaching) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             //            if (httpRequest.getRequestURI().contains("OpenLayers"))
             //            logger.debug(httpRequest.getRequestURI());
+            
 
             // Only disable caching if the URI doesn't match the regex
             Pattern p = Pattern.compile(alwaysCacheRegex);

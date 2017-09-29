@@ -7,7 +7,7 @@
     <composite:interface />
 
     <composite:implementation>
-        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMember} || #{activeDocumentBean.viewManager.topDocument.anchorChild}">
+        <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMember or activeDocumentBean.viewManager.topDocument.anchorChild}">
             <div id="widgetConvolutes" class="widget widget-convolutes">
                 <!-- Group (convolutes, etc.) listing -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.topDocument.groupMember}">

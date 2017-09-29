@@ -644,12 +644,12 @@
 		<property name="enableCrowdsourcing" value="false" />
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://haab-digital.klassik-stiftung.de/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
+		<property name="server.url" value="http://haab-digital.klassik-stiftung.de/viewer2/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fhaab-digital.klassik-stiftung.de%2Fviewer2%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="haab2" />
+		<property name="theme" value="haab" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
@@ -1162,7 +1162,7 @@
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fviewertest.fritz.box%2Freference%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql://db01.fritz.box:3306/viewer" />
-		<property name="theme" value="reference2" />
+		<property name="theme" value="reference" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
@@ -1178,7 +1178,7 @@
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fmesse.intranda.local%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="reference2" />
+		<property name="theme" value="reference" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
@@ -1209,7 +1209,7 @@
 		<property name="solr.url" value="http://G2GURL/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2FG2GURL%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
-		<property name="theme" value="reference2" />
+		<property name="theme" value="reference" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
@@ -1226,6 +1226,21 @@
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Forka.bibliothek.uni-kassel.de%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql://127.0.0.1/viewer" />
 		<property name="theme" value="grimm" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="lux">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="https://lux01.intranda.com/viewer/" />
+		<property name="solr.url" value="https://lux01.intranda.com/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Flux01.intranda.com%2Fviewer%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer" />
+		<property name="theme" value="reference" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />

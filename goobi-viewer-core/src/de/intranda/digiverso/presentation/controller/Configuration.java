@@ -1038,6 +1038,15 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataTranslateFields() {
+        return getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+    }
+
+    /**
+     * 
      * @param field
      * @return
      * @should return correct value
@@ -1624,15 +1633,6 @@ public final class Configuration extends AbstractConfiguration {
 
         logger.trace("Tree view for {} not allowed", docStructType);
         return false;
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isCollectionDrilldownEnabled() {
-        return getLocalBoolean("search.drillDown.collectionDrilldownEnabled", true);
     }
 
     /**

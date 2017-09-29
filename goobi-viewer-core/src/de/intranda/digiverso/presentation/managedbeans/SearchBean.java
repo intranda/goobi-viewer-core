@@ -578,9 +578,9 @@ public class SearchBean implements Serializable {
         QueryResponse resp = null;
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
-        for(String fq: facetFilterQueries) {
-            logger.trace("Filter query: {}", fq);
-        }
+        //        for(String fq: facetFilterQueries) {
+        //            logger.trace("Filter query: {}", fq);
+        //        }
         if (currentSearch.getHitsCount() == 0) {
             logger.trace("Final main query: {}", query);
             resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields, Collections.singletonList(
@@ -846,12 +846,12 @@ public class SearchBean implements Serializable {
                     if (phrase.length() > 0) {
                         if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
                             if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                                // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                                 sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
-                            } else {
-                                sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                             }
+                            sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
+                            sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR ");
@@ -946,10 +946,12 @@ public class SearchBean implements Serializable {
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                             sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString());
                             sbOuter.append(") OR ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString());
-                        } else {
-                            sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
-                            sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
+                            sbOuter.append(") OR ");
                         }
+                        //                        else {
+                        sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
+                        sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
+                        //                        }
                         sbOuter.append(") OR ").append(SolrConstants.NORMDATATERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString());
@@ -1469,10 +1471,6 @@ public class SearchBean implements Serializable {
         currentHitIndex = -1;
     }
 
-    public boolean isCollectionDrilldownEnabled() {
-        return DataManager.getInstance().getConfiguration().isCollectionDrilldownEnabled();
-    }
-
     public boolean isSortingEnabled() {
         return DataManager.getInstance().getConfiguration().isSortingEnabled();
     }
@@ -1957,6 +1955,11 @@ public class SearchBean implements Serializable {
         } catch (NullPointerException e) {
             return downloadReady;
         }
+    }
+
+    public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
+        String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
+        return DataManager.getInstance().getSearchIndex().count(query);
     }
 
 }

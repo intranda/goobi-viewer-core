@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -554,15 +555,17 @@ public class SearchFacets {
     /**
      * 
      * @param facetQuery
+     * @param
      * @return
      * @should remove facet correctly
+     * @should remove facet containing reserved chars
      */
-    public String removeFacetAction(String facetQuery, String ret) {
+    public String removeFacetAction(final String facetQuery, final String ret) {
         // facetQuery = facetQuery.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT);
         logger.trace("removeFacetAction: {}", facetQuery);
         String currentFacetString = generateFacetPrefix(currentFacets, false);
         if (currentFacetString.contains(facetQuery)) {
-            currentFacetString = currentFacetString.replaceAll("(" + facetQuery + ")(?=;|(?=/))", "").replace(";;;;", ";;");
+            currentFacetString = currentFacetString.replaceAll("(" + Pattern.quote(facetQuery) + ")(?=;|(?=/))", "").replace(";;;;", ";;");
             setCurrentFacetString(currentFacetString);
         }
 

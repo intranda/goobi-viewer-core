@@ -426,6 +426,86 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isSidebarTocTreeView();
     }
 
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarOverviewLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarPageLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarPreviewLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarPreviewLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarTocLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarCalendarLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarMetadataLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarThumbsLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarFulltextLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarDfgLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarOpacLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
+    }
+
     public boolean isTocTreeView(String docStructType) {
         return DataManager.getInstance().getConfiguration().isTocTreeView(docStructType);
     }
@@ -632,8 +712,12 @@ public class ConfigurationBean implements Serializable {
     public boolean isSearchExcelExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
-    
-    public boolean isDoublePageModeEnabled()  {
+
+    public boolean isDoublePageModeEnabled() {
         return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
+    }
+    
+    public String getIiifApiUrl() {
+        return DataManager.getInstance().getConfiguration().getIiifUrl();
     }
 }

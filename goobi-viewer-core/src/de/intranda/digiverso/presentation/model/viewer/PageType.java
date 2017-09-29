@@ -77,6 +77,27 @@ public enum PageType {
     public boolean isHandledWithCms() {
         return this.handling.equals(PageTypeHandling.cms);
     }
+    
+    public boolean isCmsPage() {
+        switch (this) {
+            case editContent:
+            case editHistory:
+            case editOcr:
+            case viewCalendar:
+            case viewFullscreen:
+            case viewFulltext:
+            case viewImage:
+            case viewMetadata:
+            case viewOverview:
+            case viewPreview:
+            case viewReadingMode:
+            case viewThumbs:
+            case viewToc:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     /**
      * 

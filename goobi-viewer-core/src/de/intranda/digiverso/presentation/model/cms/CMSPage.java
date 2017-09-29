@@ -93,6 +93,9 @@ public class CMSPage {
 
     @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
+    
+    @Column(name = "subtheme_discriminator", nullable = true)
+    private String subThemeDiscriminatorValue = null;    
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -446,6 +449,20 @@ public class CMSPage {
     public void setPageSorting(Long pageSorting) {
         this.pageSorting = pageSorting;
     }
+    
+    /**
+     * @return the subThemeDiscriminatorValue
+     */
+    public String getSubThemeDiscriminatorValue() {
+        return subThemeDiscriminatorValue;
+    }
+    
+    /**
+     * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
+     */
+    public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
+        this.subThemeDiscriminatorValue = subThemeDiscriminatorValue;
+    }
 
     public String getMediaName(String contentId) {
         CMSMediaItemMetadata metadata = getMediaMetadata(contentId);
@@ -623,6 +640,8 @@ public class CMSPage {
     public void setListPage(int listPage) {
         resetItemData();
         this.listPage = listPage;
+        this.getContentItems().forEach(item -> item.getFunctionality().setPageNo(listPage));
+        
     }
 
     /**
@@ -735,4 +754,25 @@ public class CMSPage {
         return "cms/" + getId() + "/";
     }
 
+    public void addContentItem(CMSContentItem item) {
+        if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+            getLanguageVersions().stream()
+            .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE)
+            .forEach(lang -> lang.addContentItem(item));
+        } else {
+            getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+        }
+    }
+
+    /**
+     * @param itemId
+     * @return
+     */
+    public boolean hasContentItem(final String itemId) {
+        return getLanguageVersions().stream()
+                .map(lang -> lang.getContentItem(itemId))
+                .filter(item -> item != null)
+                .count() > 0;
+    }
+    
 }

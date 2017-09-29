@@ -137,6 +137,7 @@ public final class SearchHelper {
             logger.trace("params: {}", params.toString());
         }
         Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         for (SolrDocument doc : resp.getResults()) {
@@ -163,7 +164,8 @@ public final class SearchHelper {
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields);
+            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields,
+                    translateFields);
             ret.add(hit);
         }
 
@@ -198,6 +200,7 @@ public final class SearchHelper {
             return new ArrayList<>();
         }
         Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         for (SolrDocument doc : resp.getResults()) {
@@ -205,7 +208,7 @@ public final class SearchHelper {
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
-            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields);
+            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields);
             ret.add(hit);
             hit.addOverviewPageChild();
 
@@ -1360,18 +1363,21 @@ public final class SearchHelper {
      * @param searchTerms
      * @param fulltext
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
+     * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @return
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
+     * @should return multiple match fragments correctly
      */
-    public static String truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength) {
+    public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
-        StringBuilder sbFulltextFragment = new StringBuilder();
+        List<String> ret = new ArrayList<>();
+//        StringBuilder sbFulltextFragment = new StringBuilder();
 
         String fulltextFragment = "";
 
@@ -1390,13 +1396,13 @@ public final class SearchHelper {
                     fulltextFragment += " ";
                     break;
                 }
-                int indexOfTerm = fulltext.toLowerCase().indexOf(searchTerm.toLowerCase());
-                if (indexOfTerm >= 0) {
+                Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
+                while (m.find()) {
+                    int indexOfTerm = m.start();
 
                     // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
                     fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
-                    // indexOfTerm);
+                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm, indexOfTerm);
 
                     indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
                     int indexOfSpace = fulltextFragment.indexOf(' ');
@@ -1415,8 +1421,21 @@ public final class SearchHelper {
                         fulltextFragment = applyHighlightingToPhrase(fulltextFragment, searchTerm);
                         fulltextFragment = replaceHighlightingPlaceholders(fulltextFragment);
                     }
+                    if (StringUtils.isNotBlank(fulltextFragment)) {
+                        // Check for unclosed HTML tags
+                        int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
+                        int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
+                        if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                            fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                        }
+                        ret.add(fulltextFragment);
+                    }
+                    if (firstMatchOnly) {
+                        break;
+                    }
                 }
             }
+
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
             if (StringUtils.isEmpty(fulltextFragment)) {
                 if (fulltext.length() > 200) {
@@ -1424,6 +1443,7 @@ public final class SearchHelper {
                 } else {
                     fulltextFragment = fulltext;
                 }
+                ret.add(fulltextFragment);
             }
         } else {
             if (fulltext.length() > 200) {
@@ -1431,21 +1451,18 @@ public final class SearchHelper {
             } else {
                 fulltextFragment = fulltext;
             }
-        }
-
-        if (StringUtils.isNotBlank(fulltextFragment)) {
-            // Check for unclosed HTML tags
-            int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
-            int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
-            if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
-                fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+            if (StringUtils.isNotBlank(fulltextFragment)) {
+                // Check for unclosed HTML tags
+                int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
+                int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
+                if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                    fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                }
+                ret.add(fulltextFragment);
             }
-            // Add prefix + suffix
-            // sbFulltextFragment.append("[...] ").append(fulltextFragment).append(" [...]");
-            sbFulltextFragment.append(fulltextFragment);
         }
 
-        return sbFulltextFragment.toString();
+        return ret;
     }
 
     /**
@@ -1956,9 +1973,6 @@ public final class SearchHelper {
         if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
             facetFields.add(SolrConstants.GROUPFIELD);
         }
-        // if (DataManager.getInstance().getConfiguration().isCollectionDrilldownEnabled()) {
-        // facetFields.add(LuceneConstants.FACET_DC);
-        // }
         for (String field : DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields()) {
             if (!facetFields.contains(field)) {
                 facetFields.add(field);

@@ -269,9 +269,10 @@ public class CmsBean {
         } else {
             //remove page with content items that don't match the template's content items
             for (CMSContentItem templateItem : template.getContentItems()) {
-                if (page.getContentItem(templateItem.getItemId()) == null) {
-                    logger.warn("Found template item that doesn't exists in page");
-                    pageValid = false;
+                if (!page.hasContentItem(templateItem.getItemId())) {
+                    page.addContentItem(new CMSContentItem(templateItem));
+//                    logger.warn("Found template item that doesn't exists in page");
+//                    pageValid = false;
                 }
             }
         }
@@ -341,9 +342,13 @@ public class CmsBean {
      * @return
      */
     public String getPageUrl(Long pageId) {
+        return getPageUrl(pageId, true);
+    }
+    
+    public String getPageUrl(Long pageId, boolean pretty) {
         try {
             CMSPage page = getPage(pageId);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(page.getRelativeUrlPath(true))
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(page.getRelativeUrlPath(pretty))
                     .toString();
         } catch (NullPointerException e) {
             return "pretty:index";
@@ -685,6 +690,9 @@ public class CmsBean {
     }
 
     public CMSPage getCurrentPage() {
+        if(currentPage == null) {
+            return new CMSPage();
+        }
         return currentPage;
     }
 
@@ -692,15 +700,9 @@ public class CmsBean {
         this.currentPage = currentPage;
         if (currentPage != null) {
             this.currentPage.setListPage(1);
+            BeanUtils.getNavigationHelper().setCmsPage(true);
             logger.trace("Set current cms page to " + this.currentPage.getMenuTitle());
         }
-        // if
-        // (DataManager.getInstance().getDao().getCMSPage(currentPage.getId())
-        // != null) {
-        // this.currentPage =
-        // DataManager.getInstance().getDao().getCMSPage(currentPage.getId());
-        // }
-        // }
     }
 
     public void updatePage() {
@@ -842,7 +844,12 @@ public class CmsBean {
      */
     public String searchAction(CMSContentItem item) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("searchAction");
-        if (searchBean != null && item != null && item.getSolrQuery() != null) {
+        if (searchBean == null) {
+            logger.error("Cannot search: SearchBean is null");
+            return "";
+        }
+        if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
+            searchBean.resetSearchResults();
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setExactSearchStringResetGui(item.getSolrQuery());
@@ -853,11 +860,33 @@ public class CmsBean {
             //            searchBean.getFacets().setCurrentFacetString();
             //            searchBean.getFacets().setCurrentCollection();
             searchBean.newSearch();
-        } else {
-            logger.error("cannot search, SearchBean null: {}, item null: {}", searchBean == null, item == null);
         }
+        if (item == null) {
+            logger.error("Cannot search: item is null");
+            searchBean.resetSearchResults();
+            return "";
+        }
+        if (StringUtils.isBlank(item.getSolrQuery())) {
+            searchBean.resetSearchResults();
+            return "";
+        }
+        
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+        searchBean.setHitsPerPage(item.getElementsPerPage());
+        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+        searchBean.setCurrentPage(item.getListPage());
+        if (item.getSolrSortFields() != null) {
+            searchBean.setSortString(item.getSolrSortFields());
+        }
+        //            searchBean.getFacets().setCurrentFacetString();
+        //            searchBean.getFacets().setCurrentCollection();
+        searchBean.newSearch();
 
         return "";
+    }
+
+    public boolean hasSearchResults() {
+        return searchBean != null && searchBean.getCurrentSearch() != null && searchBean.getCurrentSearch().getHitsCount() > 0;
     }
 
     /**
@@ -1151,5 +1180,15 @@ public class CmsBean {
             }
         }
         return null;
+    }
+    
+    public List<String> getSubThemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
+        String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+        if(StringUtils.isNotBlank(subThemeDiscriminatorField)) {    
+            subThemeDiscriminatorField = subThemeDiscriminatorField + "_UNTOKENIZED";
+            List<String> values = SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
+            return values;
+        }
+        return Collections.EMPTY_LIST;
     }
 }

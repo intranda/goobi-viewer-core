@@ -314,6 +314,12 @@
             // "ZLB-Hellblau", "28779f", "ZLB-Blau" ];
         }
         
+        if ( currentPage === 'overview' ) {
+            // activate menubar
+            viewerJS.tinyConfig.menubar = true;
+            viewerJS.tinyMce.overview();
+        }
+        
         // AJAX Loader Eventlistener for tinyMCE
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {
@@ -322,41 +328,7 @@
                 switch ( ajaxstatus ) {
                     case "success":
                         if ( currentPage === 'overview' ) {
-                            // activate menubar
-                            viewerJS.tinyConfig.menubar = true;
-                            
-                            // check if description or publication editing is enabled and
-                            // set fullscreen options
-                            if ( $( '.overview__description-editor' ).length > 0 ) {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__publication-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
-                            else {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__description-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
+                            viewerJS.tinyMce.overview();
                         }
                         
                         viewerJS.tinyMce.init( viewerJS.tinyConfig );
@@ -1150,8 +1122,10 @@
         reCaptchaSiteKey: '',
         useReCaptcha: true,
         path: '',
+        iiifPath: '',
         apiUrl: '',
         userEmail: null,
+        workInfo: {},
         modal: {
             id: '',
             label: '',
@@ -1163,14 +1137,21 @@
             }
         },
         messages: {
-            reCaptchaText: 'Bitte bestätigen Sie uns, dass Sie ein Mensch sind.',
+            downloadInfo: {
+                text: 'Informationen zum angeforderten Download',
+                title: 'Werk',
+                part: 'Teil',
+                fileSize: 'Größe'
+            },
+            reCaptchaText: 'Um die Generierung von Dokumenten durch Suchmaschinen zu verhindern bestätigen Sie bitte das reCAPTCHA.',
             rcInvalid: 'Die Überprüfung war nicht erfolgreich. Bitte bestätigen Sie die reCAPTCHA Anfrage.',
             rcValid: 'Vielen Dank. Sie können nun ihre ausgewählte Datei generieren lassen.',
-            eMailText: 'Wenn Sie über den Fortschritt ihrer Datei informiert werden möchten, dann teilen Sie uns ihre E-Mail Adresse mit.',
+            eMailText: 'Um per E-Mail informiert zu werden sobald der Download zur Verfügung steht, können Sie hier optional Ihre E-Mail Adresse hinterlassen',
             eMailTextLoggedIn: 'Sie werden über Ihre registrierte E-Mail Adresse von uns über den Fortschritt des Downloads informiert.',
             eMail: ''
         }
     };
+    var _loadingOverlay = null;
     
     viewer.downloadModal = {
         /**
@@ -1232,44 +1213,44 @@
             
             $.extend( true, _defaults, config );
             
+            // build loading overlay
+            _loadingOverlay = $( '<div />' );
+            _loadingOverlay.addClass( 'dl-modal__overlay' );
+            $( 'body' ).append( _loadingOverlay );
+            
             _defaults.downloadBtn.on( 'click', function() {
+                // show loading overlay
+                $( '.dl-modal__overlay' ).fadeIn( 'fast' );
+                
                 _defaults.dataType = $( this ).attr( 'data-type' );
                 _defaults.dataTitle = $( this ).attr( 'data-title' );
-                _defaults.dataId = $( this ).attr( 'data-id' );
-                _defaults.dataPi = $( this ).attr( 'data-pi' );
-                
-                _defaults.modal = {
-                    id: _defaults.dataId + 'Modal',
-                    label: _defaults.dataId + 'Label',
-                    string: {
-                        title: _defaults.dataTitle,
-                        body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.dataTitle ),
-                        closeBtn: _defaults.messages.closeBtn,
-                        saveBtn: _defaults.messages.saveBtn,
-                    }
-                };
-                
-                // check datatype
-                if ( _defaults.dataType === 'pdf' ) {
-                    if ( _debug ) {
-                        console.log( '---------- PDF Download ----------' );
-                        console.log( 'Title = ', _defaults.dataTitle );
-                        console.log( 'ID = ', _defaults.dataId );
-                        console.log( 'PI = ', _defaults.dataPi );
-                    }
-                    
-                    viewer.downloadModal.initModal( _defaults );
+                if ( $( this ).attr( 'data-id' ) !== '' ) {
+                    _defaults.dataId = $( this ).attr( 'data-id' );
                 }
                 else {
-                    if ( _debug ) {
-                        console.log( '---------- ePub Download ----------' );
-                        console.log( 'Title = ', _defaults.dataTitle );
-                        console.log( 'ID = ', _defaults.dataId );
-                        console.log( 'PI = ', _defaults.dataPi );
-                    }
-                    
-                    viewer.downloadModal.initModal( _defaults );
+                    _defaults.dataId = '-';
                 }
+                _defaults.dataPi = $( this ).attr( 'data-pi' );
+                _getWorkInfo( _defaults.dataPi, _defaults.dataId ).done( function( info ) {
+                    _defaults.workInfo = info;
+                    
+                    _defaults.modal = {
+                        id: _defaults.dataPi + '-Modal',
+                        label: _defaults.dataPi + '-Label',
+                        string: {
+                            title: _defaults.dataTitle,
+                            body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.workInfo ),
+                            closeBtn: _defaults.messages.closeBtn,
+                            saveBtn: _defaults.messages.saveBtn,
+                        }
+                    };
+                    
+                    // hide loading overlay
+                    $( '.dl-modal__overlay' ).fadeOut( 'fast' );
+                    
+                    // init modal
+                    viewer.downloadModal.initModal( _defaults );
+                } );
             } );
         },
         /**
@@ -1346,11 +1327,11 @@
          * @param {String} title The title of the current download file.
          * @returns {String} The HTML-String to render the download modal body.
          */
-        renderModalBody: function( type, title ) {
+        renderModalBody: function( type, infos ) {
             if ( _debug ) {
                 console.log( '---------- viewer.downloadModal.renderModalBody() ----------' );
                 console.log( 'viewer.downloadModal.renderModalBody: type = ', type );
-                console.log( 'viewer.downloadModal.renderModalBody: title = ', title );
+                console.log( 'viewer.downloadModal.renderModalBody: infos = ', infos );
             }
             var rcResponse = null;
             var modalBody = '';
@@ -1362,16 +1343,30 @@
             if ( type === 'pdf' ) {
                 modalBody += '<h4>';
                 modalBody += '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF-Download: ';
-                modalBody += title + '</h4>';
+                modalBody += '</h4>';
             }
             else {
                 modalBody += '<h4>';
                 modalBody += '<i class="fa fa-file-text-o" aria-hidden="true"></i> ePub-Download: ';
-                modalBody += title + '</h4>';
+                modalBody += '</h4>';
             }
+            // Info
+            modalBody += '<p>' + _defaults.messages.downloadInfo.text + ':</p>';
+            modalBody += '<dl class="dl-horizontal">';
+            modalBody += '<dt>' + _defaults.messages.downloadInfo.title + ':</dt>';
+            modalBody += '<dd>' + infos.title + '</dd>';
+            if ( infos.div !== null ) {
+                modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
+                modalBody += '<dd>' + infos.div + '</dd>';
+            }
+            modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+            modalBody += '<dd>' + infos.size + '</dd>';
+            modalBody += '</dl>';
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
-                modalBody += '<p>' + _defaults.messages.reCaptchaText + '</p>';
+                modalBody += '<hr />';
+                modalBody += '<p><strong>reCAPTCHA</strong></p>';
+                modalBody += '<p>' + _defaults.messages.reCaptchaText + ':</p>';
                 modalBody += '<div id="reCaptchaWrapper"></div>';
             }
             // E-Mail
@@ -1380,12 +1375,12 @@
             modalBody += '<div class="form-group">';
             modalBody += '<label for="recallEMail">' + _defaults.messages.eMail + '</label>';
             if ( _defaults.userEmail != undefined ) {
-                modalBody += '<input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
                 modalBody += '<p class="help-block">' + _defaults.messages.eMailTextLoggedIn + '</p>';
+                modalBody += '<input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
             }
             else {
+                modalBody += '<p class="help-block">' + _defaults.messages.eMailText + ':</p>';
                 modalBody += '<input type="email" class="form-control" id="recallEMail" />';
-                modalBody += '<p class="help-block">' + _defaults.messages.eMailText + '</p>';
             }
             modalBody += '</div>';
             modalBody += '</form>';
@@ -1461,9 +1456,46 @@
             }
             
             return encodeURI( url );
-        },
-    
+        }
     };
+    
+    /**
+     * Method which returns a promise if the work info has been reached.
+     * 
+     * @method getWorkInfo
+     * @param {String} pi The PI of the work.
+     * @param {String} logid The LOG_ID of the work.
+     * @returns {Promise} A promise object if the info has been reached.
+     */
+    function _getWorkInfo( pi, logid ) {
+        if ( _debug ) {
+            console.log( '---------- _getWorkInfo() ----------' );
+            console.log( '_getWorkInfo: pi = ', pi );
+            console.log( '_getWorkInfo: logid = ', logid );
+        }
+        
+        var restCall = '';
+        var workInfo = {};
+        
+        if ( logid !== '' || logid !== undefined ) {
+            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/' + logid + '/';
+            
+            if ( _debug ) {
+                console.log( 'if' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        else {
+            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/-/';
+            
+            if ( _debug ) {
+                console.log( 'else' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        
+        return viewerJS.helper.getRemoteData( restCall );
+    }
     
     return viewer;
     
@@ -5264,12 +5296,8 @@
         width: '100%',
         height: 400,
         theme: 'modern',
-        plugins: [ "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
-                "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-                "save table contextmenu directionality emoticons template paste textcolor"
-
-        ],
-        toolbar: "bold italic underline | forecolor backcolor | fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist  | link | code preview",
+        plugins: 'print preview fullpage paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists textcolor wordcount spellchecker imagetools media contextmenu colorpicker textpattern help',
+        toolbar: 'undo redo | bold italic underline strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen',
         menubar: false,
         statusbar: false,
         relative_urls: false,
@@ -5308,6 +5336,40 @@
             
             // init editor
             tinymce.init( _defaults );
+        },
+        overview: function() {
+            // check if description or publication editing is enabled and
+            // set fullscreen options
+            if ( $( '.overview__description-editor' ).length > 0 ) {
+                viewerJS.tinyConfig.setup = function( editor ) {
+                    editor.on( 'init', function( e ) {
+                        $( '.overview__publication-action .btn' ).hide();
+                    } );
+                    editor.on( 'FullscreenStateChanged', function( e ) {
+                        if ( e.state ) {
+                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
+                        }
+                        else {
+                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
+                        }
+                    } );
+                };
+            }
+            else {
+                viewerJS.tinyConfig.setup = function( editor ) {
+                    editor.on( 'init', function( e ) {
+                        $( '.overview__description-action .btn' ).hide();
+                    } );
+                    editor.on( 'FullscreenStateChanged', function( e ) {
+                        if ( e.state ) {
+                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
+                        }
+                        else {
+                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
+                        }
+                    } );
+                };
+            }
         },
     };
     
@@ -5700,6 +5762,12 @@
                     percentPosition: true
                 } );
             } );
+            
+            // fade in grid after rendering
+            _lazyGrid.on( 'layoutComplete', function( event, laidOutItems ) {
+                _defaults.$grid.addClass( 'ready' );
+            } );
+            
         }
     };
     
@@ -5947,12 +6015,24 @@
             console.log( 'cmsJS.sortableList _handleBeforeDropFromAvailable: ui - ', ui );
         }
         
-        var item = $( ui.item );
-        var firstCheckbox = item.find( "td input" ).get( 0 );
-        var secondCheckbox = item.find( "td input" ).get( 1 );
-        if ( firstCheckbox && secondCheckbox && !$( firstCheckbox ).prop( 'checked' ) && !$( secondCheckbox ).prop( 'checked' ) ) {
-            $( firstCheckbox ).prop( 'checked', true );
-        }
+        var $item = $( ui.item );
+        
+        var $radioMenues = $item.find("td");
+        $radioMenues.each(function(index, element) {
+        	var $checkboxes = $(element).find("input");
+        	if($checkboxes.length > 0) {
+        		var anychecked = false;
+        		$checkboxes.each(function(index, element) {
+        			if($(element).prop('checked')) {
+        				anychecked = true;
+        				return false;
+        			}
+        		})
+        		if(!anychecked) {
+        			$($checkboxes.get(0)).prop('checked', true);
+        		}
+        	}
+        })
         if ( _allowMultipleOccurances && item.parent().attr( "id" ) === "visibleItemList" ) {
             item.clone().appendTo( $( "#availableItemList" ) );
         }

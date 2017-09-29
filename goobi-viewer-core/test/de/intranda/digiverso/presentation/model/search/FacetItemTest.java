@@ -15,10 +15,25 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+
 public class FacetItemTest {
+
+    @Before
+    public void setUp() throws Exception {
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see FacetItem#FacetItem(String)
@@ -59,5 +74,33 @@ public class FacetItemTest {
     public void getQueryEscapedLink_shouldConstructHierarchicalLinkCorrectly() throws Exception {
         FacetItem item = new FacetItem("FIELD:value", true);
         Assert.assertEquals("(FIELD:value OR FIELD:value.*)", item.getQueryEscapedLink());
+    }
+
+    /**
+     * @see FacetItem#generateFacetItems(String,Map,boolean,boolean,boolean)
+     * @verifies sort items correctly
+     */
+    @Test
+    public void generateFacetItems_shouldSortItemsCorrectly() throws Exception {
+        Map<String, Long> values = new TreeMap<>();
+        values.put("Monograph", 1L);
+        values.put("Article", 5L);
+        values.put("Volume", 3L);
+        {
+            // asc
+            List<FacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, false, false, null);
+            Assert.assertEquals(3, items.size());
+            Assert.assertEquals("Article", items.get(0).getLabel());
+            Assert.assertEquals("Monograph", items.get(1).getLabel());
+            Assert.assertEquals("Volume", items.get(2).getLabel());
+        }
+        {
+            // desc
+            List<FacetItem> items = FacetItem.generateFacetItems(SolrConstants.DOCSTRCT, values, true, true, false, null);
+            Assert.assertEquals(3, items.size());
+            Assert.assertEquals("Article", items.get(2).getLabel());
+            Assert.assertEquals("Monograph", items.get(1).getLabel());
+            Assert.assertEquals("Volume", items.get(0).getLabel());
+        }
     }
 }

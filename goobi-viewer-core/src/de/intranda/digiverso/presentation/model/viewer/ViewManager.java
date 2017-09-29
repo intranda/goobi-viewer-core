@@ -115,11 +115,11 @@ public class ViewManager implements Serializable {
     private String opacUrl = null;
     private String contextObject = null;
     private List<String> versionHistory = null;
-    private PageOrientation firstPageOrientation = PageOrientation.left;
+    private PageOrientation firstPageOrientation = PageOrientation.right;
     private boolean doublePageMode = false;
     private int firstPdfPage;
     private int lastPdfPage;
-    private final CalendarView calendarView;
+    private CalendarView calendarView;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
             throws IndexUnreachableException, PresentationException {
@@ -152,9 +152,13 @@ public class ViewManager implements Serializable {
         this.mainMimeType = mainMimeType;
         logger.trace("mainMimeType: {}", mainMimeType);
 
+    }
+
+    public CalendarView createCalendarView() throws IndexUnreachableException, PresentationException {
         // Init calendar view
         String anchorPi = anchorDocument != null ? anchorDocument.getPi() : (topDocument.isAnchor() ? pi : null);
-        calendarView = new CalendarView(pi, anchorPi, topDocument.isAnchor() ? null : topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR));
+        return new CalendarView(pi, anchorPi, topDocument.isAnchor() ? null : topDocument.getMetadataValue(SolrConstants._CALENDAR_YEAR));
+
     }
 
     public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException {
@@ -1114,8 +1118,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getLinkForDFGViewer() throws IndexUnreachableException {
-        if (DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible() && topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS
-                .equals(topDocument.getSourceDocFormat()) && isHasPages()) {
+        if (topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS.equals(topDocument.getSourceDocFormat()) && isHasPages()) {
             try {
                 StringBuilder sbPath = new StringBuilder();
                 sbPath.append(DataManager.getInstance().getConfiguration().getViewerDfgViewerUrl());
@@ -1172,8 +1175,13 @@ public class ViewManager implements Serializable {
      */
     public String getPdfDownloadLink() throws IndexUnreachableException {
         // TODO
-        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=").append(
-                getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf").toString();
+        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=").append(
+                getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf");
+        String footerId = getFooterId();
+        if(StringUtils.isNotBlank(footerId)) {
+            sb.append("&watermarkId=").append(footerId);
+        }
+        return sb.toString();
     }
 
     /**
@@ -1205,7 +1213,10 @@ public class ViewManager implements Serializable {
         }
         sb.deleteCharAt(sb.length() - 1);
         sb.append("&targetFileName=").append(getPi()).append('_').append(firstPdfPage).append('-').append(lastPdfPage).append(".pdf");
-
+        String footerId = getFooterId();
+        if(StringUtils.isNotBlank(footerId)) {
+            sb.append("&watermarkId=").append(footerId);
+        }
         return sb.toString();
     }
 
@@ -1320,7 +1331,7 @@ public class ViewManager implements Serializable {
      * @return
      */
     public String getOpacUrl() {
-        if (currentDocument != null && DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible() && opacUrl == null) {
+        if (currentDocument != null && opacUrl == null) {
             try {
                 StructElement topStruct = currentDocument.getTopStruct();
                 if (topStruct != null) {
@@ -2095,8 +2106,13 @@ public class ViewManager implements Serializable {
 
     /**
      * @return the calendarView
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
-    public CalendarView getCalendarView() {
+    public CalendarView getCalendarView() throws IndexUnreachableException, PresentationException {
+        if (calendarView == null) {
+            calendarView = createCalendarView();
+        }
         return calendarView;
     }
 
@@ -2121,7 +2137,10 @@ public class ViewManager implements Serializable {
      */
     public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
         if (isDoublePageMode()) {
-            return getCurrentRightPage().equals(getCurrentPage()) ? 1 : 0;
+            PhysicalElement currentRightPage = getCurrentRightPage();
+            if (currentRightPage != null) {
+                return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
+            }
         }
 
         return 0;

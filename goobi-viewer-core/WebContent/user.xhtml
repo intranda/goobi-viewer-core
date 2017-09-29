@@ -87,7 +87,7 @@
 												<ui:repeat var="provider" value="#{userBean.openIdConnectProviders}">
 													<li>
 														<h:commandLink rendered="#{!provider.useTextField}" action="#{userBean.loginOpenIdConnectAction}">
-															<h:graphicImage title="#{provider.name}" library="themes/#{navigationHelper.theme}/images/openid" name="#{provider.image}" />
+															<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/openid/#{provider.image}" alt="#{provider.name}" />
 															<f:setPropertyActionListener target="#{userBean.openIdProvider}" value="#{provider}" />
 														</h:commandLink>
 													</li>

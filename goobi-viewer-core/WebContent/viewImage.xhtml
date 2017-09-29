@@ -30,8 +30,8 @@
             </h:panelGroup>
     
             <!-- OPEN SEADRAGON -->
-			<h:outputScript library="javascript/openseadragon" name="openseadragon.js" />
-			<h:outputScript library="javascript/openseadragon" name="openseadragon-viewerinputhook.js" />
+			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
+			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
 			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
             
             <div id="view_image">
@@ -87,7 +87,7 @@
 									$(document).ready(function() {
 										
 										if ( access && openSeadragonVisible) {
-											console.log("load image with config ", configViewer);
+											// console.log("load image with config ", configViewer);
 										    viewImage.init( configViewer )
 										    .then(function(osViewer) {
 										        //TODO: Hide loader?
@@ -231,13 +231,20 @@
             </h:panelGroup>
     
             <script type="text/javascript">
-                var downloadModalConfig = {
-                    downloadBtn: $( '.download-modal' ),
+            	var downloadModalConfig = {
+                	downloadBtn: $( '.download-modal' ),
                     path: '#{navigationHelper.applicationUrl}',
+                    iiifPath: '#{configurationBean.iiifApiUrl}',
                     userEmail: $( '#userEmail' ).val(),
                     useReCaptcha: #{configurationBean.useReCaptcha},
                     reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
                     messages: {
+                        downloadInfo: {
+                            text: '#{msg.downloadInfoText}',
+                            title: '#{msg.downloadInfoTitle}',
+                            part: '#{msg.downloadInfoPart}',
+                            fileSize: '#{msg.downloadInfoFileSize}'
+                        },
                         reCaptchaText: '#{msg.downloadReCaptchaText}',
                         rcInvalid: '#{msg.downloadRcInvalid}',
                         rcValid: '#{msg.downloadRcValid}',
@@ -248,6 +255,7 @@
                         saveBtn: '#{msg.downloadGenerateFile}',
                     }
                 };
+            
                 viewerJS.downloadModal.init( downloadModalConfig );
             </script>
 		</f:view>

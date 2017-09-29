@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -123,21 +124,26 @@ public class BrowseElement implements Serializable {
     private String sidebarPrevUrl;
     @JsonIgnore
     private String sidebarNextUrl;
+    @JsonIgnore
+    private final Locale locale;
 
     /**
      * Constructor for unit tests and special instances.
      * 
+     * @param pi
      * @param label
+     * @param locale
      * @param fulltext
      * @param useOverviewPage
      * @should build overview page url correctly
      */
-    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage) {
+    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale) {
         this.pi = pi;
         this.imageNo = imageNo;
         this.label = label;
         this.fulltext = fulltext;
         this.useOverviewPage = useOverviewPage;
+        this.locale = locale;
         this.metadataList = new ArrayList<>();
         this.url = generateUrl();
     }
@@ -158,6 +164,7 @@ public class BrowseElement implements Serializable {
     BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
             Map<String, Set<String>> searchTerms) throws PresentationException, IndexUnreachableException, DAOException {
         this.metadataList = metadataList;
+        this.locale = locale;
         this.fulltext = fulltext;
 
         // Collect the docstruct hierarchy
@@ -514,8 +521,7 @@ public class BrowseElement implements Serializable {
         }
 
         // Only topstructs should be openened with their overview page view (if they have one)
-        if (DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible() && (structElement.isWork() || structElement.isAnchor())
-                && OverviewPage.loadOverviewPage(structElement, locale) != null) {
+        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
             useOverviewPage = true;
         }
 
@@ -532,12 +538,15 @@ public class BrowseElement implements Serializable {
      * @param structElement
      * @param searchTerms
      * @param ignoreFields Fields to be skipped
+     * @param translateFields Fields to be translated
      * @should add metadata fields that match search terms
      * @should not add duplicates from default terms
      * @should not add duplicates from explicit terms
      * @should not add ignored fields
+     * @should translate configured field values correctly
      */
-    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, Set<String> ignoreFields) {
+    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, Set<String> ignoreFields,
+            Set<String> translateFields) {
         // logger.trace("addAdditionalMetadataContainingSearchTerms");
         if (searchTerms == null) {
             return;
@@ -623,6 +632,12 @@ public class BrowseElement implements Serializable {
                             }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
+                                // Translate values for certain fields
+                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
+                                            + translatedValue + "$3");
+                                }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
                             }
@@ -643,6 +658,12 @@ public class BrowseElement implements Serializable {
                         for (String fieldValue : fieldValues) {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
+                                // Translate values for certain fields
+                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
+                                            + translatedValue + "$3");
+                                }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
                             }

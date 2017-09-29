@@ -158,6 +158,20 @@ public class SearchFacetsTest {
     }
 
     /**
+     * @see SearchFacets#removeFacetAction(String,String)
+     * @verifies remove facet containing reserved chars
+     */
+    @Test
+    public void removeFacetAction_shouldRemoveFacetContainingReservedChars() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.setCurrentFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:{[b]};;");
+        Assert.assertEquals(3, facets.getCurrentFacets().size());
+        facets.removeFacetAction("MD_TITLE:{[b]}", null);        
+        Assert.assertEquals(2, facets.getCurrentFacets().size());
+        Assert.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getCurrentFacetString());
+    }
+
+    /**
      * @see SearchFacets#removeHierarchicalFacetAction(String,String)
      * @verifies remove facet correctly
      */

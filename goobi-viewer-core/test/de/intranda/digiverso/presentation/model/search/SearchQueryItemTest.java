@@ -20,12 +20,21 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
 
 public class SearchQueryItemTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see SearchQueryItem#getAvailableOperators()
@@ -69,7 +78,7 @@ public class SearchQueryItemTest {
             item.setValue("foo bar");
             Set<String> searchTerms = new HashSet<>(2);
             Assert.assertEquals(
-                    "SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR OVERVIEWPAGE_DESCRIPTION:(foo OR bar) OR OVERVIEWPAGE_PUBLICATIONTEXT:(foo OR bar)",
+                    "SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR DEFAULT:(foo OR bar) OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR OVERVIEWPAGE_DESCRIPTION:(foo OR bar) OR OVERVIEWPAGE_PUBLICATIONTEXT:(foo OR bar)",
                     item.generateQuery(searchTerms, true));
             Assert.assertTrue(searchTerms.contains("foo"));
             Assert.assertTrue(searchTerms.contains("bar"));
@@ -89,7 +98,7 @@ public class SearchQueryItemTest {
             item.setField(SolrConstants.FULLTEXT);
             item.setValue("lorem ipsum dolor sit amet");
             Set<String> searchTerms = new HashSet<>(1);
-            Assert.assertEquals("SUPERFULLTEXT:\"lorem ipsum dolor sit amet\"", item.generateQuery(searchTerms, true));
+            Assert.assertEquals("(SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")", item.generateQuery(searchTerms, true));
             Assert.assertTrue(searchTerms.contains("lorem ipsum dolor sit amet"));
         }
     }

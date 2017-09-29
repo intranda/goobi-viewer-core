@@ -14,17 +14,19 @@
 
 	<ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle)}" />
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle, false, false, true)}" />
             <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.currentPage.menuTitle, 1)}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
         </f:metadata>
     </ui:define>
+    
 	
 	<ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
 	<ui:define name="content">
+    
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		
 		<f:view contentType="text/html" encoding="utf-8">
@@ -46,117 +48,145 @@
                 </h:panelGroup>
 				
 				<!-- NEWS DETAIL CONTENT 1 -->
-				<div class="tpl-news-detail__content">
-					<h3>#{cmsPage.getContent('A1')}</h3>
-                    
-					<!-- IMAGE -->
-                    <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
-                        <figure class="tpl-news-detail__image">
-                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-responsive" alt="#{cmsPage.getMediaName('image01')}" />
-                            <figcaption>
-                                #{cmsPage.getMediaDescription('image01')}
-                            </figcaption>
-                        </figure>
-					</h:panelGroup>
-                    
-                    <!-- TEXT -->
-                    <div class="tpl-news-detail__text">
-    					<ui:include src="#{cmsPage.getContent('A2')}" />
-                    </div>
-				</div>
+				<h:panelGroup rendered="#{cmsPage.hasContent('A2')}">
+					<div class="tpl-news-detail__content">
+						<h3>#{cmsPage.getContent('A1')}</h3>
+						
+						<div class="row">
+                            <div class="col-xs-12 col-sm-3">
+								<!-- IMAGE -->
+			                    <h:panelGroup rendered="#{cmsPage.getContent('image01') != ''}">
+			                        <figure class="tpl-news-detail__image">
+			                            <img title="#{cmsPage.getMediaName('image01')}" src="#{cmsPage.getContent('image01')}" class="img-responsive" alt="#{cmsPage.getMediaName('image01')}" />
+			                            <figcaption>
+			                                #{cmsPage.getMediaDescription('image01')}
+			                            </figcaption>
+			                        </figure>
+								</h:panelGroup>
+							</div>
+							<div class="col-xs-12 col-sm-9">	                    
+			                    <!-- TEXT -->
+			                    <div class="tpl-news-detail__text">
+			    					<ui:include src="#{cmsPage.getContent('A2')}" />
+			                    </div>
+	                    	</div>
+	                    </div>
+					</div>
+				</h:panelGroup>
                 
                 <!-- NEWS DETAIL CONTENT 2 -->
-                <div class="tpl-news-detail__content">
-                    <h3>#{cmsPage.getContent('B1')}</h3>
-                    
-                    <!-- IMAGE -->
-                    <h:panelGroup rendered="#{cmsPage.getContent('image02') != ''}">
-                        <figure class="tpl-news-detail__image">
-                            <img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" alt="#{cmsPage.getMediaName('image02')}" />
-                            <figcaption>
-                                #{cmsPage.getMediaDescription('image02')}
-                            </figcaption>
-                        </figure>
-                    </h:panelGroup>
-                    
-                    <!-- TEXT -->
-                    <div class="tpl-news-detail__text">
-                        <ui:include src="#{cmsPage.getContent('B2')}" />
-                    </div>
-                </div>
+                <h:panelGroup rendered="#{cmsPage.hasContent('B2')}">
+	                <div class="tpl-news-detail__content">
+	                    <h3>#{cmsPage.getContent('B1')}</h3>
+						
+						<div class="row">
+							<div class="col-xs-12 col-sm-3">
+								<!-- IMAGE -->
+								<h:panelGroup rendered="#{cmsPage.getContent('image02') != ''}">
+									<figure class="tpl-news-detail__image">
+										<img title="#{cmsPage.getMediaName('image02')}" src="#{cmsPage.getContent('image02')}" alt="#{cmsPage.getMediaName('image02')}" />
+										<figcaption>#{cmsPage.getMediaDescription('image02')}</figcaption>
+									</figure>
+								</h:panelGroup>
+							</div>
+							<div class="col-xs-12 col-sm-9">
+								<!-- TEXT -->
+								<div class="tpl-news-detail__text">
+									<ui:include src="#{cmsPage.getContent('B2')}" />
+								</div>
+							</div>
+						</div>
+					</div>
+                </h:panelGroup>
                 
                 <!-- NEWS DETAIL CONTENT 3 -->
-                <div class="tpl-news-detail__content">
-                    <h3>#{cmsPage.getContent('C1')}</h3>
-                    
-                    <!-- IMAGE -->
-                    <h:panelGroup rendered="#{cmsPage.getContent('image03') != ''}">
-                        <figure class="tpl-news-detail__image">
-                            <img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" alt="#{cmsPage.getMediaName('image03')}" />
-                            <figcaption>
-                                #{cmsPage.getMediaDescription('image03')}
-                            </figcaption>
-                        </figure>
-                    </h:panelGroup>
-                    
-                    <!-- TEXT -->
-                    <div class="tpl-news-detail__text">
-                        <ui:include src="#{cmsPage.getContent('C2')}" />
-                    </div>
-                </div>
+                <h:panelGroup rendered="#{cmsPage.hasContent('C2')}">
+	                <div class="tpl-news-detail__content">
+	                    <h3>#{cmsPage.getContent('C1')}</h3>
+	                    
+	                    <div class="row">
+							<div class="col-xs-12 col-sm-3">
+			                    <!-- IMAGE -->
+			                    <h:panelGroup rendered="#{cmsPage.getContent('image03') != ''}">
+			                        <figure class="tpl-news-detail__image">
+			                            <img title="#{cmsPage.getMediaName('image03')}" src="#{cmsPage.getContent('image03')}" alt="#{cmsPage.getMediaName('image03')}" />
+			                            <figcaption>
+			                                #{cmsPage.getMediaDescription('image03')}
+			                            </figcaption>
+			                        </figure>
+			                    </h:panelGroup>
+							</div>
+							<div class="col-xs-12 col-sm-9">
+			                    <!-- TEXT -->
+			                    <div class="tpl-news-detail__text">
+			                        <ui:include src="#{cmsPage.getContent('C2')}" />
+			                    </div>
+							</div>
+						</div>
+	                </div>
+                </h:panelGroup>
                 
                 <!-- NEWS DETAIL CONTENT 4 -->
-                <div class="tpl-news-detail__content">
-                    <h3>#{cmsPage.getContent('D1')}</h3>
-                    
-                    <!-- IMAGE -->
-                    <h:panelGroup rendered="#{cmsPage.getContent('image04') != ''}">
-                        <figure class="tpl-news-detail__image">
-                            <img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" alt="#{cmsPage.getMediaName('image04')}" />
-                            <figcaption>
-                                #{cmsPage.getMediaDescription('image04')}
-                            </figcaption>
-                        </figure>
-                    </h:panelGroup>
-                    
-                    <!-- TEXT -->
-                    <div class="tpl-news-detail__text">
-                        <ui:include src="#{cmsPage.getContent('D2')}" />
-                    </div>
-                </div>
+                <h:panelGroup rendered="#{cmsPage.hasContent('D2')}">
+	                <div class="tpl-news-detail__content">
+	                    <h3>#{cmsPage.getContent('D1')}</h3>
+	                    
+	                    <div class="row">
+							<div class="col-xs-12 col-sm-3">
+			                    <!-- IMAGE -->
+			                    <h:panelGroup rendered="#{cmsPage.getContent('image04') != ''}">
+			                        <figure class="tpl-news-detail__image">
+			                            <img title="#{cmsPage.getMediaName('image04')}" src="#{cmsPage.getContent('image04')}" alt="#{cmsPage.getMediaName('image04')}" />
+			                            <figcaption>
+			                                #{cmsPage.getMediaDescription('image04')}
+			                            </figcaption>
+			                        </figure>
+			                    </h:panelGroup>
+							</div>
+							<div class="col-xs-12 col-sm-9">
+			                    <!-- TEXT -->
+			                    <div class="tpl-news-detail__text">
+			                        <ui:include src="#{cmsPage.getContent('D2')}" />
+			                    </div>
+							</div>
+						</div>
+	                </div>
+                </h:panelGroup>
 
 				<!-- SOLR QUERY COLLECTION -->
-				<div class="solr-query-collection">
-                    <div class="solr-query-collection__thumbs">
-                        <div class="row">
-        					<ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('gallery'))}">
-                                <div class="col-xs-12 col-sm-4">
-            						<div class="solr-query-collection__thumb">
-            							<!-- IMAGE -->
-                                        <div class="solr-query-collection__image">
-            								<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{!hit.browseElement.anchor}">
-            									<h:graphicImage url="#{hit.browseElement.thumbnailUrl}" styleClass="img-responsive" title="#{hit.browseElement.label}" />
-            								</h:outputLink>
-            							</div>
-            
-            							<!-- TITLE -->
-                                        <div class="solr-query-collection__title">
-                                            <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
-            									#{msg[hit.browseElement.label]}
-            								</h:outputLink>
-                                        </div>
-                                    </div>
-                                </div>
-        					</ui:repeat>
-                        </div>
-                    </div>
-
-					<!-- paginator -->
-					<viewerComponent:simplePaginator 
-						itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('gallery'))}"
-						itemActive="#{cmsPage.listPage}"
-						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
-				</div>
+				<h:panelGroup rendered="#{cmsBean.hasSearchResults()}">
+					<div class="solr-query-collection">
+	                    <div class="solr-query-collection__thumbs">
+	                        <div class="row">
+	        					<ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('gallery'))}">
+	                                <div class="col-xs-12 col-sm-4">
+	            						<div class="solr-query-collection__thumb">
+	            							<!-- IMAGE -->
+	                                        <div class="solr-query-collection__image">
+	            								<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{!hit.browseElement.anchor}">
+	            									<img src="#{hit.browseElement.thumbnailUrl}" class="img-responsive" alt="#{hit.browseElement.label}" />
+	            								</h:outputLink>
+	            							</div>
+	            
+	            							<!-- TITLE -->
+	                                        <div class="solr-query-collection__title">
+	                                            <h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
+	            									#{msg[hit.browseElement.label]}
+	            								</h:outputLink>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	        					</ui:repeat>
+	                        </div>
+	                    </div>
+	
+						<!-- paginator -->
+						<viewerComponent:simplePaginator 
+							itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('gallery'))}"
+							itemActive="#{cmsPage.listPage}"
+							urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+					</div>
+				</h:panelGroup>
 			</div>
 		</f:view>
 	</ui:define>

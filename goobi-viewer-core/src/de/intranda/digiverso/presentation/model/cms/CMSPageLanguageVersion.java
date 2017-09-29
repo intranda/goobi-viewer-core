@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -154,7 +156,7 @@ public class CMSPageLanguageVersion {
 	 *            the title to set
 	 */
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title != null ? Normalizer.normalize(title, Form.NFC) : title;
 	}
 
 	/**
@@ -169,7 +171,7 @@ public class CMSPageLanguageVersion {
 	 *            the menuTitle to set
 	 */
 	public void setMenuTitle(String menuTitle) {
-		this.menuTitle = menuTitle;
+		this.menuTitle = menuTitle != null ? Normalizer.normalize(menuTitle, Form.NFC) : "";
 	}
 
 	/**
@@ -256,6 +258,8 @@ public class CMSPageLanguageVersion {
 				return;
 			}
 		}
+		item.setOwnerPageLanguageVersion(this);
 		contentItems.add(item);
+		generateCompleteContentItemList();
 	}
 }

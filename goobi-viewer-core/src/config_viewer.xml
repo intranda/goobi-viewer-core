@@ -300,11 +300,9 @@
         <drillDown>
             <hierarchicalField initialElementNumber="4">DC</hierarchicalField>
             <field initialElementNumber="3">DOCSTRCT</field>
-            <field initialElementNumber="3">MD_CREATOR</field>
-            <field initialElementNumber="3">MD_PLACEPUBLISH</field>
-            <field>MD_YEARPUBLISH</field>
-            <!-- initialElementNumber: sets the initial number of drill-down elements to be displayed (any field including DC). Default is 20. -->
-            <initialElementNumber>3</initialElementNumber>
+            <field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
+	    <field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
+            <field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
         </drillDown>
         <advanced>
             <!-- Enables the advanced search (default is true) -->
@@ -364,6 +362,9 @@
             <ignoreField>UGCTERMS</ignoreField>
             <ignoreField>YEARMONTH</ignoreField>
             <ignoreField>YEARMONTHDAY</ignoreField>
+            <!-- translateField: Fields in this list will be highlighted with their translated value rather than raw. -->
+            <translateField>DC</translateField>
+            <translateField>DOCSTRCT</translateField>
         </displayAdditionalMetadata>
         <!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
         <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
@@ -883,7 +884,7 @@
         <labelConfig>
             <template name="_DEFAULT">
                 <metadata label="" value="{LABEL}{MD_CREATOR}">
-                    <param type="field" key="LABEL" />
+                    <param type="translatedfield" key="LABEL" />
                     <param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
                 </metadata>
             </template>
@@ -960,6 +961,11 @@
             <visible>true</visible>
         </page>
         
+        <!-- image preview: if false, the preview view is hidden -->
+        <preview>
+            <visible>true</visible>
+        </preview>
+        
         <!-- calendar: if false, the calendar view link is hidden -->
         <calendar>
             <visible>true</visible>
@@ -975,10 +981,6 @@
             <visible>true</visible>
         </thumbs>
 
-        <!-- image preview: if false, the preview view is hidden -->
-        <preview>
-            <visible>true</visible>
-        </preview>
         
         <!-- search in current item: if false, the widget is hidden -->
         <searchInItem>
