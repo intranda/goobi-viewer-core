@@ -1363,18 +1363,21 @@ public final class SearchHelper {
      * @param searchTerms
      * @param fulltext
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
+     * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @return
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
+     * @should return multiple match fragments correctly
      */
-    public static String truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength) {
+    public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
-        StringBuilder sbFulltextFragment = new StringBuilder();
+        List<String> ret = new ArrayList<>();
+//        StringBuilder sbFulltextFragment = new StringBuilder();
 
         String fulltextFragment = "";
 
@@ -1393,13 +1396,16 @@ public final class SearchHelper {
                     fulltextFragment += " ";
                     break;
                 }
-                int indexOfTerm = fulltext.toLowerCase().indexOf(searchTerm.toLowerCase());
-                if (indexOfTerm >= 0) {
+                // TODO for each occurrence
+                Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
+                while (m.find()) {
+                    //                int indexOfTerm = fulltext.toLowerCase().indexOf(searchTerm.toLowerCase());
+                    //                if (indexOfTerm >= 0) {
+                    int indexOfTerm = m.start();
 
                     // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
                     fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
-                    // indexOfTerm);
+                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm, indexOfTerm);
 
                     indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
                     int indexOfSpace = fulltextFragment.indexOf(' ');
@@ -1418,8 +1424,21 @@ public final class SearchHelper {
                         fulltextFragment = applyHighlightingToPhrase(fulltextFragment, searchTerm);
                         fulltextFragment = replaceHighlightingPlaceholders(fulltextFragment);
                     }
+                    if (StringUtils.isNotBlank(fulltextFragment)) {
+                        // Check for unclosed HTML tags
+                        int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
+                        int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
+                        if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                            fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                        }
+                        ret.add(fulltextFragment);
+                    }
+                    if (firstMatchOnly) {
+                        break;
+                    }
                 }
             }
+
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
             if (StringUtils.isEmpty(fulltextFragment)) {
                 if (fulltext.length() > 200) {
@@ -1434,21 +1453,18 @@ public final class SearchHelper {
             } else {
                 fulltextFragment = fulltext;
             }
-        }
-
-        if (StringUtils.isNotBlank(fulltextFragment)) {
-            // Check for unclosed HTML tags
-            int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
-            int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
-            if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
-                fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+            if (StringUtils.isNotBlank(fulltextFragment)) {
+                // Check for unclosed HTML tags
+                int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
+                int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
+                if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                    fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                }
+                ret.add(fulltextFragment);
             }
-            // Add prefix + suffix
-            // sbFulltextFragment.append("[...] ").append(fulltextFragment).append(" [...]");
-            sbFulltextFragment.append(fulltextFragment);
         }
 
-        return sbFulltextFragment.toString();
+        return ret;
     }
 
     /**

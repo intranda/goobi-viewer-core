@@ -153,15 +153,16 @@ public class SearchHit implements Comparable<SearchHit> {
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
             Set<String> translateAdditionalFields) throws PresentationException, IndexUnreachableException, DAOException {
-        String fulltextFragment = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
-                DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
+        List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
+                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
             docstructType = DocType.METADATA.name();
         }
         List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
-        BrowseElement browseElement = new BrowseElement(se, metadataList, locale, fulltextFragment, useThumbnail, searchTerms);
+        BrowseElement browseElement = new BrowseElement(se, metadataList, locale, (fulltextFragments != null && !fulltextFragments.isEmpty())
+                ? fulltextFragments.get(0) : null, useThumbnail, searchTerms);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
         SearchHit hit = new SearchHit(HitType.getByName(se.getMetadataValue(SolrConstants.DOCTYPE)), browseElement, searchTerms, locale);
@@ -212,43 +213,45 @@ public class SearchHit implements Comparable<SearchHit> {
             try {
                 OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(browseElement.getPi(), null, null);
                 if (overviewPage != null) {
-                    String descriptionText = null;
+                    List<String> descriptionTexts = null;
                     if (overviewPage.getDescription() != null) {
                         String value = Jsoup.parse(overviewPage.getDescription()).text();
                         String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(
                                 SolrConstants.OVERVIEWPAGE_DESCRIPTION));
                         if (!highlightedValue.equals(value)) {
-                            descriptionText = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION), highlightedValue,
-                                    DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
-                            //                            metadataList.add(new Metadata("viewOverviewDescription", "", highlightedValue));
+                            descriptionTexts = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION),
+                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false);
 
                         }
                     }
-                    String publicationText = null;
+                    List<String> publicationTexts = null;
                     if (overviewPage.getPublicationText() != null) {
                         String value = Jsoup.parse(overviewPage.getPublicationText()).text();
                         String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(
                                 SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT));
                         if (!highlightedValue.equals(value)) {
-                            publicationText = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT),
-                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
-                            //                            metadataList.add(new Metadata("viewOverviewPublication_publication", "", highlightedValue));
+                            publicationTexts = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT),
+                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false);
                         }
                     }
-                    if (descriptionText != null || publicationText != null) {
+                    if ((descriptionTexts != null && !descriptionTexts.isEmpty()) || (publicationTexts != null && !publicationTexts.isEmpty())) {
                         int count = 0;
                         SearchHit overviewPageHit = new SearchHit(HitType.METADATA, new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation(
                                 "overviewPage", locale), null, true, locale), searchTerms, locale);
                         children.add(overviewPageHit);
-                        if (descriptionText != null) {
-                            overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
-                                    "viewOverviewDescription", descriptionText, true, locale), searchTerms, locale));
-                            count++;
+                        if (descriptionTexts != null && !descriptionTexts.isEmpty()) {
+                            for (String descriptionText : descriptionTexts) {
+                                overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
+                                        "viewOverviewDescription", descriptionText, true, locale), searchTerms, locale));
+                                count++;
+                            }
                         }
-                        if (publicationText != null) {
-                            overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
-                                    "viewOverviewPublication_publication", publicationText, true, locale), searchTerms, locale));
-                            count++;
+                        if (publicationTexts != null && !publicationTexts.isEmpty()) {
+                            for (String publicationText : publicationTexts) {
+                                overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
+                                        "viewOverviewPublication_publication", publicationText, true, locale), searchTerms, locale));
+                                count++;
+                            }
                         }
                         hitTypeCounts.put(HitType.OVERVIEWPAGE, count);
                         logger.trace("Added {} overview page child hits", count);
