@@ -33,7 +33,6 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
 
     private static final long serialVersionUID = -3308596220913009726L;
 
-    private int displayNumberOfVolumesLevel;
     public static String split = DataManager.getInstance().getConfiguration().getSplittingCharacter();
 
     private String name;
@@ -42,6 +41,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     private boolean showSubElements = false;
     private boolean hasSubelements = false;
     private boolean showDescription = false;
+    private int displayNumberOfVolumesLevel;
     private BrowseElementInfo info;
 
     public BrowseDcElement(String name, long number, String field, String sortField) throws PresentationException {
@@ -55,6 +55,18 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         }
         this.displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
         this.info = new SimpleBrowseElementInfo(field);
+    }
+    
+    /**
+     * 
+     */
+    public BrowseDcElement(BrowseDcElement blueprint) {
+        this.name = blueprint.name;
+        this.number = blueprint.number;
+        this.sortField = blueprint.sortField;
+        this.hasSubelements = blueprint.hasSubelements;
+        this.showDescription = blueprint.showDescription;
+        this.info = blueprint.info;
     }
 
     @Override

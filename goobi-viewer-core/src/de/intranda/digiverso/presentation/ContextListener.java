@@ -45,7 +45,8 @@ public class ContextListener implements ServletContextListener {
 
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
-    public static volatile String prettyConfigFiles = "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
+    public static volatile String prettyConfigFiles =
+            "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
     // ImageIO.scanForPlugins();
@@ -96,17 +97,18 @@ public class ContextListener implements ServletContextListener {
                     System.out.println("Found pretty files" + prettyConfigFiles);
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
-//                } catch (URISyntaxException e) {
-//                    logger.error(e.getMessage(), e);
+                    //                } catch (URISyntaxException e) {
+                    //                    logger.error(e.getMessage(), e);
                 } catch (FileSystemNotFoundException | ProviderNotFoundException e) {
                     logger.error("Unable to scan theme-jar for pretty config files. Probably an older tomcat");
                 }
             } else {
                 logger.error("Resource '/WEB-INF/lib' not found.");
             }
-//        } catch (MalformedURLException e) {
-//            logger.error(e.getMessage(), e);
-        } finally {}
+            //        } catch (MalformedURLException e) {
+            //            logger.error(e.getMessage(), e);
+        } finally {
+        }
 
         // Set Pretty config files parameter
         sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);

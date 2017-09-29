@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
@@ -51,6 +52,18 @@ public class CollectionView {
         super();
         this.field = field;
         this.dataProvider = dataProvider;
+    }
+    
+    /**
+     * Creates a new CollectionView from an already existing one, 
+     * keeping only the list of all collections without any display information
+     * 
+     * @param blueprint
+     */
+    public CollectionView(CollectionView blueprint) {
+        this.completeCollectionList = blueprint.completeCollectionList.stream().map(element -> new HierarchicalBrowseDcElement(element)).collect(Collectors.toList());
+        this.field = blueprint.field;
+        this.dataProvider = blueprint.dataProvider;
     }
 
     public void populateCollectionList() throws IndexUnreachableException {
