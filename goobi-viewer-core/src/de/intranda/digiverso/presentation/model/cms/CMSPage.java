@@ -754,4 +754,25 @@ public class CMSPage {
         return "cms/" + getId() + "/";
     }
 
+    public void addContentItem(CMSContentItem item) {
+        if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+            getLanguageVersions().stream()
+            .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE)
+            .forEach(lang -> lang.addContentItem(item));
+        } else {
+            getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+        }
+    }
+
+    /**
+     * @param itemId
+     * @return
+     */
+    public boolean hasContentItem(final String itemId) {
+        return getLanguageVersions().stream()
+                .map(lang -> lang.getContentItem(itemId))
+                .filter(item -> item != null)
+                .count() > 0;
+    }
+    
 }

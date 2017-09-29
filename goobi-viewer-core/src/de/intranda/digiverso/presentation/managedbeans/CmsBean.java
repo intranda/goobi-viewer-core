@@ -269,9 +269,10 @@ public class CmsBean {
         } else {
             //remove page with content items that don't match the template's content items
             for (CMSContentItem templateItem : template.getContentItems()) {
-                if (page.getContentItem(templateItem.getItemId()) == null) {
-                    logger.warn("Found template item that doesn't exists in page");
-                    pageValid = false;
+                if (!page.hasContentItem(templateItem.getItemId())) {
+                    page.addContentItem(new CMSContentItem(templateItem));
+//                    logger.warn("Found template item that doesn't exists in page");
+//                    pageValid = false;
                 }
             }
         }
@@ -689,6 +690,9 @@ public class CmsBean {
     }
 
     public CMSPage getCurrentPage() {
+        if(currentPage == null) {
+            return new CMSPage();
+        }
         return currentPage;
     }
 
@@ -845,6 +849,7 @@ public class CmsBean {
             return "";
         }
         if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
+            searchBean.resetSearchResults();
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setExactSearchStringResetGui(item.getSolrQuery());

@@ -5867,6 +5867,7 @@ div.olMapViewport {
   display: block;
   padding: 3px 5px;
 }
+.widget-search-drilldown__collection ul,
 .widget-search-drilldown__groups ul {
   max-height: 400px;
   overflow-y: auto;

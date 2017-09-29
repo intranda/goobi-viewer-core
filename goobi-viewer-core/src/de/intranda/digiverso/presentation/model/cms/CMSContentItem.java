@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,6 +49,7 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
 import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
+import net.sf.saxon.evpull.Decomposer;
 
 /**
  * This class represents both template content configuration items and instance items of actual pages. Only the latter are persisted to the DB.
@@ -404,7 +407,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @param htmlFragment the htmlFragment to set
      */
     public void setHtmlFragment(String htmlFragment) {
-        this.htmlFragment = htmlFragment;
+        this.htmlFragment = htmlFragment != null ? Normalizer.normalize(htmlFragment, Form.NFC) : "";
     }
 
     /**

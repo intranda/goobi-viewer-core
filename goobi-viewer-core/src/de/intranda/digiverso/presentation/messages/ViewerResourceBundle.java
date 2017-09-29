@@ -16,8 +16,16 @@
 package de.intranda.digiverso.presentation.messages;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -44,7 +52,54 @@ public class ViewerResourceBundle extends ResourceBundle {
     private static final Object lock = new Object();
     private static final Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
     protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
+    protected static final Map<String, Boolean> reloadNeededMap = new ConcurrentHashMap<>();
     protected static volatile Locale defaultLocale;
+
+    public ViewerResourceBundle() {
+        registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
+    }
+
+    /**
+     * Registers a WatchService that checks for modified messages.properties files and tags them for reloading.
+     * 
+     * @param path
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private static void registerFileChangedService(Path path) {
+        logger.trace("registerFileChangedService: {}", path);
+        Thread backgroundThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
+                    final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                    while (true) {
+                        final WatchKey wk = watchService.take();
+                        for (WatchEvent<?> event : wk.pollEvents()) {
+                            final Path changed = (Path) event.context();
+                            final String fileName = changed.getFileName().toString();
+                            logger.trace("File has been modified: {}", fileName);
+                            if (fileName.startsWith("messages_")) {
+                                final String language = fileName.substring(9, 11);
+                                reloadNeededMap.put(language, true);
+                                logger.debug("File '{}' (language: {}) has been modified, triggering bundle reload...", changed.getFileName()
+                                        .toString(), language);
+                            }
+                        }
+                        if (!wk.reset()) {
+                            break;
+                        }
+                        // Thread.sleep(100);
+                    }
+                } catch (IOException | InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        });
+
+        backgroundThread.start();
+    }
 
     /**
      * Loads default resource bundles if not yet loaded.
@@ -86,17 +141,22 @@ public class ViewerResourceBundle extends ResourceBundle {
                 }
             }
         }
-        // Reload local bundle if the locale is different
-        if (!localBundles.containsKey(locale)) {
+        // Reload local bundle if the locale is different or the corresponding messages files has been modified
+        if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale.getLanguage()))) {
             synchronized (lock) {
                 // Bundle could have been initialized by a different thread in the meanwhile
-                if (!localBundles.containsKey(locale)) {
-                    logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
-                    ResourceBundle localBundle = loadLocalResourceBundle(locale);
-                    if (localBundle != null) {
-                        localBundles.put(locale, localBundle);
-                    } else {
-                        logger.warn("Could not load local resource bundle.");
+                if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale
+                        .getLanguage()))) {
+                    logger.debug("Reloading local resource bundle for '{}'...", locale.getLanguage());
+                    try {
+                        ResourceBundle localBundle = loadLocalResourceBundle(locale);
+                        if (localBundle != null) {
+                            localBundles.put(locale, localBundle);
+                        } else {
+                            logger.warn("Could not load local resource bundle.");
+                        }
+                    } finally {
+                        reloadNeededMap.remove(locale.getLanguage());
                     }
                 }
             }
@@ -119,8 +179,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 URLClassLoader urlLoader = new URLClassLoader(new URL[] { resourceURL });
                 return ResourceBundle.getBundle("messages", locale, urlLoader);
             } catch (Exception e) {
-                // some error while loading bundle from file system; use
-                // default bundle now ...
+                // some error while loading bundle from file system; use default bundle now ...
             }
         }
 

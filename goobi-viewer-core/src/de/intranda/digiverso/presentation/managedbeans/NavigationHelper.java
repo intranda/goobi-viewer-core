@@ -188,6 +188,9 @@ public class NavigationHelper implements Serializable {
         if (resetCurrentDocument) {
             resetCurrentDocument();
         }
+        
+        this.savePageUrl();
+        
         setCmsPage(setCmsPage);
         this.currentPage = currentPage;
     }
@@ -325,7 +328,7 @@ public class NavigationHelper implements Serializable {
     public void setCurrentView(String currentView) {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
         statusMap.put(KEY_CURRENT_VIEW, currentView);
-        this.currentPage = currentView;
+        setCurrentPage(currentView);
     }
 
     public Locale getLocale() {
@@ -1003,6 +1006,12 @@ public class NavigationHelper implements Serializable {
         }
         UrlRedirectUtils.redirectToUrl(previousUrl);
 
+    }
+    
+    public void savePageUrl() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        //save current View to session map
+        UrlRedirectUtils.setCurrentView(request);
     }
 
 }

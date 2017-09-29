@@ -360,6 +360,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should add MD fields that contain terms from DEFAULT
      * @should not add duplicate values
      * @should not add ignored fields
+     * @should not add field values that equal the label
      * @should translate configured field values correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {
@@ -405,6 +406,10 @@ public class SearchHit implements Comparable<SearchHit> {
                     if (doc.containsKey(termsFieldName)) {
                         List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, termsFieldName);
                         for (String fieldValue : fieldValues) {
+                            // Skip values that are equal to the hit label
+                            if (fieldValue.equals(browseElement.getLabel())) {
+                                continue;
+                            }
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields

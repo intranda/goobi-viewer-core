@@ -21,7 +21,7 @@
 						<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
 
 						<ul>
-							<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit)}" var="filterLink">
+							<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.descendingOrder)}" var="filterLink">
 								<li>
 									<a href="#{navigationHelper.searchUrl}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}/1/-/-/">
 										#{msg[cc.attrs.labelPrefix]}#{msg[filterLink.label]}#{msg[cc.attrs.labelSuffix]} (#{filterLink.count})
@@ -30,7 +30,7 @@
 							</ui:repeat>
 						</ul>
 
-						<h:panelGroup rendered="#{fn:length(facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit)) ge cc.attrs.widget.resultDisplayLimit}">
+						<h:panelGroup rendered="#{fn:length(facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.descendingOrder)) ge cc.attrs.widget.resultDisplayLimit}">
 							<!-- COLLAPSE DRILLDOWN -->
 							<div class="widget-search-drilldown__collapse">
 								<h:commandLink 
@@ -60,7 +60,7 @@
 						</h3>
 						<div id="customCollapse-#{cc.attrs.widget.order}" class="collapse">
 							<ul>
-								<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? 0 : cc.attrs.widget.resultDisplayLimit)}" var="filterLink">
+								<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? 0 : cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.descendingOrder)}" var="filterLink">
 									<li>
 										<a href="#{navigationHelper.searchUrl}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}/1/-/-/">
 											#{msg[cc.attrs.labelPrefix]}#{msg[filterLink.label]}#{msg[cc.attrs.labelSuffix]} (#{filterLink.count})
@@ -69,7 +69,7 @@
 								</ui:repeat>
 							</ul>
 							
-							<h:panelGroup rendered="#{fn:length(facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit)) ge cc.attrs.widget.resultDisplayLimit}">
+							<h:panelGroup rendered="#{fn:length(facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.descendingOrder)) ge cc.attrs.widget.resultDisplayLimit}">
 								<!-- COLLAPSE DRILLDOWN -->
 								<div class="widget-search-drilldown__collapse">
 									<h:commandLink 
