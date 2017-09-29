@@ -434,9 +434,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String[] terms = { "ipsum", "tempor", "labore" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true);
         Assert.assertFalse(truncated.isEmpty());
-        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
-        //        Assert.assertTrue(truncated.contains("<span class=\"search-list--highlight\">tempor</span>"));
-        //        Assert.assertTrue(truncated.contains("<span class=\"search-list--highlight\">labore</span>"));
+        System.out.println(truncated.get(0));
+        //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
+        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">tempor</span>"));
+        //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">labore</span>"));
         // TODO The other two terms aren't highlighted when using random length phrase
     }
 

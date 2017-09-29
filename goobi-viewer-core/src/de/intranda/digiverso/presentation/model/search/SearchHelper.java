@@ -1396,11 +1396,8 @@ public final class SearchHelper {
                     fulltextFragment += " ";
                     break;
                 }
-                // TODO for each occurrence
                 Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
                 while (m.find()) {
-                    //                int indexOfTerm = fulltext.toLowerCase().indexOf(searchTerm.toLowerCase());
-                    //                if (indexOfTerm >= 0) {
                     int indexOfTerm = m.start();
 
                     // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
@@ -1446,6 +1443,7 @@ public final class SearchHelper {
                 } else {
                     fulltextFragment = fulltext;
                 }
+                ret.add(fulltextFragment);
             }
         } else {
             if (fulltext.length() > 200) {
