@@ -1171,8 +1171,13 @@ public class ViewManager implements Serializable {
      */
     public String getPdfDownloadLink() throws IndexUnreachableException {
         // TODO
-        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=").append(
-                getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf").toString();
+        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=").append(
+                getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf");
+        String footerId = getFooterId();
+        if(StringUtils.isNotBlank(footerId)) {
+            sb.append("&watermarkId=").append(footerId);
+        }
+        return sb.toString();
     }
 
     /**
@@ -1204,7 +1209,10 @@ public class ViewManager implements Serializable {
         }
         sb.deleteCharAt(sb.length() - 1);
         sb.append("&targetFileName=").append(getPi()).append('_').append(firstPdfPage).append('-').append(lastPdfPage).append(".pdf");
-
+        String footerId = getFooterId();
+        if(StringUtils.isNotBlank(footerId)) {
+            sb.append("&watermarkId=").append(footerId);
+        }
         return sb.toString();
     }
 
