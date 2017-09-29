@@ -79,6 +79,12 @@ var cmsJS = ( function( cms ) {
                     percentPosition: true
                 } );
             } );
+            
+            // fade in grid after rendering
+            _lazyGrid.on( 'layoutComplete', function( event, laidOutItems ) {
+                _defaults.$grid.addClass( 'ready' );
+            } );
+            
         }
     };
     
