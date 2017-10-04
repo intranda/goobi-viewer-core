@@ -1414,6 +1414,9 @@ div.mce-fullscreen {
 #downloadWrapper {
   font-size: 1rem;
 }
+#downloadWrapper nav .list--horizontal li {
+  display: inline-block;
+}
 #downloadWrapper nav ul li {
   float: none;
   margin-left: 5px;
