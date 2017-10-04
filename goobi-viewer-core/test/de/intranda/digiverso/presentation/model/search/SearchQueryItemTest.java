@@ -89,7 +89,7 @@ public class SearchQueryItemTest {
             item.setField("MD_TITLE");
             item.setValue("bla \"blup\" -nein");
             Set<String> searchTerms = new HashSet<>(0);
-            Assert.assertEquals("MD_TITLE:(bla AND \"blup\" -nein)", item.generateQuery(searchTerms, true));
+            Assert.assertEquals("MD_TITLE:(bla AND \\\"blup\\\" -nein)", item.generateQuery(searchTerms, true));
             Assert.assertTrue(searchTerms.isEmpty());
         }
         {
@@ -119,12 +119,13 @@ public class SearchQueryItemTest {
             Assert.assertEquals("SUPERDEFAULT:(\\[foo\\] OR \\:bar\\:) OR DEFAULT:(\\[foo\\] OR \\:bar\\:)", item.generateQuery(searchTerms, true));
         }
         {
+            // Phrase searches should NOT have escaped terms
             SearchQueryItem item = new SearchQueryItem(null);
             item.setOperator(SearchItemOperator.PHRASE);
             item.setField(SolrConstants.DEFAULT);
             item.setValue("[foo] :bar:");
             Set<String> searchTerms = new HashSet<>(2);
-            Assert.assertEquals("(SUPERDEFAULT:\"\\[foo\\]\\ \\:bar\\:\" OR DEFAULT:\"\\[foo\\]\\ \\:bar\\:\")", item.generateQuery(searchTerms,
+            Assert.assertEquals("(SUPERDEFAULT:\"[foo] :bar:\" OR DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms,
                     true));
         }
     }

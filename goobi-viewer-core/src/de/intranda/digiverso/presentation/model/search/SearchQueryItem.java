@@ -265,7 +265,7 @@ public class SearchQueryItem implements Serializable {
                     if (useValue.charAt(0) != '"') {
                         sbItem.append('"');
                     }
-                    sbItem.append(ClientUtils.escapeQueryChars(useValue));
+                    sbItem.append(useValue);
                     if (useValue.charAt(useValue.length() - 1) != '"') {
                         sbItem.append('"');
                     }
