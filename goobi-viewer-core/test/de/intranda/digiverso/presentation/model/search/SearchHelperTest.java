@@ -47,6 +47,8 @@ import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.model.search.FacetItem;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.search.SearchQueryGroup.SearchQueryGroupOperator;
+import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
 import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.user.LicenseType;
 import de.intranda.digiverso.presentation.model.user.User;
@@ -999,5 +1001,63 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void replaceHighlightingPlaceholders_shouldReplacePlaceholdersWithHtmlTags() throws Exception {
         Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper.replaceHighlightingPlaceholders(
                 SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
+    }
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
+     * @verifies generate query correctly
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(2);
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.AND);
+            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems().get(0).setValue("Monograph");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+            group.getQueryItems().get(1).setValue("foo bar");
+            groups.add(group);
+        }
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.OR);
+            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems().get(0).setValue("Volume");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+            group.getQueryItems().get(1).setField("MD_SHELFMARK");
+            group.getQueryItems().get(1).setValue("bla blup");
+            groups.add(group);
+        }
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        Assert.assertEquals("(DOCSTRCT:Monograph AND MD_TITLE:(foo AND bar)) AND (DOCSTRCT:Volume OR MD_SHELFMARK:(bla OR blup))", result);
+    }
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
+     * @verifies skip reserved fields
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(1);
+
+        SearchQueryGroup group = new SearchQueryGroup(null, 3);
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+        group.getQueryItems().get(0).setValue("Monograph");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.PI_TOPSTRUCT);
+        group.getQueryItems().get(1).setValue("PPN123");
+        group.getQueryItems().get(2).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(2).setField(SolrConstants.DC);
+        group.getQueryItems().get(2).setValue("co1");
+        groups.add(group);
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        Assert.assertEquals("(DOCSTRCT:Monograph)", result);
     }
 }

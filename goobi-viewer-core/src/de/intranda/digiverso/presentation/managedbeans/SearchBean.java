@@ -636,9 +636,9 @@ public class SearchBean implements Serializable {
             int from = (currentPage - 1) * hitsPerPage;
             if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
                 // Add search hit aggregation parameters, if enabled
-                String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups) : SearchHelper
-                        .generateExpandQuery(SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups),
-                                searchTerms);
+                String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups,
+                        advancedSearchGroupOperator) : SearchHelper.generateExpandQuery(SearchHelper.getExpandQueryFieldList(activeSearchType,
+                                currentSearchFilter, advancedQueryGroups), searchTerms);
                 logger.trace("Expand query: {}", expandQuery);
                 if (StringUtils.isNotEmpty(expandQuery)) {
                     params.put(ExpandParams.EXPAND, "true");
