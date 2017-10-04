@@ -9,7 +9,10 @@
 <!--         </dependent-module>  -->
         <dependent-module archiveName="viewer-module-crowdsourcing.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/viewer-module-crowdsourcing/viewer-module-crowdsourcing">
             <dependency-type>uses</dependency-type>
-        </dependent-module> 
+        </dependent-module>
+        <dependent-module archiveName="viewer-module-worldviews.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/viewer-module-worldviews/viewer-module-worldviews">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <!-- AKWIEN -->
         <dependent-module archiveName="viewer-theme-akwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-akwien/goobi-viewer-theme-akwien">
             <dependency-type>uses</dependency-type>
