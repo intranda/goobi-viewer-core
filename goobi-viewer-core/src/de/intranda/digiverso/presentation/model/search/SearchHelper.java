@@ -1377,7 +1377,7 @@ public final class SearchHelper {
             throw new IllegalArgumentException("fulltext may not be null");
         }
         List<String> ret = new ArrayList<>();
-//        StringBuilder sbFulltextFragment = new StringBuilder();
+        //        StringBuilder sbFulltextFragment = new StringBuilder();
 
         String fulltextFragment = "";
 
@@ -2096,12 +2096,14 @@ public final class SearchHelper {
      * Creates a Solr expand query string out of advanced search query item groups.
      * 
      * @param groups
+     * @param advancedSearchGroupOperator
      * @return
      * @should generate query correctly
-     * @should skip PI_TOPSTRUCT
+     * @should skip reserved fields
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
         StringBuilder sbOuter = new StringBuilder();
+
         if (!groups.isEmpty()) {
             for (SearchQueryGroup group : groups) {
                 StringBuilder sbGroup = new StringBuilder();
@@ -2147,14 +2149,25 @@ public final class SearchHelper {
                 }
                 if (sbGroup.length() > 0) {
                     if (sbOuter.length() > 0) {
-                        sbOuter.append(" OR ");
+                        switch (advancedSearchGroupOperator) {
+                            case 0:
+                                sbOuter.append(" AND ");
+                                break;
+                            case 1:
+                                sbOuter.append(" OR ");
+                                break;
+                            default:
+                                sbOuter.append(" OR ");
+                                break;
+                        }
                     }
                     sbOuter.append('(').append(sbGroup).append(')');
                 }
             }
         }
         if (sbOuter.length() > 0) {
-            return " +(" + sbOuter.toString() + ')';
+            //            return " +(" + sbOuter.toString() + ')';
+            return sbOuter.toString();
         }
 
         return "";
