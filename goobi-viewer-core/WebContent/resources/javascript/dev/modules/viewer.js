@@ -5882,8 +5882,6 @@
          * 
          * @method init
          * @param {Object} config An config object which overwrites the defaults.
-         * @param {Object} config.$grid An jQuery object which represents the grid
-         * container.
          * @param {Object} data An data object which contains the images sources for the
          * grid.
          */
@@ -6360,6 +6358,145 @@
             _inputField.value = postData;
             // postData = $("#itemOrderInput").val();
         }
+    }
+    
+    return cms;
+    
+} )( cmsJS || {}, jQuery );
+;var cmsJS = ( function( cms ) {
+    'use strict';
+    
+    // variables
+    var _debug = true;
+    var _defaults = {
+        collectionsSelector: '.tpl-stacked-collection__collections',
+    };
+    
+    cms.stackedCollection = {
+        /**
+         * Method which initializes the RSS Feed.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {Object} data An data object which contains the images sources for the
+         * grid.
+         */
+        init: function( config, data ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'cmsJS.stackedCollections.init' );
+                console.log( '##############################' );
+                console.log( 'cmsJS.stackedCollections.init: config - ', config );
+                console.log( 'cmsJS.stackedCollections.init: data - ', data );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // render RSS Feed
+            _renderCollections( data );
+        }
+    };
+    
+    /**
+     * Method which renders the collection accordion.
+     * 
+     * @method _renderCollections
+     * @param {Object} data The RSS information data object.
+     */
+    function _renderCollections( data ) {
+        if ( _debug ) {
+            console.log( '---------- _renderCollections() ----------' );
+            console.log( '_renderCollections: data = ', data );
+        }
+        
+        var counter = 0;
+        
+        // DOM elements
+        var panelGroup = $( '<div />' ).attr( 'id', 'stackedCollections' ).attr( 'role', 'tablist' ).addClass( 'panel-group' );
+        var panel = null;
+        var panelHeading = null;
+        var panelThumbnail = null;
+        var panelThumbnailImage = null;
+        var panelTitle = null;
+        var panelTitleLink = null;
+        var panelCollapse = null;
+        var panelBody = null;
+        
+        // create members
+        data.members.forEach( function( member ) {
+            // increase counter
+            counter++;
+            // create panels
+            panel = $( '<div />' ).addClass( 'panel' );
+            // create panel title
+            panelHeading = $( '<div />' ).addClass( 'panel-heading' );
+            panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
+            panelTitleLink = $( '<a />' ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' ).attr( 'href', '#collapse-'
+                    + counter ).text( member.label );
+            panelTitle.append( panelTitleLink );
+            // create panel thumbnail if exist
+            if ( member.thumbnail ) {
+                panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
+                panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail ).addClass( 'img-responsive' );
+                panelThumbnail.append( panelThumbnailImage );
+                // build title
+                panelHeading.append( panelThumbnail ).append( panelTitle );
+            }
+            else {
+                // build title
+                panelHeading.append( panelTitle );
+            }
+            // create collapse
+            panelCollapse = $( '<div />' ).attr( 'id', 'collapse-' + counter ).attr( 'role', 'tabpanel' ).addClass( 'panel-collapse collapse' );
+            // create panel body
+            panelBody = $( '<div />' ).addClass( 'panel-body' ).append( _renderSubCollections( 'http://localhost:8080/viewer/rest/collections/de/DC/a/' ) );
+            // build collapse
+            panelCollapse.append( panelBody );
+            // build panel
+            panel.append( panelHeading ).append( panelCollapse );
+            // build panel group
+            panelGroup.append( panel );
+            
+            $( _defaults.collectionsSelector ).append( panelGroup );
+        } );
+    }
+    
+    /**
+     * Method which renders the subcollections.
+     * 
+     * @method _renderSubCollections
+     * @param {String} url The URL to the API which fetches the subcollection data.
+     * @returns {String} The HTML string of the subcollections.
+     */
+    function _renderSubCollections( url ) {
+        if ( _debug ) {
+            console.log( '---------- _renderSubCollections() ----------' );
+            console.log( '_renderSubCollections: url = ', url );
+        }
+        
+        // DOM elements
+        var subCollections = $( '<ul />' ).addClass( 'list' );
+        var subCollectionItem = null;
+        var subCollectionItemLink = null;
+        
+        // get subcollection data
+        $.ajax( {
+            url: url,
+            type: 'GET',
+            datatype: 'JSON'
+        } ).then( function( data ) {
+            // add subcollection items
+            data.members.forEach( function( member ) {
+                // create subcollection item
+                subCollectionItem = $( '<li />' );
+                subCollectionItemLink = $( '<a />' ).attr( 'href', '#' ).text( member.label );
+                // buils subcollection item
+                subCollectionItem.append( subCollectionItemLink );
+                subCollections.append( subCollectionItem );
+            } );
+        } );
+        
+        return subCollections;
     }
     
     return cms;

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateStckedCollection" version="2017-10-05">
+    <name>Accordeon Sammlungsansicht</name>
+    <description>Dieses Template zeigt eine Sammlungübersicht im Accordeonstil, inklusive Repräsentanten der Sammlung.</description>
+    <icon>cms_template_16_stackedCollection.png</icon>
+    <html>cms_template_16_stackedCollection.xhtml</html>
+    <content>
+ 	    <item id="text" label="Text" type="HTML" order="1"/>
+    </content>
+</cms_page_template>
