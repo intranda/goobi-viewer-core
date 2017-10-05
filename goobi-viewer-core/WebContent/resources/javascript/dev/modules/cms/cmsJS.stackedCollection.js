@@ -53,6 +53,10 @@ var cmsJS = ( function( cms ) {
             
             // render RSS Feed
             _renderCollections( data );
+            
+            // set first panel visible
+            $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded', 'true' ).removeClass( 'collapsed' );
+            $( '#stackedCollections .panel:first' ).find( '.panel-collapse' ).attr( 'aria-expanded', 'true' ).addClass( 'in' );
         }
     };
     
@@ -93,7 +97,7 @@ var cmsJS = ( function( cms ) {
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
             panelTitleLink = $( '<a />' ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' ).attr( 'href', '#collapse-'
-                    + counter ).text( member.label );
+                    + counter ).attr( 'aria-expanded', 'false' ).text( member.label );
             panelTitle.append( panelTitleLink );
             
             // TODO: Anzahl der Objekte im Werk in Klammern hinter den Titel
@@ -112,7 +116,7 @@ var cmsJS = ( function( cms ) {
             // build title
             panelHeading.append( panelThumbnail ).append( panelTitle ).append( panelRSS );
             // create collapse
-            panelCollapse = $( '<div />' ).attr( 'id', 'collapse-' + counter ).attr( 'role', 'tabpanel' ).addClass( 'panel-collapse collapse' );
+            panelCollapse = $( '<div />' ).attr( 'id', 'collapse-' + counter ).attr( 'role', 'tabpanel' ).attr( 'aria-expanded', 'false' ).addClass( 'panel-collapse collapse' );
             // create panel body
             
             // TODO: @id muss umbenannt werden, da es zu Fehlern beim Aufruf von
