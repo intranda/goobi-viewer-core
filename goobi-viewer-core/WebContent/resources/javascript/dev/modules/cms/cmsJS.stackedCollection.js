@@ -78,6 +78,8 @@ var cmsJS = ( function( cms ) {
         var panelThumbnailImage = null;
         var panelTitle = null;
         var panelTitleLink = null;
+        var panelRSS = null;
+        var panelRSSLink = null;
         var panelCollapse = null;
         var panelBody = null;
         
@@ -93,22 +95,30 @@ var cmsJS = ( function( cms ) {
             panelTitleLink = $( '<a />' ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' ).attr( 'href', '#collapse-'
                     + counter ).text( member.label );
             panelTitle.append( panelTitleLink );
+            
+            // TODO: Anzahl der Objekte im Werk in Klammern hinter den Titel
+            
+            // TODO: RSS-Feed verlinken
+            panelRSS = $( '<div />' ).addClass( 'panel-rss' );
+            panelRSSLink = $( '<a />' ).attr( 'href', '#' ).html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
+            panelRSS.append( panelRSSLink );
+            
             // create panel thumbnail if exist
+            panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
             if ( member.thumbnail ) {
-                panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
                 panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail ).addClass( 'img-responsive' );
                 panelThumbnail.append( panelThumbnailImage );
-                // build title
-                panelHeading.append( panelThumbnail ).append( panelTitle );
             }
-            else {
-                // build title
-                panelHeading.append( panelTitle );
-            }
+            // build title
+            panelHeading.append( panelThumbnail ).append( panelTitle ).append( panelRSS );
             // create collapse
             panelCollapse = $( '<div />' ).attr( 'id', 'collapse-' + counter ).attr( 'role', 'tabpanel' ).addClass( 'panel-collapse collapse' );
             // create panel body
+            
+            // TODO: @id muss umbenannt werden, da es zu Fehlern beim Aufruf von
+            // member.@id führt
             panelBody = $( '<div />' ).addClass( 'panel-body' ).append( _renderSubCollections( 'http://localhost:8080/viewer/rest/collections/de/DC/a/' ) );
+            
             // build collapse
             panelCollapse.append( panelBody );
             // build panel
