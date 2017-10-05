@@ -49,7 +49,7 @@ module.exports = function(grunt) {
         },
         concat: {
             options: {
-                separator: ';',
+                separator: '\n',
                 stripBanners: true,
                 banner: '/*!\n'
                     + ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
