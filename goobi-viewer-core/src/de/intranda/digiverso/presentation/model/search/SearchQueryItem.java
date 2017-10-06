@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
 
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,6 +204,7 @@ public class SearchQueryItem implements Serializable {
      * @param aggregateHits
      * @return
      * @should generate query correctly
+     * @should escape reserved characters
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
         StringBuilder sbItem = new StringBuilder();
@@ -344,9 +346,9 @@ public class SearchQueryItem implements Serializable {
                             }
                             if (value.contains("-")) {
                                 // Hack to enable fuzzy searching for terms that contain hyphens
-                                sbItem.append('"').append(value).append('"');
+                                sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
                             } else {
-                                sbItem.append(value);
+                                sbItem.append(ClientUtils.escapeQueryChars(value));
                             }
                             if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
                                 String val = value.replace("\"", "");

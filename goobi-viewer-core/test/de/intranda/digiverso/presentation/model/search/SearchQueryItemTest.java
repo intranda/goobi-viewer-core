@@ -89,7 +89,7 @@ public class SearchQueryItemTest {
             item.setField("MD_TITLE");
             item.setValue("bla \"blup\" -nein");
             Set<String> searchTerms = new HashSet<>(0);
-            Assert.assertEquals("MD_TITLE:(bla AND \"blup\" -nein)", item.generateQuery(searchTerms, true));
+            Assert.assertEquals("MD_TITLE:(bla AND \\\"blup\\\" -nein)", item.generateQuery(searchTerms, true));
             Assert.assertTrue(searchTerms.isEmpty());
         }
         {
@@ -98,8 +98,35 @@ public class SearchQueryItemTest {
             item.setField(SolrConstants.FULLTEXT);
             item.setValue("lorem ipsum dolor sit amet");
             Set<String> searchTerms = new HashSet<>(1);
-            Assert.assertEquals("(SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")", item.generateQuery(searchTerms, true));
+            Assert.assertEquals("(SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")", item.generateQuery(
+                    searchTerms, true));
             Assert.assertTrue(searchTerms.contains("lorem ipsum dolor sit amet"));
+        }
+    }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set,boolean)
+     * @verifies escape reserved characters
+     */
+    @Test
+    public void generateQuery_shouldEscapeReservedCharacters() throws Exception {
+        {
+            SearchQueryItem item = new SearchQueryItem(null);
+            item.setOperator(SearchItemOperator.OR);
+            item.setField(SolrConstants.DEFAULT);
+            item.setValue("[foo] :bar:");
+            Set<String> searchTerms = new HashSet<>(2);
+            Assert.assertEquals("SUPERDEFAULT:(\\[foo\\] OR \\:bar\\:) OR DEFAULT:(\\[foo\\] OR \\:bar\\:)", item.generateQuery(searchTerms, true));
+        }
+        {
+            // Phrase searches should NOT have escaped terms
+            SearchQueryItem item = new SearchQueryItem(null);
+            item.setOperator(SearchItemOperator.PHRASE);
+            item.setField(SolrConstants.DEFAULT);
+            item.setValue("[foo] :bar:");
+            Set<String> searchTerms = new HashSet<>(2);
+            Assert.assertEquals("(SUPERDEFAULT:\"[foo] :bar:\" OR DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms,
+                    true));
         }
     }
 }

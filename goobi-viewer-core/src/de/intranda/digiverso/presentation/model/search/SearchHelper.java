@@ -312,8 +312,8 @@ public final class SearchHelper {
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws PresentationException,
             IndexUnreachableException, DAOException {
-        // logger.debug("getBrowseElement(): " + query);
         String finalQuery = buildFinalQuery(query, aggregateHits);
+        logger.debug("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params,
                 searchTerms, null, locale) : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, filterQueries, params,
                         searchTerms, null, locale);
@@ -1377,7 +1377,7 @@ public final class SearchHelper {
             throw new IllegalArgumentException("fulltext may not be null");
         }
         List<String> ret = new ArrayList<>();
-//        StringBuilder sbFulltextFragment = new StringBuilder();
+        //        StringBuilder sbFulltextFragment = new StringBuilder();
 
         String fulltextFragment = "";
 
@@ -1910,25 +1910,30 @@ public final class SearchHelper {
         String currentField = null;
         for (String s : querySplit) {
             s = s.trim();
+            logger.trace("term: {}", s);
             // Extract the value part
-            if (s.contains(":")) {
-                String[] pairSplit = s.split(":");
-                if (pairSplit.length > 1) {
-                    currentField = pairSplit[0];
+            if (s.contains(":") && !s.startsWith(":")) {
+                int split = s.indexOf(':');
+                String field = s.substring(0, split);
+                String value = s.length() > split ? s.substring(split + 1) : null;
+                if (StringUtils.isNotBlank(value)) {
+                    currentField = field;
                     if (SolrConstants.SUPERDEFAULT.equals(currentField)) {
                         currentField = SolrConstants.DEFAULT;
                     } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {
                         currentField = SolrConstants.FULLTEXT;
                     }
                     // Remove quotation marks from phrases
-                    if (pairSplit[1].charAt(0) == '"' && pairSplit[1].charAt(pairSplit[1].length() - 1) == '"') {
-                        pairSplit[1] = pairSplit[1].replace("\"", "");
+                    logger.trace("field: {}", field);
+                    logger.trace("value: {}", value);
+                    if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
+                        value = value.replace("\"", "");
                     }
-                    if (pairSplit[1].length() > 0 && !stopwords.contains(pairSplit[1])) {
+                    if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<String>());
                         }
-                        ret.get(currentField).add(pairSplit[1]);
+                        ret.get(currentField).add(value);
                     }
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
@@ -2048,7 +2053,8 @@ public final class SearchHelper {
      * @return
      * @should generate query correctly
      * @should return empty string if no fields match
-     * @should skip PI_TOPSTRUCT
+     * @should skip reserved fields
+     * @should escape reserved characters
      */
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms) {
         StringBuilder sbOuter = new StringBuilder();
@@ -2079,7 +2085,7 @@ public final class SearchHelper {
                     if (sbInner.length() > 0) {
                         sbInner.append(" OR ");
                     }
-                    sbInner.append(term);
+                    sbInner.append(ClientUtils.escapeQueryChars(term));
                 }
                 sbOuter.append(field).append(":(").append(sbInner.toString()).append(')');
                 moreThanOne = true;
@@ -2096,12 +2102,14 @@ public final class SearchHelper {
      * Creates a Solr expand query string out of advanced search query item groups.
      * 
      * @param groups
+     * @param advancedSearchGroupOperator
      * @return
      * @should generate query correctly
-     * @should skip PI_TOPSTRUCT
+     * @should skip reserved fields
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
         StringBuilder sbOuter = new StringBuilder();
+
         if (!groups.isEmpty()) {
             for (SearchQueryGroup group : groups) {
                 StringBuilder sbGroup = new StringBuilder();
@@ -2147,7 +2155,17 @@ public final class SearchHelper {
                 }
                 if (sbGroup.length() > 0) {
                     if (sbOuter.length() > 0) {
-                        sbOuter.append(" OR ");
+                        switch (advancedSearchGroupOperator) {
+                            case 0:
+                                sbOuter.append(" AND ");
+                                break;
+                            case 1:
+                                sbOuter.append(" OR ");
+                                break;
+                            default:
+                                sbOuter.append(" OR ");
+                                break;
+                        }
                     }
                     sbOuter.append('(').append(sbGroup).append(')');
                 }
@@ -2155,6 +2173,7 @@ public final class SearchHelper {
         }
         if (sbOuter.length() > 0) {
             return " +(" + sbOuter.toString() + ')';
+            //            return sbOuter.toString();
         }
 
         return "";

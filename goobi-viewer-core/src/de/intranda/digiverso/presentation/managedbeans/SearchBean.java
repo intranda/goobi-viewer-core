@@ -122,6 +122,8 @@ public class SearchBean implements Serializable {
     private int currentPage = 1;
     /** Index of the currently open search result (used for search result browsing). */
     private int currentHitIndex = -1;
+    /** Number by which currentHitIndex shall be increased or decreased. */
+    private int hitIndexOperand = 0;
     private SearchFacets facets = new SearchFacets();
     /** User-selected Solr field name by which the search results shall be sorted. A leading exclamation mark means descending sorting. */
     private String sortString = "";
@@ -636,9 +638,9 @@ public class SearchBean implements Serializable {
             int from = (currentPage - 1) * hitsPerPage;
             if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
                 // Add search hit aggregation parameters, if enabled
-                String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups) : SearchHelper
-                        .generateExpandQuery(SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups),
-                                searchTerms);
+                String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups,
+                        advancedSearchGroupOperator) : SearchHelper.generateExpandQuery(SearchHelper.getExpandQueryFieldList(activeSearchType,
+                                currentSearchFilter, advancedQueryGroups), searchTerms);
                 logger.trace("Expand query: {}", expandQuery);
                 if (StringUtils.isNotEmpty(expandQuery)) {
                     params.put(ExpandParams.EXPAND, "true");
@@ -1336,16 +1338,37 @@ public class SearchBean implements Serializable {
         return currentHitIndex;
     }
 
+    public int getCurrentHitIndexDisplay() {
+        return currentHitIndex + 1;
+    }
+
     public void increaseCurrentHitIndex() {
-        if (currentSearch != null && currentHitIndex < currentSearch.getHitsCount() - 1) {
-            currentHitIndex++;
+        if (hitIndexOperand != 0 && currentSearch != null && currentHitIndex < currentSearch.getHitsCount() - 1) {
+            int old = currentHitIndex;
+            currentHitIndex += hitIndexOperand;
+            if (currentHitIndex < 0) {
+                currentHitIndex = 0;
+            } else if (currentHitIndex >= currentSearch.getHitsCount()) {
+                currentHitIndex = (int) (currentSearch.getHitsCount() - 1);
+            }
+            hitIndexOperand = 0; // reset operand
+
+            logger.trace("increaseCurrentHitIndex: {}->{}", old, currentHitIndex);
         }
     }
 
-    public void decreaseCurrentHitIndex() {
-        if (currentHitIndex > 0) {
-            currentHitIndex--;
-        }
+    /**
+     * @return the hitIndexOperand
+     */
+    public int getHitIndexOperand() {
+        return hitIndexOperand;
+    }
+
+    /**
+     * @param hitIndexOperand the hitIndexOperand to set
+     */
+    public void setHitIndexOperand(int hitIndexOperand) {
+        this.hitIndexOperand = hitIndexOperand;
     }
 
     /**
@@ -1360,9 +1383,9 @@ public class SearchBean implements Serializable {
         currentHitIndex = 0;
         if (currentSearch != null && !currentSearch.getHits().isEmpty()) {
             for (SearchHit hit : currentSearch.getHits()) {
-                BrowseElement el = hit.getBrowseElement();
-                logger.trace("BrowseElement: {}/{}", el.getPi(), el.getImageNo());
-                if (el.getPi().equals(currentElementPi) && el.getImageNo() == currentImageNo) {
+                BrowseElement be = hit.getBrowseElement();
+                logger.trace("BrowseElement: {}/{}", be.getPi(), be.getImageNo());
+                if (be.getPi().equals(currentElementPi) && be.getImageNo() == currentImageNo) {
                     logger.trace("currentPage: {}", currentPage);
                     currentHitIndex += (currentPage - 1) * hitsPerPage;
                     logger.trace("currentHitIndex: {}", currentHitIndex);

@@ -47,6 +47,8 @@ import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.model.search.FacetItem;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.search.SearchQueryGroup.SearchQueryGroupOperator;
+import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
 import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.user.LicenseType;
 import de.intranda.digiverso.presentation.model.user.User;
@@ -513,7 +515,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void extractSearchTermsFromQuery_shouldExtractAllValuesFromQueryExceptFromNOTBlocks() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND value4)) AND SUPERFULLTEXT:\"hello-world\" AND NOT(MD_Y:value_not)", null);
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND NOT(MD_Y:value_not)", null);
         Assert.assertEquals(3, result.size());
         {
             Set<String> terms = result.get("MD_X");
@@ -527,7 +529,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertNotNull(terms);
             Assert.assertEquals(2, terms.size());
             Assert.assertTrue(terms.contains("value3"));
-            Assert.assertTrue(terms.contains("value4"));
+            Assert.assertTrue(terms.contains(":value4:"));
         }
         {
             Set<String> terms = result.get(SolrConstants.FULLTEXT);
@@ -848,7 +850,99 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 SolrConstants.UGCTERMS, SolrConstants.OVERVIEWPAGE_DESCRIPTION, SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
+
         Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map)
+     * @verifies skip reserved fields
+     */
+    @Test
+    public void generateExpandQuery_shouldSkipReservedFields() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
+                SolrConstants.UGCTERMS, SolrConstants.OVERVIEWPAGE_DESCRIPTION, SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT,
+                SolrConstants.PI_TOPSTRUCT, SolrConstants.DC, SolrConstants.DOCSTRCT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
+        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "two", "three" })));
+        searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
+        searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
+        searchTerms.put(SolrConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<>(Arrays.asList(new String[] { "seven" })));
+        searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
+        Assert.assertEquals(
+                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:(six) OR OVERVIEWPAGE_DESCRIPTION:(seven) OR OVERVIEWPAGE_PUBLICATIONTEXT:(eight))",
+                SearchHelper.generateExpandQuery(fields, searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map)
+     * @verifies escape reserved characters
+     */
+    @Test
+    public void generateExpandQuery_shouldEscapeReservedCharacters() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "[one]", ":two:" })));
+        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
+     * @verifies generate query correctly
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(2);
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.AND);
+            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems().get(0).setValue("Monograph");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+            group.getQueryItems().get(1).setValue("foo bar");
+            groups.add(group);
+        }
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.OR);
+            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems().get(0).setValue("Volume");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+            group.getQueryItems().get(1).setField("MD_SHELFMARK");
+            group.getQueryItems().get(1).setValue("bla blup");
+            groups.add(group);
+        }
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        Assert.assertEquals(" +((DOCSTRCT:Monograph AND MD_TITLE:(foo AND bar)) AND (DOCSTRCT:Volume OR MD_SHELFMARK:(bla OR blup)))", result);
+    }
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
+     * @verifies skip reserved fields
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(1);
+
+        SearchQueryGroup group = new SearchQueryGroup(null, 3);
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+        group.getQueryItems().get(0).setValue("Monograph");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.PI_TOPSTRUCT);
+        group.getQueryItems().get(1).setValue("PPN123");
+        group.getQueryItems().get(2).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(2).setField(SolrConstants.DC);
+        group.getQueryItems().get(2).setValue("co1");
+        groups.add(group);
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        Assert.assertEquals(" +((DOCSTRCT:Monograph))", result);
     }
 
     /**

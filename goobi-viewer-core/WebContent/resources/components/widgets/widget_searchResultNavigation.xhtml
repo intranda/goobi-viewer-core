@@ -28,7 +28,7 @@
 					<div class="search-result-navigation-center">
 						<h:outputFormat value="#{msg.searchResultNavigation_hitIndex}"
 							rendered="#{activeDocumentBean.nextHit != null or activeDocumentBean.prevHit != null}" class="searchResultNavigationText">
-							<f:param value="#{activeDocumentBean.currentHitIndexDisplay}" />
+							<f:param value="#{searchBean.currentHitIndexDisplay}" />
 							<f:param value="#{searchBean.hitsCount}" />
 						</h:outputFormat>
 
