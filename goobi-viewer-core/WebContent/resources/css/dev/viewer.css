@@ -5671,6 +5671,10 @@ div.olMapViewport {
 .download {
   /* ELEMENT */
 }
+.download__status .panel-title {
+  margin: 0;
+  padding: 0;
+}
 .download__status-loader:before,
 .download__status-loader:after {
   content: " ";
@@ -5681,11 +5685,15 @@ div.olMapViewport {
 }
 .download__status-loader img {
   float: right;
+  max-height: 16px;
 }
 .download__status-license-text {
   height: 200px;
   background-color: #fff;
   overflow-y: auto;
+}
+#downloadBtn {
+  margin: 10px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
