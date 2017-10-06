@@ -94,7 +94,6 @@ public class ContextListener implements ServletContextListener {
                             }
                         }
                     }
-                    System.out.println("Found pretty files" + prettyConfigFiles);
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
                     //                } catch (URISyntaxException e) {
