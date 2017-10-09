@@ -162,6 +162,9 @@
         <dependent-module archiveName="goobi-viewer-theme-bsz.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-bsz/goobi-viewer-theme-bsz">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="goobi-viewer-theme-gaugsammlungen.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-gaugsammlungen/goobi-viewer-theme-gaugsammlungen">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>
