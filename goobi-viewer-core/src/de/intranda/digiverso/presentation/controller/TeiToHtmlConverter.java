@@ -67,9 +67,9 @@ public class TeiToHtmlConverter {
         }
         for (MatchResult r : findRegexMatches("</div>", text)) {
             divClosedIndexes.add(r.end() - 1);
-            logger.trace("end at {}-{}", r.start(), r.end() - 1);
+            // logger.trace("end at {}-{}", r.start(), r.end() - 1);
         }
-        logger.trace(text);
+        // logger.trace(text);
         List<Integer> allIndexes = new ArrayList<>();
         allIndexes.addAll(divOpenedIndexes);
         allIndexes.addAll(divClosedIndexes);
@@ -79,10 +79,10 @@ public class TeiToHtmlConverter {
         for (int i = allIndexes.get(0); i <= allIndexes.get(allIndexes.size() - 1); ++i) {
             if (divOpenedIndexes.contains(i)) {
                 level++;
-                logger.trace("increase at {}: {}", i, level);
+                // logger.trace("increase at {}: {}", i, level);
             } else if (divClosedIndexes.contains(i)) {
                 level--;
-                logger.trace("decrease at {}: {}", i, level);
+                // logger.trace("decrease at {}: {}", i, level);
             }
             hierarchyLevels.put(i, level);
         }
@@ -90,7 +90,7 @@ public class TeiToHtmlConverter {
     }
 
     int getHierarchyLevel(int index) {
-        logger.trace("getHierarchyLevel: {}", index);
+        // logger.trace("getHierarchyLevel: {}", index);
         return hierarchyLevels.get(index);
     }
 
