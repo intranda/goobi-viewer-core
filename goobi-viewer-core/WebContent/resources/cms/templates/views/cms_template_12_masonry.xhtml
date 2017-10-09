@@ -43,7 +43,12 @@
                     <ui:include src="#{cmsPage.getContent('text')}" />
                 </div>
                 
-                <!-- MASONRY -->
+                <!-- LOADER -->
+				<div class="tpl-masonry__loader" style="display: none;">
+					<img src="#{request.contextPath}/resources/images/infinity_loader.gif" alt="Masonry Loader" /> #{msg.cms_masonryLoading}...
+				</div>
+
+				<!-- MASONRY -->
                 <div class="grid">
                     <div class="grid-sizer"></div>
                     <div class="gutter-sizer"></div>

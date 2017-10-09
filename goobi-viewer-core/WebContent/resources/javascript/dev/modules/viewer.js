@@ -5714,6 +5714,7 @@
     var _lazyGrid = null;
     var _defaults = {
         $grid: null,
+        loaderSelector: '.tpl-masonry__loader'
     };
     
     // DOM-Elements
@@ -5749,6 +5750,9 @@
             
             $.extend( true, _defaults, config );
             
+            // show loader
+            $(_defaults.loaderSelector).show();
+            
             // render grid
             _renderMasonryGrid( data );
             
@@ -5765,6 +5769,9 @@
             
             // fade in grid after rendering
             _lazyGrid.on( 'layoutComplete', function( event, laidOutItems ) {
+             // hide loader
+                $(_defaults.loaderSelector).hide();
+                // show images
                 _defaults.$grid.addClass( 'ready' );
             } );
             
