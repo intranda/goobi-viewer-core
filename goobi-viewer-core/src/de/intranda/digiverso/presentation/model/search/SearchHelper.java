@@ -218,7 +218,7 @@ public final class SearchHelper {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
-                    childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
+                    // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
                     HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
