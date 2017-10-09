@@ -121,7 +121,7 @@ var cmsJS = ( function( cms ) {
             
             // TODO: @id muss umbenannt werden, da es zu Fehlern beim Aufruf von
             // member.@id führt
-            panelBody = $( '<div />' ).addClass( 'panel-body' ).append( _renderSubCollections( 'http://localhost:8080/viewer/rest/collections/de/DC/a/' ) );
+            panelBody = $( '<div />' ).addClass( 'panel-body' ).append( _renderSubCollections( member["@id"] ) );
             
             // build collapse
             panelCollapse.append( panelBody );

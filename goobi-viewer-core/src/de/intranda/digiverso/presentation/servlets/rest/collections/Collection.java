@@ -18,9 +18,13 @@ package de.intranda.digiverso.presentation.servlets.rest.collections;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,9 +32,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.managedbeans.ConfigurationBean;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 
@@ -40,19 +42,26 @@ import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcEleme
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({"@id", "@type", "label", "description", "thumbnail", "rendering"})
+@JsonPropertyOrder({"@id", "@type", "label", "description", "thumbnail", "metadata", "rendering", "related"})
 public abstract class Collection {
 
     /**
      * 
      */
+    private static final Logger logger = LoggerFactory.getLogger(Collection.class);
     protected static final String IIIF_PRESENTATION_CONTEXT = "http://iiif.io/api/presentation/2/context.json";
+    public final static String NUM_MANIFESTS_LABEL = "volumes";
+    public final static String RSS_FEED_LABEL = "Rss feed";
+    public final static String RSS_FEED_FORMAT = "Rss feed";
+    
     protected URL id;
     protected String label;
     private CollectionLink link = null;
+    private CollectionLink rssLink = null;
     private String description = null;
     private URI thumbnail;
     protected String type = "sc:collection";
+    private List<Metadata> metadata = new ArrayList<>();
 
     /**
      * @param collectionView
@@ -62,10 +71,13 @@ public abstract class Collection {
         String baseCollectionName = collectionView.getTopVisibleElement();
         this.id = getCollectionUrl(locale, baseUrl, collectionField, baseCollectionName);
         
+        
         if(baseElement != null) {
 
             if(StringUtils.isNotBlank(collectionView.getTopVisibleElement())) {
                 label = Helper.getTranslation(collectionView.getTopVisibleElement(), locale);
+                addMetadata(NUM_MANIFESTS_LABEL, Long.toString(baseElement.getNumberOfVolumes()));
+                this.rssLink = createRssLink(baseElement.getRssUrl(), baseUrl);
             } else {
                 label = Helper.getTranslation(collectionField, locale);
             }
@@ -77,10 +89,26 @@ public abstract class Collection {
             }
             this.link = createLink(collectionView, baseUrl, baseElement, label);
         }
-        
-        
 
+    }
 
+    /**
+     * @param rssUrl
+     * @return
+     */
+    private CollectionLink createRssLink(String rssUrl, String baseUrl) {
+        if(!rssUrl.matches("https?://.*")) {
+            rssUrl = baseUrl.substring(0, baseUrl.indexOf("/rest/")) + rssUrl;
+        }
+        rssUrl = rssUrl.replaceAll("\\s+", "+");
+       try {           
+           URL url = new URL(rssUrl);
+           CollectionLink link = new CollectionLink(url, RSS_FEED_LABEL);
+           return link;
+       } catch(NullPointerException | MalformedURLException e) {
+           logger.error("Unable to parse rss url " + rssUrl);
+           return null;
+       }
     }
 
     /**
@@ -165,5 +193,25 @@ public abstract class Collection {
         return link;
     }
 
-
+    /**
+     * @return the metadata
+     */
+    @JsonInclude(Include.NON_EMPTY)
+    public List<Metadata> getMetadata() {
+        return metadata;
+    }
+    
+    public void addMetadata(String label, String value) {
+        if(StringUtils.isNotBlank(label) && StringUtils.isNotBlank(value)) {
+            this.metadata.add(new Metadata(label, value));
+        }
+    }
+    
+    /**
+     * @return the rssLink
+     */
+    @JsonProperty("related")
+    public CollectionLink getRssLink() {
+        return rssLink;
+    }
 }

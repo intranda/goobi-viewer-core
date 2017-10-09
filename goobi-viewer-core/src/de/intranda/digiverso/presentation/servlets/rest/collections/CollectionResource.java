@@ -68,6 +68,9 @@ public class CollectionResource {
             throws PresentationException, IndexUnreachableException, MalformedURLException {
 
         Collection collection = generateCollection(collectionField, null, getBaseUrl(), getLocale(language), getFacetField(collectionField));
+        
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        
         return collection;
 
     }
@@ -79,6 +82,9 @@ public class CollectionResource {
             @PathParam("topElement") final String topElement) throws PresentationException, IndexUnreachableException, MalformedURLException {
 
         Collection collection = generateCollection(collectionField, topElement, getBaseUrl(), getLocale(language), getFacetField(collectionField));
+        
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        
         return collection;
 
     }

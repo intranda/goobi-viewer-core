@@ -109,7 +109,7 @@ public class BaseCollection extends Collection {
     /**
      * @return the subCollections
      */
-    @JsonProperty("members")
+    @JsonProperty("collections")
     public List<Collection> getSubCollections() {
         return subCollections;
     }

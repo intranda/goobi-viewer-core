@@ -15,11 +15,8 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.collections;
 
-import java.net.URL;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -29,33 +26,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({"@id", "label", "format"})
-public class CollectionLink {
-
-    private URL link;
-    private String label;
-    private String format = "text/html";
+@JsonPropertyOrder({"label", "value"})
+public class Metadata {
     
+    private final String label;
+    private final String value;
     /**
-     * 
+     * @param label
+     * @param value
      */
-    public CollectionLink(URL link, String label) {
-        this.link = link;
+    public Metadata(String label, String value) {
+        super();
         this.label = label;
-    }
-    
-    public CollectionLink(URL link, String label, String format) {
-        this.link = link;
-        this.label = label;
-        this.format = format;
-    }
-    
-    /**
-     * @return the link
-     */
-    @JsonProperty("@id")
-    public URL getLink() {
-        return link;
+        this.value = value;
     }
     
     /**
@@ -66,11 +49,11 @@ public class CollectionLink {
     }
     
     /**
-     * @return the format
+     * @return the value
      */
-    public String getFormat() {
-        return format;
+    public String getValue() {
+        return value;
     }
     
-    
+
 }
