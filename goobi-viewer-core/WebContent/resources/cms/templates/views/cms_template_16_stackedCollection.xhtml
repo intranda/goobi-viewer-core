@@ -43,7 +43,7 @@
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: '#{request.contextPath}' + '/rest/collections/de/DC/',
+                        url: '#{request.contextPath}/rest/collections/de/#{cmsPage.getContentItem("collection").collectionField}/',
                         type: 'GET',
                         datatype: 'JSON'
                     } ).then( function( data ) {

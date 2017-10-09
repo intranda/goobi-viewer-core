@@ -6,5 +6,6 @@
     <html>cms_template_16_stackedCollection.xhtml</html>
     <content>
  	    <item id="text" label="Text" type="HTML" order="1"/>
+ 	    <item id="collection" label="Collection" type="COLLECTION" order="2"/>
     </content>
 </cms_page_template>
