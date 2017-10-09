@@ -129,4 +129,20 @@ public class SearchQueryItemTest {
                     true));
         }
     }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set,boolean)
+     * @verifies always use OR operator if searching in all fields
+     */
+    @Test
+    public void generateQuery_shouldAlwaysUseOROperatorIfSearchingInAllFields() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS);
+        item.setValue("foo bar");
+        Set<String> searchTerms = new HashSet<>(2);
+        Assert.assertEquals(
+                "SUPERDEFAULT:(foo OR bar) OR SUPERFULLTEXT:(foo OR bar) OR DEFAULT:(foo OR bar) OR FULLTEXT:(foo OR bar) OR NORMDATATERMS:(foo OR bar) OR UGCTERMS:(foo OR bar) OR OVERVIEWPAGE_DESCRIPTION:(foo OR bar) OR OVERVIEWPAGE_PUBLICATIONTEXT:(foo OR bar)",
+                item.generateQuery(searchTerms, true));
+    }
 }

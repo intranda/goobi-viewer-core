@@ -205,6 +205,7 @@ public class SearchQueryItem implements Serializable {
      * @return
      * @should generate query correctly
      * @should escape reserved characters
+     * @should always use OR operator if searching in all fields
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
         StringBuilder sbItem = new StringBuilder();
@@ -288,9 +289,9 @@ public class SearchQueryItem implements Serializable {
             {
                 if (!value.trim().isEmpty()) {
                     String[] valueSplit = value.trim().split(" ");
-                    boolean additionalField = false;
+                    boolean moreThanOneField = false;
                     for (String field : fields) {
-                        if (additionalField) {
+                        if (moreThanOneField) {
                             sbItem.append(" OR ");
                         }
                         String useField = field;
@@ -302,7 +303,7 @@ public class SearchQueryItem implements Serializable {
                         if (valueSplit.length > 1) {
                             sbItem.append('(');
                         }
-                        boolean additionalValue = false;
+                        boolean moreThanOneValue = false;
                         for (String value : valueSplit) {
                             value = value.trim();
                             if (value.charAt(0) == '"') {
@@ -323,8 +324,15 @@ public class SearchQueryItem implements Serializable {
                                 //                            }
                                 sbItem.append(" -");
                                 value = value.substring(1);
-                            } else if (additionalValue) {
-                                sbItem.append(' ').append(operator.name()).append(' ');
+                            } else if (moreThanOneValue) {
+                                switch (this.field) {
+                                    case ADVANCED_SEARCH_ALL_FIELDS:
+                                        sbItem.append(" OR ");
+                                        break;
+                                    default:
+                                        sbItem.append(' ').append(operator.name()).append(' ');
+                                        break;
+                                }
                             }
                             // Lowercase the search term for certain fields
                             switch (useField) {
@@ -357,12 +365,12 @@ public class SearchQueryItem implements Serializable {
                                     // TODO do not add negated terms
                                 }
                             }
-                            additionalValue = true;
+                            moreThanOneValue = true;
                         }
                         if (valueSplit.length > 1) {
                             sbItem.append(')');
                         }
-                        additionalField = true;
+                        moreThanOneField = true;
                     }
                 }
             }
