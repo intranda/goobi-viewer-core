@@ -6395,9 +6395,12 @@ var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
         collectionsSelector: '.tpl-stacked-collection__collections',
+        msg: {
+            noSubCollectionText: ''
+        }
     };
     
     cms.stackedCollection = {
@@ -6466,16 +6469,12 @@ var cmsJS = ( function( cms ) {
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
             panelTitleLink = $( '<a />' ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' ).attr( 'href', '#collapse-'
-                    + counter ).attr( 'aria-expanded', 'false' ).text( member.label + ' (' + _getMetadataValue(member, 'volumes') + ')' );
+                    + counter ).attr( 'aria-expanded', 'false' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
             panelTitle.append( panelTitleLink );
-            
-            // TODO: Anzahl der Objekte im Werk in Klammern hinter den Titel
-            
-            // TODO: RSS-Feed verlinken
+            // create RSS link
             panelRSS = $( '<div />' ).addClass( 'panel-rss' );
-            panelRSSLink = $( '<a />' ).attr( 'href', member.related['@id'] ).attr('target', '_blank').html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
+            panelRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
             panelRSS.append( panelRSSLink );
-            
             // create panel thumbnail if exist
             panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
             if ( member.thumbnail ) {
@@ -6487,11 +6486,7 @@ var cmsJS = ( function( cms ) {
             // create collapse
             panelCollapse = $( '<div />' ).attr( 'id', 'collapse-' + counter ).attr( 'role', 'tabpanel' ).attr( 'aria-expanded', 'false' ).addClass( 'panel-collapse collapse' );
             // create panel body
-            
-            // TODO: @id muss umbenannt werden, da es zu Fehlern beim Aufruf von
-            // member.@id führt
-            panelBody = $( '<div />' ).addClass( 'panel-body' ).append( _renderSubCollections( member["@id"] ) );
-            
+            panelBody = $( '<div />' ).addClass( 'panel-body' ).append( _renderSubCollections( member[ "@id" ] ) );
             // build collapse
             panelCollapse.append( panelBody );
             // build panel
@@ -6504,21 +6499,30 @@ var cmsJS = ( function( cms ) {
     }
     
     /**
+     * Method to retrieve metadata value of the metadata object with the given label and
+     * within the given collection object.
      * 
-     * Method to retrieve metadata value of the metadata object with the given label and within the given collection object
-     * 
-     * @param collection {Object} The iiif-presentation collection object cotaining the metadata
-     * @param label {String} The label property value of the metadata to return
-     * @returns
+     * @param collection {Object} The iiif-presentation collection object cotaining the
+     * metadata.
+     * @param label {String} The label property value of the metadata to return.
+     * @returns {String} The count of works in the collection.
      */
     function _getMetadataValue( collection, label ) {
-    	var value = '';
-    	collection.metadata.forEach(function(metadata) {
-    		if(metadata.label == label) {
-    			value = metadata.value;
-    		}
-    	});
-    	return value;
+        if ( _debug ) {
+            console.log( '---------- _getMetadataValue() ----------' );
+            console.log( '_getMetadataValue: collection = ', collection );
+            console.log( '_getMetadataValue: label = ', label );
+        }
+        
+        var value = '';
+        
+        collection.metadata.forEach( function( metadata ) {
+            if ( metadata.label == label ) {
+                value = metadata.value;
+            }
+        } );
+        
+        return value;
     }
     
     /**
@@ -6545,15 +6549,24 @@ var cmsJS = ( function( cms ) {
             type: 'GET',
             datatype: 'JSON'
         } ).then( function( data ) {
-            // add subcollection items
-            data.members.forEach( function( member ) {
-                // create subcollection item
-                subCollectionItem = $( '<li />' );
-                subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering['@id'] ).text( member.label );
-                // buils subcollection item
+            subCollectionItem = $( '<li />' );
+            
+            if ( !$.isEmptyObject( data.members ) ) {
+                // add subcollection items
+                data.members.forEach( function( member ) {
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).text( member.label );
+                    // build subcollection item
+                    subCollectionItem.append( subCollectionItemLink );
+                    subCollections.append( subCollectionItem );
+                } );
+            }
+            else {
+                // create empty item link
+                subCollectionItemLink = $( '<a />' ).attr( 'href', data.rendering[ '@id' ] ).text( _defaults.msg.noSubCollectionText + '.' );
+                // build empty item
                 subCollectionItem.append( subCollectionItemLink );
                 subCollections.append( subCollectionItem );
-            } );
+            }
         } );
         
         return subCollections;
