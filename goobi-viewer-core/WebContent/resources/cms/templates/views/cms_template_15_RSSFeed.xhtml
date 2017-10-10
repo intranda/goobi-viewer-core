@@ -43,7 +43,7 @@
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: '#{request.contextPath}' + '/rest/rss/de/-/10/',
+                        url: '#{request.contextPath}' + '/rest/rss/de/-/#{cmsPage.getContentItem("rss").elementsPerPage}/',
                         type: 'GET',
                         datatype: 'JSON'
                     } ).then( function( data ) {

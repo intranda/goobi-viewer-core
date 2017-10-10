@@ -66,11 +66,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         PAGELIST,
         COLLECTION,
         TILEGRID,
-        TOC;
+        TOC,
+        RSS;
 
         public static CMSContentItemType getByName(String name) {
             if (name != null) {
-                switch (name) {
+                switch (name.toUpperCase()) {
                     case "TEXT":
                         return TEXT;
                     case "HTML":
@@ -85,8 +86,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         return COLLECTION;
                     case "TILEGRID":
                         return TILEGRID;
+                    case "RSS":
+                        return RSS;
                     case "TOC":
-                        return CMSContentItemType.TOC;
+                        return TOC;
                     default:
                         return null;
                 }
@@ -222,6 +225,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Transient
     private int order = 0;
     
+
     /**
      * 
      */
@@ -719,6 +723,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Override
     public String toString() {
         return CMSContentItem.class.getSimpleName() + ": " + getType() + " (" + getItemId() + ")";
+    }
+    
+    public ContentItemMode getMode() {
+        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
     }
 
 }

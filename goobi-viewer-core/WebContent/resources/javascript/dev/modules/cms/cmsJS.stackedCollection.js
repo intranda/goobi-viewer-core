@@ -97,14 +97,14 @@ var cmsJS = ( function( cms ) {
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
             panelTitleLink = $( '<a />' ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' ).attr( 'href', '#collapse-'
-                    + counter ).attr( 'aria-expanded', 'false' ).text( member.label );
+                    + counter ).attr( 'aria-expanded', 'false' ).text( member.label + ' (' + _getMetadataValue(member, 'volumes') + ')' );
             panelTitle.append( panelTitleLink );
             
             // TODO: Anzahl der Objekte im Werk in Klammern hinter den Titel
             
             // TODO: RSS-Feed verlinken
             panelRSS = $( '<div />' ).addClass( 'panel-rss' );
-            panelRSSLink = $( '<a />' ).attr( 'href', '#' ).html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
+            panelRSSLink = $( '<a />' ).attr( 'href', member.related['@id'] ).attr('target', '_blank').html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
             panelRSS.append( panelRSSLink );
             
             // create panel thumbnail if exist
@@ -135,6 +135,24 @@ var cmsJS = ( function( cms ) {
     }
     
     /**
+     * 
+     * Method to retrieve metadata value of the metadata object with the given label and within the given collection object
+     * 
+     * @param collection {Object} The iiif-presentation collection object cotaining the metadata
+     * @param label {String} The label property value of the metadata to return
+     * @returns
+     */
+    function _getMetadataValue( collection, label ) {
+    	var value = '';
+    	collection.metadata.forEach(function(metadata) {
+    		if(metadata.label == label) {
+    			value = metadata.value;
+    		}
+    	});
+    	return value;
+    }
+    
+    /**
      * Method which renders the subcollections.
      * 
      * @method _renderSubCollections
@@ -162,7 +180,7 @@ var cmsJS = ( function( cms ) {
             data.members.forEach( function( member ) {
                 // create subcollection item
                 subCollectionItem = $( '<li />' );
-                subCollectionItemLink = $( '<a />' ).attr( 'href', '#' ).text( member.label );
+                subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering['@id'] ).text( member.label );
                 // buils subcollection item
                 subCollectionItem.append( subCollectionItemLink );
                 subCollections.append( subCollectionItem );
