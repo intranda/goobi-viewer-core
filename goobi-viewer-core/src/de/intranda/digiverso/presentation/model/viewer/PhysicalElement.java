@@ -576,7 +576,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return
      */
     public String getDisplayMimeType() {
-        String baseType = getMimeType();
+        return getFullMimeType(getMimeType(), fileName);
+    }
+
+    /**
+     * 
+     * @param baseType
+     * @param fileName
+     * @return
+     */
+    public static String getFullMimeType(String baseType, String fileName) {
         if (baseType.equals(MIME_TYPE_IMAGE)) {
             //            return baseType + "/jpeg";
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
