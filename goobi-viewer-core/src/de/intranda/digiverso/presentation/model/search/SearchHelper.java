@@ -218,6 +218,7 @@ public final class SearchHelper {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
+                    childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
                     HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
@@ -312,8 +313,8 @@ public final class SearchHelper {
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws PresentationException,
             IndexUnreachableException, DAOException {
-        // logger.debug("getBrowseElement(): " + query);
         String finalQuery = buildFinalQuery(query, aggregateHits);
+        logger.debug("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params,
                 searchTerms, null, locale) : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, filterQueries, params,
                         searchTerms, null, locale);

@@ -248,11 +248,19 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Do these steps only if a new document has been loaded
+            boolean mayChangeHitIndex = false;
             if (viewManager == null || viewManager.getTopDocument() == null || viewManager.getTopDocumentIddoc() != topDocumentIddoc) {
                 toc = null;
                 anchor = false;
                 volume = false;
                 group = false;
+
+                // Change current hit index only if loading a new record
+                if (searchBean != null && searchBean.getCurrentSearch() != null) {
+                    searchBean.increaseCurrentHitIndex();
+                    mayChangeHitIndex = true;
+                }
+
                 StructElement topDocument = new StructElement(topDocumentIddoc);
 
                 // Do not open records who may not be listed for the current user
@@ -282,11 +290,6 @@ public class ActiveDocumentBean implements Serializable {
                 logger.trace("Overview page found: {}", overviewPage != null);
                 toc = new TOC();
                 toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
-            }
-
-            // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-            if (searchBean != null && searchBean.getCurrentHitIndex() < 0) {
-                searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow);
             }
 
             // If LOGID is set, update the current element
@@ -339,8 +342,27 @@ public class ActiveDocumentBean implements Serializable {
                     }
                 }
 
+                // When not aggregating hits, a new page will also be a new search hit in the list
+                if (imageToShow != viewManager.getCurrentImageNo() && DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                    mayChangeHitIndex = true;
+                }
                 viewManager.setCurrentImageNo(imageToShow);
                 viewManager.updateDropdownSelected();
+
+                // Search hit navigation
+                if (searchBean != null && searchBean.getCurrentSearch() != null) {
+                    if (searchBean.getCurrentHitIndex() < 0) {
+                        // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow);
+                    } else if (mayChangeHitIndex) {
+                        // Modify the current hit index
+                        searchBean.increaseCurrentHitIndex();
+                    } else if (searchBean.getHitIndexOperand() != 0) {
+                        // Reset hit index operand (should only be necessary if the URL was called twice, but the current hit has not changed
+                        // logger.trace("Hit index modifier operand is {}, resetting...", searchBean.getHitIndexOperand());
+                        searchBean.setHitIndexOperand(0);
+                    }
+                }
             } else {
                 logger.debug("ViewManager is null or ViewManager.currentDocument is null.");
                 throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -527,24 +549,23 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setAction(String action) {
         synchronized (this) {
-            // logger.debug("setAction: " + action);
+            logger.trace("setAction: " + action);
             this.action = action;
-            if (searchBean != null) {
-                if ("nextHit".equals(action)) {
-                    searchBean.increaseCurrentHitIndex();
-                } else if ("prevHit".equals(action)) {
-                    searchBean.decreaseCurrentHitIndex();
+            if (searchBean != null && action != null) {
+                switch (action) {
+                    case "nextHit":
+                        searchBean.setHitIndexOperand(1);
+                        break;
+                    case "prevHit":
+                        searchBean.setHitIndexOperand(-1);
+                        break;
+                    default:
+                        // do nothing
+                        break;
+
                 }
             }
         }
-    }
-
-    public int getCurrentHitIndexDisplay() {
-        if (searchBean != null) {
-            return searchBean.getCurrentHitIndex() + 1;
-        }
-
-        return 0;
     }
 
     /**

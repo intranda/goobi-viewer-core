@@ -6,11 +6,21 @@
 /* BLOCK */
 .download {
 	/* ELEMENT */
-	&__status {}
+	&__status {
+		h2 {}
+		.panel {}
+		.panel-heading {}
+		.panel-title {
+			margin: 0;
+			padding: 0;
+		}
+		.panel-body {}
+	}
 	&__status-loader {
 		.mx-clearfloats;
 		img {
 			float: right;
+			max-height: 16px;
 		}
 	}
 	&__status-license-text {
@@ -18,6 +28,10 @@
         background-color: @white;
         overflow-y: auto;
     }
+}
+
+#downloadBtn {
+	margin: 10px 0;
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
