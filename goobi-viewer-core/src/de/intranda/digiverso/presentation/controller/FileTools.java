@@ -38,6 +38,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
@@ -222,27 +223,25 @@ public class FileTools {
      * @should write file correctly
      */
     public static void getFileFromDocument(String filePath, Document doc) throws IOException {
-        getFileFromString(getStringFromDocument(doc, Helper.DEFAULT_ENCODING), filePath, Helper.DEFAULT_ENCODING, false);
+        getFileFromString(getStringFromElement(doc, Helper.DEFAULT_ENCODING), filePath, Helper.DEFAULT_ENCODING, false);
     }
 
     /**
      *
-     * Creates a single String out of the Document document
-     *
-     * @param document
-     * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
+     * @param element
+     * @param encoding
      * @return
-     * @should return XML string correctly
+     * @should return XML string correctly for documents
+     * @should return XML string correctly for elements
      */
-    public static String getStringFromDocument(Document document, String encoding) {
-        if (document == null) {
-            logger.warn("Trying to convert null document to String. Aborting");
-            return null;
+    public static String getStringFromElement(Object element, String encoding) {
+        if (element == null) {
+            throw new IllegalArgumentException("element may not be null");
         }
         if (encoding == null) {
             encoding = Helper.DEFAULT_ENCODING;
         }
-        Format format = Format.getPrettyFormat();
+        Format format = Format.getRawFormat();
         XMLOutputter outputter = new XMLOutputter(format);
         Format xmlFormat = outputter.getFormat();
         if (StringUtils.isNotEmpty(encoding)) {
@@ -250,9 +249,31 @@ public class FileTools {
         }
         xmlFormat.setExpandEmptyElements(true);
         outputter.setFormat(xmlFormat);
-        String docString = outputter.outputString(document);
 
+        String docString = null;
+        if (element instanceof Document) {
+            docString = outputter.outputString((Document) element);
+        } else if (element instanceof Element) {
+            docString = outputter.outputString((Element) element);
+        }
         return docString;
+
+    }
+
+    /**
+     * 
+     * @param file
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws JDOMException
+     * @should build document correctly
+     */
+    public static Document getDocumentFromFile(File file) throws FileNotFoundException, IOException, JDOMException {
+        SAXBuilder builder = new SAXBuilder();
+        try (FileInputStream fis = new FileInputStream(file)) {
+            return builder.build(fis);
+        }
     }
 
     /**
