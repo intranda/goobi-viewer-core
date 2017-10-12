@@ -890,45 +890,45 @@ public final class SearchHelper {
      */
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
         String[] ret = new String[2];
+        if (fileName != null) {
+            StringBuilder sbQuery = new StringBuilder();
+            String useFileField = SolrConstants.FILENAME;
+            String useFileName = fileName;
+            // Different media types have the file name in different fields
+            String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+            switch (extension) {
+                case "webm":
+                    useFileField = SolrConstants.FILENAME_WEBM;
+                    break;
+                case "mp4":
+                    useFileField = SolrConstants.FILENAME_MP4;
+                    break;
+                case "mp3":
+                    // if the mime type in METS is not audio/mpeg3 but something else, access will be false
+                    useFileField = SolrConstants.FILENAME_MPEG3;
+                    break;
+                case "ogg":
+                case "ogv":
+                    useFileField = SolrConstants.FILENAME_OGG;
+                    break;
+                case "txt":
+                case "xml":
+                    useFileName = fileName.replace(extension, "*");
+                    break;
+                default:
+                    break;
+            }
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
+            if (useFileName.endsWith(".*")) {
+                sbQuery.append(useFileName);
+            } else {
+                sbQuery.append("\"").append(useFileName).append("\"");
+            }
 
-        StringBuilder sbQuery = new StringBuilder();
-        String useFileField = SolrConstants.FILENAME;
-        String useFileName = fileName;
-        // Different media types have the file name in different fields
-        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-        switch (extension) {
-            case "webm":
-                useFileField = SolrConstants.FILENAME_WEBM;
-                break;
-            case "mp4":
-                useFileField = SolrConstants.FILENAME_MP4;
-                break;
-            case "mp3":
-                // if the mime type in METS is not audio/mpeg3 but something else, access will be false
-                useFileField = SolrConstants.FILENAME_MPEG3;
-                break;
-            case "ogg":
-            case "ogv":
-                useFileField = SolrConstants.FILENAME_OGG;
-                break;
-            case "txt":
-            case "xml":
-                useFileName = fileName.replace(extension, "*");
-                break;
-            default:
-                break;
+            // logger.trace(sbQuery.toString());
+            ret[0] = sbQuery.toString();
+            ret[1] = useFileField;
         }
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
-        if (useFileName.endsWith(".*")) {
-            sbQuery.append(useFileName);
-        } else {
-            sbQuery.append("\"").append(useFileName).append("\"");
-        }
-
-        // logger.trace(sbQuery.toString());
-        ret[0] = sbQuery.toString();
-        ret[1] = useFileField;
-
         return ret;
     }
 
@@ -1087,7 +1087,8 @@ public final class SearchHelper {
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
                 SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
+                        SolrConstants.ACCESSCONDITION,
+                        SolrConstants.PI_TOPSTRUCT }));
                 for (SolrDocument doc : hits) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                     if (fieldsAccessConddition != null) {

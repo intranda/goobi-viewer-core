@@ -2109,7 +2109,7 @@ public final class Configuration extends AbstractConfiguration {
                 }
             }
 
-            if (imageType != null) {
+            if (imageType != null && imageType.getFormat() != null) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
                 if (mimeTypes.isEmpty() || mimeTypes.contains(imageType.getFormat().getMimeType())) {
                     //match
