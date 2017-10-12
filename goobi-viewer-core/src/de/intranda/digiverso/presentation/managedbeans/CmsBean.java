@@ -271,8 +271,8 @@ public class CmsBean {
             for (CMSContentItem templateItem : template.getContentItems()) {
                 if (!page.hasContentItem(templateItem.getItemId())) {
                     page.addContentItem(new CMSContentItem(templateItem));
-//                    logger.warn("Found template item that doesn't exists in page");
-//                    pageValid = false;
+                    //                    logger.warn("Found template item that doesn't exists in page");
+                    //                    pageValid = false;
                 }
             }
         }
@@ -344,7 +344,7 @@ public class CmsBean {
     public String getPageUrl(Long pageId) {
         return getPageUrl(pageId, true);
     }
-    
+
     public String getPageUrl(Long pageId, boolean pretty) {
         try {
             CMSPage page = getPage(pageId);
@@ -690,7 +690,7 @@ public class CmsBean {
     }
 
     public CMSPage getCurrentPage() {
-        if(currentPage == null) {
+        if (currentPage == null) {
             return new CMSPage();
         }
         return currentPage;
@@ -870,7 +870,7 @@ public class CmsBean {
             searchBean.resetSearchResults();
             return "";
         }
-        
+
         searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
         searchBean.setHitsPerPage(item.getElementsPerPage());
         searchBean.setExactSearchStringResetGui(item.getSolrQuery());
@@ -1015,12 +1015,23 @@ public class CmsBean {
         return BeanUtils.getUserBean();
     }
 
+    /**
+     * 
+     * @param id
+     * @param page
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public CollectionView getCollection(String id, CMSPage page) throws PresentationException, IndexUnreachableException {
         String myId = page.getId() + "_" + id;
         CollectionView collection = collections.get(myId);
         if (collection == null) {
-            collection = page.getContentItem(id).initializeCollection();
-            collections.put(myId, collection);
+            CMSContentItem contentItem = page.getContentItem(id);
+            if (contentItem != null) {
+                collection = contentItem.initializeCollection();
+                collections.put(myId, collection);
+            }
         }
         return collection;
     }
@@ -1181,10 +1192,10 @@ public class CmsBean {
         }
         return null;
     }
-    
+
     public List<String> getSubThemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
         String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-        if(StringUtils.isNotBlank(subThemeDiscriminatorField)) {    
+        if (StringUtils.isNotBlank(subThemeDiscriminatorField)) {
             subThemeDiscriminatorField = subThemeDiscriminatorField + "_UNTOKENIZED";
             List<String> values = SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
             return values;
