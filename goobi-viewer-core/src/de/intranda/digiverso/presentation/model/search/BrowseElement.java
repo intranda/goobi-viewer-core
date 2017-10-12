@@ -779,7 +779,7 @@ public class BrowseElement implements Serializable {
                 if (locale != null) {
                     for (String key : se.getMetadataFields().keySet()) {
                         if (key.startsWith(SolrConstants.TITLE)) {
-                            if (key.endsWith("_" + locale.getLanguage().toUpperCase())) {
+                            if (key.endsWith(SolrConstants._LANG_ + locale.getLanguage().toUpperCase())) {
                                 ret = se.getMetadataValue(key);
                                 break;
                             }

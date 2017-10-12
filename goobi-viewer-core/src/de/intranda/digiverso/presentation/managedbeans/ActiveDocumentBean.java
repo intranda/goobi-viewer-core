@@ -348,7 +348,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 // When not aggregating hits, a new page will also be a new search hit in the list
-                if (imageToShow != viewManager.getCurrentImageNo() && DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                if (imageToShow != viewManager.getCurrentImageNo() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
                     mayChangeHitIndex = true;
                 }
                 viewManager.setCurrentImageNo(imageToShow);
