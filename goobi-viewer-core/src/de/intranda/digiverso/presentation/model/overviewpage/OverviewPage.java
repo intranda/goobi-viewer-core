@@ -21,11 +21,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -557,7 +555,7 @@ public class OverviewPage implements Harvestable, Serializable {
         List<String> ret = new ArrayList<>();
 
         for (Metadata md : allMetadata) {
-            if (!metadata.contains(md) && !md.isEmpty()) {
+            if (!metadata.contains(md) && !md.isBlank()) {
                 ret.add(md.getLabel());
             }
         }

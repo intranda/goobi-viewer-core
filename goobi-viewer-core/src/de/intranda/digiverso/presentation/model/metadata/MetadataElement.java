@@ -293,7 +293,6 @@ public class MetadataElement {
             if (StringUtils.isNotEmpty(language)) {
                 fullFieldName += SolrConstants._LANG_ + language.toUpperCase();
             }
-            logger.trace("looking for field: {}", fullFieldName);
             Metadata fallback = null;
             for (Metadata md : metadataList) {
                 if (md.getLabel().equals(fullFieldName)) {
