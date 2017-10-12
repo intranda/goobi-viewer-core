@@ -415,12 +415,14 @@ public class CMSPage {
                 return version;
             }
         }
-        try {
-            CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
-            this.languageVersions.add(version);
-            return version;
-        } catch (NullPointerException | IllegalStateException e) {
-            return null;
+        synchronized (languageVersions) {            
+            try {
+                CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
+                this.languageVersions.add(version);
+                return version;
+            } catch (NullPointerException | IllegalStateException e) {
+                return null;
+            }
         }
     }
 
@@ -755,12 +757,14 @@ public class CMSPage {
     }
 
     public void addContentItem(CMSContentItem item) {
-        if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
-            getLanguageVersions().stream()
-            .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE)
-            .forEach(lang -> lang.addContentItem(item));
-        } else {
-            getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+        synchronized (languageVersions) {            
+            if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+                getLanguageVersions().stream()
+                .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE)
+                .forEach(lang -> lang.addContentItem(item));
+            } else {
+                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+            }
         }
     }
 
@@ -769,10 +773,12 @@ public class CMSPage {
      * @return
      */
     public boolean hasContentItem(final String itemId) {
-        return getLanguageVersions().stream()
-                .map(lang -> lang.getContentItem(itemId))
-                .filter(item -> item != null)
-                .count() > 0;
+        synchronized (languageVersions) {            
+            return getLanguageVersions().stream()
+                    .map(lang -> lang.getContentItem(itemId))
+                    .filter(item -> item != null)
+                    .count() > 0;
+        }
     }
     
 }
