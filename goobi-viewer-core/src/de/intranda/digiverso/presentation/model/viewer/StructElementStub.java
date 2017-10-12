@@ -317,16 +317,12 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @throws IndexUnreachableException
      */
     public int getNumPages() throws IndexUnreachableException {
+        
         try {
             String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(getPi()).append(" AND ").append(SolrConstants.DOCTYPE)
                     .append(':').append(DocType.PAGE.name()).toString();
             SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, null, Collections.singletonList(
                     SolrConstants.ORDER));
-            if (result == null || result.isEmpty()) {
-                query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(getPi()).append(" AND ").append(SolrConstants.FILENAME)
-                        .append(":*").toString();
-                result = DataManager.getInstance().getSearchIndex().search(query, 0, null, Collections.singletonList(SolrConstants.ORDER));
-            }
             return (int) result.getNumFound();
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());

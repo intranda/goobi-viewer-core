@@ -206,7 +206,7 @@ public class BrowseElement implements Serializable {
                     // Add anchor to the docstruct hierarchy
                     structElements.add(anchorStructElement.createStub());
                     if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                        String anchorLabel = generateLabel(anchorStructElement);
+                        String anchorLabel = generateLabel(anchorStructElement, locale);
                         if (StringUtils.isNotEmpty(anchorLabel)) {
                             this.metadataList.add(position, new Metadata(anchorStructElement.getDocStructType(), null, new MetadataParameter(
                                     MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(), null, null, null, false, false), Helper
@@ -218,7 +218,7 @@ public class BrowseElement implements Serializable {
             }
             // Add topstruct label to lower docstructs
             if (!structElement.isWork() && DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                String topstructLabel = generateLabel(topStructElement);
+                String topstructLabel = generateLabel(topStructElement, locale);
                 if (StringUtils.isNotEmpty(topstructLabel)) {
                     // Add volume number, if the parent is a volume
                     if (topStructElement.isAnchorChild() && StringUtils.isNotEmpty(topStructElement.getVolumeNo())) {
@@ -312,7 +312,7 @@ public class BrowseElement implements Serializable {
         if (DocType.GROUP.equals(docType)) {
             label = docType.getLabel(null);
         } else {
-            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement));
+            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, locale));
             String subtitle = structElement.getMetadataValue(SolrConstants.SUBTITLE);
             if (StringUtils.isNotEmpty(subtitle)) {
                 sbLabel.append(" : ").append(subtitle);
@@ -703,7 +703,13 @@ public class BrowseElement implements Serializable {
         return null;
     }
 
-    private String generateLabel(StructElement se) {
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     */
+    private String generateLabel(StructElement se, Locale locale) {
         String ret = "";
 
         if (docType != null) {
@@ -748,23 +754,41 @@ public class BrowseElement implements Serializable {
                     }
                     break;
                 default:
-                    ret = generateDefaultLabel(se);
+                    ret = generateDefaultLabel(se, locale);
                     break;
             }
         } else {
             logger.warn("{} field seems to be missing on Solr document {}", SolrConstants.DOCTYPE, se.getLuceneId());
-            return generateDefaultLabel(se);
+            return generateDefaultLabel(se, locale);
         }
 
         return ret;
     }
 
-    private String generateDefaultLabel(StructElement se) {
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     */
+    private String generateDefaultLabel(StructElement se, Locale locale) {
         String ret = se.getMetadataValue(SolrConstants.LABEL);
         if (StringUtils.isEmpty(ret)) {
             ret = se.getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(ret)) {
-                ret = getDocStructType();
+                if (locale != null) {
+                    for (String key : se.getMetadataFields().keySet()) {
+                        if (key.startsWith(SolrConstants.TITLE)) {
+                            if (key.endsWith("_" + locale.getLanguage().toUpperCase())) {
+                                ret = se.getMetadataValue(key);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (StringUtils.isEmpty(ret)) {
+                    ret = getDocStructType();
+                }
             }
         }
 
