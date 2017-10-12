@@ -274,13 +274,37 @@ public class MetadataElement {
      * @return
      */
     public Metadata getMetadata(String name) {
+        return getMetadata(name, null);
+    }
+
+    /**
+     * Returns the first instance of a Metadata object whose label matches the given field name. If a langauge is given, a localized field name will
+     * be used.
+     * 
+     * @param name
+     * @param language Optional language
+     * @return
+     * @should return correct language metadata field
+     * @shoudl fall back to non language field if language field not found
+     */
+    public Metadata getMetadata(String name, String language) {
         if (StringUtils.isNotEmpty(name) && metadataList != null && !metadataList.isEmpty()) {
+            String fullFieldName = name;
+            if (StringUtils.isNotEmpty(language)) {
+                fullFieldName += SolrConstants._LANG_ + language.toUpperCase();
+            }
+            logger.trace("looking for field: {}", fullFieldName);
+            Metadata fallback = null;
             for (Metadata md : metadataList) {
-                if (md.getLabel().equals(name)) {
-                    logger.trace("{}: {}", name, md.getValues().size());
+                if (md.getLabel().equals(fullFieldName)) {
+                    logger.trace("{}: {}", fullFieldName, md.getValues().size());
                     return md;
+                } else if (md.getLabel().equals(name)) {
+                    fallback = md;
                 }
             }
+
+            return fallback;
         }
 
         return null;
