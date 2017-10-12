@@ -206,7 +206,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     protected static String determineFileName(String filePath) {
         String ret = filePath;
-        if (!isExternalUrl(ret)) {
+        if (StringUtils.isNotBlank(ret) && !isExternalUrl(ret)) {
             File file = new File(ret);
             ret = file.getName();
             //                String[] filePathSplit = ret.split("[/]");
