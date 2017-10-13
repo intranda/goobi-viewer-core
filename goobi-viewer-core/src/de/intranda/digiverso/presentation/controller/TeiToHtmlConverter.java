@@ -153,7 +153,7 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<span style=\"font-variant: small-caps;\">" + r.group(1) + "</span>");
         }
         // TODO spaceOut
-
+        
         // TODO replace anm
         for (MatchResult r : findRegexMatches("\\[anm\\](.*?)\\[/anm\\]", text)) {
             text = text.replace(r.group(), "<note type=\"editorial\"><p>" + r.group(1) + "</p></note>");
@@ -249,6 +249,23 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">" + r.group(1)
                     + "</p>");
         }
+        
+        //Replace <note>
+        int footnoteCount = 0;
+        for (MatchResult r : findRegexMatches("<note>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>", text)) {
+            footnoteCount++;
+            String note = r.group();
+            String footnoteText = r.group(2);
+            
+            String reference = "<sup><a href=\"#fn§§\" id=\"ref§§\">§§</a></sup>";
+            String footnote = "<p class=\"footnoteText\" id=\"fn§§\">[§§] " + footnoteText + "<a href=\"#ref§§\">↩</a></p>";
+            reference = reference.replace("§§", Integer.toString(footnoteCount));
+            footnote = footnote.replace("§§", Integer.toString(footnoteCount));
+
+            text = text.replace(note, reference) + footnote;
+
+        }
+        
 
         // line breaks
         text = text.replace("<lb />", "<br />").replace("<lb></lb>", "<br />");
