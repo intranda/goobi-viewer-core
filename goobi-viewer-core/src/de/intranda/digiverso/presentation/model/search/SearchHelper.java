@@ -218,7 +218,7 @@ public final class SearchHelper {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
-                    childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
+                    // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
                     HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
@@ -890,7 +890,7 @@ public final class SearchHelper {
      */
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
         String[] ret = new String[2];
-
+        if (fileName != null) {
         StringBuilder sbQuery = new StringBuilder();
         String useFileField = SolrConstants.FILENAME;
         String useFileName = fileName;
@@ -928,7 +928,7 @@ public final class SearchHelper {
         // logger.trace(sbQuery.toString());
         ret[0] = sbQuery.toString();
         ret[1] = useFileField;
-
+        }
         return ret;
     }
 
@@ -1087,7 +1087,8 @@ public final class SearchHelper {
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
                 SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
+                        SolrConstants.ACCESSCONDITION,
+                        SolrConstants.PI_TOPSTRUCT }));
                 for (SolrDocument doc : hits) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                     if (fieldsAccessConddition != null) {

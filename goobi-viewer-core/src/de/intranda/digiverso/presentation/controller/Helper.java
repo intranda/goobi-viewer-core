@@ -753,7 +753,7 @@ public class Helper {
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
-                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.ALTO, SolrConstants.FULLTEXT,
+                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.FULLTEXT,
                         SolrConstants.UGCTERMS }));
 
         if (doc == null) {
@@ -775,7 +775,7 @@ public class Helper {
         // Create trigger file in hotfolder
         Path triggerFile = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".docupdate");
         Files.createFile(triggerFile);
-        
+
         return true;
     }
 
@@ -1014,6 +1014,34 @@ public class Helper {
                 break;
         }
         sb.append('/').append(fileName);
+
+        return sb.toString();
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param fileName
+     * @param dataRepository
+     * @param format
+     * @return
+     * @should return correct path
+     */
+    public static String getTextFilePath(String pi, String fileName, String dataRepository, String format) {
+        if (StringUtils.isEmpty(fileName)) {
+            throw new IllegalArgumentException("fileName may not be null or empty");
+        }
+
+        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+        switch (format) {
+            case SolrConstants.FILENAME_ALTO:
+                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
+                break;
+            case SolrConstants.FILENAME_FULLTEXT:
+                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
+                break;
+        }
+        sb.append('/').append(pi).append('/').append(fileName);
 
         return sb.toString();
     }
