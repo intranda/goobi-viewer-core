@@ -202,7 +202,8 @@
 								</li>
 							</h:panelGroup>
 
-							<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.hasPages}">
+
+							<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
 								<li class="dl-links__dfg">
 									<h:outputLink 
 										id="dfgLink" 
