@@ -1599,6 +1599,7 @@ public class SearchBean implements Serializable {
                 if (browseBean == null) {
                     browseBean = new BrowseBean();
                 }
+                // Make sure displayDepth is at configured to the desired depth for this field (or -1 for complete depth)
                 int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
                 List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
                 StringBuilder sbItemLabel = new StringBuilder();
