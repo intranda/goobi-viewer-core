@@ -2005,20 +2005,37 @@ public final class SearchHelper {
         if (sourceList != null) {
             List<String> ret = new ArrayList<>(sourceList.size());
             for (String s : sourceList) {
-                switch (s) {
-                    case SolrConstants.DC:
-                        ret.add(SolrConstants.FACET_DC);
-                        break;
-                    default:
-                        if (s.startsWith("MD_")) {
-                            s = s.replace("MD_", "FACET_");
-                        }
-                        s = s.replace(SolrConstants._UNTOKENIZED, "");
-                        ret.add(s);
-                        break;
+                String fieldName = facetifyField(s);
+                if (fieldName != null) {
+                    ret.add(fieldName);
                 }
             }
             return ret;
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return
+     * @should facetify correctly
+     */
+    public static String facetifyField(String fieldName) {
+        if (fieldName != null) {
+            switch (fieldName) {
+                case SolrConstants.DC:
+                    return SolrConstants.FACET_DC;
+
+                case SolrConstants.DOCSTRCT:
+                    return "FACET_DOCSTRCT";
+                default:
+                    if (fieldName.startsWith("MD_")) {
+                        fieldName = fieldName.replace("MD_", "FACET_");
+                    }
+                    fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                    return fieldName;
+            }
         }
         return null;
     }

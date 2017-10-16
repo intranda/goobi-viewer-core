@@ -580,8 +580,8 @@ public class SearchBean implements Serializable {
         QueryResponse resp = null;
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
-        //        for(String fq: facetFilterQueries) {
-        //            logger.trace("Filter query: {}", fq);
+        //        for (String fq : facetFilterQueries) {
+        //            logger.trace("Facet query: {}", fq);
         //        }
         if (currentSearch.getHitsCount() == 0) {
             logger.trace("Final main query: {}", query);
@@ -590,8 +590,7 @@ public class SearchBean implements Serializable {
             if (resp != null && resp.getResults() != null) {
                 currentSearch.setHitsCount(resp.getResults().getNumFound());
                 logger.trace("Pre-grouping search hits: {}", currentSearch.getHitsCount());
-                // Check for duplicate values in the GROUPFIELD facet and
-                // substract the number from the total hits.
+                // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                 for (FacetField facetField : resp.getFacetFields()) {
                     if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
                         for (Count count : facetField.getValues()) {
@@ -619,8 +618,7 @@ public class SearchBean implements Serializable {
                     }
                     facetResult.put(count.getName(), count.getCount());
                 }
-                // Use non-FACET_ field names outside of the actual faceting
-                // query
+                // Use non-FACET_ field names outside of the actual faceting query
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (hierarchicalFacetFields.contains(fieldName)) {
                     facets.getAvailableHierarchicalFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));

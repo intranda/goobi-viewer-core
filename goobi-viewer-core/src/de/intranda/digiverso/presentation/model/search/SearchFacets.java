@@ -101,8 +101,9 @@ public class SearchFacets {
                         sbQuery.append(" AND ");
                     }
                 }
-                sbQuery.append('(').append(facetItem.getField()).append(':').append(facetItem.getValue()).append(" OR ").append(facetItem.getField())
-                        .append(':').append(facetItem.getValue()).append(".*)");
+                String field = SearchHelper.facetifyField(facetItem.getField());
+                sbQuery.append('(').append(field).append(':').append(facetItem.getValue()).append(" OR ").append(field).append(':').append(facetItem
+                        .getValue()).append(".*)");
                 count++;
             }
 
@@ -130,8 +131,10 @@ public class SearchFacets {
                 if (sbQuery.length() > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append(facetItem.getQueryEscapedLink());
-                logger.trace("Added facet: {}", facetItem.getLink());
+                String field = SearchHelper.facetifyField(facetItem.getField());
+                String escapedValue = facetItem.getEscapedValue();
+                sbQuery.append(field).append(':').append(escapedValue);
+                logger.trace("Added facet: {}", field + ':' + escapedValue);
             }
 
             return sbQuery.toString();
