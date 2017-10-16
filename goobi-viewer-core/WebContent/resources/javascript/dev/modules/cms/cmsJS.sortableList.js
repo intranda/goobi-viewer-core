@@ -172,8 +172,8 @@ var cmsJS = ( function( cms ) {
         }
         
         var $item = $( ui.item );
-        
-        var $radioMenues = $item.find("td");
+
+        var $radioMenues = $item.find("table");
         $radioMenues.each(function(index, element) {
         	var $checkboxes = $(element).find("input");
         	if($checkboxes.length > 0) {
@@ -185,12 +185,12 @@ var cmsJS = ( function( cms ) {
         			}
         		})
         		if(!anychecked) {
-        			$($checkboxes.get(0)).prop('checked', true);
+        			$checkboxes.first().prop('checked', true);
         		}
         	}
         })
-        if ( _allowMultipleOccurances && item.parent().attr( "id" ) === "visibleItemList" ) {
-            item.clone().appendTo( $( "#availableItemList" ) );
+        if ( _allowMultipleOccurances && $item.parent().attr( "id" ) === "visibleItemList" ) {
+            $item.clone().appendTo( $( "#availableItemList" ) );
         }
         
     }

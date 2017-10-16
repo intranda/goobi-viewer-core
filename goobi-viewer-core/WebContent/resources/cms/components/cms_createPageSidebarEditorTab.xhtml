@@ -112,6 +112,13 @@
 																			</h:selectOneRadio>
 																		</div>
 																	</h:panelGroup>
+																	<!-- CSS class -->
+																	<h:panelGroup id="inputCss">
+																		<div class="form-group">
+																			<label>#{msg.cms_sidebarElement_css}:</label>
+																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
+																		</div>
+																	</h:panelGroup>
 																	<!-- ACTION -->
 																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
 																		<div class="sidebar-editor-item-widget-editor-action">
@@ -194,6 +201,13 @@
 																			</h:selectOneRadio>
 																		</div>
 								                                    </h:panelGroup>
+								                                    <!-- CSS class -->
+																	<h:panelGroup id="inputCss">
+																		<div class="form-group">
+																			<label>#{msg.cms_sidebarElement_css}:</label>
+																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
+																		</div>
+																	</h:panelGroup>
 																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink 
