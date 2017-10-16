@@ -55,6 +55,8 @@ public class SearchFacets {
         availableFacets.clear();
         availableHierarchicalFacets.clear();
         drillDownExpanded.clear();
+        resetCurrentCollection();
+        resetCurrentFacetString();
     }
 
     /**
