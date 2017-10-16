@@ -1175,10 +1175,10 @@ public class ViewManager implements Serializable {
      */
     public String getPdfDownloadLink() throws IndexUnreachableException {
         // TODO
-        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=").append(
-                getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf");
+        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
+                "?action=pdf&metsFile=").append(getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf");
         String footerId = getFooterId();
-        if(StringUtils.isNotBlank(footerId)) {
+        if (StringUtils.isNotBlank(footerId)) {
             sb.append("&watermarkId=").append(footerId);
         }
         return sb.toString();
@@ -1214,7 +1214,7 @@ public class ViewManager implements Serializable {
         sb.deleteCharAt(sb.length() - 1);
         sb.append("&targetFileName=").append(getPi()).append('_').append(firstPdfPage).append('-').append(lastPdfPage).append(".pdf");
         String footerId = getFooterId();
-        if(StringUtils.isNotBlank(footerId)) {
+        if (StringUtils.isNotBlank(footerId)) {
             sb.append("&watermarkId=").append(footerId);
         }
         return sb.toString();
@@ -1455,7 +1455,8 @@ public class ViewManager implements Serializable {
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException {
         String currentFulltext = null;
 
-        if (StringUtils.isNotEmpty(language) && topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase())) {
+        if (StringUtils.isNotEmpty(language) && topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants._LANG_
+                + language.toUpperCase())) {
             String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase());
             String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
             logger.trace("Loading {}", filePath);
@@ -2144,5 +2145,40 @@ public class ViewManager implements Serializable {
         }
 
         return 0;
+    }
+
+    public String getTopDocumentTitle() {
+        return getDocumentTitle(this.topDocument);
+    }
+    
+    public String getDocumentTitle(StructElement document) {
+        StringBuilder sb = new StringBuilder();
+        if (document != null) {
+            switch (document.docStructType) {
+                case "Comment":
+                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                    }
+                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                    }
+                    break;
+                case "FormationHistory":
+                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                    //TODO: Add Einsatzland z.b.: (Deutschland)
+                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                    }
+                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                    }
+                    break;  
+                case "Source":
+                default:
+                    sb.append(document.getDisplayLabel());
+            }
+        }
+        return sb.toString();
     }
 }
