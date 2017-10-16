@@ -1360,7 +1360,7 @@
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
             modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            modalBody += '<dd>' + infos.size + '</dd>';
+            modalBody += '<dd>~' + infos.size + '</dd>';
             modalBody += '</dl>';
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
