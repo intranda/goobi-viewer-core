@@ -1180,6 +1180,19 @@ public class ViewManager implements Serializable {
         return sb.toString();
     }
 
+    public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
+        StringBuilder sb = new StringBuilder();
+        PhysicalElement page = getCurrentPage();
+        if(page != null) {
+            sb.append(page.getImageToPdfUrl());
+        }
+        String footerId = getFooterId();
+        if(StringUtils.isNotBlank(footerId)) {
+            sb.append("&watermarkId=").append(footerId);
+        }
+        return sb.toString();
+    }
+    
     /**
      * 
      * @return
