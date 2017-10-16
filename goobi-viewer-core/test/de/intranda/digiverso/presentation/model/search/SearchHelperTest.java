@@ -703,7 +703,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void defacetifyField_shouldDefacetifyCorrectly() throws Exception {
         Assert.assertEquals(SolrConstants.DC, SearchHelper.defacetifyField(SolrConstants.FACET_DC));
+        Assert.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_DOCSTRCT"));
         Assert.assertEquals("MD_TITLE", SearchHelper.defacetifyField("FACET_TITLE"));
+    }
+
+    /**
+     * @see SearchHelper#facetifyField(String)
+     * @verifies facetify correctly
+     */
+    @Test
+    public void facetifyField_shouldFacetifyCorrectly() throws Exception {
+        Assert.assertEquals(SolrConstants.FACET_DC, SearchHelper.facetifyField(SolrConstants.DC));
+        Assert.assertEquals("FACET_DOCSTRCT", SearchHelper.facetifyField(SolrConstants.DOCSTRCT));
+        Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
     }
 
     /**
