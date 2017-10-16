@@ -353,7 +353,8 @@ public class ActiveDocumentBean implements Serializable {
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
                         // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow);
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow, DataManager.getInstance().getConfiguration()
+                                .isAggregateHits());
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
                         searchBean.increaseCurrentHitIndex();

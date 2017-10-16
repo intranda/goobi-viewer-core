@@ -279,15 +279,25 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should construct hierarchical link correctly
      */
     public String getQueryEscapedLink() {
-        String escapedValue = ClientUtils.escapeQueryChars(value);
+        String escapedValue = getEscapedValue();
         if (hierarchial) {
             return new StringBuilder("(").append(field).append(':').append(escapedValue).append(" OR ").append(field).append(':').append(escapedValue)
                     .append(".*)").toString();
         }
+        return new StringBuilder(field).append(':').append(escapedValue).toString();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getEscapedValue() {
+        String escapedValue = ClientUtils.escapeQueryChars(value); 
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
             escapedValue = '"' + escapedValue + '"';
         }
-        return new StringBuilder(field).append(':').append(escapedValue).toString();
+        
+        return escapedValue;
     }
 
     /**
