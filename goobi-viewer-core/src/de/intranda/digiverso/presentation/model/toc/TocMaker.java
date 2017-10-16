@@ -482,6 +482,7 @@ public class TocMaker {
      * @param mimeType
      * @param ancestorField
      * @param addAllSiblings
+     * @param footerId
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -565,6 +566,7 @@ public class TocMaker {
      * @param addChildren
      * @param sourceFormatPdfAllowed
      * @param mimeType
+     * @param footerId 
      * @throws PresentationException
      */
     private static void addTocElementsRecusively(List<TOCElement> ret, Map<String, List<SolrDocument>> childrenMap, SolrDocument doc, int level,
@@ -742,6 +744,15 @@ public class TocMaker {
 
         return ret;
     }
+    
+    /**
+     * 
+     * Returns the first value of the given field in the given struct element
+     * 
+     * @param doc
+     * @param field
+     * @return
+     */
     
     static String getFooterId(StructElement doc, String field) {
         String ret = null;
