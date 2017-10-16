@@ -1372,18 +1372,19 @@ public class SearchBean implements Serializable {
     /**
      * Returns the index of the currently displayed BrowseElement, if it is present in the search hit list.
      *
-     * @param currentElementIddoc
-     * @param currentImageNo
+     * @param pi Record identifier of the loaded record.
+     * @param page Page number of he loaded record.
+     * @param aggregateHits If true, only the identifier has to match, page number is ignored.
      * @return The index of the currently displayed BrowseElement in the search hit list; -1 if not present.
      */
-    public void findCurrentHitIndex(String currentElementPi, int currentImageNo) {
-        logger.trace("findCurrentHitIndex: {}/{}", currentElementPi, currentImageNo);
+    public void findCurrentHitIndex(String pi, int page, boolean aggregateHits) {
+        logger.trace("findCurrentHitIndex: {}/{}", pi, page);
         currentHitIndex = 0;
         if (currentSearch != null && !currentSearch.getHits().isEmpty()) {
             for (SearchHit hit : currentSearch.getHits()) {
                 BrowseElement be = hit.getBrowseElement();
                 logger.trace("BrowseElement: {}/{}", be.getPi(), be.getImageNo());
-                if (be.getPi().equals(currentElementPi) && be.getImageNo() == currentImageNo) {
+                if (be.getPi().equals(pi) && (aggregateHits || be.getImageNo() == page)) {
                     logger.trace("currentPage: {}", currentPage);
                     currentHitIndex += (currentPage - 1) * hitsPerPage;
                     logger.trace("currentHitIndex: {}", currentHitIndex);
