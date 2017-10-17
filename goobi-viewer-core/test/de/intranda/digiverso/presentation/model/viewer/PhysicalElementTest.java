@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.ALTOTools;
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.managedbeans.ContextMocker;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement.CoordsFormat;
 
@@ -65,25 +63,6 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNull(pe.getAltoText());
         Assert.assertEquals(CoordsFormat.UNCHECKED, pe.getWordCoordsFormat());
         pe.getWordCoords(new HashSet<>(Collections.singletonList("test")));
-        Assert.assertNotNull(pe.getAltoText());
-        Assert.assertEquals(CoordsFormat.ALTO, pe.getWordCoordsFormat());
-    }
-
-    /**
-     * @see PhysicalElement#setAlto(String)
-     * @verifies load wordCoordsDoc correctly and set wordCoordsFormat to ALTO
-     */
-    @Test
-    public void setAlto_shouldLoadWordCoordsDocCorrectlyAndSetWordCoordsFormatToALTO() throws Exception {
-        File file = new File("resources/test/data/sample_alto.xml");
-        Assert.assertTrue(file.isFile());
-        String xmlString = FileTools.getStringFromFile(file, "UTF-8");
-        Assert.assertNotNull(xmlString);
-        PhysicalElement pe = new PhysicalElement("PHYS_0000", "00000001.tif", 1, "1", null, null, "PPN517154005", PhysicalElement.MIME_TYPE_IMAGE,
-                null);
-        Assert.assertNull(pe.getAltoText());
-        Assert.assertEquals(CoordsFormat.UNCHECKED, pe.getWordCoordsFormat());
-        Assert.assertTrue(pe.setAlto(xmlString));
         Assert.assertNotNull(pe.getAltoText());
         Assert.assertEquals(CoordsFormat.ALTO, pe.getWordCoordsFormat());
     }

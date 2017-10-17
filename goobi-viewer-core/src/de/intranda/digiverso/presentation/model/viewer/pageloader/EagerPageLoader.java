@@ -184,15 +184,6 @@ public class EagerPageLoader implements IPageLoader, Serializable {
         logger.debug("Loading pages for '{}'...", pi);
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
 
-        //        boolean lazyFulltext = DataManager.getInstance().getConfiguration().isFulltextLazyLoading();
-        //        boolean lazyWc = DataManager.getInstance().getConfiguration().isWordCoordsLazyLoading();
-        //        if (!lazyFulltext) {
-        //            fields.add("MD_FULLTEXT");
-        //        }
-        //        if (!lazyWc) {
-        //            fields.add(SolrConstants.ALTO);
-        //        }
-
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
                 .append(DocType.PAGE);
@@ -275,20 +266,10 @@ public class EagerPageLoader implements IPageLoader, Serializable {
                 }
             }
 
-            // Full text
-            //            if (doc.getFirstValue("MD_FULLTEXT") != null) {
-            //                // Prefer the unescaped MD_FULLTEXT
-            //                pe.setFullText((String) doc.getFirstValue("MD_FULLTEXT"));
-            //            }
-
-            // ALTO word coordinates
-            //            if (doc.getFieldValue(SolrConstants.ALTO) != null) {
-            //                try {
-            //                    pe.setAlto((String) doc.getFieldValue(SolrConstants.ALTO));
-            //                } catch (JDOMException | IOException e) {
-            //                    logger.error(e.getMessage(), e);
-            //                }
-            //            }
+            // Full-text filename
+            pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+            // ALTO filename
+            pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
 
             // Access conditions
             if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {
