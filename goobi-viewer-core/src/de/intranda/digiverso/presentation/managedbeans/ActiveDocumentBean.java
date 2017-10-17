@@ -679,7 +679,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public String getPageUrl() throws IndexUnreachableException {
-        StringBuilder sbUrl = new StringBuilder();
         String pageType = null;
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getPreferredView();
@@ -687,6 +686,16 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
+        return getPageUrl(pageType);
+    }
+
+    /**
+     * @param pageType
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getPageUrl(String pageType) throws IndexUnreachableException {
+        StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
                 .append(getPersistentIdentifier()).append('/');
 
