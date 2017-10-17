@@ -53,15 +53,15 @@ public class CollectionView {
         this.field = field;
         this.dataProvider = dataProvider;
     }
-    
+
     /**
-     * Creates a new CollectionView from an already existing one, 
-     * keeping only the list of all collections without any display information
+     * Creates a new CollectionView from an already existing one, keeping only the list of all collections without any display information
      * 
      * @param blueprint
      */
     public CollectionView(CollectionView blueprint) {
-        this.completeCollectionList = blueprint.completeCollectionList.stream().map(element -> new HierarchicalBrowseDcElement(element)).collect(Collectors.toList());
+        this.completeCollectionList = blueprint.completeCollectionList.stream().map(element -> new HierarchicalBrowseDcElement(element)).collect(
+                Collectors.toList());
         this.field = blueprint.field;
         this.dataProvider = blueprint.dataProvider;
     }
@@ -69,7 +69,7 @@ public class CollectionView {
     public void populateCollectionList() throws IndexUnreachableException {
         synchronized (this) {
             try {
-                logger.debug("populateCollectionList");
+                logger.trace("populateCollectionList");
                 Map<String, Long> dcStrings = dataProvider.getData();
                 logger.trace("Creating browse elements...");
                 completeCollectionList = new ArrayList<>(); // this has to be null and not empty at first; make sure it is initialized after the call to Solr
@@ -100,7 +100,7 @@ public class CollectionView {
                 }
                 //            Collections.sort(completeCollectionList);
                 calculateVisibleDcElements();
-                logger.debug("populateCollectionList end");
+                logger.trace("populateCollectionList end");
             } catch (PresentationException e) {
                 logger.error("Failed to initialize collection: " + e.toString());
             }

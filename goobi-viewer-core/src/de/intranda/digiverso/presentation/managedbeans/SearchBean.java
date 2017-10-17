@@ -204,7 +204,7 @@ public class SearchBean implements Serializable {
         setSearchStringKeepCurrentPage("");
         setCurrentPage(1);
         setExactSearchString("");
-        facets.resetCurrentCollection();
+        facets.resetCurrentFacets();
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
         resetSearchParameters(true);
@@ -232,7 +232,8 @@ public class SearchBean implements Serializable {
             currentSearch.setHitsCount(0);
             currentSearch.getHits().clear();
         }
-        facets.reset();
+        // Only reset available facets here, not selected facets!
+        facets.resetAvailableFacets();
 
         // Reset preferred record view when doing a new search
         if (navigationHelper != null) {
@@ -580,9 +581,9 @@ public class SearchBean implements Serializable {
         QueryResponse resp = null;
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
-        //        for (String fq : facetFilterQueries) {
-        //            logger.trace("Facet query: {}", fq);
-        //        }
+        for (String fq : facetFilterQueries) {
+            logger.trace("Facet query: {}", fq);
+        }
         if (currentSearch.getHitsCount() == 0) {
             logger.trace("Final main query: {}", query);
             resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields, Collections.singletonList(
@@ -1599,6 +1600,7 @@ public class SearchBean implements Serializable {
                 if (browseBean == null) {
                     browseBean = new BrowseBean();
                 }
+                // Make sure displayDepth is at configured to the desired depth for this field (or -1 for complete depth)
                 int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
                 List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
                 StringBuilder sbItemLabel = new StringBuilder();

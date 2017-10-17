@@ -51,10 +51,15 @@ public class SearchFacets {
     protected final List<FacetItem> currentHierarchicalFacets = new ArrayList<>();
     private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
 
-    public void reset() {
+    public void resetAvailableFacets() {
         availableFacets.clear();
         availableHierarchicalFacets.clear();
         drillDownExpanded.clear();
+    }
+
+    public void resetCurrentFacets() {
+        resetCurrentCollection();
+        resetCurrentFacetString();
     }
 
     /**
