@@ -850,6 +850,9 @@ public class CmsBean {
         }
         if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             searchBean.resetSearchResults();
+            if (searchBean.getFacets() != null) {
+                searchBean.getFacets().resetCurrentFacets();
+            }
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setExactSearchStringResetGui(item.getSolrQuery());
