@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -237,19 +239,19 @@ public class SearchHit implements Comparable<SearchHit> {
                     if ((descriptionTexts != null && !descriptionTexts.isEmpty()) || (publicationTexts != null && !publicationTexts.isEmpty())) {
                         int count = 0;
                         SearchHit overviewPageHit = new SearchHit(HitType.METADATA, new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation(
-                                "overviewPage", locale), null, true, locale), searchTerms, locale);
+                                "overviewPage", locale), null, true, locale, null), searchTerms, locale);
                         children.add(overviewPageHit);
                         if (descriptionTexts != null && !descriptionTexts.isEmpty()) {
                             for (String descriptionText : descriptionTexts) {
                                 overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
-                                        "viewOverviewDescription", descriptionText, true, locale), searchTerms, locale));
+                                        "viewOverviewDescription", descriptionText, true, locale, null), searchTerms, locale));
                                 count++;
                             }
                         }
                         if (publicationTexts != null && !publicationTexts.isEmpty()) {
                             for (String publicationText : publicationTexts) {
                                 overviewPageHit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1,
-                                        "viewOverviewPublication_publication", publicationText, true, locale), searchTerms, locale));
+                                        "viewOverviewPublication_publication", publicationText, true, locale, null), searchTerms, locale));
                                 count++;
                             }
                         }
@@ -293,11 +295,17 @@ public class SearchHit implements Comparable<SearchHit> {
                 //                    logger.trace("Found child doc: {}", docType);
                 switch (docType) {
                     case PAGE:
-                        fulltext = (String) childDoc.getFirstValue("MD_FULLTEXT");
-                        if ("1499441345893".equals(childDoc.getFieldValue("IDDOC")))
-                            logger.trace("IDDOC: {}, fulltext:\n'{}'", childDoc.getFieldValue("IDDOC"), fulltext);
+                        try {
+                            fulltext = SearchHelper.loadFulltext(browseElement.getDataRepository(), (String) childDoc.getFirstValue(
+                                    SolrConstants.FILENAME_ALTO), (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+                        } catch (FileNotFoundException e) {
+                            logger.error(e.getMessage());
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+
                         // Skip page hits without an proper full-text
-                        if (StringUtils.isBlank(fulltext) || fulltext.trim().isEmpty()) {
+                        if (StringUtils.isBlank(fulltext)) {
                             continue;
                         }
                     case METADATA:

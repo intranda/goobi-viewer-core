@@ -126,6 +126,8 @@ public class BrowseElement implements Serializable {
     private String sidebarNextUrl;
     @JsonIgnore
     private final Locale locale;
+    @JsonIgnore
+    private final String dataRepository;
 
     /**
      * Constructor for unit tests and special instances.
@@ -137,7 +139,7 @@ public class BrowseElement implements Serializable {
      * @param useOverviewPage
      * @should build overview page url correctly
      */
-    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale) {
+    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale, String dataRepository) {
         this.pi = pi;
         this.imageNo = imageNo;
         this.label = label;
@@ -146,6 +148,7 @@ public class BrowseElement implements Serializable {
         this.locale = locale;
         this.metadataList = new ArrayList<>();
         this.url = generateUrl();
+        this.dataRepository = dataRepository;
     }
 
     /**
@@ -308,6 +311,7 @@ public class BrowseElement implements Serializable {
         anchor = structElement.isAnchor();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
+        dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
 
         if (DocType.GROUP.equals(docType)) {
             label = docType.getLabel(null);
@@ -398,7 +402,6 @@ public class BrowseElement implements Serializable {
             String filepath = filename;
             if (StringUtils.isNotEmpty(filepath)) {
                 // Determine whether the file is in a data repository
-                String dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
@@ -1130,6 +1133,13 @@ public class BrowseElement implements Serializable {
             }
         }
         return list;
+    }
+
+    /**
+     * @return the dataRepository
+     */
+    public String getDataRepository() {
+        return dataRepository;
     }
 
     /**

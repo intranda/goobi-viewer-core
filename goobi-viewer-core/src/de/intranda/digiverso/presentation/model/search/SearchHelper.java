@@ -15,6 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,7 +58,9 @@ import org.apache.solr.common.params.GroupParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.ALTOTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
@@ -155,9 +160,14 @@ public final class SearchHelper {
                     }
                 }
 
-                fulltext = (String) doc.getFirstValue("MD_FULLTEXT");
-                if (fulltext == null) {
-                    fulltext = (String) doc.getFieldValue(SolrConstants.FULLTEXT);
+                // Load full-text
+                try {
+                    fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(
+                            SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+                } catch (FileNotFoundException e) {
+                    logger.error(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
                 }
             } else {
                 // Add docstruct documents to the owner doc map, just in case
@@ -891,43 +901,43 @@ public final class SearchHelper {
     static String[] generateAccessCheckQuery(String identifier, String fileName) {
         String[] ret = new String[2];
         if (fileName != null) {
-        StringBuilder sbQuery = new StringBuilder();
-        String useFileField = SolrConstants.FILENAME;
-        String useFileName = fileName;
-        // Different media types have the file name in different fields
-        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-        switch (extension) {
-            case "webm":
-                useFileField = SolrConstants.FILENAME_WEBM;
-                break;
-            case "mp4":
-                useFileField = SolrConstants.FILENAME_MP4;
-                break;
-            case "mp3":
-                // if the mime type in METS is not audio/mpeg3 but something else, access will be false
-                useFileField = SolrConstants.FILENAME_MPEG3;
-                break;
-            case "ogg":
-            case "ogv":
-                useFileField = SolrConstants.FILENAME_OGG;
-                break;
-            case "txt":
-            case "xml":
-                useFileName = fileName.replace(extension, "*");
-                break;
-            default:
-                break;
-        }
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
-        if (useFileName.endsWith(".*")) {
-            sbQuery.append(useFileName);
-        } else {
-            sbQuery.append("\"").append(useFileName).append("\"");
-        }
+            StringBuilder sbQuery = new StringBuilder();
+            String useFileField = SolrConstants.FILENAME;
+            String useFileName = fileName;
+            // Different media types have the file name in different fields
+            String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+            switch (extension) {
+                case "webm":
+                    useFileField = SolrConstants.FILENAME_WEBM;
+                    break;
+                case "mp4":
+                    useFileField = SolrConstants.FILENAME_MP4;
+                    break;
+                case "mp3":
+                    // if the mime type in METS is not audio/mpeg3 but something else, access will be false
+                    useFileField = SolrConstants.FILENAME_MPEG3;
+                    break;
+                case "ogg":
+                case "ogv":
+                    useFileField = SolrConstants.FILENAME_OGG;
+                    break;
+                case "txt":
+                case "xml":
+                    useFileName = fileName.replace(extension, "*");
+                    break;
+                default:
+                    break;
+            }
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
+            if (useFileName.endsWith(".*")) {
+                sbQuery.append(useFileName);
+            } else {
+                sbQuery.append("\"").append(useFileName).append("\"");
+            }
 
-        // logger.trace(sbQuery.toString());
-        ret[0] = sbQuery.toString();
-        ret[1] = useFileField;
+            // logger.trace(sbQuery.toString());
+            ret[0] = sbQuery.toString();
+            ret[1] = useFileField;
         }
         return ret;
     }
@@ -1087,8 +1097,7 @@ public final class SearchHelper {
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
                 SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION,
-                        SolrConstants.PI_TOPSTRUCT }));
+                        SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
                 for (SolrDocument doc : hits) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                     if (fieldsAccessConddition != null) {
@@ -2401,5 +2410,48 @@ public final class SearchHelper {
         }
 
         return wb;
+    }
+
+    /**
+     * 
+     * @param dataRepository
+     * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
+     * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
+     * @return
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @should load fulltext from alto correctly
+     * @should load fulltext from plain text correctly
+     */
+    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath) throws FileNotFoundException, IOException {
+        String ret = null;
+
+        String recordPath = Helper.getRepositoryPath(dataRepository);
+        if (altoFilePath != null) {
+            // ALTO file
+            File file = new File(recordPath, altoFilePath);
+            logger.trace(file.getAbsolutePath());
+            if (file.isFile()) {
+                String alto = FileTools.getStringFromFile(file, Helper.DEFAULT_ENCODING);
+                ret = ALTOTools.getFullText(alto);
+            }
+
+        }
+        if (ret == null && fulltextFilePath != null) {
+            // Plain full-text file
+            File file = new File(recordPath, fulltextFilePath);
+            logger.trace(file.getAbsolutePath());
+            if (file.isFile()) {
+                try {
+                    ret = FileTools.getStringFromFile(file, Helper.DEFAULT_ENCODING);
+                } catch (FileNotFoundException e) {
+                    logger.error(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        return ret;
     }
 }

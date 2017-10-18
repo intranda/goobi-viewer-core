@@ -29,6 +29,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -1105,5 +1106,25 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void replaceHighlightingPlaceholders_shouldReplacePlaceholdersWithHtmlTags() throws Exception {
         Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper.replaceHighlightingPlaceholders(
                 SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
+    }
+
+    /**
+     * @see SearchHelper#loadFulltext(String,String,String,String)
+     * @verifies load fulltext from alto correctly
+     */
+    @Test
+    public void loadFulltext_shouldLoadFulltextFromAltoCorrectly() throws Exception {
+        String fulltext = SearchHelper.loadFulltext(null, "alto/PPN648829383/00000001.xml", null);
+        Assert.assertTrue(StringUtils.isNotEmpty(fulltext));
+    }
+
+    /**
+     * @see SearchHelper#loadFulltext(String,String,String,String)
+     * @verifies load fulltext from plain text correctly
+     */
+    @Test
+    public void loadFulltext_shouldLoadFulltextFromPlainTextCorrectly() throws Exception {
+        String fulltext = SearchHelper.loadFulltext(null, null, "fulltext/PPN123/00000001.txt");
+        Assert.assertEquals("sample text", fulltext);
     }
 }

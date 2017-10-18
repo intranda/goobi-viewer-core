@@ -970,7 +970,8 @@ public class Helper {
     }
 
     /**
-     *
+     * Returns the absolute path to the data repository with the given name (including a slash at the end).
+     * 
      * @param dataRepository
      * @return
      */
