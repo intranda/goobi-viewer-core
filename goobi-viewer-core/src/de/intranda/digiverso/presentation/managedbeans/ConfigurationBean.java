@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -39,6 +40,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.language.Language;
+import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -716,8 +719,31 @@ public class ConfigurationBean implements Serializable {
     public boolean isDoublePageModeEnabled() {
         return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
     }
-    
+
     public String getIiifApiUrl() {
         return DataManager.getInstance().getConfiguration().getIiifUrl();
+    }
+
+    public String getIso639_1(String language) {
+        return LanguageHelper.getInstance().getLanguage(language).getIsoCodeOld();
+    }
+
+    public String getIso639_2B(String language) {
+        return LanguageHelper.getInstance().getLanguage(language).getIsoCode();
+    }
+
+    public String getTranslation(String language, String locale) {
+        Language lang = LanguageHelper.getInstance().getLanguage(language);
+        switch (locale.toLowerCase()) {
+            case "de":
+            case "ger":
+                return lang.getGermanName();
+            case "fre":
+            case "fra":
+            case "fr":
+                return lang.getFrenchName();
+            default:
+                return lang.getEnglishName();
+        }
     }
 }
