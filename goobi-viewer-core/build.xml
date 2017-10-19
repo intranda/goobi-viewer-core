@@ -1247,4 +1247,19 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
+	<target name="gaugsammlungen">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="http://sammlungen.uni-goettingen.de/viewer2/" />
+		<property name="solr.url" value="http://sammlungen.uni-goettingen.de/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fsammlungen.uni-goettingen.de%2Fviewer2%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql://localhost:3306/viewer2" />
+		<property name="theme" value="gaugsammlungen" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 </project>
