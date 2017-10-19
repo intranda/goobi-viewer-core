@@ -395,7 +395,7 @@
         },
         setTileSizes: function(imageInfo, tiles) {
         	if(tiles) {        		
-        		var tileString = configViewer.global.tileSizes.replace(/(\d+)/, '"$1"').replace("=", ":");
+        		var tileString = viewImage.getConfig().global.tileSizes.replace(/(\d+)/, '"$1"').replace("=", ":");
         		var tiles = JSON.parse(tileString);
         		var iiifTiles = [];
         		

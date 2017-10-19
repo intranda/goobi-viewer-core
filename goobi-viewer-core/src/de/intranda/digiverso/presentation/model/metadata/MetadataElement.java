@@ -302,6 +302,9 @@ public class MetadataElement {
                     fallback = md;
                 }
             }
+            if(!"en".equals(language) && fallback == null) {
+                fallback = getMetadata(name, "en");
+            }
 
             return fallback;
         }
