@@ -204,7 +204,7 @@ public class SearchBean implements Serializable {
         setSearchStringKeepCurrentPage("");
         setCurrentPage(1);
         setExactSearchString("");
-        facets.resetCurrentCollection();
+        facets.resetCurrentFacets();
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
         resetSearchParameters(true);
@@ -232,7 +232,8 @@ public class SearchBean implements Serializable {
             currentSearch.setHitsCount(0);
             currentSearch.getHits().clear();
         }
-        facets.reset();
+        // Only reset available facets here, not selected facets!
+        facets.resetAvailableFacets();
 
         // Reset preferred record view when doing a new search
         if (navigationHelper != null) {
@@ -580,9 +581,9 @@ public class SearchBean implements Serializable {
         QueryResponse resp = null;
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
         List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
-        //        for(String fq: facetFilterQueries) {
-        //            logger.trace("Filter query: {}", fq);
-        //        }
+        for (String fq : facetFilterQueries) {
+            logger.trace("Facet query: {}", fq);
+        }
         if (currentSearch.getHitsCount() == 0) {
             logger.trace("Final main query: {}", query);
             resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields, Collections.singletonList(
@@ -590,8 +591,7 @@ public class SearchBean implements Serializable {
             if (resp != null && resp.getResults() != null) {
                 currentSearch.setHitsCount(resp.getResults().getNumFound());
                 logger.trace("Pre-grouping search hits: {}", currentSearch.getHitsCount());
-                // Check for duplicate values in the GROUPFIELD facet and
-                // substract the number from the total hits.
+                // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                 for (FacetField facetField : resp.getFacetFields()) {
                     if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
                         for (Count count : facetField.getValues()) {
@@ -619,8 +619,7 @@ public class SearchBean implements Serializable {
                     }
                     facetResult.put(count.getName(), count.getCount());
                 }
-                // Use non-FACET_ field names outside of the actual faceting
-                // query
+                // Use non-FACET_ field names outside of the actual faceting query
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (hierarchicalFacetFields.contains(fieldName)) {
                     facets.getAvailableHierarchicalFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
@@ -1374,18 +1373,19 @@ public class SearchBean implements Serializable {
     /**
      * Returns the index of the currently displayed BrowseElement, if it is present in the search hit list.
      *
-     * @param currentElementIddoc
-     * @param currentImageNo
+     * @param pi Record identifier of the loaded record.
+     * @param page Page number of he loaded record.
+     * @param aggregateHits If true, only the identifier has to match, page number is ignored.
      * @return The index of the currently displayed BrowseElement in the search hit list; -1 if not present.
      */
-    public void findCurrentHitIndex(String currentElementPi, int currentImageNo) {
-        logger.trace("findCurrentHitIndex: {}/{}", currentElementPi, currentImageNo);
+    public void findCurrentHitIndex(String pi, int page, boolean aggregateHits) {
+        logger.trace("findCurrentHitIndex: {}/{}", pi, page);
         currentHitIndex = 0;
         if (currentSearch != null && !currentSearch.getHits().isEmpty()) {
             for (SearchHit hit : currentSearch.getHits()) {
                 BrowseElement be = hit.getBrowseElement();
                 logger.trace("BrowseElement: {}/{}", be.getPi(), be.getImageNo());
-                if (be.getPi().equals(currentElementPi) && be.getImageNo() == currentImageNo) {
+                if (be.getPi().equals(pi) && (aggregateHits || be.getImageNo() == page)) {
                     logger.trace("currentPage: {}", currentPage);
                     currentHitIndex += (currentPage - 1) * hitsPerPage;
                     logger.trace("currentHitIndex: {}", currentHitIndex);
@@ -1600,6 +1600,7 @@ public class SearchBean implements Serializable {
                 if (browseBean == null) {
                     browseBean = new BrowseBean();
                 }
+                // Make sure displayDepth is at configured to the desired depth for this field (or -1 for complete depth)
                 int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
                 List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
                 StringBuilder sbItemLabel = new StringBuilder();

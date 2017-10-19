@@ -271,7 +271,6 @@ var Statistics = ( function() {
                 yaxis: {
                     min: 0,
                     rendererOptions: {
-                        tickRenderer: jQuery.jqplot.CanvasAxisTickRenderer,
                         tickOptions: {
                             show: true,
                             showLabel: true
@@ -342,12 +341,16 @@ var Statistics = ( function() {
                     // min: date,
                     renderer: jQuery.jqplot.DateAxisRenderer,
                     tickOptions: {
-                        formatString: "%b %Y"
+                        formatString: "%b %Y",
+                    	markSize: 10,
                     }
                 },
                 yaxis: {
                     padMax: 1.01,
-                    padMin: 1.01
+                    padMin: 1.01,
+                    tickOptions: {
+                    	markSize: 10,
+                    },
                 }
             },
             cursor: {
@@ -396,6 +399,12 @@ var Statistics = ( function() {
             }
             return newString + " [...]";
         }
+    }
+    
+    function _addDays(date, days) {
+    	var result = new Date();
+    	  result.setDate(date.getDate() + days);
+    	  return result;
     }
 
     return Statistics;

@@ -2940,6 +2940,30 @@ div[id*="-Modal"] .email-form .form-group {
 #statistics #chart-most-active-users .chart-most-active-users-table-row .chart-most-active-users-table-cell.chart-most-active-users-table-cell-right .rank {
   background-color: #999;
 }
+.jqplot-axis {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+}
+.jqplot-axis.jqplot-xaxis {
+  margin-top: 10px;
+}
+.jqplot-axis.jqplot-yaxis {
+  margin-right: 12px;
+}
+#chartpseudotooltip {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+}
+.jqplot-highlighter-tooltip {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+}
+#chart-most-edited .jqplot-point-label {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+  margin-bottom: -15px;
+  margin-left: 5px;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */

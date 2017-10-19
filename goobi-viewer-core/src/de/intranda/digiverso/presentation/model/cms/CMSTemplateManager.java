@@ -179,6 +179,9 @@ public final class CMSTemplateManager {
         }
         // logger.trace(templateFolder.getAbsolutePath());
         for (CMSPageTemplate template : templateList) {
+            if(templates.get(template.getId()) != null) {
+                throw new IOException("Found two templates with id " + template.getId());
+            }
             templates.put(template.getId(), template);
         }
         return templates;

@@ -842,11 +842,12 @@ public final class Configuration extends AbstractConfiguration {
      * @param field
      * @return
      * @should return correct value
+     * @should return -1 if no collection config was found
      */
     public int getCollectionDisplayDepthForSearch(String field) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
         if (collection == null) {
-            return 0;
+            return -1;
         }
         return collection.getInt("displayDepthForSearch", -1);
     }

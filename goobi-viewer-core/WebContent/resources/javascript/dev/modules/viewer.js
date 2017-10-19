@@ -1360,7 +1360,7 @@
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
             modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            modalBody += '<dd>' + infos.size + '</dd>';
+            modalBody += '<dd>~' + infos.size + '</dd>';
             modalBody += '</dl>';
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
@@ -5751,7 +5751,7 @@
             $.extend( true, _defaults, config );
             
             // show loader
-            $(_defaults.loaderSelector).show();
+            $( _defaults.loaderSelector ).show();
             
             // render grid
             _renderMasonryGrid( data );
@@ -5769,8 +5769,8 @@
             
             // fade in grid after rendering
             _lazyGrid.on( 'layoutComplete', function( event, laidOutItems ) {
-             // hide loader
-                $(_defaults.loaderSelector).hide();
+                // hide loader
+                $( _defaults.loaderSelector ).hide();
                 // show images
                 _defaults.$grid.addClass( 'ready' );
             } );
@@ -6152,8 +6152,8 @@
         }
         
         var $item = $( ui.item );
-        
-        var $radioMenues = $item.find("td");
+
+        var $radioMenues = $item.find("table");
         $radioMenues.each(function(index, element) {
         	var $checkboxes = $(element).find("input");
         	if($checkboxes.length > 0) {
@@ -6165,12 +6165,12 @@
         			}
         		})
         		if(!anychecked) {
-        			$($checkboxes.get(0)).prop('checked', true);
+        			$checkboxes.first().prop('checked', true);
         		}
         	}
         })
-        if ( _allowMultipleOccurances && item.parent().attr( "id" ) === "visibleItemList" ) {
-            item.clone().appendTo( $( "#availableItemList" ) );
+        if ( _allowMultipleOccurances && $item.parent().attr( "id" ) === "visibleItemList" ) {
+            $item.clone().appendTo( $( "#availableItemList" ) );
         }
         
     }

@@ -99,12 +99,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
          * @return
          */
         public Functionality createFunctionality(CMSContentItem item) {
-            switch(this) {
-                case TOC: 
+            switch (this) {
+                case TOC:
                     return new TocFunctionality(item.getTocPI());
-                default: 
+                default:
                     return new TrivialFunctionality();
-            }   
+            }
         }
     }
 
@@ -182,7 +182,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /** whether this collection should open with all subcollections expanded. Base levels don't expand */
     @Column(name = "base_collection")
     private String baseCollection = null;
-    
+
     @Column(name = "toc_pi")
     private String tocPI = "";
 
@@ -203,7 +203,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Column(name = "tile_count")
     private int numberOfTiles = 9;
-    
+
     @Transient
     private Functionality functionality = null;
 
@@ -221,14 +221,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Transient
     private int order = 0;
-    
+
     /**
      * 
      */
     public CMSContentItem() {
         // TODO Auto-generated constructor stub
     }
-    
+
     public CMSContentItem(CMSContentItem blueprint) {
         this.setItemId(blueprint.itemId);
         this.setItemLabel(blueprint.itemLabel);
@@ -250,12 +250,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the functionality
      */
     public Functionality getFunctionality() {
-        if(functionality == null) {
+        if (functionality == null) {
             initFunctionality();
         }
         return functionality;
     }
-    
+
     /**
      * @param type2
      */
@@ -266,7 +266,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public void initFunctionality() {
         this.functionality = getType().createFunctionality(this);
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -700,14 +700,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public void setNumberOfTiles(int numberOfTiles) {
         this.numberOfTiles = numberOfTiles;
     }
-    
+
     /**
      * @return the piPeriodical
      */
     public String getTocPI() {
         return tocPI;
     }
-    
+
     /**
      * @param piPeriodical the piPeriodical to set
      */

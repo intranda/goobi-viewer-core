@@ -2159,9 +2159,22 @@ public class ConfigurationTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
     }
 
+    /**
+     * @see Configuration#getCollectionDisplayDepthForSearch(String)
+     * @verifies return correct value
+     */
     @Test
-    public void testGetCollectionDisplayDepthForSearch() {
-        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("DC"));
+    public void getCollectionDisplayDepthForSearch_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(SolrConstants.DC));
+    }
+
+    /**
+     * @see Configuration#getCollectionDisplayDepthForSearch(String)
+     * @verifies return -1 if no collection config was found
+     */
+    @Test
+    public void getCollectionDisplayDepthForSearch_shouldReturn1IfNoCollectionConfigWasFound() throws Exception {
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NOSUCHFIELD"));
     }
 
     @Test
