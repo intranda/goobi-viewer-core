@@ -26,6 +26,7 @@ module.exports = function(grunt) {
                 options: {
                     paths: [ '<%=src.lessDevFolder%>' ],
                     compress: true,
+                    sourceMap: true,
                     banner: '/*!\n'
                         + ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
                         + ' *\n'

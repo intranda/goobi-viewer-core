@@ -343,7 +343,7 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 // When not aggregating hits, a new page will also be a new search hit in the list
-                if (imageToShow != viewManager.getCurrentImageNo() && DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                if (imageToShow != viewManager.getCurrentImageNo() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
                     mayChangeHitIndex = true;
                 }
                 viewManager.setCurrentImageNo(imageToShow);
@@ -353,7 +353,8 @@ public class ActiveDocumentBean implements Serializable {
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
                     if (searchBean.getCurrentHitIndex() < 0) {
                         // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow);
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow, DataManager.getInstance().getConfiguration()
+                                .isAggregateHits());
                     } else if (mayChangeHitIndex) {
                         // Modify the current hit index
                         searchBean.increaseCurrentHitIndex();
@@ -678,7 +679,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public String getPageUrl() throws IndexUnreachableException {
-        StringBuilder sbUrl = new StringBuilder();
         String pageType = null;
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getPreferredView();
@@ -686,6 +686,16 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
+        return getPageUrl(pageType);
+    }
+
+    /**
+     * @param pageType
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getPageUrl(String pageType) throws IndexUnreachableException {
+        StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
                 .append(getPersistentIdentifier()).append('/');
 

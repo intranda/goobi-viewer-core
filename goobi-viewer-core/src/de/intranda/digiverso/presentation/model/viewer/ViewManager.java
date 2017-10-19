@@ -1166,6 +1166,8 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Returns the pdf download link for the current document
+     * 
      * @return {@link String}
      * @throws IndexUnreachableException
      */
@@ -1181,6 +1183,28 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Returns the pdf download link for the current page
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
+        StringBuilder sb = new StringBuilder();
+        PhysicalElement page = getCurrentPage();
+        if(page != null) {
+            sb.append(page.getImageToPdfUrl());
+        }
+        String footerId = getFooterId();
+        if(StringUtils.isNotBlank(footerId)) {
+            sb.append("&watermarkId=").append(footerId);
+        }
+        return sb.toString();
+    }
+    
+    /**
+     * Returns the pdf download link for a pdf of all pages 
+     * from this.firstPdfPage to this.lastPdfPage (inclusively)
      * 
      * @return
      * @throws IndexUnreachableException

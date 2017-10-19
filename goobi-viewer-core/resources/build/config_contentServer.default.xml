@@ -66,6 +66,9 @@
 		alwaysCompressToJPEG="true" metsFileGroup="PRESENTATION" writeAsPdfA="true"
 		pagesize="original" />
 
+	<!-- Factors to scale the estimated pdf size which is calculated by the size of all required image files -->
+	<imageToPdfSizeFactor tiff="0.35" jpg="1.0"/>
+
 	<!--########################################################## *############################################################# 
 		* * ContentServer parameters * *############################################################# 
 		*########################################################### -->

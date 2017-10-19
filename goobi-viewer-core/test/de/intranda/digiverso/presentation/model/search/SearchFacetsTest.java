@@ -21,12 +21,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 
 public class SearchFacetsTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see SearchFacets#generateFacetPrefix(List,boolean)
@@ -166,7 +176,7 @@ public class SearchFacetsTest {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentFacetString("DOCSTRCT:a;;MD_TITLE:bob;;MD_TITLE:{[b]};;");
         Assert.assertEquals(3, facets.getCurrentFacets().size());
-        facets.removeFacetAction("MD_TITLE:{[b]}", null);        
+        facets.removeFacetAction("MD_TITLE:{[b]}", null);
         Assert.assertEquals(2, facets.getCurrentFacets().size());
         Assert.assertEquals("DOCSTRCT%3Aa%3B%3BMD_TITLE%3Abob%3B%3B", facets.getCurrentFacetString());
     }
@@ -244,8 +254,8 @@ public class SearchFacetsTest {
     public void generateHierarchicalFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentHierarchicalFacetString("DC:a;;DC:aa;;");
-        Assert.assertEquals("(DC:a OR DC:a.*) AND (DC:aa OR DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(0));
-        Assert.assertEquals("(DC:a OR DC:a.*) OR (DC:aa OR DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(1));
+        Assert.assertEquals("(FACET_DC:a OR FACET_DC:a.*) AND (FACET_DC:aa OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(0));
+        Assert.assertEquals("(FACET_DC:a OR FACET_DC:a.*) OR (FACET_DC:aa OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(1));
     }
 
     /**
