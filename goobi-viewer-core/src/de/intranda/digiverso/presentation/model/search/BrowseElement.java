@@ -748,23 +748,30 @@ public class BrowseElement implements Serializable {
                     }
                     break;
                 default:
-                    ret = generateDefaultLabel(se);
+                    ret = generateDefaultLabel(se, locale);
                     break;
             }
         } else {
             logger.warn("{} field seems to be missing on Solr document {}", SolrConstants.DOCTYPE, se.getLuceneId());
-            return generateDefaultLabel(se);
+            return generateDefaultLabel(se, locale);
         }
 
         return ret;
     }
 
-    private String generateDefaultLabel(StructElement se) {
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     * @should translate docstruct label
+     */
+    static String generateDefaultLabel(StructElement se, Locale locale) {
         String ret = se.getMetadataValue(SolrConstants.LABEL);
         if (StringUtils.isEmpty(ret)) {
             ret = se.getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(ret)) {
-                ret = getDocStructType();
+                ret = Helper.getTranslation(se.getDocStructType(), locale);
             }
         }
 
