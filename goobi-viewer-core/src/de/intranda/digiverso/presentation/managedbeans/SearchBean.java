@@ -1097,6 +1097,8 @@ public class SearchBean implements Serializable {
         }
         searchTerms = SearchHelper.extractSearchTermsFromQuery(searchString.replace("\\", ""), discriminatorValue);
         logger.trace("searchTerms: {}", searchTerms);
+        
+        // TODO reset mode?
     }
 
     /**

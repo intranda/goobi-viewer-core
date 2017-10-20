@@ -2076,6 +2076,7 @@ public final class SearchHelper {
      * @should escape reserved characters
      */
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms) {
+        logger.trace("generateExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
         if (!searchTerms.isEmpty()) {
             logger.trace("fields: {}", fields.toString());
@@ -2127,6 +2128,7 @@ public final class SearchHelper {
      * @should skip reserved fields
      */
     public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
+        logger.trace("generateAdvancedExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
 
         if (!groups.isEmpty()) {

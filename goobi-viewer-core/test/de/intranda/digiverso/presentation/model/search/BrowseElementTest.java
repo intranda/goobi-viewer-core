@@ -166,10 +166,22 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
         searchTerms.put(SolrConstants.DC, new HashSet<>(Arrays.asList(new String[] { "admin" })));
 
-
         String[] translateFields = { SolrConstants.DC };
         be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, new HashSet<>(Arrays.asList(translateFields)));
         Assert.assertEquals(1, be.getMetadataList(SolrConstants.DC).size());
+    }
+
+    /**
+     * @see BrowseElement#generateDefaultLabel(StructElement)
+     * @verifies translate docstruct label
+     */
+    @Test
+    public void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
+        BrowseElement be = new BrowseElement("PPN123", 1, null, null, false, Locale.GERMAN);
+        StructElement se = new StructElement();
+        se.setDocStructType("Monograph");
+        String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
+        Assert.assertEquals("Monographie", label);
     }
 
 }

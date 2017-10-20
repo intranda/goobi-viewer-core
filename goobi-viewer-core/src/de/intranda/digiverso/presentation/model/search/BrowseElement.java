@@ -770,8 +770,9 @@ public class BrowseElement implements Serializable {
      * @param se
      * @param locale
      * @return
+     * @should translate docstruct label
      */
-    private String generateDefaultLabel(StructElement se, Locale locale) {
+    static String generateDefaultLabel(StructElement se, Locale locale) {
         String ret = se.getMetadataValue(SolrConstants.LABEL);
         if (StringUtils.isEmpty(ret)) {
             ret = se.getMetadataValue(SolrConstants.TITLE);
@@ -787,7 +788,7 @@ public class BrowseElement implements Serializable {
                     }
                 }
                 if (StringUtils.isEmpty(ret)) {
-                    ret = getDocStructType();
+                    ret = Helper.getTranslation(se.getDocStructType(), locale);
                 }
             }
         }

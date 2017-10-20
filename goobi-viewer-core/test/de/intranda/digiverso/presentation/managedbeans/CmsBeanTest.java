@@ -81,7 +81,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testGetStaticPages() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSStaticPage> staticPages = bean.getStaticPages();
-        Assert.assertEquals(2, staticPages.size());
+        Assert.assertFalse(staticPages.isEmpty());
     }
 
     @Test
