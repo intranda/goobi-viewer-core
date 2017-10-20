@@ -511,7 +511,6 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
 
-        logger.trace("isHasHitCount: false");
         return false;
     }
 
