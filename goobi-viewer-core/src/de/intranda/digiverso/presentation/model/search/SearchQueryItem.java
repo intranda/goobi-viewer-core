@@ -206,6 +206,7 @@ public class SearchQueryItem implements Serializable {
      * @should generate query correctly
      * @should escape reserved characters
      * @should always use OR operator if searching in all fields
+     * @should preserve truncation
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
         StringBuilder sbItem = new StringBuilder();
@@ -352,11 +353,25 @@ public class SearchQueryItem implements Serializable {
                                     }
                                     break;
                             }
+
                             if (value.contains("-")) {
                                 // Hack to enable fuzzy searching for terms that contain hyphens
                                 sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
                             } else {
-                                sbItem.append(ClientUtils.escapeQueryChars(value));
+                                // Preserve truncation before escaping
+                                String prefix = "";
+                                String useValue = value;
+                                String suffix = "";
+                                if (useValue.startsWith("*")) {
+                                    prefix = "*";
+                                    useValue = useValue.substring(1);
+                                }
+                                if (useValue.endsWith("*")) {
+                                    suffix = "*";
+                                    useValue = useValue.substring(0, useValue.length() - 1);
+                                }
+                                
+                                sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
                             }
                             if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
                                 String val = value.replace("\"", "");
