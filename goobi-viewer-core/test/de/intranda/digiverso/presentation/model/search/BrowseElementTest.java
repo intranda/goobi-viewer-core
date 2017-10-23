@@ -177,7 +177,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
-        BrowseElement be = new BrowseElement("PPN123", 1, null, null, false, Locale.GERMAN);
+        BrowseElement be = new BrowseElement("PPN123", 1, null, null, false, Locale.GERMAN, null);
         StructElement se = new StructElement();
         se.setDocStructType("Monograph");
         String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
