@@ -871,6 +871,9 @@ public final class SolrSearchIndex {
      */
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue) {
+        if(fieldValue == null) {
+            return null;
+        }
         if (fieldValue instanceof String) {
             return (String) fieldValue;
         } else if (fieldValue instanceof List) {
@@ -882,6 +885,22 @@ public final class SolrSearchIndex {
             return sb.toString().trim();
         } else {
             return fieldValue.toString();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Integer getAsInt(Object fieldValue) {
+        if(fieldValue == null) {
+            return null;
+        }
+        if (fieldValue instanceof Integer) {
+            return (Integer) fieldValue;
+        } else {
+            try {                
+                return Integer.parseInt(fieldValue.toString());
+            } catch(NumberFormatException e) {
+                return null;
+            }
         }
     }
 

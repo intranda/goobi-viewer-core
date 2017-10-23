@@ -290,24 +290,35 @@ public class MetadataElement {
     public Metadata getMetadata(String name, String language) {
         if (StringUtils.isNotEmpty(name) && metadataList != null && !metadataList.isEmpty()) {
             String fullFieldName = name;
+            String fullFieldNameDe = name + SolrConstants._LANG_ + "DE";
+            String fullFieldNameEn = name + SolrConstants._LANG_ + "EN";
             if (StringUtils.isNotEmpty(language)) {
                 fullFieldName += SolrConstants._LANG_ + language.toUpperCase();
             }
             Metadata fallback = null;
+            Metadata fallbackDe = null;
+            Metadata fallbackEn = null;
             for (Metadata md : metadataList) {
                 if (md.getLabel().equals(fullFieldName)) {
                     logger.trace("{}: {}", fullFieldName, md.getValues().size());
                     return md;
+                } else if (md.getLabel().equals(fullFieldNameDe)) {
+                    fallbackDe = md;
+                } else if (md.getLabel().equals(fullFieldNameEn)) {
+                    fallbackEn = md;
                 } else if (md.getLabel().equals(name)) {
                     fallback = md;
                 }
             }
-            if(!"en".equals(language) && fallback == null) {
-                fallback = getMetadata(name, "en");
-            }
 
-            return fallback;
-        }
+            if(fallbackEn != null) {
+                return fallbackEn;
+            } else if(fallbackDe != null) {
+                return fallbackDe;
+            } else {
+                return fallback;
+            }
+        } 
 
         return null;
     }
