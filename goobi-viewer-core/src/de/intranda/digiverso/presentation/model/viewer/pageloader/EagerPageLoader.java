@@ -143,10 +143,12 @@ public class EagerPageLoader implements IPageLoader, Serializable {
             si.setLabel(key + ":" + page.getOrderLabel());
             si.setValue(key);
             dropdownPages.add(si);
-            SelectItem full = new SelectItem();
-            full.setLabel(key + ":" + page.getOrderLabel());
-            full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + page.getPurlPart());
-            dropdownFulltext.add(full);
+            if (dropdownFulltext != null) {
+                SelectItem full = new SelectItem();
+                full.setLabel(key + ":" + page.getOrderLabel());
+                full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + page.getPurlPart());
+                dropdownFulltext.add(full);
+            }
         }
     }
 

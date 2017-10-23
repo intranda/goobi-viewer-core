@@ -725,15 +725,15 @@ public class ConfigurationBean implements Serializable {
     }
 
     public String getIso639_1(String language) {
-        return LanguageHelper.getInstance().getLanguage(language).getIsoCodeOld();
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCodeOld();
     }
 
     public String getIso639_2B(String language) {
-        return LanguageHelper.getInstance().getLanguage(language).getIsoCode();
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCode();
     }
 
     public String getTranslation(String language, String locale) {
-        Language lang = LanguageHelper.getInstance().getLanguage(language);
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
         switch (locale.toLowerCase()) {
             case "de":
             case "ger":

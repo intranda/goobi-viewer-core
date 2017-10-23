@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -39,6 +40,8 @@ public final class DataManager {
     private final List<IModule> modules = new ArrayList<>();
 
     private Configuration configuration;
+    
+    private LanguageHelper languageHelper;
 
     private SolrSearchIndex searchIndex;
 
@@ -143,6 +146,21 @@ public final class DataManager {
         }
 
         return configuration;
+    }
+    
+    
+
+    /**
+     * @return the languageHelper
+     */
+    public LanguageHelper getLanguageHelper() {
+        if (languageHelper == null) {
+            synchronized (lock) {
+                languageHelper = new LanguageHelper("languages.xml");
+            }
+        }
+        
+        return languageHelper;
     }
 
     /**

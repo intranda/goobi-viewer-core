@@ -100,8 +100,8 @@ public class ViewManager implements Serializable {
     private int rotate = 0;
     private int zoomSlider;
     private int currentImageOrder = -1;
-    private List<SelectItem> dropdownPages = new ArrayList<>();
-    private List<SelectItem> dropdownFulltext = new ArrayList<>();
+    private final List<SelectItem> dropdownPages = new ArrayList<>();
+    private final List<SelectItem> dropdownFulltext = new ArrayList<>();
     private String dropdownSelected = "";
     private int currentThumbnailPage = 1;
     private String pi;
@@ -946,21 +946,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @param dropdownPages the dropdownPages to set
-     */
-    public void setDropdownPages(List<SelectItem> dropdownPages) {
-        this.dropdownPages = dropdownPages;
-    }
-
-    /**
      * @return the dropdownPages
      */
     public List<SelectItem> getDropdownPages() {
         return dropdownPages;
-    }
-
-    public void setDropdownFulltext(List<SelectItem> dropdownFulltext) {
-        this.dropdownFulltext = dropdownFulltext;
     }
 
     /**
@@ -1196,19 +1185,18 @@ public class ViewManager implements Serializable {
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
         StringBuilder sb = new StringBuilder();
         PhysicalElement page = getCurrentPage();
-        if(page != null) {
+        if (page != null) {
             sb.append(page.getImageToPdfUrl());
         }
         String footerId = getFooterId();
-        if(StringUtils.isNotBlank(footerId)) {
+        if (StringUtils.isNotBlank(footerId)) {
             sb.append("&watermarkId=").append(footerId);
         }
         return sb.toString();
     }
-    
+
     /**
-     * Returns the pdf download link for a pdf of all pages 
-     * from this.firstPdfPage to this.lastPdfPage (inclusively)
+     * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively)
      * 
      * @return
      * @throws IndexUnreachableException
@@ -2174,30 +2162,30 @@ public class ViewManager implements Serializable {
     public String getTopDocumentTitle() {
         return getDocumentTitle(this.topDocument);
     }
-    
+
     public String getDocumentTitle(StructElement document) {
         StringBuilder sb = new StringBuilder();
         if (document != null) {
             switch (document.docStructType) {
                 case "Comment":
                     sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
-                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
                         sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
                     }
-                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
                         sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
                     }
                     break;
                 case "FormationHistory":
                     sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
                     //TODO: Add Einsatzland z.b.: (Deutschland)
-                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
                         sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
                     }
-                    if(StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
                         sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
                     }
-                    break;  
+                    break;
                 case "Source":
                 default:
                     sb.append(document.getDisplayLabel());
