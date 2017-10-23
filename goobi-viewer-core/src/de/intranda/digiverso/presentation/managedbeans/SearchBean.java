@@ -545,6 +545,10 @@ public class SearchBean implements Serializable {
         }
 
         advancedSearchQueryInfo = sbInfo.toString();
+        // Quickfix for single hierarchical item query info having an opening parenthesis only
+        if (advancedSearchQueryInfo.startsWith("(") && !advancedSearchQueryInfo.endsWith(")")) {
+            advancedSearchQueryInfo = advancedSearchQueryInfo.substring(1);
+        }
         logger.trace("query info: {}", advancedSearchQueryInfo);
 
         logger.debug("advanced query: {}", sb.toString());

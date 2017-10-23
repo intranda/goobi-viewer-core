@@ -1857,6 +1857,7 @@ public final class SearchHelper {
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should skip discriminator value
+     * @should remove truncation
      * @should throw IllegalArgumentException if query is null
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
@@ -1930,6 +1931,14 @@ public final class SearchHelper {
                     logger.trace("value: {}", value);
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
+                    }
+                    // Remove left truncation
+                    if (value.charAt(0) == '*' && value.length() > 1) {
+                        value = value.substring(1);
+                    }
+                    // Remove right truncation
+                    if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
+                        value = value.substring(0, value.length() - 1);
                     }
                     if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {

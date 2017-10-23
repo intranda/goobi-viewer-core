@@ -600,6 +600,22 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove truncation
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveTruncation() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
+        Assert.assertEquals(1, result.size());
+        {
+            Set<String> terms = result.get("MD_A");
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("foo"));
+        }
+    }
+
+    /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
      * @verifies throw IllegalArgumentException if query is null
      */

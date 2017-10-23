@@ -739,7 +739,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public String getNextPageUrl(int step) throws IndexUnreachableException {
-        if (viewManager.isDoublePageMode()) {
+        if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
         int number = imageToShow + step;
