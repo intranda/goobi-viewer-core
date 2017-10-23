@@ -1866,6 +1866,7 @@ public final class SearchHelper {
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should skip discriminator value
+     * @should remove truncation
      * @should throw IllegalArgumentException if query is null
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
@@ -1939,6 +1940,14 @@ public final class SearchHelper {
                     logger.trace("value: {}", value);
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
+                    }
+                    // Remove left truncation
+                    if (value.charAt(0) == '*' && value.length() > 1) {
+                        value = value.substring(1);
+                    }
+                    // Remove right truncation
+                    if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
+                        value = value.substring(0, value.length() - 1);
                     }
                     if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {
@@ -2085,6 +2094,7 @@ public final class SearchHelper {
      * @should escape reserved characters
      */
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms) {
+        logger.trace("generateExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
         if (!searchTerms.isEmpty()) {
             logger.trace("fields: {}", fields.toString());
@@ -2136,6 +2146,7 @@ public final class SearchHelper {
      * @should skip reserved fields
      */
     public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
+        logger.trace("generateAdvancedExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
 
         if (!groups.isEmpty()) {
