@@ -173,8 +173,14 @@ public class CmsMediaBean {
      */
     public static String getMediaUrl(CMSMediaItem item, String width, String height) {
         if (item != null && item.getFileName() != null) {
+            StringBuilder imageUrlBuilder = new StringBuilder("file:/");
+            
+            // Add an extra slash if not on Windows
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.indexOf("win") == -1) {
+                imageUrlBuilder.append('/');
+            }
 
-            StringBuilder imageUrlBuilder = new StringBuilder("file://");
             imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
             imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
             imageUrlBuilder.append(item.getFileName());
