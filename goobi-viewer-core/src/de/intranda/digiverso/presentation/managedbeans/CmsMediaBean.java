@@ -197,7 +197,7 @@ public class CmsMediaBean {
             }
             csUrlBuilder.append("&ignoreWatermark");
 
-            logger.trace("Getting media url " + csUrlBuilder.toString());
+            logger.trace("Getting media URL {}", csUrlBuilder.toString());
 
             return csUrlBuilder.toString();
         }

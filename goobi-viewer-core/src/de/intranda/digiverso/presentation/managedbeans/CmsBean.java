@@ -787,7 +787,7 @@ public class CmsBean {
     public void setSelectedMediaLocale(Locale selectedMediaLocale) {
         this.selectedMediaLocale = selectedMediaLocale;
     }
-
+    
     /**
      * Action method called when a CMS page is opened. The exact action depends on the page and content item type.
      * 
@@ -797,10 +797,26 @@ public class CmsBean {
      * @throws DAOException
      */
     public String cmsContextAction() throws PresentationException, IndexUnreachableException, DAOException {
+        return cmsContextAction(true);
+    }
+
+    /**
+     * Action method called when a CMS page is opened. The exact action depends on the page and content item type.
+     * 
+     * @param resetSearch If true, the search parameters in SearchBean will be reset
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public String cmsContextAction(boolean resetSearch) throws PresentationException, IndexUnreachableException, DAOException {
         if (currentPage != null) {
             List<CMSContentItem> contentItems = currentPage.getGlobalContentItems();
             for (CMSContentItem item : contentItems) {
                 if (item != null && CMSContentItemType.SOLRQUERY.equals(item.getType())) {
+                    if (resetSearch && searchBean != null) {
+                        searchBean.resetSearchAction();
+                    }
                     return searchAction(item);
                 }
             }
