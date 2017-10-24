@@ -1019,33 +1019,33 @@ public class Helper {
         return sb.toString();
     }
 
-    /**
-     * 
-     * @param pi
-     * @param fileName
-     * @param dataRepository
-     * @param format
-     * @return
-     * @should return correct path
-     */
-    public static String getTextFilePath(String pi, String fileName, String dataRepository, String format) {
-        if (StringUtils.isEmpty(fileName)) {
-            throw new IllegalArgumentException("fileName may not be null or empty");
-        }
-
-        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
-        switch (format) {
-            case SolrConstants.FILENAME_ALTO:
-                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
-                break;
-            case SolrConstants.FILENAME_FULLTEXT:
-                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
-                break;
-        }
-        sb.append('/').append(pi).append('/').append(fileName);
-
-        return sb.toString();
-    }
+//    /**
+//     * 
+//     * @param pi
+//     * @param fileName
+//     * @param dataRepository
+//     * @param format
+//     * @return
+//     * @should return correct path
+//     */
+//    public static String getTextFilePath(String pi, String fileName, String dataRepository, String format) {
+//        if (StringUtils.isEmpty(fileName)) {
+//            throw new IllegalArgumentException("fileName may not be null or empty");
+//        }
+//
+//        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+//        switch (format) {
+//            case SolrConstants.FILENAME_ALTO:
+//                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
+//                break;
+//            case SolrConstants.FILENAME_FULLTEXT:
+//                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
+//                break;
+//        }
+//        sb.append('/').append(pi).append('/').append(fileName);
+//
+//        return sb.toString();
+//    }
 
     /**
      * Returns the application version number.

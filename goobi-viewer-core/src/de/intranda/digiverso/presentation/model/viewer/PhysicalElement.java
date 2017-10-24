@@ -735,7 +735,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     boolean loadFullText() throws FileNotFoundException, IOException {
         if (fullText == null && fulltextFileName != null) {
             logger.trace("Loading full-text for page {}", fulltextFileName);
-            String filePath = Helper.getTextFilePath(pi, altoFileName, dataRepository, SolrConstants.FILENAME_FULLTEXT);
+            String filePath = Helper.getRepositoryPath(dataRepository) + fulltextFileName;
             fullText = FileTools.getStringFromFilePath(filePath);
             return true;
         }
@@ -798,7 +798,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     boolean loadAlto() throws JDOMException, IOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
-            String filePath = Helper.getTextFilePath(pi, altoFileName, dataRepository, SolrConstants.FILENAME_ALTO);
+            String filePath = Helper.getRepositoryPath(dataRepository) + altoFileName;
             altoText = FileTools.getStringFromFilePath(filePath);
             wordCoordsFormat = CoordsFormat.ALTO;
             return true;

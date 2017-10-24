@@ -277,7 +277,7 @@ public class NERTagResource {
                         .singletonList(SolrConstants.DATAREPOSITORY));
                 if (topSolrDoc != null && topSolrDoc.containsKey(SolrConstants.DATAREPOSITORY)) {
                     dataRepository = (String) topSolrDoc.get(SolrConstants.DATAREPOSITORY);
-            }
+                }
             }
             DocumentReference doc = new DocumentReference(topStructPi);
 
@@ -291,17 +291,17 @@ public class NERTagResource {
                                 SolrConstants.FILENAME_ALTO);
                         continue;
                     }
-                    String altoFilePath = Helper.getTextFilePath(topStructPi, altoFileName, dataRepository, SolrConstants.FILENAME_ALTO);
+                    String altoFilePath = Helper.getRepositoryPath(dataRepository) + altoFileName;
                     try {
                         String altoString = FileTools.getStringFromFilePath(altoFilePath);
-                    Integer pageOrder = getPageOrder(solrDoc);
-                    List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
-                    for (TagCount tagCount : tags) {
-                        for (ElementReference reference : tagCount.getReferences()) {
-                            reference.setPage(pageOrder);
+                        Integer pageOrder = getPageOrder(solrDoc);
+                        List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
+                        for (TagCount tagCount : tags) {
+                            for (ElementReference reference : tagCount.getReferences()) {
+                                reference.setPage(pageOrder);
+                            }
                         }
-                    }
-                    range.addTags(tags);
+                        range.addTags(tags);
                     } catch (FileNotFoundException e) {
                         logger.error(e.getMessage());
                     } catch (IOException e) {
