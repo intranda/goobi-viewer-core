@@ -17,7 +17,6 @@ package de.intranda.digiverso.presentation.model.viewer;
 
 import java.awt.Dimension;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -1476,22 +1475,15 @@ public class ViewManager implements Serializable {
 
         // logger.debug("getFulltext() START");
         PhysicalElement currentImg = getCurrentPage();
-        try {
-            if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-                // Check permissions first
-                boolean access = SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
-                        .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(),
-                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-                if (access) {
-                    currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
-                } else {
-                    currentFulltext = "ACCESS DENIED";
-                }
+        if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
+            // Check permissions first
+            boolean access = SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
+                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+            if (access) {
+                currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
+            } else {
+                currentFulltext = "ACCESS DENIED";
             }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
         }
         // logger.debug("getFulltext() END");
 
