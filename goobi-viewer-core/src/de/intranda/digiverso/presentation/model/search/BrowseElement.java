@@ -720,7 +720,7 @@ public class BrowseElement implements Serializable {
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
-                                    ret = se.getMetadataValue("MD_DISPLAYFORM");
+                                    ret = se.getMetadataValue("MD_VALUE");
                                 }
                                 break;
                             default:
@@ -1036,18 +1036,17 @@ public class BrowseElement implements Serializable {
         StringBuilder sb = new StringBuilder();
         if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
             // Person metadata search hit ==> execute search for that person
+            // TODO not for aggregated hits?
             try {
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(URLEncoder.encode(label, SearchBean.URL_ENCODING)).append("\"/1/-/-/");
+                sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
+                        SearchBean.URL_ENCODING)).append("\"/1/-/-/");
             } catch (UnsupportedEncodingException e) {
                 logger.error("{}: {}", e.getMessage(), label);
                 sb = new StringBuilder();
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(label).append("\"/1/-/-/");
+                sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
+                        "\"/1/-/-/");
             }
         } else {
-            //            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            //            sb.append('/');
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
                     useOverviewPage, false);
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId

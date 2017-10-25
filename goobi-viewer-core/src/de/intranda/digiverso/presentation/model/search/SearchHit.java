@@ -58,6 +58,7 @@ public class SearchHit implements Comparable<SearchHit> {
         DOCSTRCT,
         PAGE,
         METADATA, // grouped metadata
+        PERSON,
         EVENT, // LIDO event
         UGC, // user-generated content
         GROUP, // convolute/series
@@ -74,6 +75,10 @@ public class SearchHit implements Comparable<SearchHit> {
                         return EVENT;
                     case "OVERVIEWPAGE":
                         return OVERVIEWPAGE;
+                    case "METADATA":
+                        return METADATA;
+                    case "PERSON":
+                        return PERSON;
                     default:
                         return null;
                 }
@@ -167,7 +172,19 @@ public class SearchHit implements Comparable<SearchHit> {
                 ? fulltextFragments.get(0) : null, useThumbnail, searchTerms);
         // Add additional metadata fields that aren't configured for search hits but contain search term values
         browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms, ignoreAdditionalFields, translateAdditionalFields);
-        SearchHit hit = new SearchHit(HitType.getByName(se.getMetadataValue(SolrConstants.DOCTYPE)), browseElement, searchTerms, locale);
+
+        // Determine hit type
+        String docType = se.getMetadataValue(SolrConstants.DOCTYPE);
+        HitType hitType = HitType.getByName(docType);
+        if (DocType.METADATA.name().equals(docType)) {
+            // For metadata hits use the metadata type for the hit type
+            String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
+            if (StringUtils.isNotEmpty(metadataType)) {
+                hitType = HitType.getByName(metadataType);
+            }
+        }
+
+        SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
         hit.populateFoundMetadata(doc, ignoreAdditionalFields, translateAdditionalFields);
 
         // Export fields for Excel export
@@ -328,6 +345,9 @@ public class SearchHit implements Comparable<SearchHit> {
                         } {
                         SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
                                 ignoreFields, translateFields);
+                        if (docType.equals(DocType.METADATA)) {
+                            logger.trace("added metadata hit: {}", childHit.browseElement.getLabel());
+                        }
                         ownerHit.getChildren().add(childHit);
                         hitsPopulated++;
                     }
@@ -541,6 +561,14 @@ public class SearchHit implements Comparable<SearchHit> {
     public int getPageHitCount() {
         if (hitTypeCounts.get(HitType.PAGE) != null) {
             return hitTypeCounts.get(HitType.PAGE);
+        }
+
+        return 0;
+    }
+
+    public int getMetadataHitCount() {
+        if (hitTypeCounts.get(HitType.METADATA) != null) {
+            return hitTypeCounts.get(HitType.METADATA);
         }
 
         return 0;
