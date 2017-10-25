@@ -28,10 +28,10 @@ import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 public interface IPageLoader {
 
     public static final String[] FIELDS = { SolrConstants.PI_TOPSTRUCT, SolrConstants.PHYSID, SolrConstants.ORDER, SolrConstants.ORDERLABEL,
-            SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME,
-            SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3, SolrConstants.FILENAME_MP4,
-            SolrConstants.FILENAME_OGG, SolrConstants.FILENAME_WEBM, SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN, SolrConstants.WIDTH,
-            SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE };
+            SolrConstants.IDDOC_OWNER, SolrConstants.MIMETYPE, SolrConstants.FILEIDROOT, SolrConstants.FILENAME, SolrConstants.FILENAME_ALTO,
+            SolrConstants.FILENAME_FULLTEXT, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.FILENAME_MPEG, SolrConstants.FILENAME_MPEG3,
+            SolrConstants.FILENAME_MP4, SolrConstants.FILENAME_OGG, SolrConstants.FILENAME_WEBM, SolrConstants.DATAREPOSITORY, SolrConstants.IMAGEURN,
+            SolrConstants.WIDTH, SolrConstants.HEIGHT, SolrConstants.ACCESSCONDITION, SolrConstants.MDNUM_FILESIZE };
 
     public int getNumPages() throws IndexUnreachableException;
 

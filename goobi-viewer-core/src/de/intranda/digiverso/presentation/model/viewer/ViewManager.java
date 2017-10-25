@@ -122,7 +122,7 @@ public class ViewManager implements Serializable {
     private CalendarView calendarView;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException {
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);

@@ -34,7 +34,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -292,7 +291,7 @@ public class NERTagResource {
                                 SolrConstants.FILENAME_ALTO);
                         continue;
                     }
-                    String altoFilePath = Helper.getTextFilePath(topStructPi, altoFileName, dataRepository, SolrConstants.FILENAME_ALTO);
+                    String altoFilePath = Helper.getRepositoryPath(dataRepository) + altoFileName;
                     try {
                         String altoString = FileTools.getStringFromFilePath(altoFilePath);
                         Integer pageOrder = getPageOrder(solrDoc);
