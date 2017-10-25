@@ -1034,13 +1034,13 @@ public class BrowseElement implements Serializable {
         if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
             // Person metadata search hit ==> execute search for that person
             try {
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(URLEncoder.encode(label, SearchBean.URL_ENCODING)).append("\"/1/-/-/");
+                sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
+                        SearchBean.URL_ENCODING)).append("\"/1/-/-/");
             } catch (UnsupportedEncodingException e) {
                 logger.error("{}: {}", e.getMessage(), label);
                 sb = new StringBuilder();
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(label).append("\"/1/-/-/");
+                sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
+                        "\"/1/-/-/");
             }
         } else {
             //            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
