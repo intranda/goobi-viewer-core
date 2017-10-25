@@ -690,11 +690,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * @return the fullText
-     * @throws FileNotFoundException
-     * @throws IOException
-     * @throws JDOMException
      */
-    public String getFullText() throws FileNotFoundException, IOException {
+    public String getFullText() {
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
@@ -710,7 +707,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             String text = ALTOTools.getFullText(altoText);
             return text;
         } else if (fullText == null) {
-            loadFullText();
+            try {
+                loadFullText();
+            } catch (FileNotFoundException e) {
+                logger.error(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
 
         return fullText;
@@ -795,7 +798,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws JDOMException
      * @should load alto correctly
      */
-    boolean loadAlto() throws JDOMException, IOException {
+    public boolean loadAlto() throws JDOMException, IOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
             String filePath = Helper.getRepositoryPath(dataRepository) + altoFileName;
