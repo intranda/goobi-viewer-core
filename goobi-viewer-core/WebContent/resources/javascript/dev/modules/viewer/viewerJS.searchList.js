@@ -330,7 +330,7 @@ var viewerJS = ( function( viewer ) {
                 hitSetChildrenDt.append( '<i class="fa fa-file-text-o" aria-hidden="true"></i>' );
                 break;
             case 'PERSON':
-                hitSetChildrenDt.append( '<i class="fa fa-user-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-user" aria-hidden="true"></i>' );
                 break;
             case 'EVENT':
                 hitSetChildrenDt.append( '<i class="fa fa-calendar-o" aria-hidden="true"></i>' );
