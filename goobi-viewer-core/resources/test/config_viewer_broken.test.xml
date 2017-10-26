@@ -82,9 +82,6 @@
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
 		<dfg-viewer>dfg-viewer_value</dfg-viewer>
-		<!-- iipimageServer: path to the base url of the iipimage server -->
-		<iipimageServer>iipimageServer_value</iipimageServer>
-		<goobiWebApi>goobiWebApi_value</goobiWebApi>
 		<!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>

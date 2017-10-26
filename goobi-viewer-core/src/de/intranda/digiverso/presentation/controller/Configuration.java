@@ -1761,24 +1761,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getIIPImageServer() {
-        return getLocalString("urls.iipimageServer");
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getGoobiWebApiUrl() {
-        return getLocalString("urls.goobiWebApi");
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
     public String getUrnResolverUrl() {
         return getLocalString("urls.urnResolver", new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resolver?urn=")
                 .toString());

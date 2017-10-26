@@ -309,15 +309,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getIIPImageServer()
-     * @verifies return correct value
-     */
-    @Test
-    public void getIIPImageServer_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("iipimageServer_value", DataManager.getInstance().getConfiguration().getIIPImageServer());
-    }
-
-    /**
      * @see Configuration#getIndexedLidoFolder()
      * @verifies return correct value
      */
@@ -1712,15 +1703,6 @@ public class ConfigurationTest {
     @Test
     public void getSidebarOverviewLinkCondition_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("condition_value", DataManager.getInstance().getConfiguration().getSidebarOverviewLinkCondition());
-    }
-
-    /**
-     * @see Configuration#getGoobiWebApiUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getGoobiWebApiUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("goobiWebApi_value", DataManager.getInstance().getConfiguration().getGoobiWebApiUrl());
     }
 
     /**
