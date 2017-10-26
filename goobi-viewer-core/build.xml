@@ -882,7 +882,7 @@
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
 		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
+		<antcall target="war" />
 	</target>
 	<target name="oolbib">
 		<property name="enableCrowdsourcing" value="true" />
