@@ -508,6 +508,23 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">in</span>"));
         }
     }
+    
+
+    /**
+     * @see SearchHelper#truncateFulltext(Set,String,int,boolean)
+     * @verifies replace line breaks and tabs with spaces
+     */
+    @Test
+    public void truncateFulltext_shouldReplaceLineBreaksAndTabsWithSpaces() throws Exception {
+        String original = "one\ntwo\tthree";
+        String[] terms = { "two" };
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false);
+        Assert.assertEquals(1, truncated.size());
+        for (String fragment : truncated) {
+           System.out.println(fragment);
+            Assert.assertTrue(fragment.contains("one <span class=\"search-list--highlight\">two</span> three"));
+        }
+    }
 
     /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)

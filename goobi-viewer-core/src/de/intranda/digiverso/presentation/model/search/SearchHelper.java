@@ -1382,16 +1382,15 @@ public final class SearchHelper {
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
      * @should return multiple match fragments correctly
+     * @should replace line breaks and tabs with spaces
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
         List<String> ret = new ArrayList<>();
-        //        StringBuilder sbFulltextFragment = new StringBuilder();
 
         String fulltextFragment = "";
-
         if (searchTerms != null && !searchTerms.isEmpty()) {
             for (String searchTerm : searchTerms) {
                 if (searchTerm.length() == 0) {
@@ -1439,6 +1438,7 @@ public final class SearchHelper {
                         if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                             fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                         }
+                        fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
                         ret.add(fulltextFragment);
                     }
                     if (firstMatchOnly) {
@@ -1454,6 +1454,7 @@ public final class SearchHelper {
                 } else {
                     fulltextFragment = fulltext;
                 }
+                fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
                 ret.add(fulltextFragment);
             }
         } else {
@@ -1469,6 +1470,7 @@ public final class SearchHelper {
                 if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                     fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                 }
+                fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
                 ret.add(fulltextFragment);
             }
         }
