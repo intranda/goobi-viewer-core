@@ -47,6 +47,9 @@ import de.intranda.digiverso.presentation.servlets.rest.search.SearchHitChildLis
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
+ * REST resource providing a rss feed  as json response
+ * 
+ * 
  * @author Florian Alpers
  *
  */
@@ -61,6 +64,17 @@ public class RssResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * Returns the RSS feed containing the @numHits most recently indexed objects
+     * All metadata is provided in the passed language
+     * 
+     * @param numHits
+     * @param language
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     @GET
     @Path("/{language}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -77,6 +91,20 @@ public class RssResource {
         return rss;
     }
     
+    /**
+     * Returns the RSS feed containing the @numHits most recently indexed objects.
+     * Only objects are returned whose value in the "subthemeDiscriminatorField" matches that
+     * provided in @partnerId
+     * All metadata is provided in the passed language
+     * 
+     * @param numHits
+     * @param language
+     * @param partnerId
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     @GET
     @Path("/{language}/{partnerId}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -95,6 +123,22 @@ public class RssResource {
         return rss;
     }
     
+    /**
+     * 
+     * Returns the RSS feed containing the @numHits most recently indexed objects.
+     * Only objects are returned whose value in the "subthemeDiscriminatorField" matches that
+     * provided in @partnerId, and further filtered by the given @query
+     * All metadata is provided in the passed language
+     * 
+     * @param partnerId
+     * @param numHits
+     * @param query
+     * @param language
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     @GET
     @Path("/{query}/{language}/{partnerId}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -115,6 +159,21 @@ public class RssResource {
         return rss;
     }
     
+    /**
+     * 
+     * Returns the RSS feed containing the @numHits most recently indexed objects.
+     * Only objects are returned whose value in the "subthemeDiscriminatorField" matches that
+     * provided in @partnerId and are in the given @bookshelf
+     * All metadata is provided in the passed language
+     * 
+     * @param bookshelfIdString
+     * @param numHits
+     * @param language
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     @GET
     @Path("bookshelf/{bookshelfId}/{language}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -134,6 +193,21 @@ public class RssResource {
         return rss;
     }
     
+    /**
+     * Returns the RSS feed containing the @numHits most recently indexed objects.
+     * Only objects are returned that are within the given @bookshelf
+     * All metadata is provided in the passed language
+     * 
+     * @param partnerId
+     * @param bookshelfIdString
+     * @param numHits
+     * @param query
+     * @param language
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     @GET
     @Path("/{query}/{language}/{bookshelfId}/{partnerId}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -158,6 +232,8 @@ public class RssResource {
     }
 
     /**
+     * 
+     * 
      * @param feed
      * @return
      */

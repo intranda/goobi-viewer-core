@@ -37,6 +37,12 @@ import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 
 /**
+ * Part of the IIIF presentation api
+ * 
+ * Represents a collection as defined in the IIIF presentation api
+ * May have other collections in its members field
+ * TODO: Allow manifest items in members, once the manifest api part is implemented
+ * 
  * @author Florian Alpers
  *
  */

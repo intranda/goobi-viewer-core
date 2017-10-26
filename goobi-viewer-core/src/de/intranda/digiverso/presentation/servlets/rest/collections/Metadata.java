@@ -21,6 +21,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
+ * Part of the IIIF presentation api
+ * 
+ * Represents a simple single-language metadata within ny presentation api object
+ * 
  * @author Florian Alpers
  *
  */

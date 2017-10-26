@@ -58,6 +58,13 @@ import net.sf.saxon.evpull.Decomposer;
 @Table(name = "cms_content_items")
 public class CMSContentItem implements Comparable<CMSContentItem> {
 
+    /**
+     * The different types if content items. The names of these types need to be
+     * entered into the cms-template xml files to define the type of content item
+     * 
+     * @author Florian Alpers
+     *
+     */
     public enum CMSContentItemType {
         TEXT,
         HTML,
@@ -69,6 +76,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         TOC,
         RSS;
 
+        /**
+         * This method evaluates the text from cms-template xml files to select the correct item type
+         * 
+         * @param name
+         * @return
+         */
         public static CMSContentItemType getByName(String name) {
             if (name != null) {
                 switch (name.toUpperCase()) {
@@ -99,6 +112,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         }
 
         /**
+         * Returns the required functionality object for this content item
+         * 
          * @return
          */
         public Functionality createFunctionality(CMSContentItem item) {
@@ -207,12 +222,23 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Column(name = "tile_count")
     private int numberOfTiles = 9;
     
+    /**
+     * This object may contain item type specific functionality (methods and transient properties)
+     * 
+     */
     @Transient
     private Functionality functionality = null;
 
+    /**
+     * The collection for a collection view item
+     * TODO: Migrate this into a Functionality 
+     */
     @Transient
     private CollectionView collection = null;
 
+    /**
+     *  
+     */
     @Transient
     private boolean visible = false;
 
@@ -227,12 +253,19 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     
 
     /**
-     * 
+     * Noop constructor for javax.persistence 
      */
     public CMSContentItem() {
         // TODO Auto-generated constructor stub
     }
     
+    /**
+     * Contructs a copy of the given item, inheriting all non-transient properties
+     * This is a shallow copy, but all affected properties are either primitives or strings anyway
+     * Except mediaItem which is a shared resource
+     * 
+     * @param blueprint
+     */
     public CMSContentItem(CMSContentItem blueprint) {
         this.setItemId(blueprint.itemId);
         this.setItemLabel(blueprint.itemLabel);
@@ -267,6 +300,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.type = type;
     }
 
+    /**
+     * Creates the child class providing item-type specific functionality 
+     */
     public void initFunctionality() {
         this.functionality = getType().createFunctionality(this);
     }
@@ -597,6 +633,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.collection = null;
     }
 
+    /**
+     * Querys solr for a list of all values of the set collectionField which my serve as a collection
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
     public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
@@ -608,6 +650,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return list;
     }
 
+    /**
+     * Gets the current collection, creating it if neccessary
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
         if (this.collection == null) {
             this.collection = initializeCollection();
@@ -615,6 +664,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return this.collection;
     }
 
+    /**
+     * Creates a collection view object from the item's collection related properties
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
@@ -725,6 +781,15 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return CMSContentItem.class.getSimpleName() + ": " + getType() + " (" + getItemId() + ")";
     }
     
+    /**
+     * Returns the content item mode from the template associated with the owning cmsPage 
+     * (i.e. The value always reflects the mode for this contentItem in the template xml for this page)
+     * Mode offers the ability to allow special options for a content item in some templates 
+     * (for example for the collection item, the extended mode allows finer control of the way the collection
+     * hierarchy is handled)
+     * 
+     * @return
+     */
     public ContentItemMode getMode() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
     }

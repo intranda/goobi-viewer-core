@@ -20,6 +20,9 @@ import javax.persistence.Transient;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 
 /**
+ * A contentItem to be used in a CMSPage template. Stores a value for 
+ * content item mode
+ * 
  * @author Florian Alpers
  *
  */

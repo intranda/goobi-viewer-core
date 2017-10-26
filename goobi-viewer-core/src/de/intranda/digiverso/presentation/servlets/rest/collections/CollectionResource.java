@@ -43,6 +43,8 @@ import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcEleme
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 /**
+ * IIIF REST resource providing a collection object as defined in the IIIF presentation api
+ * 
  * @author Florian Alpers
  *
  */
@@ -61,6 +63,20 @@ public class CollectionResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    /**
+     * Returns a iiif collection of all collections from the given solr-field
+     * The response includes the metadata and subcollections of the topmost collections.
+     * Child collections may be accessed following the links in the @id properties
+     * in the member-collections
+     * Requires passing a language to set the language for all metadata values
+     * 
+     * @param language
+     * @param collectionField
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws MalformedURLException
+     */
     @GET
     @Path("/{language}/{collectionField}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -75,6 +91,14 @@ public class CollectionResource {
 
     }
 
+    /**
+     * Returns a iiif collection of the given topCollection for the give collection field
+     * The response includes the metadata and subcollections of the direct child collections.
+     * Collections further down the hierarchy may be accessed following the links in the @id properties
+     * in the member-collections
+     * Requires passing a language to set the language for all metadata values
+     * 
+     */
     @GET
     @Path("/{language}/{collectionField}/{topElement}")
     @Produces({ MediaType.APPLICATION_JSON })

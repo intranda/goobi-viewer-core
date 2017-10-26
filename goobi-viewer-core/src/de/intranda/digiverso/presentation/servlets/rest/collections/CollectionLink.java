@@ -24,6 +24,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
+ * Part of the IIIF presentation api
+ * 
+ * Represents a link to another resource, for example in the "related" property 
+ * 
  * @author Florian Alpers
  *
  */

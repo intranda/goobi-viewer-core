@@ -22,6 +22,10 @@ import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 
 /**
+ * Part of the IIIF presentation api
+ * 
+ * Represents a collection that is embedded within another collection in the json+ld response
+ * 
  * @author Florian Alpers
  *
  */
