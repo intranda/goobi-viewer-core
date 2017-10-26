@@ -75,14 +75,6 @@
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data -->
 		<dfg-viewer>http://dfg-viewer.de/show?set[mets]=</dfg-viewer>
 
-		<!-- FIXME DEPRECATED-->
-		<!-- iipimageServer: path to the base url of the iipimage server -->
-		<iipimageServer>http://viewertest.fritz.box/fcgi-bin/iipsrv.fcgi</iipimageServer>
-
-		<!-- FIXME DEPRECATED-->
-		<!-- Goobi web API URL. Must contain the valid authorization token as a GET parameter. Leave blank if no Goobi export is desired. -->
-		<!-- <goobiWebApi>http://localhost:8080/goobi/wi?token=</goobiWebApi> -->
-
 		<!-- The iiif service url from which images are requested via iiif -->
 		<iiif>http://localhost:8080/viewer/iiif/</iiif>
 

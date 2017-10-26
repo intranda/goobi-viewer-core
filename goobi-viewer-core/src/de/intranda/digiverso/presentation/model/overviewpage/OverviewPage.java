@@ -20,12 +20,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -823,15 +820,6 @@ public class OverviewPage implements Harvestable, Serializable {
 
             // Re-index record
             Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), this);
-
-            // Serialize for Goobi
-            if (exportToGoobi && StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getGoobiWebApiUrl())) {
-                if (exportConfigToGoobi()) {
-                    Messages.info("goobiExportSuccess");
-                } else {
-                    Messages.error("errGoobiExport");
-                }
-            }
         }
 
         resetEditModes();
@@ -883,23 +871,6 @@ public class OverviewPage implements Harvestable, Serializable {
 
         Messages.error("viewOverviewDeletePagefailure");
         return "";
-    }
-
-    /**
-     *
-     * @return
-     */
-    protected boolean exportConfigToGoobi() {
-        try (StringWriter sw = new StringWriter()) {
-            new XMLOutputter().output(config, sw);
-            String configString = sw.getBuffer().toString();
-            String url = new StringBuilder(DataManager.getInstance().getConfiguration().getGoobiWebApiUrl()).append("&command=viewer_update&process=")
-                    .append(pi).append("&foldername=").append(pi).append("_overview&filename=").append(pi).append(".xml").toString();
-            return Helper.sendDataAsStream(url, configString);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            return false;
-        }
     }
 
     public List<OverviewPageUpdate> getHistory() throws DAOException {
