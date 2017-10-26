@@ -27,7 +27,8 @@ public enum SidebarElementType {
     mySearches("widgetMySearches"),
     fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
     rssFeed("widgetRssFeed"),
-    user("widgetUser");
+    user("widgetUser"),
+    workCount("widgetWorkCount");
 
     private final String label;
     private final Category type;

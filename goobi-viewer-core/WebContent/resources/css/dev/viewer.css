@@ -6457,6 +6457,20 @@ div.olMapViewport {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget Work Count
+   style declarations for widget_workCount.xhtml
+   ==============================================================*/
+/* WIDGET WORKCOUNT */
+/* BLOCK */
+#widgetWorkCount p {
+  margin: 0;
+  padding: 5px 10px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page
