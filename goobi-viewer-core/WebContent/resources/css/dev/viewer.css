@@ -3806,6 +3806,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-calendar__month-day a,
 .search-calendar__month-day button {
+  width: 100%;
   color: #428bca;
   text-decoration: none;
   background-color: #eee;
