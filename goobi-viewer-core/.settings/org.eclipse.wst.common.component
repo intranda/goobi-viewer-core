@@ -166,6 +166,14 @@
         <dependent-module archiveName="goobi-viewer-theme-gaugsammlungen.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-gaugsammlungen/goobi-viewer-theme-gaugsammlungen">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- MAK -->
+        <dependent-module archiveName="goobi-viewer-theme-mak.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mak/goobi-viewer-theme-mak">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- MNHA -->
+        <dependent-module archiveName="goobi-viewer-theme-mnha.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mnha/goobi-viewer-theme-mnha">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>
