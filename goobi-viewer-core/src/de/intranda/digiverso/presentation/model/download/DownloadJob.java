@@ -192,7 +192,7 @@ public abstract class DownloadJob implements Serializable {
         if (!controlIdentifier.equals(downloadIdentifier)) {
             throw new IllegalArgumentException("wrong downloadIdentifier");
         }
-        
+
         logger.debug("Checking download of job " + controlIdentifier);
 
         try {
@@ -379,23 +379,27 @@ public abstract class DownloadJob implements Serializable {
             case READY:
                 subject = Helper.getTranslation("downloadReadySubject", null);
                 body = Helper.getTranslation("downloadReadyBody", null);
+                if (body != null) {
+                    body = body.replace("{0}", pi);
+                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/"); // TODO
+                    MutableDateTime exirationDate = new MutableDateTime(lastRequested);
+                    exirationDate.add(ttl);
+                    body = body.replace("{2}", Helper.formatterISO8601DateTime.print(exirationDate));
+                }
                 break;
             case ERROR:
                 subject = Helper.getTranslation("downloadErrorSubject", null);
                 body = Helper.getTranslation("downloadErrorBody", null);
+                if (body != null) {
+                    body = body.replace("{0}", pi);
+                    body = body.replace("{1}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
+                }
                 break;
             default:
                 break;
         }
         if (subject != null) {
             subject = subject.replace("{0}", pi);
-        }
-        if (body != null) {
-            body = body.replace("{0}", pi);
-            body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/"); // TODO
-            MutableDateTime exirationDate = new MutableDateTime(lastRequested);
-            exirationDate.add(ttl);
-            body = body.replace("{2}", Helper.formatterISO8601DateTime.print(exirationDate));
         }
 
         return Helper.postMail(observers, subject, body);
@@ -535,7 +539,7 @@ public abstract class DownloadJob implements Serializable {
      * @return the status
      */
     public JobStatus getStatus() {
-        if(status == null) {
+        if (status == null) {
             status = JobStatus.UNDEFINED;
         }
         return status;
@@ -589,46 +593,45 @@ public abstract class DownloadJob implements Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
-    
-    
+
     /**
-    *
-    * @param identtifier The identifier/has of the last job to count
-    * @return
-    */
-   public static String getJobStatus(String identifier) {
-       StringBuilder url = new StringBuilder();
-       url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
-       url.append("/viewerpdf/info/");
-       url.append(identifier);
-       ResponseHandler<String> handler = new BasicResponseHandler();
-       HttpGet httpGet = new HttpGet(url.toString());
-       try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-           CloseableHttpResponse response = httpclient.execute(httpGet);
-           String ret = handler.handleResponse(response);
-           logger.trace("TaskManager response: {}", ret);
-           return ret;
-       } catch (Throwable e) {
-           logger.error("Error getting response from TaskManager", e);
-           return "";
-       }
-   }
-   
-   public void updateStatus() {
-       String ret =  PDFDownloadJob.getJobStatus(identifier);
-       try {
-        JSONObject object = new JSONObject(ret);
-        String statusString = object.getString("status");
-        JobStatus status = JobStatus.getByName(statusString);
-        setStatus(status);
-        if(JobStatus.ERROR.equals(status)) {            
-            String errorMessage = object.getString("errorMessage");
-            setMessage(errorMessage);
+     *
+     * @param identtifier The identifier/has of the last job to count
+     * @return
+     */
+    public static String getJobStatus(String identifier) {
+        StringBuilder url = new StringBuilder();
+        url.append(DataManager.getInstance().getConfiguration().getTaskManagerRestUrl());
+        url.append("/viewerpdf/info/");
+        url.append(identifier);
+        ResponseHandler<String> handler = new BasicResponseHandler();
+        HttpGet httpGet = new HttpGet(url.toString());
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            String ret = handler.handleResponse(response);
+            logger.trace("TaskManager response: {}", ret);
+            return ret;
+        } catch (Throwable e) {
+            logger.error("Error getting response from TaskManager", e);
+            return "";
         }
-    } catch (ParseException e) {
-        setStatus(JobStatus.ERROR);
-        setMessage("Unable to parse TaskManager response");
     }
 
-   }
+    public void updateStatus() {
+        String ret = PDFDownloadJob.getJobStatus(identifier);
+        try {
+            JSONObject object = new JSONObject(ret);
+            String statusString = object.getString("status");
+            JobStatus status = JobStatus.getByName(statusString);
+            setStatus(status);
+            if (JobStatus.ERROR.equals(status)) {
+                String errorMessage = object.getString("errorMessage");
+                setMessage(errorMessage);
+            }
+        } catch (ParseException e) {
+            setStatus(JobStatus.ERROR);
+            setMessage("Unable to parse TaskManager response");
+        }
+
+    }
 }
