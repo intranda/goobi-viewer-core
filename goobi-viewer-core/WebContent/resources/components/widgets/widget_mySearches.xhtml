@@ -16,7 +16,7 @@
 
     <composite:implementation>
 		<h:panelGroup rendered="#{(cc.attrs.widget.type == 'widgetMySearches' or cc.attrs.widget.type == null) and userBean.loggedIn and searchBean.searchSavingEnabled}">
-			<div id="widgetMySearches" class="widget">
+			<div id="widgetMySearches" class="widget #{cc.attrs.widget.cssClass}">
 				<h:form id="widgetMySearchesForm">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.type == null}">
 						<h3>#{msg.bookshelf_savedSearches}</h3>

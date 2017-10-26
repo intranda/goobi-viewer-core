@@ -12,7 +12,7 @@
 
 	<composite:implementation>
 		<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchField' or cc.attrs.widget.type == null}">
-			<div id="widgetSearchField" class="widget">
+			<div id="widgetSearchField" class="widget #{cc.attrs.widget.cssClass}">
 				<h:form id="widgetSearchFieldForm" styleClass="form-inline">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == 'FOLDOUT' or cc.attrs.widget.type == null}">
 						<div class="form-group">
