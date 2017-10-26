@@ -118,7 +118,7 @@ public class ViewManager implements Serializable {
     private CalendarView calendarView;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException {
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -1173,10 +1173,10 @@ public class ViewManager implements Serializable {
      */
     public String getPdfDownloadLink() throws IndexUnreachableException {
         // TODO
-        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=").append(
-                getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf");
+        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
+                "?action=pdf&metsFile=").append(getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf");
         String footerId = getFooterId();
-        if(StringUtils.isNotBlank(footerId)) {
+        if (StringUtils.isNotBlank(footerId)) {
             sb.append("&watermarkId=").append(footerId);
         }
         return sb.toString();
@@ -1192,19 +1192,18 @@ public class ViewManager implements Serializable {
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
         StringBuilder sb = new StringBuilder();
         PhysicalElement page = getCurrentPage();
-        if(page != null) {
+        if (page != null) {
             sb.append(page.getImageToPdfUrl());
         }
         String footerId = getFooterId();
-        if(StringUtils.isNotBlank(footerId)) {
+        if (StringUtils.isNotBlank(footerId)) {
             sb.append("&watermarkId=").append(footerId);
         }
         return sb.toString();
     }
-    
+
     /**
-     * Returns the pdf download link for a pdf of all pages 
-     * from this.firstPdfPage to this.lastPdfPage (inclusively)
+     * Returns the pdf download link for a pdf of all pages from this.firstPdfPage to this.lastPdfPage (inclusively)
      * 
      * @return
      * @throws IndexUnreachableException
@@ -1234,7 +1233,7 @@ public class ViewManager implements Serializable {
         sb.deleteCharAt(sb.length() - 1);
         sb.append("&targetFileName=").append(getPi()).append('_').append(firstPdfPage).append('-').append(lastPdfPage).append(".pdf");
         String footerId = getFooterId();
-        if(StringUtils.isNotBlank(footerId)) {
+        if (StringUtils.isNotBlank(footerId)) {
             sb.append("&watermarkId=").append(footerId);
         }
         return sb.toString();

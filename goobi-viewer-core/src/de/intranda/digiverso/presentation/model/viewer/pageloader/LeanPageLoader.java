@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.viewer.pageloader;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +26,6 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,17 +220,7 @@ public class LeanPageLoader implements IPageLoader, Serializable {
         if (pageNumber >= 0) {
             logger.trace("Loading page {} for '{}'...", pageNumber, pi);
         }
-
-        boolean lazyFulltext = DataManager.getInstance().getConfiguration().isFulltextLazyLoading();
-        boolean lazyWc = DataManager.getInstance().getConfiguration().isWordCoordsLazyLoading();
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
-        if (!lazyFulltext) {
-            fields.add(SolrConstants.FULLTEXT);
-            fields.add("MD_FULLTEXT");
-        }
-        if (!lazyWc) {
-            fields.add(SolrConstants.ALTO);
-        }
 
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
@@ -320,21 +308,10 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 }
             }
 
-            // Full text
-            if (doc.getFirstValue("MD_FULLTEXT") != null) {
-                pe.setFullText((String) doc.getFirstValue("MD_FULLTEXT"));
-            } else if (doc.getFieldValue(SolrConstants.FULLTEXT) != null) {
-                pe.setFullText((String) doc.getFieldValue(SolrConstants.FULLTEXT));
-            }
-
-            // ALTO word coordinates
-            if (doc.getFieldValue(SolrConstants.ALTO) != null) {
-                try {
-                    pe.setAlto((String) doc.getFieldValue(SolrConstants.ALTO));
-                } catch (JDOMException | IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
+            // Full-text filename
+            pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+            // ALTO filename
+            pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
 
             // Access conditions
             if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {

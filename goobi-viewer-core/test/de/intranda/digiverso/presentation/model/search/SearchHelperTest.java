@@ -29,6 +29,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -600,6 +601,22 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove truncation
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveTruncation() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
+        Assert.assertEquals(1, result.size());
+        {
+            Set<String> terms = result.get("MD_A");
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("foo"));
+        }
+    }
+
+    /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
      * @verifies throw IllegalArgumentException if query is null
      */
@@ -1105,5 +1122,25 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void replaceHighlightingPlaceholders_shouldReplacePlaceholdersWithHtmlTags() throws Exception {
         Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper.replaceHighlightingPlaceholders(
                 SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
+    }
+
+    /**
+     * @see SearchHelper#loadFulltext(String,String,String,String)
+     * @verifies load fulltext from alto correctly
+     */
+    @Test
+    public void loadFulltext_shouldLoadFulltextFromAltoCorrectly() throws Exception {
+        String fulltext = SearchHelper.loadFulltext(null, "alto/PPN648829383/00000001.xml", null);
+        Assert.assertTrue(StringUtils.isNotEmpty(fulltext));
+    }
+
+    /**
+     * @see SearchHelper#loadFulltext(String,String,String,String)
+     * @verifies load fulltext from plain text correctly
+     */
+    @Test
+    public void loadFulltext_shouldLoadFulltextFromPlainTextCorrectly() throws Exception {
+        String fulltext = SearchHelper.loadFulltext(null, null, "fulltext/PPN123/00000001.txt");
+        Assert.assertEquals("sample text", fulltext);
     }
 }

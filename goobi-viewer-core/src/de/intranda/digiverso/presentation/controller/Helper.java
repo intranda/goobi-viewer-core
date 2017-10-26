@@ -368,7 +368,7 @@ public class Helper {
             }
         }
 
-        logger.trace("Parsed IP address: {}", address);
+        // logger.trace("Parsed IP address: {}", address);
         return address;
     }
 
@@ -753,8 +753,8 @@ public class Helper {
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
-                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.ALTO, SolrConstants.FULLTEXT,
-                        SolrConstants.UGCTERMS }));
+                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO,
+                        SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);
@@ -764,18 +764,23 @@ public class Helper {
         StringBuilder sbNamingScheme = new StringBuilder(pi).append('#').append(iddoc);
 
         // Module augmentations
+        boolean writeTriggerFile = true;
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
-                module.augmentReIndexPage(pi, page, doc, recordType, dataRepository, sbNamingScheme.toString());
+                if (!module.augmentReIndexPage(pi, page, doc, recordType, dataRepository, sbNamingScheme.toString())) {
+                    writeTriggerFile = false;
+                }
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
 
         // Create trigger file in hotfolder
-        Path triggerFile = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".docupdate");
-        Files.createFile(triggerFile);
-        
+        if (writeTriggerFile) {
+            Path triggerFile = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".docupdate");
+            Files.createFile(triggerFile);
+        }
+
         return true;
     }
 
@@ -970,7 +975,8 @@ public class Helper {
     }
 
     /**
-     *
+     * Returns the absolute path to the data repository with the given name (including a slash at the end).
+     * 
      * @param dataRepository
      * @return
      */
@@ -1017,6 +1023,34 @@ public class Helper {
 
         return sb.toString();
     }
+
+    //    /**
+    //     * 
+    //     * @param pi
+    //     * @param fileName
+    //     * @param dataRepository
+    //     * @param format
+    //     * @return
+    //     * @should return correct path
+    //     */
+    //    public static String getTextFilePath(String pi, String fileName, String dataRepository, String format) {
+    //        if (StringUtils.isEmpty(fileName)) {
+    //            throw new IllegalArgumentException("fileName may not be null or empty");
+    //        }
+    //
+    //        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+    //        switch (format) {
+    //            case SolrConstants.FILENAME_ALTO:
+    //                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
+    //                break;
+    //            case SolrConstants.FILENAME_FULLTEXT:
+    //                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
+    //                break;
+    //        }
+    //        sb.append('/').append(pi).append('/').append(fileName);
+    //
+    //        return sb.toString();
+    //    }
 
     /**
      * Returns the application version number.

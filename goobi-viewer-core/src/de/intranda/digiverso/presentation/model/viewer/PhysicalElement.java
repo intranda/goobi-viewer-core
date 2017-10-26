@@ -16,10 +16,10 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
@@ -113,13 +112,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int width = 0;
     /** Actual image/video height (if available). */
     private int height = 0;
-    /** Plain text. */
+    /** File name of the full-text document in the file system. */
+    private String fulltextFileName;
+    /** File name of the ALTO document in the file system. */
+    private String altoFileName;
+    /** Plain full-text. */
     private String fullText;
     /** XML document containing the ALTO document for this page. Saved into a variable so it doesn't have to be expensively loaded multiple times. */
     private String altoText;
     /** Format of the loaded word coordinates XML document. */
     private CoordsFormat wordCoordsFormat = CoordsFormat.UNCHECKED;
-
+    /** Data repository name for the record to which this page belongs. */
     private final String dataRepository;
 
     private Map<String, String> fileNames = new HashMap<>();
@@ -206,7 +209,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     protected static String determineFileName(String filePath) {
         String ret = filePath;
-        if (!isExternalUrl(ret)) {
+        if (StringUtils.isNotBlank(ret) && !isExternalUrl(ret)) {
             File file = new File(ret);
             ret = file.getName();
             //                String[] filePathSplit = ret.split("[/]");
@@ -322,7 +325,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getUrl(int width, int height, int rotate, boolean showWatermark, boolean fullscreen, List<String> highlightCoords)
-            throws IndexUnreachableException, ConfigurationException {
+            throws IndexUnreachableException {
         return getUrl(width, height, rotate, showWatermark, fullscreen, highlightCoords, null);
     }
 
@@ -658,9 +661,35 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the fulltextFileName
+     */
+    public String getFulltextFileName() {
+        return fulltextFileName;
+    }
+
+    /**
+     * @param fulltextFileName the fulltextFileName to set
+     */
+    public void setFulltextFileName(String fulltextFileName) {
+        this.fulltextFileName = fulltextFileName;
+    }
+
+    /**
+     * @return the altoFileName
+     */
+    public String getAltoFileName() {
+        return altoFileName;
+    }
+
+    /**
+     * @param altoFileName the altoFileName to set
+     */
+    public void setAltoFileName(String altoFileName) {
+        this.altoFileName = altoFileName;
+    }
+
+    /**
      * @return the fullText
-     * @throws IOException
-     * @throws JDOMException
      */
     public String getFullText() {
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
@@ -677,8 +706,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText != null) {
             String text = ALTOTools.getFullText(altoText);
             return text;
-        } else if (DataManager.getInstance().getConfiguration().isFulltextLazyLoading() && fullText == null) {
-            loadFullText();
+        } else if (fullText == null) {
+            try {
+                loadFullText();
+            } catch (FileNotFoundException e) {
+                logger.error(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
 
         return fullText;
@@ -692,35 +727,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Loads full-text data for this page from the Solr index, if not yet loaded.
+     * Loads full-text data for this page from the file system, if not yet loaded.
      *
-     * @return
+     * @return true if fulltext loaded successfully false otherwise
+     * @throws IOException
+     * @throws FileNotFoundException
      * @should load full-text correctly if not yet loaded
      * @should return false if already loaded
      */
-    protected boolean loadFullText() {
-        if (fullText == null) {
-            logger.trace("Loading full-text for page {}", order);
-            try {
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi).append(" AND ").append(SolrConstants.ORDER).append(":").append(
-                        order);
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), Arrays.asList(new String[] {
-                        SolrConstants.FULLTEXT, "MD_FULLTEXT" }));
-                if (doc != null) {
-                    if (doc.getFieldValue("MD_FULLTEXT") != null) {
-                        // Prefer the unescaped MD_FULLTEXT
-                        fullText = SolrSearchIndex.getAsString(doc.getFieldValue("MD_FULLTEXT"));
-                    } else if (doc.getFieldValue(SolrConstants.FULLTEXT) != null) {
-                        fullText = (String) doc.getFieldValue(SolrConstants.FULLTEXT);
-                        return true;
-                    }
-                }
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            }
+    boolean loadFullText() throws FileNotFoundException, IOException {
+        if (fullText == null && fulltextFileName != null) {
+            logger.trace("Loading full-text for page {}", fulltextFileName);
+            String filePath = Helper.getRepositoryPath(dataRepository) + fulltextFileName;
+            fullText = FileTools.getStringFromFilePath(filePath);
+            return true;
         }
 
         return false;
@@ -771,50 +791,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * @return the alto
+     * Loads ALTO data for this page from the file system, if not yet loaded.
+     * 
+     * @return true if ALTO successfully loaded; false otherwise
      * @throws IOException
      * @throws JDOMException
+     * @should load alto correctly
      */
     public boolean loadAlto() throws JDOMException, IOException {
-
-        if (altoText == null) {
-            try {
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi).append(" AND ").append(SolrConstants.ORDER).append(":").append(
-                        order);
-                logger.trace("loadAlto: {}", sbQuery.toString());
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), Collections.singletonList(
-                        SolrConstants.ALTO));
-                if (doc != null && doc.getFieldValue(SolrConstants.ALTO) != null) {
-                    logger.trace("Lazy loaded ALTO");
-                    wordCoordsFormat = CoordsFormat.ALTO;
-                    return setAlto((String) doc.getFieldValue(SolrConstants.ALTO));
-                }
-                logger.trace("ALTO not found for {}", pi);
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param alto the alto to set
-     * @throws IOException
-     * @throws JDOMException
-     * @should load wordCoordsDoc correctly and set wordCoordsFormat to ALTO
-     */
-    public boolean setAlto(String alto) throws JDOMException, IOException {
-        if (altoText == null) {
-            altoText = alto;
+        logger.trace("loadAlto: {}", altoFileName);
+        if (altoText == null && altoFileName != null) {
+            String filePath = Helper.getRepositoryPath(dataRepository) + altoFileName;
+            altoText = FileTools.getStringFromFilePath(filePath);
             wordCoordsFormat = CoordsFormat.ALTO;
             return true;
         }
 
         return false;
+
     }
 
     /**
@@ -844,8 +838,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         sb.append("?action=pdf").append("&images=").append(pi).append("/").append(fileName).append("&metsFile=").append(pi).append(".xml").append(
                 "&targetFileName=").append(pi).append("_").append(order).append(".pdf");
         return sb.toString();
-//        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
-//                + "&targetFileName=" + pi + "_" + order + ".pdf";
+        //        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
+        //                + "&targetFileName=" + pi + "_" + order + ".pdf";
     }
 
     /**

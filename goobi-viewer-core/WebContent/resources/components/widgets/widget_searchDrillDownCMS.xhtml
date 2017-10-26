@@ -22,7 +22,7 @@
                             id="collectionDrillDownPanelGroup_#{status.index}"
                             rendered="#{searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentHierarchicalFacetsSizeForField(field.key) > 0}">
                             <div class="widget widget-search-drilldown__collection">
-                                <h3>#{msg[field.key]}</h3>
+                                <h3>#{msg[field.key.concat('_DD')]}</h3>
                                 
                                 <ul>
                                     <!-- ACTIVE FACETS -->
@@ -78,7 +78,7 @@
                             id="drillDownPanelGroup_#{status.index}"
                             rendered="#{searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentFacetsSizeForField(field.key) > 0}">
                             <div class="widget widget-search-drilldown__groups">
-                                <h3>#{msg[field.key]}</h3>
+                                <h3>#{msg[field.key.concat('_DD')]}</h3>
                             
                                 <ul>
                                     <!-- ACTIVE FACETS -->

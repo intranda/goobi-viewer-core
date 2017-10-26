@@ -127,8 +127,12 @@
 									<h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0}" value=", " />
 									<f:param value="#{hit.pageHitCount}" />
 								</h:outputFormat>
+								<h:outputFormat rendered="#{hit.metadataHitCount > 0}" value="#{msg.searchChildMetadataHitCount}">
+                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
+                                    <f:param value="#{hit.metadataHitCount}" />
+                                </h:outputFormat>
 								<h:outputFormat rendered="#{hit.eventHitCount > 0}" value="#{msg.searchChildEventHitCount}">
-									<h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0}" value=", " />
+									<h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
 									<f:param value="#{hit.eventHitCount}" />
 								</h:outputFormat>
 								<!-- LOADER -->

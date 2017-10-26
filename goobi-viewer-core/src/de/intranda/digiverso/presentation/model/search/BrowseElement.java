@@ -126,6 +126,8 @@ public class BrowseElement implements Serializable {
     private String sidebarNextUrl;
     @JsonIgnore
     private final Locale locale;
+    @JsonIgnore
+    private final String dataRepository;
 
     /**
      * Constructor for unit tests and special instances.
@@ -137,7 +139,7 @@ public class BrowseElement implements Serializable {
      * @param useOverviewPage
      * @should build overview page url correctly
      */
-    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale) {
+    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale, String dataRepository) {
         this.pi = pi;
         this.imageNo = imageNo;
         this.label = label;
@@ -146,6 +148,7 @@ public class BrowseElement implements Serializable {
         this.locale = locale;
         this.metadataList = new ArrayList<>();
         this.url = generateUrl();
+        this.dataRepository = dataRepository;
     }
 
     /**
@@ -308,6 +311,7 @@ public class BrowseElement implements Serializable {
         anchor = structElement.isAnchor();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
+        dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
 
         if (DocType.GROUP.equals(docType)) {
             label = docType.getLabel(null);
@@ -398,7 +402,6 @@ public class BrowseElement implements Serializable {
             String filepath = filename;
             if (StringUtils.isNotEmpty(filepath)) {
                 // Determine whether the file is in a data repository
-                String dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
@@ -717,7 +720,7 @@ public class BrowseElement implements Serializable {
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
-                                    ret = se.getMetadataValue("MD_DISPLAYFORM");
+                                    ret = se.getMetadataValue("MD_VALUE");
                                 }
                                 break;
                             default:
@@ -748,23 +751,30 @@ public class BrowseElement implements Serializable {
                     }
                     break;
                 default:
-                    ret = generateDefaultLabel(se);
+                    ret = generateDefaultLabel(se, locale);
                     break;
             }
         } else {
             logger.warn("{} field seems to be missing on Solr document {}", SolrConstants.DOCTYPE, se.getLuceneId());
-            return generateDefaultLabel(se);
+            return generateDefaultLabel(se, locale);
         }
 
         return ret;
     }
 
-    private String generateDefaultLabel(StructElement se) {
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     * @should translate docstruct label
+     */
+    static String generateDefaultLabel(StructElement se, Locale locale) {
         String ret = se.getMetadataValue(SolrConstants.LABEL);
         if (StringUtils.isEmpty(ret)) {
             ret = se.getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(ret)) {
-                ret = getDocStructType();
+                ret = Helper.getTranslation(se.getDocStructType(), locale);
             }
         }
 
@@ -1026,18 +1036,17 @@ public class BrowseElement implements Serializable {
         StringBuilder sb = new StringBuilder();
         if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
             // Person metadata search hit ==> execute search for that person
+            // TODO not for aggregated hits?
             try {
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(URLEncoder.encode(label, SearchBean.URL_ENCODING)).append("\"/1/-/-/");
+                sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
+                        SearchBean.URL_ENCODING)).append("\"/1/-/-/");
             } catch (UnsupportedEncodingException e) {
                 logger.error("{}: {}", e.getMessage(), label);
                 sb = new StringBuilder();
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(label).append("\"/1/-/-/");
+                sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
+                        "\"/1/-/-/");
             }
         } else {
-            //            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            //            sb.append('/');
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
                     useOverviewPage, false);
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId
@@ -1130,6 +1139,13 @@ public class BrowseElement implements Serializable {
             }
         }
         return list;
+    }
+
+    /**
+     * @return the dataRepository
+     */
+    public String getDataRepository() {
+        return dataRepository;
     }
 
     /**

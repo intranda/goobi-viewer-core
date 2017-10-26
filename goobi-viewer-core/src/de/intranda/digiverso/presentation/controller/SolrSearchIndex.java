@@ -607,7 +607,7 @@ public final class SolrSearchIndex {
         for (String fieldName : doc.getFieldNames()) {
             switch (fieldName) {
                 case SolrConstants.IMAGEURN_OAI:
-                case SolrConstants.ALTO:
+                // case SolrConstants.ALTO:
                 case "WORDCOORDS":
                 case "PAGEURNS":
                 case "ABBYYXML":
