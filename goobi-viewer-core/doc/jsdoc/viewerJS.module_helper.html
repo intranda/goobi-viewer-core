@@ -1,80 +1,113 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>JSDoc: Module: helper</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Goobi viewer JavaScript Documentation Module: helper</title>
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.yeti.css">
+
 </head>
 
 <body>
 
-<div id="main">
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Goobi viewer JavaScript Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="cmsJS.module_createPage.html">cmsJS.createPage</a></li><li><a href="cmsJS.module_masonry.html">cmsJS.masonry</a></li><li><a href="cmsJS.module_rssFeed.html">cmsJS.rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">cmsJS.sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">cmsJS.stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">cmsJS.staticGrid</a></li><li><a href="cmsJS.module_tagList.html">cmsJS.tagList</a></li><li><a href="cmsJS.module_tileGrid.html">cmsJS.tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_calendarPopover.html">viewerJS.calendarPopover</a></li><li><a href="viewerJS.module_changeFontSize.html">viewerJS.changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">viewerJS.dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">viewerJS.dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">viewerJS.download</a></li><li><a href="viewerJS.module_downloadModal.html">viewerJS.downloadModal</a></li><li><a href="viewerJS.module_editComment.html">viewerJS.editComment</a></li><li><a href="viewerJS.module_helper.html">viewerJS.helper</a></li><li><a href="viewerJS.module_navigation.html">viewerJS.navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">viewerJS.nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">viewerJS.nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">viewerJS.normdata</a></li><li><a href="viewerJS.module_pageScroll.html">viewerJS.pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">viewerJS.responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">viewerJS.searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">viewerJS.searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">viewerJS.searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">viewerJS.simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">viewerJS.stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">viewerJS.timematrix</a></li><li><a href="viewerJS.module_tinyMce.html">viewerJS.tinyMce</a></li><li><a href="viewerJS.module_versionHistory.html">viewerJS.versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">viewImage.controls.persistence</a></li><li><a href="viewImage.module_controls.html">viewImage.controls</a></li><li><a href="viewImage.module_drawLine.html">viewImage.drawLine</a></li><li><a href="viewImage.module_drawRect.html">viewImage.drawRect</a></li><li><a href="viewImage.module_Measures.html">viewImage.Measures</a></li><li><a href="viewImage.module_overlays.html">viewImage.overlays</a></li><li><a href="viewImage.module_readingMode.html">viewImage.readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">viewImage.tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">viewImage.transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">viewImage.zoomSlider</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
 
-    <h1 class="page-title">Module: helper</h1>
-
-    
-
+</div>
+</div>
 
 
+<div class="container" id="toc-content">
+<div class="row">
 
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Module: helper</h1>
 <section>
 
 <header>
     
 </header>
 
+
 <article>
     <div class="container-overview">
     
         
-            <div class="description">This file is part of the Goobi viewer - a content presentation and management
-application for digitized objects.
-
-Visit these websites for more information. - http://www.intranda.com -
-http://digiverso.com
-
-This program is free software; you can redistribute it and/or modify it under the terms
-of the GNU General Public License as published by the Free Software Foundation; either
-version 2 of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with this
-program. If not, see <http://www.gnu.org/licenses/>.
-
-Module which includes mostly used helper functions.</div>
+            <div class="description"><p>This file is part of the Goobi viewer - a content presentation and management<br>application for digitized objects.</p>
+<p>Visit these websites for more information. - http://www.intranda.com -<br>http://digiverso.com</p>
+<p>This program is free software; you can redistribute it and/or modify it under the terms<br>of the GNU General Public License as published by the Free Software Foundation; either<br>version 2 of the License, or (at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY<br>WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A<br>PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along with this<br>program. If not, see <http://www.gnu.org/licenses/>.</p>
+<p>Module which includes mostly used helper functions.</p></div>
         
 
         
-
-
 <dl class="details">
-
-    
-    <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>3.2.0</li></ul></dd>
     
 
-    
+	
+	<dt class="tag-version method-doc-label method-doc-details-label">Version:</dt>
+	<dd class="tag-version">
+		<ul class="dummy">
+			<li>3.2.0</li>
+		</ul>
+	</dd>
+	
 
-    
+	
 
-    
-
-    
-
-    
-
-    
+	
 
     
 
@@ -84,20 +117,35 @@ Module which includes mostly used helper functions.</div>
 
     
 
-    
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line1">line 1</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-1">line 1</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
 </dl>
 
 
@@ -124,40 +172,40 @@ Module which includes mostly used helper functions.</div>
     
 
     
-
-    
         <h3 class="subsection-title">Methods</h3>
 
-        
+        <dl>
             
+<hr>
+<dt>
+    <h4 class="name" id="~checkLocalStorage"><span class="type-signature">&lt;inner> </span>checkLocalStorage()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to check if it´s possible to write to local Storage</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~checkLocalStorage"><span class="type-signature">(inner) </span>checkLocalStorage<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
 
     
-
-
-
-<div class="description">
-    Method to check if it´s possible to write to local Storage
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -167,53 +215,54 @@ Module which includes mostly used helper functions.</div>
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-306">line 306</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line306">line 306</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    true or false
+    <p>true or false</p>
 </div>
 
 
@@ -227,45 +276,48 @@ Module which includes mostly used helper functions.</div>
 <span class="param-type">Boolean</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~detectIEVersion"><span class="type-signature">&lt;inner> </span>detectIEVersion()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to get the version number of the used MS Internet Explorer.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~detectIEVersion"><span class="type-signature">(inner) </span>detectIEVersion<span class="signature">()</span><span class="type-signature"> &rarr; {Number}</span></h4>
     
 
     
-
-
-
-<div class="description">
-    Method to get the version number of the used MS Internet Explorer.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -275,53 +327,54 @@ Module which includes mostly used helper functions.</div>
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-271">line 271</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line271">line 271</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    The browser version.
+    <p>The browser version.</p>
 </div>
 
 
@@ -335,44 +388,42 @@ Module which includes mostly used helper functions.</div>
 <span class="param-type">Number</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~equalHeight"><span class="type-signature">&lt;inner> </span>equalHeight(sidebar, content)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to equal height of sidebar and content.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~equalHeight"><span class="type-signature">(inner) </span>equalHeight<span class="signature">(sidebar, content)</span><span class="type-signature"></span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Method to equal height of sidebar and content.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -403,6 +454,7 @@ Module which includes mostly used helper functions.</div>
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -410,7 +462,7 @@ Module which includes mostly used helper functions.</div>
 
             
 
-            <td class="description last">The selector of the sidebar.</td>
+            <td class="description last"><p>The selector of the sidebar.</p></td>
         </tr>
 
     
@@ -426,6 +478,7 @@ Module which includes mostly used helper functions.</div>
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -433,19 +486,24 @@ Module which includes mostly used helper functions.</div>
 
             
 
-            <td class="description last">The selector of the content.</td>
+            <td class="description last"><p>The selector of the content.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -455,83 +513,85 @@ Module which includes mostly used helper functions.</div>
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-357">line 357</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line357">line 357</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-
-
-
+    
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~getCurrentBrowser"><span class="type-signature">&lt;inner> </span>getCurrentBrowser()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to get the current used browser.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~getCurrentBrowser"><span class="type-signature">(inner) </span>getCurrentBrowser<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
     
 
     
-
-
-
-<div class="description">
-    Method to get the current used browser.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -541,53 +601,54 @@ Module which includes mostly used helper functions.</div>
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-409">line 409</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line409">line 409</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    The name of the current Browser.
+    <p>The name of the current Browser.</p>
 </div>
 
 
@@ -601,44 +662,42 @@ Module which includes mostly used helper functions.</div>
 <span class="param-type">String</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~getRemoteData"><span class="type-signature">&lt;inner> </span>getRemoteData(url)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns an JSON object from a API call.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~getRemoteData"><span class="type-signature">(inner) </span>getRemoteData<span class="signature">(url)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Returns an JSON object from a API call.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -669,6 +728,7 @@ Module which includes mostly used helper functions.</div>
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -676,19 +736,24 @@ Module which includes mostly used helper functions.</div>
 
             
 
-            <td class="description last">The API call URL.</td>
+            <td class="description last"><p>The API call URL.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -698,54 +763,54 @@ Module which includes mostly used helper functions.</div>
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-160">line 160</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line160">line 160</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    A promise object, which tells about the success of receiving
-data.
+    <p>A promise object, which tells about the success of receiving<br>data.</p>
 </div>
 
 
@@ -759,51 +824,50 @@ data.
 <span class="param-type">Object</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>&lt;pre>
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">&lt;pre&gt;
 viewerJS.helper.getRemoteData( dataURL );
-&lt;/pre></code></pre>
+&lt;/pre&gt;</pre>
 
 
+    
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~renderAlert"><span class="type-signature">&lt;inner> </span>renderAlert(type, content, dismissable)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns a BS Alert with dynamic content.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~renderAlert"><span class="type-signature">(inner) </span>renderAlert<span class="signature">(type, content, dismissable)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Returns a BS Alert with dynamic content.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -834,6 +898,7 @@ viewerJS.helper.getRemoteData( dataURL );
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -841,7 +906,7 @@ viewerJS.helper.getRemoteData( dataURL );
 
             
 
-            <td class="description last">The type of the alert.</td>
+            <td class="description last"><p>The type of the alert.</p></td>
         </tr>
 
     
@@ -857,6 +922,7 @@ viewerJS.helper.getRemoteData( dataURL );
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -864,7 +930,7 @@ viewerJS.helper.getRemoteData( dataURL );
 
             
 
-            <td class="description last">The content of the alert.</td>
+            <td class="description last"><p>The content of the alert.</p></td>
         </tr>
 
     
@@ -880,6 +946,7 @@ viewerJS.helper.getRemoteData( dataURL );
 <span class="param-type">Boolean</span>
 
 
+
             
             </td>
 
@@ -887,20 +954,24 @@ viewerJS.helper.getRemoteData( dataURL );
 
             
 
-            <td class="description last">Sets the option to make the alert dismissable,
-true = dismissable.</td>
+            <td class="description last"><p>Sets the option to make the alert dismissable,<br>true = dismissable.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -910,53 +981,54 @@ true = dismissable.</td>
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-242">line 242</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line242">line 242</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    A HTML-String which renders the alert.
+    <p>A HTML-String which renders the alert.</p>
 </div>
 
 
@@ -970,44 +1042,42 @@ true = dismissable.</td>
 <span class="param-type">String</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~renderModal"><span class="type-signature">&lt;inner> </span>renderModal(config)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Returns a BS Modal with dynamic content.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~renderModal"><span class="type-signature">(inner) </span>renderModal<span class="signature">(config)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Returns a BS Modal with dynamic content.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -1038,6 +1108,7 @@ true = dismissable.</td>
 <span class="param-type">Object</span>
 
 
+
             
             </td>
 
@@ -1045,12 +1116,11 @@ true = dismissable.</td>
 
             
 
-            <td class="description last">An config object which includes the content of the
-modal.
-                <h6>Properties</h6>
+            <td class="description last"><p>An config object which includes the content of the<br>modal.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
                 
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -1081,6 +1151,7 @@ modal.
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1088,7 +1159,7 @@ modal.
 
             
 
-            <td class="description last">The ID of the modal.</td>
+            <td class="description last"><p>The ID of the modal.</p></td>
         </tr>
 
     
@@ -1104,6 +1175,7 @@ modal.
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1111,7 +1183,7 @@ modal.
 
             
 
-            <td class="description last">The label of the modal.</td>
+            <td class="description last"><p>The label of the modal.</p></td>
         </tr>
 
     
@@ -1127,6 +1199,7 @@ modal.
 <span class="param-type">Object</span>
 
 
+
             
             </td>
 
@@ -1134,11 +1207,11 @@ modal.
 
             
 
-            <td class="description last">An object of strings for the modal content.
-                <h6>Properties</h6>
+            <td class="description last"><p>An object of strings for the modal content.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
                 
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -1169,6 +1242,7 @@ modal.
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1176,7 +1250,7 @@ modal.
 
             
 
-            <td class="description last">The title of the modal.</td>
+            <td class="description last"><p>The title of the modal.</p></td>
         </tr>
 
     
@@ -1192,6 +1266,7 @@ modal.
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1199,7 +1274,7 @@ modal.
 
             
 
-            <td class="description last">The content of the modal as HTML.</td>
+            <td class="description last"><p>The content of the modal as HTML.</p></td>
         </tr>
 
     
@@ -1215,6 +1290,7 @@ modal.
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1222,7 +1298,7 @@ modal.
 
             
 
-            <td class="description last">Buttontext</td>
+            <td class="description last"><p>Buttontext</p></td>
         </tr>
 
     
@@ -1238,6 +1314,7 @@ modal.
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1245,7 +1322,7 @@ modal.
 
             
 
-            <td class="description last">Buttontext</td>
+            <td class="description last"><p>Buttontext</p></td>
         </tr>
 
     
@@ -1266,12 +1343,17 @@ modal.
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -1281,53 +1363,54 @@ modal.
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-188">line 188</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line188">line 188</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    A HTML-String which renders the modal.
+    <p>A HTML-String which renders the modal.</p>
 </div>
 
 
@@ -1341,44 +1424,42 @@ modal.
 <span class="param-type">String</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~renderWarningPopover"><span class="type-signature">&lt;inner> </span>renderWarningPopover(msg)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to render a warning popover.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~renderWarningPopover"><span class="type-signature">(inner) </span>renderWarningPopover<span class="signature">(msg)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Method to render a warning popover.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -1409,6 +1490,7 @@ modal.
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1416,19 +1498,24 @@ modal.
 
             
 
-            <td class="description last">The message to show in the popover.</td>
+            <td class="description last"><p>The message to show in the popover.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -1438,53 +1525,54 @@ modal.
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-328">line 328</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line328">line 328</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    An jQuery Object to append to DOM.
+    <p>An jQuery Object to append to DOM.</p>
 </div>
 
 
@@ -1498,46 +1586,48 @@ modal.
 <span class="param-type">Object</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~saveSidebarTocPosition"><span class="type-signature">&lt;inner> </span>saveSidebarTocPosition()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method which calculates the current position of the active element in sidebar<br>toc and the image container position and saves it to lacal storage.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~saveSidebarTocPosition"><span class="type-signature">(inner) </span>saveSidebarTocPosition<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
-
-
-
-<div class="description">
-    Method which calculates the current position of the active element in sidebar
-toc and the image container position and saves it to lacal storage.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -1547,89 +1637,87 @@ toc and the image container position and saves it to lacal storage.
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-92">line 92</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line92">line 92</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
     
-    <pre class="prettyprint"><code>&lt;pre>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">&lt;pre&gt;
 viewerJS.helper.saveSidebarTocPosition();
-&lt;/pre></code></pre>
+&lt;/pre&gt;</pre>
 
 
+    
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~switchClass"><span class="type-signature">&lt;inner> </span>switchClass($Obj, classname1, classname2)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to switch classnames of an object.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~switchClass"><span class="type-signature">(inner) </span>switchClass<span class="signature">($Obj, classname1, classname2)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Method to switch classnames of an object.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -1660,6 +1748,7 @@ viewerJS.helper.saveSidebarTocPosition();
 <span class="param-type">Object</span>
 
 
+
             
             </td>
 
@@ -1667,7 +1756,7 @@ viewerJS.helper.saveSidebarTocPosition();
 
             
 
-            <td class="description last">The object which classname has to be switched.</td>
+            <td class="description last"><p>The object which classname has to be switched.</p></td>
         </tr>
 
     
@@ -1683,6 +1772,7 @@ viewerJS.helper.saveSidebarTocPosition();
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1690,7 +1780,7 @@ viewerJS.helper.saveSidebarTocPosition();
 
             
 
-            <td class="description last">The classname of the first class.</td>
+            <td class="description last"><p>The classname of the first class.</p></td>
         </tr>
 
     
@@ -1706,6 +1796,7 @@ viewerJS.helper.saveSidebarTocPosition();
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1713,19 +1804,24 @@ viewerJS.helper.saveSidebarTocPosition();
 
             
 
-            <td class="description last">The classname of the second class.</td>
+            <td class="description last"><p>The classname of the second class.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -1735,55 +1831,63 @@ viewerJS.helper.saveSidebarTocPosition();
 
     
 
+	
+	<dt class="important tag-deprecated method-doc-label method-doc-details-label">Deprecated:</dt>
+	
+    <dd>
+        <ul class="dummy">
+            <li>use jQuery.toggleClass();</li>
+        </ul>
+    </dd>
+    
     
 
-    
+	
 
-    
+	
 
-    
-        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>use jQuery.toggleClass();</li></ul></dd>
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-63">line 63</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line63">line 63</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    The new classname.
+    <p>The new classname.</p>
 </div>
 
 
@@ -1797,44 +1901,42 @@ viewerJS.helper.saveSidebarTocPosition();
 <span class="param-type">String</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
-
-
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~truncateString"><span class="type-signature">&lt;inner> </span>truncateString(str, size)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to truncate a string to a given length.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~truncateString"><span class="type-signature">(inner) </span>truncateString<span class="signature">(str, size)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Method to truncate a string to a given length.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -1865,6 +1967,7 @@ viewerJS.helper.saveSidebarTocPosition();
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -1872,7 +1975,7 @@ viewerJS.helper.saveSidebarTocPosition();
 
             
 
-            <td class="description last">The string to truncate.</td>
+            <td class="description last"><p>The string to truncate.</p></td>
         </tr>
 
     
@@ -1888,6 +1991,7 @@ viewerJS.helper.saveSidebarTocPosition();
 <span class="param-type">Number</span>
 
 
+
             
             </td>
 
@@ -1895,20 +1999,24 @@ viewerJS.helper.saveSidebarTocPosition();
 
             
 
-            <td class="description last">The number of characters after the string should be
-croped.</td>
+            <td class="description last"><p>The number of characters after the string should be<br>croped.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -1918,53 +2026,54 @@ croped.</td>
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-32">line 32</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line32">line 32</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    The truncated string.
+    <p>The truncated string.</p>
 </div>
 
 
@@ -1978,51 +2087,50 @@ croped.</td>
 <span class="param-type">String</span>
 
 
+
     </dd>
 </dl>
 
+
+        
+
     
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">&lt;pre&gt;
+viewerJS.helper.truncateString( $( &#x27;.something&#x27; ).text(), 75 );
+&lt;/pre&gt;</pre>
 
 
-
-
-    <h5>Example</h5>
     
-    <pre class="prettyprint"><code>&lt;pre>
-viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
-&lt;/pre></code></pre>
-
-
+</dd>
 
         
             
+<hr>
+<dt>
+    <h4 class="name" id="~validateReCaptcha"><span class="type-signature">&lt;inner> </span>validateReCaptcha(wrapper, key)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to validate the reCAPTCHA response.</p>
+    </div>
+    
+
+    
 
     
 
     
-    <h4 class="name" id="~validateReCaptcha"><span class="type-signature">(inner) </span>validateReCaptcha<span class="signature">(wrapper, key)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
+        <h5>Parameters:</h5>
+        
 
-    
-
-
-
-<div class="description">
-    Method to validate the reCAPTCHA response.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
+<table class="params table table-striped">
     <thead>
     <tr>
         
@@ -2053,6 +2161,7 @@ viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -2060,7 +2169,7 @@ viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
 
             
 
-            <td class="description last">The reCAPTCHA widget wrapper.</td>
+            <td class="description last"><p>The reCAPTCHA widget wrapper.</p></td>
         </tr>
 
     
@@ -2076,6 +2185,7 @@ viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -2083,19 +2193,24 @@ viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
 
             
 
-            <td class="description last">The reCAPTCHA site key.</td>
+            <td class="description last"><p>The reCAPTCHA site key.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
+    
 
-
-
-
-
+    
 <dl class="details">
+    
+
+	
+
+	
+
+	
 
     
 
@@ -2105,53 +2220,54 @@ viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
 
     
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
+	
 
-    
 
-    
 
-    
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>,
+				 <a href="viewer_viewerJS.helper.js.html#sunlight-1-line-383">line 383</a>
+			</li>
+		</ul>
+	</dd>
+	
 
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="viewer_viewerJS.helper.js.html">viewer/viewerJS.helper.js</a>, <a href="viewer_viewerJS.helper.js.html#line383">line 383</a>
-    </li></ul></dd>
-    
+	
 
-    
+	
 
-    
-
-    
+	
 </dl>
 
 
+    
 
+    
 
+    
 
+    
 
+    
 
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
+    
+    <h5>Returns:</h5>
+    
+            
 <div class="param-desc">
-    Returns true if the response is valid.
+    <p>Returns true if the response is valid.</p>
 </div>
 
 
@@ -2165,16 +2281,17 @@ viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
 <span class="param-type">Boolean</span>
 
 
+
     </dd>
 </dl>
 
-    
-
-
-
-
 
         
+
+    
+</dd>
+
+        </dl>
     
 
     
@@ -2187,19 +2304,136 @@ viewerJS.helper.truncateString( $( '.something' ).text(), 75 );
 
 
 
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
 </div>
 
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="cmsJS.module_createPage.html">createPage</a></li><li><a href="cmsJS.module_masonry.html">masonry</a></li><li><a href="cmsJS.module_rssFeed.html">rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">staticGrid</a></li><li><a href="cmsJS.module_tagList.html">tagList</a></li><li><a href="cmsJS.module_tileGrid.html">tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewerJS..html">viewerJS.</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="module-viewImage..html">viewImage.</a></li><li><a href="viewerJS.module_changeFontSize.html">changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">download</a></li><li><a href="viewerJS.module_downloadModal.html">downloadModal</a></li><li><a href="viewerJS.module_editComment.html">editComment</a></li><li><a href="viewerJS.module_helper.html">helper</a></li><li><a href="viewerJS.module_navigation.html">navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">normdata</a></li><li><a href="viewerJS.module_pageScroll.html">pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">timematrix</a></li><li><a href="viewerJS.module_versionHistory.html">versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">persistence</a></li><li><a href="viewImage.module_controls.html">controls</a></li><li><a href="viewImage.module_drawLine.html">drawLine</a></li><li><a href="viewImage.module_drawRect.html">drawRect</a></li><li><a href="viewImage.module_Measures.html">Measures</a></li><li><a href="viewImage.module_overlays.html">overlays</a></li><li><a href="viewImage.module_readingMode.html">readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">zoomSlider</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li></ul>
-</nav>
 
-<br class="clear">
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 27 2017 15:14:28 GMT+0200 (CEST)
+
+
+	<span class="copyright">
+	Copyright © 2017 intranda GmbH
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Fri Oct 27th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
 </body>
 </html>
