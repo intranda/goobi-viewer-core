@@ -7,6 +7,7 @@ module.exports = function(grunt) {
         src: {
             jsDevFolder: 'WebContent/resources/javascript/dev/modules/',
             jsDistFolder: 'WebContent/resources/javascript/dist/',
+            jsDocFolder: 'doc/jsdoc/',
             cssDevFolder: 'WebContent/resources/css/dev/',
             cssDistFolder: 'WebContent/resources/css/dist/',
             lessDevFolder: 'WebContent/resources/css/less/viewer/'
@@ -126,6 +127,14 @@ module.exports = function(grunt) {
                     nospawn: true
                 }
             }
+        },
+        jsdoc : {
+            dist : {
+                src: [ '<%=src.jsDevFolder %>**/*.js' ],
+                options: {
+                    destination: '<%=src.jsDocFolder %>'
+                }
+            }
         }
     });
     
@@ -134,7 +143,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-jsdoc');
     
     // register tasks
-    grunt.registerTask( 'default', [ 'watch' ] );
+    grunt.registerTask( 'default', [ 'jsdoc', 'watch' ] );
 };

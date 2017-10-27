@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: viewer/viewerJS.downloadModal.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: viewer/viewerJS.downloadModal.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see &lt;http://www.gnu.org/licenses/>.
+ * 
+ * Module which generates a download modal which dynamic content.
+ * 
+ * @version 3.2.0
+ * @module viewerJS.downloadModal
+ * @requires jQuery
+ * 
+ */
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    // default variables
+    var _debug = false;
+    var _defaults = {
+        dataType: null,
+        dataTitle: null,
+        dataId: null,
+        dataPi: null,
+        downloadBtn: null,
+        reCaptchaSiteKey: '',
+        useReCaptcha: true,
+        path: '',
+        iiifPath: '',
+        apiUrl: '',
+        userEmail: null,
+        workInfo: {},
+        modal: {
+            id: '',
+            label: '',
+            string: {
+                title: '',
+                body: '',
+                closeBtn: '',
+                saveBtn: '',
+            }
+        },
+        messages: {
+            downloadInfo: {
+                text: 'Informationen zum angeforderten Download',
+                title: 'Werk',
+                part: 'Teil',
+                fileSize: 'Größe'
+            },
+            reCaptchaText: 'Um die Generierung von Dokumenten durch Suchmaschinen zu verhindern bestätigen Sie bitte das reCAPTCHA.',
+            rcInvalid: 'Die Überprüfung war nicht erfolgreich. Bitte bestätigen Sie die reCAPTCHA Anfrage.',
+            rcValid: 'Vielen Dank. Sie können nun ihre ausgewählte Datei generieren lassen.',
+            eMailText: 'Um per E-Mail informiert zu werden sobald der Download zur Verfügung steht, können Sie hier optional Ihre E-Mail Adresse hinterlassen',
+            eMailTextLoggedIn: 'Sie werden über Ihre registrierte E-Mail Adresse von uns über den Fortschritt des Downloads informiert.',
+            eMail: ''
+        }
+    };
+    var _loadingOverlay = null;
+    
+    viewer.downloadModal = {
+        /**
+         * Method to initialize the download modal mechanic.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {String} config.dataType The data type of the current file to download.
+         * @param {String} config.dataTitle The title of the current file to download.
+         * @param {String} config.dataId The LOG_ID of the current file to download.
+         * @param {String} config.dataPi The PI of the current file to download.
+         * @param {Object} config.downloadBtn A collection of all buttons with the class
+         * attribute 'download-modal'.
+         * @param {String} config.reCaptchaSiteKey The site key for the google reCAPTCHA,
+         * fetched from the viewer config.
+         * @param {String} config.path The current application path.
+         * @param {String} config.apiUrl The URL to trigger the ITM download task.
+         * @param {String} config.userEmail The current user email if the user is logged
+         * in. Otherwise the one which the user enters or leaves blank.
+         * @param {Object} config.modal A configuration object for the download modal.
+         * @param {String} config.modal.id The ID of the modal.
+         * @param {String} config.modal.label The label of the modal.
+         * @param {Object} config.modal.string An object of strings for the modal content.
+         * @param {String} config.modal.string.title The title of the modal.
+         * @param {String} config.modal.string.body The content of the modal as HTML.
+         * @param {String} config.modal.string.closeBtn Buttontext
+         * @param {String} config.modal.string.saveBtn Buttontext
+         * @param {Object} config.messages An object of strings for the used text
+         * snippets.
+         * @example
+         * 
+         * &lt;pre>
+         * var downloadModalConfig = {
+         *     downloadBtn: $( '.download-modal' ),
+         *     path: '#{navigationHelper.applicationUrl}',
+         *     userEmail: $( '#userEmail' ).val(),
+         *     messages: {
+         *         reCaptchaText: '#{msg.downloadReCaptchaText}',
+         *         rcInvalid: '#{msg.downloadRcInvalid}',
+         *         rcValid: '#{msg.downloadRcValid}',
+         *         eMailText: '#{msg.downloadEMailText}',
+         *         eMailTextLoggedIn: '#{msg.downloadEMailTextLoggedIn}',
+         *         eMail: '#{msg.downloadEmail}',
+         *         closeBtn: '#{msg.downloadCloseModal}',
+         *         saveBtn: '#{msg.downloadGenerateFile}',
+         *     }
+         * };
+         * 
+         * viewerJS.downloadModal.init( downloadModalConfig );
+         * &lt;/pre>
+         */
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.downloadModal.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.downloadModal.init: config = ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // build loading overlay
+            _loadingOverlay = $( '&lt;div />' );
+            _loadingOverlay.addClass( 'dl-modal__overlay' );
+            $( 'body' ).append( _loadingOverlay );
+            
+            _defaults.downloadBtn.on( 'click', function() {
+                // show loading overlay
+                $( '.dl-modal__overlay' ).fadeIn( 'fast' );
+                
+                _defaults.dataType = $( this ).attr( 'data-type' );
+                _defaults.dataTitle = $( this ).attr( 'data-title' );
+                if ( $( this ).attr( 'data-id' ) !== '' ) {
+                    _defaults.dataId = $( this ).attr( 'data-id' );
+                }
+                else {
+                    _defaults.dataId = '-';
+                }
+                _defaults.dataPi = $( this ).attr( 'data-pi' );
+                _getWorkInfo( _defaults.dataPi, _defaults.dataId ).done( function( info ) {
+                    _defaults.workInfo = info;
+                    
+                    _defaults.modal = {
+                        id: _defaults.dataPi + '-Modal',
+                        label: _defaults.dataPi + '-Label',
+                        string: {
+                            title: _defaults.dataTitle,
+                            body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.workInfo ),
+                            closeBtn: _defaults.messages.closeBtn,
+                            saveBtn: _defaults.messages.saveBtn,
+                        }
+                    };
+                    
+                    // hide loading overlay
+                    $( '.dl-modal__overlay' ).fadeOut( 'fast' );
+                    
+                    // init modal
+                    viewer.downloadModal.initModal( _defaults );
+                } );
+            } );
+        },
+        /**
+         * Method which initializes the download modal and its content.
+         * 
+         * @method initModal
+         * @param {Object} params An config object which overwrites the defaults.
+         */
+        initModal: function( params ) {
+            if ( _debug ) {
+                console.log( '---------- viewer.downloadModal.initModal() ----------' );
+                console.log( 'viewer.downloadModal.initModal: params = ', params );
+            }
+            $( 'body' ).append( viewer.helper.renderModal( params.modal ) );
+            
+            // disable submit button
+            $( '#submitModal' ).attr( 'disabled', 'disabled' );
+            
+            // show modal
+            $( '#' + params.modal.id ).modal( 'show' );
+            
+            // render reCAPTCHA to modal
+            $( '#' + params.modal.id ).on( 'shown.bs.modal', function( e ) {
+                if ( _defaults.useReCaptcha ) {
+                    var rcWidget = grecaptcha.render( 'reCaptchaWrapper', {
+                        sitekey: _defaults.reCaptchaSiteKey,
+                        callback: function() {
+                            var rcWidgetResponse = viewer.downloadModal.validateReCaptcha( grecaptcha.getResponse( rcWidget ) );
+                            
+                            if ( rcWidgetResponse ) {
+                                $( '#modalAlerts' ).append( viewer.helper.renderAlert( 'alert-success', _defaults.messages.rcValid, true ) );
+                                
+                                // enable submit button
+                                $( '#submitModal' ).removeAttr( 'disabled' ).on( 'click', function() {
+                                    _defaults.userEmail = $( '#recallEMail' ).val();
+                                    
+                                    _defaults.apiUrl = viewer.downloadModal
+                                            .buildAPICall( _defaults.path, _defaults.dataType, _defaults.dataPi, _defaults.dataId, _defaults.userEmail );
+                                    
+                                    window.location.href = _defaults.apiUrl;
+                                } );
+                            }
+                            else {
+                                $( '#modalAlerts' ).append( viewer.helper.renderAlert( 'alert-danger', _defaults.messages.rcInvalid, true ) );
+                            }
+                        }
+                    } );
+                }
+                else {
+                    // hide paragraph
+                    $( this ).find( '.modal-body h4' ).next( 'p' ).hide();
+                    
+                    // enable submit button
+                    $( '#submitModal' ).removeAttr( 'disabled' ).on( 'click', function() {
+                        _defaults.userEmail = $( '#recallEMail' ).val();
+                        
+                        _defaults.apiUrl = viewer.downloadModal.buildAPICall( _defaults.path, _defaults.dataType, _defaults.dataPi, _defaults.dataId, _defaults.userEmail );
+                        
+                        window.location.href = _defaults.apiUrl;
+                    } );
+                }
+            } );
+            
+            // remove modal from DOM after closing
+            $( '#' + params.modal.id ).on( 'hidden.bs.modal', function( e ) {
+                $( this ).remove();
+            } );
+        },
+        /**
+         * Method which returns a HTML-String to render the download modal body.
+         * 
+         * @method renderModalBody
+         * @param {String} type The current file type to download.
+         * @param {String} title The title of the current download file.
+         * @returns {String} The HTML-String to render the download modal body.
+         */
+        renderModalBody: function( type, infos ) {
+            if ( _debug ) {
+                console.log( '---------- viewer.downloadModal.renderModalBody() ----------' );
+                console.log( 'viewer.downloadModal.renderModalBody: type = ', type );
+                console.log( 'viewer.downloadModal.renderModalBody: infos = ', infos );
+            }
+            var rcResponse = null;
+            var modalBody = '';
+            
+            modalBody += '';
+            // alerts
+            modalBody += '&lt;div id="modalAlerts">&lt;/div>';
+            // Title
+            if ( type === 'pdf' ) {
+                modalBody += '&lt;h4>';
+                modalBody += '&lt;i class="fa fa-file-pdf-o" aria-hidden="true">&lt;/i> PDF-Download: ';
+                modalBody += '&lt;/h4>';
+            }
+            else {
+                modalBody += '&lt;h4>';
+                modalBody += '&lt;i class="fa fa-file-text-o" aria-hidden="true">&lt;/i> ePub-Download: ';
+                modalBody += '&lt;/h4>';
+            }
+            // Info
+            modalBody += '&lt;p>' + _defaults.messages.downloadInfo.text + ':&lt;/p>';
+            modalBody += '&lt;dl class="dl-horizontal">';
+            modalBody += '&lt;dt>' + _defaults.messages.downloadInfo.title + ':&lt;/dt>';
+            modalBody += '&lt;dd>' + infos.title + '&lt;/dd>';
+            if ( infos.div !== null ) {
+                modalBody += '&lt;dt>' + _defaults.messages.downloadInfo.part + ':&lt;/dt>';
+                modalBody += '&lt;dd>' + infos.div + '&lt;/dd>';
+            }
+            modalBody += '&lt;dt>' + _defaults.messages.downloadInfo.fileSize + ':&lt;/dt>';
+            modalBody += '&lt;dd>~' + infos.size + '&lt;/dd>';
+            modalBody += '&lt;/dl>';
+            // reCAPTCHA
+            if ( _defaults.useReCaptcha ) {
+                modalBody += '&lt;hr />';
+                modalBody += '&lt;p>&lt;strong>reCAPTCHA&lt;/strong>&lt;/p>';
+                modalBody += '&lt;p>' + _defaults.messages.reCaptchaText + ':&lt;/p>';
+                modalBody += '&lt;div id="reCaptchaWrapper">&lt;/div>';
+            }
+            // E-Mail
+            modalBody += '&lt;hr />';
+            modalBody += '&lt;form class="email-form">';
+            modalBody += '&lt;div class="form-group">';
+            modalBody += '&lt;label for="recallEMail">' + _defaults.messages.eMail + '&lt;/label>';
+            if ( _defaults.userEmail != undefined ) {
+                modalBody += '&lt;p class="help-block">' + _defaults.messages.eMailTextLoggedIn + '&lt;/p>';
+                modalBody += '&lt;input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
+            }
+            else {
+                modalBody += '&lt;p class="help-block">' + _defaults.messages.eMailText + ':&lt;/p>';
+                modalBody += '&lt;input type="email" class="form-control" id="recallEMail" />';
+            }
+            modalBody += '&lt;/div>';
+            modalBody += '&lt;/form>';
+            
+            return modalBody;
+        },
+        /**
+         * Method which checks the reCAPTCHA response.
+         * 
+         * @method validateReCaptcha
+         * @param {String} response The reCAPTCHA response.
+         * @returns {Boolean} Returns true if the reCAPTCHA sent a response.
+         */
+        validateReCaptcha: function( response ) {
+            if ( _debug ) {
+                console.log( '---------- viewer.downloadModal.validateReCaptcha() ----------' );
+                console.log( 'viewer.downloadModal.validateReCaptcha: response = ', response );
+            }
+            if ( response == 0 ) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        },
+        /**
+         * Method which returns an URL to trigger the ITM download task.
+         * 
+         * @method buildAPICall
+         * @param {String} path The current application path.
+         * @param {String} type The current file type to download.
+         * @param {String} pi The PI of the current work.
+         * @param {String} logid The LOG_ID of the current work.
+         * @param {String} email The current user email.
+         * @returns {String} The URL to trigger the ITM download task.
+         */
+        buildAPICall: function( path, type, pi, logid, email ) {
+            if ( _debug ) {
+                console.log( '---------- viewer.downloadModal.buildAPICall() ----------' );
+                console.log( 'viewer.downloadModal.buildAPICall: path = ', path );
+                console.log( 'viewer.downloadModal.buildAPICall: type = ', type );
+                console.log( 'viewer.downloadModal.buildAPICall: pi = ', pi );
+                console.log( 'viewer.downloadModal.buildAPICall: logid = ', logid );
+                console.log( 'viewer.downloadModal.buildAPICall: email = ', email );
+            }
+            var url = '';
+            
+            url += path + 'rest/download';
+            
+            if ( type == '' ) {
+                url += '/-';
+            }
+            else {
+                url += '/' + type;
+            }
+            if ( pi == '' ) {
+                url += '/-';
+            }
+            else {
+                url += '/' + pi;
+            }
+            if ( logid == '' ) {
+                url += '/-';
+            }
+            else {
+                url += '/' + logid;
+            }
+            if ( email == '' || email == undefined ) {
+                url += '/-/';
+            }
+            else {
+                url += '/' + email + '/';
+            }
+            
+            return encodeURI( url );
+        }
+    };
+    
+    /**
+     * Method which returns a promise if the work info has been reached.
+     * 
+     * @method getWorkInfo
+     * @param {String} pi The PI of the work.
+     * @param {String} logid The LOG_ID of the work.
+     * @returns {Promise} A promise object if the info has been reached.
+     */
+    function _getWorkInfo( pi, logid ) {
+        if ( _debug ) {
+            console.log( '---------- _getWorkInfo() ----------' );
+            console.log( '_getWorkInfo: pi = ', pi );
+            console.log( '_getWorkInfo: logid = ', logid );
+        }
+        
+        var restCall = '';
+        var workInfo = {};
+        
+        if ( logid !== '' || logid !== undefined ) {
+            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/' + logid + '/';
+            
+            if ( _debug ) {
+                console.log( 'if' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        else {
+            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/-/';
+            
+            if ( _debug ) {
+                console.log( 'else' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        
+        return viewerJS.helper.getRemoteData( restCall );
+    }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="cmsJS.module_createPage.html">createPage</a></li><li><a href="cmsJS.module_masonry.html">masonry</a></li><li><a href="cmsJS.module_rssFeed.html">rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">staticGrid</a></li><li><a href="cmsJS.module_tagList.html">tagList</a></li><li><a href="cmsJS.module_tileGrid.html">tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewerJS..html">viewerJS.</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="module-viewImage..html">viewImage.</a></li><li><a href="viewerJS.module_changeFontSize.html">changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">download</a></li><li><a href="viewerJS.module_downloadModal.html">downloadModal</a></li><li><a href="viewerJS.module_editComment.html">editComment</a></li><li><a href="viewerJS.module_helper.html">helper</a></li><li><a href="viewerJS.module_navigation.html">navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">normdata</a></li><li><a href="viewerJS.module_pageScroll.html">pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">timematrix</a></li><li><a href="viewerJS.module_versionHistory.html">versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">persistence</a></li><li><a href="viewImage.module_controls.html">controls</a></li><li><a href="viewImage.module_drawLine.html">drawLine</a></li><li><a href="viewImage.module_drawRect.html">drawRect</a></li><li><a href="viewImage.module_Measures.html">Measures</a></li><li><a href="viewImage.module_overlays.html">overlays</a></li><li><a href="viewImage.module_readingMode.html">readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">zoomSlider</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 27 2017 15:14:28 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
