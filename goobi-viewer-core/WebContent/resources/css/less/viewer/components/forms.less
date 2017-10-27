@@ -77,9 +77,19 @@
 	    background-color: @white;
 	    background-image: none;
 	    border: 1px solid @middlegray;
+	    &:before,
 	    &:after {
-	        content: "";
-	        position: absolute;
+		    content: "";
+		    position: absolute;
+	    }
+	    &:before {
+		    top: 0;
+		    right: 0;
+		    width: 32px;
+		    height: 32px;
+		    background-color: @white;
+		}
+	    &:after {
 	        display: inline-block;
 	        top: 50%;
 	        right: 10px;
