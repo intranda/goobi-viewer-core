@@ -43,7 +43,6 @@ var cmsJS = ( function( cms ) {
     var $gridItemCaption = null;
     var $gridItemCaptionHeading = null;
     var $gridItemCaptionLink = null;
-    var $gridItemCaptionIcon = null;
     
     cms.masonry = {
         /**
@@ -152,12 +151,7 @@ var cmsJS = ( function( cms ) {
                     $gridItemCaptionLink.attr( 'href', item.url );
                     $gridItemCaptionLink.attr( 'title', item.title );
                     
-                    // grid item caption icon
-                    $gridItemCaptionIcon = $( '<i aria-hidden="true" />' );
-                    $gridItemCaptionIcon.addClass( 'fa fa-arrow-right' );
-                    
                     // append to grid item
-                    $gridItemCaption.append( $gridItemCaptionIcon );
                     $gridItemCaptionLink.append( $gridItemCaption );
                     $gridItem.append( $gridItemCaptionLink );
                 }
