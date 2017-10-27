@@ -534,7 +534,6 @@ public class SearchHit implements Comparable<SearchHit> {
     public boolean isHasHitCount() {
         for (HitType key : hitTypeCounts.keySet()) {
             if (hitTypeCounts.get(key) > 0) {
-                logger.trace("isHasHitCount: true");
                 return true;
             }
         }
