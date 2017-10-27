@@ -229,7 +229,12 @@ public final class SearchHelper {
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
-                    HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
+                    String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
+                    if (DocType.METADATA.name().equals(docType)) {
+                        // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
+                        docType = DocType.DOCSTRCT.name();
+                    }
+                    HitType hitType = HitType.getByName(docType);
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
                 }
