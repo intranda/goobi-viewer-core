@@ -130,7 +130,7 @@
 
 
 	<!-- TODO DOCUMENTATION-->
-	<reCaptcha show="true">
+	<reCaptcha show="false">
 		<provider name="Google" siteKey="TODO" />
 	</reCaptcha>
 
