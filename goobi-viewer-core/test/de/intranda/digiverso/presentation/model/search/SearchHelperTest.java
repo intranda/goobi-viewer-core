@@ -512,11 +512,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#truncateFulltext(Set,String,int,boolean)
-     * @verifies replace line breaks and tabs with spaces
+     * @verifies replace line breaks with spaces
      */
     @Test
-    public void truncateFulltext_shouldReplaceLineBreaksAndTabsWithSpaces() throws Exception {
-        String original = "one\ntwo\tthree";
+    public void truncateFulltext_shouldReplaceLineBreaksWithSpaces() throws Exception {
+        String original = "one<br>two<br>three";
         String[] terms = { "two" };
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false);
         Assert.assertEquals(1, truncated.size());

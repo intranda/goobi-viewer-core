@@ -1387,7 +1387,7 @@ public final class SearchHelper {
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
      * @should return multiple match fragments correctly
-     * @should replace line breaks and tabs with spaces
+     * @should replace line breaks with spaces
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
         if (fulltext == null) {
