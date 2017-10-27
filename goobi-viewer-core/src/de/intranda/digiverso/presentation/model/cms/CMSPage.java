@@ -118,7 +118,7 @@ public class CMSPage {
     @Transient
     private int listPage = 1;
 
-    @Column(name = "static_page", nullable = true)
+    @Column(name = "static_page", nullable = true, unique = true)
     private String staticPageName;
 
     public boolean saveSidebarElements() {
