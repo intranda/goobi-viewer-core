@@ -1438,7 +1438,8 @@ public final class SearchHelper {
                         if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                             fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                         }
-                        fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                        // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                        fulltextFragment = fulltextFragment.replace("<br>", " ");
                         ret.add(fulltextFragment);
                     }
                     if (firstMatchOnly) {
@@ -1454,7 +1455,8 @@ public final class SearchHelper {
                 } else {
                     fulltextFragment = fulltext;
                 }
-                fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
         } else {
@@ -1470,7 +1472,8 @@ public final class SearchHelper {
                 if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                     fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                 }
-                fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
         }
