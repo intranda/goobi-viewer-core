@@ -31,8 +31,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -53,7 +54,7 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 @ViewerRestServiceBinding
 public class CollectionResource {
 
-    private static final Logger logger = Logger.getLogger(CollectionResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(CollectionResource.class);
 
     private static Map<String, String> facetFieldMap = new HashMap<>();
     private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
@@ -64,11 +65,9 @@ public class CollectionResource {
     private HttpServletResponse servletResponse;
 
     /**
-     * Returns a iiif collection of all collections from the given solr-field
-     * The response includes the metadata and subcollections of the topmost collections.
-     * Child collections may be accessed following the links in the @id properties
-     * in the member-collections
-     * Requires passing a language to set the language for all metadata values
+     * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
+     * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
+     * to set the language for all metadata values
      * 
      * @param language
      * @param collectionField
@@ -84,31 +83,29 @@ public class CollectionResource {
             throws PresentationException, IndexUnreachableException, MalformedURLException {
 
         Collection collection = generateCollection(collectionField, null, getBaseUrl(), getLocale(language), getFacetField(collectionField));
-        
+
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        
+
         return collection;
 
     }
 
     /**
-     * Returns a iiif collection of the given topCollection for the give collection field
-     * The response includes the metadata and subcollections of the direct child collections.
-     * Collections further down the hierarchy may be accessed following the links in the @id properties
-     * in the member-collections
-     * Requires passing a language to set the language for all metadata values
+     * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
+     * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
+     * member-collections Requires passing a language to set the language for all metadata values
      * 
      */
     @GET
     @Path("/{language}/{collectionField}/{topElement}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Collection getCollection(@PathParam("language") String language, @PathParam("collectionField") String collectionField,
-            @PathParam("topElement") final String topElement) throws PresentationException, IndexUnreachableException, MalformedURLException {
+            @PathParam("topElement") final String topElement) throws IndexUnreachableException, MalformedURLException {
 
         Collection collection = generateCollection(collectionField, topElement, getBaseUrl(), getLocale(language), getFacetField(collectionField));
-        
+
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        
+
         return collection;
 
     }
@@ -166,13 +163,11 @@ public class CollectionResource {
         synchronized (collectionViewMap) {
             if (collectionViewMap.containsKey(collectionField)) {
                 return new CollectionView(collectionViewMap.get(collectionField));
-            } else {
-                collectionViewMap.put(collectionField, view);
-                return view;
             }
+            collectionViewMap.put(collectionField, view);
+            return view;
         }
     }
-
 
     /**
      * @param language
@@ -204,24 +199,23 @@ public class CollectionResource {
         synchronized (facetFieldMap) {
             if (facetFieldMap.containsKey(collectionField)) {
                 return facetFieldMap.get(collectionField);
+            }
+            String facetField = collectionField;
+            if (collectionField.startsWith("MD_")) {
+                facetField = collectionField.replace("MD_", "FACET_");
             } else {
-                String facetField = collectionField;
-                if (collectionField.startsWith("MD_")) {
-                    facetField = collectionField.replace("MD_", "FACET_");
-                } else {
-                    facetField = "MD_" + collectionField;
-                }
-                try {
-                    if (!DataManager.getInstance().getSearchIndex().getAllFieldNames().contains(facetField)) {
-                        facetField = collectionField;
-                    }
-                } catch (SolrServerException | IOException e) {
-                    logger.warn("Unable to query for facet field", e);
+                facetField = "MD_" + collectionField;
+            }
+            try {
+                if (!DataManager.getInstance().getSearchIndex().getAllFieldNames().contains(facetField)) {
                     facetField = collectionField;
                 }
-                facetFieldMap.put(collectionField, facetField);
-                return facetField;
+            } catch (SolrServerException | IOException e) {
+                logger.warn("Unable to query for facet field", e);
+                facetField = collectionField;
             }
+            facetFieldMap.put(collectionField, facetField);
+            return facetField;
         }
 
     }
