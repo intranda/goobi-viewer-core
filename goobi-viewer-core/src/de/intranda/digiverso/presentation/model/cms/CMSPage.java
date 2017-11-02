@@ -117,7 +117,7 @@ public class CMSPage {
 
     @Transient
     private int listPage = 1;
-
+// ALTER TABLE cms_pages ADD CONSTRAINT cms_pages_static_page_unique_constraint UNIQUE (static_page);
     @Column(name = "static_page", nullable = true)
     private String staticPageName;
 

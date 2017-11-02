@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Goobi viewer JavaScript Documentation Source: viewer/viewerJS.timematrix.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.yeti.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Goobi viewer JavaScript Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="cmsJS.module_createPage.html">cmsJS.createPage</a></li><li><a href="cmsJS.module_masonry.html">cmsJS.masonry</a></li><li><a href="cmsJS.module_rssFeed.html">cmsJS.rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">cmsJS.sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">cmsJS.stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">cmsJS.staticGrid</a></li><li><a href="cmsJS.module_tagList.html">cmsJS.tagList</a></li><li><a href="cmsJS.module_tileGrid.html">cmsJS.tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_calendarPopover.html">viewerJS.calendarPopover</a></li><li><a href="viewerJS.module_changeFontSize.html">viewerJS.changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">viewerJS.dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">viewerJS.dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">viewerJS.download</a></li><li><a href="viewerJS.module_downloadModal.html">viewerJS.downloadModal</a></li><li><a href="viewerJS.module_editComment.html">viewerJS.editComment</a></li><li><a href="viewerJS.module_helper.html">viewerJS.helper</a></li><li><a href="viewerJS.module_navigation.html">viewerJS.navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">viewerJS.nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">viewerJS.nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">viewerJS.normdata</a></li><li><a href="viewerJS.module_pageScroll.html">viewerJS.pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">viewerJS.responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">viewerJS.searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">viewerJS.searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">viewerJS.searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">viewerJS.simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">viewerJS.stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">viewerJS.timematrix</a></li><li><a href="viewerJS.module_tinyMce.html">viewerJS.tinyMce</a></li><li><a href="viewerJS.module_versionHistory.html">viewerJS.versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">viewImage.controls.persistence</a></li><li><a href="viewImage.module_controls.html">viewImage.controls</a></li><li><a href="viewImage.module_drawLine.html">viewImage.drawLine</a></li><li><a href="viewImage.module_drawRect.html">viewImage.drawRect</a></li><li><a href="viewImage.module_Measures.html">viewImage.Measures</a></li><li><a href="viewImage.module_overlays.html">viewImage.overlays</a></li><li><a href="viewImage.module_readingMode.html">viewImage.readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">viewImage.tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">viewImage.transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">viewImage.zoomSlider</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: viewer/viewerJS.timematrix.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see &lt;http://www.gnu.org/licenses/>.
+ * 
+ * Module to create an imagemap sorted by the year of creation.
+ * 
+ * @version 3.2.0
+ * @module viewerJS.timematrix
+ * @requires jQuery
+ */
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    // default variables
+    var _debug = false;
+    var _promise = null;
+    var _apiData = null;
+    var _defaults = {
+        contextPath: null,
+        apiQuery: 'api?action=timeline',
+        startDateQuery: '&amp;startDate=',
+        rangeInput1: null,
+        startDate: null,
+        endDateQuery: '&amp;endDate=',
+        rangeInput2: null,
+        endDate: null,
+        countQuery: '&amp;count=',
+        count: null,
+        $tmCanvas: null,
+        $tmCanvasPos: null,
+        $tmCanvasCoords: {},
+        lang: {}
+    };
+    
+    viewer.timematrix = {
+        /**
+         * Method to initialize the timematrix slider and the events which builds the
+         * matrix and popovers.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {String} config.contextPath The rootpath of the application.
+         * @param {String} config.apiQuery The API action to call.
+         * @param {String} config.startDateQuery The GET-Parameter for the start date.
+         * @param {Object} config.rangeInput1 An jQuery object of the first range input.
+         * @param {String} config.startDate The value of the first range input.
+         * @param {String} config.endDateQuery The GET-Parameter for the end date.
+         * @param {Object} config.rangeInput2 An jQuery object of the second range input.
+         * @param {String} config.endDate The value of the second range input.
+         * @param {String} config.countQuery The GET-Parameter for the count query.
+         * @param {String} config.count The number of results from the query.
+         * @param {Object} config.$tmCanvas An jQuery object of the timematrix canvas.
+         * @param {Object} config.$tmCanvasPos An jQuery object of the timematrix canvas
+         * position.
+         * @param {Object} config.lang An object of localized strings.
+         * @example
+         * 
+         * &lt;pre>
+         * $( document ).ready( function() {
+         *     var timematrixConfig = {
+         *         path: '#{request.contextPath}/',
+         *         lang: {
+         *             closeWindow: '#{msg.timematrixCloseWindow}',
+         *             goToWork: '#{msg.timematrixGoToWork}'
+         *         }
+         *     };
+         *     viewerJS.timematrix.init( timematrixConfig );
+         * } );
+         * &lt;/pre>
+         */
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.timematrix.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.timematrix.init: config - ' );
+                console.log( config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            _defaults.$tmCanvasCoords = {
+                top: _defaults.$tmCanvasPos.top,
+                left: 0,
+                right: _defaults.$tmCanvasPos.left + _defaults.$tmCanvas.outerWidth()
+            };
+            
+            // range slider settings
+            $( '#slider-range' ).slider( {
+                range: true,
+                min: parseInt( _defaults.startDate ),
+                max: parseInt( _defaults.endDate ),
+                values: [ parseInt( _defaults.startDate ), parseInt( _defaults.endDate ) ],
+                slide: function( event, ui ) {
+                    _defaults.rangeInput1.val( ui.values[ 0 ] );
+                    $( '.timematrix-slider-bubble-startDate' ).html( ui.values[ 0 ] );
+                    _defaults.startDate = ui.values[ 0 ];
+                    _defaults.rangeInput1.val( ui.values[ 1 ] );
+                    $( '.timematrix-slider-bubble-endDate' ).html( ui.values[ 1 ] );
+                    _defaults.endDate = ui.values[ 1 ];
+                }
+            } );
+            
+            // append slider bubble to slider handle
+            $( '#slider-range .ui-slider-range' ).next().append( _renderSliderBubble( 'startDate', _defaults.startDate ) );
+            $( '#slider-range .ui-slider-range' ).next().next().append( _renderSliderBubble( 'endDate', _defaults.endDate ) );
+            
+            // listen to submit event of locate timematrix form
+            $( '#locateTimematrix' ).on( 'submit', function( e ) {
+                e.preventDefault();
+                
+                // check for popovers and remove them
+                if ( $( '.timematrix-popover' ).length ) {
+                    $( '.timematrix-popover' ).remove();
+                }
+                
+                // build api target
+                var apiTarget = _defaults.contextPath;
+                apiTarget += _defaults.apiQuery;
+                apiTarget += _defaults.startDateQuery;
+                apiTarget += _defaults.startDate;
+                apiTarget += _defaults.endDateQuery;
+                apiTarget += _defaults.endDate;
+                apiTarget += _defaults.countQuery;
+                apiTarget += _defaults.count;
+                
+                // get data from api
+                _promise = viewer.helper.getRemoteData( apiTarget );
+                
+                // render thumbnails
+                _promise.then( function( data ) {
+                    _apiData = data;
+                    
+                    _defaults.$tmCanvas.html( _renderThumbs( _apiData ) );
+                    $( '.timematrix-thumb' ).css( {
+                        height: $( '.timematrix-thumb' ).outerWidth()
+                    } );
+                    
+                    // show thumbs after they´ve been loaded
+                    $( '.timematrix-thumb img' ).load( function() {
+                        $( this ).css( {
+                            visibility: 'visible'
+                        } );
+                    } );
+                    
+                    // listen to click event on thumbnails
+                    $( '.timematrix-thumb' ).on( 'click', function() {
+                        if ( !$( '.timematrix-popover' ) ) {
+                            $( '.timematrix-thumb' ).removeClass( 'marker' );
+                            $( this ).addClass( 'marker' );
+                            _renderPopover( $( this ), _defaults.lang );
+                        }
+                        else {
+                            $( '.timematrix-popover' ).remove();
+                            $( '.timematrix-thumb' ).removeClass( 'marker' );
+                            $( this ).addClass( 'marker' );
+                            _renderPopover( $( this ), _defaults.lang );
+                        }
+                        
+                        // close popover
+                        $( '.timematrix-popover-close' ).on( 'click', function() {
+                            $( this ).parent().remove();
+                            $( '.timematrix-thumb' ).removeClass( 'marker' );
+                        } );
+                        
+                        // check if image is loaded and reset loader
+                        $( '.timematrix-popover-body img' ).load( function() {
+                            $( '.timematrix-popover-imageloader' ).hide();
+                        } );
+                    } );
+                } ).then( null, function() {
+                    _defaults.$tmCanvas.append( viewer.helper.renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' ' + error.statusText, false ) );
+                    console.error( 'ERROR: viewer.timematrix.init - ', error );
+                } )
+            } );
+            
+            // remove all popovers by clicking on body
+            $( 'body' ).on( 'click', function( event ) {
+                if ( $( event.target ).closest( '.timematrix-thumb' ).length ) {
+                    return;
+                }
+                else {
+                    _removePopovers();
+                }
+            } );
+        }
+    };
+    
+    /**
+     * Method to render image thumbnails to the timematrix canvas.
+     * 
+     * @method _renderThumbs
+     * @param {Object} json An JSON-Object which contains the image data.
+     * @returns {String} HTML-String which displays the image thumbnails.
+     */
+    function _renderThumbs( json ) {
+        if ( _debug ) {
+            console.log( 'viewer.timematrix _renderThumbs: json - ' );
+            console.log( json );
+        }
+        
+        var tlbox = '';
+        tlbox += '&lt;div class="timematrix-box">';
+        tlbox += '&lt;header class="timematrix-header">';
+        if ( _defaults.startDate !== '' &amp;&amp; _defaults.endDate !== '' ) {
+            tlbox += '&lt;h3>' + _defaults.startDate + ' - ' + _defaults.endDate + '&lt;/h3>';
+        }
+        tlbox += '&lt;/header>';
+        tlbox += '&lt;section class="timematrix-body">';
+        $.each( json, function( i, j ) {
+            tlbox += '&lt;div class="timematrix-thumb" data-title="' + j.title + '" data-mediumimage="' + j.mediumimage + '" data-url="' + j.url + '">';
+            if ( j.thumbnailUrl ) {
+                tlbox += '&lt;img src="' + j.thumbnailUrl + '" style="visibility: hidden;" />';
+            }
+            else {
+                tlbox += '';
+            }
+            tlbox += '&lt;/div>';
+        } );
+        tlbox += '&lt;/section>';
+        tlbox += '&lt;footer class="timematrix-footer">&lt;/footer>';
+        tlbox += '&lt;/div>';
+        
+        return tlbox;
+    }
+    
+    /**
+     * Method to render a popover with a thumbnail image.
+     * 
+     * @method _renderPopover
+     * @param {Object} $Obj Must be an jQuery-Object like $(this).
+     * @param {Object} lang An Object with localized strings in the selected language.
+     */
+    function _renderPopover( $Obj, lang ) {
+        if ( _debug ) {
+            console.log( 'viewer.timematrix _renderPopover: obj - ' );
+            console.log( $Obj );
+            console.log( 'viewer.timematrix _renderPopover: lang - ' + lang );
+        }
+        
+        var title = $Obj.attr( 'data-title' );
+        var mediumimage = $Obj.attr( 'data-mediumimage' );
+        var url = $Obj.attr( 'data-url' );
+        var $objPos = $Obj.position();
+        var $objCoords = {
+            top: $objPos.top,
+            left: $objPos.left,
+            width: $Obj.outerWidth()
+        };
+        var popoverPos = _calculatePopoverPosition( $objCoords, _defaults.$tmCanvasCoords );
+        var popover = '';
+        popover += '&lt;div class="timematrix-popover" style="top: ' + popoverPos.top + 'px; left: ' + popoverPos.left + 'px;">';
+        popover += '&lt;span class="timematrix-popover-close" title="' + lang.closeWindow + '">&amp;times;&lt;/span>';
+        popover += '&lt;header class="timematrix-popover-header">';
+        popover += '&lt;h4 title="' + title + '">' + viewer.helper.truncateString( title, 75 ) + '&lt;/h4>';
+        popover += '&lt;/header>';
+        popover += '&lt;section class="timematrix-popover-body">';
+        popover += '&lt;div class="timematrix-popover-imageloader">&lt;/div>';
+        popover += '&lt;a href="' + url + '">&lt;img src="' + mediumimage + '" />&lt;/a>';
+        popover += '&lt;/section>';
+        popover += '&lt;footer class="timematrix-popover-footer">';
+        popover += '&lt;a href="' + url + '" title="' + title + '">' + lang.goToWork + '&lt;/a>';
+        popover += '&lt;/footer>';
+        popover += '&lt;/div>';
+        
+        _defaults.$tmCanvas.append( popover );
+    }
+    
+    /**
+     * Method which calculates the position of the popover.
+     * 
+     * @method _calculatePopoverPosition
+     * @param {Object} triggerCoords An object which contains the coordinates of the
+     * element has been clicked.
+     * @param {Object} tmCanvasCoords An object which contains the coordinates of the
+     * wrapper element from the timematrix.
+     * @returns {Object} An object which contains the top and the left position of the
+     * popover.
+     */
+    function _calculatePopoverPosition( triggerCoords, tmCanvasCoords ) {
+        if ( _debug ) {
+            console.log( 'viewer.timematrix _calculatePopoverPosition: triggerCoords - ' );
+            console.log( triggerCoords );
+            console.log( 'viewer.timematrix _calculatePopoverPosition: tmCanvasCoords - ' );
+            console.log( tmCanvasCoords );
+        }
+        
+        var poLeftBorder = triggerCoords.left - ( 150 - ( triggerCoords.width / 2 ) );
+        var poRightBorder = poLeftBorder + 300;
+        var tbLeftBorder = tmCanvasCoords.left;
+        var tbRightBorder = tmCanvasCoords.right;
+        var poTop;
+        var poLeft = poLeftBorder;
+        
+        poTop = ( triggerCoords.top + $( '.timematrix-thumb' ).outerHeight() ) - 1;
+        
+        if ( poLeftBorder &lt;= tbLeftBorder ) {
+            poLeft = tbLeftBorder;
+        }
+        
+        if ( poRightBorder >= tbRightBorder ) {
+            poLeft = tmCanvasCoords.right - 300;
+        }
+        
+        return {
+            top: poTop,
+            left: poLeft
+        };
+    }
+    
+    /**
+     * Method which renders the bubbles for the slider.
+     * 
+     * @method _renderSliderBubble
+     * @param {String} time The string for the time value.
+     * @param {String} val The string for the value.
+     * @returns {String} HTML-String which renders the slider-bubble.
+     */
+    function _renderSliderBubble( time, val ) {
+        if ( _debug ) {
+            console.log( 'viewer.timematrix _renderSliderBubble: time - ' + time );
+            console.log( 'viewer.timematrix _renderSliderBubble: val - ' + val );
+        }
+        
+        return '&lt;div class="timematrix-slider-bubble-' + time + '">' + val + '&lt;/div>';
+    }
+    
+    /**
+     * Method which removes all popovers.
+     * 
+     * @method _removePopovers
+     */
+    function _removePopovers() {
+        if ( _debug ) {
+            console.log( '---------- _removePopovers() ----------' );
+        }
+        
+        $( '.timematrix-popover' ).remove();
+        $( '.timematrix-thumb' ).removeClass( 'marker' );
+    }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	Copyright © 2017 intranda GmbH
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Thu Nov 2nd 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

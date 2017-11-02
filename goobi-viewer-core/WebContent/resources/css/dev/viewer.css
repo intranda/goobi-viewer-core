@@ -726,9 +726,19 @@ table,
   background-image: none;
   border: 1px solid #ccc;
 }
+.custom-control--select:before,
 .custom-control--select:after {
   content: "";
   position: absolute;
+}
+.custom-control--select:before {
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+}
+.custom-control--select:after {
   display: inline-block;
   top: 50%;
   right: 10px;

@@ -19,7 +19,7 @@
  * <Short Module Description>
  * 
  * @version 3.2.0
- * @module viewerJS.
+ * @module viewerJS.calendarPopover
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {

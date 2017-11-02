@@ -229,7 +229,12 @@ public final class SearchHelper {
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
-                    HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
+                    String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
+                    if (DocType.METADATA.name().equals(docType)) {
+                        // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
+                        docType = DocType.DOCSTRCT.name();
+                    }
+                    HitType hitType = HitType.getByName(docType);
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
                 }
@@ -1382,7 +1387,7 @@ public final class SearchHelper {
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
      * @should return multiple match fragments correctly
-     * @should replace line breaks and tabs with spaces
+     * @should replace line breaks with spaces
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
         if (fulltext == null) {
@@ -1438,7 +1443,8 @@ public final class SearchHelper {
                         if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                             fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                         }
-                        fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                        // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                        fulltextFragment = fulltextFragment.replace("<br>", " ");
                         ret.add(fulltextFragment);
                     }
                     if (firstMatchOnly) {
@@ -1454,7 +1460,8 @@ public final class SearchHelper {
                 } else {
                     fulltextFragment = fulltext;
                 }
-                fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
         } else {
@@ -1470,7 +1477,8 @@ public final class SearchHelper {
                 if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                     fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                 }
-                fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
         }
