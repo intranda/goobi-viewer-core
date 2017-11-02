@@ -74,7 +74,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         COLLECTION,
         TILEGRID,
         TOC,
-        RSS;
+        RSS,
+        SEARCH;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -102,6 +103,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                     case "RSS":
                         return RSS;
                     case "TOC":
+                    case "SEARCH":
                         return TOC;
                     default:
                         return null;

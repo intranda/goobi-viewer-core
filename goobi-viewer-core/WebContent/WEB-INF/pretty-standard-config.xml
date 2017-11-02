@@ -65,6 +65,7 @@
         <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
         <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+    </url-mapping>
     <url-mapping id="searchtimeline">
         <pattern value="/searchtimeline/" />
         <view-id value="/searchTimeline.xhtml" />
@@ -163,7 +164,6 @@
             value="/search/#{dc:searchBean.facets.currentCollection}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.search}</action>
-    </url-mapping>
     </url-mapping>
         <url-mapping id="searchAdvanced1">
         <pattern value="/searchadvanced/#{currentCollection:searchBean.facets.currentCollection}/" />
