@@ -3255,7 +3255,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-advanced__connector .custom-control--select,
 .search-advanced__connect-group .custom-control--select {
   display: inline-block;
-  width: 70px;
+  width: 80px;
   border: none;
 }
 .search-advanced__connector .custom-control--select:after,
