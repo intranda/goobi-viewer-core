@@ -873,7 +873,7 @@ public class CmsBean {
             if (item.getSolrSortFields() != null) {
                 searchBean.setSortString(item.getSolrSortFields());
             }
-            searchBean.newSearch();
+            return searchBean.search();
         }
         if (item == null) {
             logger.error("Cannot search: item is null");
@@ -894,9 +894,7 @@ public class CmsBean {
         }
         //            searchBean.getFacets().setCurrentFacetString();
         //            searchBean.getFacets().setCurrentCollection();
-        searchBean.newSearch();
-
-        return "";
+        return searchBean.search();
     }
 
     public boolean hasSearchResults() {
