@@ -559,6 +559,18 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
     </url-mapping>
+    <url-mapping id="cmsOpenPageWithSearchSimple">
+        <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/" />
+        <view-id value="#{cmsBean.getCurrentPageUrl}" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+    </url-mapping>
+    <url-mapping id="cmsOpenPageWithSearchSimple2">
+        <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/#{sort:cmsBean.currentPage.search.solrSortFields}/#{currentFacetString:cmsBean.currentPage.search.facetString}/#{dc:cmsBean.currentPage.search.collection}/" />
+        <view-id value="#{cmsBean.getCurrentPageUrl}" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+    </url-mapping>
     <url-mapping id="cmsOpenPagePreview">
         <pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />

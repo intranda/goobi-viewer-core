@@ -58,6 +58,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.cms.CMSPageTemplate;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
@@ -818,6 +819,11 @@ public class CmsBean {
                         searchBean.resetSearchAction();
                     }
                     return searchAction(item);
+                } else if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
+                    if (resetSearch && searchBean != null) {
+                        searchBean.resetSearchAction();
+                    }
+                    return searchAction(item);
                 }
             }
         }
@@ -864,7 +870,9 @@ public class CmsBean {
             logger.error("Cannot search: SearchBean is null");
             return "";
         }
-        if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
+        if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
+            ((SearchFunctionality)item.getFunctionality()).search();
+        } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             searchBean.resetSearchResults();
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
@@ -884,17 +892,6 @@ public class CmsBean {
             searchBean.resetSearchResults();
             return "";
         }
-
-        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-        searchBean.setHitsPerPage(item.getElementsPerPage());
-        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-        searchBean.setCurrentPage(item.getListPage());
-        if (item.getSolrSortFields() != null) {
-            searchBean.setSortString(item.getSolrSortFields());
-        }
-        //            searchBean.getFacets().setCurrentFacetString();
-        //            searchBean.getFacets().setCurrentCollection();
-        searchBean.newSearch();
 
         return "";
     }

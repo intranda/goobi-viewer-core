@@ -43,6 +43,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TocFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TrivialFunctionality;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -66,7 +67,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         PAGELIST,
         COLLECTION,
         TILEGRID,
-        TOC;
+        TOC,
+        SEARCH;
 
         public static CMSContentItemType getByName(String name) {
             if (name != null) {
@@ -87,6 +89,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         return TILEGRID;
                     case "TOC":
                         return CMSContentItemType.TOC;
+                    case "SEARCH":
+                        return CMSContentItemType.SEARCH;
                     default:
                         return null;
                 }
@@ -102,6 +106,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
             switch (this) {
                 case TOC:
                     return new TocFunctionality(item.getTocPI());
+                case SEARCH:
+                    return new SearchFunctionality(item.getSearchPrefix(), item.getElementsPerPage());
                 default:
                     return new TrivialFunctionality();
             }
@@ -185,6 +191,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Column(name = "toc_pi")
     private String tocPI = "";
+    
+    @Column(name = "search_prefix")
+    private String searchPrefix;
 
     /**
      * For TileGrid
@@ -414,6 +423,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the solrQuery
      */
     public String getSolrQuery() {
+        if(getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality)getFunctionality()).getSolrQuery();
+        }
         return solrQuery;
     }
 
@@ -428,6 +440,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the solrSortFields
      */
     public String getSolrSortFields() {
+        if(getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality)getFunctionality()).getSolrSortFields();
+        }
         return solrSortFields;
     }
 
@@ -716,6 +731,21 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         initFunctionality();
     }
 
+    /**
+     * @return the searchPrefix
+     */
+    public String getSearchPrefix() {
+        return searchPrefix;
+    }
+    
+    /**
+     * @param searchPrefix the searchPrefix to set
+     */
+    public void setSearchPrefix(String searchPrefix) {
+        this.searchPrefix = searchPrefix;
+        initFunctionality();
+    }
+    
     @Override
     public String toString() {
         return CMSContentItem.class.getSimpleName() + ": " + getType() + " (" + getItemId() + ")";

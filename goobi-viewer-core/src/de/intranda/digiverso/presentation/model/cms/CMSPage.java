@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -46,11 +47,13 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
@@ -781,4 +784,15 @@ public class CMSPage {
         }
     }
     
+    public SearchFunctionality getSearch() {
+        Optional<CMSContentItem> searchItem = getGlobalContentItems().stream()
+        .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
+        .findFirst();
+        if(searchItem.isPresent()) {
+            return (SearchFunctionality) searchItem.get().getFunctionality();
+        } else {
+            logger.warn("Did not find search functionality in page " + this);
+            return new SearchFunctionality("", DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
+        }
+    }
 }
