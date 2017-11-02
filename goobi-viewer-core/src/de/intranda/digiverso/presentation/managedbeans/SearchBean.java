@@ -1993,5 +1993,4 @@ public class SearchBean implements Serializable {
         String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
         return DataManager.getInstance().getSearchIndex().count(query);
     }
-
 }
