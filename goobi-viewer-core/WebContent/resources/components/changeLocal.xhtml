@@ -6,6 +6,7 @@
     xmlns:p="http://primefaces.org/ui">
 
     <composite:interface>
+        <composite:attribute name="showFrench" required="false" default="true" />
         <composite:attribute name="showEnglish" required="false" default="true" />
         <composite:attribute name="showSpanish" required="false" default="true" />
         <composite:attribute name="showGerman" required="false" default="true" />
@@ -76,6 +77,17 @@
                                 	</h:panelGroup>
                                     <h:outputText value="#{msg.changeLocal_ru}" rendered="#{cc.attrs.showLabels == true}" />
                                     <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="ru" />
+                                </h:commandLink>
+                            </li>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{cc.attrs.showFrench == true}">
+                            <li>
+                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == 'fr'?'activeLang':''}">
+                                    <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
+	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_fr.gif" alt="Flag Icon" />
+                                	</h:panelGroup>
+                                    <h:outputText value="#{msg.changeLocal_fr}" rendered="#{cc.attrs.showLabels == true}" />
+                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="fr" />
                                 </h:commandLink>
                             </li>
                         </h:panelGroup>
