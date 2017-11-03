@@ -930,6 +930,10 @@ public class ViewManager implements Serializable {
         return null;
     }
 
+    public boolean isMultiPageRecord() throws IndexUnreachableException {
+        return getImagesCount() > 1;
+    }
+
     /**
      *
      * @return {@link Integer}
@@ -1260,8 +1264,8 @@ public class ViewManager implements Serializable {
         if (accessPermissionPdf == null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             try {
-                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
-                        request);
+                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 return false;
