@@ -313,7 +313,7 @@ public class SearchHit implements Comparable<SearchHit> {
                 switch (docType) {
                     case PAGE:
                         try {
-                            fulltext = SearchHelper.loadFulltext(browseElement.getDataRepository(), (String) childDoc.getFirstValue(
+                            fulltext = SearchHelper.loadFulltext(pi, browseElement.getDataRepository(), (String) childDoc.getFirstValue(
                                     SolrConstants.FILENAME_ALTO), (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
                         } catch (FileNotFoundException e) {
                             logger.error(e.getMessage());

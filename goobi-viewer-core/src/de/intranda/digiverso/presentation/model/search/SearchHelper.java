@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,12 +57,12 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.ALTOTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
@@ -160,8 +159,9 @@ public final class SearchHelper {
 
                 // Load full-text
                 try {
-                    fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(
-                            SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+                    fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT), (String) doc.getFirstValue(
+                            SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(
+                                    SolrConstants.FILENAME_FULLTEXT));
                 } catch (FileNotFoundException e) {
                     logger.error(e.getMessage());
                 } catch (IOException e) {
@@ -868,8 +868,8 @@ public final class SearchHelper {
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
             // Consider only license types that do not allow listing by default and are not static licenses
             if (!licenseType.isStaticLicenseType() && !licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
-                if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType), new HashSet<>(Collections.singletonList(licenseType
-                        .getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
+                if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType), new HashSet<>(Collections.singletonList(
+                        licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                     // If the use has an explicit priv to list a certain license type, ignore all other license types
                     logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                     query = new StringBuilder();
@@ -1954,7 +1954,9 @@ public final class SearchHelper {
     }
 
     /**
+     * Loads full-text via the REST service. ALTO is preferred, with a plain text fallback.
      * 
+     * @param pi
      * @param dataRepository
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
@@ -1964,35 +1966,29 @@ public final class SearchHelper {
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
-    @Deprecated
-    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath) throws FileNotFoundException, IOException {
+    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath) throws FileNotFoundException,
+            IOException {
         String ret = null;
-
-        String url = DataManager.getInstance().getConfiguration().getContentRestApiUrl();
 
         String recordPath = Helper.getRepositoryPath(dataRepository);
         if (altoFilePath != null) {
             // ALTO file
-            File file = new File(recordPath, altoFilePath);
-            logger.trace(file.getAbsolutePath());
-            if (file.isFile()) {
-                String alto = FileTools.getStringFromFile(file, Helper.DEFAULT_ENCODING);
+            String url = Helper.buildFullTextUrl(pi, altoFilePath);
+            try {
+                String alto = Helper.getWebContentGET(url);
                 ret = ALTOTools.getFullText(alto);
+            } catch (HTTPException e) {
+                throw new IOException(e);
             }
-
         }
         if (ret == null && fulltextFilePath != null) {
             // Plain full-text file
-            File file = new File(recordPath, fulltextFilePath);
-            logger.trace(file.getAbsolutePath());
-            if (file.isFile()) {
-                try {
-                    ret = FileTools.getStringFromFile(file, Helper.DEFAULT_ENCODING);
-                } catch (FileNotFoundException e) {
-                    logger.error(e.getMessage());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
+            String url = Helper.buildFullTextUrl(pi, fulltextFilePath);
+            try {
+                ret = Helper.getWebContentGET(url);
+            } catch (HTTPException e) {
+                logger.error(e.getMessage(), e);
+                throw new IOException(e);
             }
         }
 

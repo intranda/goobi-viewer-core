@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -87,7 +88,7 @@ public class ContentResource {
         }
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        java.nio.file.Path file = getContentFile(dataRepository, filePath);
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
         if (file != null && Files.isRegularFile(file)) {
             Document doc;
             try {
@@ -131,7 +132,8 @@ public class ContentResource {
         }
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        java.nio.file.Path file = getContentFile(dataRepository, filePath);
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+        ;
         if (file != null && Files.isRegularFile(file)) {
             try {
                 return FileTools.getStringFromFile(file.toFile(), null);
@@ -165,8 +167,7 @@ public class ContentResource {
             @PathParam("filePath") String filePath) throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException,
             ContentNotFoundException {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        java.nio.file.Path file = getContentFile(dataRepository, filePath);
-
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
         String fileName = FilenameUtils.getName(filePath);
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
@@ -185,27 +186,5 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
-    }
-
-    /**
-     * 
-     * @param dataRepository Absolute path of the data repository
-     * @param fileName File path relative to the data repository
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws ContentNotFoundException
-     */
-    private static java.nio.file.Path getContentFile(String dataRepository, String filePath) throws PresentationException, IndexUnreachableException {
-        String recordPath;
-        if (StringUtils.isEmpty(dataRepository)) {
-            recordPath = DataManager.getInstance().getConfiguration().getViewerHome();
-        } else {
-            recordPath = new StringBuilder(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append("/")
-                    .toString();
-        }
-
-        return Paths.get(recordPath, filePath);
-
     }
 }

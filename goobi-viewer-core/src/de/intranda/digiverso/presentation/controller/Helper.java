@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -838,6 +839,24 @@ public class Helper {
 
     /**
      * 
+     * @param pi
+     * @param filePath
+     * @return
+     * @should build url correctly
+     */
+    public static String buildFullTextUrl(String pi, String filePath) {
+        try {
+            return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(pi).append('/')
+                    .append(URLEncoder.encode(filePath, DEFAULT_ENCODING)).append('/').toString();
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.getMessage(), e);
+            return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(pi).append('/')
+                    .append(filePath).append('/').toString();
+        }
+    }
+
+    /**
+     * 
      * @param urlString
      * @return
      * @throws ClientProtocolException
@@ -853,7 +872,6 @@ public class Helper {
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
-                    logger.trace(code + ": " + response.getStatusLine().getReasonPhrase());
                     IOUtils.copy(response.getEntity().getContent(), writer);
                     return writer.toString();
                 }

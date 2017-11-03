@@ -169,4 +169,14 @@ public class HelperTest {
     public void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
         Assert.assertEquals("3.3.3.3", Helper.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
     }
+
+    /**
+     * @see Helper#buildFullTextUrl(String,String)
+     * @verifies build url correctly
+     */
+    @Test
+    public void buildFullTextUrl_shouldBuildUrlCorrectly() throws Exception {
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/PPN123/alto%2FPPN123%2F00000001.xml/",
+                Helper.buildFullTextUrl("PPN123", "alto/PPN123/00000001.xml"));
+    }
 }

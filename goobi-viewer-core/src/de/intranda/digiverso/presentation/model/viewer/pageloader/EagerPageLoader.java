@@ -284,8 +284,8 @@ public class EagerPageLoader implements IPageLoader, Serializable {
             // File names for different formats (required for A/V)
             String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
             for (String fieldName : doc.getFieldNames()) {
-                if (fieldName.startsWith(filenameRoot) && !fieldName.startsWith("FILENAME_TILED")) {
-                    logger.trace("Format: {}", fieldName);
+                if (fieldName.startsWith(filenameRoot)) {
+                    // logger.trace("Format: {}", fieldName);
                     String format = fieldName.split("_")[1].toLowerCase();
                     String value = (String) doc.getFieldValue(fieldName);
                     pe.getFileNames().put(format, value);
