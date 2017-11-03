@@ -23,14 +23,14 @@
         <class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPage</class>
         <class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate</class>
         <class>de.intranda.digiverso.presentation.model.search.Search</class>
+        <class>de.intranda.digiverso.presentation.model.security.License</class>
+        <class>de.intranda.digiverso.presentation.model.security.LicenseType</class>
+        <class>de.intranda.digiverso.presentation.model.security.Role</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.IpRange</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.User</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserGroup</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserRole</class>
         <class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
-        <class>de.intranda.digiverso.presentation.model.user.IpRange</class>
-        <class>de.intranda.digiverso.presentation.model.user.License</class>
-        <class>de.intranda.digiverso.presentation.model.user.LicenseType</class>
-        <class>de.intranda.digiverso.presentation.model.user.Role</class>
-        <class>de.intranda.digiverso.presentation.model.user.User</class>
-        <class>de.intranda.digiverso.presentation.model.user.UserGroup</class>
-        <class>de.intranda.digiverso.presentation.model.user.UserRole</class>
         
         <properties>
         <!-- EclipseLink should create the database schema automatically -->
@@ -67,14 +67,14 @@
 		<class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPage</class>
 		<class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate</class>
 		<class>de.intranda.digiverso.presentation.model.search.Search</class>
-		<class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
-		<class>de.intranda.digiverso.presentation.model.user.IpRange</class>
-		<class>de.intranda.digiverso.presentation.model.user.License</class>
-		<class>de.intranda.digiverso.presentation.model.user.LicenseType</class>
-		<class>de.intranda.digiverso.presentation.model.user.Role</class>
-		<class>de.intranda.digiverso.presentation.model.user.User</class>
-		<class>de.intranda.digiverso.presentation.model.user.UserGroup</class>
-		<class>de.intranda.digiverso.presentation.model.user.UserRole</class>
+        <class>de.intranda.digiverso.presentation.model.security.License</class>
+        <class>de.intranda.digiverso.presentation.model.security.LicenseType</class>
+        <class>de.intranda.digiverso.presentation.model.security.Role</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.IpRange</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.User</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserGroup</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserRole</class>
+        <class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />
