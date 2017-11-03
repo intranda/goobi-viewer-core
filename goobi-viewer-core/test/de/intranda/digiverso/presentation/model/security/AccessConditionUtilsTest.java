@@ -22,14 +22,24 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
+import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
-public class AccessConditionUtilsTest {
+public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractDatabaseAndSolrEnabledTest.setUpClass();
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
