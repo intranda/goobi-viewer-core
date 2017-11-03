@@ -35,7 +35,8 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 
 /**
  * This Servlet maps a given lucene field value to a url and then either redirects there or forwards there, depending on the config.
@@ -100,7 +101,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
-            boolean access = SearchHelper.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST, request);
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(identifier, null, IPrivilegeHolder.PRIV_LIST, request);
             if (!access) {
                 logger.debug("User may not list " + identifier);
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);

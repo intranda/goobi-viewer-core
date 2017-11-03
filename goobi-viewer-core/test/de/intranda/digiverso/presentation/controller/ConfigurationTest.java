@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
-import de.intranda.digiverso.presentation.model.user.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import net.sf.ehcache.config.ConfigurationHelper;
@@ -162,6 +162,24 @@ public class ConfigurationTest {
     @Test
     public void getContentServerWrapperUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("contentServerWrapper_value", DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
+    }
+
+    /**
+     * @see Configuration#getDownloadUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDownloadUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8080/viewer/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
+    }
+
+    /**
+     * @see Configuration#getContentRestApiUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentRestApiUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8080/viewer/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
     }
 
     /**

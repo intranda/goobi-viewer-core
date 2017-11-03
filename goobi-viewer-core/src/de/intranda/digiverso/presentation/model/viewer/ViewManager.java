@@ -57,10 +57,11 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.calendar.CalendarView;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
-import de.intranda.digiverso.presentation.model.user.User;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 
 /**
@@ -1259,7 +1260,7 @@ public class ViewManager implements Serializable {
         if (accessPermissionPdf == null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             try {
-                accessPermissionPdf = SearchHelper.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
+                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
                         request);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -1477,7 +1478,7 @@ public class ViewManager implements Serializable {
         PhysicalElement currentImg = getCurrentPage();
         if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
             // Check permissions first
-            boolean access = SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
                     .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
             if (access) {
                 currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
@@ -1518,7 +1519,7 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayContentDownloadMenu() {
         try {
-            if (DataManager.getInstance().getConfiguration().isOriginalContentDownload() && SearchHelper.checkContentFileAccessPermission(pi,
+            if (DataManager.getInstance().getConfiguration().isOriginalContentDownload() && AccessConditionUtils.checkContentFileAccessPermission(pi,
                     (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
 
                 File sourceFileDir;

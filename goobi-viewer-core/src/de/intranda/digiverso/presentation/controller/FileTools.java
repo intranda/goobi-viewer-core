@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +46,9 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 
 public class FileTools {
 
@@ -87,7 +91,7 @@ public class FileTools {
             return new SAXBuilder().build(is);
         }
     }
-    
+
     public static Document readXmlFile(Path path) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = Files.newInputStream(path)) {
             return new SAXBuilder().build(is);
@@ -143,7 +147,11 @@ public class FileTools {
      */
     public static String getStringFromFile(File file, String encoding) throws FileNotFoundException, IOException {
         if (encoding == null) {
-            encoding = Helper.DEFAULT_ENCODING;
+            encoding = getCharset(new FileInputStream(file));
+            logger.trace("{} encoding: {}", file.getName(), encoding);
+            if (encoding == null) {
+                encoding = Helper.DEFAULT_ENCODING;
+            }
         }
 
         StringBuilder text = new StringBuilder();
@@ -155,6 +163,27 @@ public class FileTools {
         }
 
         return text.toString().trim();
+    }
+
+    /**
+     * Uses ICU4J to determine the charset of the given InputStream.
+     * 
+     * @param input
+     * @return Detected charset name; null if not detected.
+     * @throws IOException
+     * @should detect charset correctly
+     */
+    public static String getCharset(InputStream input) throws IOException {
+        CharsetDetector cd = new CharsetDetector();
+        try (BufferedInputStream bis = new BufferedInputStream(input)) {
+            cd.setText(bis);
+            CharsetMatch cm = cd.detect();
+            if (cm != null) {
+                return cm.getName();
+            }
+        }
+
+        return null;
     }
 
     /**

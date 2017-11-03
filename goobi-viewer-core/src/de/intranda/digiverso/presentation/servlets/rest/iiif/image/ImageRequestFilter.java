@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
@@ -106,10 +106,10 @@ public class ImageRequestFilter implements ContainerRequestFilter {
         boolean access = false;
         try {
             if (isThumb) {
-                access = SearchHelper.checkAccessPermissionForThumbnail(servletRequest, pi, contentFileName);
+                access = AccessConditionUtils.checkAccessPermissionForThumbnail(servletRequest, pi, contentFileName);
                 //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
             } else {
-                access = SearchHelper.checkAccessPermissionForImage(servletRequest, pi, contentFileName);
+                access = AccessConditionUtils.checkAccessPermissionForImage(servletRequest, pi, contentFileName);
                 //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access);
             }
         } catch (IndexUnreachableException e) {
