@@ -30,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
@@ -39,8 +40,11 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
@@ -64,7 +68,7 @@ public class ContentResource {
      * @param fileName
      * @return
      * @throws PresentationException
-     * @throws IndexUnreachableException
+     * @throws IndexUnreachableException * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
      */
@@ -72,9 +76,15 @@ public class ContentResource {
     @Path("/alto/{pi}/{fileName}")
     @Produces({ MediaType.APPLICATION_XML })
     public String getAltoDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
-            IndexUnreachableException, MalformedURLException, ContentNotFoundException {
+            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         String filePath = DataManager.getInstance().getConfiguration().getAltoFolder() + '/' + pi + '/' + fileName;
+
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        if (!access) {
+            throw new ContentNotFoundException("No permission found");
+        }
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         java.nio.file.Path file = getContentFile(dataRepository, filePath);
@@ -93,6 +103,7 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+
     }
 
     /**
@@ -101,6 +112,7 @@ public class ContentResource {
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
      */
@@ -108,9 +120,15 @@ public class ContentResource {
     @Path("/fulltext/{pi}/{fileName}")
     @Produces({ MediaType.TEXT_HTML })
     public String getFulltextDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
-            IndexUnreachableException, MalformedURLException, ContentNotFoundException {
+            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
+
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        if (!access) {
+            throw new ContentNotFoundException("No permission found");
+        }
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         java.nio.file.Path file = getContentFile(dataRepository, filePath);
@@ -128,24 +146,34 @@ public class ContentResource {
     }
 
     /**
-     * API method for retrieving any type of content by
+     * API method for retrieving any type of content by its relative path within its data repository.
      * 
+     * @param pi Record identifier
      * @param dataRepository Absolute path of the data repository
      * @param filePath File path relative to the data repository
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
      */
     @GET
     @Path("/document/{pi}/{filePath}")
     @Produces({ MediaType.TEXT_HTML })
-    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("filePath") String filePath)
-            throws PresentationException, IndexUnreachableException, MalformedURLException, ContentNotFoundException {
+    public String getContentDocument(@PathParam("pi") String pi, @PathParam("dataRepository") String dataRepository,
+            @PathParam("filePath") String filePath) throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException,
+            ContentNotFoundException {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         java.nio.file.Path file = getContentFile(dataRepository, filePath);
-        logger.trace(file.toAbsolutePath().toString());
+
+        String fileName = FilenameUtils.getName(filePath);
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        if (!access) {
+            throw new ContentNotFoundException("No permission found");
+        }
+
         if (file != null && Files.isRegularFile(file)) {
             try {
                 return FileTools.getStringFromFile(file.toFile(), null);
