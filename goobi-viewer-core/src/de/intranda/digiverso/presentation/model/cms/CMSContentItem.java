@@ -107,7 +107,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                 case TOC:
                     return new TocFunctionality(item.getTocPI());
                 case SEARCH:
-                    return new SearchFunctionality(item.getSearchPrefix(), item.getElementsPerPage());
+                    return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl(), item.getElementsPerPage());
                 default:
                     return new TrivialFunctionality();
             }

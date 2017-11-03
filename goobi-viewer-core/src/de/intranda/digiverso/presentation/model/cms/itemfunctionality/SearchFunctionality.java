@@ -43,6 +43,8 @@ public class SearchFunctionality implements Functionality {
      * 
      */
     private final int hitsPerPage;
+    
+    private final String baseUrl;
 
     
     /**
@@ -51,8 +53,7 @@ public class SearchFunctionality implements Functionality {
     private String simpleSearchQuery = "-";
     
     private String solrSortFields = "-";
-    
-    private String facetString;
+    private String facetString = "-";
     private String collection = "-";
     
     private SearchBean searchBean;
@@ -60,9 +61,20 @@ public class SearchFunctionality implements Functionality {
     /**
      * @param searchPrefix
      */
-    public SearchFunctionality(String searchPrefix, int hitsPerPage) {
+    public SearchFunctionality(String searchPrefix, String baseUrl, int hitsPerPage) {
        this.facetString = searchPrefix;
        this.hitsPerPage = hitsPerPage;
+       this.baseUrl = baseUrl;
+    }
+    
+    
+    public void resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
+        getSearchBean().resetSearchResults();
+        getSearchBean().resetSearchParameters();
+        getSearchBean().getFacets().resetCurrentFacetString();
+        getSearchBean().resetSearchResults();
+        setQueryString("");
+        search();
     }
     
     public String searchSimple() {
@@ -71,10 +83,11 @@ public class SearchFunctionality implements Functionality {
             logger.error("Cannot search: SearchBean is null");
             return "";
         }
+        setPageNo(1);
         getSearchBean().resetSearchResults();
         getSearchBean().resetSearchParameters();
         getSearchBean().getFacets().resetCurrentFacetString();
-        searchBean.resetSearchResults();
+        getSearchBean().resetSearchResults();
         return "pretty:cmsOpenPageWithSearchSimple2";
     }
     
@@ -112,6 +125,31 @@ public class SearchFunctionality implements Functionality {
 //        if(StringUtils.isNotBlank(getSearchPrefix())) {
 //            sb.append(" AND (").append(getSearchPrefix()).append(")");
 //        }
+        return sb.toString();
+    }
+    
+    /**
+     * The part of the search url before the page number
+     * 
+     * @return
+     */
+    public String getUrlPrefix() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseUrl());
+        sb.append("search/").append(getSimpleSearchQuery()).append("/");
+        return sb.toString();
+    }
+    
+    /**
+     * The part of the search url after the page number
+     * 
+     * @return
+     */
+    public String getUrlSuffix() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getSolrSortFields());
+        sb.append("/").append(getFacetString());
+        sb.append("/").append(getCollection());
         return sb.toString();
     }
 
@@ -157,7 +195,7 @@ public class SearchFunctionality implements Functionality {
      * @return the simpleSearchQuery
      */
     public String getSimpleSearchQuery() {
-        return simpleSearchQuery;
+        return simpleSearchQuery == null ? "" : simpleSearchQuery;
     }
     
     /**
@@ -209,6 +247,29 @@ public class SearchFunctionality implements Functionality {
         this.collection = collection;
     }
     
+    public String getQueryString() {
+        if(StringUtils.isNotBlank(getSimpleSearchQuery().replace("-", ""))) {
+            return getSimpleSearchQuery();
+        } else {
+            return "";
+        }
+    }
     
+    public void setQueryString(String s) {
+        if(s != null && StringUtils.isNotBlank(s.replace("-", ""))) {
+            setSimpleSearchQuery(s);
+        } else {
+            setSimpleSearchQuery("");
+        }
+    }
+
+
+    /**
+     * @return the baseUrl
+     */
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
 
 }

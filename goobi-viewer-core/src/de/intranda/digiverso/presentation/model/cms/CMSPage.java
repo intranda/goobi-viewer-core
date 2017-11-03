@@ -543,7 +543,12 @@ public class CMSPage {
 
         return new CMSPageLanguageVersion();
     }
+    
+    public String getPageUrl() {
+        return BeanUtils.getCmsBean().getPageUrl(this.id);
+    }
 
+    @Deprecated
     public String getUrl() {
         return CMSContentResource.getPageUrl(this);
     }
@@ -792,7 +797,7 @@ public class CMSPage {
             return (SearchFunctionality) searchItem.get().getFunctionality();
         } else {
             logger.warn("Did not find search functionality in page " + this);
-            return new SearchFunctionality("", DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
+            return new SearchFunctionality("", getPageUrl(), DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
         }
     }
 }
