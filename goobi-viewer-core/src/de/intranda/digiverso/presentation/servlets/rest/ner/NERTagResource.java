@@ -294,7 +294,7 @@ public class NERTagResource {
                     }
 
                     // Load ALTO via the REST service
-                    String url = Helper.buildFullTextUrl(topStructPi, altoFileName);
+                    String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
                     try {
                         String altoString = Helper.getWebContentGET(url);
                         Integer pageOrder = getPageOrder(solrDoc);

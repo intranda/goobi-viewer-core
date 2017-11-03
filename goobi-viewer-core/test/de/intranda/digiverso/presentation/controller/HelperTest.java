@@ -176,7 +176,7 @@ public class HelperTest {
      */
     @Test
     public void buildFullTextUrl_shouldBuildUrlCorrectly() throws Exception {
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/PPN123/alto%2FPPN123%2F00000001.xml/",
-                Helper.buildFullTextUrl("PPN123", "alto/PPN123/00000001.xml"));
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001.xml/",
+                Helper.buildFullTextUrl(null, "alto/PPN123/00000001.xml"));
     }
 }

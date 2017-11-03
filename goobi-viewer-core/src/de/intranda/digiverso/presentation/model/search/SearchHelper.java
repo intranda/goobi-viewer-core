@@ -1973,7 +1973,7 @@ public final class SearchHelper {
         String recordPath = Helper.getRepositoryPath(dataRepository);
         if (altoFilePath != null) {
             // ALTO file
-            String url = Helper.buildFullTextUrl(pi, altoFilePath);
+            String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
             try {
                 String alto = Helper.getWebContentGET(url);
                 ret = ALTOTools.getFullText(alto);
@@ -1983,7 +1983,7 @@ public final class SearchHelper {
         }
         if (ret == null && fulltextFilePath != null) {
             // Plain full-text file
-            String url = Helper.buildFullTextUrl(pi, fulltextFilePath);
+            String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
             try {
                 ret = Helper.getWebContentGET(url);
             } catch (HTTPException e) {

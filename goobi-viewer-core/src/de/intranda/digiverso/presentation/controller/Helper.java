@@ -839,20 +839,14 @@ public class Helper {
 
     /**
      * 
-     * @param pi
+     * @param dataRepository
      * @param filePath
      * @return
      * @should build url correctly
      */
-    public static String buildFullTextUrl(String pi, String filePath) {
-        try {
-            return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(pi).append('/')
-                    .append(URLEncoder.encode(filePath, DEFAULT_ENCODING)).append('/').toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-            return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(pi).append('/')
-                    .append(filePath).append('/').toString();
-        }
+    public static String buildFullTextUrl(String dataRepository, String filePath) {
+        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(StringUtils.isEmpty(
+                dataRepository) ? '-' : dataRepository).append('/').append(filePath).append('/').toString();
     }
 
     /**

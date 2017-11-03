@@ -739,7 +739,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     boolean loadFullText() throws FileNotFoundException, IOException {
         if (fullText == null && fulltextFileName != null) {
             logger.trace("Loading full-text for page {}", fulltextFileName);
-            String url = Helper.buildFullTextUrl(pi, fulltextFileName);
+            String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
             try {
                 fullText = Helper.getWebContentGET(url);
                 wordCoordsFormat = CoordsFormat.ALTO;
@@ -807,11 +807,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean loadAlto() throws JDOMException, IOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
-            String url = Helper.buildFullTextUrl(pi, altoFileName);
+            String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
             logger.trace("URL: {}", url);
             try {
                 altoText = Helper.getWebContentGET(url);
-                logger.trace("ALTO loaded:\n{}", altoText);
+                // logger.trace("ALTO loaded:\n{}", altoText);
                 wordCoordsFormat = CoordsFormat.ALTO;
                 return true;
             } catch (HTTPException e) {

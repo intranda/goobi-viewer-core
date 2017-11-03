@@ -161,20 +161,22 @@ public class ContentResource {
      * @throws ContentNotFoundException
      */
     @GET
-    @Path("/document/{pi}/{filePath}")
+    @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
     @Produces({ MediaType.TEXT_HTML })
-    public String getContentDocument(@PathParam("pi") String pi, @PathParam("dataRepository") String dataRepository,
-            @PathParam("filePath") String filePath) throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException,
-            ContentNotFoundException {
+    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
+            @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
+            MalformedURLException, ContentNotFoundException {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
-        String fileName = FilenameUtils.getName(filePath);
+        if("-".contentEquals(dataRepository)) {
+            dataRepository = null;
+        }
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         if (!access) {
             throw new ContentNotFoundException("No permission found");
         }
 
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), contentFolder, pi, fileName);
         if (file != null && Files.isRegularFile(file)) {
             try {
                 return FileTools.getStringFromFile(file.toFile(), null);
