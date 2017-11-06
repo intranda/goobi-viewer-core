@@ -881,7 +881,7 @@ public class CmsBean {
             if (item.getSolrSortFields() != null) {
                 searchBean.setSortString(item.getSolrSortFields());
             }
-            searchBean.newSearch();
+            return searchBean.search();
         }
         if (item == null) {
             logger.error("Cannot search: item is null");
@@ -893,7 +893,16 @@ public class CmsBean {
             return "";
         }
 
-        return "";
+        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+        searchBean.setHitsPerPage(item.getElementsPerPage());
+        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+        searchBean.setCurrentPage(item.getListPage());
+        if (item.getSolrSortFields() != null) {
+            searchBean.setSortString(item.getSolrSortFields());
+        }
+        //            searchBean.getFacets().setCurrentFacetString();
+        //            searchBean.getFacets().setCurrentCollection();
+        return searchBean.search();
     }
 
     public boolean hasSearchResults() {

@@ -37,8 +37,6 @@ var cmsJS = ( function( cms ) {
          * 
          * @method init
          * @param {Object} config An config object which overwrites the defaults.
-         * @param {Object} config.$grid An jQuery object which represents the grid
-         * container.
          * @param {Object} data An data object which contains the images sources for the
          * grid.
          */

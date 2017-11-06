@@ -676,7 +676,8 @@ if(!Number.isNaN) {
         return number !== number;
     }
 }
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;
@@ -955,7 +956,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false; 
@@ -1031,7 +1033,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;
@@ -1209,7 +1212,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;
@@ -1450,7 +1454,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;
@@ -1586,7 +1591,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;
@@ -2167,7 +2173,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;
@@ -2452,7 +2459,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;
@@ -2598,7 +2606,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var DEFAULT_CURSOR = "default";
@@ -3021,7 +3030,8 @@ if(!Number.isNaN) {
     return osViewer;
     
 } )( viewImage || {}, jQuery );
-;var viewImage = ( function( osViewer ) {
+
+var viewImage = ( function( osViewer ) {
     'use strict';
     
     var _debug = false;

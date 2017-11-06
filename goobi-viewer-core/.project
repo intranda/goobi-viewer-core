@@ -42,6 +42,8 @@
 		<project>goobi-viewer-theme-hub</project>
 		<project>goobi-viewer-theme-bsz</project>
 		<project>goobi-viewer-theme-gaugsammlungen</project>
+		<project>goobi-viewer-theme-mak</project>
+		<project>goobi-viewer-theme-mnha</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

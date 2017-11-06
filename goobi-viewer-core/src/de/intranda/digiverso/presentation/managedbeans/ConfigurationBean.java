@@ -230,10 +230,6 @@ public class ConfigurationBean implements Serializable {
         return height;
     }
 
-    public String getIipimageServerAddress() {
-        return DataManager.getInstance().getConfiguration().getIIPImageServer();
-    }
-
     public boolean isShowSidebarEventMetadata() {
         return DataManager.getInstance().getConfiguration().isShowSidebarEventMetadata();
     }

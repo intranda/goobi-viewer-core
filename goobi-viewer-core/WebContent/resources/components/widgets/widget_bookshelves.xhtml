@@ -19,7 +19,7 @@
     <composite:implementation>
 		<h:panelGroup
 			rendered="#{configurationBean.bookshelvesEnabled and (cc.attrs.widget.type == 'widgetBookshelves' or cc.attrs.widget == null) and userBean.loggedIn and cc.attrs.bookshelfDisplay and !activeDocumentBean.anchor}">
-			<div id="widgetBookshelves" class="widget">
+			<div id="widgetBookshelves" class="widget #{cc.attrs.widget.cssClass}">
 				<h:form id="widgetBookshelvesForm">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget == null}">
 						<h3>#{msg.bookshelf_bookshelf}</h3>

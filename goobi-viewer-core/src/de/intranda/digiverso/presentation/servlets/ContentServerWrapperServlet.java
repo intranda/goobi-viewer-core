@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -48,8 +47,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetImageAction;
@@ -118,7 +116,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 if (values[0] != null) {
                     switch (s) {
                         case "metsFile":
-                            if(request.getParameterMap().get("images") == null) {                                
+                            if (request.getParameterMap().get("images") == null) {
                                 csType = "gcs";
                             }
                             urlArgs.append('&').append(s).append('=').append(values[0]);
@@ -294,7 +292,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
             // 3) otherwise check via checkAccessPermissionByPhysicalElement() and set pif physicalElement.accessGranted to whatever
             // checkAccessPermission returns
             try {
-                access = checkAccess(request, action, pi, contentFileName, isThumbnail);
+                access = AccessConditionUtils.checkAccess(request, action, pi, contentFileName, isThumbnail);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -520,57 +518,5 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
-    }
-
-    protected static boolean checkAccess(HttpServletRequest request, String action, String pi, String contentFileName, boolean isThumbnail)
-            throws IndexUnreachableException, DAOException {
-        if (request == null) {
-            throw new IllegalArgumentException("request may not be null");
-        }
-        if (action == null) {
-            throw new IllegalArgumentException("action may not be null");
-        }
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-
-        switch (action) {
-            case "image":
-            case "application":
-                switch (FilenameUtils.getExtension(contentFileName).toLowerCase()) {
-                    // This check is needed so that the "application" action cannot be abused to download images w/o the proper permission
-                    case "pdf":
-                        return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                                IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-                    default:
-                        if (isThumbnail) {
-                            return SearchHelper.checkAccessPermissionForThumbnail(request, pi, contentFileName);
-                            //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
-                        }
-                        return SearchHelper.checkAccessPermissionForImage(request, pi, contentFileName);
-                    //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access);
-                }
-            case "text":
-            case "ocrdump":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            case "pdf":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-            case "video":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_VIDEO);
-            case "audio":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_AUDIO);
-            case "dimensions":
-            case "version":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_IMAGES); // TODO is priv checking needed here?
-            default: // nothing
-                break;
-        }
-
-        return false;
     }
 }

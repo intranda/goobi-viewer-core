@@ -41,7 +41,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 
 /**
  * Servlet for original content file download.
@@ -110,7 +110,7 @@ public class FileServlet extends HttpServlet implements Serializable {
         // Check access conditions, if an actual document with a PI is involved
         boolean access = false;
         try {
-            access = SearchHelper.checkContentFileAccessPermission(pi, request);
+            access = AccessConditionUtils.checkContentFileAccessPermission(pi, request);
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

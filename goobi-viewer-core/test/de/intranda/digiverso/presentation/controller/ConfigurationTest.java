@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
-import de.intranda.digiverso.presentation.model.user.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import net.sf.ehcache.config.ConfigurationHelper;
@@ -162,6 +162,24 @@ public class ConfigurationTest {
     @Test
     public void getContentServerWrapperUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("contentServerWrapper_value", DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
+    }
+
+    /**
+     * @see Configuration#getDownloadUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDownloadUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8080/viewer/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
+    }
+
+    /**
+     * @see Configuration#getContentRestApiUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentRestApiUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8080/viewer/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
     }
 
     /**
@@ -306,15 +324,6 @@ public class ConfigurationTest {
     @Test
     public void getHotfolder_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
-    }
-
-    /**
-     * @see Configuration#getIIPImageServer()
-     * @verifies return correct value
-     */
-    @Test
-    public void getIIPImageServer_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("iipimageServer_value", DataManager.getInstance().getConfiguration().getIIPImageServer());
     }
 
     /**
@@ -1712,15 +1721,6 @@ public class ConfigurationTest {
     @Test
     public void getSidebarOverviewLinkCondition_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("condition_value", DataManager.getInstance().getConfiguration().getSidebarOverviewLinkCondition());
-    }
-
-    /**
-     * @see Configuration#getGoobiWebApiUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getGoobiWebApiUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("goobiWebApi_value", DataManager.getInstance().getConfiguration().getGoobiWebApiUrl());
     }
 
     /**

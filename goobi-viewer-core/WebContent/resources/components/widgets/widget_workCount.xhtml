@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+    <!-- interface options -->
+    <composite:interface>
+    	<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+    </composite:interface>
+
+    <!-- component content -->
+    <composite:implementation>
+    	<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetWorkCount' or cc.attrs.widget == null}">
+	        <!-- WIDGET WORK COUNT STANDARD -->
+	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
+		        <div id="widgetWorkCount" class="widget #{cc.attrs.widget.cssClass}">
+		        	<h3>#{msg.totalNumberOfVolumes}</h3>
+		        	<p><strong>#{searchBean.totalNumberOfVolumes}</strong></p>
+		        </div>
+	        </h:panelGroup>
+	        
+	        <!-- WIDGET WORK COUNT FOLDOUT -->
+	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+	        	<div id="widgetWorkCount" class="widget widget-workcount">
+					<h3>
+						<a href="#workCountCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="workCountCollapse">
+							#{msg.totalNumberOfVolumes}
+							<span class="glyphicon glyphicon-arrow-down"></span>
+						</a>
+					</h3>
+					
+					<div id="workCountCollapse" class="collapse">
+						<p><strong>#{searchBean.totalNumberOfVolumes}</strong></p>
+					</div>
+		        </div>
+	        </h:panelGroup>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

@@ -57,6 +57,7 @@ import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -454,7 +455,7 @@ public class BrowseElement implements Serializable {
                             // Regular page or docstruct
                             if (useThumbnail) {
                                 boolean access = FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext()
-                                        .getRequest() != null ? SearchHelper.checkAccessPermissionForThumbnail((HttpServletRequest) FacesContext
+                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail((HttpServletRequest) FacesContext
                                                 .getCurrentInstance().getExternalContext().getRequest(), pi, filename) : false;
                                 // Flag the thumbnail for this element as access denied, so that further visualization can be triggered in HTML.
                                 // The display of the "access denied" thumbnail is done in the ContentServerWrapperServlet.

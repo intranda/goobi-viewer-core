@@ -24,17 +24,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
- * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ * Represents a single object within an RSS feed
+ * 
+ * @author Florian Alpers
  *
- * Visit these websites for more information. - http://www.intranda.com - http://digiverso.com
- *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
@@ -117,8 +110,9 @@ public class RssItem implements Comparable<RssItem> {
         this.creator = creator;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
+    /**
+     * Sorts the items accoring to their publication date
+     * 
      */
     @Override
     public int compareTo(RssItem other) {

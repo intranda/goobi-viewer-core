@@ -14,7 +14,7 @@
 
     <composite:implementation>
         <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null}">
-            <div id="searchListDrillDownWrapper" class="widget-search-drilldown">
+            <div id="searchListDrillDownWrapper" class="widget-search-drilldown #{cc.attrs.widget.cssClass}">
                 <h:form id="searchListDrillDownForm" prependId="false">
                     <!-- COLLECTION DRILL DOWN -->
                     <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">

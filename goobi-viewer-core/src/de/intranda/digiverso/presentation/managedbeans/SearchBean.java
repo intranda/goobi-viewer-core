@@ -179,18 +179,94 @@ public class SearchBean implements Serializable {
      * @throws PresentationException
      * @throws DAOException
      */
+    @Deprecated
     public String newSearch() throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("newSearch");
-        updateBreadcrumbsForSearchHits();
 
         // set the current page for the horizontal template navigation, therefore this determines the current-cat css class
-        Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
-        if (o != null) {
-            NavigationHelper nh = (NavigationHelper) o;
-            nh.setCurrentPage("search");
-        }
+        //        Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
+        //        if (o != null) {
+        //            NavigationHelper nh = (NavigationHelper) o;
+        //            nh.setCurrentPage("search");
+        //        }
 
         return search();
+    }
+
+    /**
+     *
+     * @return {@link String} null
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public String search() throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("search");
+        updateBreadcrumbsForSearchHits();
+        resetSearchResults();
+        StringBuilder sbQuery = new StringBuilder();
+        if (StringUtils.isNotEmpty(searchString)) {
+            sbQuery.append('(').append(searchString).append(')');
+        } else {
+            // Collection browsing (no search query)
+            sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+            sbQuery.append(SearchHelper.getDocstrctWhitelistFilterSuffix());
+        }
+        currentQuery = sbQuery.toString();
+
+        logger.trace("{}", sbQuery.toString());
+        // Only execute search if the query is not empty
+        // TODO replace dirty hack with something more elegant
+        if (!currentQuery.contains("()")) {
+            executeSearch();
+        }
+
+        return "";
+    }
+
+    /**
+     * Action method for search buttons (simple search).
+     * 
+     * @return
+     */
+    public String searchSimple() {
+        logger.trace("searchSimple");
+        resetSearchResults();
+        resetSearchParameters();
+        return "pretty:newSearch5";
+    }
+
+    /**
+     * Same as <code>searchSimple()</code> but resets the current facets.
+     * 
+     * @return
+     */
+    public String searchSimpleResetCollections() {
+        facets.resetCurrentCollection();
+        facets.resetCurrentFacetString();
+        return searchSimple();
+    }
+
+    public String searchAdvanced() {
+        logger.trace("searchAdvanced");
+        updateBreadcrumbsForSearchHits();
+        resetSearchResults();
+        resetSearchParameters();
+        searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
+
+        return "pretty:searchAdvanced5";
+    }
+
+    /**
+     * Search using currently set search string
+     *
+     * @return
+     */
+    public String searchDirect() {
+        logger.trace("searchDirect");
+        resetSearchResults();
+        facets.resetCurrentFacetString();
+        return "pretty:newSearch5";
     }
 
     /**
@@ -333,80 +409,6 @@ public class SearchBean implements Serializable {
         if (reset) {
             resetAdvancedSearchParameters(1, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
         }
-    }
-
-    /**
-     *
-     * @return {@link String} null
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    public String search() throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("search");
-        resetSearchResults();
-        StringBuilder sbQuery = new StringBuilder();
-        if (StringUtils.isNotEmpty(searchString)) {
-            sbQuery.append('(').append(searchString).append(')');
-        } else {
-            // Collection browsing (no search query)
-            sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
-            sbQuery.append(SearchHelper.getDocstrctWhitelistFilterSuffix());
-        }
-        currentQuery = sbQuery.toString();
-
-        logger.trace("{}", sbQuery.toString());
-        // Only execute search if the query is not empty
-        // TODO replace dirty hack with something more elegant
-        if (!currentQuery.contains("()")) {
-            executeSearch();
-        }
-
-        return "";
-    }
-
-    /**
-     * Action method for search buttons (simple search).
-     * 
-     * @return
-     */
-    public String searchSimple() {
-        logger.trace("searchSimple");
-        resetSearchResults();
-        resetSearchParameters();
-        facets.resetCurrentFacetString();
-        return "pretty:newSearch5";
-    }
-
-    /**
-     * Same as <code>searchSimple()</code> but resets the current facets.
-     * 
-     * @return
-     */
-    public String searchSimpleResetCollections() {
-        facets.resetCurrentCollection();
-        return searchSimple();
-    }
-
-    /**
-     * Search using currently set search string
-     *
-     * @return
-     */
-    public String searchDirect() {
-        logger.trace("searchDirect");
-        resetSearchResults();
-        facets.resetCurrentFacetString();
-        return "pretty:newSearch5";
-    }
-
-    public String searchAdvanced() {
-        logger.trace("searchAdvanced");
-        resetSearchResults();
-        resetSearchParameters();
-        searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
-
-        return "pretty:newSearch5";
     }
 
     /**
@@ -1231,7 +1233,8 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeHierarchicalFacetAction(String facetQuery) {
-        return facets.removeHierarchicalFacetAction(facetQuery, "pretty:newSearch5");
+        return facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+                : "pretty:newSearch5");
     }
 
     /**
@@ -1241,7 +1244,8 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeFacetAction(String facetQuery) {
-        return facets.removeFacetAction(facetQuery, "pretty:newSearch5");
+        return facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+                : "pretty:newSearch5");
     }
 
     /*
@@ -1991,5 +1995,4 @@ public class SearchBean implements Serializable {
         String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
         return DataManager.getInstance().getSearchIndex().count(query);
     }
-
 }

@@ -327,7 +327,7 @@ public class LeanPageLoader implements IPageLoader, Serializable {
             String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
             for (String fieldName : doc.getFieldNames()) {
                 //                logger.trace(fieldName);
-                if (fieldName.startsWith(filenameRoot) && !fieldName.startsWith("FILENAME_TILED")) {
+                if (fieldName.startsWith(filenameRoot)) {
                     String format = fieldName.split("_")[1].toLowerCase();
                     String value = (String) doc.getFieldValue(fieldName);
                     pe.getFileNames().put(format, value);

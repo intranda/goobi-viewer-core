@@ -16,6 +16,10 @@
 package de.intranda.digiverso.presentation.servlets.rest.collections;
 
 /**
+ * Part of the IIIF presentation api
+ * 
+ * Values for the viewing hint property of collections or sequences
+ * 
  * @author Florian Alpers
  *
  */

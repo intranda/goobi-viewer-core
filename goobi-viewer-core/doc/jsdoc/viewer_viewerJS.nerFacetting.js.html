@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Goobi viewer JavaScript Documentation Source: viewer/viewerJS.nerFacetting.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.yeti.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Goobi viewer JavaScript Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="cmsJS.module_createPage.html">cmsJS.createPage</a></li><li><a href="cmsJS.module_masonry.html">cmsJS.masonry</a></li><li><a href="cmsJS.module_rssFeed.html">cmsJS.rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">cmsJS.sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">cmsJS.stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">cmsJS.staticGrid</a></li><li><a href="cmsJS.module_tagList.html">cmsJS.tagList</a></li><li><a href="cmsJS.module_tileGrid.html">cmsJS.tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_calendarPopover.html">viewerJS.calendarPopover</a></li><li><a href="viewerJS.module_changeFontSize.html">viewerJS.changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">viewerJS.dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">viewerJS.dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">viewerJS.download</a></li><li><a href="viewerJS.module_downloadModal.html">viewerJS.downloadModal</a></li><li><a href="viewerJS.module_editComment.html">viewerJS.editComment</a></li><li><a href="viewerJS.module_helper.html">viewerJS.helper</a></li><li><a href="viewerJS.module_navigation.html">viewerJS.navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">viewerJS.nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">viewerJS.nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">viewerJS.normdata</a></li><li><a href="viewerJS.module_pageScroll.html">viewerJS.pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">viewerJS.responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">viewerJS.searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">viewerJS.searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">viewerJS.searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">viewerJS.simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">viewerJS.stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">viewerJS.timematrix</a></li><li><a href="viewerJS.module_tinyMce.html">viewerJS.tinyMce</a></li><li><a href="viewerJS.module_versionHistory.html">viewerJS.versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">viewImage.controls.persistence</a></li><li><a href="viewImage.module_controls.html">viewImage.controls</a></li><li><a href="viewImage.module_drawLine.html">viewImage.drawLine</a></li><li><a href="viewImage.module_drawRect.html">viewImage.drawRect</a></li><li><a href="viewImage.module_Measures.html">viewImage.Measures</a></li><li><a href="viewImage.module_overlays.html">viewImage.overlays</a></li><li><a href="viewImage.module_readingMode.html">viewImage.readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">viewImage.tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">viewImage.transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">viewImage.zoomSlider</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: viewer/viewerJS.nerFacetting.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see &lt;http://www.gnu.org/licenses/>.
+ * 
+ * Module which facetts the NER-Tags in a sidebar widget and Pageview.
+ * 
+ * @version 3.2.0
+ * @module viewerJS.nerFacetting
+ * @requires jQuery
+ * @requires Bootstrap
+ */
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    var _debug = false;
+    var _json = null;
+    var _apiCall = '';
+    var _html = '';
+    var _pageCount = 0;
+    var _scaleCount = 0;
+    var _scaleHeight = 0;
+    var _sliderHandlePosition = {};
+    var _movedSliderHandlePosition = 0;
+    var _recurrenceCount = 0;
+    var _scaleValue = 0;
+    var _sliderScaleHeight = 0;
+    var _start = 0;
+    var _end = 0;
+    var _currentNerPageRangeSelected = '';
+    var _currentNerPageRange = '';
+    var _currentNerType = '';
+    var _promise = null;
+    var _defaults = {
+        currentPage: '',
+        baseUrl: '',
+        apiUrl: '/rest/ner/tags/',
+        workId: '',
+        overviewTrigger: '',
+        overviewContent: '',
+        sectionTrigger: '',
+        sectionContent: '',
+        facettingTrigger: '',
+        setTagRange: '',
+        slider: '',
+        sliderScale: '',
+        sectionTags: '',
+        currentTags: '',
+        sliderHandle: '',
+        sliderSectionStripe: '',
+        recurrenceNumber: 0,
+        recurrenceSectionNumber: 0,
+        sidebarRight: false,
+        loader: '',
+        msg: {
+            noJSON: 'Es konnten keine Daten abgerufen werden.',
+            emptyTag: 'Keine Tags vorhanden',
+            page: 'Seite',
+            tags: 'Tags',
+        }
+    };
+    
+    viewer.nerFacetting = {
+        /**
+         * Method to initialize the NER-Widget or NER-View.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {String} config.currentPage The name of the current page.
+         * @param {String} config.baseUrl The root URL.
+         * @param {String} config.apiUrl The base URL for the API-Calls.
+         * @param {String} config.workId The ID of the current work.
+         * @param {String} config.overviewTrigger The ID/Class of the overview trigger.
+         * @param {String} config.overviewContent The ID/Class of the content section from
+         * overview.
+         * @param {String} config.sectionTrigger The ID/Class of the section trigger.
+         * @param {String} config.sectionContent The ID/Class of the content section from
+         * section.
+         * @param {String} config.facettingTrigger The ID/Class of the facetting trigger.
+         * @param {String} config.setTagRange The ID/Class of the select menu for the
+         * range.
+         * @param {String} config.slider The ID/Class of the tag range slider.
+         * @param {String} config.sliderScale The ID/Class of the slider scale.
+         * @param {String} config.sectionTags The ID/Class of the tag section.
+         * @param {String} config.currentTags The ID/Class of the tag container.
+         * @param {String} config.sliderHandle The ID/Class of the slider handle.
+         * @param {String} config.sliderSectionStripe The ID/Class of the range stripe on
+         * the slider.
+         * @param {Number} config.recurrenceNumber The number of displayed tags in a row.
+         * @param {Number} config.recurrenceSectionNumber The number of displayed tags in
+         * a section.
+         * @param {Boolean} config.sidebarRight If true, the current tag row will show up
+         * to the left of the sidebar widget.
+         * @param {String} config.loader The ID/Class of the AJAX-Loader.
+         * @param {Object} config.msg An object of strings for multi language use.
+         */
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.nerFacetting.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.nerFacetting.init: config - ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            if ( viewer.localStoragePossible ) {
+                // show loader
+                $( _defaults.loader ).show();
+                
+                // clean local storage
+                _cleanUpLocalStorage();
+                
+                // reset select menu
+                $( _defaults.setTagRange ).find( 'option' ).attr( 'selected', false );
+                
+                if ( _defaults.currentPage === 'nerfacetting' ) {
+                    $( _defaults.setTagRangeOverview ).find( 'option[value="1"]' ).prop( 'selected', true );
+                }
+                else {
+                    $( _defaults.setTagRangeOverview ).find( 'option[value="10"]' ).prop( 'selected', true );
+                }
+                
+                // reset facetting icons
+                _resetFacettingIcons();
+                
+                // get data for current work
+                if ( _defaults.currentPage === 'nerfacetting' ) {
+                    _apiCall = _getAllTagsOfARange( 1, '-' );
+                }
+                else {
+                    _apiCall = _getAllTagsOfARange( 10, '-' );
+                }
+                
+                _promise = viewer.helper.getRemoteData( _apiCall );
+                
+                _promise.then( function( json ) {
+                    _json = json;
+                    
+                    // check if data is not empty
+                    if ( _json !== null || _json !== 'undefinded' ) {
+                        // check if overview is already loaded
+                        if ( $( _defaults.overviewContent ).html() === '' ) {
+                            _renderOverview( _json );
+                        }
+                    }
+                    else {
+                        _html = viewer.helper.renderAlert( 'alert-danger', _defaults.msg.noJSON + '&lt;br />&lt;br />URL: ' + _apiCall, true );
+                        $( _defaults.overviewContent ).html( _html );
+                    }
+                } ).then( null, function( error ) {
+                    $( '.facetting-content' ).empty().append( viewer.helper
+                            .renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' ' + error.statusText, false ) );
+                    console.error( 'ERROR: viewer.nerFacetting.init - ', error );
+                } );
+                
+                /**
+                 * Event if overview tab is clicked.
+                 */
+                $( _defaults.overviewTrigger ).on( 'click', function() {
+                    // show loader
+                    $( _defaults.loader ).show();
+                    
+                    // resets
+                    $( _defaults.setTagRange ).find( 'option' ).attr( 'selected', false );
+                    
+                    if ( _defaults.currentPage === 'nerfacetting' ) {
+                        $( _defaults.setTagRangeOverview ).find( 'option[value="1"]' ).prop( 'selected', true );
+                        localStorage.setItem( 'currentNerPageRange', '1' );
+                    }
+                    else {
+                        $( _defaults.setTagRangeOverview ).find( 'option[value="10"]' ).prop( 'selected', true );
+                        localStorage.setItem( 'currentNerPageRange', '10' );
+                    }
+                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                    
+                    localStorage.setItem( 'currentNerType', '-' );
+                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    
+                    _resetFacettingIcons();
+                    
+                    // check if tab is active
+                    if ( $( this ).parent().hasClass( 'active' ) ) {
+                        console.info( 'Overview is already active.' );
+                    }
+                    else {
+                        if ( _defaults.currentPage === 'nerfacetting' ) {
+                            _apiCall = _getAllTagsOfARange( 1, '-' );
+                        }
+                        else {
+                            _apiCall = _getAllTagsOfARange( 10, '-' );
+                        }
+                        
+                        _promise = viewer.helper.getRemoteData( _apiCall );
+                        
+                        _promise.then( function( json ) {
+                            _json = json;
+                            _renderOverview( _json );
+                        } ).then( null, function( error ) {
+                            $( '.facetting-content' ).empty().append( viewer.helper.renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' '
+                                    + error.statusText, false ) );
+                            console.error( 'ERROR: viewer.nerFacetting.init - ', error );
+                        } );
+                        
+                    }
+                } );
+                
+                /**
+                 * Event if section tab is clicked.
+                 */
+                $( _defaults.sectionTrigger ).on( 'click', function() {
+                    // show loader
+                    $( _defaults.loader ).show();
+                    
+                    // reset select menu
+                    $( _defaults.setTagRange ).find( 'option' ).attr( 'selected', false );
+                    
+                    if ( _defaults.currentPage === 'nerfacetting' ) {
+                        $( _defaults.setTagRangeSection ).find( 'option[value="5"]' ).prop( 'selected', true );
+                    }
+                    else {
+                        $( _defaults.setTagRangeSection ).find( 'option[value="10"]' ).prop( 'selected', true );
+                    }
+                    
+                    // reset facetting
+                    _resetFacettingIcons()
+
+                    // set local storage value
+                    if ( _defaults.currentPage === 'nerfacetting' ) {
+                        localStorage.setItem( 'currentNerPageRange', 5 );
+                    }
+                    else {
+                        localStorage.setItem( 'currentNerPageRange', 10 );
+                    }
+                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                    localStorage.setItem( 'currentNerType', '-' );
+                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    
+                    // check if tab is active
+                    if ( $( this ).parent().hasClass( 'active' ) ) {
+                        console.info( 'Section is already active.' );
+                    }
+                    else {
+                        _renderSection();
+                        
+                        // reset section stripe
+                        $( _defaults.sliderSectionStripe ).css( 'top', '0px' );
+                    }
+                } );
+                
+                /**
+                 * Event if select menu changes.
+                 */
+                $( _defaults.setTagRange ).on( 'change', function() {
+                    var currVal = $( this ).val();
+                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    
+                    // show loader
+                    $( _defaults.loader ).show();
+                    
+                    // save current value in local storage
+                    localStorage.setItem( 'currentNerPageRange', currVal );
+                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                    
+                    // render overview
+                    if ( $( this ).hasClass( 'overview' ) ) {
+                        if ( _currentNerType === null || _currentNerType === '' ) {
+                            _currentNerType = '-';
+                        }
+                        _apiCall = _getAllTagsOfARange( currVal, _currentNerType );
+                        
+                        _promise = viewer.helper.getRemoteData( _apiCall );
+                        
+                        _promise.then( function( json ) {
+                            _json = json;
+                            
+                            // check if data is not empty
+                            if ( _json !== null || _json !== 'undefinded' ) {
+                                _renderOverview( _json );
+                            }
+                            else {
+                                _html = viewer.helper.renderAlert( 'alert-danger', _defaults.msg.noJSON + '&lt;br />&lt;br />URL: ' + _apiCall, true );
+                                $( _defaults.overviewContent ).html( _html );
+                            }
+                        } ).then( null, function( error ) {
+                            $( '.facetting-content' ).empty().append( viewer.helper.renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' '
+                                    + error.statusText, false ) );
+                            console.error( 'ERROR: viewer.nerFacetting.init - ', error );
+                        } );
+                    }
+                    // render section
+                    else {
+                        // setup values
+                        localStorage.setItem( 'currentNerPageRange', currVal );
+                        _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                        
+                        _renderSection();
+                        
+                        // reset section stripe
+                        if ( _currentNerPageRange > _pageCount ) {
+                            $( _defaults.sliderSectionStripe ).css( {
+                                'top': '0px',
+                                'height': '600px'
+                            } );
+                        }
+                        else {
+                            $( _defaults.sliderSectionStripe ).css( {
+                                'top': '0px',
+                                'height': '100px'
+                            } );
+                        }
+                    }
+                    
+                } );
+                
+                /**
+                 * Event if facetting icons are clicked.
+                 */
+                $( _defaults.facettingTrigger ).on( 'click', function() {
+                    var currType = $( this ).attr( 'data-type' );
+                    
+                    // show loader
+                    $( _defaults.loader ).show();
+                    
+                    // set values
+                    localStorage.setItem( 'currentNerType', currType );
+                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    
+                    if ( _defaults.currentPage === 'nerfacetting' ) {
+                        if ( _currentNerPageRange == null || _currentNerPageRange === '' ) {
+                            _currentNerPageRange = localStorage.setItem( 'currentNerPageRange', 1 );
+                        }
+                    }
+                    else {
+                        if ( _currentNerPageRange == null || _currentNerPageRange === '' ) {
+                            _currentNerPageRange = localStorage.setItem( 'currentNerPageRange', 10 );
+                        }
+                    }
+                    _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+                    
+                    // activate icons
+                    $( '.facetting-trigger' ).removeClass( 'active' );
+                    $( this ).addClass( 'active' );
+                    $( '.reset-filter' ).show();
+                    
+                    // filter overview
+                    if ( $( this ).parent().parent().parent().attr( 'id' ) === 'overview' ) {
+                        // setup data
+                        _apiCall = _getAllTagsOfARange( _currentNerPageRange, _currentNerType );
+                        
+                        _promise = viewer.helper.getRemoteData( _apiCall );
+                        
+                        _promise.then( function( json ) {
+                            _json = json;
+                            
+                            _renderOverview( _json );
+                            
+                            // hide select all
+                            if ( $( this ).parent().hasClass( 'reset-filter' ) ) {
+                                $( this ).parent().hide();
+                            }
+                            // set icons to active if "all" is selected
+                            if ( _currentNerType === '-' ) {
+                                $( '.facetting-trigger' ).addClass( 'active' );
+                            }
+                        } ).then( null, function( error ) {
+                            $( '.facetting-content' ).empty().append( viewer.helper.renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' '
+                                    + error.statusText, false ) );
+                            console.error( 'ERROR: viewer.nerFacetting.init - ', error );
+                        } );
+                    }
+                    // filter section
+                    else {
+                        _renderSection();
+                        
+                        // hide select all
+                        if ( $( this ).parent().hasClass( 'reset-filter' ) ) {
+                            $( this ).parent().hide();
+                        }
+                        // set icons to active if "all" is selected
+                        if ( _currentNerType === '-' ) {
+                            $( '.facetting-trigger' ).addClass( 'active' );
+                        }
+                        // reset section stripe
+                        $( _defaults.sliderSectionStripe ).css( 'top', '0px' );
+                    }
+                    
+                } );
+            }
+            else {
+                $( '.facetting-content' ).empty().append( viewer.helper
+                        .renderAlert( 'alert-danger', '&lt;strong>Deactivated: &lt;/strong>Not possible to write in local Storage!', false ) );
+            }
+        }
+    };
+    
+    /**
+     * Method to render the NER overview.
+     * 
+     * @method _renderOverview
+     * @param {Object} data A JSON-Object.
+     * @returns {Sting} A HTML-String which renders the overview.
+     */
+    function _renderOverview( data ) {
+        if ( _debug ) {
+            console.log( '---------- _renderOverview() ----------' );
+            console.log( '_renderOverview: data = ', data );
+        }
+        
+        _html = '';
+        _html += '&lt;ul class="overview-scale">';
+        
+        // render page number
+        $.each( data.pages, function( p, page ) {
+            _html += '&lt;li>';
+            _html += '&lt;div class="page-number">';
+            if ( data.rangeSize == 1 ) {
+                if ( _defaults.currentPage === 'nerfacetting' ) {
+                    _html += '&lt;a href="' + _defaults.baseUrl + '/image/' + _defaults.workId + '/' + page.pageOrder + '/">';
+                }
+                else {
+                    _html += '&lt;a href="' + _defaults.baseUrl + '/' + _defaults.currentPage + '/' + _defaults.workId + '/' + page.pageOrder + '/">';
+                }
+                _html += page.pageOrder;
+                _html += '&lt;/a>';
+            }
+            else {
+                if ( _defaults.currentPage === 'nerfacetting' ) {
+                    if ( page.firstPage !== undefined || page.lastPage !== undefined ) {
+                        _html += '&lt;a href="' + _defaults.baseUrl + '/image/' + _defaults.workId + '/' + page.firstPage + '/">';
+                        _html += page.firstPage + '-' + page.lastPage;
+                        _html += '&lt;/a>';
+                    }
+                    else {
+                        _html += '&lt;a href="' + _defaults.baseUrl + '/image/' + _defaults.workId + '/' + page.pageOrder + '/">';
+                        _html += page.pageOrder;
+                        _html += '&lt;/a>';
+                    }
+                }
+                else {
+                    if ( page.firstPage !== undefined || page.lastPage !== undefined ) {
+                        _html += '&lt;a href="' + _defaults.baseUrl + '/' + _defaults.currentPage + '/' + _defaults.workId + '/' + page.firstPage + '/">';
+                        _html += page.firstPage + '-' + page.lastPage;
+                        _html += '&lt;/a>';
+                    }
+                    else {
+                        _html += '&lt;a href="' + _defaults.baseUrl + '/' + _defaults.currentPage + '/' + _defaults.workId + '/' + page.pageOrder + '/">';
+                        _html += page.pageOrder;
+                        _html += '&lt;/a>';
+                    }
+                }
+            }
+            _html += '&lt;/div>';
+            _html += '&lt;div class="tag-container">';
+            
+            // render tags
+            if ( page.tags.length === 0 || page.tags.length === 'undefined' ) {
+                _html += '&lt;span class="page-tag empty">' + _defaults.msg.emptyTag + '&lt;/span>';
+            }
+            else {
+                $.each( page.tags, function( t, tag ) {
+                    _html += '&lt;span class="page-tag ' + tag.type + '">' + tag.value + '&lt;/span>';
+                } );
+            }
+            _html += '&lt;/div>';
+            _html += '&lt;/li>';
+        } );
+        _html += '&lt;/ul>';
+        
+        $( _defaults.overviewContent ).hide().html( _html ).find( '.tag-container' ).each( function() {
+            $( this ).children( '.page-tag' ).slice( _defaults.recurrenceNumber ).remove();
+        } );
+        $( _defaults.overviewContent ).show();
+        
+        // hide loader
+        $( _defaults.loader ).hide();
+        
+        $( '.tag-container' ).on( {
+            'mouseover': function() {
+                var $this = $( this );
+                
+                _showCurrentTags( $this );
+            },
+            'mouseout': function() {
+                _hideCurrentTags();
+            }
+        } );
+    }
+    
+    /**
+     * Method which shows the current tag row in a tooltip.
+     * 
+     * @method _showCurrentTags
+     * @param {Object} $obj An jQuery object of the current tag row.
+     */
+    function _showCurrentTags( $obj ) {
+        var content = $obj.html();
+        var pos = $obj.position();
+        
+        if ( _defaults.sidebarRight ) {
+            if ( _defaults.currentPage === 'nerfacetting' ) {
+                $( _defaults.currentTags ).html( content ).css( {
+                    'display': 'block',
+                    'top': pos.top + 25 + 'px',
+                } );
+            }
+            else {
+                $( _defaults.currentTags ).addClass( 'right' ).html( content ).css( {
+                    'display': 'block',
+                    'top': pos.top - 2 + 'px',
+                    'left': 'auto',
+                    'right': '100%'
+                } );
+            }
+        }
+        else {
+            if ( _defaults.currentPage === 'nerfacetting' ) {
+                $( _defaults.currentTags ).html( content ).css( {
+                    'display': 'block',
+                    'top': pos.top + 25 + 'px'
+                } );
+            }
+            else {
+                $( _defaults.currentTags ).html( content ).css( {
+                    'display': 'block',
+                    'top': pos.top - 2 + 'px'
+                } );
+            }
+        }
+    }
+    
+    /**
+     * Method which hides the current tag row tooltip.
+     * 
+     * @method _hideCurrentTags
+     */
+    function _hideCurrentTags() {
+        $( _defaults.currentTags ).hide();
+    }
+    
+    /**
+     * Method to render the NER section.
+     * 
+     * @method _renderSection
+     * @param {Object} data A JSON-Object.
+     */
+    function _renderSection() {
+        if ( _debug ) {
+            console.log( '---------- _renderSection() ----------' );
+            console.log( '_renderSection: _currentNerPageRange = ', _currentNerPageRange );
+            console.log( '_renderSection: _currentNerType = ', _currentNerType );
+        }
+        
+        // set values
+        _apiCall = _getAllTags();
+        
+        _promise = viewer.helper.getRemoteData( _apiCall );
+        
+        _promise.then( function( workCall ) {
+            _pageCount = _getPageCount( workCall );
+            
+            if ( _currentNerPageRange === null || _currentNerPageRange === '' ) {
+                _currentNerPageRange = localStorage.getItem( 'currentNerPageRange' );
+            }
+            if ( _currentNerType === null || _currentNerType === '' ) {
+                _currentNerType = localStorage.getItem( 'currentNerType' )
+            }
+            
+            // render page count to scale
+            if ( _defaults.currentPage === 'nerfacetting' ) {
+                $( '#sliderScale .scale-page.end' ).html( _pageCount );
+            }
+            else {
+                if ( _pageCount > 1000 ) {
+                    $( '#sliderScale .scale-page.end' ).html( '999+' );
+                }
+                else {
+                    $( '#sliderScale .scale-page.end' ).html( _pageCount );
+                }
+            }
+            
+            // init slider
+            $( _defaults.slider ).slider( {
+                orientation: "vertical",
+                range: false,
+                min: 1,
+                max: _pageCount,
+                value: _pageCount,
+                slide: function( event, ui ) {
+                    _sliderHandlePosition = $( _defaults.sliderHandle ).position();
+                    _scaleValue = ( _pageCount + 1 ) - ui.value;
+                    
+                    // show bubble
+                    $( '.page-bubble' ).show();
+                    _renderPageBubble( _scaleValue );
+                },
+                start: function() {
+                    _sliderHandlePosition = $( _defaults.sliderHandle ).position();
+                    _movedSliderHandlePosition = _sliderHandlePosition.top;
+                },
+                stop: function( event, ui ) {
+                    _currentNerType = localStorage.getItem( 'currentNerType' );
+                    _sliderScaleHeight = $( _defaults.sliderScale ).height();
+                    
+                    // set position of section stripe
+                    if ( _currentNerPageRange > _pageCount ) {
+                        $( _defaults.sliderSectionStripe ).css( {
+                            'top': '0px',
+                            'height': '600px'
+                        } );
+                    }
+                    else {
+                        if ( _sliderHandlePosition.top &lt; 100 ) {
+                            $( _defaults.sliderSectionStripe ).animate( {
+                                'top': '0px',
+                                'height': '100px'
+                            } );
+                        }
+                        else if ( _sliderHandlePosition.top > 100 ) {
+                            if ( _sliderHandlePosition.top > 500 ) {
+                                $( _defaults.sliderSectionStripe ).animate( {
+                                    'top': ( _sliderScaleHeight - 100 ) + 'px',
+                                    'height': '100px'
+                                } );
+                            }
+                            else {
+                                if ( _movedSliderHandlePosition &lt; _sliderHandlePosition.top ) {
+                                    $( _defaults.sliderSectionStripe ).animate( {
+                                        'top': _sliderHandlePosition.top - 25 + 'px',
+                                        'height': '100px'
+                                    } );
+                                }
+                                else {
+                                    $( _defaults.sliderSectionStripe ).animate( {
+                                        'top': _sliderHandlePosition.top - 50 + 'px',
+                                        'height': '100px'
+                                    } );
+                                }
+                            }
+                        }
+                    }
+                    
+                    // render tags
+                    switch ( _currentNerPageRange ) {
+                        case '5':
+                            _start = _scaleValue - 2;
+                            _end = _scaleValue + 3;
+                            
+                            while ( _start &lt; 1 ) {
+                                _start++;
+                                _end++;
+                            }
+                            while ( _end > _pageCount ) {
+                                _start--;
+                                _end--;
+                            }
+                            
+                            _apiCall = _getAllTagsOfPageSection( _start, _end, _currentNerType );
+                            break;
+                        case '10':
+                            _start = _scaleValue - 5;
+                            _end = _scaleValue + 5;
+                            
+                            while ( _start &lt; 1 ) {
+                                _start++;
+                                _end++;
+                            }
+                            while ( _end > _pageCount ) {
+                                _start--;
+                                _end--;
+                            }
+                            
+                            _apiCall = _getAllTagsOfPageSection( _start, _end, _currentNerType );
+                            break;
+                        case '50':
+                            _start = _scaleValue - 25;
+                            _end = _scaleValue + 25;
+                            
+                            while ( _start &lt; 1 ) {
+                                _start++;
+                                _end++;
+                            }
+                            while ( _end > _pageCount ) {
+                                _start--;
+                                _end--;
+                            }
+                            
+                            _apiCall = _getAllTagsOfPageSection( _start, _end, _currentNerType );
+                            break;
+                        case '100':
+                            _start = _scaleValue - 50;
+                            _end = _scaleValue + 50;
+                            
+                            while ( _start &lt; 1 ) {
+                                _start++;
+                                _end++;
+                            }
+                            while ( _end > _pageCount ) {
+                                _start--;
+                                _end--;
+                            }
+                            
+                            _apiCall = _getAllTagsOfPageSection( _start, _end, _currentNerType );
+                            break;
+                    }
+                    
+                    _promise = viewer.helper.getRemoteData( _apiCall );
+                    
+                    _promise.then( function( json ) {
+                        _json = json;
+                        
+                        _html = _renderSectionTags( _json );
+                        
+                        if ( _html === '' ) {
+                            $( _defaults.sectionTags ).hide().html( viewer.helper.renderAlert( 'alert-warning', _defaults.msg.emptyTag, false ) ).show();
+                        }
+                        else {
+                            $( _defaults.sectionTags ).hide().html( _html ).each( function() {
+                                $( this ).children( '.page-tag' ).slice( _defaults.recurrenceSectionNumber ).remove();
+                            } );
+                            $( _defaults.sectionTags ).show();
+                        }
+                        
+                        // hide bubble
+                        $( '.page-bubble' ).fadeOut();
+                        
+                    } ).then( null, function( error ) {
+                        $( '.facetting-content' ).empty().append( viewer.helper
+                                .renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' ' + error.statusText, false ) );
+                        console.error( 'ERROR: viewer.nerFacetting.init - ', error );
+                    } );
+                }
+            } );
+            
+            // render section tags
+            _apiCall = _getAllTagsOfPageSection( 0, _currentNerPageRange, _currentNerType );
+            
+            _promise = viewer.helper.getRemoteData( _apiCall );
+            
+            _promise.then( function( json ) {
+                _json = json;
+                
+                _html = _renderSectionTags( _json );
+                
+                if ( _html === '' ) {
+                    $( _defaults.sectionTags ).hide().html( viewer.helper.renderAlert( 'alert-warning', _defaults.msg.emptyTag, false ) ).show();
+                }
+                else {
+                    $( _defaults.sectionTags ).hide().html( _html ).each( function() {
+                        $( this ).children( '.page-tag' ).slice( _defaults.recurrenceSectionNumber ).remove();
+                    } );
+                    $( _defaults.sectionTags ).show();
+                }
+                
+                // hide loader
+                $( _defaults.loader ).hide();
+                
+            } )
+                    .then( null, function( error ) {
+                        $( '.facetting-content' ).empty().append( viewer.helper
+                                .renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' ' + error.statusText, false ) );
+                        console.error( 'ERROR: viewer.nerFacetting.init - ', error );
+                    } );
+            
+        } ).then( null, function( error ) {
+            $( '.facetting-content' ).empty().append( viewer.helper.renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' ' + error.statusText, false ) );
+            console.error( 'ERROR: viewer.nerFacetting.init - ', error );
+        } );
+    }
+    
+    /**
+     * Method which renders the tags in the section area.
+     * 
+     * @method _renderSectionTags
+     * @param {Object} data A JSON-Object.
+     * @returns {Sting} A HTML-String which renders the tag section.
+     */
+    function _renderSectionTags( data ) {
+        if ( _debug ) {
+            console.log( '---------- _renderSectionTags() ----------' );
+            console.log( '_renderSectionTags: data - ', data );
+        }
+        
+        _html = '';
+        // render tags
+        $.each( data.pages, function( p, page ) {
+            if ( page.tags.length === 0 || page.tags.length === 'undefined' ) {
+                _html += '';
+            }
+            else {
+                $.each( page.tags, function( t, tag ) {
+                    if ( _defaults.currentPage === 'nerfacetting' ) {
+                        if ( tag.counter &lt; 10 ) {
+                            _html += '&lt;span class="page-tag ' + tag.type + '" style="font-size: 1.' + tag.counter + 'rem;">' + tag.value + '&lt;/span>';
+                        }
+                        else {
+                            _html += '&lt;span class="page-tag ' + tag.type + '" style="font-size: 2rem;">' + tag.value + '&lt;/span>';
+                        }
+                    }
+                    else {
+                        if ( tag.counter &lt; 10 ) {
+                            _html += '&lt;span class="page-tag ' + tag.type + '" style="font-size: 1' + tag.counter + 'px;">' + tag.value + '&lt;/span>';
+                        }
+                        else {
+                            _html += '&lt;span class="page-tag ' + tag.type + '" style="font-size: 19px;">' + tag.value + '&lt;/span>';
+                        }
+                    }
+                } );
+            }
+        } );
+        
+        return _html;
+    }
+    
+    /**
+     * Method which renders a span showing the current page section.
+     * 
+     * @method _renderPageBubble
+     * @param {Number} page The current pagenumber.
+     */
+    function _renderPageBubble( page ) {
+        if ( _debug ) {
+            console.log( '---------- _renderPageBubble() ----------' );
+            console.log( '_renderPageBubble: page - ', page );
+        }
+        
+        var pageBubble = '';
+        
+        switch ( _currentNerPageRange ) {
+            case '5':
+                _start = page - 2;
+                _end = page + 3;
+                
+                while ( _start &lt; 1 ) {
+                    _start++;
+                    _end++;
+                }
+                while ( _end > _pageCount ) {
+                    _start--;
+                    _end--;
+                }
+                
+                pageBubble += '&lt;span class="page-bubble">' + _start + '-' + _end + '&lt;/span>';
+                break;
+            case '10':
+                _start = page - 5;
+                _end = page + 5;
+                
+                while ( _start &lt; 1 ) {
+                    _start++;
+                    _end++;
+                }
+                while ( _end > _pageCount ) {
+                    _start--;
+                    _end--;
+                }
+                
+                pageBubble += '&lt;span class="page-bubble">' + _start + '-' + _end + '&lt;/span>';
+                break;
+            case '50':
+                _start = page - 25;
+                _end = page + 25;
+                
+                while ( _start &lt; 1 ) {
+                    _start++;
+                    _end++;
+                }
+                while ( _end > _pageCount ) {
+                    _start--;
+                    _end--;
+                }
+                
+                pageBubble += '&lt;span class="page-bubble">' + _start + '-' + _end + '&lt;/span>';
+                break;
+            case '100':
+                _start = page - 50;
+                _end = page + 50;
+                
+                while ( _start &lt; 1 ) {
+                    _start++;
+                    _end++;
+                }
+                while ( _end > _pageCount ) {
+                    _start--;
+                    _end--;
+                }
+                
+                pageBubble += '&lt;span class="page-bubble">' + _start + '-' + _end + '&lt;/span>';
+                break;
+        }
+        
+        $( '#sliderVertical .ui-slider-handle' ).html( pageBubble );
+    }
+    
+    /**
+     * Method which returns the page count of the current work.
+     * 
+     * @method _getPageCount
+     * @param {Object} work The current wor object.
+     * @returns {Number} The page count of the current work.
+     */
+    function _getPageCount( work ) {
+        if ( _debug ) {
+            console.log( '---------- _getPageCount() ----------' );
+            console.log( '_getPageCount: work - ', work );
+        }
+        
+        return work.pages.length;
+    }
+    
+    /**
+     * Method which resets all facetting icons to default
+     * 
+     * @method _resetFacettingIcons
+     */
+    function _resetFacettingIcons() {
+        if ( _debug ) {
+            console.log( '---------- _resetFacettingIcons() ----------' );
+        }
+        
+        $( '.facetting-trigger' ).addClass( 'active' );
+        $( '.reset-filter' ).hide();
+    }
+    
+    /**
+     * Method which removes all set local storage values.
+     * 
+     * @method _cleanUpLocalStorage
+     */
+    function _cleanUpLocalStorage() {
+        if ( _debug ) {
+            console.log( '---------- _cleanUpLocalStorage() ----------' );
+        }
+        
+        localStorage.removeItem( 'currentNerPageRange' );
+        localStorage.removeItem( 'currentNerType' );
+    }
+    
+    /**
+     * API-Calls
+     */
+    // get all tags from all pages: /rest/ner/tags/{pi}/
+    function _getAllTags() {
+        return _defaults.baseUrl + _defaults.apiUrl + _defaults.workId;
+    }
+    
+    // get all tags of a range: /viewer/rest/ner/tags/ranges/{range}/{type}/{pi}/
+    function _getAllTagsOfARange( range, type ) {
+        return _defaults.baseUrl + _defaults.apiUrl + 'ranges/' + range + '/' + type + '/' + _defaults.workId + '/';
+    }
+    
+    // get all tags sorted of type: /rest/ner/tags/{type}/{pi}/
+    function _getAllTagsOfAType( type ) {
+        return _defaults.baseUrl + _defaults.apiUrl + type + '/' + _defaults.workId + '/';
+    }
+    
+    // get all tags sorted of recurrence (asc/desc):
+    // /rest/ner/tags/recurrence/{type}/{order}/{pi}/
+    function _getAllTagsOfRecurrence( type, order ) {
+        if ( type === '-' ) {
+            return _defaults.baseUrl + _defaults.apiUrl + 'recurrence/-/' + order + '/' + _defaults.workId + '/';
+        }
+        else {
+            return _defaults.baseUrl + _defaults.apiUrl + 'recurrence/' + type + '/' + order + '/' + _defaults.workId + '/';
+        }
+    }
+    
+    // get all tags sorted of page section: /rest/ner/tags/{start}/{end}/{pi}/
+    function _getAllTagsOfPageSection( start, end, type ) {
+        return _defaults.baseUrl + _defaults.apiUrl + start + '/' + end + '/' + type + '/' + _defaults.workId + '/';
+    }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	Copyright © 2017 intranda GmbH
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Thu Nov 2nd 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

@@ -35,7 +35,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
@@ -107,7 +106,7 @@ public class NavigationHelper implements Serializable {
     private String currentPage = "index";
 
     private List<LabeledLink> breadcrumbs = new LinkedList<>();
-    
+
     private boolean isCmsPage = false;
 
     /** Empty constructor. */
@@ -147,14 +146,14 @@ public class NavigationHelper implements Serializable {
     public String getCurrentPage() {
         return currentPage;
     }
-    
+
     /**
      * @return the isCmsPage
      */
     public boolean isCmsPage() {
         return isCmsPage;
     }
-    
+
     /**
      * @param isCmsPage the isCmsPage to set
      */
@@ -173,7 +172,7 @@ public class NavigationHelper implements Serializable {
     public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
         setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
-    
+
     /**
      *
      * @param currentPage
@@ -188,9 +187,9 @@ public class NavigationHelper implements Serializable {
         if (resetCurrentDocument) {
             resetCurrentDocument();
         }
-        
+
         this.savePageUrl();
-        
+
         setCmsPage(setCmsPage);
         this.currentPage = currentPage;
     }
@@ -247,28 +246,26 @@ public class NavigationHelper implements Serializable {
 
     public void setCurrentPageSearch() {
         setCurrentPage("search", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("search", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search/", NavigationHelper.WEIGHT_SEARCH));
+        updateBreadcrumbs(new LabeledLink("search", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search/",
+                NavigationHelper.WEIGHT_SEARCH));
     }
 
     public void setCurrentPageBrowse() {
         setCurrentPage("browse", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
-                        NavigationHelper.WEIGHT_BROWSE));
+        updateBreadcrumbs(new LabeledLink("browseCollection", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/browse/",
+                NavigationHelper.WEIGHT_BROWSE));
     }
 
     public void setCurrentPageTags() {
         setCurrentPage("tags", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("tagclouds", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/tags/", NavigationHelper.WEIGHT_TAG_CLOUD));
+        updateBreadcrumbs(new LabeledLink("tagclouds", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/tags/",
+                NavigationHelper.WEIGHT_TAG_CLOUD));
     }
 
     public void setCurrentPageStatistics() {
         setCurrentPage("statistics", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("statistics", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/statistics/",
-                        NavigationHelper.WEIGHT_TAG_MAIN_MENU));
+        updateBreadcrumbs(new LabeledLink("statistics", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/statistics/",
+                NavigationHelper.WEIGHT_TAG_MAIN_MENU));
     }
 
     public void setCurrentPageUser() {
@@ -326,9 +323,9 @@ public class NavigationHelper implements Serializable {
      * @should set value correctly
      */
     public void setCurrentView(String currentView) {
-            logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
-            statusMap.put(KEY_CURRENT_VIEW, currentView);
-            setCurrentPage(currentView);
+        logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
+        statusMap.put(KEY_CURRENT_VIEW, currentView);
+        setCurrentPage(currentView);
     }
 
     public Locale getLocale() {
@@ -541,9 +538,9 @@ public class NavigationHelper implements Serializable {
                         logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
                         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
                     }
-                } else if(isCmsPage()) {
+                } else if (isCmsPage()) {
                     CmsBean cmsBean = BeanUtils.getCmsBean();
-                    if(cmsBean != null && cmsBean.getCurrentPage() != null){
+                    if (cmsBean != null && cmsBean.getCurrentPage() != null) {
                         subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
                         if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                             logger.trace("Setting discriminator value from cms page: '{}'", subThemeDiscriminatorValue);
@@ -555,7 +552,7 @@ public class NavigationHelper implements Serializable {
         }
 
         String ret = StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
-//         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
+        //         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
         return ret;
     }
 
@@ -666,9 +663,8 @@ public class NavigationHelper implements Serializable {
                     .getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
                 String path = "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme()
                         + "/urlMappings/viewImageFullscreen.xhtml";
-                logger.debug(
-                        "MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the " + DataManager.getInstance()
-                                .getConfiguration().getTheme() + " theme.");
+                logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the " + DataManager.getInstance()
+                        .getConfiguration().getTheme() + " theme.");
                 return path;
             }
             if (imageDisplayType.equalsIgnoreCase("classic")) {
@@ -676,9 +672,8 @@ public class NavigationHelper implements Serializable {
                 return "/viewImageFullscreen.xhtml";
             }
         }
-        logger.error(
-                "No correct configuration, use the standard Fullscreen Image view. Detected: " + imageDisplayType
-                        + " from <zoomFullscreenView/> in the config_viewer.xml.");
+        logger.error("No correct configuration, use the standard Fullscreen Image view. Detected: " + imageDisplayType
+                + " from <zoomFullscreenView/> in the config_viewer.xml.");
 
         return "/viewImageFullscreen.xhtml";
     }
@@ -725,6 +720,15 @@ public class NavigationHelper implements Serializable {
 
     public String getSearchUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
+    }
+
+    public String getSearchUrl(int activeSearchType) {
+        switch (activeSearchType) {
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+            default:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
+        }
     }
 
     public String getTermUrl() {
@@ -988,26 +992,26 @@ public class NavigationHelper implements Serializable {
     public PageType getCurrentPagerType() {
         return PageType.getByName(getCurrentPage());
     }
-    
+
     public String getPreviousViewUrl() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = UrlRedirectUtils.getPreviousView(request);
-        if(StringUtils.isBlank(previousUrl)) {
+        if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
         }
         return previousUrl;
     }
-    
+
     public void redirectToPreviousView() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = UrlRedirectUtils.getPreviousView(request);
-        if(StringUtils.isBlank(previousUrl)) {
+        if (StringUtils.isBlank(previousUrl)) {
             previousUrl = homePage();
         }
         UrlRedirectUtils.redirectToUrl(previousUrl);
 
     }
-    
+
     public void savePageUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         //save current View to session map

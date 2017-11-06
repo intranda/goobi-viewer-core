@@ -6,6 +6,6 @@
     <html>cms_template_07_collection.xhtml</html>
     <content>
         <item order="1" id="text01" label="Inhalt" type="HTML"/>
-        <item order="2" id="collection01" label="Sammlung" type="COLLECTION" mandatory="true"/>
+        <item order="2" id="collection01" label="Sammlung" type="COLLECTION" mandatory="true" mode="expanded"/>
     </content>
 </cms_page_template>

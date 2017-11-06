@@ -82,7 +82,7 @@ var viewerJS = ( function() {
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
             var warningPopover = this.helper
-                    .renderWarningPopover( 'Ihr Browser befindet sich im privaten Modus und unterstützt momentan nicht die Möglichkeit Daten lokal zu speichern. Aus diesem Grund sind nicht alle Funktionenn des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.' );
+                    .renderWarningPopover( 'Ihr Browser befindet sich im privaten Modus und unterstützt die Möglichkeit Informationen zur Seite lokal zu speichern nicht. Aus diesem Grund sind nicht alle Funktionen des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.' );
             
             $( 'body' ).append( warningPopover );
             

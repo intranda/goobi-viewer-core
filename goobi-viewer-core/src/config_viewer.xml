@@ -77,17 +77,15 @@
 
         <!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data -->
         <dfg-viewer>http://dfg-viewer.de/v2?set[mets]=</dfg-viewer>
-        <!-- iipimageServer: path to the base url of the iipimage server -->
-        <iipimageServer>http://viewertest.fritz.box/fcgi-bin/iipsrv.fcgi</iipimageServer>
-        <!-- Goobi web API URL. Must contain the valid authorization token as a 
-            GET parameter. Leave blank if no Goobi export is desired. -->
-        <goobiWebApi></goobiWebApi>
 	    <!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 		    widget, etc. Default is the current application URL + "/resolver?urn=" -->
 	    <urnResolver>http://nbn-resolving.de/</urnResolver>
 	    
-	            <!-- The base urls to access download pages for pdf and epub downloads -->
+	    <!-- The base urls to access download pages for pdf and epub downloads -->
 		<download>http://localhost:8080/viewer/download/</download>
+		
+        <!-- contentRestApi: REST API URL for content files -->
+        <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi>
     </urls>
 
     <user>

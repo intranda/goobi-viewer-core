@@ -54,6 +54,13 @@
                                                 src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" /></td>
                                             <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                 <td class="column_language">
+                                                	<h:panelGroup rendered="#{locale == 'fr'}">
+														<img 
+															src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_fr.gif" 
+                                                			class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
+                                                			title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
+                                                			alt="Flag Icon" />
+													</h:panelGroup>
                                                 	<h:panelGroup rendered="#{locale == 'de'}">
 														<img 
 															src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" 
