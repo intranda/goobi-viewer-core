@@ -19,6 +19,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.intranda.digiverso.presentation.controller.Helper;
 
 public class Messages {
