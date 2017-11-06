@@ -317,6 +317,14 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return bundle.getString(newKey);
             }
         }
+        // Remove leading _LANG_XX
+        if (key.contains(SolrConstants._LANG_)) {
+            String newKey = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
+            logger.trace("newKey: {}", newKey);
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
 
         return null;
     }
