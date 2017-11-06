@@ -229,6 +229,9 @@ public class ViewerResourceBundle extends ResourceBundle {
             if (key.endsWith("*")) {
                 key = key.substring(0, key.length() - 1);
             }
+            if(key.matches(".*(_LANG_\\w{2,3})$")) {
+                key = key.substring(0, key.lastIndexOf("_LANG_"));
+            }
 
             if (preferredBundle != null) {
                 String value = getTranslationFromBundle(key, preferredBundle);
