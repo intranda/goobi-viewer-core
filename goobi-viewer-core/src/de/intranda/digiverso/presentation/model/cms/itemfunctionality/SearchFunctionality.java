@@ -37,21 +37,20 @@ public class SearchFunctionality implements Functionality {
     /**
      * The current page of the search result list 
      */
-    private int currentPage = 1;
     
     /**
      * 
      */
     private final int hitsPerPage;
-    
     private final String baseUrl;
+    private final String pageFacetString;
 
     
     /**
      * The query entered for a simple search 
      */
+    private int currentPage = 1;
     private String simpleSearchQuery = "-";
-    
     private String solrSortFields = "-";
     private String facetString = "-";
     private String collection = "-";
@@ -61,20 +60,24 @@ public class SearchFunctionality implements Functionality {
     /**
      * @param searchPrefix
      */
-    public SearchFunctionality(String searchPrefix, String baseUrl, int hitsPerPage) {
-       this.facetString = searchPrefix;
+    public SearchFunctionality(String pageFacetString, String baseUrl, int hitsPerPage) {
+       this.pageFacetString = pageFacetString;
        this.hitsPerPage = hitsPerPage;
        this.baseUrl = baseUrl;
     }
     
     
-    public void resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
+    public String resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
         getSearchBean().resetSearchResults();
         getSearchBean().resetSearchParameters();
         getSearchBean().getFacets().resetCurrentFacetString();
         getSearchBean().resetSearchResults();
-        setQueryString("");
-        search();
+        setPageNo(1);
+        setCollection("-");
+        setFacetString("-");
+        setSolrSortFields("-");
+        setQueryString("-");
+        return "pretty:cmsOpenPageWithSearchSimple2";
     }
     
     public String searchSimple() {
@@ -105,12 +108,29 @@ public class SearchFunctionality implements Functionality {
         getSearchBean().setSearchString(getSolrQuery());
         getSearchBean().setCurrentPage(getPageNo());
         getSearchBean().getFacets().setCurrentHierarchicalFacetString(getCollection());
-        getSearchBean().getFacets().setCurrentFacetString(getFacetString());
+        getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString());
         if(StringUtils.isNotBlank(getSolrSortFields())) {            
             getSearchBean().setSortString(getSolrSortFields());
         }
-        getSearchBean().newSearch();
+        getSearchBean().search();
     }
+
+    /**
+     * @return 
+     */
+    private String getCompleteFacetString() {
+        StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotBlank(getPageFacetString())) {
+            sb.append(getPageFacetString());
+            if(StringUtils.isNotBlank(getFacetString()) && !"-".equals(getFacetString())) {
+                sb.append(";;").append(getFacetString());
+            }
+        } else if(StringUtils.isNotBlank(getFacetString()) && !"-".equals(getFacetString())) {
+            sb.append(getFacetString());
+        }
+        return sb.toString();
+    }
+
 
     /**
      * @return the complete SOLR query string (query prefix + entered simple query)
@@ -271,5 +291,10 @@ public class SearchFunctionality implements Functionality {
         return baseUrl;
     }
 
-
+    /**
+     * @return the pageFacetString
+     */
+    public String getPageFacetString() {
+        return pageFacetString;
+    }
 }

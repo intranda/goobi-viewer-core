@@ -892,17 +892,17 @@ public class CmsBean {
             searchBean.resetSearchResults();
             return "";
         }
-
-        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-        searchBean.setHitsPerPage(item.getElementsPerPage());
-        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-        searchBean.setCurrentPage(item.getListPage());
-        if (item.getSolrSortFields() != null) {
-            searchBean.setSortString(item.getSolrSortFields());
-        }
-        //            searchBean.getFacets().setCurrentFacetString();
-        //            searchBean.getFacets().setCurrentCollection();
-        return searchBean.search();
+        return "";
+//        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+//        searchBean.setHitsPerPage(item.getElementsPerPage());
+//        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+//        searchBean.setCurrentPage(item.getListPage());
+//        if (item.getSolrSortFields() != null) {
+//            searchBean.setSortString(item.getSolrSortFields());
+//        }
+//        //            searchBean.getFacets().setCurrentFacetString();
+//        //            searchBean.getFacets().setCurrentCollection();
+//        return searchBean.search();
     }
 
     public boolean hasSearchResults() {

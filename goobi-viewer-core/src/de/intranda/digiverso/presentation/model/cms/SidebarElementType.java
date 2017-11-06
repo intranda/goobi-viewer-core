@@ -28,7 +28,8 @@ public enum SidebarElementType {
     fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
     rssFeed("widgetRssFeed"),
     user("widgetUser"),
-    workCount("widgetWorkCount");
+    workCount("widgetWorkCount"),
+    searchDrillDownTopics("widgetSearchDrillDownTopics");
 
     private final String label;
     private final Category type;
