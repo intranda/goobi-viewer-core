@@ -1466,8 +1466,8 @@ public final class SearchHelper {
                         currentField = SolrConstants.FULLTEXT;
                     }
                     // Remove quotation marks from phrases
-                    logger.trace("field: {}", field);
-                    logger.trace("value: {}", value);
+                    // logger.trace("field: {}", field);
+                    // logger.trace("value: {}", value);
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
                     }
