@@ -229,9 +229,9 @@ public class ViewerResourceBundle extends ResourceBundle {
             if (key.endsWith("*")) {
                 key = key.substring(0, key.length() - 1);
             }
-            if(key.matches(".*(_LANG_\\w{2,3})$")) {
-                key = key.substring(0, key.lastIndexOf("_LANG_"));
-            }
+            //            if (key.matches(".*(_LANG_\\w{2,3})$")) {
+            //                key = key.substring(0, key.lastIndexOf("_LANG_"));
+            //            }
 
             if (preferredBundle != null) {
                 String value = getTranslationFromBundle(key, preferredBundle);
@@ -316,6 +316,14 @@ public class ViewerResourceBundle extends ResourceBundle {
             if (bundle.containsKey("MD_" + newKey)) {
                 return bundle.getString("MD_" + newKey);
             }
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading _LANG_XX
+        if (key.contains(SolrConstants._LANG_)) {
+            String newKey = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
+            logger.trace("newKey: {}", newKey);
             if (bundle.containsKey(newKey)) {
                 return bundle.getString(newKey);
             }
