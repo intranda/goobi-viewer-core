@@ -184,6 +184,7 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
 
+        logger.trace("label: {}", browseElement.getLabel());
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
         hit.populateFoundMetadata(doc, ignoreAdditionalFields, translateAdditionalFields);
 
