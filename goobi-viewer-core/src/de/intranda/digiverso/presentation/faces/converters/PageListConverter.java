@@ -32,7 +32,11 @@ public class PageListConverter implements AttributeConverter<PageLinks, String>{
      */
     @Override
     public String convertToDatabaseColumn(PageLinks links) {
-        return links.toString();
+        if(links != null) {            
+            return links.toString();
+        } else {
+            return null;
+        }
     }
 
     /* (non-Javadoc)
