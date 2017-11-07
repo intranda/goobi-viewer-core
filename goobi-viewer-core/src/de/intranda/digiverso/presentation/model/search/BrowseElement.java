@@ -455,8 +455,9 @@ public class BrowseElement implements Serializable {
                             // Regular page or docstruct
                             if (useThumbnail) {
                                 boolean access = FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext()
-                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail((HttpServletRequest) FacesContext
-                                                .getCurrentInstance().getExternalContext().getRequest(), pi, filename) : false;
+                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail(
+                                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), pi,
+                                                filename) : false;
                                 // Flag the thumbnail for this element as access denied, so that further visualization can be triggered in HTML.
                                 // The display of the "access denied" thumbnail is done in the ContentServerWrapperServlet.
                                 if (!access) {
@@ -782,12 +783,28 @@ public class BrowseElement implements Serializable {
             ret = se.getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(ret)) {
                 if (locale != null) {
+                    String englishTitle = null;
+                    String germanTitle = null;
+                    String anyTitle = null;
                     for (String key : se.getMetadataFields().keySet()) {
-                        if (key.startsWith(SolrConstants.TITLE)) {
-                            if (key.endsWith(SolrConstants._LANG_ + locale.getLanguage().toUpperCase())) {
-                                ret = se.getMetadataValue(key);
-                                break;
-                            }
+                        if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
+                            ret = se.getMetadataValue(key);
+                            break;
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
+                            germanTitle = se.getMetadataValue(key);
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
+                            englishTitle = se.getMetadataValue(key);
+                        } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
+                            anyTitle = se.getMetadataValue(key);
+                        }
+                    }
+                    if(StringUtils.isBlank(ret)) {
+                        if(StringUtils.isNotBlank(englishTitle)) {
+                            ret = englishTitle;
+                        } else if(StringUtils.isNotBlank(germanTitle)) {
+                            ret = germanTitle;
+                        } else {
+                            ret = anyTitle;
                         }
                     }
                 }

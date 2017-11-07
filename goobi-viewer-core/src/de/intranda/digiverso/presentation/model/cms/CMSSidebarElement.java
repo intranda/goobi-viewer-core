@@ -89,6 +89,9 @@ public class CMSSidebarElement {
     @Column(name = "widget_mode", nullable = false)
     private WidgetMode widgetMode = WidgetMode.STANDARD;
     
+    @Column(name = "linked_pages", nullable = true)
+    private PageLinks linkedPages = null;
+    
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
 
@@ -337,8 +340,11 @@ public class CMSSidebarElement {
     }
     
     public SidebarElementType.Category getCategory() {
+               
         if(this instanceof CMSSidebarElementWithQuery) {
             return SidebarElementType.Category.fieldQuery;
+        } else if(this.getLinkedPages() != null) {
+            return SidebarElementType.Category.pageLinks;
         }
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
@@ -357,6 +363,20 @@ public class CMSSidebarElement {
      */
     public int getSortingId() {
         return sortingId;
+    }
+    
+    /**
+     * @return the linkedPages
+     */
+    public PageLinks getLinkedPages() {
+        return linkedPages;
+    }
+    
+    /**
+     * @param linkedPages the linkedPages to set
+     */
+    public void setLinkedPages(PageLinks linkedPages) {
+        this.linkedPages = linkedPages;
     }
 
 }

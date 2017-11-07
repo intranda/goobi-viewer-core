@@ -29,7 +29,8 @@ public enum SidebarElementType {
     rssFeed("widgetRssFeed"),
     user("widgetUser"),
     workCount("widgetWorkCount"),
-    searchDrillDownTopics("widgetSearchDrillDownTopics");
+    searchDrillDownTopics("widgetSearchDrillDownTopics"),
+    cmsPageLinks("cmsPageLinks", Category.pageLinks);
 
     private final String label;
     private final Category type;
@@ -67,6 +68,10 @@ public enum SidebarElementType {
             case fieldQuery:
                 element = new CMSSidebarElementWithQuery();
                 break;
+            case pageLinks:
+                element = new CMSSidebarElement();
+                element.setLinkedPages(new PageLinks());
+                break;
             default:
                 element = new CMSSidebarElement();
         }
@@ -78,6 +83,7 @@ public enum SidebarElementType {
     public enum Category {
         standard,
         custom,
-        fieldQuery;
+        fieldQuery,
+        pageLinks;
     }
 }

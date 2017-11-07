@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -37,6 +38,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -63,6 +67,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.language.LocaleComparator;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -1143,9 +1148,17 @@ public class SearchBean implements Serializable {
                 for (String field : sortStringSplit) {
                     sortFields.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
                     logger.trace("Added sort field: {}", field);
+                    //add translated sort fields
+                    Iterable<Locale> locales = () -> BeanUtils.getNavigationHelper().getSupportedLocales();
+                    StreamSupport.stream(locales.spliterator(), false)
+                    .sorted(new LocaleComparator(BeanUtils.getLocale()))
+                    .map(locale -> field + "_LANG_" + locale.getLanguage().toUpperCase())
+                    .peek(language -> logger.trace("Adding sort field: {}", language))
+                    .forEach(language -> sortFields.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
                 }
             }
         }
+        System.out.println(sortFields);
     }
 
     /**
@@ -1995,4 +2008,5 @@ public class SearchBean implements Serializable {
         String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
         return DataManager.getInstance().getSearchIndex().count(query);
     }
+    
 }

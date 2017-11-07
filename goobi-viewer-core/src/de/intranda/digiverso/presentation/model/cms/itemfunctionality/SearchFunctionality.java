@@ -160,14 +160,18 @@ public class SearchFunctionality implements Functionality {
         return sb.toString();
     }
     
+    public String getUrlSuffix() {
+        return getUrlSuffix(getSolrSortFields());
+    }
+    
     /**
      * The part of the search url after the page number
      * 
      * @return
      */
-    public String getUrlSuffix() {
+    public String getUrlSuffix(String solrSortFields) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getSolrSortFields());
+        sb.append(solrSortFields);
         sb.append("/").append(getFacetString());
         sb.append("/").append(getCollection());
         return sb.toString();
@@ -296,5 +300,10 @@ public class SearchFunctionality implements Functionality {
      */
     public String getPageFacetString() {
         return pageFacetString;
+    }
+    
+    public String getSortUrl(String sortString, boolean descending) {
+        sortString = (descending ? "!" : "") + sortString;
+        return getUrlPrefix() + getPageNo() + "/" +  getUrlSuffix(sortString);
     }
 }
