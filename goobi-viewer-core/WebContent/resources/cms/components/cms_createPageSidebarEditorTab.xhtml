@@ -117,7 +117,7 @@
 																		<div class="form-group selection_page_links">
 																			<label>#{msg.cms_sidebarElement_pageLinks}:</label>
 																			<h:selectManyCheckbox value="#{element.linkedPages}">
-																		   		<f:selectItems value="#{cmsBean.createdPages}"
+																		   		<f:selectItems layout="lineDirection" value="#{cmsBean.createdPages}"
 																		   					var="page"
 																		   					itemLabel="#{page.title}"
 																		   					itemValue="#{page}"></f:selectItems>

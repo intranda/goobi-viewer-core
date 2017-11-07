@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -41,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.faces.converters.PageListConverter;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.misc.NumberIterator;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
@@ -90,6 +92,7 @@ public class CMSSidebarElement {
     private WidgetMode widgetMode = WidgetMode.STANDARD;
     
     @Column(name = "linked_pages", nullable = true)
+    @Convert(converter = PageListConverter.class)
     private PageLinks linkedPages = null;
     
     @Column(name = "widget_type", nullable = false)

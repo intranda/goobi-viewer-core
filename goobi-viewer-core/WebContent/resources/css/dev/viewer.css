@@ -6634,6 +6634,15 @@ div.olMapViewport {
 #cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .sidebar-editor-item-widget-editor-action {
   text-align: right;
 }
+#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td {
+  display: block;
+}
+#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td label {
+  overflow: hidden;
+  max-width: 90%;
+  margin-bottom: -5px;
+  margin-left: 5px;
+}
 #cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .btn {
   margin: 0 0 0 5px;
 }
