@@ -398,8 +398,6 @@ public class SearchHit implements Comparable<SearchHit> {
         if (searchTerms == null) {
             return;
         }
-        logger.trace("searchTerms: {}", searchTerms.keySet().toString());
-        logger.trace("ignoreFields: {}", ignoreFields.toString());
 
         boolean overviewPageFetched = false;
         for (String termsFieldName : searchTerms.keySet()) {
