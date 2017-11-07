@@ -718,6 +718,8 @@ public class BrowseElement implements Serializable {
                         switch (metadataGroupType) {
                             case PERSON:
                             case CORPORATION:
+                            case LOCATION:
+                            case SUBJECT:
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
