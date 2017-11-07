@@ -336,7 +336,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
-                                logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
+                                // logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
                             }
                         }
                         if (ownerHit == null) {
@@ -398,6 +398,8 @@ public class SearchHit implements Comparable<SearchHit> {
         if (searchTerms == null) {
             return;
         }
+        logger.trace("searchTerms: {}", searchTerms.keySet().toString());
+        logger.trace("ignoreFields: {}", ignoreFields.toString());
 
         boolean overviewPageFetched = false;
         for (String termsFieldName : searchTerms.keySet()) {
@@ -410,6 +412,9 @@ public class SearchHit implements Comparable<SearchHit> {
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
                         if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                            continue;
+                        }
+                        if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
                             continue;
                         }
                         List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, docFieldName);
