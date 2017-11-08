@@ -33,11 +33,11 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 public class SearchFunctionality implements Functionality {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchFunctionality.class);
-    
+
     /**
-     * The current page of the search result list 
+     * The current page of the search result list
      */
-    
+
     /**
      * 
      */
@@ -45,28 +45,26 @@ public class SearchFunctionality implements Functionality {
     private final String baseUrl;
     private final String pageFacetString;
 
-    
     /**
-     * The query entered for a simple search 
+     * The query entered for a simple search
      */
     private int currentPage = 1;
     private String simpleSearchQuery = "-";
     private String solrSortFields = "-";
     private String facetString = "-";
     private String collection = "-";
-    
+
     private SearchBean searchBean;
-    
+
     /**
      * @param searchPrefix
      */
     public SearchFunctionality(String pageFacetString, String baseUrl, int hitsPerPage) {
-       this.pageFacetString = pageFacetString;
-       this.hitsPerPage = hitsPerPage;
-       this.baseUrl = baseUrl;
+        this.pageFacetString = pageFacetString;
+        this.hitsPerPage = hitsPerPage;
+        this.baseUrl = baseUrl;
     }
-    
-    
+
     public String resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
         setPageNo(1);
         setCollection("-");
@@ -81,7 +79,7 @@ public class SearchFunctionality implements Functionality {
         getSearchBean().resetSearchResults();
         return "pretty:cmsOpenPageWithSearchSimple2";
     }
-    
+
     public String searchSimple() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
@@ -95,9 +93,9 @@ public class SearchFunctionality implements Functionality {
         getSearchBean().resetSearchResults();
         return "pretty:cmsOpenPageWithSearchSimple2";
     }
-    
+
     public void search() throws PresentationException, IndexUnreachableException, DAOException {
-        
+
         logger.trace("searchAction");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
@@ -106,50 +104,49 @@ public class SearchFunctionality implements Functionality {
         getSearchBean().resetSearchResults();
         getSearchBean().setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
         getSearchBean().setHitsPerPage(getHitsPerPage());
-//        getSearchBean().setExactSearchStringResetGui(getSimpleSearchQuery());
+        //        getSearchBean().setExactSearchStringResetGui(getSimpleSearchQuery());
         getSearchBean().setSearchString(getSolrQuery());
         getSearchBean().setCurrentPage(getPageNo());
         getSearchBean().getFacets().setCurrentHierarchicalFacetString(getCollection());
         getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString());
-        if(StringUtils.isNotBlank(getSolrSortFields())) {            
+        if (StringUtils.isNotBlank(getSolrSortFields())) {
             getSearchBean().setSortString(getSolrSortFields());
         }
         getSearchBean().search();
     }
 
     /**
-     * @return 
+     * @return
      */
     private String getCompleteFacetString() {
         StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotBlank(getPageFacetString())) {
+        if (StringUtils.isNotBlank(getPageFacetString())) {
             sb.append(getPageFacetString());
-            if(StringUtils.isNotBlank(getFacetString()) && !"-".equals(getFacetString())) {
+            if (StringUtils.isNotBlank(getFacetString()) && !"-".equals(getFacetString())) {
                 sb.append(";;").append(getFacetString());
             }
-        } else if(StringUtils.isNotBlank(getFacetString()) && !"-".equals(getFacetString())) {
+        } else if (StringUtils.isNotBlank(getFacetString()) && !"-".equals(getFacetString())) {
             sb.append(getFacetString());
         }
         return sb.toString();
     }
-
 
     /**
      * @return the complete SOLR query string (query prefix + entered simple query)
      */
     public String getSolrQuery() {
         StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotBlank(getSimpleSearchQuery())) {
+        if (StringUtils.isNotBlank(getSimpleSearchQuery())) {
             sb.append(getSimpleSearchQuery());
         } else {
             sb.append("*:*");
         }
-//        if(StringUtils.isNotBlank(getSearchPrefix())) {
-//            sb.append(" AND (").append(getSearchPrefix()).append(")");
-//        }
+        //        if(StringUtils.isNotBlank(getSearchPrefix())) {
+        //            sb.append(" AND (").append(getSearchPrefix()).append(")");
+        //        }
         return sb.toString();
     }
-    
+
     /**
      * The part of the search url before the page number
      * 
@@ -161,11 +158,11 @@ public class SearchFunctionality implements Functionality {
         sb.append("search/").append(getSimpleSearchQuery()).append("/");
         return sb.toString();
     }
-    
+
     public String getUrlSuffix() {
         return getUrlSuffix(getSolrSortFields());
     }
-    
+
     /**
      * The part of the search url after the page number
      * 
@@ -196,48 +193,47 @@ public class SearchFunctionality implements Functionality {
 
     }
 
-    
     /**
      * @return the searchBean
      */
     public SearchBean getSearchBean() {
-        if(this.searchBean == null) {
+        if (this.searchBean == null) {
             this.searchBean = BeanUtils.getSearchBean();
         }
         return searchBean;
     }
-    
+
     /**
      * @param simpleSearchQuery the simpleSearchQuery to set
      */
     public void setSimpleSearchQuery(String simpleSearchQuery) {
-        if(StringUtils.isBlank(simpleSearchQuery)) {
+        if (StringUtils.isBlank(simpleSearchQuery)) {
             simpleSearchQuery = "-";
         }
         this.simpleSearchQuery = simpleSearchQuery;
     }
-    
+
     /**
      * @return the simpleSearchQuery
      */
     public String getSimpleSearchQuery() {
         return simpleSearchQuery == null ? "" : simpleSearchQuery;
     }
-    
+
     /**
      * @return the hitsPerPage
      */
     public int getHitsPerPage() {
         return hitsPerPage;
     }
-    
+
     /**
      * @return the solrSortFields
      */
     public String getSolrSortFields() {
         return solrSortFields;
     }
-    
+
     /**
      * @param solrSortFields the solrSortFields to set
      */
@@ -256,6 +252,7 @@ public class SearchFunctionality implements Functionality {
      * @param facetString the facetString to set
      */
     public void setFacetString(String facetString) {
+        logger.trace("setFacetString: {}", facetString);
         this.facetString = facetString;
     }
 
@@ -272,23 +269,22 @@ public class SearchFunctionality implements Functionality {
     public void setCollection(String collection) {
         this.collection = collection;
     }
-    
+
     public String getQueryString() {
-        if(StringUtils.isNotBlank(getSimpleSearchQuery().replace("-", ""))) {
+        if (StringUtils.isNotBlank(getSimpleSearchQuery().replace("-", ""))) {
             return getSimpleSearchQuery();
-        } else {
-            return "";
         }
+        
+        return "";
     }
-    
+
     public void setQueryString(String s) {
-        if(s != null && StringUtils.isNotBlank(s.replace("-", ""))) {
+        if (s != null && StringUtils.isNotBlank(s.replace("-", ""))) {
             setSimpleSearchQuery(s);
         } else {
             setSimpleSearchQuery("");
         }
     }
-
 
     /**
      * @return the baseUrl
@@ -303,9 +299,9 @@ public class SearchFunctionality implements Functionality {
     public String getPageFacetString() {
         return pageFacetString;
     }
-    
+
     public String getSortUrl(String sortString, boolean descending) {
         sortString = (descending ? "!" : "") + sortString;
-        return getUrlPrefix() + getPageNo() + "/" +  getUrlSuffix(sortString);
+        return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix(sortString);
     }
 }
