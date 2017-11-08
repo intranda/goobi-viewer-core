@@ -1108,7 +1108,7 @@ public class SearchBean implements Serializable {
         }
         searchTerms = SearchHelper.extractSearchTermsFromQuery(searchString.replace("\\", ""), discriminatorValue);
         logger.trace("searchTerms: {}", searchTerms);
-        
+
         // TODO reset mode?
     }
 
@@ -1150,15 +1150,13 @@ public class SearchBean implements Serializable {
                     logger.trace("Added sort field: {}", field);
                     //add translated sort fields
                     Iterable<Locale> locales = () -> BeanUtils.getNavigationHelper().getSupportedLocales();
-                    StreamSupport.stream(locales.spliterator(), false)
-                    .sorted(new LocaleComparator(BeanUtils.getLocale()))
-                    .map(locale -> field + "_LANG_" + locale.getLanguage().toUpperCase())
-                    .peek(language -> logger.trace("Adding sort field: {}", language))
-                    .forEach(language -> sortFields.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
+                    StreamSupport.stream(locales.spliterator(), false).sorted(new LocaleComparator(BeanUtils.getLocale())).map(locale -> field
+                            + "_LANG_" + locale.getLanguage().toUpperCase()).peek(language -> logger.trace("Adding sort field: {}", language))
+                            .forEach(language -> sortFields.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc"
+                                    : "asc")));
                 }
             }
         }
-        System.out.println(sortFields);
     }
 
     /**
@@ -2008,5 +2006,5 @@ public class SearchBean implements Serializable {
         String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
         return DataManager.getInstance().getSearchIndex().count(query);
     }
-    
+
 }
