@@ -790,6 +790,12 @@ public class CMSPage {
         }
     }
     
+    /**
+     * Returns the first found SearchFunctionality of any containted content items
+     * If no fitting item is found, a new default SearchFunctionality is returned
+     * 
+     * @return SearchFunctionality, not null
+     */
     public SearchFunctionality getSearch() {
         Optional<CMSContentItem> searchItem = getGlobalContentItems().stream()
         .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
