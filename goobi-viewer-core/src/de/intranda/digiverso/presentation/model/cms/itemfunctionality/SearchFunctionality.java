@@ -68,15 +68,17 @@ public class SearchFunctionality implements Functionality {
     
     
     public String resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
-        getSearchBean().resetSearchResults();
-        getSearchBean().resetSearchParameters();
-        getSearchBean().getFacets().resetCurrentFacetString();
-        getSearchBean().resetSearchResults();
         setPageNo(1);
         setCollection("-");
         setFacetString("-");
         setSolrSortFields("-");
         setQueryString("-");
+        getSearchBean().resetSearchResults();
+        getSearchBean().resetSearchParameters();
+        getSearchBean().getFacets().resetCurrentFacetString();
+        getSearchBean().getFacets().resetCurrentCollection();
+        getSearchBean().getFacets().resetCurrentFacets();
+        getSearchBean().resetSearchResults();
         return "pretty:cmsOpenPageWithSearchSimple2";
     }
     
