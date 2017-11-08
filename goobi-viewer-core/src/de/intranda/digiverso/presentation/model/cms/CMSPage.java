@@ -141,6 +141,7 @@ public class CMSPage {
                     element.setOrder(i);
                     //		    element.setId(null);
                     element.setOwnerPage(this);
+                    element.serialize();
                     selectedElements.add(element);
                 }
             }

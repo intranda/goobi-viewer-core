@@ -20,9 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,12 +35,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.faces.converters.PageListConverter;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.misc.NumberIterator;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
@@ -92,8 +88,10 @@ public class CMSSidebarElement {
     private WidgetMode widgetMode = WidgetMode.STANDARD;
     
     @Column(name = "linked_pages", nullable = true)
-    @Convert(converter = PageListConverter.class)
-    private PageLinks linkedPages = null;
+    private String linkedPagesString = "";
+    @Transient
+    private PageList linkedPages = null;
+   
     
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
@@ -135,6 +133,9 @@ public class CMSSidebarElement {
         if(StringUtils.isNotBlank(getCssClass())) {            
             code += HASH_MULTIPLIER * getCssClass().hashCode();
         }
+        if(getLinkedPages() != null) {
+            code += HASH_MULTIPLIER * getLinkedPages().hashCode();
+        }
         return code;
     }
     
@@ -143,7 +144,8 @@ public class CMSSidebarElement {
         return o.getClass().equals(CMSSidebarElement.class) 
                 && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
                 && bothNullOrEqual(getHtml(), ((CMSSidebarElement) o).getHtml())
-                && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass());
+                && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
+                && bothNullOrEqual(getLinkedPages(), ((CMSSidebarElement) o).getLinkedPages());
         }
 
     protected static boolean bothNullOrEqual(Object o1, Object o2) {
@@ -371,15 +373,43 @@ public class CMSSidebarElement {
     /**
      * @return the linkedPages
      */
-    public PageLinks getLinkedPages() {
+    public PageList getLinkedPages() {
+//        this.linkedPages = new PageList(this.linkedPagesString);
         return linkedPages;
     }
     
     /**
      * @param linkedPages the linkedPages to set
      */
-    public void setLinkedPages(PageLinks linkedPages) {
+    public void setLinkedPages(PageList linkedPages) {
         this.linkedPages = linkedPages;
+    }
+    
+    /**
+     * @return the linkedPagesList
+     */
+    public String getLinkedPagesString() {
+//        this.linkedPagesString = linkedPages.toString();
+        return linkedPagesString;
+    }
+    
+    /**
+     * @param linkedPagesList the linkedPagesList to set
+     */
+    public void setLinkedPagesString(String linkedPagesList) {
+        this.linkedPagesString = linkedPagesList;
+    }
+    
+    public void serialize() {
+        if(this.linkedPages != null) {            
+            this.linkedPagesString = linkedPages.toString();
+        } else {
+            this.linkedPagesString = "";
+        }
+    }
+    
+    public void deSerialize() {
+      this.linkedPages = new PageList(this.linkedPagesString);
     }
 
 }

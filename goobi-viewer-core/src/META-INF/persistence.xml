@@ -31,7 +31,6 @@
         <class>de.intranda.digiverso.presentation.model.security.user.UserGroup</class>
         <class>de.intranda.digiverso.presentation.model.security.user.UserRole</class>
         <class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
-        <class>de.intranda.digiverso.presentation.faces.converters.PageListConverter</class>
         
         <properties>
         <!-- EclipseLink should create the database schema automatically -->

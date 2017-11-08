@@ -30,7 +30,7 @@ public enum SidebarElementType {
     user("widgetUser"),
     workCount("widgetWorkCount"),
     searchDrillDownTopics("widgetSearchDrillDownTopics"),
-    cmsPageLinks("cmsPageLinks", Category.pageLinks);
+    cmsPageLinks("widgetCmsPageLinks", Category.pageLinks);
 
     private final String label;
     private final Category type;
@@ -70,7 +70,7 @@ public enum SidebarElementType {
                 break;
             case pageLinks:
                 element = new CMSSidebarElement();
-                element.setLinkedPages(new PageLinks());
+                element.setLinkedPages(new PageList());
                 break;
             default:
                 element = new CMSSidebarElement();
