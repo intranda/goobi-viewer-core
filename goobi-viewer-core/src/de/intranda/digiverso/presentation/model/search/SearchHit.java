@@ -184,6 +184,7 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
 
+        logger.trace("label: {}", browseElement.getLabel());
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
         hit.populateFoundMetadata(doc, ignoreAdditionalFields, translateAdditionalFields);
 
@@ -336,7 +337,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
-                                logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
+                                // logger.trace("owner doc: {}", ownerDoc.getFieldValue("LOGID"));
                             }
                         }
                         if (ownerHit == null) {
@@ -410,6 +411,9 @@ public class SearchHit implements Comparable<SearchHit> {
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
                         if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                            continue;
+                        }
+                        if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
                             continue;
                         }
                         List<String> fieldValues = SolrSearchIndex.getMetadataValues(doc, docFieldName);
