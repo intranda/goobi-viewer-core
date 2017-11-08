@@ -455,8 +455,9 @@ public class BrowseElement implements Serializable {
                             // Regular page or docstruct
                             if (useThumbnail) {
                                 boolean access = FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext()
-                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail((HttpServletRequest) FacesContext
-                                                .getCurrentInstance().getExternalContext().getRequest(), pi, filename) : false;
+                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail(
+                                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), pi,
+                                                filename) : false;
                                 // Flag the thumbnail for this element as access denied, so that further visualization can be triggered in HTML.
                                 // The display of the "access denied" thumbnail is done in the ContentServerWrapperServlet.
                                 if (!access) {
@@ -718,6 +719,9 @@ public class BrowseElement implements Serializable {
                         switch (metadataGroupType) {
                             case PERSON:
                             case CORPORATION:
+                            case LOCATION:
+                            case SUBJECT:
+                            case PUBLISHER:
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
@@ -1035,17 +1039,32 @@ public class BrowseElement implements Serializable {
     private String generateUrl() {
         // For aggregated person search hits, start another search (label contains the person's name in this case)
         StringBuilder sb = new StringBuilder();
-        if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
-            // Person metadata search hit ==> execute search for that person
-            // TODO not for aggregated hits?
-            try {
-                sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
-                        SearchBean.URL_ENCODING)).append("\"/1/-/-/");
-            } catch (UnsupportedEncodingException e) {
-                logger.error("{}: {}", e.getMessage(), label);
-                sb = new StringBuilder();
-                sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
-                        "\"/1/-/-/");
+        if (metadataGroupType != null) {
+            switch (metadataGroupType) {
+                case PERSON:
+                case CORPORATION:
+                case LOCATION:
+                case SUBJECT:
+                case PUBLISHER:
+                    // Person metadata search hit ==> execute search for that person
+                    // TODO not for aggregated hits?
+                    try {
+                        sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
+                                SearchBean.URL_ENCODING)).append("\"/1/-/-/");
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error("{}: {}", e.getMessage(), label);
+                        sb = new StringBuilder();
+                        sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
+                                "\"/1/-/-/");
+                    }
+
+                    break;
+                default:
+                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
+                            useOverviewPage, false);
+                    sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId)
+                            ? logId : '-').append('/');
+                    break;
             }
         } else {
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
