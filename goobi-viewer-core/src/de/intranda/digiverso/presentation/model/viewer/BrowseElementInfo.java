@@ -20,7 +20,7 @@ import java.net.URI;
 public interface BrowseElementInfo {
 
     public String getDescription();
-    public URI getLinkURI();
+    public URI getLinkURL();
     public URI getIconURI();
     
 }

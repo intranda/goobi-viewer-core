@@ -33,7 +33,7 @@ public interface ImageGalleryTile {
 
     public URI getIconURI();
 
-    public URI getLinkURI();
+    public URI getLinkURL();
 
     public String getDescription(String language);
 

@@ -62,7 +62,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     private String fileName;
 
     @Column(name = "link_url", nullable = true)
-    private URI linkURI;
+    private String linkURL;
 
     @Column(name = "priority", nullable = true)
     private Priority priority = Priority.DEFAULT;
@@ -264,31 +264,39 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         this.priority = priority;
     }
 
+    /**
+     * returns the entered url string
+     */
     @Override
-    public URI getLinkURI() {
-        if (this.linkURI != null) {
-            return this.linkURI;
+    public String getLinkURL() {
+        if (this.linkURL != null) {
+            return this.linkURL;
         }
         return null;
     }
 
-    public void setLinkUrl(URI linkUrl) {
-        this.linkURI = linkUrl;
+    /**
+     * Se
+     *  
+     * @param linkUrl
+     */
+    public void setLinkURL(String) {
+        this.linkURL = linkUrl;
 
     }
 
     public String getLink() {
-        if (getLinkURI() != null) {
-            return getLinkURI().toString();
+        if (this.linkURL != null) {
+            return this.linkURL.toString();
         }
         return null;
     }
 
     public void setLink(String linkUrl) throws URISyntaxException {
         if (StringUtils.isNotBlank(linkUrl)) {
-            this.linkURI = new URI(linkUrl);
+            this.linkURL = new URI(linkUrl);
         } else {
-            this.linkURI = null;
+            this.linkURL = null;
         }
     }
 
@@ -311,9 +319,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
-        if (StringUtils.isNotBlank(this.collectionName) && this.linkURI == null) {
+        if (StringUtils.isNotBlank(this.collectionName) && this.linkURL == null) {
             try {
-                this.linkURI = new URI(getCollectionSearchUri());
+                this.linkURL = new URI(getCollectionSearchUri());
             } catch (URISyntaxException e) {
                 logger.error("Unable to create link to collection " + getCollectionName());
             }

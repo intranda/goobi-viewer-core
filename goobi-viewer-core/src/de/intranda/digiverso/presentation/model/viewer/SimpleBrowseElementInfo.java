@@ -47,7 +47,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     @Override
-    public URI getLinkURI() {
+    public URI getLinkURL() {
         return linkURI;
     }
 
