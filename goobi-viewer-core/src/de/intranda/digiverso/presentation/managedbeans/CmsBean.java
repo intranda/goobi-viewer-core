@@ -225,6 +225,7 @@ public class CmsBean {
                         staticPage.setCmsPage(page);
                     }
                 }
+                page.getSidebarElements().forEach(element -> element.deSerialize());
             }
         }
         return createdPages;
@@ -249,6 +250,7 @@ public class CmsBean {
                         staticPage.setCmsPage(page);
                     }
                 }
+                page.getSidebarElements().forEach(element -> element.deSerialize());
             }
         }
         numCreatedPages = createdPages.size();

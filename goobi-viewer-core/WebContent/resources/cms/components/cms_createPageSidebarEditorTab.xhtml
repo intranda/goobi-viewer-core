@@ -112,6 +112,18 @@
 																			</h:selectOneRadio>
 																		</div>
 																	</h:panelGroup>
+																	<!-- page links -->
+																	<h:panelGroup id="inputPageLinks" rendered="#{element.category == 'pageLinks'}">
+																		<div class="form-group selection_page_links">
+																			<label>#{msg.cms_sidebarElement_pageLinks}:</label>
+																			<h:selectManyCheckbox value="#{element.linkedPages.pages}">
+																		   		<f:selectItems value="#{cmsBean.createdPages}"
+																		   					var="page"
+																		   					itemLabel="#{page.title}"
+																		   					itemValue="#{page.id}"></f:selectItems>
+																			</h:selectManyCheckbox>
+																		</div>
+																	</h:panelGroup>
 																	<!-- CSS class -->
 																	<h:panelGroup id="inputCss">
 																		<div class="form-group">
@@ -201,6 +213,18 @@
 																			</h:selectOneRadio>
 																		</div>
 								                                    </h:panelGroup>
+								                                    <!-- page links -->
+																	<h:panelGroup id="inputPageLinks" rendered="#{element.category == 'pageLinks'}">
+																		<div class="form-group selection_page_links">
+																			<label>#{msg.cms_sidebarElement_pageLinks}:</label>
+																			<h:selectManyCheckbox value="#{element.linkedPages.pages}">
+																		   		<f:selectItems value="#{cmsBean.createdPages}"
+																		   					var="page"
+																		   					itemLabel="#{page.title}"
+																		   					itemValue="#{page.id}"></f:selectItems>
+																			</h:selectManyCheckbox>
+																		</div>
+																	</h:panelGroup>
 								                                    <!-- CSS class -->
 																	<h:panelGroup id="inputCss">
 																		<div class="form-group">
