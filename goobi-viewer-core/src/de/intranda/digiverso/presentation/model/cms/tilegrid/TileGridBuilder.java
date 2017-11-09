@@ -95,7 +95,7 @@ public class TileGridBuilder {
             }
         });
         
-        return new TileGrid(items, language, request);
+        return new TileGrid(items, tags, language, request);
     }
 
     private List<ImageGalleryTile> filter(List<ImageGalleryTile> items, Set<String> tags) {
