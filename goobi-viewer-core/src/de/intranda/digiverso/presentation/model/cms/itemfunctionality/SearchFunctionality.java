@@ -15,7 +15,14 @@
  */
 package de.intranda.digiverso.presentation.model.cms.itemfunctionality;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,5 +310,13 @@ public class SearchFunctionality implements Functionality {
     public String getSortUrl(String sortString, boolean descending) {
         sortString = (descending ? "!" : "") + sortString;
         return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix(sortString);
+    }
+    
+    public String removeFacet(String facet) throws UnsupportedEncodingException {
+        final String decodedFacet = URLDecoder.decode(facet, "utf-8");
+        String facetString = Stream.of(getFacetString().split(";;"))
+        .filter(s -> !s.equalsIgnoreCase(decodedFacet))
+        .collect(Collectors.joining(";;"));
+        return facetString;
     }
 }
