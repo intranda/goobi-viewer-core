@@ -18,6 +18,9 @@ package de.intranda.digiverso.presentation.model.viewer;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +50,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     @Override
-    public URI getLinkURI() {
+    public URI getLinkURI(HttpServletRequest request) {
         return linkURI;
     }
 
@@ -69,6 +72,9 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
 
     private static URI createIconURI(String collectionName) {
         String icon = DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName);
+        if(StringUtils.isBlank(icon)) {
+            return null;
+        }
         try {
             String iconPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/resources/themes/" + BeanUtils.getNavigationHelper()
                     .getTheme() + "/" + icon;

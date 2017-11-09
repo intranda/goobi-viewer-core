@@ -125,6 +125,17 @@
                                     <h:panelGroup id="collectionSelector">
                                         <h:panelGroup rendered="#{cmsMediaBean.currentMediaItem.isCollection()}">
                                             <div class="form-group">
+												<label class="col-sm-6 control-label">#{msg.cms_media_select_collection_field}:</label>
+												<div class="col-sm-6">
+													<div class="form-control__select">
+														<h:selectOneMenu styleClass="form-control content-input" value="#{cmsMediaBean.currentMediaItem.collectionField}">
+															<f:selectItems value="#{cmsBean.getLuceneFields(true, true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+															<f:ajax render="collectionSelector" />
+														</h:selectOneMenu>
+													</div>
+												</div>
+											</div>
+                                            <div class="form-group">
                                                 <label class="col-sm-4 control-label">#{msg.cms_media_select_collection}:</label>
                                                 <div class="col-sm-8">
                                                     <div class="form-control__select">
@@ -132,7 +143,7 @@
                                                             value="#{cmsMediaBean.currentMediaItem.collectionName}"
                                                             disabled="#{!cmsMediaBean.currentMediaItem.isCollection()}">
                                                             <f:selectItems 
-                                                                value="#{cmsMediaBean.getAllowedCollections()}" 
+                                                                value="#{cmsMediaBean.getAllowedCollections(cmsMediaBean.currentMediaItem.collectionField)}" 
                                                                 var="field" 
                                                                 itemValue="#{field}"
                                                                 itemLabel="#{msg[field]}" />

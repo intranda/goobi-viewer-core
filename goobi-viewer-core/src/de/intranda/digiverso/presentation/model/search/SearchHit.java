@@ -345,9 +345,14 @@ public class SearchHit implements Comparable<SearchHit> {
                         } {
                         SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
                                 ignoreFields, translateFields);
-                        if (docType.equals(DocType.METADATA)) {
-                            logger.trace("added metadata hit: {}", childHit.browseElement.getLabel());
+                        // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                        for (StringPair metadata : childHit.getFoundMetadata()) {
+                            // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                            if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                ownerHit.getFoundMetadata().add(metadata);
+                            }
                         }
+
                         ownerHit.getChildren().add(childHit);
                         hitsPopulated++;
                     }
@@ -395,6 +400,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should translate configured field values correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {
+        logger.trace("populateFoundMetadata");
         if (searchTerms == null) {
             return;
         }
@@ -409,7 +415,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
-                        if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                        if (!(docFieldName.startsWith("MD_") || docFieldName.equals("NORM_ALTNAME")) || docFieldName.endsWith(
+                                SolrConstants._UNTOKENIZED)) {
                             continue;
                         }
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
@@ -431,6 +438,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
+                                // Only add one instance of NORM_ALTNAME (as there can be dozens)
+                                if ("NORM_ALTNAME".equals(docFieldName)) {
+                                    break;
+                                }
+                                logger.trace("found {}:{}", docFieldName, fieldValue);
                             }
                         }
                     }

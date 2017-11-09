@@ -82,7 +82,7 @@ public class TileGridBuilderTest {
         items.add(item4);
 
         for (int i = 0; i < 20; i++) {
-            TileGrid grid = new TileGridBuilder().size(2).reserveForHighPriority(1).tags("tag1").build(items);
+            TileGrid grid = new TileGridBuilder(null).size(2).reserveForHighPriority(1).tags("tag1").build(items);
             Assert.assertEquals(2, grid.getItems().size());
             Assert.assertTrue(contains(grid.getItems(), item1));
             Assert.assertTrue("Grid does not contain item 3 or 4: " + grid, contains(grid.getItems(), item3) || contains(grid.getItems(), item4));
