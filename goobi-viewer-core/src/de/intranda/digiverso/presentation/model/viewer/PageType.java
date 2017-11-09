@@ -156,7 +156,7 @@ public enum PageType {
         //look for configured names
         for (PageType p : PageType.values()) {
             String configName = DataManager.getInstance().getConfiguration().getPageType(p);
-            if (configName.equalsIgnoreCase(name)) {
+            if (configName != null && configName.equalsIgnoreCase(name)) {
                 return p;
             }
         }
