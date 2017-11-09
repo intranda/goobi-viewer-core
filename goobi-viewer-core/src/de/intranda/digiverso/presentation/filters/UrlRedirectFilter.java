@@ -52,9 +52,9 @@ public class UrlRedirectFilter implements Filter {
         if(!path.startsWith("index.xhtml") & !path.startsWith("resources") && path.endsWith("index.xhtml")) {
             path = StringUtils.remove(path, "/index.xhtml");
             String urlSuffix = "";
-            if(path.contains("/")) {                
-                urlSuffix = path.substring(path.indexOf("/"));
-                path = path.substring(0, path.indexOf("/"));
+            if(path.contains("/search/")) {                
+                urlSuffix = path.substring(path.indexOf("/search/"));
+                path = path.substring(0, path.indexOf("/search/"));
             }
            logger.trace("Attempting to find cms page for " + path);
             try {
