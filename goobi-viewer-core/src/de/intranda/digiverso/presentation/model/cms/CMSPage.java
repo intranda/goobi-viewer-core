@@ -781,12 +781,14 @@ public class CMSPage {
      * @param itemId
      * @return
      */
-    public boolean hasContentItem(final String itemId) {
+    public boolean hasContentItem(final String itemId) {          
         synchronized (languageVersions) {            
-            return getLanguageVersions().stream()
-                    .map(lang -> lang.getContentItem(itemId))
-                    .filter(item -> item != null)
-                    .count() > 0;
+            return languageVersions.stream()
+                    .flatMap(lang -> lang.getContentItems().stream())
+//                    .map(lang -> lang.getContentItem(itemId))
+//                    .filter(item -> item != null)
+                    .filter(item -> item.getItemId().equals(itemId))
+                    .findAny().isPresent();
         }
     }
     

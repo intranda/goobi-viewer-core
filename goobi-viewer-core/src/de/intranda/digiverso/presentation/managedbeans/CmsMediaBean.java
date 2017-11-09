@@ -423,6 +423,26 @@ public class CmsMediaBean {
 
         return collectionNames;
     }
+    
+    public List<String> getAllowedCollections(String collectionField) throws DAOException, IndexUnreachableException {
+        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        if (browseBean == null) {
+            browseBean = new BrowseBean();
+        }
+        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(collectionField);
+        List<BrowseDcElement> collections = browseBean.getList(collectionField, displayDepth);
+        List<String> collectionNames = new ArrayList<>();
+        List<String> usedCollections = getUsedCollections();
+        for (BrowseDcElement element : collections) {
+            String collectionName = element.getName();
+            if (!usedCollections.contains(collectionName) || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem()
+                    .getCollectionName()))) {
+                collectionNames.add(collectionName);
+            }
+        }
+
+        return collectionNames;
+    }
 
     /**
      * @return
