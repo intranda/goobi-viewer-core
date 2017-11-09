@@ -216,6 +216,8 @@ public class CmsBean {
             if (template == null) {
                 //remove pages with no template files
                 pages.remove();
+            } else if (!isPageValid(page, template)) {
+                pages.remove();
             } else {
                 //check if this pages is used as static page
                 for (CMSStaticPage staticPage : getStaticPages()) {
@@ -1176,8 +1178,8 @@ public class CmsBean {
             }
         }
         logger.trace("forwardToCMSPage path 2: {}", path);
+        FacesContext context = getFacesContext();
         if (StringUtils.isNotBlank(path)) {
-            FacesContext context = getFacesContext();
             logger.debug("Forwarding to " + path);
             context.getExternalContext().dispatch(path);
             context.responseComplete();

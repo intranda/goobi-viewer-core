@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections.CollectionUtils;
 
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -34,6 +36,15 @@ public class TileGridBuilder {
     private int reserveForHighPriority = 9;
     private String language = "en";
     private Set<String> tags = new HashSet<>();
+
+    private final HttpServletRequest request;
+    
+    /**
+     * @param servletRequest
+     */
+    public TileGridBuilder(HttpServletRequest servletRequest) {
+        this.request = servletRequest;
+    }
 
     public TileGridBuilder size(int size) {
         this.gridSize = size;
@@ -84,7 +95,7 @@ public class TileGridBuilder {
             }
         });
         
-        return new TileGrid(items, language);
+        return new TileGrid(items, language, request);
     }
 
     private List<ImageGalleryTile> filter(List<ImageGalleryTile> items, Set<String> tags) {

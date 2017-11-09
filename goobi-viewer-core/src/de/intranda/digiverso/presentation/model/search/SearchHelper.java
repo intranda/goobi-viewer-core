@@ -60,6 +60,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
@@ -76,6 +77,7 @@ import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.utils.SolrHelper;
 
 /**
  * Search utility class. Static methods only.
@@ -404,7 +406,7 @@ public final class SearchHelper {
                     Collection<Object> fieldList = doc.getFieldValues(luceneField);
                     if (fieldList != null) {
                         for (Object o : fieldList) {
-                            String dc = (String) o;
+                            String dc = SolrSearchIndex.getAsString(o);
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
                             }
@@ -525,7 +527,8 @@ public final class SearchHelper {
                     Collection<Object> fieldList = doc.getFieldValues(luceneField);
                     if (fieldList != null) {
                         for (Object o : fieldList) {
-                            String dc = (String) o;
+                            String dc = DataManager.getInstance().getSearchIndex().getAsString(o);
+//                            String dc = (String) o;
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
                             }
