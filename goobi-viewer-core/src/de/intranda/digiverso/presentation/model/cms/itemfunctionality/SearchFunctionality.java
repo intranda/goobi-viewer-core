@@ -317,6 +317,9 @@ public class SearchFunctionality implements Functionality {
         String facetString = Stream.of(getFacetString().split(";;"))
         .filter(s -> !s.equalsIgnoreCase(decodedFacet))
         .collect(Collectors.joining(";;"));
+        if(StringUtils.isBlank(facetString)) {
+            facetString = "-";
+        }
         return facetString;
     }
 }
