@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <cms_page_template id="template_solrQuery_list" version="2015-01-14">
-    <name>Text mit Suchtreffern</name>
-    <description>Dieses Template beinhaltet im oberen Bereich einen beschreibenden Text. Darunter werden die Treffer einer Suchabfrage inklusive eines Paginators angezeigt. Die Suchabfrage wie auch die Anzahl der Elemente pro Seite wird im Template konfiguriert. </description>
-    <icon>cms_template_06_solrquery.png</icon>
-    <html>cms_template_06_solrquery.xhtml</html>
-    <content>
-        <item id="text01" label="Inhalt" type="HTML" mandatory="true" />
-        <item id="queryList01" label="Werke" type="SOLRQUERY" />
-    </content>
+  <name>Text mit Suchtreffern</name>
+  <description>Dieses Template beinhaltet im oberen Bereich einen beschreibenden Text. Darunter werden die Treffer einer Suchabfrage inklusive eines Paginators angezeigt. Die Suchabfrage wie auch die Anzahl der Elemente pro Seite wird im Template konfiguriert. </description>
+  <icon>cms_template_06_solrquery.png</icon>
+  <html>cms_template_06_solrquery.xhtml</html>
+  <content>
+    <item id="image01" order="1" label="Sammlungsbild" type="MEDIA" mandatory="false"/>
+    <item id="preview01" order="2" label="Textabschnitt (Vorschau)" type="HTML" mandatory="false"/>
+    <item id="text01" label="Inhalt" type="HTML" mandatory="true"/>
+    <item id="queryList01" label="Werke" type="SOLRQUERY"/>
+  </content>
 </cms_page_template>
