@@ -878,15 +878,19 @@ public class BrowseElement implements Serializable {
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
             String url = getThumbnailUrl();
-            url = url.replaceAll("width=\\d+", "").replaceAll("height=\\d+", "");
-            StringBuilder urlBuilder = new StringBuilder(url);
-            if (width != null) {
-                urlBuilder.append("&width=").append(width);
+            if (url != null) {
+                url = url.replaceAll("width=\\d+", "").replaceAll("height=\\d+", "");
+                StringBuilder urlBuilder = new StringBuilder(url);
+                if (width != null) {
+                    urlBuilder.append("&width=").append(width);
+                }
+                if (height != null) {
+                    urlBuilder.append("&height=").append(height);
+                }
+                return urlBuilder.toString();
+            } else {
+                return "";
             }
-            if (height != null) {
-                urlBuilder.append("&height=").append(height);
-            }
-            return urlBuilder.toString();
         }
     }
 
