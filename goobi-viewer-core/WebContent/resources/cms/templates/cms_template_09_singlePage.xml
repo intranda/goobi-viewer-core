@@ -6,5 +6,6 @@
     <html>cms_template_09_singlePage.xhtml</html>
     <content>
         <item id="text01" type="HTML" label="Text" mandatory="true" />
+        <item id="image01" type="MEDIA" label="Bild" mandatory="false" />
     </content>
 </cms_page_template>

@@ -769,10 +769,14 @@ public class CMSPage {
      * @return
      */
     public boolean hasContentItem(final String itemId) {
-        return getLanguageVersions().stream()
-                .map(lang -> lang.getContentItem(itemId))
-                .filter(item -> item != null)
-                .count() > 0;
+        synchronized (languageVersions) {            
+            return languageVersions.stream()
+                    .flatMap(lang -> lang.getContentItems().stream())
+//                    .map(lang -> lang.getContentItem(itemId))
+//                    .filter(item -> item != null)
+                    .filter(item -> item.getItemId().equals(itemId))
+                    .findAny().isPresent();
+        }
     }
     
 }

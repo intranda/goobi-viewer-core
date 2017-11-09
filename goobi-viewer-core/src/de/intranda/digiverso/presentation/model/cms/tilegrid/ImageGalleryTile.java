@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.cms.tilegrid;
 import java.net.URI;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
@@ -33,7 +35,7 @@ public interface ImageGalleryTile {
 
     public URI getIconURI();
 
-    public URI getLinkURI();
+    public URI getLinkURI(HttpServletRequest request);
 
     public String getDescription(String language);
 

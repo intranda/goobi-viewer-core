@@ -19,10 +19,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -39,6 +41,9 @@ public class TileGridResource {
     public static final String TAG_SEPARATOR_REGEX = "\\$";
     public static final String TAG_SEPARATOR = "$";
 
+    @Context
+    private HttpServletRequest servletRequest;
+    
     @SuppressWarnings("unchecked")
     @GET
     @Path("/{language}/{size}/{priorityPlaces}/{tags}/")
@@ -57,7 +62,7 @@ public class TileGridResource {
             tags = tagString.split(TAG_SEPARATOR_REGEX);
         }
 
-        TileGrid grid = new TileGridBuilder().language(language).size(gridSize).reserveForHighPriority(priorityPlaces).tags(tags).build(items);
+        TileGrid grid = new TileGridBuilder(servletRequest).language(language).size(gridSize).reserveForHighPriority(priorityPlaces).tags(tags).build(items);
         return grid;
     }
 }

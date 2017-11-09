@@ -32,6 +32,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -62,7 +63,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     private String fileName;
 
     @Column(name = "link_url", nullable = true)
-    private URI linkURI;
+    private URI link;
 
     @Column(name = "priority", nullable = true)
     private Priority priority = Priority.DEFAULT;
@@ -70,6 +71,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @Column(name = "collection", nullable = true)
     private Boolean collection = false;
 
+    @Column(name = "collection_field", nullable = true)
+    private String collectionField = "DC";
+    
     @Column(name = "collection_name", nullable = true)
     private String collectionName = null;
 
@@ -264,32 +268,56 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         this.priority = priority;
     }
 
-    @Override
     public URI getLinkURI() {
-        if (this.linkURI != null) {
-            return this.linkURI;
-        }
-        return null;
+        return getLinkURI(BeanUtils.getRequest());
     }
-
-    public void setLinkUrl(URI linkUrl) {
-        this.linkURI = linkUrl;
-
-    }
-
-    public String getLink() {
-        if (getLinkURI() != null) {
-            return getLinkURI().toString();
-        }
-        return null;
-    }
-
-    public void setLink(String linkUrl) throws URISyntaxException {
-        if (StringUtils.isNotBlank(linkUrl)) {
-            this.linkURI = new URI(linkUrl);
+    
+    /**
+     * @return the URI to this media item
+     */
+    @Override
+    public URI getLinkURI(HttpServletRequest request) {
+        
+        if (StringUtils.isNotBlank(getLink())) {
+            try {
+                URI uri = new URI(getLink());            
+                if(!uri.isAbsolute()) {                    
+                    String viewerURL = "/";
+                    if(request != null) {
+                        viewerURL = request.getContextPath();
+                    }
+                    String urlString = (viewerURL + getLink()).replace("//", "/");
+                    uri = new URI(urlString);
+                }
+                return uri;
+            } catch (URISyntaxException e) {
+                logger.error("Unable to create uri from " + getLink());
+                return null;
+            }
         } else {
-            this.linkURI = null;
+            return null;
         }
+    }
+
+    /**
+     * 
+     * @return the entered link url
+     */
+    public String getLink() {
+        if (this.link != null) {
+            return this.link.toString();
+        }
+        return null;
+    }
+
+    /**
+     * set the link for this media item
+     * 
+     * @param linkUrl
+     * @throws URISyntaxException
+     */
+    public void setLink(String linkUrl) throws URISyntaxException {
+        this.link = new URI(linkUrl);
     }
 
     @Override
@@ -309,26 +337,22 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return collectionName;
     }
 
-    public void setCollectionName(String collectionName) {
+    public void setCollectionName(String collectionName) throws URISyntaxException {
         this.collectionName = collectionName;
-        if (StringUtils.isNotBlank(this.collectionName) && this.linkURI == null) {
-            try {
-                this.linkURI = new URI(getCollectionSearchUri());
-            } catch (URISyntaxException e) {
-                logger.error("Unable to create link to collection " + getCollectionName());
-            }
+        if (StringUtils.isNotBlank(this.collectionName) && StringUtils.isBlank(getLink())) {
+            this.link = new URI(getCollectionSearchUri());
         }
     }
 
     @Deprecated
     public String getCollectionViewUri() {
         String baseUri = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
-        return baseUri + "/" + PageType.expandCollection + "/" + SolrConstants.DC + ':' + getCollectionName() + "/";
+        return baseUri + "/" + PageType.expandCollection + "/" + getCollectionField() + ':' + getCollectionName() + "/";
     }
 
     public String getCollectionSearchUri() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + SolrConstants.DC + ':' + getCollectionName()
-                + "/-/1/-/-/";
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + getCollectionField() + ':'
+                + getCollectionName() + "/-/1/-/-/";
     }
 
     /* (non-Javadoc)
@@ -417,5 +441,22 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
      */
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
+    }
+    
+    /**
+     * @return the collectionNField
+     */
+    public String getCollectionField() {
+        if(StringUtils.isBlank(collectionField)) {
+            return SolrConstants.DC;
+        }
+        return collectionField;
+    }
+    
+    /**
+     * @param collectionField the collectionField to set
+     */
+    public void setCollectionField(String collectionField) {
+        this.collectionField = collectionField;
     }
 }
