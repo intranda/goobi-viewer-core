@@ -184,7 +184,6 @@ public class SearchHit implements Comparable<SearchHit> {
             }
         }
 
-        logger.trace("label: {}", browseElement.getLabel());
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
         hit.populateFoundMetadata(doc, ignoreAdditionalFields, translateAdditionalFields);
 
@@ -346,9 +345,9 @@ public class SearchHit implements Comparable<SearchHit> {
                         } {
                         SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
                                 ignoreFields, translateFields);
-                        if (docType.equals(DocType.METADATA)) {
-                            logger.trace("added metadata hit: {}", childHit.browseElement.getLabel());
-                        }
+                        // Add all found additional metadata to the owner doc so it can be displayed
+                        ownerHit.getFoundMetadata().addAll(childHit.getFoundMetadata());
+                       
                         ownerHit.getChildren().add(childHit);
                         hitsPopulated++;
                     }
@@ -410,7 +409,8 @@ public class SearchHit implements Comparable<SearchHit> {
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : doc.getFieldNames()) {
-                        if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
+                        if (!(docFieldName.startsWith("MD_") || docFieldName.equals("NORM_ALTNAME")) || docFieldName.endsWith(
+                                SolrConstants._UNTOKENIZED)) {
                             continue;
                         }
                         if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
@@ -432,6 +432,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
+                                // logger.trace("found {}:{}", docFieldName, fieldValue);
                             }
                         }
                     }

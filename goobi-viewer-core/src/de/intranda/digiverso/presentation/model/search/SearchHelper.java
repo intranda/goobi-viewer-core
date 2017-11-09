@@ -1455,7 +1455,7 @@ public final class SearchHelper {
         String currentField = null;
         for (String s : querySplit) {
             s = s.trim();
-            logger.trace("term: {}", s);
+            // logger.trace("term: {}", s);
             // Extract the value part
             if (s.contains(":") && !s.startsWith(":")) {
                 int split = s.indexOf(':');

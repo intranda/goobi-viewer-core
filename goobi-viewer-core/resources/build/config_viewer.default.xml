@@ -417,6 +417,9 @@
 			<ignoreField>DOCTYPE</ignoreField>
 			<ignoreField>ISANCHOR</ignoreField>
 			<ignoreField>ISWORK</ignoreField>
+            <ignoreField>MD_FIRSTNAME</ignoreField>
+            <ignoreField>MD_LASTNAME</ignoreField>
+            <ignoreField>MD_VALUE</ignoreField>
 			<ignoreField>NORMDATATERMS</ignoreField>
 			<ignoreField>PI_ANCHOR</ignoreField>
 			<ignoreField>PI_TOPSTRUCT</ignoreField>
