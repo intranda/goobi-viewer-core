@@ -345,9 +345,14 @@ public class SearchHit implements Comparable<SearchHit> {
                         } {
                         SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
                                 ignoreFields, translateFields);
-                        // Add all found additional metadata to the owner doc so it can be displayed
-                        ownerHit.getFoundMetadata().addAll(childHit.getFoundMetadata());
-                       
+                        // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                        for (StringPair metadata : childHit.getFoundMetadata()) {
+                            // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                            if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                ownerHit.getFoundMetadata().add(metadata);
+                            }
+                        }
+
                         ownerHit.getChildren().add(childHit);
                         hitsPopulated++;
                     }
@@ -395,6 +400,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should translate configured field values correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {
+        logger.trace("populateFoundMetadata");
         if (searchTerms == null) {
             return;
         }
@@ -432,7 +438,11 @@ public class SearchHit implements Comparable<SearchHit> {
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 foundMetadata.add(new StringPair(Helper.getTranslation(docFieldName, locale), highlightedValue));
-                                // logger.trace("found {}:{}", docFieldName, fieldValue);
+                                // Only add one instance of NORM_ALTNAME (as there can be dozens)
+                                if ("NORM_ALTNAME".equals(docFieldName)) {
+                                    break;
+                                }
+                                logger.trace("found {}:{}", docFieldName, fieldValue);
                             }
                         }
                     }
