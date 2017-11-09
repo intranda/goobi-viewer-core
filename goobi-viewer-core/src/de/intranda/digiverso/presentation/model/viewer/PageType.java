@@ -153,6 +153,13 @@ public enum PageType {
                 return p;
             }
         }
+        //look for configured names
+        for (PageType p : PageType.values()) {
+            String configName = DataManager.getInstance().getConfiguration().getPageType(p);
+            if (configName.equalsIgnoreCase(name)) {
+                return p;
+            }
+        }
         return PageType.other;
     }
 

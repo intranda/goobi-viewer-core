@@ -51,12 +51,17 @@ public class UrlRedirectFilter implements Filter {
         path = StringUtils.removeEnd(path, "/");
         if(!path.startsWith("index.xhtml") & !path.startsWith("resources") && path.endsWith("index.xhtml")) {
             path = StringUtils.remove(path, "/index.xhtml");
+            String urlSuffix = "";
+            if(path.contains("/")) {                
+                urlSuffix = path.substring(path.indexOf("/"));
+                path = path.substring(0, path.indexOf("/"));
+            }
            logger.trace("Attempting to find cms page for " + path);
             try {
                 List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
                 for (CMSPage cmsPage : cmsPages) {
                     if(path.equalsIgnoreCase(cmsPage.getPersistentUrl())) {                        
-                        String redirectPath = "/" + cmsPage.getRelativeUrlPath(false);
+                        String redirectPath = ("/" + cmsPage.getRelativeUrlPath(false) + urlSuffix).replace("//", "/");
                         logger.debug("Forwarding " + path + " to " + redirectPath);
                         RequestDispatcher d=request.getRequestDispatcher(redirectPath);
                         d.forward(request, response);
