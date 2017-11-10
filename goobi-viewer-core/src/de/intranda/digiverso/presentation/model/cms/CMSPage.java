@@ -563,6 +563,8 @@ public class CMSPage {
                     return StringUtils.isNotBlank(item.getHtmlFragment());
                 case MEDIA:
                     return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
+                case COMPONENT:
+                    return StringUtils.isNotBlank(item.getComponent());
                 default:
                     return false;
             }
@@ -588,6 +590,8 @@ public class CMSPage {
                     break;
                 case MEDIA:
                     contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                case COMPONENT:
+                    contentString = item.getComponent();
                     break;
                 default:
                     contentString = "";

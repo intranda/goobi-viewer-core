@@ -75,7 +75,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         TILEGRID,
         TOC,
         RSS,
-        SEARCH;
+        SEARCH,
+        COMPONENT;
 
         /**
          * This method evaluates the text from cms-template xml files to select the correct item type
@@ -106,6 +107,8 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         return TOC;
                     case "SEARCH":
                         return CMSContentItemType.SEARCH;
+                    case "COMPONENT":
+                        return COMPONENT;
                     default:
                         return null;
                 }
@@ -229,6 +232,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Column(name = "tile_count")
     private int numberOfTiles = 9;
+    
+    @Column(name = "component")
+    private String component = null;
 
     /**
      * This object may contain item type specific functionality (methods and transient properties)
@@ -820,6 +826,20 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public ContentItemMode getMode() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
+    }
+    
+    /**
+     * @return the component
+     */
+    public String getComponent() {
+        return component;
+    }
+    
+    /**
+     * @param component the component to set
+     */
+    public void setComponent(String component) {
+        this.component = component;
     }
 
 }

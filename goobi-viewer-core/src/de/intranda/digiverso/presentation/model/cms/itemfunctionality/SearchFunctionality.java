@@ -120,6 +120,7 @@ public class SearchFunctionality implements Functionality {
             getSearchBean().setSortString(getSolrSortFields());
         }
         getSearchBean().search();
+        
     }
 
     /**
