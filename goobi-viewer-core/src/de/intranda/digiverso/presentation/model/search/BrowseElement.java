@@ -727,6 +727,9 @@ public class BrowseElement implements Serializable {
                                 } else {
                                     ret = se.getMetadataValue("MD_VALUE");
                                 }
+                                if (ret == null) {
+                                    ret = se.getMetadataValue(SolrConstants.LABEL);
+                                }
                                 break;
                             default:
                                 ret = se.getMetadataValue(SolrConstants.LABEL);
@@ -764,6 +767,12 @@ public class BrowseElement implements Serializable {
             return generateDefaultLabel(se, locale);
         }
 
+        if (ret == null) {
+            ret = "";
+            logger.error("Index document {}, has no LABEL, MD_TITLE or DOCSTRUCT fields. Perhaps there is no connection to the owner doc?", se
+                    .getLuceneId());
+        }
+
         return ret;
     }
 
@@ -783,10 +792,6 @@ public class BrowseElement implements Serializable {
             }
         }
 
-        if (ret == null) {
-            ret = "";
-            logger.error("Index document {}, has no LABEL, MD_TITLE or DOCSTRUCT fields. Perhaps there is no connection to the owner doc?");
-        }
         return ret;
     }
 
