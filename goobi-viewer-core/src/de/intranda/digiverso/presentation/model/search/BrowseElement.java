@@ -317,6 +317,7 @@ public class BrowseElement implements Serializable {
         if (DocType.GROUP.equals(docType)) {
             label = docType.getLabel(null);
         } else {
+            generateLabel(structElement).length();
             StringBuilder sbLabel = new StringBuilder(generateLabel(structElement));
             String subtitle = structElement.getMetadataValue(SolrConstants.SUBTITLE);
             if (StringUtils.isNotEmpty(subtitle)) {
@@ -764,7 +765,7 @@ public class BrowseElement implements Serializable {
             }
         } else {
             logger.warn("{} field seems to be missing on Solr document {}", SolrConstants.DOCTYPE, se.getLuceneId());
-            return generateDefaultLabel(se, locale);
+            ret = generateDefaultLabel(se, locale);
         }
 
         if (ret == null) {
