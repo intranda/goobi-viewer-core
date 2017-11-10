@@ -410,4 +410,34 @@ public class MetadataElement {
     public boolean isFilesOnly() {
         return filesOnly;
     }
+    
+    /**
+     * 
+     * 
+     * @param name  The name of the metadata
+     * @return the best available metadata value, or an empty string if no metadata was found
+     */
+    public String getFirstMetadataValue(String name) {
+        Metadata md = getMetadata(name);
+        if(md == null) {
+            md = getMetadata(name, BeanUtils.getActiveDocumentBean().getSelectedRecordLanguage());
+        }
+        if(md != null) {
+            if(StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}")) {
+                return md.getMasterValue();
+            } else if(!md.getValues().isEmpty()){
+                return md.getValues().get(0).getComboValueShort(0);
+            }
+        }
+        return "";
+    }
+    
+    public String getFirstMetadataValue(String prefix, String name, String suffix) {
+        String value = getFirstMetadataValue(name);
+        if(StringUtils.isNotBlank(value)) {
+            return prefix + value + suffix;
+        } else {
+            return value;
+        }
+    }
 }

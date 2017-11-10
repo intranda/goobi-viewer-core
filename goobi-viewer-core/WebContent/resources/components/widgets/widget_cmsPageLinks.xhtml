@@ -10,7 +10,7 @@
 
     <composite:implementation>
     	<h:form id="customDrillDownForm" prependId="false">
-			<h:panelGroup id="cmsPageLinks" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'cmsPageLinks'}">
+			<h:panelGroup id="cmsPageLinks" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'widgetCmsPageLinks'}">
 				<div id="widgetCmsPageLinks-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
 <!-- 						<h3>#{msg[cc.attrs.widget.type]}</h3> -->

@@ -1151,5 +1151,5 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Error writing toc: " + e.getMessage(), e);
         }
     }
-    
+        
 }
