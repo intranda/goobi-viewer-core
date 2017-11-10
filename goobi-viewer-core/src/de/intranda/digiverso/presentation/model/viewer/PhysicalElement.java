@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -745,7 +744,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 wordCoordsFormat = CoordsFormat.ALTO;
                 return true;
             } catch (HTTPException e) {
-                throw new IOException(e);
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
             }
         }
 
@@ -815,7 +815,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 wordCoordsFormat = CoordsFormat.ALTO;
                 return true;
             } catch (HTTPException e) {
-                throw new IOException(e);
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
             }
         }
 

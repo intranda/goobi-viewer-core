@@ -12,16 +12,18 @@
         	<h:form id="imageControlsForm" prependId="false">
 	            <ul>
 	                <!-- START -->
-	                <li class="image-control image-control__start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
-	                    <h:outputLink 
-	                        value="#{activeDocumentBean.firstPageUrl}" 
-	                        title="#{msg.firstImage}"
-	                        disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
-	                        <i class="image-start"></i>
-	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                        <f:passThroughAttribute name="data-placement" value="bottom" />
-	                    </h:outputLink>
-	                </li>
+	                <h:panelGroup rendered="#{activeDocumentBean.viewManager.multiPageRecord}">
+	                
+	                    <li class="image-control image-control__start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+	                        <h:outputLink 
+	                            value="#{activeDocumentBean.firstPageUrl}" 
+	                            title="#{msg.firstImage}"
+	                            disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
+	                            <i class="image-start"></i>
+	                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                            <f:passThroughAttribute name="data-placement" value="bottom" />
+	                        </h:outputLink>
+	                    </li>
 	                
 	                <!-- PAGE BROWSE BACK -->
 	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
@@ -185,6 +187,8 @@
 		                    	<f:passThroughAttribute name="data-placement" value="bottom" />
 		                    </h:commandLink>
 		                </li>
+					</h:panelGroup>
+					
 					</h:panelGroup>
 	                
 	                <h:panelGroup rendered="#{navigationHelper.currentPage != 'fulltext'}">

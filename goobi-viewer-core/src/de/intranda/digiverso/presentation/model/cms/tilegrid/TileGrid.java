@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.cms.tilegrid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,9 +25,11 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 
 public class TileGrid {
 
+    private final List<String> tags = new ArrayList<>();
     private final List<Tile> items = new ArrayList<Tile>();
 
-    public TileGrid(List<ImageGalleryTile> items, String language, HttpServletRequest request) {
+    public TileGrid(List<ImageGalleryTile> items, Set<String> tags,String language, HttpServletRequest request) {
+        this.tags.addAll(tags);
         for (ImageGalleryTile mediaItem : items) {
             this.items.add(new Tile(mediaItem.getName(language) != null ? mediaItem.getName(language) : "", mediaItem.getIconURI() != null ? mediaItem
                     .getIconURI().toString() : "", mediaItem.getDescription(language) != null ? mediaItem.getDescription(language) : "", mediaItem
@@ -50,6 +53,14 @@ public class TileGrid {
     public void removeItem(Tile item) {
         this.items.remove(item);
     }
+    
+    /**
+     * @return the tags
+     */
+    public List<String> getTags() {
+        return tags;
+    }
+
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

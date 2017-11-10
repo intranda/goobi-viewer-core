@@ -717,6 +717,7 @@ table,
   display: inline-block;
 }
 .custom-control--select {
+  width: 100%;
   height: 34px;
   padding: 6px;
   font-size: 14px;
@@ -726,17 +727,9 @@ table,
   background-image: none;
   border: 1px solid #ccc;
 }
-.custom-control--select:before,
 .custom-control--select:after {
   content: "";
   position: absolute;
-}
-.custom-control--select:before {
-  top: 0;
-  right: 0;
-  width: 32px;
-  height: 32px;
-  background-color: #fff;
 }
 .custom-control--select:after {
   display: inline-block;
@@ -756,7 +749,7 @@ table,
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 0;
+  padding-right: 26px;
   line-height: 1.5;
   color: #1a1a1a;
   border: 0;
@@ -3286,9 +3279,6 @@ div[id*="-Modal"] .email-form .form-group {
   text-decoration: none;
   color: #1a1a1a;
 }
-.search-advanced__input-group .custom-control--select {
-  width: 100%;
-}
 .search-advanced__input-group .custom-control--select.disabled {
   display: none;
 }
@@ -3299,10 +3289,6 @@ div[id*="-Modal"] .email-form .form-group {
   border-radius: 0;
   background-color: transparent;
   opacity: 0.4;
-}
-.search-advanced__input-group select {
-  padding-right: 1rem;
-  padding-left: 0;
 }
 .search-advanced__input-group button {
   padding: .5rem;

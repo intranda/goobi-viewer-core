@@ -38,7 +38,7 @@
     	                                    <!-- WITH DESCRIPTION -->
     	                                    <h:commandLink rendered="#{!browseDcElement.info.description.equals('')}"  action="#{collection.expand(browseDcElement)}">
     	                                        <f:passThroughAttribute name="data-toggle" value="popover" />
-    	                                        <f:passThroughAttribute name="data-placement" value="bottom" />
+    	                                        <f:passThroughAttribute name="data-placement" value="top" />
     	                                        <f:passThroughAttribute name="data-container" value="body" />
     	                                        <f:passThroughAttribute name="data-trigger" value="hover" />
     	                                        <f:passThroughAttribute name="data-html" value="true" />
@@ -70,7 +70,7 @@
     	                                    <!-- WITH DESCRIPTION -->
     	                                    <h:outputLink rendered="#{!browseDcElement.info.description.equals('')}" value="#{collection.getCollectionUrl(browseDcElement)}">
     	                                        <f:passThroughAttribute name="data-toggle" value="popover" />
-    	                                        <f:passThroughAttribute name="data-placement" value="bottom" />
+    	                                        <f:passThroughAttribute name="data-placement" value="top" />
     	                                        <f:passThroughAttribute name="data-container" value="body" />
     	                                        <f:passThroughAttribute name="data-trigger" value="hover" />
     	                                        <f:passThroughAttribute name="data-html" value="true" />
