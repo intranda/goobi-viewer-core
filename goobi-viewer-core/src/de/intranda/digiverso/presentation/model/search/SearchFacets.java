@@ -381,6 +381,18 @@ public class SearchFacets {
             return ret;
         }
     }
+    
+    public String getCurrentFacetString(boolean urlEncode) {
+        String ret = generateFacetPrefix(currentFacets, true);
+        if (StringUtils.isEmpty(ret)) {
+            ret = "-";
+        }
+        try {
+            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return ret;
+        }
+    }
 
     /**
      * @return the currentCollection
@@ -569,7 +581,6 @@ public class SearchFacets {
      * @should remove facet containing reserved chars
      */
     public String removeFacetAction(final String facetQuery, final String ret) {
-        // facetQuery = facetQuery.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT);
         logger.trace("removeFacetAction: {}", facetQuery);
         String currentFacetString = generateFacetPrefix(currentFacets, false);
         if (currentFacetString.contains(facetQuery)) {

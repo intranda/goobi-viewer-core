@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" 
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"> 
+
+	<composite:interface />
+
+	<composite:implementation>
+		<h:panelGroup rendered="#{contentItem.type == 'RSS'}">
+			<div class="edit-content-page edit-content-page-solr">
+			<div class="form-group">
+						<label class="col-sm-12 group-label">#{msg.cms_itemRss}#{contentItem.mandatory?'*':''}:</label>
+					</div>
+				<div class="form-horizontal">
+					<div class="form-group">
+			<label class="col-sm-3 control-label">#{msg.cms_itemRssCount}:</label>
+						<div class="col-sm-9">
+							<h:inputText value="#{contentItem.elementsPerPage}" styleClass="form-control content-input">
+							<f:ajax event="change" render="@this"/>
+							</h:inputText>
+						</div>
+					</div>
+				</div>
+			</div>
+		</h:panelGroup>
+	</composite:implementation>
+</ui:composition>

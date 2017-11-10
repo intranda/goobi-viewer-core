@@ -726,9 +726,19 @@ table,
   background-image: none;
   border: 1px solid #ccc;
 }
+.custom-control--select:before,
 .custom-control--select:after {
   content: "";
   position: absolute;
+}
+.custom-control--select:before {
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+}
+.custom-control--select:after {
   display: inline-block;
   top: 50%;
   right: 10px;
@@ -3245,7 +3255,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-advanced__connector .custom-control--select,
 .search-advanced__connect-group .custom-control--select {
   display: inline-block;
-  width: 70px;
+  width: 80px;
   border: none;
 }
 .search-advanced__connector .custom-control--select:after,
@@ -3806,8 +3816,10 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-calendar__month-day a,
 .search-calendar__month-day button {
+  width: 100%;
   color: #428bca;
-  text-decoration: underline;
+  text-decoration: none;
+  background-color: #eee;
 }
 .search-calendar__month-day a:hover,
 .search-calendar__month-day button:hover,
@@ -6455,6 +6467,20 @@ div.olMapViewport {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget Work Count
+   style declarations for widget_workCount.xhtml
+   ==============================================================*/
+/* WIDGET WORKCOUNT */
+/* BLOCK */
+#widgetWorkCount p {
+  margin: 0;
+  padding: 5px 10px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page
@@ -6607,6 +6633,15 @@ div.olMapViewport {
 }
 #cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .sidebar-editor-item-widget-editor-action {
   text-align: right;
+}
+#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td {
+  display: block;
+}
+#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td label {
+  overflow: hidden;
+  max-width: 90%;
+  margin-bottom: -5px;
+  margin-left: 5px;
 }
 #cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .btn {
   margin: 0 0 0 5px;

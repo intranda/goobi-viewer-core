@@ -17,10 +17,12 @@ package de.intranda.digiverso.presentation.model.viewer;
 
 import java.net.URI;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface BrowseElementInfo {
 
     public String getDescription();
-    public URI getLinkURI();
+    public URI getLinkURI(HttpServletRequest request);
     public URI getIconURI();
     
 }

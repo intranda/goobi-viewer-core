@@ -31,6 +31,10 @@ import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 
 /**
+ * Part of the IIIF-presentation api
+ * 
+ *  represents a iiif collection which is the topmost element of a json+ld response
+ *  
  * @author Florian Alpers
  *
  */
@@ -76,6 +80,11 @@ public class BaseCollection extends Collection {
         collectionView.setTopVisibleElement("");
     }
     
+    /**
+     * The iiif-presentation context. Static
+     * 
+     * @return
+     */
     @JsonProperty("@context")
     public String getContext() {
         return IIIF_PRESENTATION_CONTEXT;

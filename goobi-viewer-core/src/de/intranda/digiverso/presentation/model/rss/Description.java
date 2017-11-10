@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
+ * Description for an RSS feed object
+ * 
  * @author Florian Alpers
  *
  */
@@ -71,10 +73,19 @@ public class Description {
         this.text = description;
     }
     
+    /**
+     * 
+     * @return all rss metadata of this object
+     */
     public List<RssMetadata> getMetadata() {
         return this.metadata;
     }
     
+    /**
+     * Add rss metadata to this object
+     * 
+     * @param metadata
+     */
     public void addMetadata(RssMetadata metadata) {
         this.metadata.add(metadata);
     }

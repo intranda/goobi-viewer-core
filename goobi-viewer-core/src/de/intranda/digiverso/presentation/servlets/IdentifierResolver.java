@@ -41,7 +41,8 @@ import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
@@ -198,7 +199,7 @@ public class IdentifierResolver extends HttpServlet {
             }
 
             // If the user has no listing privilege for this record, act as if it does not exist
-            boolean access = SearchHelper.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
             if (!access) {
                 logger.debug("User may not list record '{}'.", pi);
                 redirectToError(HttpServletResponse.SC_NOT_FOUND, fieldValue, request, response);
@@ -294,7 +295,7 @@ public class IdentifierResolver extends HttpServlet {
         // If the user has no listing privilege for this record, act as if it does not exist
         boolean access;
         try {
-            access = SearchHelper.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_LIST, request);
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

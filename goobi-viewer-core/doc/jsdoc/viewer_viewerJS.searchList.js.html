@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>DocStrap Source: viewer/viewerJS.searchList.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">DocStrap</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="cmsJS.module_createPage.html">cmsJS.createPage</a></li><li><a href="cmsJS.module_masonry.html">cmsJS.masonry</a></li><li><a href="cmsJS.module_rssFeed.html">cmsJS.rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">cmsJS.sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">cmsJS.stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">cmsJS.staticGrid</a></li><li><a href="cmsJS.module_tagList.html">cmsJS.tagList</a></li><li><a href="cmsJS.module_tileGrid.html">cmsJS.tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_calendarPopover.html">viewerJS.calendarPopover</a></li><li><a href="viewerJS.module_changeFontSize.html">viewerJS.changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">viewerJS.dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">viewerJS.dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">viewerJS.download</a></li><li><a href="viewerJS.module_downloadModal.html">viewerJS.downloadModal</a></li><li><a href="viewerJS.module_editComment.html">viewerJS.editComment</a></li><li><a href="viewerJS.module_helper.html">viewerJS.helper</a></li><li><a href="viewerJS.module_navigation.html">viewerJS.navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">viewerJS.nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">viewerJS.nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">viewerJS.normdata</a></li><li><a href="viewerJS.module_pageScroll.html">viewerJS.pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">viewerJS.responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">viewerJS.searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">viewerJS.searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">viewerJS.searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">viewerJS.simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">viewerJS.stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">viewerJS.timematrix</a></li><li><a href="viewerJS.module_tinyMce.html">viewerJS.tinyMce</a></li><li><a href="viewerJS.module_versionHistory.html">viewerJS.versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">viewImage.controls.persistence</a></li><li><a href="viewImage.module_controls.html">viewImage.controls</a></li><li><a href="viewImage.module_drawLine.html">viewImage.drawLine</a></li><li><a href="viewImage.module_drawRect.html">viewImage.drawRect</a></li><li><a href="viewImage.module_Measures.html">viewImage.Measures</a></li><li><a href="viewImage.module_overlays.html">viewImage.overlays</a></li><li><a href="viewImage.module_readingMode.html">viewImage.readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">viewImage.tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">viewImage.transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">viewImage.zoomSlider</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: viewer/viewerJS.searchList.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see &lt;http://www.gnu.org/licenses/>.
+ * 
+ * Module which sets up the functionality for search list.
+ * 
+ * @version 3.2.0
+ * @module viewerJS.searchList
+ * @requires jQuery
+ */
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    var _debug = false;
+    var _promise = null;
+    var _childHits = null;
+    var _defaults = {
+        contextPath: '',
+        restApiPath: '/rest/search/hit/',
+        hitsPerCall: 20,
+        resetSearchSelector: '#resetCurrentSearch',
+        searchInputSelector: '#currentSearchInput',
+        searchTriggerSelector: '#slCurrentSearchTrigger',
+        saveSearchModalSelector: '#saveSearchModal',
+        saveSearchInputSelector: '#saveSearchInput',
+        excelExportSelector: '.excel-export-trigger',
+        excelExportLoaderSelector: '.excel-export-loader',
+        hitContentLoaderSelector: '.search-list__loader',
+        hitContentSelector: '.search-list__hit-content',
+        msg: {
+            getMoreChildren: 'Mehr Treffer laden',
+        }
+    };
+    
+    viewer.searchList = {
+        /**
+         * Method to initialize the search list features.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         */
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.searchList.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.searchList.init: config = ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // init bs tooltips
+            $( '[data-toggle="tooltip"]' ).tooltip();
+            
+            // focus save search modal input on show
+            $( _defaults.saveSearchModalSelector ).on( 'shown.bs.modal', function() {
+                $( _defaults.saveSearchInputSelector ).focus();
+            } );
+            
+            // reset current search and redirect to standard search
+            $( _defaults.resetSearchSelector ).on( 'click', function() {
+                $( _defaults.searchInputSelector ).val( '' );
+                location.href = _defaults.contextPath + '/search/';
+            } );
+            
+            // show/hide loader for excel export
+            $( _defaults.excelExportSelector ).on( 'click', function() {
+                var trigger = $( this );
+                var excelLoader = $( _defaults.excelExportLoaderSelector );
+                
+                trigger.hide();
+                excelLoader.show();
+               
+                var url = _defaults.contextPath + '/rest/download/search/waitFor/';
+                console.log("Calling ", url);
+                var promise = Q( $.ajax( {
+                    url: decodeURI( url ),
+                    type: "GET",
+                    dataType: "text",
+                    async: true
+                } ) );
+                
+                promise
+                .then(function(data) {
+                	if(_debug) {                		
+                		console.log("Download started");
+                	}
+                	excelLoader.hide();
+                	trigger.show();
+                })
+                .catch(function(error) {
+                	if(_debug) {                		
+                		console.log("Error downloading excel sheet: ", error.responseText);
+                	}
+                	excelLoader.hide();
+                	trigger.show();
+                });
+                
+            } );
+            
+            // get child hits
+            
+            $( '[data-toggle="hit-content"]' ).each( function() {
+                var currBtn = $( this );
+                var currIdDoc = $( this ).attr( 'data-iddoc' );
+                var currUrl = _getApiUrl( currIdDoc, _defaults.hitsPerCall );
+                
+                if ( _debug ) {
+                    console.log( 'Current API Call URL: ', currUrl );
+                }
+                
+                _promise = viewer.helper.getRemoteData( currUrl );
+                
+                currBtn.find( _defaults.hitContentLoaderSelector ).css( 'display', 'inline-block' );
+                
+                // get data and render hits if data is valid
+                _promise.then( function( data ) {
+                    if ( data.hitsDisplayed &lt; _defaults.hitsPerCall ) {
+                        // render child hits into the DOM
+                        _renderChildHits( data, currBtn );
+                        // set current button active, remove loader and show content
+                        currBtn.toggleClass( 'in' ).find( _defaults.hitContentLoaderSelector ).hide();
+                        currBtn.next().show();
+                        // set event to toggle current hits
+                        currBtn.off().on( 'click', function() {
+                            $( this ).toggleClass( 'in' ).next().slideToggle();
+                        } );
+                    }
+                    else {
+                      // remove loader
+                      currBtn.find( _defaults.hitContentLoaderSelector ).hide();
+                      // set event to toggle current hits
+                      currBtn.off().on( 'click', function() {
+                          // render child hits into the DOM
+                          _renderChildHits( data, currBtn );
+                          // check if more children exist and render link
+                          _renderGetMoreChildren( data, currIdDoc, currBtn );
+                          $( this ).toggleClass( 'in' ).next().slideToggle();                         
+                      } );
+                    }                    
+                } ).then( null, function() {
+                    currBtn.next().append( viewer.helper.renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' ' + error.statusText, false ) );
+                    console.error( 'ERROR: viewer.searchList.init - ', error );
+                } );
+            } );
+        },
+    };
+    
+    /**
+     * Method to get the full REST-API URL.
+     * 
+     * @method _getApiUrl
+     * @param {String} id The current IDDoc of the hit set.
+     * @returns {String} The full REST-API URL.
+     */
+    function _getApiUrl( id, hits ) {
+        if ( _debug ) {
+            console.log( '---------- _getApiUrl() ----------' );
+            console.log( '_getApiUrl: id = ', id );
+        }
+        
+        return _defaults.contextPath + _defaults.restApiPath + id + '/' + hits + '/';
+    }
+    
+    /**
+     * Method which renders the child hits into the DOM.
+     * 
+     * @method _renderChildHits
+     * @param {Object} data The data object which contains the child hits.
+     * @param {Object} $this The current child hits trigger.
+     * @returns {Object} An jquery object which contains the child hits.
+     */
+    function _renderChildHits( data, $this ) {
+        if ( _debug ) {
+            console.log( '---------- _renderChildHits() ----------' );
+            console.log( '_renderChildHits: data = ', data );
+            console.log( '_renderChildHits: $this = ', $this );
+        }
+        
+        var hitSet = null;
+        
+        // clean hit sets
+        $this.next().empty();
+        
+        // build hits
+        $.each( data.children, function( children, child ) {
+            hitSet = $( '&lt;div class="search-list__hit-content-set" />' );
+            
+            // build title
+            hitSet.append( _renderHitSetTitle( child.browseElement ) );
+
+            // append metadata if exist
+            hitSet.append( _renderMetdataInfo( child.foundMetadata, child.url ) );
+            
+            // build child hits
+            if ( child.hasChildren ) {
+                $.each( child.children, function( subChildren, subChild ) {
+                    hitSet.append( _renderSubChildHits( subChild.browseElement, subChild.type ) );
+                } );
+            }
+            
+            // append complete set
+            $this.next().append( hitSet );
+        } );
+        
+    }
+    
+    /**
+     * Method which renders the hit set title.
+     * 
+     * @method _renderHitSetTitle
+     * @param {Object} data The data object which contains the hit set title values.
+     * @returns {Object} A jquery object which contains the hit set title.
+     */
+    function _renderHitSetTitle( data ) {
+        if ( _debug ) {
+            console.log( '---------- _renderHitSetTitle() ----------' );
+            console.log( '_renderHitSetTitle: data = ', data );
+        }
+        
+        var hitSetTitle = null;
+        var hitSetTitleH5 = null;
+        var hitSetTitleDl = null;
+        var hitSetTitleDt = null;
+        var hitSetTitleDd = null;
+        var hitSetTitleLink = null;
+        
+        hitSetTitle = $( '&lt;div class="search-list__struct-title" />' );
+        hitSetTitleH5 = $( '&lt;h5 />' );
+        hitSetTitleLink = $( '&lt;a />' );
+        hitSetTitleLink.attr( 'href', _defaults.contextPath + '/' + data.url );
+        hitSetTitleLink.append( data.labelShort );
+        hitSetTitleH5.append( hitSetTitleLink );
+        hitSetTitle.append( hitSetTitleH5 );
+        
+        return hitSetTitle;
+    }
+    
+    /**
+     * Method which renders metadata info.
+     * 
+     * @method _renderMetdataInfo
+     * @param {Object} data The data object which contains the sub hit values.
+     * @param {String} url The URL for the current work.
+     * @returns {Object} A jquery object which contains the metadata info.
+     */
+    function _renderMetdataInfo( data, url ) {
+        if ( _debug ) {
+            console.log( '---------- _renderMetdataInfo() ----------' );
+            console.log( '_renderMetdataInfo: data = ', data );
+            console.log( '_renderMetdataInfo: url = ', url );
+        }
+        
+        var metadataWrapper = null;
+        var metadataList = null;
+        var metadataKey = null;
+        var metadataKeyIcon = null;
+        var metadataKeyLink = null;
+        var metadataValue = null;
+        var metadataValueLink = null;
+        
+        if ( !$.isEmptyObject( data ) ) {
+            metadataWrapper = $( '&lt;div class="search-list__metadata-info" />' );
+            metadataList = $( '&lt;dl class="dl-horizontal" />' );
+
+            $.each( data, function( metadata, item ) {
+                // build metadata key
+                metadataKey = $( '&lt;dt />' );
+                metadataKeyIcon = $( '&lt;i class="fa fa-bookmark-o" aria-hidden="true" />' );
+                metadataKeyLink = $( '&lt;a />' );
+                metadataKeyLink.attr( 'href', _defaults.contextPath + '/' + url );
+                metadataKeyLink.append( item.one + ':' );
+                metadataKey.append( metadataKeyIcon ).append( metadataKeyLink );
+                // build metadata value
+                metadataValue = $( '&lt;dd />' );
+                metadataValueLink = $( '&lt;a />' );
+                metadataValueLink.attr( 'href', _defaults.contextPath + '/' +  url );
+                metadataValueLink.append( item.two );
+                metadataValue.append( metadataValueLink );
+                // build metadata list
+                metadataList.append( metadataKey ).append( metadataValue );
+                metadataWrapper.append( metadataList );
+            } );            
+                
+            return metadataWrapper;
+        }
+    }
+    
+    /**
+     * Method which renders sub child hits.
+     * 
+     * @method _renderSubChildHits
+     * @param {Object} data The data object which contains the sub hit values.
+     * @param {String} type The type of hit to render.
+     * @returns {Object} A jquery object which contains the sub child hits.
+     */
+    function _renderSubChildHits( data, type ) {
+        if ( _debug ) {
+            console.log( '---------- _renderSubChildHits() ----------' );
+            console.log( '_renderSubChildHits: data = ', data );
+            console.log( '_renderSubChildHits: type = ', type );
+        }
+        
+        var hitSetChildren = null;
+        var hitSetChildrenDl = null;
+        var hitSetChildrenDt = null;
+        var hitSetChildrenDd = null;
+        var hitSetChildrenLink = null;
+        
+        hitSetChildren = $( '&lt;div class="search-list__struct-child-hits" />' );
+        hitSetChildrenDl = $( '&lt;dl class="dl-horizontal" />' );
+        hitSetChildrenDt = $( '&lt;dt />' );
+        // check hit type
+        switch ( type ) {
+            case 'PAGE':
+                hitSetChildrenDt.append( '&lt;i class="fa fa-file-text-o" aria-hidden="true">&lt;/i>' );
+                break;
+            case 'PERSON':
+                hitSetChildrenDt.append( '&lt;i class="fa fa-user" aria-hidden="true">&lt;/i>' );
+                break;
+            case 'EVENT':
+                hitSetChildrenDt.append( '&lt;i class="fa fa-calendar-o" aria-hidden="true">&lt;/i>' );
+                break;
+        }
+        hitSetChildrenDd = $( '&lt;dd />' );
+        hitSetChildrenLink = $( '&lt;a />' );
+        hitSetChildrenLink.attr( 'href', _defaults.contextPath + '/' + data.url );
+        switch ( type ) {
+            case 'PAGE':
+                hitSetChildrenLink.append( data.fulltextForHtml );
+            break;
+            default:
+                hitSetChildrenLink.append( data.labelShort );
+            break;
+        }
+        hitSetChildrenDd.append( hitSetChildrenLink );
+        hitSetChildrenDl.append( hitSetChildrenDt ).append( hitSetChildrenDd );
+        hitSetChildren.append( hitSetChildrenDl );
+        
+        return hitSetChildren;
+    }
+    
+    /**
+     * Method to render a get more children link.
+     * 
+     * @method _renderGetMoreChildren
+     */
+    function _renderGetMoreChildren( data, iddoc, $this ) {
+        if ( _debug ) {
+            console.log( '---------- _renderGetMoreChildren() ----------' );
+            console.log( '_renderGetMoreChildren: data = ', data );
+            console.log( '_renderGetMoreChildren: iddoc = ', iddoc );
+            console.log( '_renderGetMoreChildren: $this = ', $this );
+        }
+        
+        var apiUrl = _getApiUrl( iddoc, _defaults.hitsPerCall + data.hitsDisplayed );
+        var hitContentMore = $( '&lt;div />' );
+        var getMoreChildrenLink = $( '&lt;button type="button" />' );
+        
+        if ( data.hasMoreChildren ) {
+            // build get more link
+            hitContentMore.addClass( 'search-list__hit-content-more' );
+            getMoreChildrenLink.addClass( 'btn-clean' );
+            getMoreChildrenLink.attr( 'data-api', apiUrl );
+            getMoreChildrenLink.attr( 'data-iddoc', iddoc );
+            getMoreChildrenLink.append( _defaults.msg.getMoreChildren );
+            hitContentMore.append( getMoreChildrenLink );
+            // append links
+            $this.next().append( hitContentMore );
+            // render new hit set
+            getMoreChildrenLink.off().on( 'click', function( event ) {
+                var currApiUrl = $( this ).attr( 'data-api' );
+                var parentOffset = $this.parent().offset().top;
+                
+                // get data and render hits if data is valid
+                _promise = viewer.helper.getRemoteData( currApiUrl );
+                _promise.then( function( data ) {
+                    // render child hits into the DOM
+                    _renderChildHits( data, $this );
+                    // check if more children exist and render link
+                    _renderGetMoreChildren( data, iddoc, $this );
+                } ).then( null, function() {
+                    $this.next().append( viewer.helper.renderAlert( 'alert-danger', '&lt;strong>Status: &lt;/strong>' + error.status + ' ' + error.statusText, false ) );
+                    console.error( 'ERROR: _renderGetMoreChildren - ', error );
+                } );
+            } );
+        }
+        else {
+            // clear and hide current get more link
+            $this.next().find( _defaults.hitContentMoreSelector ).empty().hide();
+            console.info( '_renderGetMoreChildren: No more child hits available' );
+            return false;
+        }
+    }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2015 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Tue Nov 7th 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

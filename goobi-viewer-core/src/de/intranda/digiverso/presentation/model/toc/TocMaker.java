@@ -50,8 +50,8 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -368,7 +368,7 @@ public class TocMaker {
             for (SolrDocument volumeDoc : queryResponse.getResults()) {
                 String topStructPi = (String) volumeDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                 // Skip volumes that may not be listed
-                if (FacesContext.getCurrentInstance() != null && !SearchHelper.checkAccessPermissionByIdentifierAndLogId(topStructPi, null,
+                if (FacesContext.getCurrentInstance() != null && !AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(topStructPi, null,
                         IPrivilegeHolder.PRIV_LIST, (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
                     continue;
                 }

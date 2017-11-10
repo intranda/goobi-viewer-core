@@ -14,7 +14,7 @@
             <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
                 <!-- user interactions -->
                 <h:panelGroup rendered="#{activeDocumentBean.recordLoaded}">
-                    <div id="widgetUserInteractions" class="widget">
+                    <div id="widgetUserInteractions" class="widget #{cc.attrs.widget.cssClass}">
                         <h:form id="widgetUserInteractionsStandardForm" prependId="false">
                             <h3>#{msg.menuUser_workInteractions}</h3>
 

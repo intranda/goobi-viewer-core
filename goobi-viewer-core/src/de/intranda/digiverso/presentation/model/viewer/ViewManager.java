@@ -37,8 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
-import org.jdom2.Document;
-import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -47,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
@@ -61,10 +58,11 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.calendar.CalendarView;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
-import de.intranda.digiverso.presentation.model.user.User;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 
 /**
@@ -933,6 +931,10 @@ public class ViewManager implements Serializable {
         return null;
     }
 
+    public boolean isMultiPageRecord() throws IndexUnreachableException {
+        return getImagesCount() > 1;
+    }
+
     /**
      *
      * @return {@link Integer}
@@ -1252,8 +1254,8 @@ public class ViewManager implements Serializable {
         if (accessPermissionPdf == null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             try {
-                accessPermissionPdf = SearchHelper.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_DOWNLOAD_PDF,
-                        request);
+                accessPermissionPdf = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null,
+                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 return false;
@@ -1483,7 +1485,7 @@ public class ViewManager implements Serializable {
             PhysicalElement currentImg = getCurrentPage();
             if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
                 // Check permissions first
-                boolean access = SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
+                boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
                         .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(),
                         IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
                 if (access) {
@@ -1526,7 +1528,7 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayContentDownloadMenu() {
         try {
-            if (DataManager.getInstance().getConfiguration().isOriginalContentDownload() && SearchHelper.checkContentFileAccessPermission(pi,
+            if (DataManager.getInstance().getConfiguration().isOriginalContentDownload() && AccessConditionUtils.checkContentFileAccessPermission(pi,
                     (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
 
                 File sourceFileDir;

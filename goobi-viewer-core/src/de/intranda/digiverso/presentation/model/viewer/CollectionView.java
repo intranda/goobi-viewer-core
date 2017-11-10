@@ -612,8 +612,8 @@ public class CollectionView {
     }
 
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
-        if (collection.getInfo().getLinkURI() != null) {
-            return collection.getInfo().getLinkURI().toString();
+        if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
+            return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
         } else if (collection.isOpensInNewWindow()) {
             String baseUri = BeanUtils.getRequest().getRequestURL().toString();
             int cutoffIndex = baseUri.indexOf(PageType.expandCollection.getName());

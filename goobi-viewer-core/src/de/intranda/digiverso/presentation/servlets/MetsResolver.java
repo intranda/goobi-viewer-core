@@ -37,8 +37,8 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 
 /**
  * Servlet implementation class MetsResolver
@@ -73,7 +73,7 @@ public class MetsResolver extends HttpServlet {
                 SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + id);
                 if (hits != null && !hits.isEmpty()) {
                     // If the user has no listing privilege for this record, act as if it does not exist
-                    boolean access = SearchHelper.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
+                    boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
                     if (!access) {
                         logger.debug("User may not list {}", id);
                         response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);

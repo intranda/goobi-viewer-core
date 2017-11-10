@@ -24,7 +24,7 @@
 	                </li>
 	                
 	                <!-- PAGE BROWSE BACK -->
-	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
+	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
 	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep3Visible}">
 	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'inactive' : ''}">
 	                            <h:outputLink 

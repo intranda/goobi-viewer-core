@@ -16,7 +16,7 @@
     <composite:implementation>
         <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchDrillDown' or cc.attrs.widget.type == null}">
             <h:panelGroup rendered="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray() != null and searchBean.facets.availableFacets.entrySet().toArray() != null}">
-            <div id="searchListDrillDownWrapper" class="widget-search-drilldown">
+            <div id="searchListDrillDownWrapper" class="widget-search-drilldown #{cc.attrs.widget.cssClass}">
                 <h:form id="searchListDrillDownForm" prependId="false">
                     <!-- HIERARCHICAL DRILL DOWN -->
                     <c:forEach var="field" items="#{searchBean.facets.availableHierarchicalFacets.entrySet().toArray()}" varStatus="status">
@@ -46,7 +46,7 @@
                                     <!-- AVAILABLE HIERARCHICAL FACETS -->
 	                                    <ui:repeat value="#{searchBean.facets.getLimitedHierarchicalFacetListForField(field.key)}" var="facet">
                                         <li>
-                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
+                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
                                                 #{msg[facet.label]} (#{facet.count})
                                             </h:outputLink>
                                         </li>
@@ -102,7 +102,7 @@
                                     <!-- AVAILABLE FACETS -->
                                     <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                         <li>
-                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentHierarchicalFacetString}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                            <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}" value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetString}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                 #{msg[facet.label]} (#{facet.count})
                                             </h:outputLink></li>
                                     </ui:repeat>

@@ -16,7 +16,9 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -252,4 +254,17 @@ public class FileToolsTest {
         String concat = FileTools.getStringFromFile(file, null);
         Assert.assertEquals("XYZ", concat);
     }
+
+    /**
+     * @see FileTools#getCharset(InputStream)
+     * @verifies detect charset correctly
+     */
+    @Test
+    public void getCharset_shouldDetectCharsetCorrectly() throws Exception {
+        File file = new File("resources/test/stopwords.txt");
+        try (FileInputStream fis = new FileInputStream(file)) {
+            Assert.assertEquals("UTF-8", FileTools.getCharset(fis));
+        }
+    }
+
 }

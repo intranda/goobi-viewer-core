@@ -24,6 +24,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
+ * Part of the IIIF presentation api
+ * 
+ * Represents a link to another resource, for example in the "related" property 
+ * 
  * @author Florian Alpers
  *
  */
@@ -42,6 +46,12 @@ public class CollectionLink {
     public CollectionLink(URL link, String label) {
         this.link = link;
         this.label = label;
+    }
+    
+    public CollectionLink(URL link, String label, String format) {
+        this.link = link;
+        this.label = label;
+        this.format = format;
     }
     
     /**

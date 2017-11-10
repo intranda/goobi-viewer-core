@@ -43,7 +43,7 @@
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: '#{request.contextPath}' + '/rest/rss/de/-/10/',
+                        url: '#{request.contextPath}/rest/rss/#{navigationHelper.localeString}/-/#{cmsPage.getContentItem("rss").elementsPerPage}/',
                         type: 'GET',
                         datatype: 'JSON'
                     } ).then( function( data ) {
@@ -67,6 +67,7 @@
             <widgetComponent:widget_mySearches widget="#{element}"/>
             <widgetComponent:widget_user widget="#{element}"/>
             <widgetComponent:widget_rssFeed widget="#{element}" />
+            <widgetComponent:widget_workCount widget="#{element}" />
     	</c:forEach>
     </ui:define>
 </ui:composition>

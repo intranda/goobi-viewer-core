@@ -60,7 +60,7 @@ public class CMSPageTemplate {
 
     private boolean displaySortingField = false;
 
-    private List<CMSContentItem> contentItems = new ArrayList<>();
+    private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
 
     /**
      * Loads a page template from the given template file and returns the template object.
@@ -98,10 +98,11 @@ public class CMSPageTemplate {
                 template.setHtmlFileName(root.getChildText("html"));
                 for (Element eleContentItem : root.getChild("content").getChildren("item")) {
                     CMSContentItemType type = CMSContentItemType.getByName(eleContentItem.getAttributeValue("type"));
-                    CMSContentItem item = new CMSContentItem(type);
+                    CMSContentItemTemplate item = new CMSContentItemTemplate(type);
                     item.setItemId(eleContentItem.getAttributeValue("id"));
                     item.setItemLabel(eleContentItem.getAttributeValue("label"));
                     item.setMandatory(Boolean.valueOf(eleContentItem.getAttributeValue("mandatory")));
+                    item.setMode(ContentItemMode.get(eleContentItem.getAttributeValue("mode")));
                     if (eleContentItem.getAttribute("order") != null) {
                         try {
                             int order = Integer.parseInt(eleContentItem.getAttributeValue("order"));
@@ -316,7 +317,7 @@ public class CMSPageTemplate {
     /**
      * @return the contentItems
      */
-    public List<CMSContentItem> getContentItems() {
+    public List<CMSContentItemTemplate> getContentItems() {
         return contentItems;
     }
 
@@ -332,7 +333,7 @@ public class CMSPageTemplate {
     /**
      * @param contentItems the contentItems to set
      */
-    public void setContentItems(List<CMSContentItem> contentItems) {
+    public void setContentItems(List<CMSContentItemTemplate> contentItems) {
         this.contentItems = contentItems;
     }
 

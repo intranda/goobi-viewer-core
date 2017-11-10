@@ -15,11 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,7 +35,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -60,25 +57,27 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.ALTOTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHit.HitType;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
-import de.intranda.digiverso.presentation.model.user.IpRange;
-import de.intranda.digiverso.presentation.model.user.LicenseType;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.utils.SolrHelper;
 
 /**
  * Search utility class. Static methods only.
@@ -162,8 +161,9 @@ public final class SearchHelper {
 
                 // Load full-text
                 try {
-                    fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(
-                            SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+                    fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT), (String) doc.getFirstValue(
+                            SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(
+                                    SolrConstants.FILENAME_FULLTEXT));
                 } catch (FileNotFoundException e) {
                     logger.error(e.getMessage());
                 } catch (IOException e) {
@@ -229,7 +229,12 @@ public final class SearchHelper {
                 hit.setChildDocs(childDocs.get(pi));
                 for (SolrDocument childDoc : childDocs.get(pi)) {
                     // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
-                    HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
+                    String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
+                    if (DocType.METADATA.name().equals(docType)) {
+                        // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
+                        docType = DocType.DOCSTRCT.name();
+                    }
+                    HitType hitType = HitType.getByName(docType);
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
                 }
@@ -401,7 +406,7 @@ public final class SearchHelper {
                     Collection<Object> fieldList = doc.getFieldValues(luceneField);
                     if (fieldList != null) {
                         for (Object o : fieldList) {
-                            String dc = (String) o;
+                            String dc = SolrSearchIndex.getAsString(o);
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
                             }
@@ -522,7 +527,8 @@ public final class SearchHelper {
                     Collection<Object> fieldList = doc.getFieldValues(luceneField);
                     if (fieldList != null) {
                         for (Object o : fieldList) {
-                            String dc = (String) o;
+                            String dc = DataManager.getInstance().getSearchIndex().getAsString(o);
+//                            String dc = (String) o;
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
                             }
@@ -865,8 +871,8 @@ public final class SearchHelper {
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
             // Consider only license types that do not allow listing by default and are not static licenses
             if (!licenseType.isStaticLicenseType() && !licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
-                if (checkAccessPermission(Collections.singletonList(licenseType), new HashSet<>(Collections.singletonList(licenseType.getName())),
-                        IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
+                if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType), new HashSet<>(Collections.singletonList(
+                        licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                     // If the use has an explicit priv to list a certain license type, ignore all other license types
                     logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                     query = new StringBuilder();
@@ -891,485 +897,6 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param fileName
-     * @param identifier
-     * @return
-     * @should use correct field name for AV files
-     * @should use correct file name for text files
-     */
-    static String[] generateAccessCheckQuery(String identifier, String fileName) {
-        String[] ret = new String[2];
-        if (fileName != null) {
-            StringBuilder sbQuery = new StringBuilder();
-            String useFileField = SolrConstants.FILENAME;
-            String useFileName = fileName;
-            // Different media types have the file name in different fields
-            String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-            switch (extension) {
-                case "webm":
-                    useFileField = SolrConstants.FILENAME_WEBM;
-                    break;
-                case "mp4":
-                    useFileField = SolrConstants.FILENAME_MP4;
-                    break;
-                case "mp3":
-                    // if the mime type in METS is not audio/mpeg3 but something else, access will be false
-                    useFileField = SolrConstants.FILENAME_MPEG3;
-                    break;
-                case "ogg":
-                case "ogv":
-                    useFileField = SolrConstants.FILENAME_OGG;
-                    break;
-                case "txt":
-                case "xml":
-                    useFileName = fileName.replace(extension, "*");
-                    break;
-                default:
-                    break;
-            }
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
-            if (useFileName.endsWith(".*")) {
-                sbQuery.append(useFileName);
-            } else {
-                sbQuery.append("\"").append(useFileName).append("\"");
-            }
-
-            // logger.trace(sbQuery.toString());
-            ret[0] = sbQuery.toString();
-            ret[1] = useFileField;
-        }
-        return ret;
-    }
-
-    /**
-     * Checks whether the client may access an image (by PI + file name).
-     *
-     * @param identifier Work identifier (PI).
-     * @param fileName Image file name. For all files of a record, use "*".
-     * @param request Calling HttpServiceRequest.
-     * @return true if access is granted; false otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    protected static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
-            HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {}, {})", identifier, fileName, privilegeName,
-        // request.getAttributeNames().toString());
-        if (StringUtils.isNotEmpty(identifier)) {
-            String[] query = generateAccessCheckQuery(identifier, fileName);
-            try {
-                // Collect access conditions required by the page
-                Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(query[0], "*".equals(fileName) ? SolrSearchIndex.MAX_HITS
-                        : 1, null, Arrays.asList(new String[] { query[1], SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            Set<String> pageAccessConditions = new HashSet<>();
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                pageAccessConditions.add(accessCondition.toString());
-                                // logger.debug(accessCondition.toString());
-                            }
-                            requiredAccessConditions.put(fileName, pageAccessConditions);
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
-                for (String pageFileName : requiredAccessConditions.keySet()) {
-                    Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
-                    boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), pageAccessConditions,
-                            privilegeName, user, Helper.getIpAddress(request), query[0]);
-                    ret.put(pageFileName, access);
-                }
-                return ret;
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return new HashMap<>(0);
-
-    }
-
-    /**
-     * Checks whether the current users has the given access permissions to the element with the given identifier and LOGID.
-     *
-     * @param identifier The PI to check.
-     * @param logId The LOGID to check (optional).
-     * @param privilegeName Particular privilege for which to check the permission.
-     * @param request
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {}, {})", identifier, logId, privilegeName,
-        // request.getAttributeNames());
-        if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
-            if (StringUtils.isNotEmpty(logId)) {
-                sbQuery.append(" AND ").append(SolrConstants.LOGID).append(':').append(logId);
-            }
-            // Only query docstruct docs because metadata/event docs may not contain values defined in the license type
-            // filter query
-            sbQuery.append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                                // logger.debug(accessCondition.toString());
-                            }
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean checkContentFileAccessPermission(String identifier, HttpServletRequest request) throws IndexUnreachableException,
-            DAOException {
-        // logger.trace("checkContentFileAccessPermission({})", identifier);
-        if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI).append(':').append(identifier);
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                                // logger.debug(accessCondition.toString());
-                            }
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, Helper.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether the client may access an image (by image URN).
-     *
-     * @param imageUrn Image URN.
-     * @param request Calling HttpServiceRequest.
-     * @return true if access is granted; false otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName, request.getAttributeNames());
-        if (StringUtils.isNotEmpty(imageUrn)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.IMAGEURN).append(':').append(imageUrn.replace(":", "\\:"));
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION,
-                        SolrConstants.PI_TOPSTRUCT }));
-                for (SolrDocument doc : hits) {
-                    Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                    if (fieldsAccessConddition != null) {
-                        for (Object accessCondition : fieldsAccessConddition) {
-                            requiredAccessConditions.add((String) accessCondition);
-                            // logger.debug((String) accessCondition);
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     * @param requiredAccessConditions
-     * @param privilegeName
-     * @param pi
-     * @param request
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query, HttpServletRequest request)
-            throws IndexUnreachableException, PresentationException, DAOException {
-        User user = BeanUtils.getUserFromRequest(request);
-        return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions, privilegeName, user,
-                Helper.getIpAddress(request), query);
-    }
-
-    /**
-     * Checks access permission for the given image and puts the permission status into the corresponding session map.
-     *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
-            throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName);
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
-    }
-
-    /**
-     * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
-     *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionForThumbnail(HttpServletRequest request, String pi, String contentFileName)
-            throws IndexUnreachableException, DAOException {
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-    }
-
-    /**
-     * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
-     *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @param privilegeType
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    @SuppressWarnings("unchecked")
-    public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
-            String privilegeType) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap");
-        if (privilegeType == null) {
-            throw new IllegalArgumentException("privilegeType may not be null");
-        }
-        boolean access = false;
-        // logger.debug("session id: " + request.getSession().getId());
-        // Session persistent permission check: Servlet-local method.
-        String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeType;
-        logger.trace("Checking session attribute: {}", attributeName);
-        Map<String, Boolean> permissions = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
-        if (permissions == null) {
-            permissions = new HashMap<>();
-            logger.trace("Session attribute not found, creating new");
-        }
-        // logger.debug("Permissions found, " + permissions.size() + " items.");
-        // new pi -> create an new empty map in the session
-        if (!pi.equals(request.getSession().getAttribute("currentPi"))) {
-            // logger.trace("new PI: {}", pi);
-            request.getSession().setAttribute("currentPi", pi);
-            request.getSession().removeAttribute(attributeName);
-            permissions = new HashMap<>();
-            logger.trace("PI has changed, permissions map reset.");
-        }
-
-        String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
-        // pi already checked -> look in the session
-        // logger.debug("permissions key: " + key + ": " + permissions.get(key));
-        if (permissions.containsKey(key)) {
-            access = permissions.get(key);
-            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName, request
-                    .getSession().getId());
-        } else {
-            // TODO check for all images and save to map
-            Map<String, Boolean> accessMap = SearchHelper.checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
-            for (String pageFileName : accessMap.keySet()) {
-                String newKey = new StringBuilder(pi).append('_').append(pageFileName).toString();
-                boolean pageAccess = accessMap.get(pageFileName);
-                permissions.put(newKey, pageAccess);
-            }
-            access = permissions.get(key) != null ? permissions.get(key) : false;
-            // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName,
-            // access);
-            request.getSession().setAttribute(attributeName, permissions);
-        }
-
-        return access;
-    }
-
-    /**
-     *
-     * @param allLicenseTypes
-     * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
-     * @param privilegeName The particular privilege to check.
-     * @param user Logged in user.
-     * @param query Solr query describing the resource in question.
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     * @should return true if required access conditions empty
-     * @should return true if required access conditions contain only open access
-     * @should return true if all license types allow privilege by default
-     * @should return false if not all license types allow privilege by default
-     * @should return true if ip range allows access
-     * @should not return true if no ip range matches
-     * 
-     *         TODO user license checks
-     */
-    static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName, User user,
-            String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
-        // logger.trace("checkAccessPermission({},{},{})", allLicenseTypes, requiredAccessConditions, privilegeName);
-        // If OPENACCESS is the only condition, allow immediately
-        if (requiredAccessConditions.isEmpty()) {
-            logger.debug("No required access conditions given, access granted.");
-            return true;
-        }
-        if (requiredAccessConditions.size() == 1 && (requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE) || requiredAccessConditions
-                .contains(SolrConstants.OPEN_ACCESS_VALUE.toLowerCase()))) {
-            return true;
-        }
-        // If no license types are configured or no privilege name is given, allow immediately
-        if (allLicenseTypes == null || !StringUtils.isNotEmpty(privilegeName)) {
-            logger.trace("No license types or no privilege name given.");
-            return true;
-        }
-
-        List<LicenseType> relevantLicenseTypes = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query);
-        requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
-        if (relevantLicenseTypes.isEmpty()) {
-            logger.trace("No relevant license types.");
-            return true;
-        }
-
-        // If all relevant license types allow the requested privilege by default, allow access
-        {
-            boolean licenseTypeAllowsPriv = true;
-            // Check whether *all* relevant license types allow the requested privilege by default
-            for (LicenseType licenseType : relevantLicenseTypes) {
-                requiredAccessConditions.add(licenseType.getName());
-                if (!licenseType.getPrivileges().contains(privilegeName)) {
-                    // logger.debug("LicenseType '" + licenseType.getName() + "' does not allow the action '" + privilegeName
-                    // + "' by default.");
-                    licenseTypeAllowsPriv = false;
-                }
-            }
-            if (licenseTypeAllowsPriv) {
-                logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
-                return true;
-            }
-        }
-
-        // Check IP range
-        if (StringUtils.isNotEmpty(remoteAddress)) {
-            // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-            Map<String, Boolean> permissionMap = new HashMap<>(requiredAccessConditions.size());
-            for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                // logger.debug("ip range: " + ipRange.getSubnetMask());
-                if (ipRange.matchIp(remoteAddress) && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                    logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                    return true;
-                }
-            }
-        }
-
-        // If not within an allowed IP range, check the current user's satisfied access conditions
-        if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-            return true;
-        }
-
-        // logger.trace("not allowed");
-        return false;
-    }
-
-    /**
-     * Filters the given list of license types my removing those that have Solr query conditions that do not match the given identifier.
-     *
-     * @param allLicenseTypes
-     * @param requiredAccessConditions
-     * @param query
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @should remove license types whose names do not match access conditions
-     * @should remove license types whose condition query excludes the given pi
-     */
-    static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String query)
-            throws IndexUnreachableException, PresentationException {
-        if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
-        List<LicenseType> ret = new ArrayList<>(allLicenseTypes.size());
-        for (LicenseType licenseType : allLicenseTypes) {
-            // logger.trace(licenseType.getName());
-            if (!requiredAccessConditions.contains(licenseType.getName())) {
-                continue;
-            }
-            // Check whether the license type contains conditions that exclude the given record, in that case disregard this
-            // license type
-            if (StringUtils.isNotEmpty(licenseType.getConditions()) && StringUtils.isNotEmpty(query)) {
-                String conditions = licenseType.getProcessedConditions();
-                // logger.trace("License conditions: {}", conditions);
-                StringBuilder sbQuery = new StringBuilder(query);
-                if (conditions.charAt(0) == '-') {
-                    // do not wrap the conditions in parentheses if it starts with a negation, otherwise it won't work
-                    sbQuery.append(" AND ").append(conditions);
-                } else {
-                    sbQuery.append(" AND (").append(conditions).append(')');
-                }
-                // logger.trace("License relevance query: {}", sbQuery.toString());
-                if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the
-                    // license subquery.", licenseType
-                    // .getName(), query);
-                    continue;
-                }
-                logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
-                        query);
-            }
-            ret.add(licenseType);
-        }
-
-        return ret;
-    }
-
-    /**
      * TODO This method might be quite expensive.
      *
      * @param searchTerms
@@ -1383,13 +910,13 @@ public final class SearchHelper {
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
      * @should return multiple match fragments correctly
+     * @should replace line breaks with spaces
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
         List<String> ret = new ArrayList<>();
-        //        StringBuilder sbFulltextFragment = new StringBuilder();
 
         String fulltextFragment = "";
 
@@ -1440,6 +967,8 @@ public final class SearchHelper {
                         if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                             fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                         }
+                        // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                        fulltextFragment = fulltextFragment.replace("<br>", " ");
                         ret.add(fulltextFragment);
                     }
                     if (firstMatchOnly) {
@@ -1455,6 +984,8 @@ public final class SearchHelper {
                 } else {
                     fulltextFragment = fulltext;
                 }
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
         } else {
@@ -1470,6 +1001,8 @@ public final class SearchHelper {
                 if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
                     fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                 }
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
                 ret.add(fulltextFragment);
             }
         }
@@ -1923,7 +1456,7 @@ public final class SearchHelper {
         String currentField = null;
         for (String s : querySplit) {
             s = s.trim();
-            logger.trace("term: {}", s);
+            // logger.trace("term: {}", s);
             // Extract the value part
             if (s.contains(":") && !s.startsWith(":")) {
                 int split = s.indexOf(':');
@@ -1937,8 +1470,8 @@ public final class SearchHelper {
                         currentField = SolrConstants.FULLTEXT;
                     }
                     // Remove quotation marks from phrases
-                    logger.trace("field: {}", field);
-                    logger.trace("value: {}", value);
+                    // logger.trace("field: {}", field);
+                    // logger.trace("value: {}", value);
                     if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
                         value = value.replace("\"", "");
                     }
@@ -2425,7 +1958,9 @@ public final class SearchHelper {
     }
 
     /**
+     * Loads full-text via the REST service. ALTO is preferred, with a plain text fallback.
      * 
+     * @param pi
      * @param dataRepository
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
@@ -2435,32 +1970,30 @@ public final class SearchHelper {
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
-    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath) throws FileNotFoundException, IOException {
+    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath) throws FileNotFoundException,
+            IOException {
         String ret = null;
 
         String recordPath = Helper.getRepositoryPath(dataRepository);
         if (altoFilePath != null) {
             // ALTO file
-            File file = new File(recordPath, altoFilePath);
-            logger.trace(file.getAbsolutePath());
-            if (file.isFile()) {
-                String alto = FileTools.getStringFromFile(file, Helper.DEFAULT_ENCODING);
+            String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
+            try {
+                String alto = Helper.getWebContentGET(url);
                 ret = ALTOTools.getFullText(alto);
+            } catch (HTTPException e) {
+                throw new IOException(e);
             }
 
         }
         if (ret == null && fulltextFilePath != null) {
             // Plain full-text file
-            File file = new File(recordPath, fulltextFilePath);
-            logger.trace(file.getAbsolutePath());
-            if (file.isFile()) {
-                try {
-                    ret = FileTools.getStringFromFile(file, Helper.DEFAULT_ENCODING);
-                } catch (FileNotFoundException e) {
-                    logger.error(e.getMessage());
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
+            String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
+            try {
+                ret = Helper.getWebContentGET(url);
+            } catch (HTTPException e) {
+                logger.error(e.getMessage(), e);
+                throw new IOException(e);
             }
         }
 

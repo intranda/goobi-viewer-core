@@ -316,7 +316,6 @@ public class Metadata implements Serializable {
                 }
                 for (String paramValue : value.getParamValues()) {
                     if (paramValue != null && !paramValue.trim().isEmpty()) {
-                        logger.trace("paramVAlue: " + paramValue);
                         return false;
                     }
                 }

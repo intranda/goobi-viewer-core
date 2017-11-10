@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,7 +212,7 @@ public class SearchQueryItem implements Serializable {
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
         StringBuilder sbItem = new StringBuilder();
 
-        if (value.trim().isEmpty()) {
+        if (StringUtils.isBlank(value)) {
             return "";
         }
 

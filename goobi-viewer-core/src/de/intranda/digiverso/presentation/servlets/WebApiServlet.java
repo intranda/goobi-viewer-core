@@ -54,7 +54,8 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.metadata.CompareYearSolrDocWrapper;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
@@ -450,7 +451,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = SearchHelper.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
                         SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
                 if (!access) {
                     logger.trace("User may not list {}", pi);
@@ -491,7 +492,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = SearchHelper.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
                         SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
                 if (!access) {
                     logger.debug("User may not list {}", pi);

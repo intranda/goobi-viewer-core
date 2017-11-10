@@ -217,6 +217,8 @@ public class CmsBean {
             if (template == null) {
                 //remove pages with no template files
                 pages.remove();
+            } else if (!isPageValid(page, template)) {
+                pages.remove();
             } else {
                 //check if this pages is used as static page
                 for (CMSStaticPage staticPage : getStaticPages()) {
@@ -224,6 +226,7 @@ public class CmsBean {
                         staticPage.setCmsPage(page);
                     }
                 }
+                page.getSidebarElements().forEach(element -> element.deSerialize());
             }
         }
         return createdPages;
@@ -248,6 +251,7 @@ public class CmsBean {
                         staticPage.setCmsPage(page);
                     }
                 }
+                page.getSidebarElements().forEach(element -> element.deSerialize());
             }
         }
         numCreatedPages = createdPages.size();
@@ -788,7 +792,7 @@ public class CmsBean {
     public void setSelectedMediaLocale(Locale selectedMediaLocale) {
         this.selectedMediaLocale = selectedMediaLocale;
     }
-    
+
     /**
      * Action method called when a CMS page is opened. The exact action depends on the page and content item type.
      * 
@@ -871,7 +875,7 @@ public class CmsBean {
             return "";
         }
         if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
-            ((SearchFunctionality)item.getFunctionality()).search();
+            ((SearchFunctionality) item.getFunctionality()).search();
         } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             searchBean.resetSearchResults();
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
@@ -881,7 +885,7 @@ public class CmsBean {
             if (item.getSolrSortFields() != null) {
                 searchBean.setSortString(item.getSolrSortFields());
             }
-            searchBean.newSearch();
+            return searchBean.search();
         }
         if (item == null) {
             logger.error("Cannot search: item is null");
@@ -892,8 +896,17 @@ public class CmsBean {
             searchBean.resetSearchResults();
             return "";
         }
-
         return "";
+        //        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+        //        searchBean.setHitsPerPage(item.getElementsPerPage());
+        //        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+        //        searchBean.setCurrentPage(item.getListPage());
+        //        if (item.getSolrSortFields() != null) {
+        //            searchBean.setSortString(item.getSolrSortFields());
+        //        }
+        //        //            searchBean.getFacets().setCurrentFacetString();
+        //        //            searchBean.getFacets().setCurrentCollection();
+        //        return searchBean.search();
     }
 
     public boolean hasSearchResults() {
@@ -909,11 +922,19 @@ public class CmsBean {
      * @throws PresentationException
      */
     public String removeHierarchicalFacetAction(String facetQuery) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("removeHierarchicalFacetAction: {}", facetQuery);
+        CMSPage currentPage = getCurrentPage();
+        if (currentPage != null) {
+            SearchFunctionality search = currentPage.getSearch();
+            if (search != null) {
+                search.setCollection("-");
+            }
+        }
         if (searchBean != null) {
             searchBean.removeHierarchicalFacetAction(facetQuery);
         }
 
-        return "pretty:cmsOpenPageWithSearch";
+        return "pretty:cmsOpenPageWithSearch2";
     }
 
     /**
@@ -925,11 +946,19 @@ public class CmsBean {
      * @throws PresentationException
      */
     public String removeFacetAction(String facetQuery) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("removeFacetAction: {}", facetQuery);
+        CMSPage currentPage = getCurrentPage();
+        if (currentPage != null) {
+            SearchFunctionality search = currentPage.getSearch();
+            if (search != null) {
+                search.setFacetString("-");
+            }
+        }
         if (searchBean != null) {
             searchBean.removeFacetAction(facetQuery);
         }
 
-        return "pretty:cmsOpenPageWithSearch";
+        return "pretty:cmsOpenPageWithSearch2";
     }
 
     /**
@@ -1175,8 +1204,8 @@ public class CmsBean {
             }
         }
         logger.trace("forwardToCMSPage path 2: {}", path);
+        FacesContext context = getFacesContext();
         if (StringUtils.isNotBlank(path)) {
-            FacesContext context = getFacesContext();
             logger.debug("Forwarding to " + path);
             context.getExternalContext().dispatch(path);
             context.responseComplete();

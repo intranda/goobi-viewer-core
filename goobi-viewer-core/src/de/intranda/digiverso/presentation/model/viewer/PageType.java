@@ -40,9 +40,9 @@ public enum PageType {
     viewCalendar("calendar"),
     search("search"),
     searchlist("searchlist", PageTypeHandling.cms),
-    advancedSearch("advancedsearch"),
-    timelinesearch("timelinesearch"),
-    calendarsearch("calendarsearch"),
+    advancedSearch("searchadvanced"),
+    timelinesearch("searchtimeline"),
+    calendarsearch("searchcalendar"),
     term("term"),
     browse("browse", PageTypeHandling.cms),
     expandCollection("expandCollection"),
@@ -150,6 +150,13 @@ public enum PageType {
         }
         for (PageType p : PageType.values()) {
             if (p.getName().equalsIgnoreCase(name) || p.name.equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
+                return p;
+            }
+        }
+        //look for configured names
+        for (PageType p : PageType.values()) {
+            String configName = DataManager.getInstance().getConfiguration().getPageType(p);
+            if (configName != null && configName.equalsIgnoreCase(name)) {
                 return p;
             }
         }

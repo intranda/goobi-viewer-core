@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,8 +56,8 @@ import de.intranda.digiverso.presentation.managedbeans.ConfigurationBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -703,7 +704,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 wordCoordsFormat = CoordsFormat.NONE;
             }
         }
-        if (altoText != null) {
+        if (StringUtils.isNotEmpty(altoText)) {
             String text = ALTOTools.getFullText(altoText);
             return text;
         } else if (fullText == null) {
@@ -727,7 +728,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Loads full-text data for this page from the file system, if not yet loaded.
+     * Loads full-text data for this page via the REST service, if not yet loaded.
      *
      * @return true if fulltext loaded successfully false otherwise
      * @throws IOException
@@ -738,9 +739,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     boolean loadFullText() throws FileNotFoundException, IOException {
         if (fullText == null && fulltextFileName != null) {
             logger.trace("Loading full-text for page {}", fulltextFileName);
-            String filePath = Helper.getRepositoryPath(dataRepository) + fulltextFileName;
-            fullText = FileTools.getStringFromFilePath(filePath);
-            return true;
+            String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
+            try {
+                fullText = Helper.getWebContentGET(url);
+                wordCoordsFormat = CoordsFormat.ALTO;
+                return true;
+            } catch (HTTPException e) {
+                throw new IOException(e);
+            }
         }
 
         return false;
@@ -791,7 +797,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Loads ALTO data for this page from the file system, if not yet loaded.
+     * Loads ALTO data for this page via the REST service, if not yet loaded.
      * 
      * @return true if ALTO successfully loaded; false otherwise
      * @throws IOException
@@ -801,10 +807,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean loadAlto() throws JDOMException, IOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
-            String filePath = Helper.getRepositoryPath(dataRepository) + altoFileName;
-            altoText = FileTools.getStringFromFilePath(filePath);
-            wordCoordsFormat = CoordsFormat.ALTO;
-            return true;
+            String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
+            logger.trace("URL: {}", url);
+            try {
+                altoText = Helper.getWebContentGET(url);
+                // logger.trace("ALTO loaded:\n{}", altoText);
+                wordCoordsFormat = CoordsFormat.ALTO;
+                return true;
+            } catch (HTTPException e) {
+                throw new IOException(e);
+            }
         }
 
         return false;
@@ -1099,7 +1111,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return SearchHelper.checkAccessPermissionForImage(request, pi, fileName);
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName);
         } else {
             logger.trace("FacesContext not found");
         }

@@ -57,6 +57,7 @@ import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -454,8 +455,9 @@ public class BrowseElement implements Serializable {
                             // Regular page or docstruct
                             if (useThumbnail) {
                                 boolean access = FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext()
-                                        .getRequest() != null ? SearchHelper.checkAccessPermissionForThumbnail((HttpServletRequest) FacesContext
-                                                .getCurrentInstance().getExternalContext().getRequest(), pi, filename) : false;
+                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail(
+                                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), pi,
+                                                filename) : false;
                                 // Flag the thumbnail for this element as access denied, so that further visualization can be triggered in HTML.
                                 // The display of the "access denied" thumbnail is done in the ContentServerWrapperServlet.
                                 if (!access) {
@@ -723,6 +725,9 @@ public class BrowseElement implements Serializable {
                         switch (metadataGroupType) {
                             case PERSON:
                             case CORPORATION:
+                            case LOCATION:
+                            case SUBJECT:
+                            case PUBLISHER:
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
@@ -781,12 +786,28 @@ public class BrowseElement implements Serializable {
             ret = se.getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(ret)) {
                 if (locale != null) {
+                    String englishTitle = null;
+                    String germanTitle = null;
+                    String anyTitle = null;
                     for (String key : se.getMetadataFields().keySet()) {
-                        if (key.startsWith(SolrConstants.TITLE)) {
-                            if (key.endsWith(SolrConstants._LANG_ + locale.getLanguage().toUpperCase())) {
-                                ret = se.getMetadataValue(key);
-                                break;
-                            }
+                        if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
+                            ret = se.getMetadataValue(key);
+                            break;
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
+                            germanTitle = se.getMetadataValue(key);
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
+                            englishTitle = se.getMetadataValue(key);
+                        } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
+                            anyTitle = se.getMetadataValue(key);
+                        }
+                    }
+                    if(StringUtils.isBlank(ret)) {
+                        if(StringUtils.isNotBlank(englishTitle)) {
+                            ret = englishTitle;
+                        } else if(StringUtils.isNotBlank(germanTitle)) {
+                            ret = germanTitle;
+                        } else {
+                            ret = anyTitle;
                         }
                     }
                 }
@@ -1052,17 +1073,32 @@ public class BrowseElement implements Serializable {
     private String generateUrl() {
         // For aggregated person search hits, start another search (label contains the person's name in this case)
         StringBuilder sb = new StringBuilder();
-        if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
-            // Person metadata search hit ==> execute search for that person
-            // TODO not for aggregated hits?
-            try {
-                sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
-                        SearchBean.URL_ENCODING)).append("\"/1/-/-/");
-            } catch (UnsupportedEncodingException e) {
-                logger.error("{}: {}", e.getMessage(), label);
-                sb = new StringBuilder();
-                sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
-                        "\"/1/-/-/");
+        if (metadataGroupType != null) {
+            switch (metadataGroupType) {
+                case PERSON:
+                case CORPORATION:
+                case LOCATION:
+                case SUBJECT:
+                case PUBLISHER:
+                    // Person metadata search hit ==> execute search for that person
+                    // TODO not for aggregated hits?
+                    try {
+                        sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
+                                SearchBean.URL_ENCODING)).append("\"/1/-/-/");
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error("{}: {}", e.getMessage(), label);
+                        sb = new StringBuilder();
+                        sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
+                                "\"/1/-/-/");
+                    }
+
+                    break;
+                default:
+                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
+                            useOverviewPage, false);
+                    sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId)
+                            ? logId : '-').append('/');
+                    break;
             }
         } else {
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,

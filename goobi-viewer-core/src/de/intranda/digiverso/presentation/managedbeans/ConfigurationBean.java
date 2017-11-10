@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -44,6 +45,7 @@ import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
@@ -228,10 +230,6 @@ public class ConfigurationBean implements Serializable {
         }
 
         return height;
-    }
-
-    public String getIipimageServerAddress() {
-        return DataManager.getInstance().getConfiguration().getIIPImageServer();
     }
 
     public boolean isShowSidebarEventMetadata() {
@@ -610,6 +608,18 @@ public class ConfigurationBean implements Serializable {
 
     public List<String> getSortFields() {
         return DataManager.getInstance().getConfiguration().getSortFields();
+//                .stream()
+//                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
+//                .collect(Collectors.toList());
+    }
+
+    /**
+     * @param field
+     * @param language
+     * @return
+     */
+    private boolean isLanguageVersionOtherThan(String field, String language) {
+        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
 
     public int getTocIndentation() {

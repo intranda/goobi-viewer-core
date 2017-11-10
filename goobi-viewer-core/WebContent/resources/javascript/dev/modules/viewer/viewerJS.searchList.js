@@ -327,13 +327,25 @@ var viewerJS = ( function( viewer ) {
         // check hit type
         switch ( type ) {
             case 'PAGE':
-                hitSetChildrenDt.append( '<i class="fa fa-file-text-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-file-text" aria-hidden="true"></i>' );
                 break;
             case 'PERSON':
-                hitSetChildrenDt.append( '<i class="fa fa-user-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-user" aria-hidden="true"></i>' );
+                break;
+            case 'CORPORATION':
+                hitSetChildrenDt.append( '<i class="fa fa-university" aria-hidden="true"></i>' );
+                break;
+            case 'LOCATION':
+                hitSetChildrenDt.append( '<i class="fa fa-location-arrow" aria-hidden="true"></i>' );
+                break;
+            case 'SUBJECT':
+                hitSetChildrenDt.append( '<i class="fa fa-question-circle-o" aria-hidden="true"></i>' );
+                break;
+            case 'PUBLISHER':
+                hitSetChildrenDt.append( '<i class="fa fa-copyright" aria-hidden="true"></i>' );
                 break;
             case 'EVENT':
-                hitSetChildrenDt.append( '<i class="fa fa-calendar-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-calendar" aria-hidden="true"></i>' );
                 break;
         }
         hitSetChildrenDd = $( '<dd />' );

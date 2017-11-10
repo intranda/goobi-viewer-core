@@ -120,7 +120,7 @@ public class CMSPage {
 
     @Transient
     private int listPage = 1;
-
+// ALTER TABLE cms_pages ADD CONSTRAINT cms_pages_static_page_unique_constraint UNIQUE (static_page);
     @Column(name = "static_page", nullable = true)
     private String staticPageName;
 
@@ -141,6 +141,7 @@ public class CMSPage {
                     element.setOrder(i);
                     //		    element.setId(null);
                     element.setOwnerPage(this);
+                    element.serialize();
                     selectedElements.add(element);
                 }
             }
@@ -543,7 +544,12 @@ public class CMSPage {
 
         return new CMSPageLanguageVersion();
     }
+    
+    public String getPageUrl() {
+        return BeanUtils.getCmsBean().getPageUrl(this.id);
+    }
 
+    @Deprecated
     public String getUrl() {
         return CMSContentResource.getPageUrl(this);
     }
@@ -775,15 +781,23 @@ public class CMSPage {
      * @param itemId
      * @return
      */
-    public boolean hasContentItem(final String itemId) {
+    public boolean hasContentItem(final String itemId) {          
         synchronized (languageVersions) {            
-            return getLanguageVersions().stream()
-                    .map(lang -> lang.getContentItem(itemId))
-                    .filter(item -> item != null)
-                    .count() > 0;
+            return languageVersions.stream()
+                    .flatMap(lang -> lang.getContentItems().stream())
+//                    .map(lang -> lang.getContentItem(itemId))
+//                    .filter(item -> item != null)
+                    .filter(item -> item.getItemId().equals(itemId))
+                    .findAny().isPresent();
         }
     }
     
+    /**
+     * Returns the first found SearchFunctionality of any containted content items
+     * If no fitting item is found, a new default SearchFunctionality is returned
+     * 
+     * @return SearchFunctionality, not null
+     */
     public SearchFunctionality getSearch() {
         Optional<CMSContentItem> searchItem = getGlobalContentItems().stream()
         .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
@@ -792,7 +806,7 @@ public class CMSPage {
             return (SearchFunctionality) searchItem.get().getFunctionality();
         } else {
             logger.warn("Did not find search functionality in page " + this);
-            return new SearchFunctionality("", DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
+            return new SearchFunctionality("", getPageUrl(), DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
         }
     }
 }

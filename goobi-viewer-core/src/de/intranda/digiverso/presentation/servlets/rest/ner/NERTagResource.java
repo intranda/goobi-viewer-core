@@ -45,6 +45,7 @@ import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
@@ -291,9 +292,11 @@ public class NERTagResource {
                                 SolrConstants.FILENAME_ALTO);
                         continue;
                     }
-                    String altoFilePath = Helper.getRepositoryPath(dataRepository) + altoFileName;
+
+                    // Load ALTO via the REST service
+                    String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
                     try {
-                        String altoString = FileTools.getStringFromFilePath(altoFilePath);
+                        String altoString = Helper.getWebContentGET(url);
                         Integer pageOrder = getPageOrder(solrDoc);
                         List<TagCount> tags = ALTOTools.getNERTags(altoString, type);
                         for (TagCount tagCount : tags) {
@@ -305,6 +308,8 @@ public class NERTagResource {
                     } catch (FileNotFoundException e) {
                         logger.error(e.getMessage());
                     } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (HTTPException e) {
                         logger.error(e.getMessage(), e);
                     }
                 }

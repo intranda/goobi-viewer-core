@@ -50,14 +50,14 @@ import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
 import de.intranda.digiverso.presentation.model.search.Search;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
+import de.intranda.digiverso.presentation.model.security.Role;
+import de.intranda.digiverso.presentation.model.security.user.IpRange;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
+import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob.JobStatus;
-import de.intranda.digiverso.presentation.model.user.IpRange;
-import de.intranda.digiverso.presentation.model.user.LicenseType;
-import de.intranda.digiverso.presentation.model.user.Role;
-import de.intranda.digiverso.presentation.model.user.User;
-import de.intranda.digiverso.presentation.model.user.UserGroup;
-import de.intranda.digiverso.presentation.model.user.UserRole;
 
 public class JPADAO implements IDAO {
 
@@ -503,7 +503,7 @@ public class JPADAO implements IDAO {
      *
      * @throws DAOException
      *
-     * @see de.intranda.digiverso.presentation.dao.IDAO#updateUserGroup(de.intranda.digiverso.presentation.model.user.UserGroup)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#updateUserGroup(de.intranda.digiverso.presentation.model.security.user.UserGroup)
      * @should set id on new license
      */
     @Override
@@ -2228,7 +2228,7 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
         q.setParameter("pageName", pageName);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         if (!q.getResultList().isEmpty()) {
             return (CMSPage) q.getSingleResult();
         }

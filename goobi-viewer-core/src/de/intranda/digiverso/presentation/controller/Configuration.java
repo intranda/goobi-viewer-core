@@ -50,7 +50,7 @@ import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.DcSortingList;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -921,6 +921,20 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+    *
+    * @return
+    * @should return correct value
+    */
+    public String getContentRestApiUrl() {
+        String urlString = getLocalString("urls.contentRestApi", "http://localhost:8080/viewer/rest/content/");
+        if (!urlString.endsWith("/")) {
+            urlString += "/";
+        }
+
+        return urlString;
+    }
+
+    /**
      * 
      * @return
      * @should return correct value
@@ -1763,24 +1777,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getSortFields() {
         return getLocalList("search.sorting.luceneField");
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getIIPImageServer() {
-        return getLocalString("urls.iipimageServer");
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getGoobiWebApiUrl() {
-        return getLocalString("urls.goobiWebApi");
     }
 
     /**
@@ -3050,7 +3046,7 @@ public final class Configuration extends AbstractConfiguration {
             return subConfig.getString("defaultBrowseIcon", "");
         }
 
-        return getLocalString("collection.defaultBrowseIcon", "");
+        return getLocalString("collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 
     /**
