@@ -229,34 +229,14 @@ public class CmsBean {
                 page.getSidebarElements().forEach(element -> element.deSerialize());
             }
         }
+        numCreatedPages = createdPages.size();
         return createdPages;
     }
 
     public List<CMSPage> loadCreatedPages(int from, int to) throws DAOException {
-        logger.debug("Loading created cms-pages from database");
-        //        createdPages = DataManager.getInstance().getDao().getCMSPages(from, to - from, null, false, null);
-        createdPages = DataManager.getInstance().getDao().getAllCMSPages();
-        Iterator<CMSPage> pages = createdPages.iterator();
-
-        while (pages.hasNext()) {
-            CMSPage page = pages.next();
-            CMSPageTemplate template = CMSTemplateManager.getInstance().getTemplate(page.getTemplateId());
-
-            if (!isPageValid(page, template)) {
-                pages.remove();
-            } else {
-                //check if this pages is used as static page
-                for (CMSStaticPage staticPage : getStaticPages()) {
-                    if (staticPage.getCmsPage() != null && staticPage.getCmsPage().getId().equals(page.getId())) {
-                        staticPage.setCmsPage(page);
-                    }
-                }
-                page.getSidebarElements().forEach(element -> element.deSerialize());
-            }
-        }
-        numCreatedPages = createdPages.size();
+        loadCreatedPages();
         if (!createdPages.isEmpty()) {
-            createdPages = createdPages.subList(Math.min(from, createdPages.size() - 1), Math.min(to, createdPages.size()));
+            return createdPages.subList(Math.min(from, createdPages.size() - 1), Math.min(to, createdPages.size()));
         }
         return createdPages;
     }
