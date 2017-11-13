@@ -29,6 +29,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,15 +105,41 @@ public class TeiToHtmlConverter {
         text = text.replace(" xmlns=\"http://www.tei-c.org/ns/1.0\"", "");
 
         // Remove type attributes from divs
-//        text = text.replaceAll("<div type=\"(.*?)\">", "<div>");
+        //        text = text.replaceAll("<div type=\"(.*?)\">", "<div>");
 
         // remove empty <p>'s
         // text = text.replace("<p />", "").replace("<p/>", "").replace("<p></p>", "");
-        
+
         // images
         // <img src="none" alt="Bildbeschriftung" />
-        for (MatchResult r : findRegexMatches("<figure><head>(.*?)</head><graphic url=\"(.*?)\" /></figure>", text)) {
-            text = text.replace(r.group(), "\"<img src=\"" + r.group(2) + "\" alt=\"" + r.group(1) + "\"/>");
+        //        for (MatchResult r : findRegexMatches("<figure.*?>\\s*<head.*?>(.*?)</head>[\\s\\S]*?<graphic url=\"(.*?)\" */>\\s*</figure>", text)) {
+        //            text = text.replace(r.group(), "\"<img src=\"" + r.group(2) + "\" alt=\"" + r.group(1) + "\"/>");
+        //        }
+        for (MatchResult r : findRegexMatches("<figure.*?>[\\s\\S]*?</figure>", text)) {
+            String xmlSnippet = r.group();
+            try {
+                Document doc = FileTools.getDocumentFromString(xmlSnippet, Helper.DEFAULT_ENCODING);
+                if (doc != null && doc.hasRootElement()) {
+                    StringBuilder sb = new StringBuilder();
+                    Element eleGraphic = doc.getRootElement().getChild("graphic");
+                    if (eleGraphic != null && eleGraphic.getAttribute("url") != null) {
+                        sb.append("<img src=\"").append(eleGraphic.getAttributeValue("url")).append('"');
+                        String head = doc.getRootElement().getChildText("head");
+                        if (head != null) {
+                            sb.append(" alt=\"").append(head).append('"');
+                        }
+                        sb.append(" />");
+                    } else if (doc.getRootElement().getChild("figDesc") != null) {
+                        String figDesc = doc.getRootElement().getChildText("figDesc");
+                        sb.append("<p>").append(figDesc).append("</p>");
+                    }
+                    text = text.replace(r.group(), sb.toString());
+                }
+            } catch (JDOMException e) {
+                logger.error(e.getMessage(), e);
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
 
         // headers (after images)
@@ -153,7 +182,7 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<span style=\"font-variant: small-caps;\">" + r.group(1) + "</span>");
         }
         // TODO spaceOut
-        
+
         // TODO replace anm
         for (MatchResult r : findRegexMatches("\\[anm\\](.*?)\\[/anm\\]", text)) {
             text = text.replace(r.group(), "<note type=\"editorial\"><p>" + r.group(1) + "</p></note>");
@@ -249,14 +278,14 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">" + r.group(1)
                     + "</p>");
         }
-        
+
         //Replace <note>
         int footnoteCount = 0;
         for (MatchResult r : findRegexMatches("<note>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>", text)) {
             footnoteCount++;
             String note = r.group();
             String footnoteText = r.group(2);
-            
+
             String reference = "<sup><a href=\"#fn§§\" id=\"ref§§\">§§</a></sup>";
             String footnote = "<p class=\"footnoteText\" id=\"fn§§\">[§§] " + footnoteText + "<a href=\"#ref§§\">↩</a></p>";
             reference = reference.replace("§§", Integer.toString(footnoteCount));
@@ -265,7 +294,6 @@ public class TeiToHtmlConverter {
             text = text.replace(note, reference) + footnote;
 
         }
-        
 
         // line breaks
         text = text.replace("<lb />", "<br />").replace("<lb></lb>", "<br />");
