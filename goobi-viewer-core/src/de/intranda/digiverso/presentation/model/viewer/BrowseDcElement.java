@@ -250,7 +250,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public BrowseElementInfo getInfo() {
         return info;
     }
-
+    
     public static class TranslationComparator implements Comparator<BrowseDcElement>, Serializable {
 
         private static final long serialVersionUID = -2594688666989841956L;

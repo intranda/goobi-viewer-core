@@ -459,4 +459,5 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
     }
+
 }
