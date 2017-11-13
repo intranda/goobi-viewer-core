@@ -45,14 +45,13 @@ import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 
 @Entity
 @Table(name = "cms_sidebar_elements")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="widget_type")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "widget_type")
 public class CMSSidebarElement {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarElement.class);
     protected static final int HASH_MULTIPLIER = 11;
     private static final NumberIterator ID_COUNTER = new NumberIterator();
-
 
     private static Pattern patternHtmlTag = Pattern.compile("<.*?>");
     private static Pattern patternHtmlAttribute = Pattern.compile("[ ].*?[=][\"].*?[\"]");
@@ -86,13 +85,12 @@ public class CMSSidebarElement {
     @Enumerated(EnumType.STRING)
     @Column(name = "widget_mode", nullable = false)
     private WidgetMode widgetMode = WidgetMode.STANDARD;
-    
+
     @Column(name = "linked_pages", nullable = true)
     private String linkedPagesString = "";
     @Transient
     private PageList linkedPages = null;
-   
-    
+
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
 
@@ -120,33 +118,31 @@ public class CMSSidebarElement {
         return -1;
     }
 
-     /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    /* (non-Javadoc)
+    * @see java.lang.Object#hashCode()
+    */
     @Override
     public int hashCode() {
         int code = 21;
         code += HASH_MULTIPLIER * getType().hashCode();
-        if(StringUtils.isNotBlank(getHtml())) {            
+        if (StringUtils.isNotBlank(getHtml())) {
             code += HASH_MULTIPLIER * getHtml().hashCode();
         }
-        if(StringUtils.isNotBlank(getCssClass())) {            
+        if (StringUtils.isNotBlank(getCssClass())) {
             code += HASH_MULTIPLIER * getCssClass().hashCode();
         }
-        if(getLinkedPages() != null) {
+        if (getLinkedPages() != null) {
             code += HASH_MULTIPLIER * getLinkedPages().hashCode();
         }
         return code;
     }
-    
+
     @Override
     public boolean equals(Object o) {
-        return o.getClass().equals(CMSSidebarElement.class) 
-                && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
-                && bothNullOrEqual(getHtml(), ((CMSSidebarElement) o).getHtml())
-                && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
+        return o.getClass().equals(CMSSidebarElement.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType()) && bothNullOrEqual(
+                getHtml(), ((CMSSidebarElement) o).getHtml()) && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
                 && bothNullOrEqual(getLinkedPages(), ((CMSSidebarElement) o).getLinkedPages());
-        }
+    }
 
     protected static boolean bothNullOrEqual(Object o1, Object o2) {
         if (o1 == null) {
@@ -269,35 +265,35 @@ public class CMSSidebarElement {
         }
         this.widgetMode = widgetMode;
     }
-    
-    /**
-	 * @return the cssClass
-	 */
-	public String getCssClass() {
-		return cssClass;
-	}
-	
-	/**
-	 * @param cssClass the cssClass to set
-	 */
-	public void setCssClass(String className) {
-		if(!validateCssClass(className)) {
-			String msg = Helper.getTranslation("cms_validationWarningCssClassInvalid", null);
-			Messages.error(msg.replace("{0}", this.getType()));
-		} else {			
-			this.cssClass = className;
-		}
-	}
 
     /**
-	 * @param className
-	 * @return
-	 */
-	private static boolean validateCssClass(String className) {
-		return patternCssClass.matcher(className).matches();
-	}
+     * @return the cssClass
+     */
+    public String getCssClass() {
+        return cssClass;
+    }
 
-	/**
+    /**
+     * @param cssClass the cssClass to set
+     */
+    public void setCssClass(String className) {
+        if (!validateCssClass(className)) {
+            String msg = Helper.getTranslation("cms_validationWarningCssClassInvalid", null);
+            Messages.error(msg.replace("{0}", this.getType()));
+        } else {
+            this.cssClass = className;
+        }
+    }
+
+    /**
+     * @param className
+     * @return
+     */
+    private static boolean validateCssClass(String className) {
+        return patternCssClass.matcher(className).matches();
+    }
+
+    /**
      * Tests whether the html contains only the allowed html-tags
      *
      * @return
@@ -323,7 +319,6 @@ public class CMSSidebarElement {
         return true;
     }
 
-
     /**
      * Normalizes the given HTML tag so that it can be matched against <code>CMSSidebarManager.getAllowedHtmlTags()</code>.
      *
@@ -343,12 +338,12 @@ public class CMSSidebarElement {
 
         return tag;
     }
-    
+
     public SidebarElementType.Category getCategory() {
-               
-        if(this instanceof CMSSidebarElementWithQuery) {
+
+        if (this instanceof CMSSidebarElementWithQuery) {
             return SidebarElementType.Category.fieldQuery;
-        } else if(this.getLinkedPages() != null) {
+        } else if (this.getLinkedPages() != null) {
             return SidebarElementType.Category.pageLinks;
         }
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
@@ -362,54 +357,56 @@ public class CMSSidebarElement {
         sb.append(" (").append(getId()).append(") ");
         return sb.toString();
     }
-    
+
     /**
      * @return the sortingId
      */
     public int getSortingId() {
         return sortingId;
     }
-    
+
     /**
      * @return the linkedPages
      */
     public PageList getLinkedPages() {
-//        this.linkedPages = new PageList(this.linkedPagesString);
+        //        this.linkedPages = new PageList(this.linkedPagesString);
         return linkedPages;
     }
-    
+
     /**
      * @param linkedPages the linkedPages to set
      */
     public void setLinkedPages(PageList linkedPages) {
         this.linkedPages = linkedPages;
     }
-    
+
     /**
      * @return the linkedPagesList
      */
     public String getLinkedPagesString() {
-//        this.linkedPagesString = linkedPages.toString();
+        //        this.linkedPagesString = linkedPages.toString();
         return linkedPagesString;
     }
-    
+
     /**
      * @param linkedPagesList the linkedPagesList to set
      */
     public void setLinkedPagesString(String linkedPagesList) {
         this.linkedPagesString = linkedPagesList;
     }
-    
+
     public void serialize() {
-        if(this.linkedPages != null) {            
+        if (this.linkedPages != null) {
             this.linkedPagesString = linkedPages.toString();
         } else {
-            this.linkedPagesString = "";
+            this.linkedPagesString = null;
         }
     }
-    
+
     public void deSerialize() {
-      this.linkedPages = new PageList(this.linkedPagesString);
+        if (this.linkedPagesString != null) {
+            this.linkedPages = new PageList(this.linkedPagesString);
+        }
     }
 
 }
