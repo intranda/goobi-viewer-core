@@ -256,11 +256,6 @@ public class FileTools {
     }
 
     /**
-<<<<<<< HEAD
-     * 
-=======
-     *
->>>>>>> refs/heads/master
      * @param element
      * @param encoding
      * @return

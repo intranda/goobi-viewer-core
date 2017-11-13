@@ -300,7 +300,7 @@ public class MetadataElement {
             Metadata fallbackEn = null;
             for (Metadata md : metadataList) {
                 if (md.getLabel().equals(fullFieldName)) {
-                    logger.trace("{}: {}", fullFieldName, md.getValues().size());
+                    // logger.trace("{}: {}", fullFieldName, md.getValues().size());
                     return md;
                 } else if (md.getLabel().equals(fullFieldNameDe)) {
                     fallbackDe = md;

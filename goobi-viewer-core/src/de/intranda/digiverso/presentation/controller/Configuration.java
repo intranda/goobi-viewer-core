@@ -415,6 +415,7 @@ public final class Configuration extends AbstractConfiguration {
      */
     @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getMainMetadataForTemplate(String template) {
+        logger.trace("getMainMetadataForTemplate: {}", template);
         HierarchicalConfiguration usingTemplate = null;
         List templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
         if (templateList != null) {
