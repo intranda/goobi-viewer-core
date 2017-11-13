@@ -528,7 +528,7 @@ public final class SearchHelper {
                     if (fieldList != null) {
                         for (Object o : fieldList) {
                             String dc = DataManager.getInstance().getSearchIndex().getAsString(o);
-//                            String dc = (String) o;
+                            //                            String dc = (String) o;
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
                             }
@@ -1982,7 +1982,8 @@ public final class SearchHelper {
                 String alto = Helper.getWebContentGET(url);
                 ret = ALTOTools.getFullText(alto);
             } catch (HTTPException e) {
-                throw new IOException(e);
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
             }
 
         }
@@ -1992,8 +1993,8 @@ public final class SearchHelper {
             try {
                 ret = Helper.getWebContentGET(url);
             } catch (HTTPException e) {
-                logger.error(e.getMessage(), e);
-                throw new IOException(e);
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
             }
         }
 

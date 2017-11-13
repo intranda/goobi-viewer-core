@@ -49,27 +49,27 @@ public class SearchResultResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren) throws DAOException,
             PresentationException, IndexUnreachableException, IOException {
-        try {
-            SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
-            List<SearchHit> searchHits = searchBean.getCurrentSearch().getHits();
-            if (searchHits != null) {
-                for (SearchHit searchHit : searchHits) {
-                    if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
-                        if (searchHit.getHitsPopulated() < numChildren) {
-                            searchHit.populateChildren(numChildren - searchHit.getHitsPopulated());
-                        }
-                        Collections.sort(searchHit.getChildren());
-                        SearchHitChildList searchHitChildren = new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit
-                                .isHasMoreChildren());
-                        return searchHitChildren;
-                    }
-                }
-            }
-        } catch (NullPointerException e) {
+        SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
+        if (searchBean == null) {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
                     "No instance of SearchBean found in the user session. Execute a search first.");
             return null;
         }
+        List<SearchHit> searchHits = searchBean.getCurrentSearch().getHits();
+        if (searchHits != null) {
+            for (SearchHit searchHit : searchHits) {
+                if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
+                    if (searchHit.getHitsPopulated() < numChildren) {
+                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated());
+                    }
+                    Collections.sort(searchHit.getChildren());
+                    SearchHitChildList searchHitChildren = new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit
+                            .isHasMoreChildren());
+                    return searchHitChildren;
+                }
+            }
+        }
+
         servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "IDDOC " + hitId + " is not in the current search result set.");
         return null;
     }
