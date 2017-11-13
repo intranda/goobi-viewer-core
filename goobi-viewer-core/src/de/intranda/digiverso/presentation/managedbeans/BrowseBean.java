@@ -265,6 +265,7 @@ public class BrowseBean implements Serializable {
      */
     public String searchTerms() throws PresentationException, IndexUnreachableException {
         synchronized (this) {
+            logger.trace("searchTerms");
             updateBreadcrumbsWithCurrentUrl("browseTitle", NavigationHelper.WEIGHT_SEARCH_TERMS);
             if (searchBean != null) {
                 searchBean.setSearchString("");
@@ -359,6 +360,8 @@ public class BrowseBean implements Serializable {
                     }
                     browseTermListEscaped.add(term.intern());
                 }
+            } else {
+                resetTerms();
             }
 
             return "searchTermList";

@@ -400,7 +400,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @should translate configured field values correctly
      */
     public void populateFoundMetadata(SolrDocument doc, Set<String> ignoreFields, Set<String> translateFields) {
-        logger.trace("populateFoundMetadata");
+        // logger.trace("populateFoundMetadata");
         if (searchTerms == null) {
             return;
         }
@@ -442,7 +442,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 if ("NORM_ALTNAME".equals(docFieldName)) {
                                     break;
                                 }
-                                logger.trace("found {}:{}", docFieldName, fieldValue);
+                                // logger.trace("found {}:{}", docFieldName, fieldValue);
                             }
                         }
                     }
