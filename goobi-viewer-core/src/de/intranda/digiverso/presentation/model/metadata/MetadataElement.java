@@ -423,7 +423,7 @@ public class MetadataElement {
             md = getMetadata(name, BeanUtils.getActiveDocumentBean().getSelectedRecordLanguage());
         }
         if(md != null) {
-            if(StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}")) {
+            if(StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}") && !md.getMasterValue().equals("MASTERVALUE_WIKINORM")) {
                 return md.getMasterValue();
             } else if(!md.getValues().isEmpty()){
                 return md.getValues().get(0).getComboValueShort(0);
