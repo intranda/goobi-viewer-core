@@ -626,8 +626,9 @@ public class CollectionView {
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field + "/"
                     + collection.getLuceneName() + "/";
         } else {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + field + ':' + collection
+            String url =  BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + field + ':' + collection
                     .getLuceneName() + "/-/1/" + collection.getSortField() + "/-/";
+            return url;
         }
     }
 

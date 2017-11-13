@@ -19,10 +19,15 @@ import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 public interface BrowseElementInfo {
 
     public String getDescription();
     public URI getLinkURI(HttpServletRequest request);
     public URI getIconURI();
+    default boolean hasDescription() {
+        return StringUtils.isNotBlank(getDescription());
+    }
     
 }
