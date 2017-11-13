@@ -1977,7 +1977,6 @@ public final class SearchHelper {
         if (altoFilePath != null) {
             // ALTO file
             String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
-            logger.trace("url: {}, url");
             try {
                 String alto = Helper.getWebContentGET(url);
                 ret = ALTOTools.getFullText(alto);
