@@ -16,12 +16,17 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.StreamSupport;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -41,6 +46,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -812,5 +818,40 @@ public class CMSPage {
             logger.warn("Did not find search functionality in page " + this);
             return new SearchFunctionality("", getPageUrl());
         }
+    }
+
+    /**
+     * @return
+     */
+    public Set<String> getHandledPages() {
+        Set<String> pages = new HashSet<String>();
+        if(StringUtils.isNotBlank(getStaticPageName())) {            
+            pages = new HashSet<String>(Arrays.asList(getStaticPageName().split(";")));
+        }
+        return pages;
+    }
+    
+    public void setHandledPages(Collection<String> staticPages) {
+        setStaticPageName(StringUtils.join(staticPages, ";"));
+    }
+
+    /**
+     * @param pageName
+     */
+    public void removeStaticPageName(String pageName) {
+        Set<String> staticPages = getHandledPages();
+        staticPages.remove(pageName);
+        setHandledPages(staticPages);
+        
+    }
+
+    /**
+     * @param pageName
+     */
+    public void addStaticPageName(String pageName) {
+        Set<String> staticPages = getHandledPages();
+        staticPages.add(pageName);
+        setHandledPages(staticPages);
+        
     }
 }

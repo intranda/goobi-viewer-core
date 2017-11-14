@@ -34,6 +34,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ddf.EscherColorRef.SysIndexSource;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
@@ -1117,14 +1118,21 @@ public class CmsBean {
      * @return
      * @throws DAOException
      */
-    private static List<CMSStaticPage> createStaticPageList() throws DAOException {
+    private List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> pages = new ArrayList<>();
         for (PageType pageType : PageType.getTypesHandledByCms()) {
-            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
             CMSStaticPage page = new CMSStaticPage(pageType.getName());
+            CMSPage cmsPage = getCreatedPages().stream()
+                    .peek(p -> System.out.println("page " + p.getId() + " staticPageName: " + p.getStaticPageName()))
+                    .peek(p -> System.out.println("page " + p.getId() + " handles pages " + p.getHandledPages()))
+                    .filter(p -> p.getHandledPages().contains(pageType.name()) || p.getHandledPages().contains(pageType.getName()))
+                    .findFirst().orElse(null);
+//            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
             if (cmsPage != null) {
                 page.setCmsPage(cmsPage);
                 page.setUseCmsPage(true);
+            } else {
+                page.setCmsPage(null);
             }
             pages.add(page);
         }
@@ -1142,15 +1150,26 @@ public class CmsBean {
                 allPages.add(cmsPage);
             }
         }
-        for (CMSStaticPage staticPage : getStaticPages()) {
-            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-                allPages.remove(staticPage.getCmsPage());
-            }
-        }
+//        for (CMSStaticPage staticPage : getStaticPages()) {
+//            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
+//                allPages.remove(staticPage.getCmsPage());
+//            }
+//        }
         return allPages;
     }
 
     public void saveCMSPages() throws DAOException {
+        
+        for (CMSPage cmsPage : getCreatedPages()) {
+            cmsPage.setStaticPageName(null);
+        }
+        
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if(staticPage.isHasCmsPage()) {
+                staticPage.getCmsPage().addStaticPageName(staticPage.getPageName());
+            }
+        }
+        
         for (CMSPage cmsPage : getCreatedPages()) {
             if (!DataManager.getInstance().getDao().updateCMSPage(cmsPage)) {
                 Messages.error("cms_errorSavingStaticPages");
@@ -1206,7 +1225,7 @@ public class CmsBean {
      */
     private CMSStaticPage getStaticPageForPageType(PageType pageType) throws DAOException {
         for (CMSStaticPage staticPage : getStaticPages()) {
-            if (staticPage.getPageName().equals(pageType.getName())) {
+            if (staticPage.getPageName().equals(pageType.getName()) || staticPage.getPageName().equals(pageType.name())) {
                 return staticPage;
             }
         }

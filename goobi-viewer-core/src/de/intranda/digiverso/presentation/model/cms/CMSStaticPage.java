@@ -45,9 +45,14 @@ public class CMSStaticPage {
     public void setUseCmsPage(boolean useCmsPage) {
         //		this.useCmsPage = useCmsPage;
         //		System.out.println("Use cms page in " + pageName + ": " + useCmsPage);
-        if (this.cmsPage != null) {
-            this.cmsPage.setStaticPageName(useCmsPage ? pageName : null);
-        }
+//        if (this.cmsPage != null) {
+//            if(useCmsPage) {
+//                this.cmsPage.addStaticPageName(pageName);                
+//            } else {
+//                this.cmsPage.removeStaticPageName(pageName);
+//            }
+//            this.cmsPage.setStaticPageName(useCmsPage ? pageName : null);
+//        }
     }
 
     /**
@@ -61,18 +66,20 @@ public class CMSStaticPage {
      * @param cmsPage the cmsPage to set
      */
     public void setCmsPage(CMSPage cmsPage) {
-        if (this.cmsPage != null) {
-            this.cmsPage.setStaticPageName(null);
-        }
+        
+//        if (this.cmsPage != null) {
+//            this.cmsPage.setStaticPageName(null);
+//        }
+
+//        if (cmsPage == null && this.cmsPage != null) {
+//            this.cmsPage.removeStaticPageName(pageName);
+//            setUseCmsPage(false);
+//        }
 
         this.cmsPage = cmsPage;
-        if (cmsPage == null) {
-            setUseCmsPage(false);
-        }
-
-        if (this.cmsPage != null) {
-            this.cmsPage.setStaticPageName(pageName);
-        }
+//        if (this.cmsPage != null) {
+//            this.cmsPage.addStaticPageName(pageName);
+//        }
     }
 
     /**
