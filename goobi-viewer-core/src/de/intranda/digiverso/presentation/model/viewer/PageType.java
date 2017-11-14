@@ -40,7 +40,7 @@ public enum PageType {
     viewCalendar("calendar"),
     search("search"),
     searchlist("searchlist", PageTypeHandling.cms),
-    advancedSearch("searchadvanced"),
+    advancedSearch("searchadvanced", PageTypeHandling.cms),
     timelinesearch("searchtimeline"),
     calendarsearch("searchcalendar"),
     term("term"),
