@@ -1329,7 +1329,10 @@ public class SearchBean implements Serializable {
      */
     public long getHitsCount() {
         if (currentSearch != null) {
+            logger.trace("Hits count = {}", currentSearch.getHitsCount());
             return currentSearch.getHitsCount();
+        } else {
+            logger.warn("No Search object available");
         }
 
         return 0;
@@ -1745,6 +1748,7 @@ public class SearchBean implements Serializable {
      * @param currentSearch the currentSearch to set
      */
     public void setCurrentSearch(Search currentSearch) {
+        logger.trace("Setting current search to {}", currentSearch);
         this.currentSearch = currentSearch;
     }
 
