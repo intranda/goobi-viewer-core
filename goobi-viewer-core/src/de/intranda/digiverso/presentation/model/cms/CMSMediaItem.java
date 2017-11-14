@@ -342,7 +342,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public void setCollectionName(String collectionName) throws URISyntaxException, UnsupportedEncodingException {
         this.collectionName = collectionName;
         if (StringUtils.isNotBlank(this.collectionName) && StringUtils.isBlank(getLink())) {
-            this.link = new URI(URLEncoder.encode(getCollectionSearchUri(), "utf-8"));
+            this.link = new URI(getCollectionSearchUri());
         }
     }
 
@@ -352,9 +352,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return baseUri + "/" + PageType.expandCollection + "/" + getCollectionField() + ':' + getCollectionName() + "/";
     }
 
-    public String getCollectionSearchUri() {
+    public String getCollectionSearchUri() throws UnsupportedEncodingException {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + getCollectionField() + ':'
-                + getCollectionName() + "/-/1/-/-/";
+                + URLEncoder.encode(getCollectionName(), "utf-8") + "/-/1/-/-/";
     }
 
     /* (non-Javadoc)
