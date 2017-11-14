@@ -218,10 +218,11 @@ public final class SearchHelper {
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
+            logger.trace("Creating search hit from {}", doc);
             SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields);
             ret.add(hit);
             hit.addOverviewPageChild();
-
+            logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits 
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
@@ -240,7 +241,7 @@ public final class SearchHelper {
                 }
             }
         }
-
+        logger.trace("Return {} search hits", ret.size());
         return ret;
     }
 
