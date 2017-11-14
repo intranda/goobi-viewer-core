@@ -15,8 +15,10 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -337,10 +339,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return collectionName;
     }
 
-    public void setCollectionName(String collectionName) throws URISyntaxException {
+    public void setCollectionName(String collectionName) throws URISyntaxException, UnsupportedEncodingException {
         this.collectionName = collectionName;
         if (StringUtils.isNotBlank(this.collectionName) && StringUtils.isBlank(getLink())) {
-            this.link = new URI(getCollectionSearchUri());
+            this.link = new URI(URLEncoder.encode(getCollectionSearchUri(), "utf-8"));
         }
     }
 
