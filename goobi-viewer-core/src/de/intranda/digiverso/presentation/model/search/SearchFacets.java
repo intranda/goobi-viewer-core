@@ -107,8 +107,8 @@ public class SearchFacets {
                     }
                 }
                 String field = SearchHelper.facetifyField(facetItem.getField());
-                sbQuery.append('(').append(field).append(':').append("\"" + facetItem.getValue() + "\"").append(" OR ").append(field).append(':').append(facetItem
-                        .getValue()).append(".*)");
+                sbQuery.append('(').append(field).append(':').append("\"" + facetItem.getValue() + "\"").append(" OR ").append(field).append(':')
+                        .append(facetItem.getValue()).append(".*)");
                 count++;
             }
 
@@ -381,7 +381,7 @@ public class SearchFacets {
             return ret;
         }
     }
-    
+
     public String getCurrentFacetString(boolean urlEncode) {
         String ret = generateFacetPrefix(currentFacets, true);
         if (StringUtils.isEmpty(ret)) {
@@ -638,5 +638,29 @@ public class SearchFacets {
      */
     public List<FacetItem> getCurrentHierarchicalFacets() {
         return currentHierarchicalFacets;
+    }
+
+    /**
+     * Returns true if the given <code>field</code> is language-specific to a different language than the given <code>language</code>.
+     * 
+     * @param field
+     * @param language
+     * @return
+     * @should return true if language code different
+     * @should return false if language code same
+     * @should return false if no language code
+     */
+    public boolean isHasWrongLanguageCode(String field, String language) {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (language == null) {
+            throw new IllegalArgumentException("language may not be null");
+        }
+        if (field.contains(SolrConstants._LANG_) && !field.endsWith(SolrConstants._LANG_ + language.toUpperCase())) {
+            return true;
+        }
+
+        return false;
     }
 }
