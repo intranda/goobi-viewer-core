@@ -854,4 +854,12 @@ public class CMSPage {
         setHandledPages(staticPages);
         
     }
+    
+    public boolean isHasSidebarElements() {
+       if(!isUseDefaultSidebar()) {
+           return getSidebarElements() != null && !getSidebarElements().isEmpty();
+       } else {
+           return true;
+       }
+    }
 }
