@@ -127,7 +127,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                 case TOC:
                     return new TocFunctionality(item.getTocPI());
                 case SEARCH:
-                    return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl(), item.getElementsPerPage());
+                    return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl());
                 default:
                     return new TrivialFunctionality();
             }
@@ -468,7 +468,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public String getSolrQuery() {
         if(getType().equals(CMSContentItemType.SEARCH)) {
-            return ((SearchFunctionality)getFunctionality()).getSolrQuery();
+            return ((SearchFunctionality)getFunctionality()).getQueryString();
         }
         return solrQuery;
     }

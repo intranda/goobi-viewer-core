@@ -810,7 +810,7 @@ public class CMSPage {
             return (SearchFunctionality) searchItem.get().getFunctionality();
         } else {
             logger.warn("Did not find search functionality in page " + this);
-            return new SearchFunctionality("", getPageUrl(), DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
+            return new SearchFunctionality("", getPageUrl());
         }
     }
 }

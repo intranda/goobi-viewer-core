@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -100,6 +101,59 @@ public class ContentResource {
                 logger.error(e.getMessage(), e);
             } catch (JDOMException e) {
                 logger.error(e.getMessage(), e);
+            }
+        }
+
+        throw new ContentNotFoundException("Resource not found");
+
+    }
+    
+    /**
+     * @param pi
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException * @throws DAOException
+     * @throws ContentNotFoundException
+     * @throws IOException 
+     */
+    @GET
+    @Path("/tei/{pi}/{lang}")
+    @Produces({ MediaType.APPLICATION_XML })
+    public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
+            IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+//        String teiPath = DataManager.getInstance().getConfiguration().getTeiFolder() + '/' + pi + '/';
+        java.nio.file.Path teiPath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
+        java.nio.file.Path filePath = null;
+        if(Files.exists(teiPath)) {
+            filePath = Files.list(teiPath)
+            .filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
+            .findFirst().orElse(Files.list(teiPath).findFirst().orElse(null));
+        }
+
+        if(filePath != null) {            
+//            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filePath.getFileName().toString(),
+//                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+            if (!access) {
+                throw new ContentNotFoundException("No permission found");
+            }
+            
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            if (Files.isRegularFile(filePath)) {
+                Document doc;
+                try {
+                    doc = FileTools.readXmlFile(filePath);
+                    return new XMLOutputter().outputString(doc);
+                } catch (FileNotFoundException e) {
+                    logger.debug(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (JDOMException e) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         }
 
