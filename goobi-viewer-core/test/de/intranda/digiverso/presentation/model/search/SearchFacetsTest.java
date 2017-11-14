@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
@@ -267,5 +266,35 @@ public class SearchFacetsTest {
     public void generateHierarchicalFacetFilterQuery_shouldReturnNullIfFacetListIsEmpty() throws Exception {
         SearchFacets facets = new SearchFacets();
         Assert.assertNull(facets.generateHierarchicalFacetFilterQuery(1));
+    }
+
+    /**
+     * @see SearchFacets#isHasWrongLanguageCode(String,String)
+     * @verifies return true if language code different
+     */
+    @Test
+    public void isHasWrongLanguageCode_shouldReturnTrueIfLanguageCodeDifferent() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assert.assertTrue(facets.isHasWrongLanguageCode("MD_TITLE_LANG_DE", "en"));
+    }
+
+    /**
+     * @see SearchFacets#isHasWrongLanguageCode(String,String)
+     * @verifies return false if language code same
+     */
+    @Test
+    public void isHasWrongLanguageCode_shouldReturnFalseIfLanguageCodeSame() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assert.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE_LANG_DE", "de"));
+    }
+
+    /**
+     * @see SearchFacets#isHasWrongLanguageCode(String,String)
+     * @verifies return false if no language code
+     */
+    @Test
+    public void isHasWrongLanguageCode_shouldReturnFalseIfNoLanguageCode() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        Assert.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE", "en"));
     }
 }
