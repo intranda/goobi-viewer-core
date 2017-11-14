@@ -129,7 +129,7 @@ public class ContentResource {
         java.nio.file.Path filePath = null;
         if(Files.exists(teiPath)) {
             filePath = Files.list(teiPath)
-            .filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
+            .filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
             .findFirst().orElse(Files.list(teiPath).findFirst().orElse(null));
         }
 
