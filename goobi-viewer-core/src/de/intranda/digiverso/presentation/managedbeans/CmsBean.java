@@ -34,7 +34,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ddf.EscherColorRef.SysIndexSource;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
@@ -59,12 +58,12 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
-import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.cms.CMSPageTemplate;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
@@ -1122,12 +1121,10 @@ public class CmsBean {
         List<CMSStaticPage> pages = new ArrayList<>();
         for (PageType pageType : PageType.getTypesHandledByCms()) {
             CMSStaticPage page = new CMSStaticPage(pageType.getName());
-            CMSPage cmsPage = getCreatedPages().stream()
-                    .peek(p -> System.out.println("page " + p.getId() + " staticPageName: " + p.getStaticPageName()))
-                    .peek(p -> System.out.println("page " + p.getId() + " handles pages " + p.getHandledPages()))
-                    .filter(p -> p.getHandledPages().contains(pageType.name()) || p.getHandledPages().contains(pageType.getName()))
-                    .findFirst().orElse(null);
-//            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
+            CMSPage cmsPage = getCreatedPages().stream().peek(p -> logger.trace("page {} staticPageName: {}", p.getId(), p.getStaticPageName())).peek(
+                    p -> logger.trace("page {} handles pages {}", p.getId(), p.getHandledPages())).filter(p -> p.getHandledPages().contains(pageType
+                            .name()) || p.getHandledPages().contains(pageType.getName())).findFirst().orElse(null);
+            //            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
             if (cmsPage != null) {
                 page.setCmsPage(cmsPage);
                 page.setUseCmsPage(true);
@@ -1150,26 +1147,26 @@ public class CmsBean {
                 allPages.add(cmsPage);
             }
         }
-//        for (CMSStaticPage staticPage : getStaticPages()) {
-//            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-//                allPages.remove(staticPage.getCmsPage());
-//            }
-//        }
+        //        for (CMSStaticPage staticPage : getStaticPages()) {
+        //            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
+        //                allPages.remove(staticPage.getCmsPage());
+        //            }
+        //        }
         return allPages;
     }
 
     public void saveCMSPages() throws DAOException {
-        
+
         for (CMSPage cmsPage : getCreatedPages()) {
             cmsPage.setStaticPageName(null);
         }
-        
+
         for (CMSStaticPage staticPage : getStaticPages()) {
-            if(staticPage.isHasCmsPage()) {
+            if (staticPage.isHasCmsPage()) {
                 staticPage.getCmsPage().addStaticPageName(staticPage.getPageName());
             }
         }
-        
+
         for (CMSPage cmsPage : getCreatedPages()) {
             if (!DataManager.getInstance().getDao().updateCMSPage(cmsPage)) {
                 Messages.error("cms_errorSavingStaticPages");
