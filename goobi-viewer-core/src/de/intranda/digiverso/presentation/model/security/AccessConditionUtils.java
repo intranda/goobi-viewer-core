@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -47,7 +47,7 @@ import de.intranda.digiverso.presentation.model.security.user.IpRange;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 public class AccessConditionUtils {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AccessConditionUtils.class);
 
     /**
@@ -91,21 +91,16 @@ public class AccessConditionUtils {
                 }
             case "text":
             case "ocrdump":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
             case "pdf":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
             case "video":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_VIDEO);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_VIDEO);
             case "audio":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_AUDIO);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_AUDIO);
             case "dimensions":
             case "version":
-                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_IMAGES); // TODO is priv checking needed here?
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES); // TODO is priv checking needed here?
             default: // nothing
                 break;
         }
@@ -392,6 +387,28 @@ public class AccessConditionUtils {
     }
 
     /**
+     * 
+     * @param request
+     * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
+     * @param privilegeType
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public static boolean checkAccessPermissionByIdentifierAndFilePathWithSessionMap(HttpServletRequest request, String filePath,
+            String privilegeType) throws IndexUnreachableException, DAOException {
+        if (filePath == null) {
+            throw new IllegalArgumentException("filePath may not be null");
+        }
+        String[] filePathSplit = filePath.split("/");
+        if (filePathSplit.length != 3) {
+            throw new IllegalArgumentException("Illegal filePath value: " + filePath);
+        }
+
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, filePathSplit[1], filePathSplit[2], privilegeType);
+    }
+
+    /**
      * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
      *
      * @param request
@@ -473,8 +490,8 @@ public class AccessConditionUtils {
      * 
      *         TODO user license checks
      */
-    public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName, User user,
-            String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
+    public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
+            User user, String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
         // logger.trace("checkAccessPermission({},{},{})", allLicenseTypes, requiredAccessConditions, privilegeName);
         // If OPENACCESS is the only condition, allow immediately
         if (requiredAccessConditions.isEmpty()) {
@@ -518,6 +535,10 @@ public class AccessConditionUtils {
 
         // Check IP range
         if (StringUtils.isNotEmpty(remoteAddress)) {
+            if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress)) {
+                logger.debug("Access granted to localhost");
+                return true;
+            }
             // Check whether the requested privilege is allowed to this IP range (for all access conditions)
             Map<String, Boolean> permissionMap = new HashMap<>(requiredAccessConditions.size());
             for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
