@@ -1977,7 +1977,7 @@ public final class SearchHelper {
 
         String recordPath = Helper.getRepositoryPath(dataRepository);
         if (altoFilePath != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFilePath,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(null, altoFilePath,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFilePath);
                 return "ACCESS DENIED";
@@ -1997,7 +1997,7 @@ public final class SearchHelper {
 
         if (ret == null && fulltextFilePath != null) {
             // Plain full-text file
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFilePath,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(null, fulltextFilePath,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFilePath);
                 return "ACCESS DENIED";
