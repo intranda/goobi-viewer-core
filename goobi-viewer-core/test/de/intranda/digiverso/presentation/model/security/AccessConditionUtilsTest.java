@@ -158,9 +158,10 @@ public class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest
         Assert.assertTrue(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "127.0.0.1", null));
 
-        recordAccessConditions.add("license type 1 name");
-        Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
-                "127.0.0.1", null));
+        // localhost always gets access now
+        //        recordAccessConditions.add("license type 1 name");
+        //        Assert.assertFalse(AccessConditionUtils.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
+        //                "127.0.0.1", null));
     }
 
     /**
