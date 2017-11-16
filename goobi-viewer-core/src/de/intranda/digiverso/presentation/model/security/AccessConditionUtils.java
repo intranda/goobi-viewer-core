@@ -535,7 +535,7 @@ public class AccessConditionUtils {
 
         // Check IP range
         if (StringUtils.isNotEmpty(remoteAddress)) {
-            if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress)) {
+            if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
                 logger.debug("Access granted to localhost");
                 return true;
             }
