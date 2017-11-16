@@ -1484,15 +1484,14 @@ public class ViewManager implements Serializable {
             // Current page fulltext
             PhysicalElement currentImg = getCurrentPage();
             if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-                // Check permissions first
-                boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
-                        .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(),
-                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-                if (access) {
-                    currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
-                } else {
-                    currentFulltext = "ACCESS DENIED";
-                }
+                //            // Check permissions first
+                //            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
+                //                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                //            if (access) {
+                currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
+                //            } else {
+                //                currentFulltext = "ACCESS DENIED";
+                //            }
             }
         }
 

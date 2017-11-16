@@ -60,7 +60,6 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
-import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
@@ -77,7 +76,6 @@ import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
-import de.intranda.utils.SolrHelper;
 
 /**
  * Search utility class. Static methods only.
@@ -528,7 +526,7 @@ public final class SearchHelper {
                     Collection<Object> fieldList = doc.getFieldValues(luceneField);
                     if (fieldList != null) {
                         for (Object o : fieldList) {
-                            String dc = DataManager.getInstance().getSearchIndex().getAsString(o);
+                            String dc = SolrSearchIndex.getAsString(o);
                             //                            String dc = (String) o;
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
@@ -1968,15 +1966,23 @@ public final class SearchHelper {
      * @return
      * @throws IOException
      * @throws FileNotFoundException
+     * @throws DAOException
+     * @throws IndexUnreachableException
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
     public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath) throws FileNotFoundException,
-            IOException {
+            IOException, IndexUnreachableException, DAOException {
         String ret = null;
 
         String recordPath = Helper.getRepositoryPath(dataRepository);
         if (altoFilePath != null) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFilePath,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFilePath);
+                return "ACCESS DENIED";
+            }
+
             // ALTO file
             String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
             try {
@@ -1988,8 +1994,14 @@ public final class SearchHelper {
             }
 
         }
+
         if (ret == null && fulltextFilePath != null) {
             // Plain full-text file
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFilePath,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFilePath);
+                return "ACCESS DENIED";
+            }
             String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
             try {
                 ret = Helper.getWebContentGET(url);

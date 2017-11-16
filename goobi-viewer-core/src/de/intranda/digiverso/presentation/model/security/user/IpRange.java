@@ -42,9 +42,7 @@ import org.slf4j.LoggerFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.security.ILicensee;
@@ -118,10 +116,9 @@ public class IpRange implements ILicensee {
     }
 
     public boolean matchIp(String inIp) {
-        if (inIp.equals(Helper.ADDRESS_LOCALHOST_IPV6)) {
-            //            logger.debug("localhost IP");
-            return true;
-        }
+        //        if (inIp.equals(Helper.ADDRESS_LOCALHOST_IPV6) || inIp.equals(Helper.ADDRESS_LOCALHOST_IPV4)) {
+        //            return true;
+        //        }
 
         // Workaround for single IP ranges (isInRange() doesn't seem to match these)
         if (subnetMask.endsWith("/32") && subnetMask.substring(0, subnetMask.length() - 3).equals(inIp)) {
