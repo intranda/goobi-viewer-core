@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -73,14 +74,15 @@ public class TileGridBuilder {
             items = filter(items, tags);
         }
         
-        //		if(reserveForHighPriority > 0) {
+        items = items.stream()
+        .filter(item -> tags.isEmpty() || countTags(item, tags) > 0)
+        .sorted(new SemiRandomOrderComparator<ImageGalleryTile>(tile -> tile.getDisplayOrder()))
+        .collect(Collectors.toList());
+         
         List<ImageGalleryTile> priorityItems = filter(items, Priority.IMPORTANT);
-//        Collections.shuffle(priorityItems);
         priorityItems = priorityItems.subList(0, Math.min(gridSize, Math.min(priorityItems.size(), reserveForHighPriority)));
         
-        
         List<ImageGalleryTile> defaultItems = filter(items, Priority.DEFAULT);
-//        Collections.shuffle(defaultItems);
         defaultItems = defaultItems.subList(0, Math.min(defaultItems.size(), gridSize - priorityItems.size()));
 
         
@@ -88,12 +90,12 @@ public class TileGridBuilder {
         items.addAll(priorityItems);
         items.addAll(defaultItems);
         
-        Collections.sort(items, new Comparator<ImageGalleryTile>() {
-            @Override
-            public int compare(ImageGalleryTile item1, ImageGalleryTile item2) {
-                return Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder());
-            }
-        });
+//        Collections.sort(items, new Comparator<ImageGalleryTile>() {
+//            @Override
+//            public int compare(ImageGalleryTile item1, ImageGalleryTile item2) {
+//                return Integer.compare(item1.getDisplayOrder(), item2.getDisplayOrder());
+//            }
+//        });
         
         return new TileGrid(items, tags, language, request);
     }
@@ -144,6 +146,13 @@ public class TileGridBuilder {
 
     }
 
+    /**
+     * Returns the number of tags that are both in the collection 'tags' and in the tag-list of the GalleryTile item
+     * 
+     * @param item
+     * @param tags
+     * @return
+     */
     protected static int countTags(ImageGalleryTile item, Collection<String> tags) {
         return CollectionUtils.intersection(item.getTags(), tags).size();
     }
