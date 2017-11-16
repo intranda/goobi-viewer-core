@@ -285,7 +285,7 @@ public class MetadataElement {
      * @param language Optional language
      * @return
      * @should return correct language metadata field
-     * @shoudl fall back to non language field if language field not found
+     * @should fall back to non language field if language field not found
      */
     public Metadata getMetadata(String name, String language) {
         if (StringUtils.isNotEmpty(name) && metadataList != null && !metadataList.isEmpty()) {
@@ -311,14 +311,14 @@ public class MetadataElement {
                 }
             }
 
-            if(fallbackEn != null) {
+            if (fallbackEn != null) {
                 return fallbackEn;
-            } else if(fallbackDe != null) {
+            } else if (fallbackDe != null) {
                 return fallbackDe;
             } else {
                 return fallback;
             }
-        } 
+        }
 
         return null;
     }
@@ -410,31 +410,32 @@ public class MetadataElement {
     public boolean isFilesOnly() {
         return filesOnly;
     }
-    
+
     /**
      * 
      * 
-     * @param name  The name of the metadata
+     * @param name The name of the metadata
      * @return the best available metadata value, or an empty string if no metadata was found
      */
     public String getFirstMetadataValue(String name) {
         Metadata md = getMetadata(name);
-        if(md == null) {
+        if (md == null) {
             md = getMetadata(name, BeanUtils.getActiveDocumentBean().getSelectedRecordLanguage());
         }
-        if(md != null) {
-            if(StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}") && !md.getMasterValue().equals("MASTERVALUE_WIKINORM")) {
+        if (md != null) {
+            if (StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}") && !md.getMasterValue().equals(
+                    "MASTERVALUE_WIKINORM")) {
                 return md.getMasterValue();
-            } else if(!md.getValues().isEmpty()){
+            } else if (!md.getValues().isEmpty()) {
                 return md.getValues().get(0).getComboValueShort(0);
             }
         }
         return "";
     }
-    
+
     public String getFirstMetadataValue(String prefix, String name, String suffix) {
         String value = getFirstMetadataValue(name);
-        if(StringUtils.isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value)) {
             return prefix + value + suffix;
         } else {
             return value;
