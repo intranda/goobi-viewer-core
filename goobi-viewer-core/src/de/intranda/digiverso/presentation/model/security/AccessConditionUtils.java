@@ -431,14 +431,17 @@ public class AccessConditionUtils {
         // Session persistent permission check: Servlet-local method.
         String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeType;
         logger.trace("Checking session attribute: {}", attributeName);
-        Map<String, Boolean> permissions = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
+        Map<String, Boolean> permissions = null;
+        if (request != null) {
+            permissions = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
+        }
         if (permissions == null) {
             permissions = new HashMap<>();
             logger.trace("Session attribute not found, creating new");
         }
         // logger.debug("Permissions found, " + permissions.size() + " items.");
         // new pi -> create an new empty map in the session
-        if (!pi.equals(request.getSession().getAttribute("currentPi"))) {
+        if (request != null && !pi.equals(request.getSession().getAttribute("currentPi"))) {
             // logger.trace("new PI: {}", pi);
             request.getSession().setAttribute("currentPi", pi);
             request.getSession().removeAttribute(attributeName);
@@ -464,7 +467,9 @@ public class AccessConditionUtils {
             access = permissions.get(key) != null ? permissions.get(key) : false;
             // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName,
             // access);
-            request.getSession().setAttribute(attributeName, permissions);
+            if (request != null) {
+                request.getSession().setAttribute(attributeName, permissions);
+            }
         }
 
         return access;
@@ -535,7 +540,7 @@ public class AccessConditionUtils {
 
         // Check IP range
         if (StringUtils.isNotEmpty(remoteAddress)) {
-            if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress)) {
+            if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
                 logger.debug("Access granted to localhost");
                 return true;
             }
