@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
@@ -285,11 +287,12 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * 
      * @param number
+     * @param request
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public void populateChildren(int number) throws PresentationException, IndexUnreachableException, DAOException {
+    public void populateChildren(int number, HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("populateChildren START");
 
         // Create child hits
@@ -314,7 +317,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     case PAGE:
                         try {
                             fulltext = SearchHelper.loadFulltext(pi, browseElement.getDataRepository(), (String) childDoc.getFirstValue(
-                                    SolrConstants.FILENAME_ALTO), (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+                                    SolrConstants.FILENAME_ALTO), (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), request);
                         } catch (FileNotFoundException e) {
                             logger.error(e.getMessage());
                         } catch (IOException e) {
@@ -405,7 +408,7 @@ public class SearchHit implements Comparable<SearchHit> {
             return;
         }
 
-        boolean overviewPageFetched = false;
+        //        boolean overviewPageFetched = false;
         for (String termsFieldName : searchTerms.keySet()) {
             // Skip fields that are in the ignore list
             if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
