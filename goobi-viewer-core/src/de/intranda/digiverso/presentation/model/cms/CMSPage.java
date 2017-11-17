@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.persistence.CascadeType;
@@ -778,9 +779,9 @@ public class CMSPage {
     public void addContentItem(CMSContentItem item) {
         synchronized (languageVersions) {            
             if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
-                getLanguageVersions().stream()
-                .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE)
-                .forEach(lang -> lang.addContentItem(item));
+                 List<CMSPageLanguageVersion> langs = getLanguageVersions().stream()
+                .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE).collect(Collectors.toList());
+                 langs.forEach(lang -> lang.addContentItem(item));
             } else {
                 getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
             }
