@@ -56,6 +56,7 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -698,7 +699,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 if (!loadAlto()) {
                     wordCoordsFormat = CoordsFormat.NONE;
                 }
-            } catch (JDOMException | IOException e) {
+            } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
                 wordCoordsFormat = CoordsFormat.NONE;
             }
@@ -709,9 +710,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         } else if (fullText == null) {
             try {
                 loadFullText();
+                wordCoordsFormat = CoordsFormat.NONE;
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
-            } catch (IOException e) {
+            } catch (IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
             }
         }
@@ -732,16 +734,23 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if fulltext loaded successfully false otherwise
      * @throws IOException
      * @throws FileNotFoundException
+     * @throws DAOException
+     * @throws IndexUnreachableException
      * @should load full-text correctly if not yet loaded
      * @should return false if already loaded
      */
-    boolean loadFullText() throws FileNotFoundException, IOException {
+    boolean loadFullText() throws FileNotFoundException, IOException, IndexUnreachableException, DAOException {
         if (fullText == null && fulltextFileName != null) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", fulltextFileName);
+                fullText = "ACCESS DENIED";
+                return true;
+            }
             logger.trace("Loading full-text for page {}", fulltextFileName);
             String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
             try {
                 fullText = Helper.getWebContentGET(url);
-                wordCoordsFormat = CoordsFormat.ALTO;
                 return true;
             } catch (HTTPException e) {
                 logger.error("Could not retrieve file from {}", url);
@@ -777,7 +786,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 if (!loadAlto()) {
                     wordCoordsFormat = CoordsFormat.NONE;
                 }
-            } catch (JDOMException | IOException e) {
+            } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
                 wordCoordsFormat = CoordsFormat.NONE;
             }
@@ -802,11 +811,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return true if ALTO successfully loaded; false otherwise
      * @throws IOException
      * @throws JDOMException
+     * @throws DAOException
+     * @throws IndexUnreachableException
      * @should load alto correctly
      */
-    public boolean loadAlto() throws JDOMException, IOException {
+    public boolean loadAlto() throws JDOMException, IOException, IndexUnreachableException, DAOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFileName);
+                fullText = "ACCESS DENIED";
+                return false;
+            }
             String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
             logger.trace("URL: {}", url);
             try {

@@ -352,9 +352,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         return baseUri + "/" + PageType.expandCollection + "/" + getCollectionField() + ':' + getCollectionName() + "/";
     }
 
-    public String getCollectionSearchUri() {
+    public String getCollectionSearchUri() throws UnsupportedEncodingException {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + getCollectionField() + ':'
-                + getCollectionName() + "/-/1/-/-/";
+                + URLEncoder.encode(getCollectionName(), "utf-8") + "/-/1/-/-/";
     }
 
     /* (non-Javadoc)
