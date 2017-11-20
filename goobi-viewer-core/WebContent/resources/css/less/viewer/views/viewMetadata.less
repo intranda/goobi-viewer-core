@@ -2,7 +2,7 @@
    View Metadata
    style declarations for viewMetadata.xhtml 
    ==============================================================*/
-// metadata
+/* METADATA */
 #metadataElementWrapper {
 	position: relative;
     float: left;
@@ -21,8 +21,12 @@
                     margin-left: 30%;
                     .metadata-value {
                         display: block;
+                        margin-bottom: 0.5rem;
                         text-overflow: ellipsis;
                         overflow: hidden;
+                        &:last-child {
+                        	margin-bottom: 0;
+                        }
                     }
                 }
             }
@@ -41,6 +45,12 @@
                     margin-left: 30%;
                     .metadata-value {
                         display: block;
+                        margin-bottom: 0.5rem;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        &:last-child {
+                        	margin-bottom: 0;
+                        }
                     }
                 }
             }

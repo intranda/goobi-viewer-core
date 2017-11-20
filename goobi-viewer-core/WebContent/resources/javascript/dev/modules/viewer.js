@@ -361,6 +361,8 @@
                 }
                 break;
             case 'IE':
+                /* SET IE CLASS TO HTML */
+                $( 'html' ).addClass( 'is-IE' );
                 /* BROKEN IMAGES */
                 $( "img" ).error( function() {
                     $( this ).hide();

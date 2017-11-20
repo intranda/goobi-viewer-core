@@ -121,14 +121,15 @@ public final class SearchHelper {
      * @param searchTerms
      * @param exportFields
      * @param locale
+     * @param request
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
-            throws PresentationException, IndexUnreachableException, DAOException {
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries,
                 params);
@@ -161,7 +162,7 @@ public final class SearchHelper {
                 try {
                     fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT), (String) doc.getFirstValue(
                             SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(
-                                    SolrConstants.FILENAME_FULLTEXT));
+                                    SolrConstants.FILENAME_FULLTEXT), request);
                 } catch (FileNotFoundException e) {
                     logger.error(e.getMessage());
                 } catch (IOException e) {
@@ -325,13 +326,13 @@ public final class SearchHelper {
      * @should return correct hit for aggregated search
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws PresentationException,
-            IndexUnreachableException, DAOException {
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException, DAOException {
         String finalQuery = buildFinalQuery(query, aggregateHits);
         logger.debug("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params,
                 searchTerms, null, locale) : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, filterQueries, params,
-                        searchTerms, null, locale);
+                        searchTerms, null, locale, request);
         if (!hits.isEmpty()) {
             return hits.get(0).getBrowseElement();
         }
@@ -481,15 +482,18 @@ public final class SearchHelper {
                 }
             }
 
-            // Fill the map from the facet (faster, but unfortunately, precise parent collection size cannot be determined this way)
+            // Fill the map from the facet (faster, but unfortunately, precise parent collection size cannot be determined
+            // this way)
             {
                 //              logger.debug("query: {}", sbQuery.toString());
-                //            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null, Collections.singletonList(
+                // QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null,
+                // Collections.singletonList(
                 //                    facetField), null, null, null);
                 //              logger.trace("query done");
                 //                if (resp.getFacetField(facetField) != null && resp.getFacetField(facetField).getValues() != null) {
                 //                    for (Count count : resp.getFacetField(facetField).getValues()) {
-                //                        if (count.getName() == null || (!blacklist.isEmpty() && checkCollectionInBlacklist(count.getName(), blacklist))) {
+                // if (count.getName() == null || (!blacklist.isEmpty() && checkCollectionInBlacklist(count.getName(),
+                // blacklist))) {
                 //                            continue;
                 //                        }
                 //                        Long recordCount = ret.get(count.getName());
@@ -940,7 +944,8 @@ public final class SearchHelper {
 
                     // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
                     fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
-                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm, indexOfTerm);
+                    // fulltextFragment = getTextFragmentStatic(fulltext, targetFragmentLength, fulltextFragment, searchTerm,
+                    // indexOfTerm);
 
                     indexOfTerm = fulltextFragment.toLowerCase().indexOf(searchTerm.toLowerCase());
                     int indexOfSpace = fulltextFragment.indexOf(' ');
@@ -1271,7 +1276,8 @@ public final class SearchHelper {
                 params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
             }
             QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, fieldList, null, params);
-            // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(), facetFields, false);
+            // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
+            // facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
                 // Numerical filtering
@@ -1517,7 +1523,8 @@ public final class SearchHelper {
             params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
         }
         if (DataManager.getInstance().getConfiguration().isBoostTopLevelDocstructs()) {
-            // Add a boost query to promote anchors and works to the top of the list (Extended Dismax query parser is required for this)
+            // Add a boost query to promote anchors and works to the top of the list (Extended Dismax query parser is
+            // required for this)
             params.put("defType", "edismax");
             params.put("bq", "ISANCHOR:true^10 OR ISWORK:true^5");
         }
@@ -1634,7 +1641,8 @@ public final class SearchHelper {
             logger.trace("searchTerms: {}", searchTerms.toString());
             boolean moreThanOne = false;
             for (String field : fields) {
-                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+                // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return
+                // every single doc
                 switch (field) {
                     case SolrConstants.PI_TOPSTRUCT:
                     case SolrConstants.DC:
@@ -1706,7 +1714,8 @@ public final class SearchHelper {
                     if (item.getField() == null) {
                         continue;
                     }
-                    // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+                    // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
+                    // return every single doc
                     switch (item.getField()) {
                         case SolrConstants.PI_TOPSTRUCT:
                         case SolrConstants.DC:
@@ -1888,8 +1897,8 @@ public final class SearchHelper {
      * @should create excel workbook correctly
      */
     public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws IndexUnreachableException,
-            DAOException, PresentationException {
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException, PresentationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
         List<SXSSFSheet> sheets = new ArrayList<>();
         int currentSheetIndex = 0;
@@ -1939,7 +1948,8 @@ public final class SearchHelper {
             if (aggregateHits) {
                 batch = searchWithAggregation(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale);
             } else {
-                batch = searchWithFulltext(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale);
+                batch = searchWithFulltext(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale,
+                        request);
             }
             for (SearchHit hit : batch) {
                 // Create row
@@ -1963,6 +1973,7 @@ public final class SearchHelper {
      * @param dataRepository
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
+     * @param request
      * @return
      * @throws IOException
      * @throws FileNotFoundException
@@ -1971,13 +1982,12 @@ public final class SearchHelper {
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
-    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath) throws FileNotFoundException,
-            IOException, IndexUnreachableException, DAOException {
+    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
+            throws FileNotFoundException, IOException, IndexUnreachableException, DAOException {
         String ret = null;
 
-        String recordPath = Helper.getRepositoryPath(dataRepository);
         if (altoFilePath != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(null, altoFilePath,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, altoFilePath,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFilePath);
                 return "ACCESS DENIED";
@@ -1997,7 +2007,7 @@ public final class SearchHelper {
 
         if (ret == null && fulltextFilePath != null) {
             // Plain full-text file
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(null, fulltextFilePath,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, fulltextFilePath,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFilePath);
                 return "ACCESS DENIED";
