@@ -483,6 +483,19 @@ table,
   position: relative;
   top: -1px;
 }
+/* ==============================================================
+   IE lower EDGE Styles
+   ==============================================================*/
+/* IS IE */
+.is-IE {
+  /* CUSTOM DROPDOWNS */
+}
+.is-IE .custom-control--select:after {
+  display: none;
+}
+.is-IE .custom-control--select select {
+  padding: 0;
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
