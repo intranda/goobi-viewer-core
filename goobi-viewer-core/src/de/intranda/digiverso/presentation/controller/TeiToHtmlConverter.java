@@ -157,6 +157,10 @@ public class TeiToHtmlConverter {
                 "<hi rend=\"bold\">[\\s]*<hi rend=\"italic\">[\\s]*<hi rend=\"underline\">(.*?)</hi>[\\s]*</hi>[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<strong><em><span style=\"text-decoration: underline;\">" + r.group(1) + "</span></em></strong>");
         }
+        // bold+italic
+        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">[\\s]*<hi rend=\"italic\">[\\s]*(.*?)[\\s]*</hi>[\\s]*</hi>", text)) {
+            text = text.replace(r.group(), "<strong><em>" + r.group(1) + "</em></strong>");
+        }
         // bold
         for (MatchResult r : findRegexMatches("<hi rend=\"bold\">[\\s]*(.*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<strong>" + r.group(1) + "</strong>");
