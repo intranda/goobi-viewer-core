@@ -3268,6 +3268,10 @@ div[id*="-Modal"] .email-form .form-group {
 .search-advanced__connect-group .custom-control--select:after {
   right: 10px;
 }
+.search-advanced__connector .custom-control--select select,
+.search-advanced__connect-group .custom-control--select select {
+  padding: 0;
+}
 .search-advanced__input-group .form-control__select,
 .search-advanced__input-group input[type="text"] {
   width: 100%;
