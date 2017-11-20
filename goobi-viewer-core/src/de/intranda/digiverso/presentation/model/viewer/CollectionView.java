@@ -15,8 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -613,7 +611,7 @@ public class CollectionView {
         return showAllHierarchyLevels;
     }
 
-    public String getCollectionUrl(HierarchicalBrowseDcElement collection) throws UnsupportedEncodingException {
+    public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
         } else if (collection.isOpensInNewWindow()) {
@@ -626,7 +624,7 @@ public class CollectionView {
         } else if (collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field + "/"
-                    + URLEncoder.encode(collection.getLuceneName(), "utf-8") + "/";
+                    + collection.getLuceneName() + "/";
         } else {
             String url =  BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + field + ':' + collection
                     .getLuceneName() + "/-/1/" + collection.getSortField() + "/-/";

@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.servlets;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +43,6 @@ public class SingleWorkCollectionRedirect {
     public Response redirectToWork(@PathParam("luceneField") String field, @PathParam("fieldValue") String value, @Context HttpServletRequest request,
             @Context HttpServletResponse response) {
         try {
-            value = URLDecoder.decode(value, "utf-8");
             String url = SearchHelper.getFirstWorkUrlWithFieldValue(field, value, true, true, true, true, DataManager.getInstance().getConfiguration()
                     .getSplittingCharacter(), Locale.getDefault());
             URI uri = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest) + url);

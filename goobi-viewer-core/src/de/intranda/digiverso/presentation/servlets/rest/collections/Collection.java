@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.collections;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -73,7 +72,6 @@ public abstract class Collection {
     /**
      * @param collectionView
      * @throws MalformedURLException
-     * @throws UnsupportedEncodingException 
      */
     public Collection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement baseElement, String collectionField, String facetField) throws MalformedURLException {
         String baseCollectionName = collectionView.getTopVisibleElement();
@@ -124,20 +122,15 @@ public abstract class Collection {
      * @param baseUrl
      * @param baseElement
      * @throws MalformedURLException
-     * @throws UnsupportedEncodingException 
      */
     public CollectionLink createLink(CollectionView collectionView, String baseUrl, HierarchicalBrowseDcElement element, String label) throws MalformedURLException {
-        try {            
-            String urlString = collectionView.getCollectionUrl(element);
-            if(!urlString.matches("https?://.*")) {
-                urlString = baseUrl.substring(0, baseUrl.indexOf("/rest/")) + urlString;
-            }
-            URL url = new URL(urlString);
-            
-            return new CollectionLink(url, label);
-        } catch(UnsupportedEncodingException e) {
-            throw new MalformedURLException(e.getMessage());
+        String urlString = collectionView.getCollectionUrl(element);
+        if(!urlString.matches("https?://.*")) {
+            urlString = baseUrl.substring(0, baseUrl.indexOf("/rest/")) + urlString;
         }
+        URL url = new URL(urlString);
+        
+        return new CollectionLink(url, label);
     }
 
     /**
