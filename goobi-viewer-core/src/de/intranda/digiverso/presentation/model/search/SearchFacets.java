@@ -107,8 +107,8 @@ public class SearchFacets {
                     }
                 }
                 String field = SearchHelper.facetifyField(facetItem.getField());
-                sbQuery.append('(').append(field).append(':').append("\"" + facetItem.getValue() + "\"").append(" OR ").append(field).append(':').append(facetItem
-                        .getValue()).append(".*)");
+                sbQuery.append('(').append(field).append(':').append("\"").append(facetItem.getValue()).append("\"").append(" OR ").append(field).append(':').append("\"").append(facetItem
+                        .getValue()).append(".*").append("\"").append(")");
                 count++;
             }
 

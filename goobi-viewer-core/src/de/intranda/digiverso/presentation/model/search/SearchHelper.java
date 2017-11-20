@@ -422,7 +422,7 @@ public final class SearchHelper {
                 return null;
             }
         }
-        return null;
+        return "";
     }
 
     /**
