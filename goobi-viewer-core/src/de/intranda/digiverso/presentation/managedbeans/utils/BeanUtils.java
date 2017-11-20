@@ -52,12 +52,7 @@ public class BeanUtils {
      */
     public static HttpServletRequest getRequest() {
         FacesContext context = FacesContext.getCurrentInstance();
-        if (context != null && context.getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-            return request;
-        }
-
-        return null;
+        return getRequest(context);
     }
 
     public static HttpServletRequest getRequest(FacesContext context) {

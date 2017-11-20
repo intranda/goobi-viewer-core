@@ -659,7 +659,7 @@ public class SearchBean implements Serializable {
             List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits() ? SearchHelper.searchWithAggregation(query, from,
                     hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null, BeanUtils.getLocale()) : SearchHelper
                             .searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null, BeanUtils
-                                    .getLocale());
+                                    .getLocale(), BeanUtils.getRequest());
             currentSearch.getHits().addAll(hits);
             // logger.debug("seList: " + seList );
             // logger.debug("Current page query END");
@@ -1420,11 +1420,11 @@ public class SearchBean implements Serializable {
             if (currentHitIndex < currentSearch.getHitsCount() - 1) {
                 return SearchHelper.getBrowseElement(currentQuery, currentHitIndex + 1, sortFields, facets.generateFacetFilterQueries(
                         advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager
-                                .getInstance().getConfiguration().isAggregateHits());
+                                .getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             }
             return SearchHelper.getBrowseElement(currentQuery, currentHitIndex, sortFields, facets.generateFacetFilterQueries(
                     advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager.getInstance()
-                            .getConfiguration().isAggregateHits());
+                            .getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
 
         return null;
@@ -1444,11 +1444,11 @@ public class SearchBean implements Serializable {
             if (currentHitIndex > 0) {
                 return SearchHelper.getBrowseElement(currentQuery, currentHitIndex - 1, sortFields, facets.generateFacetFilterQueries(
                         advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager
-                                .getInstance().getConfiguration().isAggregateHits());
+                                .getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             } else if (currentSearch.getHitsCount() > 0) {
                 return SearchHelper.getBrowseElement(currentQuery, currentHitIndex, sortFields, facets.generateFacetFilterQueries(
                         advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager
-                                .getInstance().getConfiguration().isAggregateHits());
+                                .getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             }
         }
 
@@ -1921,7 +1921,7 @@ public class SearchBean implements Serializable {
             Map<String, String> params = SearchHelper.generateQueryParams();
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields, facets.generateFacetFilterQueries(
                     advancedSearchGroupOperator), params, searchTerms, navigationHelper.getLocale(), DataManager.getInstance().getConfiguration()
-                            .isAggregateHits());
+                            .isAggregateHits(), BeanUtils.getRequest());
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
