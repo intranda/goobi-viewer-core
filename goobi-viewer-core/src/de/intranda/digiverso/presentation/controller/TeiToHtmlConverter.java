@@ -154,35 +154,35 @@ public class TeiToHtmlConverter {
 
         // bold+italic+underline
         for (MatchResult r : findRegexMatches(
-                "<hi rend=\"bold\">[\\s]*<hi rend=\"italic\">[\\s]*<hi rend=\"underline\">(.*?)</hi>[\\s]*</hi>[\\s]*</hi>", text)) {
+                "<hi rend=\"bold\">[\\s]*<hi rend=\"italic\">[\\s]*<hi rend=\"underline\">([\\s\\S]*?)</hi>[\\s]*</hi>[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<strong><em><span style=\"text-decoration: underline;\">" + r.group(1) + "</span></em></strong>");
         }
         // bold+italic
-        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">[\\s]*<hi rend=\"italic\">[\\s]*(.*?)[\\s]*</hi>[\\s]*</hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">[\\s]*<hi rend=\"italic\">[\\s]*([\\s\\S]*?)[\\s]*</hi>[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<strong><em>" + r.group(1) + "</em></strong>");
         }
         // bold
-        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"bold\">[\\s]*([\\s\\S]*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<strong>" + r.group(1) + "</strong>");
         }
         // italic
-        for (MatchResult r : findRegexMatches("<hi rend=\"italic\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"italic\">[\\s]*([\\s\\S]*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<em>" + r.group(1) + "</em>");
         }
         // underline
-        for (MatchResult r : findRegexMatches("<hi rend=\"underline\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"underline\">[\\s]*([\\s\\S]*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<span style=\"text-decoration: underline;\">" + r.group(1) + "</span>");
         }
         // strikethrough
-        for (MatchResult r : findRegexMatches("<hi rend=\"strikethrough\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"strikethrough\">[\\s]*([\\s\\S]*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<s>" + r.group(1) + "</s>");
         }
         // blockCapitals
-        for (MatchResult r : findRegexMatches("<hi rend=\"blockCapitals\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"blockCapitals\">[\\s]*([\\s\\S]*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<span style=\"text-transform: uppercase;\">" + r.group(1) + "</span>");
         }
         // smallCapitals
-        for (MatchResult r : findRegexMatches("<hi rend=\"smallCapitals\">[\\s]*(.*?)[\\s]*</hi>", text)) {
+        for (MatchResult r : findRegexMatches("<hi rend=\"smallCapitals\">[\\s]*([\\s\\S]*?)[\\s]*</hi>", text)) {
             text = text.replace(r.group(), "<span style=\"font-variant: small-caps;\">" + r.group(1) + "</span>");
         }
         // TODO spaceOut
