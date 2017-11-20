@@ -483,6 +483,19 @@ table,
   position: relative;
   top: -1px;
 }
+/* ==============================================================
+   IE lower EDGE Styles
+   ==============================================================*/
+/* IS IE */
+.is-IE {
+  /* CUSTOM DROPDOWNS */
+}
+.is-IE .custom-control--select:after {
+  display: none;
+}
+.is-IE .custom-control--select select {
+  padding: 0;
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
@@ -3255,6 +3268,10 @@ div[id*="-Modal"] .email-form .form-group {
 .search-advanced__connect-group .custom-control--select:after {
   right: 10px;
 }
+.search-advanced__connector .custom-control--select select,
+.search-advanced__connect-group .custom-control--select select {
+  padding: 0;
+}
 .search-advanced__input-group .form-control__select,
 .search-advanced__input-group input[type="text"] {
   width: 100%;
@@ -4667,6 +4684,7 @@ div.olMapViewport {
    View Metadata
    style declarations for viewMetadata.xhtml 
    ==============================================================*/
+/* METADATA */
 #metadataElementWrapper {
   position: relative;
   float: left;
@@ -4685,8 +4703,12 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value {
   display: block;
+  margin-bottom: 0.5rem;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value:last-child {
+  margin-bottom: 0;
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal {
   margin: 0;
@@ -4700,6 +4722,12 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value {
   display: block;
+  margin-bottom: 0.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value:last-child {
+  margin-bottom: 0;
 }
 #metadataElementWrapper .glyphicon {
   margin-right: 5px;
