@@ -4684,6 +4684,7 @@ div.olMapViewport {
    View Metadata
    style declarations for viewMetadata.xhtml 
    ==============================================================*/
+/* METADATA */
 #metadataElementWrapper {
   position: relative;
   float: left;
@@ -4702,8 +4703,12 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value {
   display: block;
+  margin-bottom: 0.5rem;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value:last-child {
+  margin-bottom: 0;
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal {
   margin: 0;
@@ -4717,6 +4722,12 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value {
   display: block;
+  margin-bottom: 0.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value:last-child {
+  margin-bottom: 0;
 }
 #metadataElementWrapper .glyphicon {
   margin-right: 5px;
