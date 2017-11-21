@@ -310,7 +310,7 @@ public class NERTagResource {
                     } catch (IOException e) {
                         logger.error(e.getMessage(), e);
                     } catch (HTTPException e) {
-                        logger.error(e.getMessage(), e);
+                        logger.error(e.getMessage());
                     }
                 }
                 Collections.sort(range.getTags());
