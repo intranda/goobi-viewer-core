@@ -111,7 +111,7 @@ public class PpnResolver extends HttpServlet implements Serializable {
             // 4. extract the target field value of the single found document
             SolrDocument targetDoc = hits.get(0);
 
-            String result = IdentifierResolver.constructUrl(identifier, targetDoc, false, DataManager.getInstance().getConfiguration()
+            String result = IdentifierResolver.constructUrl(targetDoc, false, DataManager.getInstance().getConfiguration()
                     .isSidebarOverviewLinkVisible());
             if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
                 response.sendRedirect(result);

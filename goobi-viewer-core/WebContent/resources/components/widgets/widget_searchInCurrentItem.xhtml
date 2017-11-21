@@ -14,7 +14,7 @@
                     <div class="form-group">
                         <label for="searchInCurrentItemInput" class="sr-only">#{msg.searchIn}</label>
                         <div class="input-group">
-                            <h:inputText id="searchInCurrentItemInput" styleClass="form-control">
+                            <h:inputText value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" id="searchInCurrentItemInput" styleClass="form-control">
                                 <f:passThroughAttribute name="placeholder" value="#{msg.searchIn}: #{msg[activeDocumentBean.topDocument.label]}" />
                             </h:inputText>
                             <div class="input-group-addon">
