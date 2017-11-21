@@ -757,7 +757,7 @@ public class CMSPage {
     public void addContentItem(CMSContentItem item) {
         if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
             getLanguageVersions().stream()
-            .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE)
+            .filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE))
             .forEach(lang -> lang.addContentItem(item));
         } else {
             getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
