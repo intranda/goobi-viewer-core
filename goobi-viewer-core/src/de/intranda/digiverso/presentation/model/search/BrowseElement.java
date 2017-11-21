@@ -129,6 +129,8 @@ public class BrowseElement implements Serializable {
     private final Locale locale;
     @JsonIgnore
     private final String dataRepository;
+    
+    private List<String> recordLanguages;
 
     /**
      * Constructor for unit tests and special instances.
@@ -529,6 +531,9 @@ public class BrowseElement implements Serializable {
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
             useOverviewPage = true;
         }
+        
+        //record languages
+        this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
 
         this.url = generateUrl();
         sidebarPrevUrl = generateSidebarUrl("prevHit");
@@ -1230,5 +1235,12 @@ public class BrowseElement implements Serializable {
         }
 
         return contextObject;
+    }
+    
+    /**
+     * @return the recordLanguages
+     */
+    public List<String> getRecordLanguages() {
+        return recordLanguages;
     }
 }
