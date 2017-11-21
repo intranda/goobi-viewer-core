@@ -18,9 +18,9 @@ package de.intranda.digiverso.presentation.model.cms.tilegrid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -139,6 +139,48 @@ public class SemiRandomOrderComparatorTest {
         @Override
         public String toString() {
             return name + " -> " + number.toString() + "\t";
+        }
+    }
+    
+    @Test
+    public void testComparatorContract() {
+        Random picker = new Random(System.nanoTime());
+
+        //Commutation
+        for (int i = 0; i < testRuns; i++) {
+            SortTestObject o1 = testArray[picker.nextInt(testArray.length)];
+            SortTestObject o2 = testArray[picker.nextInt(testArray.length)];
+            
+            SemiRandomOrderComparator<SortTestObject> comparator = new SemiRandomOrderComparator<>(o -> o.number);
+            
+            int resA = comparator.compare(o1, o2);
+            int resB = comparator.compare(o2, o1);
+            
+            Assert.assertEquals("Contract violated for " + o1 + ", " + o2, -Math.signum(resA), Math.signum(resB), 0.0);
+        }
+        
+        //Transitivity
+        for (int i = 0; i < testRuns; i++) {
+            SortTestObject o1 = testArray[picker.nextInt(testArray.length)];
+            SortTestObject o2 = testArray[picker.nextInt(testArray.length)];
+            SortTestObject o3 = testArray[picker.nextInt(testArray.length)];
+            
+            SemiRandomOrderComparator<SortTestObject> comparator = new SemiRandomOrderComparator<>(o -> o.number);
+            
+            int resA = comparator.compare(o1, o2);
+            int resB = comparator.compare(o2, o3);
+            int resC = comparator.compare(o1, o3);
+            
+            if(resA > 0 && resB > 0) {
+                Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, 1.0, Math.signum(resC), 0.0);
+            } else if (resA < 0 && resB < 0) {
+                Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, -1.0, Math.signum(resC), 0.0);
+            } else if(resA == 0) {
+                Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, Math.signum(resB), Math.signum(resC), 0.0);
+            } else if(resB == 0) {
+                Assert.assertEquals("Contract violated for " + o1 + ", " + o2 + ", " + o3, Math.signum(resA), Math.signum(resC), 0.0);
+            }
+            
         }
     }
 

@@ -16,27 +16,37 @@
 package de.intranda.digiverso.presentation.model.cms.tilegrid;
 
 import java.util.Comparator;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
-import org.apache.poi.ss.formula.functions.T;
-
 /**
+ * Compares objects of type T by applying the given comparisonOperator and comparing the resulting integers.
+ * A comparison value of 0 is considered to come after any other values, and treated as Integer.MAX_VALUE for the comparison.
+ * Equal comparison values return a semi-random value of -1, 0 or 1.
+ * Each comparator instance fulfills all Comparator.compare contracts because each object gets a fixed random value which is used for all equal value comparisons. 
+ * 
  * @author Florian Alpers
  *
  */
 public class SemiRandomOrderComparator<T> implements Comparator<T> {
  
     private final Function<T, Integer> comparisonOperator;
+    private final Map<T, Integer> map = new IdentityHashMap<>();
     private final Random random = new Random(System.nanoTime());
     
+    /**
+     * @param comparisonOperator A function from the object to compare to an integer value to use for comparison
+     */
     public SemiRandomOrderComparator(Function<T, Integer> comparisonOperator) {
         this.comparisonOperator = comparisonOperator;
     }
     
     
-    /* (non-Javadoc)
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+    /**
+     * Compares two objects a und b, using the comparisonOperator passed to the Comparator constructor.
+     *
      */
     @Override
     public int compare(T a, T b) {
@@ -51,11 +61,23 @@ public class SemiRandomOrderComparator<T> implements Comparator<T> {
         
         if(nA.equals(nB)) {
             //return random
-            int res = random.nextInt(3)-1;
-            return res;
+            return Integer.compare(valueFor(a), valueFor(b));
+//            int res = random.nextInt(3)-1;
+//            return res;
         } else {
             int res = nA.compareTo(nB);
             return res;
+        }
+    }
+
+
+    /**
+     * @param nA
+     * @return
+     */
+    private int valueFor(T object) {
+        synchronized (map) {
+            return map.computeIfAbsent(object, ignore -> random.nextInt());
         }
     }
 
