@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -431,6 +432,15 @@ public class MetadataElement {
             }
         }
         return "";
+    }
+    
+    public Optional<String> getFirstMetadataValueIfExists(String name) {
+        String value = getFirstMetadataValue(name);
+        if(StringUtils.isNotBlank(value)) {
+            return Optional.of(value);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public String getFirstMetadataValue(String prefix, String name, String suffix) {
