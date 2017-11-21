@@ -43,9 +43,11 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -57,6 +59,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 public class SearchHit implements Comparable<SearchHit> {
 
     public enum HitType {
+        ACCESSDENIED,
         DOCSTRCT,
         PAGE,
         METADATA, // grouped metadata
@@ -69,6 +72,8 @@ public class SearchHit implements Comparable<SearchHit> {
         public static HitType getByName(String name) {
             if (name != null) {
                 switch (name) {
+                    case "ACCESSDENIED":
+                        return ACCESSDENIED;
                     case "DOCSTRCT":
                         return DOCSTRCT;
                     case "PAGE":
@@ -153,6 +158,7 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param useThumbnail
      * @param ignoreAdditionalFields
      * @param translateAdditionalFields
+     * @param overrideType
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -161,7 +167,7 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
-            Set<String> translateAdditionalFields) throws PresentationException, IndexUnreachableException, DAOException {
+            Set<String> translateAdditionalFields, HitType overrideType) throws PresentationException, IndexUnreachableException, DAOException {
         List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
                 DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
@@ -177,12 +183,15 @@ public class SearchHit implements Comparable<SearchHit> {
 
         // Determine hit type
         String docType = se.getMetadataValue(SolrConstants.DOCTYPE);
-        HitType hitType = HitType.getByName(docType);
-        if (DocType.METADATA.name().equals(docType)) {
-            // For metadata hits use the metadata type for the hit type
-            String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
-            if (StringUtils.isNotEmpty(metadataType)) {
-                hitType = HitType.getByName(metadataType);
+        HitType hitType = overrideType;
+        if (hitType == null) {
+            hitType = HitType.getByName(docType);
+            if (DocType.METADATA.name().equals(docType)) {
+                // For metadata hits use the metadata type for the hit type
+                String metadataType = se.getMetadataValue(SolrConstants.METADATATYPE);
+                if (StringUtils.isNotEmpty(metadataType)) {
+                    hitType = HitType.getByName(metadataType);
+                }
             }
         }
 
@@ -313,18 +322,22 @@ public class SearchHit implements Comparable<SearchHit> {
                     continue;
                 }
                 //                    logger.trace("Found child doc: {}", docType);
+                boolean acccessDeniedType = false;
                 switch (docType) {
                     case PAGE:
                         try {
                             fulltext = SearchHelper.loadFulltext(pi, browseElement.getDataRepository(), (String) childDoc.getFirstValue(
                                     SolrConstants.FILENAME_ALTO), (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), request);
+                        } catch (AccessDeniedException e) {
+                            acccessDeniedType = true;
+                            fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
                         } catch (FileNotFoundException e) {
                             logger.error(e.getMessage());
                         } catch (IOException e) {
                             logger.error(e.getMessage(), e);
                         }
 
-                        // Skip page hits without an proper full-text
+                        // Skip page hits without a proper full-text
                         if (StringUtils.isBlank(fulltext)) {
                             continue;
                         }
@@ -335,7 +348,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ownerHit == null) {
                             SolrDocument ownerDoc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(ownerIddoc);
                             if (ownerDoc != null) {
-                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields);
+                                ownerHit = createSearchHit(ownerDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields,
+                                        null);
                                 children.add(ownerHit);
                                 ownerHits.put(ownerIddoc, ownerHit);
                                 ownerDocs.put(ownerIddoc, ownerDoc);
@@ -347,7 +361,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             continue;
                         } {
                         SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
-                                ignoreFields, translateFields);
+                                ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
                         // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
                         for (StringPair metadata : childHit.getFoundMetadata()) {
                             // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
@@ -365,7 +379,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         String iddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC);
                         if (!ownerHits.containsKey(iddoc)) {
                             SearchHit childHit = createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields,
-                                    translateFields);
+                                    translateFields, null);
                             children.add(childHit);
                             ownerHits.put(iddoc, childHit);
                             ownerDocs.put(iddoc, childDoc);

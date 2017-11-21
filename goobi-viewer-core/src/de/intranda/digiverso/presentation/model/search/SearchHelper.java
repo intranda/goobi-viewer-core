@@ -61,12 +61,14 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.search.SearchHit.HitType;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
@@ -163,6 +165,8 @@ public final class SearchHelper {
                     fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT), (String) doc.getFirstValue(
                             SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(
                                     SolrConstants.FILENAME_FULLTEXT), request);
+                } catch (AccessDeniedException e) {
+                    fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
                 } catch (FileNotFoundException e) {
                     logger.error(e.getMessage());
                 } catch (IOException e) {
@@ -173,8 +177,8 @@ public final class SearchHelper {
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields,
-                    translateFields);
+            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields, translateFields,
+                    null);
             ret.add(hit);
         }
 
@@ -217,7 +221,7 @@ public final class SearchHelper {
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
-            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields);
+            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
             ret.add(hit);
             hit.addOverviewPageChild();
 
@@ -325,8 +329,8 @@ public final class SearchHelper {
      * @should return correct hit for aggregated search
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request) throws PresentationException,
-            IndexUnreachableException, DAOException {
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException, DAOException {
         String finalQuery = buildFinalQuery(query, aggregateHits);
         logger.debug("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params,
@@ -1973,6 +1977,7 @@ public final class SearchHelper {
      * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
      * @param request
      * @return
+     * @throws AccessDeniedException
      * @throws IOException
      * @throws FileNotFoundException
      * @throws DAOException
@@ -1981,14 +1986,14 @@ public final class SearchHelper {
      * @should load fulltext from plain text correctly
      */
     public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
-            throws FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
         String ret = null;
 
         if (altoFilePath != null) {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, altoFilePath,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFilePath);
-                return "ACCESS DENIED";
+                throw new AccessDeniedException("fulltextAccessDenied");
             }
 
             // ALTO file
@@ -2007,7 +2012,7 @@ public final class SearchHelper {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, fulltextFilePath,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFilePath);
-                return "ACCESS DENIED";
+                throw new AccessDeniedException("fulltextAccessDenied");
             }
             String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
             try {

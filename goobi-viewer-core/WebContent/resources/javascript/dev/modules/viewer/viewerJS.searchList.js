@@ -347,12 +347,16 @@ var viewerJS = ( function( viewer ) {
             case 'EVENT':
                 hitSetChildrenDt.append( '<i class="fa fa-calendar" aria-hidden="true"></i>' );
                 break;
+            case 'ACCESSDENIED':
+                hitSetChildrenDt.append( '<i class="fa fa-lock" aria-hidden="true"></i>' );
+                break;
         }
         hitSetChildrenDd = $( '<dd />' );
         hitSetChildrenLink = $( '<a />' );
         hitSetChildrenLink.attr( 'href', _defaults.contextPath + '/' + data.url );
         switch ( type ) {
             case 'PAGE':
+            case 'ACCESSDENIED':
                 hitSetChildrenLink.append( data.fulltextForHtml );
             break;
             default:
