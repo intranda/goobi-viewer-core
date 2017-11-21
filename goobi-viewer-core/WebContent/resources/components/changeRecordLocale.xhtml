@@ -17,11 +17,11 @@
 					<ul class="list list--horizontal">
 						<ui:repeat var="lang"
 							value="#{activeDocumentBean.recordLanguages}">
-							<li
-								class="#{activeDocumentBean.selectedRecordLanguage == lang ? 'activeLang':''}">
+							<li class="#{activeDocumentBean.selectedRecordLanguage == lang ? 'activeLang':''}"
+							data-isoCode="#{lang}">
 								<h:commandLink actionListener="index">
 <!-- 									<h:outputText value="[#{msg[lang]}]" /> -->
-										<h:outputText value="#{configurationBean.getTranslation(lang, navigationHelper.localeString)}" />
+											<h:outputText value="#{configurationBean.getTranslation(lang, navigationHelper.localeString)}" />
 									<f:setPropertyActionListener
 										target="#{activeDocumentBean.selectedRecordLanguage}"
 										value="#{lang}" />
