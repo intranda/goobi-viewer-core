@@ -10,14 +10,14 @@
 
     <composite:implementation>
     	<h:form id="customDrillDownForm" prependId="false">
-			<h:panelGroup id="cmsPageLinks" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'cmsPageLinks'}">
+			<h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'widgetCmsPageLinks'}">
 				<div id="widgetCmsPageLinks-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
 <!-- 						<h3>#{msg[cc.attrs.widget.type]}</h3> -->
 
 						<ul>
 							<ui:repeat value="#{cc.attrs.widget.linkedPages.pages}" var="pageId">
-								<li>
+								<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.toString().equals(pageId) ? 'active': ''}">
 									<a href="#{cmsBean.getPageUrl(pageId)}">
 										#{cmsBean.getPage(pageId).menuTitle}
 									</a>
@@ -34,7 +34,7 @@
 
 						<ul>
 							<ui:repeat value="#{cc.attrs.widget.linkedPages}" var="pageId">
-								<li>
+								<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.equals(pageId)}">
 									<a href="">
 										#{msg[pageId]}
 									</a>
