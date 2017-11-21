@@ -114,7 +114,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "PPN517154005";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/viewImage_value/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(pi, qr.getResults().get(0), false, true));
+        Assert.assertEquals("/viewImage_value/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false, true));
     }
 
     /**
@@ -126,7 +126,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "10089470";
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + pi, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/toc/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(pi, qr.getResults().get(0), false, true));
+        Assert.assertEquals("/toc/" + pi + "/1/LOG_0000/", IdentifierResolver.constructUrl(qr.getResults().get(0), false, true));
     }
 
     /**
@@ -139,7 +139,7 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "134997743"; // This record has an overview page that should not override the page URL
         QueryResponse qr = DataManager.getInstance().getSearchIndex().search(SolrConstants.IMAGEURN + ":" + urn, 0, 1, null, null, null);
         Assert.assertEquals(1, qr.getResults().size());
-        Assert.assertEquals("/viewImage_value/" + pi + "/2/", IdentifierResolver.constructUrl(pi, qr.getResults().get(0), true, true));
+        Assert.assertEquals("/viewImage_value/" + pi + "/2/", IdentifierResolver.constructUrl(qr.getResults().get(0), true, true));
     }
 
     /**
@@ -151,7 +151,8 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Catalogue");
-        Assert.assertEquals("/toc/" + pi + "/1/", IdentifierResolver.constructUrl(pi, doc, false, true));
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "123");
+        Assert.assertEquals("/toc/" + pi + "/1/", IdentifierResolver.constructUrl(doc, false, true));
     }
 
     /**
@@ -163,7 +164,8 @@ public class IdentifierResolverTest extends AbstractDatabaseAndSolrEnabledTest {
         String pi = "123";
         SolrDocument doc = new SolrDocument();
         doc.setField(SolrConstants.DOCSTRCT, "Monograph");
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "123");
         doc.setField(SolrConstants.MIMETYPE, "application");
-        Assert.assertEquals("/metadata/" + pi + "/1/", IdentifierResolver.constructUrl(pi, doc, false, true));
+        Assert.assertEquals("/metadata/" + pi + "/1/", IdentifierResolver.constructUrl(doc, false, true));
     }
 }
