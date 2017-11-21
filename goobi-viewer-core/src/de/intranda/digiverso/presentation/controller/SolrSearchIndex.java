@@ -303,7 +303,7 @@ public final class SolrSearchIndex {
         //        logger.trace("search: {}", query);
         return search(query, 0, MAX_HITS, null, null, null).getResults();
     }
-    
+
     public long count(String query) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
         return search(query, 0, 0, null, null, null).getResults().getNumFound();
@@ -557,13 +557,23 @@ public final class SolrSearchIndex {
      * @param field
      * @return
      */
-    public static String getSingleFieldStringValue(SolrDocument doc, String field) {
+    public static Object getSingleFieldValue(SolrDocument doc, String field) {
         Collection<Object> valueList = doc.getFieldValues(field);
         if (valueList != null && !valueList.isEmpty()) {
-            return (String) valueList.iterator().next();
+            return valueList.iterator().next();
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @param doc
+     * @param field
+     * @return
+     */
+    public static String getSingleFieldStringValue(SolrDocument doc, String field) {
+        return (String) getSingleFieldValue(doc, field);
     }
 
     /**
@@ -607,7 +617,7 @@ public final class SolrSearchIndex {
         for (String fieldName : doc.getFieldNames()) {
             switch (fieldName) {
                 case SolrConstants.IMAGEURN_OAI:
-                // case SolrConstants.ALTO:
+                    // case SolrConstants.ALTO:
                 case "WORDCOORDS":
                 case "PAGEURNS":
                 case "ABBYYXML":
@@ -871,7 +881,7 @@ public final class SolrSearchIndex {
      */
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue) {
-        if(fieldValue == null) {
+        if (fieldValue == null) {
             return null;
         }
         if (fieldValue instanceof String) {
@@ -887,18 +897,18 @@ public final class SolrSearchIndex {
             return fieldValue.toString();
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public static Integer getAsInt(Object fieldValue) {
-        if(fieldValue == null) {
+        if (fieldValue == null) {
             return null;
         }
         if (fieldValue instanceof Integer) {
             return (Integer) fieldValue;
         } else {
-            try {                
+            try {
                 return Integer.parseInt(fieldValue.toString());
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 return null;
             }
         }
