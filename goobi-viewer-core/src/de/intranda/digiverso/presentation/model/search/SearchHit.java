@@ -296,12 +296,13 @@ public class SearchHit implements Comparable<SearchHit> {
     /**
      * 
      * @param number
+     * @param locale
      * @param request
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public void populateChildren(int number, HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException {
+    public void populateChildren(int number, Locale locale, HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("populateChildren START");
 
         // Create child hits
@@ -330,7 +331,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                     SolrConstants.FILENAME_ALTO), (String) childDoc.getFirstValue(SolrConstants.FILENAME_FULLTEXT), request);
                         } catch (AccessDeniedException e) {
                             acccessDeniedType = true;
-                            fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
+                            fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), locale);
                         } catch (FileNotFoundException e) {
                             logger.error(e.getMessage());
                         } catch (IOException e) {

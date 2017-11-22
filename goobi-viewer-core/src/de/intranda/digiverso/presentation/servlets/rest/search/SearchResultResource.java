@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.servlets.rest.search;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
@@ -55,12 +57,17 @@ public class SearchResultResource {
                     "No instance of SearchBean found in the user session. Execute a search first.");
             return null;
         }
+        Locale locale = null;
+        NavigationHelper nh = (NavigationHelper) servletRequest.getSession().getAttribute("navigationHelper");
+        if (nh != null) {
+            locale = nh.getLocale();
+        }
         List<SearchHit> searchHits = searchBean.getCurrentSearch().getHits();
         if (searchHits != null) {
             for (SearchHit searchHit : searchHits) {
                 if (hitId.equals(Long.toString(searchHit.getBrowseElement().getIddoc()))) {
                     if (searchHit.getHitsPopulated() < numChildren) {
-                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), servletRequest);
+                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), locale, servletRequest);
                     }
                     Collections.sort(searchHit.getChildren());
                     SearchHitChildList searchHitChildren = new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit
