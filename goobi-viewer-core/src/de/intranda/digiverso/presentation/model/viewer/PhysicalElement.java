@@ -47,6 +47,7 @@ import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -54,6 +55,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ConfigurationBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
@@ -696,21 +698,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
-                if (!loadAlto()) {
-                    wordCoordsFormat = CoordsFormat.NONE;
-                }
+                altoText = loadAlto();
+            } catch (AccessDeniedException e) {
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
-                wordCoordsFormat = CoordsFormat.NONE;
             }
         }
         if (StringUtils.isNotEmpty(altoText)) {
+            wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFullText(altoText);
             return text;
-        } else if (fullText == null) {
+        }
+        wordCoordsFormat = CoordsFormat.NONE;
+        if (fullText == null) {
             try {
-                loadFullText();
-                wordCoordsFormat = CoordsFormat.NONE;
+                fullText = loadFullText();
+            } catch (AccessDeniedException e) {
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (FileNotFoundException e) {
                 logger.error(e.getMessage());
             } catch (IOException | IndexUnreachableException | DAOException e) {
@@ -732,33 +737,32 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * Loads full-text data for this page via the REST service, if not yet loaded.
      *
      * @return true if fulltext loaded successfully false otherwise
+     * @throws AccessDeniedException
      * @throws IOException
      * @throws FileNotFoundException
      * @throws DAOException
      * @throws IndexUnreachableException
      * @should load full-text correctly if not yet loaded
-     * @should return false if already loaded
+     * @should return null if already loaded
      */
-    boolean loadFullText() throws FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+    String loadFullText() throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
         if (fullText == null && fulltextFileName != null) {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", fulltextFileName);
-                fullText = "ACCESS DENIED";
-                return true;
+                throw new AccessDeniedException("fulltextAccessDenied");
             }
             logger.trace("Loading full-text for page {}", fulltextFileName);
             String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
             try {
-                fullText = Helper.getWebContentGET(url);
-                return true;
+                return Helper.getWebContentGET(url);
             } catch (HTTPException e) {
                 logger.error("Could not retrieve file from {}", url);
                 logger.error(e.getMessage());
             }
         }
 
-        return false;
+        return null;
     }
 
     public List<String> getWordCoords(Set<String> searchTerms) {
@@ -783,16 +787,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
-                if (!loadAlto()) {
-                    wordCoordsFormat = CoordsFormat.NONE;
-                }
+                altoText = loadAlto();
+            } catch (AccessDeniedException e) {
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
-                wordCoordsFormat = CoordsFormat.NONE;
             }
         }
 
         if (altoText != null) {
+            wordCoordsFormat = CoordsFormat.ALTO;
             Document altoDoc;
             try {
                 altoDoc = FileTools.getDocumentFromString(altoText, "UTF-8");
@@ -800,6 +804,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             } catch (JDOMException | IOException e) {
                 logger.error(e.getMessage(), e);
             }
+        } else {
+            wordCoordsFormat = CoordsFormat.NONE;
         }
 
         return Collections.emptyList();
@@ -809,35 +815,32 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * Loads ALTO data for this page via the REST service, if not yet loaded.
      * 
      * @return true if ALTO successfully loaded; false otherwise
+     * @throws AccessDeniedException
      * @throws IOException
      * @throws JDOMException
      * @throws DAOException
      * @throws IndexUnreachableException
      * @should load alto correctly
      */
-    public boolean loadAlto() throws JDOMException, IOException, IndexUnreachableException, DAOException {
+    public String loadAlto() throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFileName);
-                fullText = "ACCESS DENIED";
-                return false;
+                throw new AccessDeniedException("fulltextAccessDenied");
             }
             String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
             logger.trace("URL: {}", url);
             try {
-                altoText = Helper.getWebContentGET(url);
-                // logger.trace("ALTO loaded:\n{}", altoText);
-                wordCoordsFormat = CoordsFormat.ALTO;
-                return true;
+                return Helper.getWebContentGET(url);
             } catch (HTTPException e) {
                 logger.error("Could not retrieve file from {}", url);
                 logger.error(e.getMessage());
             }
         }
 
-        return false;
+        return null;
 
     }
 

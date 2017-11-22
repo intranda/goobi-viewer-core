@@ -55,7 +55,6 @@ import org.apache.solr.common.params.GroupParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.ALTOTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
@@ -63,7 +62,6 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
@@ -162,7 +160,7 @@ public final class SearchHelper {
 
                 // Load full-text
                 try {
-                    fulltext = loadFulltext((String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT), (String) doc.getFirstValue(
+                    fulltext = Helper.loadFulltext((String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT), (String) doc.getFirstValue(
                             SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(
                                     SolrConstants.FILENAME_FULLTEXT), request);
                 } catch (AccessDeniedException e) {
@@ -1966,63 +1964,5 @@ public final class SearchHelper {
         }
 
         return wb;
-    }
-
-    /**
-     * Loads full-text via the REST service. ALTO is preferred, with a plain text fallback.
-     * 
-     * @param pi
-     * @param dataRepository
-     * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
-     * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
-     * @param request
-     * @return
-     * @throws AccessDeniedException
-     * @throws IOException
-     * @throws FileNotFoundException
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @should load fulltext from alto correctly
-     * @should load fulltext from plain text correctly
-     */
-    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
-        String ret = null;
-
-        if (altoFilePath != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, altoFilePath,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-                logger.debug("Access denied for ALTO file {}", altoFilePath);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-
-            // ALTO file
-            String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
-            try {
-                String alto = Helper.getWebContentGET(url);
-                ret = ALTOTools.getFullText(alto);
-            } catch (HTTPException e) {
-                logger.error("Could not retrieve file from {}", url);
-                logger.error(e.getMessage());
-            }
-        }
-
-        if (ret == null && fulltextFilePath != null) {
-            // Plain full-text file
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, fulltextFilePath,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-                logger.debug("Access denied for ALTO file {}", altoFilePath);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-            String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
-            try {
-                ret = Helper.getWebContentGET(url);
-            } catch (HTTPException e) {
-                logger.error("Could not retrieve file from {}", url);
-                logger.error(e.getMessage());
-            }
-        }
-
-        return ret;
     }
 }
