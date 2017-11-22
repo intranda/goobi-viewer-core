@@ -6560,7 +6560,6 @@ div.olMapViewport {
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image {
   height: 80px;
   border-radius: 4px 4px 0 0;
-  overflow: hidden;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image img {
   display: block;

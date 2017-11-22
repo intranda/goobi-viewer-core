@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -47,14 +45,12 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.comparators.NullComparator;
-import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -779,9 +775,9 @@ public class CMSPage {
     public void addContentItem(CMSContentItem item) {
         synchronized (languageVersions) {            
             if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
-                 List<CMSPageLanguageVersion> langs = getLanguageVersions().stream()
-                .filter(lang -> lang.getLanguage() != CMSPage.GLOBAL_LANGUAGE).collect(Collectors.toList());
-                 langs.forEach(lang -> lang.addContentItem(item));
+            getLanguageVersions().stream()
+            .filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE))
+            .forEach(lang -> lang.addContentItem(item));
             } else {
                 getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
             }
