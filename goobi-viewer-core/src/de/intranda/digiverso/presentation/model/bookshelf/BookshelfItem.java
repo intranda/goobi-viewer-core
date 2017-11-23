@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +146,7 @@ public class BookshelfItem implements Serializable {
         this.order = order;
         try {            
             this.name = getDocumentTitle();
-        } catch(IndexUnreachableException | PresentationException e) {
+        } catch(SolrException | IndexUnreachableException | PresentationException e) {
             if(ignoreMissingSolrDoc) {
                 this.name = "";
             } else {
