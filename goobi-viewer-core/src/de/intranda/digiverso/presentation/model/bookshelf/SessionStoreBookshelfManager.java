@@ -44,11 +44,16 @@ public class SessionStoreBookshelfManager {
     public Optional<Bookshelf> getBookshelf(HttpSession session) {
         
         try {            
-            return Optional.ofNullable((Bookshelf)session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME));
+            Object object = session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME);
+            if(object != null) {                
+                return Optional.of((Bookshelf)object);
+            } else {
+                return Optional.empty();
+            }
         } catch(ClassCastException e) {
-            logger.warn("Attribute stored in session under " + BOOKSHELF_ATTRIBUTE_NAME + " is not of type Bookshelf");
+            logger.error("Attribute stored in session under " + BOOKSHELF_ATTRIBUTE_NAME + " is not of type Bookshelf");
             return Optional.empty();
-        }   
+        }
     }
     
     /**
@@ -63,7 +68,7 @@ public class SessionStoreBookshelfManager {
      */
     public Bookshelf createBookshelf(HttpSession session) {
         
-        if(session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME) != null) {            
+        if(session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME) == null) {            
             Bookshelf bookshelf = new Bookshelf();
             session.setAttribute(BOOKSHELF_ATTRIBUTE_NAME, bookshelf);
             return getBookshelf(session).orElseThrow(() -> new IllegalStateException("Attribute stored but not available"));
@@ -80,7 +85,7 @@ public class SessionStoreBookshelfManager {
      * @throws NullPointerException     if the session is NULL
      */
     public Bookshelf getOrCreateBookshelf(HttpSession session) {
-        return getBookshelf(session).orElse(createBookshelf(session));
+        return getBookshelf(session).orElseGet(() -> createBookshelf(session));
     }
     
     /**
@@ -122,6 +127,15 @@ public class SessionStoreBookshelfManager {
      */
     public void deleteBookshelf(HttpSession session) {
         session.removeAttribute(BOOKSHELF_ATTRIBUTE_NAME);
+    }
+    
+    public boolean isInBookshelf(BookshelfItem item, HttpSession session) {
+        Optional<Bookshelf> o = getBookshelf(session);
+        if(o.isPresent()) {
+            return o.get().getItems().contains(item);
+        } else {
+            return false;
+        }
     }
 
 }

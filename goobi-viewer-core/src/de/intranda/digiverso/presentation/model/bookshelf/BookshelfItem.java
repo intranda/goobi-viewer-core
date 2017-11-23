@@ -37,6 +37,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
@@ -45,6 +47,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 @Entity
 @Table(name = "bookshelf_items")
@@ -61,6 +64,7 @@ public class BookshelfItem implements Serializable {
     @Column(name = "bookshelf_item_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "bookshelf_id", nullable = false)
     private Bookshelf bookshelf;
@@ -247,7 +251,9 @@ public class BookshelfItem implements Serializable {
         if(iddoc != null) {
             SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(iddoc.toString());
             if(doc != null) {
-                title = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+                StructElement se = new StructElement(iddoc, doc);
+                title = se.getDisplayLabel();
+//                title = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
                 return title;
             } else {
                 throw new PresentationException("No document found with iddoc = " + iddoc);
