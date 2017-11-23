@@ -3606,14 +3606,20 @@ div[id*="-Modal"] .email-form .form-group {
   margin-top: 10px;
 }
 .search-list__hit-content dl {
-  margin: 0;
+  margin-bottom: 5px;
+}
+.search-list__hit-content dt,
+.search-list__hit-content dd {
+  display: inline-block;
 }
 .search-list__hit-content dt {
-  width: 30px;
+  width: 30%;
+  padding-right: 5px;
   text-align: left;
 }
 .search-list__hit-content dd {
-  margin-left: 30px;
+  width: 70%;
+  margin-left: 0;
 }
 .search-list__hit-content-set {
   padding: 0 0 5px 0;
@@ -3646,14 +3652,10 @@ div[id*="-Modal"] .email-form .form-group {
   padding-left: 16px;
 }
 .search-list__metadata-info dt {
-  width: 20%;
   font-weight: normal;
 }
 .search-list__metadata-info dt .fa {
   margin-right: 20px;
-}
-.search-list__metadata-info dd {
-  margin-left: 20%;
 }
 .search-list__struct-child-hits {
   padding-left: 15px;
