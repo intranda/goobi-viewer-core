@@ -33,6 +33,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
  * @author Florian Alpers
@@ -45,12 +46,14 @@ public class UrlRedirectUtils {
     /**
      * 
      */
-    private static final String VIEW_REGEX = "https?://.*?/.*?/.*?/";
-    private static final String VIEWERBASE_REGEX = "https?:\\/\\/.*?\\/[^\\/]+";
+    private static final String VIEW_REGEX = "https?://.*?/.*?/(.*?)/";
+    private static final String VIEWERBASE_REGEX = "https?://.*?/[^/]+";
     private static final String CMSPAGE_REGEX = "https?://.*?/.*?/cms/.*";
     private static final String CMSID_REGEX = "https?://.*?/.*?/cms/(.*?)/.*";
     private static final String PREVIOUS_URL = "previousURL";
     private static final String CURRENT_URL = "currentURL";
+    
+    private static final PageType[] IGNORED_VIEWS = new PageType[]{PageType.viewFullscreen};
 
     /**
      * Saves the current view url to the session map Also saves the previous view url to the session map if it represents a different view than the
@@ -94,7 +97,7 @@ public class UrlRedirectUtils {
                     previousURL = previousURL == null ? "" : previousURL;
                     session.setAttribute(CURRENT_URL, currentURL);
                     logger.trace("Set session attribute {} to {}", CURRENT_URL, currentURL);
-                    if (isDifferentView(previousURL, currentURL)) {
+                    if (isDifferentView(previousURL, currentURL) && !isIgnoredView(previousURL)) {
                         session.setAttribute(PREVIOUS_URL, previousURL);
                         logger.trace("Set session attribute {} to {}", PREVIOUS_URL, previousURL);
                     }
@@ -105,6 +108,27 @@ public class UrlRedirectUtils {
             //catch all throwables to avoid constant redirects to error
             logger.error("Error saving page url", e);
         }
+    }
+
+    /**
+     * Returns true if the url leads to a view on the ignore list
+     * 
+     * @param previousURL
+     * @return
+     */
+    private static boolean isIgnoredView(String url) {
+        String viewPath = getMatch(url, VIEW_REGEX, 1);
+        for (PageType pageType : IGNORED_VIEWS) {
+            if(pageType.getName().equalsIgnoreCase(viewPath)) {
+                return true;
+            } else {
+                String altPageTypeName = DataManager.getInstance().getConfiguration().getPageType(pageType);
+                if(StringUtils.isNotBlank(altPageTypeName) && altPageTypeName.equalsIgnoreCase(viewPath)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public synchronized static String getPreviousView(ServletRequest request) {
@@ -145,7 +169,8 @@ public class UrlRedirectUtils {
     private static boolean isDifferentView(String previousURL, String currentURL) {
         previousURL = getMatch(previousURL, VIEW_REGEX, 0);
         currentURL = getMatch(currentURL, VIEW_REGEX, 0);
-        return !previousURL.equals(currentURL);
+        boolean res = !previousURL.equals(currentURL);
+        return res;
     }
 
     /**
