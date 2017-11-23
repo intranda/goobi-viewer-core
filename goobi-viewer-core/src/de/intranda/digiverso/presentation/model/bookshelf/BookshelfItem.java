@@ -78,10 +78,10 @@ public class BookshelfItem implements Serializable {
     @Column(name = "pi")
     private String pi;
 
-    @Column(name = "logid", nullable = true)
+    @Column(name = "logid")
     private String logId;
     
-    @Column(name = "order", nullable = true)
+    @Column(name = "page_order")
     private Integer order;
 
     @Column(name = "urn")
@@ -89,7 +89,7 @@ public class BookshelfItem implements Serializable {
 
     @Deprecated
     @Column(name = "main_title")
-    private final String mainTitle = null;
+    private String mainTitle = null;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_added")
@@ -424,5 +424,20 @@ public class BookshelfItem implements Serializable {
         this.order = order;
     }
 
+    /**
+     * @return the mainTitle
+     */
+    @Deprecated
+    public String getMainTitle() {
+        return mainTitle;
+    }
+    
+    /**
+     * @param mainTitle the mainTitle to set
+     */
+    @Deprecated
+    public void setMainTitle(String mainTitle) {
+        this.mainTitle = mainTitle;
+    }
     
 }
