@@ -13,7 +13,7 @@
 			<h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'widgetCmsPageLinks'}">
 				<div id="widgetCmsPageLinks-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
-<!-- 						<h3>#{msg[cc.attrs.widget.type]}</h3> -->
+						<h3>#{msg[cc.attrs.widget.type]}</h3>
 
 						<ul>
 							<ui:repeat value="#{cc.attrs.widget.linkedPages.pages}" var="pageId">

@@ -23,6 +23,7 @@ import java.util.Locale;
 public class SolrConstants {
 
     public enum DocType {
+        ACCESSDENIED,
         DOCSTRCT,
         PAGE,
         METADATA, // grouped metadata
@@ -33,6 +34,8 @@ public class SolrConstants {
         public static DocType getByName(String name) {
             if (name != null) {
                 switch (name) {
+                    case "ACCESSDENIED":
+                        return ACCESSDENIED;
                     case "DOCSTRCT":
                         return DOCSTRCT;
                     case "PAGE":

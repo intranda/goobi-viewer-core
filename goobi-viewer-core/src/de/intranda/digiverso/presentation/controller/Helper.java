@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -88,6 +89,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 import de.intranda.digiverso.presentation.Version;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -96,6 +98,8 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 /**
@@ -1139,5 +1143,63 @@ public class Helper {
             return null;
         }
         return string.intern();
+    }
+    
+    /**
+     * Loads full-text via the REST service. ALTO is preferred, with a plain text fallback.
+     * 
+     * @param pi
+     * @param dataRepository
+     * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
+     * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
+     * @param request
+     * @return
+     * @throws AccessDeniedException
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @should load fulltext from alto correctly
+     * @should load fulltext from plain text correctly
+     */
+    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
+            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+        String ret = null;
+
+        if (altoFilePath != null) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, altoFilePath,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFilePath);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+
+            // ALTO file
+            String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
+            try {
+                String alto = Helper.getWebContentGET(url);
+                ret = ALTOTools.getFullText(alto);
+            } catch (HTTPException e) {
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
+            }
+        }
+
+        if (ret == null && fulltextFilePath != null) {
+            // Plain full-text file
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, fulltextFilePath,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFilePath);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+            String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
+            try {
+                ret = Helper.getWebContentGET(url);
+            } catch (HTTPException e) {
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
+            }
+        }
+
+        return ret;
     }
 }
