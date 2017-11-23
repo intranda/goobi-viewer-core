@@ -30,7 +30,8 @@ public enum SidebarElementType {
     user("widgetUser"),
     workCount("widgetWorkCount"),
     searchDrillDownTopics("widgetSearchDrillDownTopics"),
-    cmsPageLinks("widgetCmsPageLinks", Category.pageLinks);
+    cmsPageLinks("widgetCmsPageLinks", Category.pageLinks),
+    geoLocations("widgetGeoLocations");
 
     private final String label;
     private final Category type;
