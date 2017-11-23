@@ -125,6 +125,35 @@ public class BookshelfItem implements Serializable {
         this.name = getDocumentTitle();
         this.dateAdded = new Date();
     }
+    
+    /**
+     * Creates a new Bookshelf item based in book pi, section logId and page order
+     * logId and order my be empty or null, if only the book itself is references. PI must be non-empty, otherwise a NullPointerException is thrown
+     * The item name will be inferred from the book/section title from Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
+     * 
+     * @param pi    
+     * @param logId
+     * @param order
+     * @param ignoreMissingSolrDoc  should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
+     * @throws IndexUnreachableException    if the Solr index could not be reached
+     * @throws PresentationException        if the pi/logId could not be resolved
+     * @throws NullPointerException         if pi is null or blank
+     */
+    public BookshelfItem(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc) throws IndexUnreachableException, PresentationException {
+        this.pi = pi;
+        this.logId = logId;
+        this.order = order;
+        try {            
+            this.name = getDocumentTitle();
+        } catch(IndexUnreachableException | PresentationException e) {
+            if(ignoreMissingSolrDoc) {
+                this.name = "";
+            } else {
+                throw e;
+            }
+        }
+        this.dateAdded = new Date();
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

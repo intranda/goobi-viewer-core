@@ -55,12 +55,25 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 public class BookshelfResource {
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfResource.class);
-
+    private final boolean testing;
+    
     @Context
     private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
 
+    public BookshelfResource() {
+        this.testing = false;
+    }
+    
+    /**
+     * For testing
+     * @param request
+     */
+    protected BookshelfResource(HttpServletRequest request) {
+        this.servletRequest = request;
+        this.testing = true;
+    }
+    
+    
     /**
      * Returns the session stored bookshelf, creating a new empty one if needed
      * 
@@ -117,7 +130,7 @@ public class BookshelfResource {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = DataManager.getInstance().getBookshelfManager().addToBookshelf(item, session);
                 return new SuccessMessage(success);
             } catch (IndexUnreachableException | PresentationException e) {
@@ -173,7 +186,7 @@ public class BookshelfResource {
         if (session != null) {
 
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = DataManager.getInstance().getBookshelfManager().removeFromBookself(item, session);
                 return new SuccessMessage(success);
             } catch (IndexUnreachableException | PresentationException e) {
@@ -242,7 +255,7 @@ public class BookshelfResource {
         if (session != null) {
 
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = DataManager.getInstance().getBookshelfManager().isInBookshelf(item, session);
                 return success;
             } catch(PresentationException e) {
@@ -287,11 +300,12 @@ public class BookshelfResource {
      * @return
      * @throws DAOException
      * @throws IOException
+     * @throws RestApiException 
      */
     @GET
     @Path("/get/{bookshelfId}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Bookshelf getBookshelf(@PathParam("bookshelfId") Long id) throws DAOException, IOException {
+    public Bookshelf getBookshelf(@PathParam("bookshelfId") Long id) throws DAOException, IOException, RestApiException {
 
         User user = getUserFromSession(servletRequest.getSession());
 
@@ -303,8 +317,7 @@ public class BookshelfResource {
                 }
             }
         }
-        servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "Did not find bookshelf " + id + " for user " + user);
-        return null;
+        throw new RestApiException("Did not find bookshelf " + id + " for user " + user, HttpServletResponse.SC_NOT_FOUND);
     }
 
     /**
@@ -337,7 +350,7 @@ public class BookshelfResource {
 
         boolean success = false;
 
-        BookshelfItem item = new BookshelfItem(pi, logId, order);
+        BookshelfItem item = new BookshelfItem(pi, logId, order, testing);
 
         return new SuccessMessage(success);
     }
