@@ -26,6 +26,7 @@ import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
+import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 public final class DataManager {
@@ -43,6 +44,8 @@ public final class DataManager {
     private SolrSearchIndex searchIndex;
 
     private IDAO dao;
+    
+    private SessionStoreBookshelfManager bookshelfManager;
 
     public static DataManager getInstance() {
         DataManager dm = instance;
@@ -201,5 +204,18 @@ public final class DataManager {
      */
     public void injectDao(IDAO dao) {
         this.dao = dao;
+    }
+    
+    public SessionStoreBookshelfManager getBookshelfManager() {
+        if(this.bookshelfManager == null) {
+            synchronized (lock) {
+                this.bookshelfManager = new SessionStoreBookshelfManager();
+            }
+        }
+        return this.bookshelfManager;
+    }
+    
+    public void injectBookshelfManager(SessionStoreBookshelfManager bookshelfManager) {
+        this.bookshelfManager = bookshelfManager;
     }
 }

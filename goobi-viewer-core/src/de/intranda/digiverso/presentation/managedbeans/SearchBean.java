@@ -1150,7 +1150,7 @@ public class SearchBean implements Serializable {
      * @return the sortString
      */
     public String getSortString() {
-        if (sortString.length() == 0) {
+        if (StringUtils.isEmpty(sortString)) {
             return "-";
         }
 
