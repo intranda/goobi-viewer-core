@@ -243,14 +243,19 @@
         display: none;
         margin-top: 10px;
         dl {
-            margin: 0;
+            margin-bottom: 5px;
+        }
+        dt, dd {
+        	display: inline-block;
         }
         dt {
-            width: 30px;
+            width: 30%;
+            padding-right: 5px;
             text-align: left;
         }
         dd {
-            margin-left: 30px;
+        	width: 70%;
+            margin-left: 0;
         }
     }
     &__hit-content-set {
@@ -287,15 +292,12 @@
     &__metadata-info {
     	padding-left: 16px;
     	dt {
-    		width: 20%;
     		font-weight: normal;
     		.fa {
     			margin-right: 20px;
     		}
     	}
-    	dd {
-    		margin-left: 20%;
-    	}
+    	dd {}
     }
     &__struct-child-hits {
         padding-left: 15px;
