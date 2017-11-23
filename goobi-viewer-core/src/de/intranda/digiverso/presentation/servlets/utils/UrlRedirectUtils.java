@@ -92,12 +92,12 @@ public class UrlRedirectUtils {
                 } catch (DAOException e) {
                     logger.warn("Unable to map cms url to persistent url ", e);
                 }
-                if (!currentURL.endsWith(".xhtml")) {
+                if (!currentURL.endsWith(".xhtml") && !isIgnoredView(currentURL)) {
                     String previousURL = (String) session.getAttribute(CURRENT_URL);
                     previousURL = previousURL == null ? "" : previousURL;
                     session.setAttribute(CURRENT_URL, currentURL);
                     logger.trace("Set session attribute {} to {}", CURRENT_URL, currentURL);
-                    if (isDifferentView(previousURL, currentURL) && !isIgnoredView(previousURL)) {
+                    if (isDifferentView(previousURL, currentURL)) {
                         session.setAttribute(PREVIOUS_URL, previousURL);
                         logger.trace("Set session attribute {} to {}", PREVIOUS_URL, previousURL);
                     }
