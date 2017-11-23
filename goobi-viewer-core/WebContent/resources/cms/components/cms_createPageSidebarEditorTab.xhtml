@@ -120,8 +120,25 @@
 																	<!-- GEO LOCATIONS -->
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
 																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
-																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control" />
+																			<label>#{msg.cms_sidebarElement_geoLocations_title}:</label>
+																			<ul>
+																					<ui:repeat var="location" value="#{element.geoLocations}">
+																						<li>
+																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
+																							<h:inputText value="#{location.latitude}"></h:inputText>
+																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
+																							<h:inputText value="#{location.longitude}"></h:inputText>
+																						</li>
+																					</ui:repeat>
+																							<h:commandLink action="#{element.removeGeoLocation}" value="Löschen">
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																							</h:commandLink>
+																							<h:commandLink action="#{element.addGeoLocation()}" value="Hinzufügen">
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																							</h:commandLink>
+																			</ul>
+																			
+<!-- 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control" /> -->
 																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->
@@ -132,10 +149,10 @@
 																		</div>
 																	</h:panelGroup>
 																	<!-- ACTION -->
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
+																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoLocations'}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn">
-																				<f:ajax execute="inputHtml inputQuery" render="inputHtml inputQuery :messages" onevent="cmsJS.sortableList.save" />
+																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />
 																			</h:commandLink>
 																		</div>
 																	</h:panelGroup>

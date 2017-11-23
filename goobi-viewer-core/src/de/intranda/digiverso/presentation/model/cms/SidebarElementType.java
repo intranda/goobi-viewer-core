@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.util.ArrayList;
+
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement.WidgetMode;
 
 public enum SidebarElementType {
@@ -31,7 +33,7 @@ public enum SidebarElementType {
     workCount("widgetWorkCount"),
     searchDrillDownTopics("widgetSearchDrillDownTopics"),
     cmsPageLinks("widgetCmsPageLinks", Category.pageLinks),
-    geoLocations("widgetGeoLocations");
+    geoLocations("widgetGeoLocations", Category.geoLocations);
 
     private final String label;
     private final Category type;
@@ -73,6 +75,10 @@ public enum SidebarElementType {
                 element = new CMSSidebarElement();
                 element.setLinkedPages(new PageList());
                 break;
+            case geoLocations:
+                element = new CMSSidebarElement();
+                element.initGeolocations(new ArrayList<>());
+                break;
             default:
                 element = new CMSSidebarElement();
         }
@@ -85,6 +91,7 @@ public enum SidebarElementType {
         standard,
         custom,
         fieldQuery,
-        pageLinks;
+        pageLinks, 
+        geoLocations;
     }
 }
