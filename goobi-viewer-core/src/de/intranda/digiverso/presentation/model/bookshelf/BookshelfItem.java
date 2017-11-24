@@ -32,17 +32,23 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 @Entity
 @Table(name = "bookshelf_items")
@@ -59,6 +65,7 @@ public class BookshelfItem implements Serializable {
     @Column(name = "bookshelf_item_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "bookshelf_id", nullable = false)
     private Bookshelf bookshelf;
@@ -74,12 +81,16 @@ public class BookshelfItem implements Serializable {
 
     @Column(name = "logid")
     private String logId;
+    
+    @Column(name = "page_order")
+    private Integer order;
 
     @Column(name = "urn")
     private String urn;
 
+    @Deprecated
     @Column(name = "main_title")
-    private String mainTitle;
+    private String mainTitle = null;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_added")
@@ -92,8 +103,56 @@ public class BookshelfItem implements Serializable {
 
     public BookshelfItem(String pi, String mainTitle, String name) {
         this.pi = pi;
-        this.mainTitle = mainTitle;
         this.name = name;
+        this.dateAdded = new Date();
+    }
+    
+    /**
+     * Creates a new Bookshelf item based in book pi, section logId and page order
+     * logId and order my be empty or null, if only the book itself is references. PI must be non-empty, otherwise a NullPointerException is thrown
+     * The item name will be inferred from the book/section title from Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
+     * 
+     * @param pi    
+     * @param logId
+     * @param order
+     * @throws IndexUnreachableException    if the Solr index could not be reached
+     * @throws PresentationException        if the pi/logId could not be resolved
+     * @throws NullPointerException         if pi is null or blank
+     */
+    public BookshelfItem(String pi, String logId, Integer order) throws IndexUnreachableException, PresentationException {
+        this.pi = pi;
+        this.logId = logId;
+        this.order = order;
+        this.name = getDocumentTitle();
+        this.dateAdded = new Date();
+    }
+    
+    /**
+     * Creates a new Bookshelf item based in book pi, section logId and page order
+     * logId and order my be empty or null, if only the book itself is references. PI must be non-empty, otherwise a NullPointerException is thrown
+     * The item name will be inferred from the book/section title from Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
+     * 
+     * @param pi    
+     * @param logId
+     * @param order
+     * @param ignoreMissingSolrDoc  should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
+     * @throws IndexUnreachableException    if the Solr index could not be reached
+     * @throws PresentationException        if the pi/logId could not be resolved
+     * @throws NullPointerException         if pi is null or blank
+     */
+    public BookshelfItem(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc) throws IndexUnreachableException, PresentationException {
+        this.pi = pi;
+        this.logId = logId;
+        this.order = order;
+        try {            
+            this.name = getDocumentTitle();
+        } catch(SolrException | IndexUnreachableException | PresentationException e) {
+            if(ignoreMissingSolrDoc) {
+                this.name = "";
+            } else {
+                throw e;
+            }
+        }
         this.dateAdded = new Date();
     }
 
@@ -123,14 +182,33 @@ public class BookshelfItem implements Serializable {
             return false;
         }
         BookshelfItem other = (BookshelfItem) obj;
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
+        return bothEqualOrBlank(this.pi, other.pi) && bothEqualOrBlank(this.logId, other.logId) && bothEqualOrNull(this.order, other.order);
+    }
+
+    /**
+     * @param other
+     * @return
+     */
+    public boolean bothEqualOrNull(Object o1, Object o2) {
+        if (o1 == null) {
+            return o2 == null;
+        } else {
+            return o1.equals(o2);
         }
-        return true;
+    }
+    
+    /**
+     * @param other
+     * @return
+     */
+    public boolean bothEqualOrBlank(String o1, String o2) {
+        if (StringUtils.isBlank(o1)) {
+            return StringUtils.isBlank(o2);
+        } else if(StringUtils.isBlank(o2)) {
+            return false;
+        } else {
+            return o1.trim().equals(o2.trim());
+        }
     }
 
     /**
@@ -145,7 +223,12 @@ public class BookshelfItem implements Serializable {
         if (StringUtils.isNotEmpty(urn)) {
             url.append("/resolver?identifier=").append(urn);
         } else {
-            url.append('/').append(PageType.viewMetadata.getName()).append('/').append(pi).append("/1/");
+            url.append('/').append(PageType.viewMetadata.getName()).append('/').append(pi);
+            if(order != null) {
+                url.append("/"+order+"/");
+            } else {                
+                url.append("/1/");
+            }
             if (StringUtils.isNotEmpty(logId)) {
                 url.append(logId).append('/');
             }
@@ -177,6 +260,37 @@ public class BookshelfItem implements Serializable {
         }
 
         return null;
+    }
+    
+    /**
+     * Retrieves the documents title from the Solr index using the stored pi and - if nonempty - the logId
+     * 
+     * @return
+     * @throws IndexUnreachableException    if the Solr index could not be reached
+     * @throws PresentationException        if the pi/logId could not be resolved
+     */
+    public String getDocumentTitle() throws IndexUnreachableException, PresentationException {
+        Long iddoc = null;
+        if( StringUtils.isNotBlank(logId)) {
+            iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(pi, logId);
+        } else if(StringUtils.isNotBlank(pi)) {
+            iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(pi);
+        }
+        
+        String title = "";
+        if(iddoc != null) {
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByIddoc(iddoc.toString());
+            if(doc != null) {
+                StructElement se = new StructElement(iddoc, doc);
+                title = se.getDisplayLabel();
+//                title = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
+                return title;
+            } else {
+                throw new PresentationException("No document found with iddoc = " + iddoc);
+            }
+        } else {
+            throw new PresentationException("No iddoc found for pi = " + pi + " and logId = " + logId);
+        }
     }
 
     /*********************************** Getter and Setter ***************************************/
@@ -251,20 +365,6 @@ public class BookshelfItem implements Serializable {
         this.urn = urn;
     }
 
-    /**
-     * @return the mainTitle
-     */
-    public String getMainTitle() {
-        return mainTitle;
-    }
-
-    /**
-     * @param mainTitle the mainTitle to set
-     */
-    public void setMainTitle(String mainTitle) {
-        this.mainTitle = mainTitle;
-    }
-
     public String getMainTitleUnescaped() {
         return StringEscapeUtils.unescapeHtml(mainTitle);
     }
@@ -310,4 +410,35 @@ public class BookshelfItem implements Serializable {
     public void setDateAdded(Date dateAdded) {
         this.dateAdded = dateAdded;
     }
+    
+    /**
+     * @return the order
+     */
+    public Integer getOrder() {
+        return order;
+    }
+    
+    /**
+     * @param order the order to set
+     */
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
+
+    /**
+     * @return the mainTitle
+     */
+    @Deprecated
+    public String getMainTitle() {
+        return mainTitle;
+    }
+    
+    /**
+     * @param mainTitle the mainTitle to set
+     */
+    @Deprecated
+    public void setMainTitle(String mainTitle) {
+        this.mainTitle = mainTitle;
+    }
+    
 }
