@@ -6503,6 +6503,7 @@ div.olMapViewport {
    ==============================================================*/
 .widget-geo-locations {
   position: relative;
+  /* CMS BACKEND WIDGET */
 }
 .widget-geo-locations__map {
   height: 350px;
@@ -6530,6 +6531,36 @@ div.olMapViewport {
 .widget-geo-locations .mapboxgl-ctrl-attrib.mapboxgl-ctrl a {
   font-size: 12px;
   line-height: 120%;
+}
+.widget-geo-locations h4 {
+  margin-bottom: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+}
+.widget-geo-locations__input {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.widget-geo-locations__input:before,
+.widget-geo-locations__input:after {
+  content: " ";
+  display: table;
+}
+.widget-geo-locations__input:after {
+  clear: both;
+}
+.widget-geo-locations__input .row {
+  margin: 0;
+}
+.widget-geo-locations__input .col-xs-5 {
+  margin-bottom: 5px;
+  padding-left: 0;
+  padding-right: 5px;
+}
+.widget-geo-locations__action .col-xs-2 {
+  padding: 32px 0 0 0;
+  text-align: right;
 }
 /* Map-Popup */
 #mapPopupOverlay {

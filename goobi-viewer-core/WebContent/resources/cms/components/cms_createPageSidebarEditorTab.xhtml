@@ -119,28 +119,35 @@
 																	</h:panelGroup>
 																	<!-- GEO LOCATIONS -->
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_geoLocations_title}:</label>
-																			<ul>
+																		<div class="widget-geo-locations">
+																			<h4>#{msg.cms_sidebarElement_geoLocations_title}</h4>
+																		
+																			<div class="widget-geo-locations__input">
+																				<div class="row">
 																					<ui:repeat var="location" value="#{element.geoLocations}">
-																						<li>
-																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
-																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.latitude}">
-																							</h:inputText>
-																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
-																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.longitude}">
-																							</h:inputText>
-																						</li>
-																					</ui:repeat>
-																							<h:commandLink action="#{element.removeGeoLocation}" value="Löschen">
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																						<div class="col-xs-5">
+																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
+																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
+																						</div>
+																						<div class="col-xs-5">
+																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
+																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
+																						</div>
+																					</ui:repeat>																				
+																					<div class="widget-geo-locations__action">
+																						<div class="col-xs-2">
+																							<h:commandLink action="#{element.removeGeoLocation}">
+																								<i class="fa fa-minus-circle" aria-hidden="true"></i>
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																							<h:commandLink action="#{element.addGeoLocation()}" value="Hinzufügen">
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																							<h:commandLink action="#{element.addGeoLocation()}">
+																								<i class="fa fa-plus-circle" aria-hidden="true"></i>
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																			</ul>
-																			
-<!-- 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control" /> -->
+																						</div>
+																					</div>
+																				</div>
+																			</div>
 																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->

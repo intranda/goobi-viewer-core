@@ -5787,7 +5787,9 @@ var cmsJS = ( function( cms ) {
     
     // variables
     var _debug = true;
+    var _features = [];
     var _defaults = {
+        locations: '',
         mapboxAccessToken: 'pk.eyJ1IjoibGlydW1nYnYiLCJhIjoiY2lobjRzamkyMDBnM3U5bTR4cHp0NDdyeCJ9.AjNCRBlBb57j-dziFxf58A',
         mapBoxContainerSelector: 'widgetGeoLocationsMap',
         mapBoxStyle: 'mapbox://styles/lirumgbv/cii024wxn009aiolzgy2zlycj',
@@ -5820,21 +5822,15 @@ var cmsJS = ( function( cms ) {
                     interactive: true
                 } );
                 
+                _features = _getMapFeatures( _defaults.locations );
+                
                 // build markers
                 map.on( 'style.load', function() {
                     map.addSource( "markers", {
                         "type": "geojson",
                         "data": {
-                            "type": "Feature",
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": [ 9.94100, 51.53950 ]
-                            },
-                            "properties": {
-                                "description": '<strong>Sammlung der Gipsabgüsse antiker Skulpturen</strong>',
-                                "adresse": 'Nikolausberger Weg 15',
-                                "isil": 'slg_1022'
-                            }
+                            "type": "FeatureCollection",
+                            "features": _features
                         }
                     } );
                     
@@ -6145,15 +6141,45 @@ var cmsJS = ( function( cms ) {
     };
     
     /**
-     * Method which .
+     * Method which returns an object of map features.
      * 
-     * @method _showCurrentImageInfo
+     * @method _getMapFeatures
+     * @param {String} infos A JSON-String which contains the feature infos.
+     * @returns {Array} An array of features.
      */
-    // function _showCurrentImageInfo() {
-    // if ( _debug ) {
-    // console.log( '---------- _showCurrentImageInfo() ----------' );
-    // }
-    // }
+    function _getMapFeatures( infos ) {
+        if ( _debug ) {
+            console.log( '---------- _getMapFeatures() ----------' );
+        }
+        
+        var features = [];
+        var infos = JSON.parse( infos );
+        
+        // TODO: properties ergänzen
+        // "properties": {
+        // "description": '<strong>' + value.name + '</strong>',
+        // "adresse": value.adresse,
+        // "isil": value.isil
+        // }
+        
+        $.each( infos, function( key, locations ) {
+            $.each( locations, function( key, location ) {
+                var feature = {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [ location.longitude, location.latitude ]
+                    },
+                    'properties': {}
+                }
+
+                features.push( feature );
+            } );
+        } );
+        
+        return features;
+    }
+    
     return cms;
     
 } )( cmsJS || {}, jQuery );
