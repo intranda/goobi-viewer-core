@@ -6497,6 +6497,76 @@ div.olMapViewport {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget Geo Locations
+   style declarations for widget_geoLocations.xhtml
+   ==============================================================*/
+.widget-geo-locations {
+  position: relative;
+}
+.widget-geo-locations__map {
+  height: 350px;
+}
+.widget-geo-locations__overlay {
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: 0;
+  bottom: 0;
+  left: 0px;
+  background-image: url("../../images/map/enlarge-icon.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  z-index: 100;
+}
+.widget-geo-locations .mapbox-improve-map {
+  display: none;
+}
+.widget-geo-locations .mapboxgl-ctrl-attrib.mapboxgl-ctrl {
+  padding: 0px 3px;
+}
+.widget-geo-locations .mapboxgl-ctrl-attrib.mapboxgl-ctrl a {
+  font-size: 12px;
+  line-height: 120%;
+}
+/* Map-Popup */
+#mapPopupOverlay {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 10000000;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  display: none;
+  overflow: hidden;
+  /* map in popup */
+}
+#mapPopupOverlay #mapPopupContainer {
+  width: 70%;
+  height: 70%;
+  background-color: white;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+#mapPopupOverlay #mapPopupOverlayCloseButton {
+  background-image: url("../../images/map/close_map-icon.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  width: 64px;
+  height: 64px;
+  position: fixed;
+  left: 10px;
+  top: 10px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page

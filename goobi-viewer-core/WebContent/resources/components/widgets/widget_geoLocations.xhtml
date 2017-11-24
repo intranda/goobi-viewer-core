@@ -12,8 +12,13 @@
     
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
-    	<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
-	        <!-- WIDGET GEO LOCATIONS STANDARD -->
+    	<!-- MAPBOX RESOURCES -->
+		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css' rel='stylesheet' />
+    	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js'></script>
+
+		<!-- WIDGET GEO LOCATIONS -->
+		<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
+	        <!-- STANDARD -->
 	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
 		        <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">		
 					<h3>
@@ -25,7 +30,7 @@
 				</div>
 	        </h:panelGroup>
 	        
-	        <!-- WIDGET GEO LOCATIONS FOLDOUT -->
+	        <!-- FOLDOUT -->
 	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
 	        	<div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
 					<h3>
@@ -41,6 +46,12 @@
 					</div>
 		        </div>
 	        </h:panelGroup>
+	        
+	        <script type="text/javascript">
+	        	widgetGeoLocationsConfig = {};
+	        	
+	        	cmsJS.geoLocations.init( widgetGeoLocationsConfig );
+	        </script>
         </h:panelGroup>
     </composite:implementation>
 </ui:composition>
