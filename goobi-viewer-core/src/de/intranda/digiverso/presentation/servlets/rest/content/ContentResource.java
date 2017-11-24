@@ -107,15 +107,15 @@ public class ContentResource {
         throw new ContentNotFoundException("Resource not found");
 
     }
-    
+
     /**
      * @param pi
-     * @param fileName
+     * @param lang
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException * @throws DAOException
      * @throws ContentNotFoundException
-     * @throws IOException 
+     * @throws IOException
      */
     @GET
     @Path("/tei/{pi}/{lang}")
@@ -124,23 +124,21 @@ public class ContentResource {
             IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-//        String teiPath = DataManager.getInstance().getConfiguration().getTeiFolder() + '/' + pi + '/';
-        java.nio.file.Path teiPath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
+        java.nio.file.Path teiPath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(),
+                pi);
         java.nio.file.Path filePath = null;
-        if(Files.exists(teiPath)) {
-            filePath = Files.list(teiPath)
-            .filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-            .findFirst().orElse(Files.list(teiPath).findFirst().orElse(null));
+        if (Files.exists(teiPath)) {
+            filePath = Files.list(teiPath).filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst()
+                    .orElse(Files.list(teiPath).findFirst().orElse(null));
         }
 
-        if(filePath != null) {            
-//            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, filePath.getFileName().toString(),
-//                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
+        if (filePath != null) {
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    servletRequest);
             if (!access) {
                 throw new ContentNotFoundException("No permission found");
             }
-            
+
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             if (Files.isRegularFile(filePath)) {
                 Document doc;
@@ -221,7 +219,7 @@ public class ContentResource {
             @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
             MalformedURLException, ContentNotFoundException {
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        if("-".contentEquals(dataRepository)) {
+        if ("-".contentEquals(dataRepository)) {
             dataRepository = null;
         }
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
