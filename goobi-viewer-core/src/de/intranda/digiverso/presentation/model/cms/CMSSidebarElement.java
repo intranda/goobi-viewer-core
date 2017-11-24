@@ -440,6 +440,9 @@ public class CMSSidebarElement {
      * 
      */
     public void initGeolocations(List<GeoLocation> locations) {
+        if(locations.isEmpty()) {
+            locations.add(new GeoLocation());
+        }
         this.geoLocations = locations;
         this.geoLocationsString = createGeoLocationsString(this.geoLocations);
     }

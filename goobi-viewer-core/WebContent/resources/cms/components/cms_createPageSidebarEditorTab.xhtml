@@ -125,9 +125,11 @@
 																					<ui:repeat var="location" value="#{element.geoLocations}">
 																						<li>
 																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
-																							<h:inputText value="#{location.latitude}"></h:inputText>
+																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.latitude}">
+																							</h:inputText>
 																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
-																							<h:inputText value="#{location.longitude}"></h:inputText>
+																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.longitude}">
+																							</h:inputText>
 																						</li>
 																					</ui:repeat>
 																							<h:commandLink action="#{element.removeGeoLocation}" value="Löschen">
@@ -231,6 +233,30 @@
 																			</h:selectManyCheckbox>
 																		</div>
 																	</h:panelGroup>
+																	<!-- GEO LOCATIONS -->
+																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
+																		<div class="form-group">
+																			<label>#{msg.cms_sidebarElement_geoLocations_title}:</label>
+																			<ul>
+																					<ui:repeat var="location" value="#{element.geoLocations}">
+																						<li>
+																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
+																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.latitude}"></h:inputText>
+																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
+																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.longitude}"></h:inputText>
+																						</li>
+																					</ui:repeat>
+																							<h:commandLink action="#{element.removeGeoLocation}" value="Löschen">
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																							</h:commandLink>
+																							<h:commandLink action="#{element.addGeoLocation()}" value="Hinzufügen">
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																							</h:commandLink>
+																			</ul>
+																			
+<!-- 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control" /> -->
+																		</div>
+																	</h:panelGroup>
 																	<!-- CSS class -->
 																	<h:panelGroup id="inputCss">
 																		<div class="form-group">
@@ -241,7 +267,7 @@
 																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn">
-																				<f:ajax execute="inputHtml inputQuery" render="inputHtml inputQuery :messages" onevent="cmsJS.sortableList.save" />
+																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />
 																			</h:commandLink>
 																		</div>
 																	</h:panelGroup>
