@@ -36,6 +36,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -55,9 +56,11 @@ public class Bookshelf implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookshelf_id")
+    @JsonIgnore
     private Long id;
 
     @JoinColumn(name = "owner_id", nullable = false)
+    @JsonIgnore
     private User owner;
 
     @Column(name = "name", nullable = false)
@@ -76,6 +79,7 @@ public class Bookshelf implements Serializable {
     /** UserGroups that may access this bookshelf. */
     // TODO
     @Transient
+    @JsonIgnore
     private List<UserGroup> groupShares = new ArrayList<>();
 
     /*
@@ -290,6 +294,7 @@ public class Bookshelf implements Serializable {
      * @return the isPublic Value as a String <br>
      *         surrounded with ()
      */
+    @JsonIgnore
     public String getPublicString() {
         String publicString = "";
 
@@ -336,5 +341,13 @@ public class Bookshelf implements Serializable {
      */
     public void setGroupShares(List<UserGroup> groupShares) {
         this.groupShares = groupShares;
+    }
+    
+    public String getOwnerName() {
+        if(getOwner() != null) {            
+            return getOwner().getDisplayNameObfuscated();
+        } else {
+            return null;
+        }
     }
 }
