@@ -56,12 +56,25 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 public class BookshelfResource {
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfResource.class);
-
+    private final boolean testing;
+    
     @Context
     private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
 
+    public BookshelfResource() {
+        this.testing = false;
+    }
+    
+    /**
+     * For testing
+     * @param request
+     */
+    protected BookshelfResource(HttpServletRequest request) {
+        this.servletRequest = request;
+        this.testing = true;
+    }
+    
+    
     /**
      * Returns the session stored bookshelf, creating a new empty one if needed
      * 
@@ -118,7 +131,7 @@ public class BookshelfResource {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = DataManager.getInstance().getBookshelfManager().addToBookshelf(item, session);
                 return new SuccessMessage(success);
             } catch (IndexUnreachableException | PresentationException e) {
@@ -135,12 +148,12 @@ public class BookshelfResource {
     }
 
     /**
-     * Deletes the bookshelf item with the given pi from the session store bookshelf This operation returns an object with the property "success:
-     * false" if the operation failed (usually because the object wasn't in the bookshelf to begin with). Otherwise the return opject contains
-     * "success: true"
+     * Deletes the bookshelf item with the given pi from the session store bookshelf
+     * This operation returns an object with the property "success: false" if the operation failed (usually because the
+     * object wasn't in the bookshelf to begin with). Otherwise the return opject contains "success: true"
      * 
      * @param pi
-     * @return an object containing the boolean property 'success', detailing wether the operation was successfull
+     * @return  an object containing the boolean property 'success', detailing wether the operation was successfull
      * @throws DAOException
      * @throws IOException
      * @throws RestApiException
@@ -153,14 +166,14 @@ public class BookshelfResource {
     }
 
     /**
-     * Deletes the bookshelf item with the given pi, logid and page number from the session store bookshelf This operation returns an object with the
-     * property "success: false" if the operation failed (usually because the object wasn't in the bookshelf to begin with). Otherwise the return
-     * opject contains "success: true"
+     * Deletes the bookshelf item with the given pi, logid and page number from the session store bookshelf
+     * This operation returns an object with the property "success: false" if the operation failed (usually because the
+     * object wasn't in the bookshelf to begin with). Otherwise the return opject contains "success: true"
      * 
      * @param pi
      * @param logId
      * @param pageString
-     * @return an object containing the boolean property 'success', detailing wether the operation was successfull
+     * @return  an object containing the boolean property 'success', detailing wether the operation was successfull
      * @throws DAOException
      * @throws IOException
      * @throws RestApiException
@@ -174,7 +187,7 @@ public class BookshelfResource {
         if (session != null) {
 
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = DataManager.getInstance().getBookshelfManager().removeFromBookself(item, session);
                 return new SuccessMessage(success);
             } catch (IndexUnreachableException | PresentationException e) {
@@ -188,8 +201,8 @@ public class BookshelfResource {
     }
 
     /**
-     * Deletes the entiry bookshelf from the session store. Always returns an object with the property "success: true", unless an error occurs in
-     * which case an error status code and an error object is returned
+     * Deletes the entiry bookshelf from the session store. Always returns an object with the 
+     * property "success: true", unless an error occurs in which case an error status code and an error object is returned
      * 
      * @return
      * @throws RestApiException
@@ -206,7 +219,7 @@ public class BookshelfResource {
             throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
     }
-
+    
     /**
      * Returns "true" if the object with the given IP is in the session store bookshelf, "false" otherwise
      * 
@@ -243,10 +256,10 @@ public class BookshelfResource {
         if (session != null) {
 
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = DataManager.getInstance().getBookshelfManager().isInBookshelf(item, session);
                 return success;
-            } catch (PresentationException e) {
+            } catch(PresentationException e) {
                 //no such document
                 return false;
             } catch (IndexUnreachableException e) {
@@ -258,10 +271,10 @@ public class BookshelfResource {
             throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
     }
-
+    
     /**
-     * Counts the items contained in the session store bookshelf and returns the number as plain integer If no session store bookshelf exists, 0 is
-     * returned
+     * Counts the items contained in the session store bookshelf and returns the number as plain integer
+     * If no session store bookshelf exists, 0 is returned
      * 
      * @return
      * @throws RestApiException
