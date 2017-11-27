@@ -590,6 +590,8 @@ public class BookshelfResource {
             } catch (IndexUnreachableException | PresentationException e) {
                 return new SuccessMessage(false, e.getMessage());
             }
+        } else {
+            return new SuccessMessage(false, "No bookshelves found for current user");
         }
     }
 
@@ -618,76 +620,14 @@ public class BookshelfResource {
      * 
      * @return
      * @throws RestApiException
+     * @throws IOException 
+     * @throws DAOException 
      */
     @GET
     @Path("/user/get/{id}/count")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Integer countItems(@PathParam("id") Long id) throws RestApiException {
+    public Long countItems(@PathParam("id") Long id) throws RestApiException, DAOException, IOException {
         return getUserBookshelfById(id).getItems().stream().count();
-    }
-
-    /**
-     * Retrieves a bookshelf with name @bookshelfName from the currently logged in user if one could be found. If no bookshelf of this name is found
-     * for the current user, 404 is returned
-     * 
-     * 
-     * @param bookshelfName
-     * @return
-     * @throws DAOException
-     * @throws IOException
-     */
-    @GET
-    @Path("/get/{bookshelfId}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    public Bookshelf getBookshelf(@PathParam("bookshelfId") Long id) throws DAOException, IOException {
-
-        User user = getUserFromSession(servletRequest.getSession());
-
-        if (user != null) {
-            Bookshelf shelf = DataManager.getInstance().getDao().getBookshelf(id);
-            if (shelf != null) {
-                if (shelf.getOwner().equals(user)) {
-                    return shelf;
-                }
-            }
-        }
-        servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "Did not find bookshelf " + id + " for user " + user);
-        return null;
-    }
-
-    /**
-     * Adds the object determined by the passed parameters to the session store bookshelf returns a json object with the single property "stored"
-     * containing a boolean which is true exactly if the object is in the session bookshelf after the operation
-     * 
-     * @param pi
-     * @param logid
-     * @param page
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     */
-    @GET
-    @Path("/add/{pi}/{logid}/{page}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addToSessionStore(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
-            throws IndexUnreachableException, PresentationException {
-
-        if ("-".equals(pi)) {
-            pi = "";
-        }
-        if ("-".equals(logId)) {
-            logId = "";
-        }
-        if ("-".equals(pageString)) {
-            pageString = "";
-        }
-        Integer order = getPageOrder(pageString);
-
-        boolean success = false;
-
-        BookshelfItem item = new BookshelfItem(pi, logId, order);
-
-        return new SuccessMessage(success);
     }
 
     /**
