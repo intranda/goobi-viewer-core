@@ -521,6 +521,23 @@ public class BookshelfResource {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
     }
+
+    /**
+     * Adds a new Bookshelf with the given name to the current users bookshelves
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     * @throws IOException
+     * @throws RestApiException
+     */
+    @GET
+    @Path("/user/add/{name}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public SuccessMessage addUserBookshelf() throws DAOException, IOException, RestApiException {
+        String name = generateNewBookshelfName(getAllUserBookshelfs());
+        return addUserBookshelf(name);
+    }
     
     /**
      * Adds the current session bookshelf to the current user bookshelves under a newly generated name
