@@ -535,8 +535,8 @@ public class BookshelfResource {
     @Path("/user/addSessionBookshelf")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelfFromSession() throws DAOException, IOException, RestApiException {
-        User user = getUserFromSession(servletRequest.getSession());
-        
+        String name = generateNewBookshelfName(getAllUserBookshelfs());
+        return addUserBookshelfFromSession(name);
     }
     
     /**
@@ -772,14 +772,19 @@ public class BookshelfResource {
      * @param allUserBookshelfs
      * @return
      */
-    private String generateNewBookshelfName(List<Bookshelf> allUserBookshelfs) {
+    private String generateNewBookshelfName(List<Bookshelf> bookshelves) {
         
         String bookshelfNameTemplate = "List {num}";
         String bookshelfNamePlaceholder = "{num}";
         String bookshelfNameRegex = "List \\d+";
         String bookshelfNameBase = "List ";
+
+        if(bookshelves == null || bookshelves.isEmpty()) {
+            return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, "1");
+        }
         
-        Integer counter = allUserBookshelfs.stream()
+        
+        Integer counter = bookshelves.stream()
         .map(bs -> bs.getName())
         .filter(name -> name != null && name.matches(bookshelfNameRegex))
         .map(name -> name.replace(bookshelfNameBase, ""))
