@@ -86,7 +86,7 @@ public class BookshelfResource {
     @GET
     @Path("/session/get/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Bookshelf getBookshelf() throws DAOException, IOException, RestApiException {
+    public Bookshelf getSessionBookshelf() throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
@@ -108,8 +108,8 @@ public class BookshelfResource {
     @GET
     @Path("/session/add/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addToBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return addToBookshelf(pi, null, null);
+    public SuccessMessage addToSessionBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return addToSessionBookshelf(pi, null, null);
     }
 
     /**
@@ -126,7 +126,7 @@ public class BookshelfResource {
     @GET
     @Path("/session/add/{pi}/{logid}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addToBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
+    public SuccessMessage addToSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
@@ -161,8 +161,8 @@ public class BookshelfResource {
     @GET
     @Path("/session/delete/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return deleteFromBookshelf(pi, null, null);
+    public SuccessMessage deleteFromSessionBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return deleteFromSessionBookshelf(pi, null, null);
     }
 
     /**
@@ -181,7 +181,7 @@ public class BookshelfResource {
     @GET
     @Path("/session/delete/{pi}/{logid}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
+    public SuccessMessage deleteFromSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
@@ -210,7 +210,7 @@ public class BookshelfResource {
     @GET
     @Path("/session/delete")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteBookshelf() throws RestApiException {
+    public SuccessMessage deleteSessionBookshelf() throws RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             DataManager.getInstance().getBookshelfManager().deleteBookshelf(session);
@@ -232,8 +232,8 @@ public class BookshelfResource {
     @GET
     @Path("/session/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Boolean isInBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return isInBookshelf(pi, null, null);
+    public Boolean isInSessionBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return isInSessionBookshelf(pi, null, null);
     }
 
     /**
@@ -250,7 +250,7 @@ public class BookshelfResource {
     @GET
     @Path("/session/contains/{pi}/{logid}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Boolean isInBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
+    public Boolean isInSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
@@ -282,7 +282,7 @@ public class BookshelfResource {
     @GET
     @Path("/session/count")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Integer countItems() throws RestApiException {
+    public Integer countSessionBookshelfItems() throws RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             int count = DataManager.getInstance().getBookshelfManager().getBookshelf(session).map(bs -> bs.getItems().size()).orElse(0);
@@ -394,7 +394,7 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/set/name/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage setBookshelfName(@PathParam("id") Long id, @PathParam("name") String name) throws DAOException, IOException,
+    public SuccessMessage setUserBookshelfName(@PathParam("id") Long id, @PathParam("name") String name) throws DAOException, IOException,
             RestApiException {
         Optional<Bookshelf> o = getAllUserBookshelfs().stream().filter(bs -> bs.getId().equals(id)).findFirst();
 
@@ -415,13 +415,13 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/add/{pi}/{logid}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addItemToShelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
+    public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         Optional<Bookshelf> o = getAllUserBookshelfs().stream().filter(bs -> bs.getId().equals(id)).findFirst();
 
         if (o.isPresent()) {
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = o.get().addItem(item);
                 DataManager.getInstance().getDao().updateBookshelf(o.get());
                 return new SuccessMessage(success);
@@ -442,8 +442,8 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/add/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addItemToShelf(@PathParam("id") Long id, @PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return addItemToShelf(id, pi, null, null);
+    public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return addItemToUserBookshelf(id, pi, null, null);
     }
 
     /**
@@ -454,13 +454,13 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/remove/{pi}/{logid}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage removeItemFromShelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
+    public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         Optional<Bookshelf> o = getAllUserBookshelfs().stream().filter(bs -> bs.getId().equals(id)).findFirst();
 
         if (o.isPresent()) {
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = o.get().removeItem(item);
                 DataManager.getInstance().getDao().updateBookshelf(o.get());
                 return new SuccessMessage(success);
@@ -485,9 +485,9 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/remove/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage removeItemFromShelf(@PathParam("id") Long id, @PathParam("pi") String pi) throws DAOException, IOException,
+    public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi) throws DAOException, IOException,
             RestApiException {
-        return removeItemFromShelf(id, pi, null, null);
+        return deleteFromUserBookshelf(id, pi, null, null);
     }
 
     /**
@@ -523,7 +523,7 @@ public class BookshelfResource {
     }
     
     /**
-     * Adds a new Bookshelf with a new generated name to the current users bookshelves
+     * Adds the current session bookshelf to the current user bookshelves under a newly generated name
      * 
      * @param pi
      * @return
@@ -532,13 +532,38 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/user/add")
+    @Path("/user/addSessionBookshelf")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addUserBookshelf() throws DAOException, IOException, RestApiException {
+    public SuccessMessage addUserBookshelfFromSession() throws DAOException, IOException, RestApiException {
+        User user = getUserFromSession(servletRequest.getSession());
+        
+    }
+    
+    /**
+     * Adds the current session bookshelf to the current user bookshelves under the given name
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     * @throws IOException
+     * @throws RestApiException
+     */
+    @GET
+    @Path("/user/addSessionBookshelf/{name}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public SuccessMessage addUserBookshelfFromSession(@PathParam("name")String bookshelfName) throws DAOException, IOException, RestApiException {
         User user = getUserFromSession(servletRequest.getSession());
 
         if (user != null) {            
-            return addUserBookshelf(generateNewBookshelfName(getAllUserBookshelfs()));
+            
+            Optional<Bookshelf> bookshelf = DataManager.getInstance().getBookshelfManager().getBookshelf(servletRequest.getSession());
+            if(bookshelf.isPresent()) {                
+                bookshelf.get().setName(bookshelfName);
+                boolean success = DataManager.getInstance().getDao().addBookshelf(bookshelf.get());
+                return new SuccessMessage(success);
+            } else {
+                return new SuccessMessage(false, "No session bookshelf found");
+            }
         } else {
             throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
@@ -589,11 +614,11 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/contains/{pi}/{logid}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Object getContainingBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
+    public Object getContainingUserBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         List<Bookshelf> bookshelves = getAllUserBookshelfs();
         if(bookshelves  != null) {
             try {
-                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString));
+                BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 Optional<Bookshelf> bookshelf = bookshelves.stream().filter(bs -> bs.getItems().contains(item)).findFirst();
                 if(bookshelf.isPresent()) {
                     return bookshelf.get();
@@ -622,8 +647,8 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/contains/{pi}/{logid}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Object getContainingBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return getContainingBookshelf(pi, null, null);
+    public Object getContainingUserBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return getContainingUserBookshelf(pi, null, null);
     }
  
     /**
@@ -638,9 +663,12 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/count")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Long countItems(@PathParam("id") Long id) throws RestApiException, DAOException, IOException {
+    public Long countUserBookshelfItems(@PathParam("id") Long id) throws RestApiException, DAOException, IOException {
         return getUserBookshelfById(id).getItems().stream().count();
     }
+    
+    @GET
+    @Path("user/add/")
 
     /**
      * @param pageString
