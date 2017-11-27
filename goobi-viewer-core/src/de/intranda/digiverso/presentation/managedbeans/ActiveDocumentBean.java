@@ -308,7 +308,6 @@ public class ActiveDocumentBean implements Serializable {
                         SolrConstants.IDDOC));
                 long subElementIddoc = 0;
                 if (!docList.isEmpty()) {
-                    logger.trace("vm3");
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();

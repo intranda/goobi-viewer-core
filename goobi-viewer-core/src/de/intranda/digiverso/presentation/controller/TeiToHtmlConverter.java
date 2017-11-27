@@ -76,6 +76,9 @@ public class TeiToHtmlConverter {
         List<Integer> allIndexes = new ArrayList<>();
         allIndexes.addAll(divOpenedIndexes);
         allIndexes.addAll(divClosedIndexes);
+        if (allIndexes.isEmpty()) {
+            return;
+        }
         Collections.sort(allIndexes);
         int level = 0;
         logger.trace("index: {}-{}", allIndexes.get(0), allIndexes.get(allIndexes.size() - 1));
