@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,10 +79,10 @@ public class BookshelfItem implements Serializable {
     @Column(name = "pi")
     private String pi;
 
-    @Column(name = "logid", nullable = true)
+    @Column(name = "logid")
     private String logId;
     
-    @Column(name = "order", nullable = true)
+    @Column(name = "page_order")
     private Integer order;
 
     @Column(name = "urn")
@@ -89,7 +90,7 @@ public class BookshelfItem implements Serializable {
 
     @Deprecated
     @Column(name = "main_title")
-    private final String mainTitle = null;
+    private String mainTitle = null;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_added")
@@ -123,6 +124,35 @@ public class BookshelfItem implements Serializable {
         this.logId = logId;
         this.order = order;
         this.name = getDocumentTitle();
+        this.dateAdded = new Date();
+    }
+    
+    /**
+     * Creates a new Bookshelf item based in book pi, section logId and page order
+     * logId and order my be empty or null, if only the book itself is references. PI must be non-empty, otherwise a NullPointerException is thrown
+     * The item name will be inferred from the book/section title from Solr. If that fails, an IndexUnreachableException or PresentationException is thrown
+     * 
+     * @param pi    
+     * @param logId
+     * @param order
+     * @param ignoreMissingSolrDoc  should be false, unless arbitrary pi/logid values should be allowed (e.g. for testing)
+     * @throws IndexUnreachableException    if the Solr index could not be reached
+     * @throws PresentationException        if the pi/logId could not be resolved
+     * @throws NullPointerException         if pi is null or blank
+     */
+    public BookshelfItem(String pi, String logId, Integer order, boolean ignoreMissingSolrDoc) throws IndexUnreachableException, PresentationException {
+        this.pi = pi;
+        this.logId = logId;
+        this.order = order;
+        try {            
+            this.name = getDocumentTitle();
+        } catch(SolrException | IndexUnreachableException | PresentationException e) {
+            if(ignoreMissingSolrDoc) {
+                this.name = "";
+            } else {
+                throw e;
+            }
+        }
         this.dateAdded = new Date();
     }
 
@@ -399,5 +429,20 @@ public class BookshelfItem implements Serializable {
         this.order = order;
     }
 
+    /**
+     * @return the mainTitle
+     */
+    @Deprecated
+    public String getMainTitle() {
+        return mainTitle;
+    }
+    
+    /**
+     * @param mainTitle the mainTitle to set
+     */
+    @Deprecated
+    public void setMainTitle(String mainTitle) {
+        this.mainTitle = mainTitle;
+    }
     
 }

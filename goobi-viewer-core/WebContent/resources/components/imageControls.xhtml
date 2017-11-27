@@ -153,7 +153,7 @@
 	                    </h:outputLink>
 	                </li>
 	                
-	                <!-- DUOBLEPAGEVIEW -->
+	                <!-- DOUBLEPAGEVIEW -->
 	                <h:panelGroup rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
 		                <li class="image-control image-control__double-page-view">
 		                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
@@ -231,6 +231,7 @@
 		                </li>
 		                
 		                <!-- PDF -->
+                                <h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
 		                    <li class="image-control image-control__pdf">
 		                        <h:outputLink 
 		                            value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" 
@@ -241,6 +242,7 @@
 		                            <f:passThroughAttribute name="data-placement" value="bottom" />    
 		                        </h:outputLink>
 		                    </li>
+                                </h:panelGroup>
 	                </h:panelGroup>
 	            </ul>
             </h:form>

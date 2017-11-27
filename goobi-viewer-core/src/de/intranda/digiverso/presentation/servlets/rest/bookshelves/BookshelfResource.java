@@ -298,7 +298,7 @@ public class BookshelfResource {
      * @return
      * @throws DAOException
      * @throws IOException
-     * @throws RestApiException
+     * @throws RestApiException 
      */
     @GET
     @Path("/user/get/")
@@ -626,7 +626,6 @@ public class BookshelfResource {
         return getContainingBookshelf(pi, null, null);
     }
  
-
     /**
      * Counts the items contained in the current user's bookshelf with the given id and returns the number as plain integer If no session store bookshelf exists, 0 is
      * returned
