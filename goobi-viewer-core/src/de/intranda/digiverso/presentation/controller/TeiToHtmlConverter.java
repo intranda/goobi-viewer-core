@@ -233,7 +233,7 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<ul>" + r.group(1) + "</ul>");
         }
         for (MatchResult r : findRegexMatches("<bibl>[\\s]*([\\s\\S]*?)[\\s]*</bibl>", text)) {
-            text = text.replace(r.group(), "<li" + r.group(1) + "</li>");
+            text = text.replace(r.group(), "<li>" + r.group(1) + "</li>");
         }
 
         // TODO Blockquote (old)
