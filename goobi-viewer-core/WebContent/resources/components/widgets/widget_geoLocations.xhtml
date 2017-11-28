@@ -18,39 +18,16 @@
 
 		<!-- WIDGET GEO LOCATIONS -->
 		<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
-	        <!-- STANDARD -->
-	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
-		        <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">		
-					<h3>
-						<h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
-					</h3>
-					
-					<!-- MAP -->
-					<div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
-				</div>
-	        </h:panelGroup>
-	        
-	        <!-- FOLDOUT -->
-	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
-	        	<div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
-					<h3>
-						<a href="#widgetGeoLocationsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetGeoLocationsCollapse">
-							<h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
-							<span class="glyphicon glyphicon-arrow-down"></span>
-						</a>
-					</h3>
-					
-					<div id="widgetGeoLocationsCollapse" class="collapse">
-						<!-- MAP -->
-						<div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
-					</div>
-		        </div>
-	        </h:panelGroup>
+		    <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">		
+				<h3>
+					<h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
+				</h3>
+				
+				<!-- MAP -->
+				<div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
+			</div>
 	        
 	        <script type="text/javascript">
-// 		        widget.geoLocationsString  gibt das json-Object als String wieder
-// 				widget.geoLocations gibt die Liste als Java-Liste zurück (für ui:repeat oder so)	        
-	        
 	        	widgetGeoLocationsConfig = {
         			locations: '#{cc.attrs.widget.geoLocationsString}'
 				};

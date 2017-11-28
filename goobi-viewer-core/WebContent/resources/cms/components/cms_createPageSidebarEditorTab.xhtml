@@ -63,13 +63,15 @@
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
 																	<!-- WIDGET MODE -->
-																	<div class="form-group">
-																		<label>#{msg.cms_sidebarElement_widgetmode}:</label>
-																		<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																			<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
-																			<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
-																		</h:selectOneRadio>
-																	</div>
+																	<h:panelGroup rendered="#{element.category != 'geoLocations'}">
+																		<div class="form-group">
+																			<label>#{msg.cms_sidebarElement_widgetmode}:</label>
+																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																				<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
+																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
+																			</h:selectOneRadio>
+																		</div>
+																	</h:panelGroup>
 																	<!-- HTML INPUT -->
 																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
 																		<div class="form-group">
@@ -119,9 +121,7 @@
 																	</h:panelGroup>
 																	<!-- GEO LOCATIONS -->
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
-																		<div class="widget-geo-locations">
-																			<h4>#{msg.cms_sidebarElement_geoLocations_title}</h4>
-																			
+																		<div class="widget-geo-locations">																			
 																			<div class="widget-geo-locations__input">
 																				<!-- WIDGET TITLE -->
 																				<div class="form-group">

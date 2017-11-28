@@ -6536,11 +6536,6 @@ div.olMapViewport {
   font-size: 12px;
   line-height: 120%;
 }
-.widget-geo-locations h4 {
-  margin-bottom: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #ccc;
-}
 .widget-geo-locations h5 {
   margin-bottom: 5px;
 }
