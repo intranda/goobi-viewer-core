@@ -41,8 +41,10 @@ public class TeiToHtmlConverter {
     /**
      * 
      */
-    private static final String SB_FOOTNOTE_REGEX = "<note(\\s+type=\"(footnote|endnote|gloss)\")?(\\s+n=\"([\\w\\d]+)\")?>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>";
-    private static final String EDITORIAL_FOOTNOTE_REGEX = "<note(\\s+type=\"(editorial)\")(\\s+n=\"([\\w\\d]+)\")?>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>";
+    private static final String SB_FOOTNOTE_REGEX =
+            "<note(\\s+type=\"(footnote|endnote|gloss)\")?(\\s+n=\"([\\w\\d]+)\")?>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>";
+    private static final String EDITORIAL_FOOTNOTE_REGEX =
+            "<note(\\s+type=\"(editorial)\")(\\s+n=\"([\\w\\d]+)\")?>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>";
 
     public static enum ConverterMode {
         annotation,
@@ -226,6 +228,14 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<ol>" + r.group(1) + "</ol>");
         }
 
+        // listBibl
+        for (MatchResult r : findRegexMatches("<listBibl>[\\s]*([\\s\\S]*?)[\\s]*</listBibl>", text)) {
+            text = text.replace(r.group(), "<ul>" + r.group(1) + "</ul>");
+        }
+        for (MatchResult r : findRegexMatches("<bibl>[\\s]*([\\s\\S]*?)[\\s]*</bibl>", text)) {
+            text = text.replace(r.group(), "<li" + r.group(1) + "</li>");
+        }
+
         // TODO Blockquote (old)
         for (MatchResult r : findRegexMatches("<blockquote>\\s*<p>\\[Q=(.*?)\\](.*?)\\[/Q\\]</p>\\s*</blockquote>", text)) {
             text = text.replace(r.group(), "<cit><q source=\"#" + r.group(1) + "\">" + r.group(2) + "</q></cit>");
@@ -297,33 +307,31 @@ public class TeiToHtmlConverter {
             String table = r.group();
             String tableText = r.group(3);
             int tableStartIndex = text.indexOf(r.group());
-            
+
             tableText = tableStartString + tableText + tableEndString;
             tableText = tableText.replaceAll(columnSwitchRegex, columnSwitchString);
-            
+
             text = text.replace(table, tableText);
-            
+
         }
-        
+
         // page breaks
         for (MatchResult r : findRegexMatches("<pb n=\"(.*?)\"></pb>", text)) {
             text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">" + r.group(1)
                     + "</p>");
         }
 
-        
-        
         //Replace <note>
         int footnoteCount = 0;
         for (MatchResult r : findRegexMatches(SB_FOOTNOTE_REGEX, text)) {
             String note = r.group();
             String footnoteText = r.group(6);
             Optional<String> n = Optional.ofNullable(r.group(4));
-            
-            if(!n.isPresent()) {                
+
+            if (!n.isPresent()) {
                 footnoteCount++;
             }
-            
+
             String reference = "<sup><a href=\"#fn§§\" id=\"ref§§\">§§</a></sup>";
             String footnote = "<p class=\"footnoteText\" id=\"fn§§\">[§§] " + footnoteText + "<a href=\"#ref§§\">↩</a></p>";
             reference = reference.replace("§§", n.orElse(Integer.toString(footnoteCount)));
@@ -336,11 +344,11 @@ public class TeiToHtmlConverter {
             String note = r.group();
             String footnoteText = r.group(6);
             Optional<String> n = Optional.ofNullable(r.group(4));
-            
-            if(!n.isPresent()) {                
+
+            if (!n.isPresent()) {
                 footnoteCount++;
             }
-            
+
             String reference = "<sup><a href=\"#fn§§\" id=\"ref§§\">§§</a></sup>";
             String footnote = "<p class=\"footnoteText\" id=\"fn§§\">[§§] " + footnoteText + "<a href=\"#ref§§\">↩</a></p>";
             reference = reference.replace("§§", n.orElse(Integer.toString(footnoteCount)));
