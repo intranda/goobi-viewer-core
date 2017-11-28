@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.misc.GeoLocation;
+import de.intranda.digiverso.presentation.model.misc.GeoLocationInfo;
 import de.intranda.digiverso.presentation.model.misc.NumberIterator;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 
@@ -104,7 +105,7 @@ public class CMSSidebarElement {
     @Column(name = "geo_locations", nullable = true)
     private String geoLocationsString = null;
     @Transient
-    private List<GeoLocation> geoLocations = null;
+    private GeoLocationInfo geoLocations = null;
 
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
@@ -439,27 +440,27 @@ public class CMSSidebarElement {
     /**
      * 
      */
-    public void initGeolocations(List<GeoLocation> locations) {
-        if(locations.isEmpty()) {
-            locations.add(new GeoLocation());
+    public void initGeolocations(GeoLocationInfo info) {
+        if(info.getLocationList().isEmpty()) {
+            info.getLocationList().add(new GeoLocation());
         }
-        this.geoLocations = locations;
+        this.geoLocations = info;
         this.geoLocationsString = createGeoLocationsString(this.geoLocations);
     }
     
-    public List<GeoLocation> getGeoLocations() {
+    public GeoLocationInfo getGeoLocations() {
         return this.geoLocations;
     }
     
     public void addGeoLocation() {
-        this.geoLocations.add(new GeoLocation());
+        this.geoLocations.getLocationList().add(new GeoLocation());
     }
     
     public void removeGeoLocation() {
-        if(geoLocations != null && !geoLocations.isEmpty()) {            
-            this.geoLocations.remove(geoLocations.size()-1);
-            if(this.geoLocations.isEmpty()) {
-                this.geoLocations.add(new GeoLocation());
+        if(geoLocations != null) {            
+            this.geoLocations.getLocationList().remove(this.geoLocations.getLocationList().size()-1);
+            if(this.geoLocations.getLocationList().isEmpty()) {
+                this.geoLocations.getLocationList().add(new GeoLocation());
             }
         }
     }
@@ -468,40 +469,43 @@ public class CMSSidebarElement {
      * @param geoLocationsString2
      * @return 
      */
-    private List<GeoLocation> createGeoLocationsFromString(String string) {
-        List<GeoLocation> list = new ArrayList<GeoLocation>();
+    private GeoLocationInfo createGeoLocationsFromString(String string) {
+
         try {
             JSONObject json = new JSONObject(string);
-            JSONArray locations = json.getJSONArray(JSON_PROPERTYNAME_GEOLOCATIONS);
-            if(locations != null) {                
-                for (int i = 0; i < locations.length(); i++) {
-                    JSONObject obj = locations.getJSONObject(i);
-                    list.add(new GeoLocation(obj));
-                }
-            }
+            GeoLocationInfo info = new GeoLocationInfo(json);
+//            if(locations != null) {                
+//                for (int i = 0; i < locations.length(); i++) {
+//                    JSONObject obj = locations.getJSONObject(i);
+//                    list.add(new GeoLocation(obj));
+//                }
+//            }
+            return info;
         } catch (ParseException e) {
             logger.error("Failed to create geolocation list from string \n" + string, e);
         }
-        if(list.isEmpty()) {
-            list.add(new GeoLocation());
-        }
-        return list;
+        return new GeoLocationInfo();
+//        if(list.isEmpty()) {
+//            list.add(new GeoLocation());
+//        }
     }
 
     /**
      * @param geoLocations2
      * @return
      */
-    private String createGeoLocationsString(List<GeoLocation> list) {
+    private String createGeoLocationsString(GeoLocationInfo info) {
         
-        JSONArray locations = new JSONArray();
-        list.stream()
-        .filter(loc -> !loc.isEmpty())
-        .map(loc -> loc.getAsJson())
-        .forEach(loc -> locations.put(loc));
-        
-        JSONObject json = new JSONObject();
-        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
+        JSONObject json = info.getAsJson();
+
+//        JSONArray locations = new JSONArray();
+//        list.stream()
+//        .filter(loc -> !loc.isEmpty())
+//        .map(loc -> loc.getAsJson())
+//        .forEach(loc -> locations.put(loc));
+//        
+//        JSONObject json = new JSONObject();
+//        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
         
         return json.toString();
     }

@@ -126,7 +126,7 @@
 																				<!-- WIDGET TITLE -->
 																				<div class="form-group">
 																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
-																					<h:inputText styleClass="form-control" />
+																			<h:inputText value="#{element.html}" styleClass="form-control"></h:inputText>
 																				</div>
 																		
 																				<div class="row">
@@ -134,16 +134,16 @@
 																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
 																					<div class="col-xs-6">
 																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
-																						<h:inputText styleClass="form-control" />
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
 																					</div>
 																					<div class="col-xs-6">
 																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
-																						<h:inputText styleClass="form-control" />
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
 																					</div>
 
 																					<!-- LOCATIONS -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
-																					<ui:repeat var="location" value="#{element.geoLocations}">
+																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
 																						<div class="col-xs-5">
 																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
@@ -155,12 +155,12 @@
 																						<!-- INFOS -->
 																						<div class="col-xs-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
-																							<textarea class="form-control"></textarea> 
+																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
 																						</div>
 																						<!-- LINK -->
 																						<div class="col-xs-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
-																							<h:inputText styleClass="form-control" /> 
+																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
 																						</div>
 																						<div class="col-xs-10">
 																							<div class="widget-geo-locations__input-spacer"></div>
@@ -183,7 +183,7 @@
 																					<div class="widget-geo-locations__overlay-check">
 																						<div class="checkbox">
 																							<label> 
-																								<input type="checkbox" /> #{msg.cms_sidebarElement_geoLocations_overlay} 
+																							<h:selectBooleanCheckbox value="#{element.geoLocations.displayOverlay}"></h:selectBooleanCheckbox> #{msg.cms_sidebarElement_geoLocations_overlay} 
 																							</label>
 																						</div>
 																					</div>
@@ -283,26 +283,74 @@
 																	</h:panelGroup>
 																	<!-- GEO LOCATIONS -->
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_geoLocations_title}:</label>
-																			<ul>
-																					<ui:repeat var="location" value="#{element.geoLocations}">
-																						<li>
-																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
-																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.latitude}"></h:inputText>
-																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
-																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.longitude}"></h:inputText>
-																						</li>
+																		<div class="widget-geo-locations">																			
+																			<div class="widget-geo-locations__input">
+																				<!-- WIDGET TITLE -->
+																				<div class="form-group">
+																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
+																			<h:inputText value="#{element.html}" styleClass="form-control"></h:inputText>
+																				</div>
+																		
+																				<div class="row">
+																					<!-- CENTER VALUE -->
+																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
+																					<div class="col-xs-6">
+																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
+																					</div>
+																					<div class="col-xs-6">
+																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
+																					</div>
+
+																					<!-- LOCATIONS -->
+																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
+																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
+																						<div class="col-xs-5">
+																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
+																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
+																						</div>
+																						<div class="col-xs-5">
+																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
+																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
+																						</div>
+																						<!-- INFOS -->
+																						<div class="col-xs-10">
+																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
+																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
+																						</div>
+																						<!-- LINK -->
+																						<div class="col-xs-10">
+																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
+																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
+																						</div>
+																						<div class="col-xs-10">
+																							<div class="widget-geo-locations__input-spacer"></div>
+																						</div>
 																					</ui:repeat>
-																							<h:commandLink action="#{element.removeGeoLocation}" value="Löschen">
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																					<!-- ADD LOCATION -->																				
+																					<div class="widget-geo-locations__action">
+																						<div class="col-xs-2">
+																							<h:commandLink action="#{element.removeGeoLocation}">
+																								<i class="fa fa-minus-circle" aria-hidden="true"></i>
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																							<h:commandLink action="#{element.addGeoLocation()}" value="Hinzufügen">
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																							<h:commandLink action="#{element.addGeoLocation()}">
+																								<i class="fa fa-plus-circle" aria-hidden="true"></i>
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																			</ul>
-																			
-<!-- 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control" /> -->
+																						</div>
+																					</div>
+																					<!-- ACTIVATE OVERLAY -->
+																					<div class="widget-geo-locations__overlay-check">
+																						<div class="checkbox">
+																							<label> 
+																							<h:selectBooleanCheckbox value="#{element.geoLocations.displayOverlay}"></h:selectBooleanCheckbox> #{msg.cms_sidebarElement_geoLocations_overlay} 
+																							</label>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
 																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->
@@ -394,4 +442,6 @@
 			</div>
 		</div>
 	</composite:implementation>
+	
+	
 </ui:composition>

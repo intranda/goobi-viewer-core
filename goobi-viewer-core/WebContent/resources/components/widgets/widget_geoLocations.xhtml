@@ -20,7 +20,7 @@
 		<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
 		    <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">		
 				<h3>
-					<h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
+					#{cc.attrs.widget.html}
 				</h3>
 				
 				<!-- MAP -->
