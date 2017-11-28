@@ -65,18 +65,7 @@ public class TileGridResource {
         if (!tagString.equals("-")) {
             tags = tagString.split(TAG_SEPARATOR_REGEX);
         }
-        
-        HttpSession session = servletRequest.getSession();
-        if(session != null) {
-            UserBean userBean = (UserBean) session.getAttribute("userBean");
-            if(userBean != null) {
-                System.out.println("Found user bean!");
-            } else {
-                System.err.println("No user Bean");
-            }
-        }
-        
-        
+
         TileGrid grid = new TileGridBuilder(servletRequest).language(language).size(gridSize).reserveForHighPriority(priorityPlaces).tags(tags).build(items);
         return grid;
     }
