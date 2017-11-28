@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -36,6 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TeiToHtmlConverter {
+
+    /**
+     * 
+     */
+    private static final String SB_FOOTNOTE_REGEX = "<note(\\s+type=\"(footnote|endnote|gloss)\")?(\\s+n=\"([\\w\\d]+)\")?>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>";
+    private static final String EDITORIAL_FOOTNOTE_REGEX = "<note(\\s+type=\"(editorial)\")(\\s+n=\"([\\w\\d]+)\")?>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>";
 
     public static enum ConverterMode {
         annotation,
@@ -283,20 +290,42 @@ public class TeiToHtmlConverter {
                     + "</p>");
         }
 
+        
+        
         //Replace <note>
         int footnoteCount = 0;
-        for (MatchResult r : findRegexMatches("<note>(\\s*<p>\\s*)?([\\w\\W]+?)(\\s*<\\/p>\\s*)?<\\/note>", text)) {
-            footnoteCount++;
+        for (MatchResult r : findRegexMatches(SB_FOOTNOTE_REGEX, text)) {
             String note = r.group();
-            String footnoteText = r.group(2);
-
+            String footnoteText = r.group(6);
+            Optional<String> n = Optional.ofNullable(r.group(4));
+            
+            if(!n.isPresent()) {                
+                footnoteCount++;
+            }
+            
             String reference = "<sup><a href=\"#fn§§\" id=\"ref§§\">§§</a></sup>";
             String footnote = "<p class=\"footnoteText\" id=\"fn§§\">[§§] " + footnoteText + "<a href=\"#ref§§\">↩</a></p>";
-            reference = reference.replace("§§", Integer.toString(footnoteCount));
-            footnote = footnote.replace("§§", Integer.toString(footnoteCount));
+            reference = reference.replace("§§", n.orElse(Integer.toString(footnoteCount)));
+            footnote = footnote.replace("§§", n.orElse(Integer.toString(footnoteCount)));
 
             text = text.replace(note, reference) + footnote;
+        }
+        text = text + "<br />";
+        for (MatchResult r : findRegexMatches(EDITORIAL_FOOTNOTE_REGEX, text)) {
+            String note = r.group();
+            String footnoteText = r.group(6);
+            Optional<String> n = Optional.ofNullable(r.group(4));
+            
+            if(!n.isPresent()) {                
+                footnoteCount++;
+            }
+            
+            String reference = "<sup><a href=\"#fn§§\" id=\"ref§§\">§§</a></sup>";
+            String footnote = "<p class=\"footnoteText\" id=\"fn§§\">[§§] " + footnoteText + "<a href=\"#ref§§\">↩</a></p>";
+            reference = reference.replace("§§", n.orElse(Integer.toString(footnoteCount)));
+            footnote = footnote.replace("§§", n.orElse(Integer.toString(footnoteCount)));
 
+            text = text.replace(note, reference) + footnote;
         }
 
         // line breaks

@@ -771,7 +771,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getFullscreenImageUrl() throws IndexUnreachableException {
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
     }
-
+    
     /**
      *
      * @return

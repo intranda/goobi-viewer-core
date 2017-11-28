@@ -1201,15 +1201,22 @@ public class CmsBean {
         String pageName = navigationHelper.getCurrentPage();
         CMSStaticPage page = getStaticPageForPageType(PageType.getByName(pageName));
         if (page != null && page.isHasCmsPage() && page.getCmsPage().isPublished()) {
-            forwardToCMSPage(page.getCmsPage());
+            try {
+                forwardToCMSPage(page.getCmsPage());
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Unable to initialize cms functionality", e);
+            }
         }
     }
 
     /**
      * @param page
      * @throws IOException
+     * @throws DAOException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
      */
-    public void forwardToCMSPage(CMSPage page) throws IOException {
+    public void forwardToCMSPage(CMSPage page) throws IOException, PresentationException, IndexUnreachableException, DAOException {
         logger.trace("forwardToCMSPage page: " + page);
         setCurrentPage(page);
         String path = CMSTemplateManager.getInstance().getTemplateViewUrl(page.getTemplate());
@@ -1223,6 +1230,7 @@ public class CmsBean {
         logger.trace("forwardToCMSPage path 2: {}", path);
         FacesContext context = getFacesContext();
         if (StringUtils.isNotBlank(path)) {
+            cmsContextAction(false);
             logger.debug("Forwarding to " + path);
             context.getExternalContext().dispatch(path);
             context.responseComplete();
