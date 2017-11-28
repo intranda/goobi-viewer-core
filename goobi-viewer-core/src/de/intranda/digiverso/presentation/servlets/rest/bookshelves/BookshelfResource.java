@@ -532,7 +532,7 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/user/add/{name}")
+    @Path("/user/add")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelf() throws DAOException, IOException, RestApiException {
         String name = generateNewBookshelfName(getAllUserBookshelfs());
@@ -662,7 +662,7 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/user/get/contains/{pi}/{logid}/{page}")
+    @Path("/user/get/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Object getContainingUserBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
         return getContainingUserBookshelf(pi, null, null);
@@ -683,9 +683,6 @@ public class BookshelfResource {
     public Long countUserBookshelfItems(@PathParam("id") Long id) throws RestApiException, DAOException, IOException {
         return getUserBookshelfById(id).getItems().stream().count();
     }
-    
-    @GET
-    @Path("user/add/")
 
     /**
      * @param pageString
