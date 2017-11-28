@@ -40,6 +40,9 @@
     	padding-top: 10px;
     	border-top: 1px solid @middlegray;
     }
+    h5 {
+    	margin-bottom: 5px;
+    }
     &__input {
     	.mx-clearfloats;
     	margin-bottom: 20px;
@@ -48,16 +51,46 @@
     	.row {
     		margin: 0;
     	}
-    	.col-xs-5 {
+    	.col-xs-5,
+    	.col-xs-6,
+    	.col-xs-10 {
     		margin-bottom: 5px;
-    		padding-left: 0;
     		padding-right: 5px;
+    		padding-left: 0;
+    	}
+    	textarea {
+    		resize: vertical;
     	}
     }
+    &__input-spacer {
+    	margin: 10px 0;
+    	width: 100%;
+    	height: 1px;
+    	background-color: @middlegray;
+    }
     &__action {
+    	position: relative;
+    	z-index: 10;
     	.col-xs-2 {
-    		padding: 32px 0 0 0;
-    		text-align: right;
+		    margin: -32px 0 0 -6px;
+    		padding: 0 0 21px 0;
+		    text-align: right;
+		    border-bottom: 1px solid @middlegray;
+    	}
+    	a {
+    		&:hover,
+    		&:focus,
+    		&:active {
+    			text-decoration: none;
+    		}
+    	}
+    }
+    &__overlay-check {
+    	.mx-clearfloats;
+    	float: left;
+    	width: 100%;
+    	.checkbox {
+    		margin: 0;
     	}
     }
 }
