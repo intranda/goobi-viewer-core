@@ -366,9 +366,12 @@ table,
 .popover-content {
   color: #1a1a1a;
 }
-/* CHROME BUTTON RESET */
+/* CHROME RESETS */
 button {
   border-radius: 0;
+}
+*:focus {
+  outline: none;
 }
 /* ==============================================================
    CSS Helper Classes
