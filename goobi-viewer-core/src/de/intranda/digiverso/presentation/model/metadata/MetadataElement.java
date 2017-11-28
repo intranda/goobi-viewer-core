@@ -275,7 +275,8 @@ public class MetadataElement {
      * @return
      */
     public Metadata getMetadata(String name) {
-        return getMetadata(name, null);
+        Metadata md = getMetadata(name, null);
+        return md;
     }
 
     /**
@@ -424,8 +425,7 @@ public class MetadataElement {
             md = getMetadata(name, BeanUtils.getActiveDocumentBean().getSelectedRecordLanguage());
         }
         if (md != null) {
-            if (StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}") && !md.getMasterValue().equals(
-                    "MASTERVALUE_WIKINORM")) {
+            if (StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}") && !md.isGroup()) {
                 return md.getMasterValue();
             } else if (!md.getValues().isEmpty()) {
                 return md.getValues().get(0).getComboValueShort(0);

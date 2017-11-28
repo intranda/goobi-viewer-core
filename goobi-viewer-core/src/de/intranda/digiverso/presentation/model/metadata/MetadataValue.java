@@ -144,7 +144,25 @@ public class MetadataValue implements Serializable {
     public String getNormDataUrl(String key) {
         return normDataUrls.get(key);
     }
+    
+    public boolean hasParamValue(String paramLabel) {
+        int index = paramLabels.indexOf(paramLabel);
+        if(index > -1 && index < paramValues.size()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    public String getParamValue(String paramLabel) {
+        int index = paramLabels.indexOf(paramLabel);
+        if(index > -1 && index < paramValues.size()) {
+            return paramValues.get(index);
+        } else {
+            return "";
+        }
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

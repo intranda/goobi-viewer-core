@@ -3535,7 +3535,11 @@ var viewerJS = ( function( viewer ) {
             $( '.closeAllPopovers' ).hide();
             
             // first level click
+            console.log("Init Click on normdata");
+            console.log("normdatalink = ", $( '.normdataLink') )
             $( '.normdataLink' ).on( 'click', function() {
+                console.log("Click on normdata");
+
                 _$this = $( this );
                 
                 _$this.off( 'focus' );

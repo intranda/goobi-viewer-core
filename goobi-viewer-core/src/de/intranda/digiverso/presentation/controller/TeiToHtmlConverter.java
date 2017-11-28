@@ -287,6 +287,24 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), r.group(2));
         }
 
+        //column breaks
+        String tableRegex = "(<cb type=\"start\"(\\/>|><\\/cb>))([\\w\\W]*?)(<cb type=\"end\"(\\/>|><\\/cb>))";
+        String columnSwitchRegex = "<cb\\s*\\/>|<cb><\\/cb>";
+        String tableStartString = "<table class=\"tei-text-table\"><tbody><tr><td>";
+        String columnSwitchString = "</td><td>";
+        String tableEndString = "</td></tr></tbody></table>";
+        for (MatchResult r : findRegexMatches(tableRegex, text)) {
+            String table = r.group();
+            String tableText = r.group(3);
+            int tableStartIndex = text.indexOf(r.group());
+            
+            tableText = tableStartString + tableText + tableEndString;
+            tableText = tableText.replaceAll(columnSwitchRegex, columnSwitchString);
+            
+            text = text.replace(table, tableText);
+            
+        }
+        
         // page breaks
         for (MatchResult r : findRegexMatches("<pb n=\"(.*?)\"></pb>", text)) {
             text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">" + r.group(1)
