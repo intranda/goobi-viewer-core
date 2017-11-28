@@ -141,6 +141,7 @@
 																						<h:inputText styleClass="form-control" />
 																					</div>
 
+																					<!-- LOCATIONS -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
 																					<ui:repeat var="location" value="#{element.geoLocations}">
 																						<div class="col-xs-5">
@@ -151,10 +152,12 @@
 																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
 																						</div>
+																						<!-- INFOS -->
 																						<div class="col-xs-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
 																							<textarea class="form-control"></textarea> 
 																						</div>
+																						<!-- LINK -->
 																						<div class="col-xs-10">
 																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
 																							<h:inputText styleClass="form-control" /> 
@@ -162,7 +165,8 @@
 																						<div class="col-xs-10">
 																							<div class="widget-geo-locations__input-spacer"></div>
 																						</div>
-																					</ui:repeat>																				
+																					</ui:repeat>
+																					<!-- ADD LOCATION -->																				
 																					<div class="widget-geo-locations__action">
 																						<div class="col-xs-2">
 																							<h:commandLink action="#{element.removeGeoLocation}">
@@ -175,6 +179,7 @@
 																							</h:commandLink>
 																						</div>
 																					</div>
+																					<!-- ACTIVATE OVERLAY -->
 																					<div class="widget-geo-locations__overlay-check">
 																						<div class="checkbox">
 																							<label> 
