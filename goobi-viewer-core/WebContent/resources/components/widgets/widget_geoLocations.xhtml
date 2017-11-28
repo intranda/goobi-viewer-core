@@ -1,0 +1,62 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<!-- INTERFACE OPTIONS -->
+    <composite:interface>
+    	<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+    </composite:interface>
+    
+    <!-- COMPONENT CONTENT -->
+    <composite:implementation>
+    	<!-- MAPBOX RESOURCES -->
+		<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.css' rel='stylesheet' />
+    	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.2/mapbox-gl.js'></script>
+
+		<!-- WIDGET GEO LOCATIONS -->
+		<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
+	        <!-- STANDARD -->
+	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == null}">
+		        <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">		
+					<h3>
+						<h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
+					</h3>
+					
+					<!-- MAP -->
+					<div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
+				</div>
+	        </h:panelGroup>
+	        
+	        <!-- FOLDOUT -->
+	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+	        	<div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+					<h3>
+						<a href="#widgetGeoLocationsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetGeoLocationsCollapse">
+							<h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
+							<span class="glyphicon glyphicon-arrow-down"></span>
+						</a>
+					</h3>
+					
+					<div id="widgetGeoLocationsCollapse" class="collapse">
+						<!-- MAP -->
+						<div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
+					</div>
+		        </div>
+	        </h:panelGroup>
+	        
+	        <script type="text/javascript">
+// 		        widget.geoLocationsString  gibt das json-Object als String wieder
+// 				widget.geoLocations gibt die Liste als Java-Liste zurück (für ui:repeat oder so)	        
+	        
+	        	widgetGeoLocationsConfig = {
+        			locations: '#{cc.attrs.widget.geoLocationsString}'
+				};
+	        	
+	        	cmsJS.geoLocations.init( widgetGeoLocationsConfig );
+	        </script>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>
