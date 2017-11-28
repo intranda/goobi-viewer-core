@@ -6626,7 +6626,8 @@ div.olMapViewport {
   border-bottom: none;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-solr {
-  padding: 14px 14px 0 14px;
+  margin-bottom: 15px;
+  padding-top: 15px;
   border-top: 1px solid #eee;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-collection {
