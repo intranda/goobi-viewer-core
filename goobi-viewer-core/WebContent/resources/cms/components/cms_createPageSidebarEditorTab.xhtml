@@ -73,7 +73,7 @@
 																		</div>
 																	</h:panelGroup>
 																	<!-- HTML INPUT -->
-																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
+																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_html}:</label>
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
@@ -126,7 +126,7 @@
 																				<!-- WIDGET TITLE -->
 																				<div class="form-group">
 																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
-																			<h:inputText value="#{element.html}" styleClass="form-control"></h:inputText>
+																					<h:inputText value="#{element.html}" styleClass="form-control" />
 																				</div>
 																		
 																				<div class="row">
@@ -140,7 +140,6 @@
 																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
 																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
 																					</div>
-
 																					<!-- LOCATIONS -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
 																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
@@ -229,14 +228,16 @@
 
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
-																	<div class="form-group">
-																		<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
-																		<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																			<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
-																			<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
-																		</h:selectOneRadio>
-																	</div>
-																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
+																	<h:panelGroup rendered="#{element.category != 'geoLocations'}">
+																		<div class="form-group">
+																			<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
+																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																				<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
+																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
+																			</h:selectOneRadio>
+																		</div>
+																	</h:panelGroup>
+																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_html}:</h4>
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
@@ -360,7 +361,7 @@
 																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
+																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoLocations'}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn">
 																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />

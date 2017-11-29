@@ -6510,31 +6510,10 @@ div.olMapViewport {
   /* CMS BACKEND WIDGET */
 }
 .widget-geo-locations__map {
-  height: 350px;
+  min-height: 350px;
 }
-.widget-geo-locations__overlay {
-  display: none;
-  position: absolute;
-  top: 0px;
-  right: 0;
-  bottom: 0;
-  left: 0px;
-  background-image: url("../../images/map/enlarge-icon.svg");
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  z-index: 100;
-}
-.widget-geo-locations .mapbox-improve-map {
-  display: none;
-}
-.widget-geo-locations .mapboxgl-ctrl-attrib.mapboxgl-ctrl {
-  padding: 0px 3px;
-}
-.widget-geo-locations .mapboxgl-ctrl-attrib.mapboxgl-ctrl a {
-  font-size: 12px;
-  line-height: 120%;
+.widget-geo-locations__map .mapboxgl-popup-content {
+  padding: 20px 15px 10px 15px;
 }
 .widget-geo-locations h5 {
   margin-bottom: 5px;
@@ -6600,38 +6579,6 @@ div.olMapViewport {
 }
 .widget-geo-locations__overlay-check .checkbox {
   margin: 0;
-}
-/* Map-Popup */
-#mapPopupOverlay {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-  z-index: 10000000;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  display: none;
-  overflow: hidden;
-  /* map in popup */
-}
-#mapPopupOverlay #mapPopupContainer {
-  width: 70%;
-  height: 70%;
-  background-color: white;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-}
-#mapPopupOverlay #mapPopupOverlayCloseButton {
-  background-image: url("../../images/map/close_map-icon.svg");
-  background-position: center center;
-  background-repeat: no-repeat;
-  cursor: pointer;
-  width: 64px;
-  height: 64px;
-  position: fixed;
-  left: 10px;
-  top: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
