@@ -294,9 +294,9 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<a href=\"" + r.group(1) + "\">" + r.group(2) + "</a>");
         }
 
-        for (MatchResult r : findRegexMatches("<a\\s*(\\w+=\".*\"\\s*)*>(.*?)</a>", text)) {
-            text = text.replace(r.group(), r.group(2));
-        }
+        //        for (MatchResult r : findRegexMatches("<a\\s*(\\w+=\".*\"\\s*)*>(.*?)</a>", text)) {
+        //            text = text.replace(r.group(), r.group(2));
+        //        }
 
         //column breaks
         String tableRegex = "(<cb type=\"start\"(\\/>|><\\/cb>))([\\w\\W]*?)(<cb type=\"end\"(\\/>|><\\/cb>))";
