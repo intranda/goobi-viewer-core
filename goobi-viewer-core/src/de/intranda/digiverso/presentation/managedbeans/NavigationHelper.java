@@ -968,13 +968,8 @@ public class NavigationHelper implements Serializable {
         return msg;
     }
 
-    public String getTranslationWithParams(String msgKey, String language, String... params) {
+    public String getTranslation(String msgKey, String language) {
         String msg = Helper.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
-        if (params != null) {
-            for (int i = 0; i < params.length; ++i) {
-                msg = msg.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
-            }
-        }
 
         return msg;
     }
