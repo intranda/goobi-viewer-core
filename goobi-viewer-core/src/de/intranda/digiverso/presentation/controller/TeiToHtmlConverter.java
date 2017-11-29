@@ -289,8 +289,9 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<q>" + r.group(1) + "</q>");
         }
 
-        for (MatchResult r : findRegexMatches("<a\\s*(\\w+=\".*\"\\s*)*href=\"(.*)\">(.*)<\\/a>", text)) {
-            text = text.replace(r.group(), "<ref target=\"" + r.group(2) + "\" type=\"url\">" + r.group(3) + "</ref>");
+        // Hyperlinks
+        for (MatchResult r : findRegexMatches("<ref target=\"(.*?)>\\s*(.*?)\\s*</ref>", text)) {
+            text = text.replace(r.group(), "<a href=\"" + r.group(1) + "\">" + r.group(2) + "</a>");
         }
 
         for (MatchResult r : findRegexMatches("<a\\s*(\\w+=\".*\"\\s*)*>(.*?)</a>", text)) {
