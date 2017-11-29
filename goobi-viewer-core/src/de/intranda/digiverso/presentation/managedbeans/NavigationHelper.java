@@ -336,7 +336,7 @@ public class NavigationHelper implements Serializable {
     public String getLocaleString() {
         return locale.getLanguage();
     }
-    
+
     public Iterator<Locale> getSupportedLocales() {
         return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
     }
@@ -959,6 +959,17 @@ public class NavigationHelper implements Serializable {
      */
     public String getTranslationWithParams(String msgKey, String... params) {
         String msg = Helper.getTranslation(msgKey, null);
+        if (params != null) {
+            for (int i = 0; i < params.length; ++i) {
+                msg = msg.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
+            }
+        }
+
+        return msg;
+    }
+
+    public String getTranslationWithParams(String msgKey, String language, String... params) {
+        String msg = Helper.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
         if (params != null) {
             for (int i = 0; i < params.length; ++i) {
                 msg = msg.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
