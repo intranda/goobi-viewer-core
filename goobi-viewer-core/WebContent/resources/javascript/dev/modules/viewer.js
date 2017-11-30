@@ -5792,6 +5792,7 @@ var cmsJS = ( function( cms ) {
     var _features = [];
     var _centerCoords = [];
     var _defaults = {
+            appUrl: '',
         locations: '',
         mapboxAccessToken: 'pk.eyJ1IjoibGlydW1nYnYiLCJhIjoiY2lobjRzamkyMDBnM3U5bTR4cHp0NDdyeCJ9.AjNCRBlBb57j-dziFxf58A',
         mapBoxContainerSelector: 'widgetGeoLocationsMap',
@@ -5885,7 +5886,7 @@ var cmsJS = ( function( cms ) {
                     'coordinates': [ location.longitude, location.latitude ]
                 },
                 'properties': {
-                    'infos': location.infos + '<br /><a href="' + location.link + '">' + _defaults.msg.propertiesLink + '</a>'
+                    'infos': location.infos + '<br /><a href="' + _defaults.appUrl +location.link + '">' + _defaults.msg.propertiesLink + '</a>'
                 }
             }
 
