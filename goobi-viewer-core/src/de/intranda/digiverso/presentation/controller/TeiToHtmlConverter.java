@@ -109,7 +109,7 @@ public class TeiToHtmlConverter {
         return hierarchyLevels.get(index);
     }
 
-    public String convert(String text) {
+    public String convert(String text, String language) {
         text = removeUrlEncoding(text);
         text = TeiToHtmlConverter.removeComments(text);
 
@@ -317,9 +317,24 @@ public class TeiToHtmlConverter {
         }
 
         // page breaks
+        char pageChar = 'p';
+        if ("ger".equals(language)) {
+            pageChar = 'S';
+        } else {
+        }
         for (MatchResult r : findRegexMatches("<pb n=\"(.*?)\"></pb>", text)) {
-            text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">" + r.group(1)
-                    + "</p>");
+
+            text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">[" + pageChar + ". "
+                    + r.group(1) + "]</p>");
+        }
+
+        // Page numbers
+        for (MatchResult r : findRegexMatches("<pb n=\"(.*?)\"\\s/>", text)) {
+            if ("ger".equals(language)) {
+                text = text.replace(r.group(), "[S. " + r.group(1) + "]");
+            } else {
+                text = text.replace(r.group(), "[p. " + r.group(1) + "]");
+            }
         }
                 
         //correct note attribute order

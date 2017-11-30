@@ -50,5 +50,19 @@ public class SuccessMessage {
         return message;
     }
     
+    /**
+     * Two success messages are equal, of their success properties are equal
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return false;
+        }
+        if(obj.getClass().equals(this.getClass())) {
+            return this.success == ((SuccessMessage)obj).success;
+        } else {
+            return false;
+        }
+    }
     
 }

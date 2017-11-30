@@ -1111,7 +1111,7 @@ public class CalendarBean implements Serializable {
         searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets();
         searchBean.setExactSearchString(builder.toString());
         searchBean.executeSearch();
-        return "pretty:newSearch5";
+        return "pretty:searchCalendar5";
     }
 
     /**

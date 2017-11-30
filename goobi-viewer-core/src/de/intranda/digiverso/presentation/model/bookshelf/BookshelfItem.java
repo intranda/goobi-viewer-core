@@ -254,9 +254,11 @@ public class BookshelfItem implements Serializable {
         if (!docs.isEmpty()) {
             String fileName = (String) docs.get(0).getFieldValue(SolrConstants.THUMBNAIL);
             String dataRepository = (String) docs.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
-            String url = Helper.getImageUrl(pi, fileName, dataRepository, width, height, 0, true, true);
-            logger.trace("Bookshelf item thumbnail URL: {}", url);
-            return url;
+            if(StringUtils.isNotBlank(fileName)) {
+                String url = Helper.getImageUrl(pi, fileName, dataRepository, width, height, 0, true, true);
+                logger.trace("Bookshelf item thumbnail URL: {}", url);
+                return url;                
+            }
         }
 
         return null;
@@ -269,6 +271,7 @@ public class BookshelfItem implements Serializable {
      * @throws IndexUnreachableException    if the Solr index could not be reached
      * @throws PresentationException        if the pi/logId could not be resolved
      */
+    @JsonIgnore
     public String getDocumentTitle() throws IndexUnreachableException, PresentationException {
         Long iddoc = null;
         if( StringUtils.isNotBlank(logId)) {
@@ -365,6 +368,7 @@ public class BookshelfItem implements Serializable {
         this.urn = urn;
     }
 
+    @JsonIgnore
     public String getMainTitleUnescaped() {
         return StringEscapeUtils.unescapeHtml(mainTitle);
     }
