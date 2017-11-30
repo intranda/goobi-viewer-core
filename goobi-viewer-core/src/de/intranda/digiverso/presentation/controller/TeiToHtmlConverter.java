@@ -321,6 +321,13 @@ public class TeiToHtmlConverter {
             text = text.replace(r.group(), "<p style=\"page-break-after: always;\"></p>\n<p style=\"page-break-before: always;\">" + r.group(1)
                     + "</p>");
         }
+                
+        //correct note attribute order
+        String noteWrongAttributeOrderRegex = "<note\\s+(n=\"[\\w\\d]+\")\\s+(type=\"[\\w\\d]+\")>";
+        String noteCorrectionString = "<note {2} {1}>";
+        for (MatchResult r : findRegexMatches(noteWrongAttributeOrderRegex, text)) {
+            text = text.replace(r.group(), noteCorrectionString.replace("{1}", r.group(1)).replace("{2}", r.group(2)));
+        }
 
         //Replace <note>
         int footnoteCount = 0;
@@ -360,7 +367,7 @@ public class TeiToHtmlConverter {
 
         // line breaks
         text = text.replace("<lb />", "<br />").replace("<lb></lb>", "<br />");
-
+        
         // text = text.replace("<p />", "");
 
         return text.trim();
