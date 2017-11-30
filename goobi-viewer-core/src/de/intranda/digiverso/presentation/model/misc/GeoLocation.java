@@ -56,13 +56,13 @@ public class GeoLocation {
         if(json.has(JSON_PROPERTYNAME_LATITUDE)) {            
             try {                
                 setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
-            } catch(NullPointerException | NumberFormatException e) {
+            } catch(Throwable e) {
             }
         }
         if(json.has(JSON_PROPERTYNAME_LONGITUDE)) {    
             try {                
                 setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
-            } catch(NullPointerException | NumberFormatException e) {
+            } catch(Throwable e) {
             }
         }
         if(json.has(JSON_PROPERTYNAME_INFO)) {            
