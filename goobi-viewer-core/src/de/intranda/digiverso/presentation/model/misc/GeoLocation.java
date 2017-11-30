@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.misc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONObject;
 
 /**
@@ -36,8 +38,8 @@ public class GeoLocation {
     private Double latitude = null;
     private Double longitude = null;
     
-    private String info = "";
-    private String link = "";
+    private String info = null;
+    private String link = null;
 
    
     public GeoLocation() {
@@ -51,14 +53,34 @@ public class GeoLocation {
     }
 
     public GeoLocation(JSONObject json) {
-        setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
-        setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
+        if(json.has(JSON_PROPERTYNAME_LATITUDE)) {            
+            try {                
+                setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
+            } catch(NullPointerException | NumberFormatException e) {
+            }
+        }
+        if(json.has(JSON_PROPERTYNAME_LONGITUDE)) {    
+            try {                
+                setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
+            } catch(NullPointerException | NumberFormatException e) {
+            }
+        }
         if(json.has(JSON_PROPERTYNAME_INFO)) {            
             setInfo(json.getString(JSON_PROPERTYNAME_INFO));
         }
         if(json.has(JSON_PROPERTYNAME_LINK)) {            
             setLink(json.getString(JSON_PROPERTYNAME_LINK));
         }
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    private String formatJson(String string) {
+        string = StringEscapeUtils.unescapeJava(string);
+        string = string.replaceAll("(\\r)?\\n", "<br/>");
+        return string;
     }
 
     /**
@@ -88,10 +110,14 @@ public class GeoLocation {
     
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
-        map.put(JSON_PROPERTYNAME_LONGITUDE, getLongitude());
-        map.put(JSON_PROPERTYNAME_LATITUDE, getLatitude());
-        map.put(JSON_PROPERTYNAME_INFO, getInfo());
-        map.put(JSON_PROPERTYNAME_LINK, getLink());
+        map.put(JSON_PROPERTYNAME_LATITUDE, getLatitude() == null ? "" : getLatitude());
+        map.put(JSON_PROPERTYNAME_LONGITUDE, getLongitude() == null ? "" : getLongitude());
+        if(StringUtils.isNotBlank(getInfo())) {            
+            map.put(JSON_PROPERTYNAME_INFO, formatJson(getInfo()));
+        }
+        if(StringUtils.isNotBlank(getLink())) {            
+            map.put(JSON_PROPERTYNAME_LINK, getLink());
+        }
         
         JSONObject obj = new JSONObject(map);
         return obj;

@@ -34,9 +34,7 @@ public class GeoLocationInfo {
     private static final String JSON_PROPERTYNAME_LOCATIONS = "locations";
     
     private GeoLocation centerLocation = new GeoLocation();
-        
-    private boolean displayOverlay = false;
-    
+            
     private List<GeoLocation> locationList = new ArrayList<>();
 
     public GeoLocationInfo() {
@@ -46,9 +44,6 @@ public class GeoLocationInfo {
     public GeoLocationInfo(JSONObject json) {
         if(json.has(JSON_PROPERTYNAME_CENTER)) {            
             setCenterLocation(new GeoLocation(json.getJSONObject(JSON_PROPERTYNAME_CENTER)));
-        }
-        if(json.has(JSON_PROPERTYNAME_OVERLAY)) {            
-            setDisplayOverlay(json.getBoolean(JSON_PROPERTYNAME_OVERLAY));
         }
         JSONArray locations = json.getJSONArray(JSON_PROPERTYNAME_LOCATIONS);
         if(locations != null) {            
@@ -61,7 +56,6 @@ public class GeoLocationInfo {
     public JSONObject getAsJson() {
         Map<String, Object> map = new HashMap<>();
         map.put(JSON_PROPERTYNAME_CENTER, getCenterLocation().getAsJson());
-        map.put(JSON_PROPERTYNAME_OVERLAY, isDisplayOverlay());
         
         JSONArray locations = new JSONArray();
         for (GeoLocation geoLocation : locationList) {
@@ -86,20 +80,6 @@ public class GeoLocationInfo {
      */
     public void setCenterLocation(GeoLocation centerLocation) {
         this.centerLocation = centerLocation;
-    }
-
-    /**
-     * @return the displayOverlay
-     */
-    public boolean isDisplayOverlay() {
-        return displayOverlay;
-    }
-
-    /**
-     * @param displayOverlay the displayOverlay to set
-     */
-    public void setDisplayOverlay(boolean displayOverlay) {
-        this.displayOverlay = displayOverlay;
     }
 
     /**

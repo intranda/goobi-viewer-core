@@ -126,7 +126,7 @@
 																				<!-- WIDGET TITLE -->
 																				<div class="form-group">
 																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
-																					<h:inputText value="#{element.html}" styleClass="form-control" />
+																					<h:inputText value="#{element.widgetTitle}" styleClass="form-control" />
 																				</div>
 																		
 																				<div class="row">
@@ -176,14 +176,6 @@
 																								<i class="fa fa-plus-circle" aria-hidden="true"></i>
 																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																						</div>
-																					</div>
-																					<!-- ACTIVATE OVERLAY -->
-																					<div class="widget-geo-locations__overlay-check">
-																						<div class="checkbox">
-																							<label> 
-																							<h:selectBooleanCheckbox value="#{element.geoLocations.displayOverlay}"></h:selectBooleanCheckbox> #{msg.cms_sidebarElement_geoLocations_overlay} 
-																							</label>
 																						</div>
 																					</div>
 																				</div>
@@ -289,7 +281,7 @@
 																				<!-- WIDGET TITLE -->
 																				<div class="form-group">
 																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
-																			<h:inputText value="#{element.html}" styleClass="form-control"></h:inputText>
+																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
 																				</div>
 																		
 																				<div class="row">
@@ -340,14 +332,6 @@
 																								<i class="fa fa-plus-circle" aria-hidden="true"></i>
 																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																						</div>
-																					</div>
-																					<!-- ACTIVATE OVERLAY -->
-																					<div class="widget-geo-locations__overlay-check">
-																						<div class="checkbox">
-																							<label> 
-																							<h:selectBooleanCheckbox value="#{element.geoLocations.displayOverlay}"></h:selectBooleanCheckbox> #{msg.cms_sidebarElement_geoLocations_overlay} 
-																							</label>
 																						</div>
 																					</div>
 																				</div>

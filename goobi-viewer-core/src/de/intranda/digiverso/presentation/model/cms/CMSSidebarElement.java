@@ -110,6 +110,9 @@ public class CMSSidebarElement {
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
 
+    @Column(name = "widget_title")
+    private String widgetTitle = null;
+    
     @Transient
     private final int sortingId = ID_COUNTER.next();
 
@@ -512,6 +515,20 @@ public class CMSSidebarElement {
     
     public String getGeoLocationsString() {
         return this.geoLocationsString;
+    }
+    
+    /**
+     * @return the widgetTitle
+     */
+    public String getWidgetTitle() {
+        return widgetTitle;
+    }
+    
+    /**
+     * @param widgetTitle the widgetTitle to set
+     */
+    public void setWidgetTitle(String widgetTitle) {
+        this.widgetTitle = widgetTitle;
     }
 
 }
