@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -138,6 +139,7 @@ public class TeiToHtmlConverter {
                         sb.append("<h4>").append(head).append("</h4>");
                     }
                     Element eleGraphic = doc.getRootElement().getChild("graphic");
+                    StringBuilder imageTextBuilder = new StringBuilder();
                     if (eleGraphic != null && eleGraphic.getAttribute("url") != null) {
                         // <graphic> exists
                         sb.append("<img src=\"").append(eleGraphic.getAttributeValue("url")).append('"');
@@ -149,11 +151,11 @@ public class TeiToHtmlConverter {
                     } else if (doc.getRootElement().getChild("figDesc") != null) {
                         // no <graphic> found, use <figDesc>
                         NavigationHelper nh = BeanUtils.getNavigationHelper();
-                        sb.append("<img class=\"img-responsive\" src=\"").append(nh != null ? nh.getApplicationUrl() : "/").append(
-                                "resources/themes/geiwv/images/geiwv_placeholder.jpg").append('"');
+                        sb.append("<img class=\"img-responsive img-placeholder-tei\" src=\"").append(nh != null ? nh.getApplicationUrl() : "/").append(
+                                "resources/themes/geiwv/images/geiwv_placeholder.jpg").append("\"/>");
                         if (doc.getRootElement().getChild("figDesc") != null) {
                             String figDesc = doc.getRootElement().getChildText("figDesc");
-                            sb.append("<p>").append(figDesc).append("</p>");
+                            imageTextBuilder.append("<p class=\"img-placeholder-tei-desc\">").append(figDesc).append("</p>");
                         }
                     }
                     // <p> elements
@@ -161,9 +163,14 @@ public class TeiToHtmlConverter {
                     if (eleListP != null && !eleListP.isEmpty()) {
                         for (Element eleP : eleListP) {
                             String p = FileTools.getStringFromElement(eleP, Helper.DEFAULT_ENCODING);
-                            sb.append(p.replace("<lb/>", "<br/>").replaceAll("<lb />", "<br/>"));
+                            imageTextBuilder.append(p.replace("<lb/>", "<br/>").replaceAll("<lb />", "<br/>"));
                         }
                     }
+                    if(StringUtils.isNotBlank(imageTextBuilder.toString())) {
+                        sb.append("<span class=\"img-placeholder-tei-text\">").append(imageTextBuilder.toString()).append("</span>");
+                    }
+                    
+                    
                     // Replace the entire block with the new HTML code
                     text = text.replace(r.group(), sb.toString());
                 }
