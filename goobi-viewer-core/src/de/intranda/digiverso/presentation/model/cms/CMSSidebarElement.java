@@ -102,7 +102,7 @@ public class CMSSidebarElement {
     @Transient
     private PageList linkedPages = null;
 
-    @Column(name = "geo_locations", nullable = true)
+    @Column(name = "geo_locations", columnDefinition = "LONGTEXT")
     private String geoLocationsString = null;
     @Transient
     private GeoLocationInfo geoLocations = null;
