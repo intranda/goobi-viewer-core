@@ -149,7 +149,7 @@ public class TeiToHtmlConverter {
                     } else if (doc.getRootElement().getChild("figDesc") != null) {
                         // no <graphic> found, use <figDesc>
                         NavigationHelper nh = BeanUtils.getNavigationHelper();
-                        sb.append("<img src=\"").append(nh != null ? nh.getApplicationUrl() : "/").append(
+                        sb.append("<img class=\"img-responsive\" src=\"").append(nh != null ? nh.getApplicationUrl() : "/").append(
                                 "resources/themes/geiwv/images/geiwv_placeholder.jpg").append('"');
                         if (doc.getRootElement().getChild("figDesc") != null) {
                             String figDesc = doc.getRootElement().getChildText("figDesc");
