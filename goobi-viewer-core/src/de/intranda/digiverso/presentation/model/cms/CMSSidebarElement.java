@@ -15,6 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,11 +38,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.misc.GeoLocation;
 import de.intranda.digiverso.presentation.model.misc.NumberIterator;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 
@@ -49,6 +55,10 @@ import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 @DiscriminatorColumn(name = "widget_type")
 public class CMSSidebarElement {
 
+    /**
+     * 
+     */
+    private static final String JSON_PROPERTYNAME_GEOLOCATIONS = "locations";
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarElement.class);
     protected static final int HASH_MULTIPLIER = 11;
     private static final NumberIterator ID_COUNTER = new NumberIterator();
@@ -90,6 +100,11 @@ public class CMSSidebarElement {
     private String linkedPagesString = "";
     @Transient
     private PageList linkedPages = null;
+
+    @Column(name = "geo_locations", nullable = true)
+    private String geoLocationsString = null;
+    @Transient
+    private List<GeoLocation> geoLocations = null;
 
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
@@ -345,6 +360,8 @@ public class CMSSidebarElement {
             return SidebarElementType.Category.fieldQuery;
         } else if (this.getLinkedPages() != null) {
             return SidebarElementType.Category.pageLinks;
+        } else if (this.getGeoLocations() != null) {
+            return SidebarElementType.Category.geoLocations;
         }
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
@@ -401,12 +418,91 @@ public class CMSSidebarElement {
         } else {
             this.linkedPagesString = null;
         }
+        if (geoLocations != null) {
+            this.geoLocationsString = createGeoLocationsString(geoLocations);
+        }
+
     }
 
     public void deSerialize() {
-        if (this.linkedPagesString != null) {
+        if (StringUtils.isNotEmpty(this.linkedPagesString)) {
             this.linkedPages = new PageList(this.linkedPagesString);
+        } else {
+            this.linkedPages = null;
+        }
+        if (StringUtils.isNotBlank(this.geoLocationsString)) {
+            this.geoLocations = createGeoLocationsFromString(this.geoLocationsString);
         }
     }
 
+    /**
+     * 
+     */
+    public void initGeolocations(List<GeoLocation> locations) {
+        if (locations.isEmpty()) {
+            locations.add(new GeoLocation());
+        }
+        this.geoLocations = locations;
+        this.geoLocationsString = createGeoLocationsString(this.geoLocations);
+    }
+
+    public List<GeoLocation> getGeoLocations() {
+        return this.geoLocations;
+    }
+
+    public void addGeoLocation() {
+        this.geoLocations.add(new GeoLocation());
+    }
+
+    public void removeGeoLocation() {
+        if (geoLocations != null && !geoLocations.isEmpty()) {
+            this.geoLocations.remove(geoLocations.size() - 1);
+            if (this.geoLocations.isEmpty()) {
+                this.geoLocations.add(new GeoLocation());
+            }
+        }
+    }
+
+    /**
+     * @param geoLocationsString2
+     * @return
+     */
+    private List<GeoLocation> createGeoLocationsFromString(String string) {
+        List<GeoLocation> list = new ArrayList<>();
+        try {
+            JSONObject json = new JSONObject(string);
+            JSONArray locations = json.getJSONArray(JSON_PROPERTYNAME_GEOLOCATIONS);
+            if (locations != null) {
+                for (int i = 0; i < locations.length(); i++) {
+                    JSONObject obj = locations.getJSONObject(i);
+                    list.add(new GeoLocation(obj));
+                }
+            }
+        } catch (ParseException e) {
+            logger.error("Failed to create geolocation list from string \n" + string, e);
+        }
+        if (list.isEmpty()) {
+            list.add(new GeoLocation());
+        }
+        return list;
+    }
+
+    /**
+     * @param geoLocations2
+     * @return
+     */
+    private String createGeoLocationsString(List<GeoLocation> list) {
+
+        JSONArray locations = new JSONArray();
+        list.stream().filter(loc -> !loc.isEmpty()).map(loc -> loc.getAsJson()).forEach(loc -> locations.put(loc));
+
+        JSONObject json = new JSONObject();
+        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
+
+        return json.toString();
+    }
+
+    public String getGeoLocationsString() {
+        return this.geoLocationsString;
+    }
 }

@@ -223,6 +223,13 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
+    <url-mapping id="searchCalendar5">
+        <pattern
+            value="/searchcalendar/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
 
     <!-- overview -->
     <url-mapping id="overview2">
