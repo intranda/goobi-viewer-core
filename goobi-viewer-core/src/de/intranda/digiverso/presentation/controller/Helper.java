@@ -1086,13 +1086,14 @@ public class Helper {
             if (doc != null && doc.getRootElement() != null) {
                 Element eleText = doc.getRootElement().getChild("text", null);
                 if (eleText != null && eleText.getChild("body", null) != null) {
+                    String language = eleText.getAttributeValue("lang", Namespace.getNamespace("xml", "http://www.w3.org/XML/1998/namespace"));
                     Element eleBody = eleText.getChild("body", null);
                     Element eleNewRoot = new Element("tempRoot");
                     for (Element ele : eleBody.getChildren()) {
                         eleNewRoot.addContent(ele.clone());
                     }
                     String html = FileTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
-                    return new TeiToHtmlConverter(ConverterMode.resource).convert(html);
+                    return new TeiToHtmlConverter(ConverterMode.resource).convert(html, language);
                 }
             }
         } catch (FileNotFoundException e) {
