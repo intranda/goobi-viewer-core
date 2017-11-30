@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.cms;
 import java.util.ArrayList;
 
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement.WidgetMode;
+import de.intranda.digiverso.presentation.model.misc.GeoLocationInfo;
 
 public enum SidebarElementType {
 
@@ -77,7 +78,7 @@ public enum SidebarElementType {
                 break;
             case geoLocations:
                 element = new CMSSidebarElement();
-                element.initGeolocations(new ArrayList<>());
+                element.initGeolocations(new GeoLocationInfo());
                 break;
             default:
                 element = new CMSSidebarElement();

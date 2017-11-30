@@ -63,15 +63,17 @@
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
 																	<!-- WIDGET MODE -->
-																	<div class="form-group">
-																		<label>#{msg.cms_sidebarElement_widgetmode}:</label>
-																		<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																			<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
-																			<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
-																		</h:selectOneRadio>
-																	</div>
+																	<h:panelGroup rendered="#{element.category != 'geoLocations'}">
+																		<div class="form-group">
+																			<label>#{msg.cms_sidebarElement_widgetmode}:</label>
+																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																				<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
+																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
+																			</h:selectOneRadio>
+																		</div>
+																	</h:panelGroup>
 																	<!-- HTML INPUT -->
-																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
+																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_html}:</label>
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
@@ -119,12 +121,28 @@
 																	</h:panelGroup>
 																	<!-- GEO LOCATIONS -->
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
-																		<div class="widget-geo-locations">
-																			<h4>#{msg.cms_sidebarElement_geoLocations_title}</h4>
-																		
+																		<div class="widget-geo-locations">																			
 																			<div class="widget-geo-locations__input">
+																				<!-- WIDGET TITLE -->
+																				<div class="form-group">
+																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
+																					<h:inputText value="#{element.widgetTitle}" styleClass="form-control" />
+																				</div>
+																		
 																				<div class="row">
-																					<ui:repeat var="location" value="#{element.geoLocations}">
+																					<!-- CENTER VALUE -->
+																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
+																					<div class="col-xs-6">
+																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
+																					</div>
+																					<div class="col-xs-6">
+																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
+																					</div>
+																					<!-- LOCATIONS -->
+																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
+																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
 																						<div class="col-xs-5">
 																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
@@ -133,7 +151,21 @@
 																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
 																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
 																						</div>
-																					</ui:repeat>																				
+																						<!-- INFOS -->
+																						<div class="col-xs-10">
+																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
+																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
+																						</div>
+																						<!-- LINK -->
+																						<div class="col-xs-10">
+																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
+																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
+																						</div>
+																						<div class="col-xs-10">
+																							<div class="widget-geo-locations__input-spacer"></div>
+																						</div>
+																					</ui:repeat>
+																					<!-- ADD LOCATION -->																				
 																					<div class="widget-geo-locations__action">
 																						<div class="col-xs-2">
 																							<h:commandLink action="#{element.removeGeoLocation}">
@@ -188,14 +220,16 @@
 
 															<div class="sidebar-editor-widget-item-body">
 																<div class="sidebar-editor-item-widget-editor">
-																	<div class="form-group">
-																		<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
-																		<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
-																			<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
-																			<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
-																		</h:selectOneRadio>
-																	</div>
-																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml()}">
+																	<h:panelGroup rendered="#{element.category != 'geoLocations'}">
+																		<div class="form-group">
+																			<h4>#{msg.cms_sidebarElement_widgetmode}:</h4>
+																			<h:selectOneRadio id="widgetModeRadioTable2" value="#{element.widgetMode}" layout="pageDirection" onclick="cmsJS.createPage.disablePreview();">
+																				<f:selectItem id="select_standard" itemLabel="#{msg.cms_sidebarElement_standard}" itemValue="STANDARD"></f:selectItem>
+																				<f:selectItem id="select_foldout" itemLabel="#{msg.cms_sidebarElement_foldout}" itemValue="FOLDOUT"></f:selectItem>
+																			</h:selectOneRadio>
+																		</div>
+																	</h:panelGroup>
+																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_html}:</h4>
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
@@ -242,26 +276,66 @@
 																	</h:panelGroup>
 																	<!-- GEO LOCATIONS -->
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_geoLocations_title}:</label>
-																			<ul>
-																					<ui:repeat var="location" value="#{element.geoLocations}">
-																						<li>
-																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
-																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.latitude}"></h:inputText>
-																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
-																							<h:inputText converter="floatingNumberConverter" styleClass="input-float" value="#{location.longitude}"></h:inputText>
-																						</li>
+																		<div class="widget-geo-locations">																			
+																			<div class="widget-geo-locations__input">
+																				<!-- WIDGET TITLE -->
+																				<div class="form-group">
+																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
+																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
+																				</div>
+																		
+																				<div class="row">
+																					<!-- CENTER VALUE -->
+																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
+																					<div class="col-xs-6">
+																						<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label>
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.longitude}" />
+																					</div>
+																					<div class="col-xs-6">
+																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
+																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
+																					</div>
+
+																					<!-- LOCATIONS -->
+																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
+																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
+																						<div class="col-xs-5">
+																							<label>#{msg.cms_sidebarElement_geoLocations_longitude}</label> 
+																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.longitude}" />
+																						</div>
+																						<div class="col-xs-5">
+																							<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label> 
+																							<h:inputText converter="floatingNumberConverter" styleClass="form-control" value="#{location.latitude}" /> 
+																						</div>
+																						<!-- INFOS -->
+																						<div class="col-xs-10">
+																							<label>#{msg.cms_sidebarElement_geoLocations_infos}</label>
+																							<h:inputTextarea styleClass="form-control" value="#{location.info}"></h:inputTextarea>
+																						</div>
+																						<!-- LINK -->
+																						<div class="col-xs-10">
+																							<label>#{msg.cms_sidebarElement_geoLocations_link}</label> 
+																							<h:inputText styleClass="form-control" value="#{location.link}" /> 
+																						</div>
+																						<div class="col-xs-10">
+																							<div class="widget-geo-locations__input-spacer"></div>
+																						</div>
 																					</ui:repeat>
-																							<h:commandLink action="#{element.removeGeoLocation}" value="Löschen">
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																					<!-- ADD LOCATION -->																				
+																					<div class="widget-geo-locations__action">
+																						<div class="col-xs-2">
+																							<h:commandLink action="#{element.removeGeoLocation}">
+																								<i class="fa fa-minus-circle" aria-hidden="true"></i>
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																							<h:commandLink action="#{element.addGeoLocation()}" value="Hinzufügen">
-																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations"/>
+																							<h:commandLink action="#{element.addGeoLocation()}">
+																								<i class="fa fa-plus-circle" aria-hidden="true"></i>
+																								<f:ajax execute="inputGeoLocations" render="inputGeoLocations" />
 																							</h:commandLink>
-																			</ul>
-																			
-<!-- 																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control" /> -->
+																						</div>
+																					</div>
+																				</div>
+																			</div>
 																		</div>
 																	</h:panelGroup>
 																	<!-- CSS class -->
@@ -271,7 +345,7 @@
 																			<h:inputText value="#{element.cssClass}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
-																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml()}">
+																	<h:panelGroup rendered="#{element.category == 'fieldQuery' || element.hasHtml() || element.category == 'geoLocations'}">
 																		<div class="sidebar-editor-item-widget-editor-action">
 																			<h:commandLink value="#{msg.save}" action="#{cmsBean.validateSidebarElement(element)}" onclick="cmsJS.createPage.disablePreview();" styleClass="btn">
 																				<f:ajax execute="inputHtml inputQuery inputGeoLocations" render="inputHtml inputQuery inputGeoLocations :messages" onevent="cmsJS.sortableList.save" />
@@ -353,4 +427,6 @@
 			</div>
 		</div>
 	</composite:implementation>
+	
+	
 </ui:composition>

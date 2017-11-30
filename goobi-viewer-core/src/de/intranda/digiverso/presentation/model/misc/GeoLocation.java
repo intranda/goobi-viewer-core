@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.misc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONObject;
 
 /**
@@ -28,10 +30,16 @@ public class GeoLocation {
     
     private static final String JSON_PROPERTYNAME_LONGITUDE = "longitude";
     private static final String JSON_PROPERTYNAME_LATITUDE = "latitude";
+    private static final String JSON_PROPERTYNAME_INFO = "infos";
+    private static final String JSON_PROPERTYNAME_LINK = "link";
+
 
 
     private Double latitude = null;
     private Double longitude = null;
+    
+    private String info = null;
+    private String link = null;
 
    
     public GeoLocation() {
@@ -45,8 +53,34 @@ public class GeoLocation {
     }
 
     public GeoLocation(JSONObject json) {
-        setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
-        setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
+        if(json.has(JSON_PROPERTYNAME_LATITUDE)) {            
+            try {                
+                setLatitude(json.getDouble(JSON_PROPERTYNAME_LATITUDE));
+            } catch(NullPointerException | NumberFormatException e) {
+            }
+        }
+        if(json.has(JSON_PROPERTYNAME_LONGITUDE)) {    
+            try {                
+                setLongitude(json.getDouble(JSON_PROPERTYNAME_LONGITUDE));
+            } catch(NullPointerException | NumberFormatException e) {
+            }
+        }
+        if(json.has(JSON_PROPERTYNAME_INFO)) {            
+            setInfo(json.getString(JSON_PROPERTYNAME_INFO));
+        }
+        if(json.has(JSON_PROPERTYNAME_LINK)) {            
+            setLink(json.getString(JSON_PROPERTYNAME_LINK));
+        }
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    private String formatJson(String string) {
+        string = StringEscapeUtils.unescapeJava(string);
+        string = string.replaceAll("(\\r)?\\n", "<br/>");
+        return string;
     }
 
     /**
@@ -75,9 +109,15 @@ public class GeoLocation {
     }
     
     public JSONObject getAsJson() {
-        Map<String, Double> map = new HashMap<>();
-        map.put(JSON_PROPERTYNAME_LONGITUDE, getLongitude());
-        map.put(JSON_PROPERTYNAME_LATITUDE, getLatitude());
+        Map<String, Object> map = new HashMap<>();
+        map.put(JSON_PROPERTYNAME_LATITUDE, getLatitude() == null ? "" : getLatitude());
+        map.put(JSON_PROPERTYNAME_LONGITUDE, getLongitude() == null ? "" : getLongitude());
+        if(StringUtils.isNotBlank(getInfo())) {            
+            map.put(JSON_PROPERTYNAME_INFO, formatJson(getInfo()));
+        }
+        if(StringUtils.isNotBlank(getLink())) {            
+            map.put(JSON_PROPERTYNAME_LINK, getLink());
+        }
         
         JSONObject obj = new JSONObject(map);
         return obj;
@@ -90,5 +130,35 @@ public class GeoLocation {
     public boolean isEmpty() {
         return longitude == null || latitude == null;
     }
+
+    /**
+     * @return the info
+     */
+    public String getInfo() {
+        return info;
+    }
+
+    /**
+     * @param info the info to set
+     */
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    /**
+     * @return the link
+     */
+    public String getLink() {
+        return link;
+    }
+
+    /**
+     * @param link the link to set
+     */
+    public void setLink(String link) {
+        this.link = link;
+    }
+    
+    
     
 }
