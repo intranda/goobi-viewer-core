@@ -36,6 +36,9 @@ import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+
 public class TeiToHtmlConverter {
 
     /**
@@ -123,28 +126,45 @@ public class TeiToHtmlConverter {
         // text = text.replace("<p />", "").replace("<p/>", "").replace("<p></p>", "");
 
         // images
-        // <img src="none" alt="Bildbeschriftung" />
-        //        for (MatchResult r : findRegexMatches("<figure.*?>\\s*<head.*?>(.*?)</head>[\\s\\S]*?<graphic url=\"(.*?)\" */>\\s*</figure>", text)) {
-        //            text = text.replace(r.group(), "\"<img src=\"" + r.group(2) + "\" alt=\"" + r.group(1) + "\"/>");
-        //        }
         for (MatchResult r : findRegexMatches("<figure.*?>[\\s\\S]*?</figure>", text)) {
             String xmlSnippet = r.group();
             try {
                 Document doc = FileTools.getDocumentFromString(xmlSnippet, Helper.DEFAULT_ENCODING);
                 if (doc != null && doc.hasRootElement()) {
                     StringBuilder sb = new StringBuilder();
+                    // Image header
+                    String head = doc.getRootElement().getChildText("head");
+                    if (head != null) {
+                        sb.append("<h4>").append(head).append("</h4>");
+                    }
                     Element eleGraphic = doc.getRootElement().getChild("graphic");
                     if (eleGraphic != null && eleGraphic.getAttribute("url") != null) {
+                        // <graphic> exists
                         sb.append("<img src=\"").append(eleGraphic.getAttributeValue("url")).append('"');
-                        String head = doc.getRootElement().getChildText("head");
-                        if (head != null) {
-                            sb.append(" alt=\"").append(head).append('"');
+                        if (doc.getRootElement().getChild("figDesc") != null) {
+                            String figDesc = doc.getRootElement().getChildText("figDesc");
+                            sb.append(" alt=\"").append(figDesc).append('"');
                         }
                         sb.append(" />");
                     } else if (doc.getRootElement().getChild("figDesc") != null) {
-                        String figDesc = doc.getRootElement().getChildText("figDesc");
-                        sb.append("<p>").append(figDesc).append("</p>");
+                        // no <graphic> found, use <figDesc>
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        sb.append("<img src=\"").append(nh != null ? nh.getApplicationUrl() : "/").append(
+                                "resources/themes/geiwv/images/geiwv_placeholder.jpg").append('"');
+                        if (doc.getRootElement().getChild("figDesc") != null) {
+                            String figDesc = doc.getRootElement().getChildText("figDesc");
+                            sb.append("<p>").append(figDesc).append("</p>");
+                        }
                     }
+                    // <p> elements
+                    List<Element> eleListP = doc.getRootElement().getChildren("p");
+                    if (eleListP != null && !eleListP.isEmpty()) {
+                        for (Element eleP : eleListP) {
+                            String p = FileTools.getStringFromElement(eleP, Helper.DEFAULT_ENCODING);
+                            sb.append(p.replace("<lb/>", "<br/>").replaceAll("<lb />", "<br/>"));
+                        }
+                    }
+                    // Replace the entire block with the new HTML code
                     text = text.replace(r.group(), sb.toString());
                 }
             } catch (JDOMException e) {
@@ -336,7 +356,7 @@ public class TeiToHtmlConverter {
                 text = text.replace(r.group(), "[p. " + r.group(1) + "]");
             }
         }
-                
+
         //correct note attribute order
         String noteWrongAttributeOrderRegex = "<note\\s+(n=\"[\\w\\d]+\")\\s+(type=\"[\\w\\d]+\")>";
         String noteCorrectionString = "<note {2} {1}>";
@@ -382,7 +402,7 @@ public class TeiToHtmlConverter {
 
         // line breaks
         text = text.replace("<lb />", "<br />").replace("<lb></lb>", "<br />");
-        
+
         // text = text.replace("<p />", "");
 
         return text.trim();

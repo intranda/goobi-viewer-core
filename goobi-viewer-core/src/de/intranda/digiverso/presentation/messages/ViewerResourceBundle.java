@@ -338,7 +338,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param value
      * @return
      */
-    private static String cleanUpTranslation(String value) {
+    public static String cleanUpTranslation(String value) {
         if (value == null) {
             return null;
         }
