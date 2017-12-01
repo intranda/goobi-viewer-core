@@ -18,7 +18,12 @@
 			<h:panelGroup id="customDrillDownGroup" rendered="#{cc.attrs.widget != null and cc.attrs.widget.category == 'fieldQuery'}">
 				<div id="widgetCustomDrillDown-#{cc.attrs.widget.order}" class="widget widget-custom-drilldown #{cc.attrs.widget.cssClass}">
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
-						<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+								<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+							</ui:fragment>
+							<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
+								<h3>#{msg[cc.attrs.widget.type]}</h3>
+							</ui:fragment>
 
 						<ul>
 							<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.descendingOrder)}" var="filterLink">
@@ -54,7 +59,12 @@
 					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
 						<h3>
 							<a href="#customCollapse-#{cc.attrs.widget.order}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
-								#{msg[cc.attrs.widget.widgetTitle]}
+								<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+									#{msg[cc.attrs.widget.widgetTitle]}
+								</ui:fragment>
+								<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
+									#{msg[cc.attrs.widget.type]}
+								</ui:fragment>
 								<span class="glyphicon glyphicon-arrow-down"></span>
 							</a>
 						</h3>

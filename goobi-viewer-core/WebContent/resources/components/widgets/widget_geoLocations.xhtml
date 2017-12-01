@@ -30,10 +30,12 @@
 
 		<!-- WIDGET GEO LOCATIONS -->
 		<h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetGeoLocations' or cc.attrs.widget == null}">
-		    <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">		
-				<h3>#{cc.attrs.widget.widgetTitle}</h3>
-				
-				<!-- MAP -->
+		    <div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
+					<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+						<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+					</ui:fragment>
+
+					<!-- MAP -->
 				<div id="widgetGeoLocationsMap" class="widget-geo-locations__map"></div>
 			</div>
 	        
@@ -75,6 +77,12 @@
 	        <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
 	        	<div id="widgetGeoLocations" class="widget widget-geo-locations #{cc.attrs.widget.cssClass}">
 					<h3>
+						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+								#{msg[cc.attrs.widget.widgetTitle]}
+							</ui:fragment>
+							<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
+								#{msg[cc.attrs.widget.type]}
+							</ui:fragment>
 						<a href="#widgetGeoLocationsCollapse" data-toggle="collapse" aria-expanded="false" aria-controls="widgetGeoLocationsCollapse">
 							<h:outputText value="#{msg.widgetGeoLocations}" escape="false" />
 							<span class="glyphicon glyphicon-arrow-down"></span>

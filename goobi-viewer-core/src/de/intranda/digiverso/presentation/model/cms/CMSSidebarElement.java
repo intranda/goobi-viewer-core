@@ -530,5 +530,9 @@ public class CMSSidebarElement {
     public void setWidgetTitle(String widgetTitle) {
         this.widgetTitle = widgetTitle;
     }
+    
+    public boolean isHasWidgetTitle() {
+        return StringUtils.isNotBlank(getWidgetTitle());
+    }
 
 }

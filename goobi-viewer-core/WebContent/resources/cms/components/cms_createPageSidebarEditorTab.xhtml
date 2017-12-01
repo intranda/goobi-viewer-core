@@ -72,6 +72,11 @@
 																			</h:selectOneRadio>
 																		</div>
 																	</h:panelGroup>
+																	<!-- WIDGET TITLE -->
+																		<div class="form-group">
+																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
+																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
+																		</div>
 																	<!-- HTML INPUT -->
 																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
 																		<div class="form-group">
@@ -81,10 +86,6 @@
 																	</h:panelGroup>
 																	<!-- QUERY INPUT -->
 																	<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
-																		<div class="form-group">
-																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
-																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
-																		</div>
 																		<div class="form-group">
 																			<label>#{msg.cms_sidebarElement_searchField}:</label>
 																			<div class="form-control__select">
@@ -123,11 +124,6 @@
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
 																		<div class="widget-geo-locations">																			
 																			<div class="widget-geo-locations__input">
-																				<!-- WIDGET TITLE -->
-																				<div class="form-group">
-																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
-																					<h:inputText value="#{element.widgetTitle}" styleClass="form-control" />
-																				</div>
 																		
 																				<div class="row">
 																					<!-- CENTER VALUE -->
@@ -229,6 +225,11 @@
 																			</h:selectOneRadio>
 																		</div>
 																	</h:panelGroup>
+																	<!-- WIDGET TITLE -->
+																		<div class="form-group">
+																			<label>#{msg.cms_sidebarElement_widgetTitle}:</label>
+																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
+																		</div>
 																	<h:panelGroup id="inputHtml" rendered="#{element.hasHtml() and element.category != 'geoLocations'}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_html}:</h4>
@@ -236,10 +237,6 @@
 																		</div>
 																	</h:panelGroup>
 																	<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
-																		<div class="form-group">
-																			<h4>#{msg.cms_sidebarElement_widgetTitle}:</h4>
-																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
-																		</div>
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_searchField}:</h4>
 																			<div class="form-control__select">
@@ -278,12 +275,7 @@
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
 																		<div class="widget-geo-locations">																			
 																			<div class="widget-geo-locations__input">
-																				<!-- WIDGET TITLE -->
-																				<div class="form-group">
-																					<label>#{msg.cms_sidebarElement_geoLocations_heading}</label>
-																			<h:inputText value="#{element.widgetTitle}" styleClass="form-control"></h:inputText>
-																				</div>
-																		
+																			
 																				<div class="row">
 																					<!-- CENTER VALUE -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
