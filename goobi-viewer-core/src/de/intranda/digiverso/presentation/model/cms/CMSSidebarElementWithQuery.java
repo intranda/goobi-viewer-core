@@ -23,9 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 @Entity
 public class CMSSidebarElementWithQuery extends CMSSidebarElement {
 
-    @Column(name = "widget_title")
-    private String widgetTitle;
-
     @Column(name = "search_field")
     private String searchField = null;
 
@@ -50,20 +47,6 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
      */
     public void setSearchField(String searchField) {
         this.searchField = searchField;
-    }
-
-    /**
-     * @return the widgetTitle
-     */
-    public String getWidgetTitle() {
-        return widgetTitle;
-    }
-
-    /**
-     * @param widgetTitle the widgetTitle to set
-     */
-    public void setWidgetTitle(String widgetTitle) {
-        this.widgetTitle = widgetTitle;
     }
 
     /**

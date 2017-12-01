@@ -198,6 +198,7 @@ public class SearchBean implements Serializable {
         return search();
     }
 
+    
     /**
      *
      * @return {@link String} null
@@ -1971,6 +1972,10 @@ public class SearchBean implements Serializable {
         this.hitsPerPage = hitsPerPage;
     }
 
+    public void resetHitsPerPage() {
+        setHitsPerPage(DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
+    }
+    
     /**
      * @return the advancedSearchQueryInfo
      */

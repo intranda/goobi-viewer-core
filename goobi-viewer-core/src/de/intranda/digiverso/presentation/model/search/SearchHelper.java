@@ -1444,6 +1444,8 @@ public final class SearchHelper {
                     field = SolrConstants.DEFAULT;
                 } else if (SolrConstants.SUPERFULLTEXT.equals(field)) {
                     field = SolrConstants.FULLTEXT;
+                } else if (field.endsWith(SolrConstants._UNTOKENIZED)) {
+                    field = field.substring(0, field.length() - SolrConstants._UNTOKENIZED.length());
                 }
                 String phraseWoQuot = phraseSplit[1].replace("\"", "");
                 if (phraseWoQuot.length() > 0 && !stopwords.contains(phraseWoQuot)) {
@@ -1476,6 +1478,9 @@ public final class SearchHelper {
                     } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {
                         currentField = SolrConstants.FULLTEXT;
                     }
+                    if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
+                        currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
+                    }
                     // Remove quotation marks from phrases
                     // logger.trace("field: {}", field);
                     // logger.trace("value: {}", value);
@@ -1501,6 +1506,8 @@ public final class SearchHelper {
                 // single values w/o a field
                 if (currentField == null) {
                     currentField = SolrConstants.DEFAULT;
+                } else if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
+                    currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
                 }
                 if (ret.get(currentField) == null) {
                     ret.put(currentField, new HashSet<String>());

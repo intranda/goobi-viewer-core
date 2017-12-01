@@ -1676,7 +1676,7 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getInitialDrillDownElementNumber(String field) {
         if (StringUtils.isNotBlank(field)) {
-            field = SearchHelper.defacetifyField(field);
+            field = SearchHelper.facetifyField(field);
             // Regular fields
             List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
             if (drillDownFields != null && !drillDownFields.isEmpty()) {
@@ -1717,6 +1717,8 @@ public final class Configuration extends AbstractConfiguration {
             return "default";
         }
 
+        field = SearchHelper.facetifyField(field);
+        
         // Regular fields
         List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
         if (drillDownFields != null && !drillDownFields.isEmpty()) {
