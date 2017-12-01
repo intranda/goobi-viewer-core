@@ -101,6 +101,15 @@
 						</div>
 					</h:panelGroup>
 				</div>
+				<script type="text/javascript">
+					var $widget = $("#widgetCustomDrillDown-#{cc.attrs.widget.order}");
+					if($widget.length) {
+						var $lis = $widget.find("li");
+						if(!$lis.length) {
+							$widget.hide();
+						}
+					}
+				</script>
 			</h:panelGroup>
 		</h:form>
 	</composite:implementation>
