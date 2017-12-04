@@ -122,6 +122,10 @@ public class ActiveDocumentBean implements Serializable {
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
     private String lastReceivedIdentifier;
+    /** Available languages for this record. */
+    private List<String> recordLanguages;
+    /** Currently selected language for multilingual records. */
+    private String selectedRecordLanguage;
 
     /** Empty constructor. */
     public ActiveDocumentBean() {
@@ -337,7 +341,7 @@ public class ActiveDocumentBean implements Serializable {
                 // logger.debug("topSe: " + topSe.getId());
                 for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
                     md.populate(topSe.getMetadataFields(), BeanUtils.getLocale());
-                    if (!md.isEmpty()) {
+                    if (!md.isBlank()) {
                         titleBarMetadata.add(md);
                     }
                 }
@@ -367,6 +371,13 @@ public class ActiveDocumentBean implements Serializable {
             } else {
                 logger.debug("ViewManager is null or ViewManager.currentDocument is null.");
                 throw new RecordNotFoundException(lastReceivedIdentifier);
+            }
+
+            // Metadata language versions
+            recordLanguages = viewManager.getTopDocument().getMetadataValues(SolrConstants.LANGUAGE);
+            // If the record has metadata language versions, pre-select the current locale as the record language
+            if (StringUtils.isBlank(selectedRecordLanguage) && !recordLanguages.isEmpty()) {
+                selectedRecordLanguage = navigationHelper.getLocaleString();
             }
 
             // Prepare a new bookshelf item
@@ -486,7 +497,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return titleBarMetadata;
+        return Metadata.filterMetadataByLanguage(titleBarMetadata, selectedRecordLanguage);
     }
 
     /**
@@ -759,7 +770,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getFullscreenImageUrl() throws IndexUnreachableException {
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
     }
-
+    
     /**
      *
      * @return
@@ -868,6 +879,12 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel() throws IndexUnreachableException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
+            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
+            }
+        }
         if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
@@ -876,8 +893,9 @@ public class ActiveDocumentBean implements Serializable {
                     return label;
                 }
             }
-            if (viewManager.getTitleBarLabel() != null) {
-                return viewManager.getTitleBarLabel();
+            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
             }
         } else if (cmsBean != null) {
             CMSPage cmsPage = cmsBean.getCurrentPage();
@@ -894,15 +912,15 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * LABEL value escaped for JavaScript.
+     * Title bar label value escaped for JavaScript.
      * 
      * @return
+     * @throws IndexUnreachableException 
      */
-    public String getLabelForJS() {
-        if (viewManager != null) {
-            String label = viewManager.getTitleBarLabel();
-            label = StringEscapeUtils.escapeJavaScript(label);
-            return label;
+    public String getLabelForJS() throws IndexUnreachableException {
+        String label = getTitleBarLabel();
+        if (label != null) {
+            return StringEscapeUtils.escapeJavaScript(label);
         }
 
         return null;
@@ -1019,6 +1037,42 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean isHasLanguages() {
+        return recordLanguages != null && !recordLanguages.isEmpty();
+    }
+
+    /**
+     * @return the recordLanguages
+     */
+    public List<String> getRecordLanguages() {
+        return recordLanguages;
+    }
+
+    /**
+     * @param recordLanguages the recordLanguages to set
+     */
+    public void setRecordLanguages(List<String> recordLanguages) {
+        this.recordLanguages = recordLanguages;
+    }
+
+    /**
+     * @return the selectedRecordLanguage
+     */
+    public String getSelectedRecordLanguage() {
+        return selectedRecordLanguage;
+    }
+
+    /**
+     * @param selectedRecordLanguage the selectedRecordLanguage to set
+     */
+    public void setSelectedRecordLanguage(String selectedRecordLanguage) {
+        this.selectedRecordLanguage = selectedRecordLanguage;
+    }
+
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
             try {
@@ -1096,4 +1150,5 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Error writing toc: " + e.getMessage(), e);
         }
     }
+        
 }

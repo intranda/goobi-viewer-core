@@ -120,6 +120,7 @@ public class SolrConstants {
     public static final String FILENAME_MPEG3 = "FILENAME_MPEG3";
     public static final String FILENAME_MP4 = "FILENAME_MP4";
     public static final String FILENAME_OGG = "FILENAME_OGG";
+    public static final String FILENAME_TEI = "FILENAME_TEI";
     public static final String FILENAME_WEBM = "FILENAME_WEBM";
     public static final String FULLTEXT = "FULLTEXT";
     public static final String FULLTEXTAVAILABLE = "FULLTEXTAVAILABLE";
@@ -131,6 +132,7 @@ public class SolrConstants {
     public static final String ISANCHOR = "ISANCHOR";
     public static final String ISWORK = "ISWORK";
     public static final String LABEL = "LABEL";
+    public static final String LANGUAGE = "LANGUAGE";
     public static final String LOGID = "LOGID";
     public static final String METADATATYPE = "METADATATYPE";
     public static final String NORMDATATERMS = "NORMDATATERMS";
@@ -171,6 +173,7 @@ public class SolrConstants {
 
     public static final String GROUPID_ = "GROUPID_";
     public static final String GROUPORDER_ = "GROUPORDER_";
+    public static final String _LANG_ = "_LANG_";
     public static final String _NOESCAPE = "_NOESCAPE";
     public static final String _UNTOKENIZED = "_UNTOKENIZED";
     public static final String _DRILLDOWN_SUFFIX = "_DD";

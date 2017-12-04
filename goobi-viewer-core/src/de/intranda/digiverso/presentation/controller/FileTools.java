@@ -256,7 +256,6 @@ public class FileTools {
     }
 
     /**
-     *
      * @param element
      * @param encoding
      * @return

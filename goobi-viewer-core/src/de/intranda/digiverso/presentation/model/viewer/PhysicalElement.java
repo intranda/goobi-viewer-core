@@ -595,7 +595,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (baseType.equals(MIME_TYPE_IMAGE)) {
             //            return baseType + "/jpeg";
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
-            if (fileFormat.equals(ImageFileFormat.PNG)) {
+            if (ImageFileFormat.PNG.equals(fileFormat)) {
                 return fileFormat.getMimeType();
             }
             return ImageFileFormat.JPG.getMimeType();

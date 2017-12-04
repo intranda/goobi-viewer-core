@@ -219,11 +219,12 @@ public final class SearchHelper {
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
+            // logger.trace("Creating search hit from {}", doc);
             SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
             ret.add(hit);
             hit.addOverviewPageChild();
-
-            // Collect Solr docs of child hits
+            logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
+            // Collect Solr docs of child hits 
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
@@ -241,7 +242,7 @@ public final class SearchHelper {
                 }
             }
         }
-
+        logger.trace("Return {} search hits", ret.size());
         return ret;
     }
 
@@ -486,37 +487,37 @@ public final class SearchHelper {
             // Fill the map from the facet (faster, but unfortunately, precise parent collection size cannot be determined
             // this way)
             {
-                // logger.debug("query: {}", sbQuery.toString());
+                //              logger.debug("query: {}", sbQuery.toString());
                 // QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null,
                 // Collections.singletonList(
-                // facetField), null, null, null);
-                // logger.trace("query done");
-                // if (resp.getFacetField(facetField) != null && resp.getFacetField(facetField).getValues() != null) {
-                // for (Count count : resp.getFacetField(facetField).getValues()) {
+                //                    facetField), null, null, null);
+                //              logger.trace("query done");
+                //                if (resp.getFacetField(facetField) != null && resp.getFacetField(facetField).getValues() != null) {
+                //                    for (Count count : resp.getFacetField(facetField).getValues()) {
                 // if (count.getName() == null || (!blacklist.isEmpty() && checkCollectionInBlacklist(count.getName(),
                 // blacklist))) {
-                // continue;
-                // }
-                // Long recordCount = ret.get(count.getName());
-                // if (recordCount == null) {
-                // recordCount = 0L;
-                // }
-                // ret.put(count.getName(), recordCount + count.getCount());
+                //                            continue;
+                //                        }
+                //                        Long recordCount = ret.get(count.getName());
+                //                        if (recordCount == null) {
+                //                            recordCount = 0L;
+                //                        }
+                //                        ret.put(count.getName(), recordCount + count.getCount());
                 //
-                // // Add count to parent collections
-                // if (count.getName().contains(BrowseDcElement.split)) {
-                // String parent = count.getName();
-                // while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
-                // parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
-                // Long parentRecordCount = ret.get(parent);
-                // if (parentRecordCount == null) {
-                // parentRecordCount = 0L;
-                // }
-                // ret.put(parent, parentRecordCount + count.getCount());
-                // }
-                // }
-                // }
-                // }
+                //                        // Add count to parent collections
+                //                        if (count.getName().contains(BrowseDcElement.split)) {
+                //                            String parent = count.getName();
+                //                            while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
+                //                                parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
+                //                                Long parentRecordCount = ret.get(parent);
+                //                                if (parentRecordCount == null) {
+                //                                    parentRecordCount = 0L;
+                //                                }
+                //                                ret.put(parent, parentRecordCount + count.getCount());
+                //                            }
+                //                        }
+                //                    }
+                //                }
             }
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
@@ -532,7 +533,7 @@ public final class SearchHelper {
                     if (fieldList != null) {
                         for (Object o : fieldList) {
                             String dc = SolrSearchIndex.getAsString(o);
-                            // String dc = (String) o;
+                            //                            String dc = (String) o;
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
                             }
@@ -923,6 +924,7 @@ public final class SearchHelper {
         List<String> ret = new ArrayList<>();
 
         String fulltextFragment = "";
+
         if (searchTerms != null && !searchTerms.isEmpty()) {
             for (String searchTerm : searchTerms) {
                 if (searchTerm.length() == 0) {
@@ -1321,9 +1323,9 @@ public final class SearchHelper {
                         startsWith, terms, usedTerms, aggregateHits));
 
                 // Sequential processing
-                // for (SolrDocument doc : resp.getResults()) {
-                // processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms);
-                // }
+                //                for (SolrDocument doc : resp.getResults()) {
+                //                    processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms);
+                //                }
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -1761,7 +1763,7 @@ public final class SearchHelper {
         }
         if (sbOuter.length() > 0) {
             return " +(" + sbOuter.toString() + ')';
-            // return sbOuter.toString();
+            //            return sbOuter.toString();
         }
 
         return "";

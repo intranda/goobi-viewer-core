@@ -1247,6 +1247,22 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
+	<target name="worldviews">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.url" value="http://gei-worldviews.gei.de/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fgei-worldviews.gei.de%2Foai" />
+		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
+		<property name="theme" value="geiwv" />
+		<property name="contentserver.color.red" value="114" />
+		<property name="contentserver.color.green" value="0" />
+		<property name="contentserver.color.blue" value="28" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war-internal" />
+	</target>
+
 	<target name="gaugsammlungen">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />

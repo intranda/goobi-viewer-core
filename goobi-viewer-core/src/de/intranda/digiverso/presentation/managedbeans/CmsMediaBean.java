@@ -46,7 +46,6 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
-import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile.DisplaySize;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 
 @ManagedBean
@@ -61,7 +60,7 @@ public class CmsMediaBean {
     private ImageFileUploadThread uploadThread;
     private int uploadProgress;
     private String selectedTag;
-    private List<CMSMediaItem> mediaItems;
+    //    private List<CMSMediaItem> mediaItems;
 
     public String uploadMedia() {
         logger.trace("uploadMedia");
@@ -174,7 +173,7 @@ public class CmsMediaBean {
     public static String getMediaUrl(CMSMediaItem item, String width, String height) {
         if (item != null && item.getFileName() != null) {
             StringBuilder imageUrlBuilder = new StringBuilder("file:/");
-            
+
             // Add an extra slash if not on Windows
             String os = System.getProperty("os.name").toLowerCase();
             if (os.indexOf("win") == -1) {
@@ -423,7 +422,7 @@ public class CmsMediaBean {
 
         return collectionNames;
     }
-    
+
     public List<String> getAllowedCollections(String collectionField) throws DAOException, IndexUnreachableException {
         BrowseBean browseBean = BeanUtils.getBrowseBean();
         if (browseBean == null) {
@@ -448,7 +447,7 @@ public class CmsMediaBean {
      * @return
      * @throws DAOException
      */
-    private List<String> getUsedCollections() throws DAOException {
+    private static List<String> getUsedCollections() throws DAOException {
         List<String> collectionNames = new ArrayList<>();
         for (CMSMediaItem media : getAllMedia()) {
             if (media.isCollection()) {

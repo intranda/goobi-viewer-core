@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -39,8 +41,11 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.language.Language;
+import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
@@ -603,6 +608,18 @@ public class ConfigurationBean implements Serializable {
 
     public List<String> getSortFields() {
         return DataManager.getInstance().getConfiguration().getSortFields();
+//                .stream()
+//                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
+//                .collect(Collectors.toList());
+    }
+
+    /**
+     * @param field
+     * @param language
+     * @return
+     */
+    private boolean isLanguageVersionOtherThan(String field, String language) {
+        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
 
     public int getTocIndentation() {
@@ -715,5 +732,28 @@ public class ConfigurationBean implements Serializable {
 
     public String getIiifApiUrl() {
         return DataManager.getInstance().getConfiguration().getIiifUrl();
+    }
+
+    public String getIso639_1(String language) {
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCodeOld();
+    }
+
+    public String getIso639_2B(String language) {
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCode();
+    }
+
+    public String getTranslation(String language, String locale) {
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        switch (locale.toLowerCase()) {
+            case "de":
+            case "ger":
+                return lang.getGermanName();
+            case "fre":
+            case "fra":
+            case "fr":
+                return lang.getFrenchName();
+            default:
+                return lang.getEnglishName();
+        }
     }
 }

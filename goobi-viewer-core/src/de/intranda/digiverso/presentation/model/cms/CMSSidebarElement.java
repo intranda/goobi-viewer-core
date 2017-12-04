@@ -116,7 +116,6 @@ public class CMSSidebarElement {
     @Transient
     private final int sortingId = ID_COUNTER.next();
 
-
     public enum WidgetMode {
         STANDARD,
         FOLDOUT;
@@ -360,11 +359,12 @@ public class CMSSidebarElement {
     }
 
     public SidebarElementType.Category getCategory() {
+
         if (this instanceof CMSSidebarElementWithQuery) {
             return SidebarElementType.Category.fieldQuery;
         } else if (this.getLinkedPages() != null) {
             return SidebarElementType.Category.pageLinks;
-        } else if(this.getGeoLocations() != null) {
+        } else if (this.getGeoLocations() != null) {
             return SidebarElementType.Category.geoLocations;
         }
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
@@ -384,7 +384,6 @@ public class CMSSidebarElement {
      */
     public int getSortingId() {
         return sortingId;
-
     }
 
     /**
@@ -421,16 +420,16 @@ public class CMSSidebarElement {
         if (this.linkedPages != null) {
             this.linkedPagesString = linkedPages.toString();
         } else {
-            this.linkedPagesString = "";
+            this.linkedPagesString = null;
         }
-        if(geoLocations != null) {            
+        if (geoLocations != null) {
             this.geoLocationsString = createGeoLocationsString(geoLocations);
         }
 
     }
 
     public void deSerialize() {
-        if(StringUtils.isNotEmpty(this.linkedPagesString)) {            
+        if (StringUtils.isNotEmpty(this.linkedPagesString)) {
             this.linkedPages = new PageList(this.linkedPagesString);
         } else {
             this.linkedPages = null;
@@ -450,15 +449,15 @@ public class CMSSidebarElement {
         this.geoLocations = info;
         this.geoLocationsString = createGeoLocationsString(this.geoLocations);
     }
-    
+
     public GeoLocationInfo getGeoLocations() {
         return this.geoLocations;
     }
-    
+
     public void addGeoLocation() {
         this.geoLocations.getLocationList().add(new GeoLocation());
     }
-    
+
     public void removeGeoLocation() {
         if(geoLocations != null) {            
             this.geoLocations.getLocationList().remove(this.geoLocations.getLocationList().size()-1);
@@ -470,7 +469,7 @@ public class CMSSidebarElement {
 
     /**
      * @param geoLocationsString2
-     * @return 
+     * @return
      */
     private GeoLocationInfo createGeoLocationsFromString(String string) {
 
@@ -498,7 +497,7 @@ public class CMSSidebarElement {
      * @return
      */
     private String createGeoLocationsString(GeoLocationInfo info) {
-        
+
         JSONObject json = info.getAsJson();
 
 //        JSONArray locations = new JSONArray();
@@ -509,14 +508,13 @@ public class CMSSidebarElement {
 //        
 //        JSONObject json = new JSONObject();
 //        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
-        
+
         return json.toString();
     }
-    
+
     public String getGeoLocationsString() {
         return this.geoLocationsString;
     }
-    
     /**
      * @return the widgetTitle
      */

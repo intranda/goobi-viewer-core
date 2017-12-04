@@ -43,13 +43,13 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TocFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TrivialFunctionality;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
 import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
-import net.sf.saxon.evpull.Decomposer;
 
 /**
  * This class represents both template content configuration items and instance items of actual pages. Only the latter are persisted to the DB.
@@ -104,6 +104,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                     case "RSS":
                         return RSS;
                     case "TOC":
+                        return TOC;
                     case "SEARCH":
                         return CMSContentItemType.SEARCH;
                     case "COMPONENT":
@@ -122,12 +123,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
          * @return
          */
         public Functionality createFunctionality(CMSContentItem item) {
-            switch(this) {
-                case TOC: 
+            switch (this) {
+                case TOC:
                     return new TocFunctionality(item.getTocPI());
-                default: 
+                case SEARCH:
+                    return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl());
+                default:
                     return new TrivialFunctionality();
-            }   
+            }
         }
     }
 
@@ -205,9 +208,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     /** whether this collection should open with all subcollections expanded. Base levels don't expand */
     @Column(name = "base_collection")
     private String baseCollection = null;
-    
+
     @Column(name = "toc_pi")
     private String tocPI = "";
+    
+    @Column(name = "search_prefix")
+    private String searchPrefix;
 
     /**
      * For TileGrid
@@ -227,6 +233,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Column(name = "tile_count")
     private int numberOfTiles = 9;
     
+    @Column(name = "component")
+    private String component = null;
+
     /**
      * This object may contain item type specific functionality (methods and transient properties)
      * 
@@ -255,7 +264,6 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Transient
     private int order = 0;
-    
 
     /**
      * Noop constructor for javax.persistence 
@@ -263,7 +271,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public CMSContentItem() {
         // TODO Auto-generated constructor stub
     }
-    
+
     /**
      * Contructs a copy of the given item, inheriting all non-transient properties
      * This is a shallow copy, but all affected properties are either primitives or strings anyway
@@ -292,12 +300,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the functionality
      */
     public Functionality getFunctionality() {
-        if(functionality == null) {
+        if (functionality == null) {
             initFunctionality();
         }
         return functionality;
     }
-    
+
     /**
      * @param type2
      */
@@ -311,7 +319,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public void initFunctionality() {
         this.functionality = getType().createFunctionality(this);
     }
-    
+
     /*
      * (non-Javadoc)
      *
@@ -459,6 +467,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the solrQuery
      */
     public String getSolrQuery() {
+        if(getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality)getFunctionality()).getQueryString();
+        }
         return solrQuery;
     }
 
@@ -473,6 +484,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the solrSortFields
      */
     public String getSolrSortFields() {
+        if(getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality)getFunctionality()).getSolrSortFields();
+        }
         return solrSortFields;
     }
 
@@ -765,14 +779,14 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public void setNumberOfTiles(int numberOfTiles) {
         this.numberOfTiles = numberOfTiles;
     }
-    
+
     /**
      * @return the piPeriodical
      */
     public String getTocPI() {
         return tocPI;
     }
-    
+
     /**
      * @param piPeriodical the piPeriodical to set
      */
@@ -781,11 +795,26 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         initFunctionality();
     }
 
+    /**
+     * @return the searchPrefix
+     */
+    public String getSearchPrefix() {
+        return searchPrefix;
+    }
+    
+    /**
+     * @param searchPrefix the searchPrefix to set
+     */
+    public void setSearchPrefix(String searchPrefix) {
+        this.searchPrefix = searchPrefix;
+        initFunctionality();
+    }
+    
     @Override
     public String toString() {
         return CMSContentItem.class.getSimpleName() + ": " + getType() + " (" + getItemId() + ")";
     }
-    
+
     /**
      * Returns the content item mode from the template associated with the owning cmsPage 
      * (i.e. The value always reflects the mode for this contentItem in the template xml for this page)
@@ -797,6 +826,20 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     public ContentItemMode getMode() {
         return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
+    }
+    
+    /**
+     * @return the component
+     */
+    public String getComponent() {
+        return component;
+    }
+    
+    /**
+     * @param component the component to set
+     */
+    public void setComponent(String component) {
+        this.component = component;
     }
 
 }

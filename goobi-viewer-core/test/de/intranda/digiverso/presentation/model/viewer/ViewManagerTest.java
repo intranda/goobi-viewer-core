@@ -180,4 +180,34 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertTrue(url.endsWith(
                 "?action=pdf&images=PPN517154005/00000014.tif$PPN517154005/00000015.tif$PPN517154005/00000016.tif&targetFileName=PPN517154005_13-15.pdf"));
     }
+
+    /**
+     * @see ViewManager#getTitleBarLabel(Locale)
+     * @verifies return locale specific title if so requested
+     */
+    @Test
+    public void getTitleBarLabel_shouldReturnLocaleSpecificTitleIfSoRequested() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see ViewManager#getTitleBarLabel(Locale)
+     * @verifies return label if no locale specific title found
+     */
+    @Test
+    public void getTitleBarLabel_shouldReturnLabelIfNoLocaleSpecificTitleFound() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
+
+    /**
+     * @see ViewManager#getTitleBarLabel(Locale)
+     * @verifies return label if locale is null
+     */
+    @Test
+    public void getTitleBarLabel_shouldReturnLabelIfLocaleIsNull() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
 }

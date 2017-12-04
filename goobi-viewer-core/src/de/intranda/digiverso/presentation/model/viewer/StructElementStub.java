@@ -317,16 +317,12 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @throws IndexUnreachableException
      */
     public int getNumPages() throws IndexUnreachableException {
+        
         try {
             String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(getPi()).append(" AND ").append(SolrConstants.DOCTYPE)
                     .append(':').append(DocType.PAGE.name()).toString();
             SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, null, Collections.singletonList(
                     SolrConstants.ORDER));
-            if (result == null || result.isEmpty()) {
-                query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(getPi()).append(" AND ").append(SolrConstants.FILENAME)
-                        .append(":*").toString();
-                result = DataManager.getInstance().getSearchIndex().search(query, 0, null, Collections.singletonList(SolrConstants.ORDER));
-            }
             return (int) result.getNumFound();
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -361,6 +357,27 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      * @return the label
      */
     public String getLabel() {
+        return getLabel(null);
+    }
+
+    /**
+     * Returns a language specific version of MD_TITLE, if available. If not available or if locale is null, the regular label is returned.
+     * 
+     * @param language
+     * @return Locale-specific version of MD_TITLE if requested and found; label otherwise
+     * @should return locale specific title if so requested
+     * @should return label if no locale specific title found
+     * @should return label if locale is null
+     */
+    public String getLabel(String language) {
+        if (language != null) {
+            String mdField = SolrConstants.TITLE + "_LANG_" + language.toUpperCase();
+            String label = getMetadataValue(mdField);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
+            }
+        }
+
         return label;
     }
 
@@ -397,6 +414,25 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
      */
     public void setMetadataFields(Map<String, List<String>> metadataFields) {
         this.metadataFields = metadataFields;
+    }
+
+    /**
+     * Returns the first meetadata value for the language speciic version of the given field name. If no value is found, the value of the generic
+     * version is returned.
+     * 
+     * @param fieldName Solr field name
+     * @param language ISO 639-1 language code
+     * @return
+     */
+    public String getMetadataValueForLanguage(String fieldName, String language) {
+        if (StringUtils.isNotEmpty(language)) {
+            String value = getMetadataValue(fieldName + SolrConstants._LANG_ + language.toUpperCase());
+            if (value != null) {
+                return value;
+            }
+        }
+
+        return getMetadataValue(fieldName);
     }
 
     /**

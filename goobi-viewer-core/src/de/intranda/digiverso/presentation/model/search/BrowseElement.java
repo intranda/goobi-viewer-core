@@ -129,6 +129,8 @@ public class BrowseElement implements Serializable {
     private final Locale locale;
     @JsonIgnore
     private final String dataRepository;
+    
+    private List<String> recordLanguages;
 
     /**
      * Constructor for unit tests and special instances.
@@ -210,7 +212,7 @@ public class BrowseElement implements Serializable {
                     // Add anchor to the docstruct hierarchy
                     structElements.add(anchorStructElement.createStub());
                     if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                        String anchorLabel = generateLabel(anchorStructElement);
+                        String anchorLabel = generateLabel(anchorStructElement, locale);
                         if (StringUtils.isNotEmpty(anchorLabel)) {
                             this.metadataList.add(position, new Metadata(anchorStructElement.getDocStructType(), null, new MetadataParameter(
                                     MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(), null, null, null, false, false), Helper
@@ -222,7 +224,7 @@ public class BrowseElement implements Serializable {
             }
             // Add topstruct label to lower docstructs
             if (!structElement.isWork() && DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                String topstructLabel = generateLabel(topStructElement);
+                String topstructLabel = generateLabel(topStructElement, locale);
                 if (StringUtils.isNotEmpty(topstructLabel)) {
                     // Add volume number, if the parent is a volume
                     if (topStructElement.isAnchorChild() && StringUtils.isNotEmpty(topStructElement.getVolumeNo())) {
@@ -317,8 +319,7 @@ public class BrowseElement implements Serializable {
         if (DocType.GROUP.equals(docType)) {
             label = docType.getLabel(null);
         } else {
-            generateLabel(structElement).length();
-            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement));
+            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, locale));
             String subtitle = structElement.getMetadataValue(SolrConstants.SUBTITLE);
             if (StringUtils.isNotEmpty(subtitle)) {
                 sbLabel.append(" : ").append(subtitle);
@@ -530,6 +531,9 @@ public class BrowseElement implements Serializable {
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
             useOverviewPage = true;
         }
+        
+        //record languages
+        this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
 
         this.url = generateUrl();
         sidebarPrevUrl = generateSidebarUrl("prevHit");
@@ -709,7 +713,13 @@ public class BrowseElement implements Serializable {
         return null;
     }
 
-    private String generateLabel(StructElement se) {
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     */
+    private String generateLabel(StructElement se, Locale locale) {
         String ret = "";
 
         if (docType != null) {
@@ -789,7 +799,35 @@ public class BrowseElement implements Serializable {
         if (StringUtils.isEmpty(ret)) {
             ret = se.getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(ret)) {
-                ret = Helper.getTranslation(se.getDocStructType(), locale);
+                if (locale != null) {
+                    String englishTitle = null;
+                    String germanTitle = null;
+                    String anyTitle = null;
+                    for (String key : se.getMetadataFields().keySet()) {
+                        if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
+                            ret = se.getMetadataValue(key);
+                            break;
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
+                            germanTitle = se.getMetadataValue(key);
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
+                            englishTitle = se.getMetadataValue(key);
+                        } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
+                            anyTitle = se.getMetadataValue(key);
+                        }
+                    }
+                    if(StringUtils.isBlank(ret)) {
+                        if(StringUtils.isNotBlank(englishTitle)) {
+                            ret = englishTitle;
+                        } else if(StringUtils.isNotBlank(germanTitle)) {
+                            ret = germanTitle;
+                        } else {
+                            ret = anyTitle;
+                        }
+                    }
+                }
+                if (StringUtils.isEmpty(ret)) {
+                    ret = Helper.getTranslation(se.getDocStructType(), locale);
+                }
             }
         }
 
@@ -1197,5 +1235,12 @@ public class BrowseElement implements Serializable {
         }
 
         return contextObject;
+    }
+    
+    /**
+     * @return the recordLanguages
+     */
+    public List<String> getRecordLanguages() {
+        return recordLanguages;
     }
 }

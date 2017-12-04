@@ -342,7 +342,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public void setCollectionName(String collectionName) throws URISyntaxException, UnsupportedEncodingException {
         this.collectionName = collectionName;
         if (StringUtils.isNotBlank(this.collectionName) && StringUtils.isBlank(getLink())) {
-            this.link = new URI(getCollectionSearchUri());
+            this.link = new URI(URLEncoder.encode(getCollectionSearchUri(), "utf-8"));
         }
     }
 

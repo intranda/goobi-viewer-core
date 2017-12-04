@@ -323,7 +323,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getHotfolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("hotfolder_value", DataManager.getInstance().getConfiguration().getHotfolder());
+        Assert.assertEquals("hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
     }
 
     /**
@@ -425,7 +425,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getMediaFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("mediaFolder_value", DataManager.getInstance().getConfiguration().getMediaFolder());
+        Assert.assertEquals("media", DataManager.getInstance().getConfiguration().getMediaFolder());
     }
 
     /**
@@ -494,7 +494,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getOrigContentFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("origContentFolder_value", DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        Assert.assertEquals("src", DataManager.getInstance().getConfiguration().getOrigContentFolder());
     }
 
     /**
@@ -881,7 +881,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getTempFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("tempFolder_value", DataManager.getInstance().getConfiguration().getTempFolder());
+        Assert.assertEquals("temp", DataManager.getInstance().getConfiguration().getTempFolder());
     }
 
     /**
@@ -1702,7 +1702,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getOverviewFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("overviewFolder_value", DataManager.getInstance().getConfiguration().getOverviewFolder());
+        Assert.assertEquals("overview", DataManager.getInstance().getConfiguration().getOverviewFolder());
     }
 
     /**
@@ -1756,7 +1756,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getFulltextFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("fulltextFolder_value", DataManager.getInstance().getConfiguration().getFulltextFolder());
+        Assert.assertEquals("fulltext", DataManager.getInstance().getConfiguration().getFulltextFolder());
     }
 
     /**
@@ -1765,7 +1765,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getWcFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("wcFolder_value", DataManager.getInstance().getConfiguration().getWcFolder());
+        Assert.assertEquals("wc", DataManager.getInstance().getConfiguration().getWcFolder());
     }
 
     /**
@@ -1774,7 +1774,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getAbbyyFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("abbyyFolder_value", DataManager.getInstance().getConfiguration().getAbbyyFolder());
+        Assert.assertEquals("abbyy", DataManager.getInstance().getConfiguration().getAbbyyFolder());
     }
 
     /**

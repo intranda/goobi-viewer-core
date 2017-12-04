@@ -16,11 +16,16 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -51,6 +56,7 @@ import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
@@ -416,12 +422,14 @@ public class CMSPage {
                 return version;
             }
         }
-        try {
-            CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
-            this.languageVersions.add(version);
-            return version;
-        } catch (NullPointerException | IllegalStateException e) {
-            return null;
+        synchronized (languageVersions) {            
+            try {
+                CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
+                this.languageVersions.add(version);
+                return version;
+            } catch (NullPointerException | IllegalStateException e) {
+                return null;
+            }
         }
     }
 
@@ -539,7 +547,12 @@ public class CMSPage {
 
         return new CMSPageLanguageVersion();
     }
+    
+    public String getPageUrl() {
+        return BeanUtils.getCmsBean().getPageUrl(this.id);
+    }
 
+    @Deprecated
     public String getUrl() {
         return CMSContentResource.getPageUrl(this);
     }
@@ -553,6 +566,8 @@ public class CMSPage {
                     return StringUtils.isNotBlank(item.getHtmlFragment());
                 case MEDIA:
                     return item.getMediaItem() != null && StringUtils.isNotBlank(item.getMediaItem().getFileName());
+                case COMPONENT:
+                    return StringUtils.isNotBlank(item.getComponent());
                 default:
                     return false;
             }
@@ -578,6 +593,8 @@ public class CMSPage {
                     break;
                 case MEDIA:
                     contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                case COMPONENT:
+                    contentString = item.getComponent();
                     break;
                 default:
                     contentString = "";
@@ -756,12 +773,14 @@ public class CMSPage {
     }
 
     public void addContentItem(CMSContentItem item) {
-        if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+        synchronized (languageVersions) {            
+            if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
             getLanguageVersions().stream()
             .filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE))
             .forEach(lang -> lang.addContentItem(item));
-        } else {
-            getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+            } else {
+                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+            }
         }
     }
 
@@ -769,7 +788,7 @@ public class CMSPage {
      * @param itemId
      * @return
      */
-    public boolean hasContentItem(final String itemId) {
+    public boolean hasContentItem(final String itemId) {          
         synchronized (languageVersions) {            
             return languageVersions.stream()
                     .flatMap(lang -> lang.getContentItems().stream())
@@ -780,4 +799,64 @@ public class CMSPage {
         }
     }
     
+    /**
+     * Returns the first found SearchFunctionality of any containted content items
+     * If no fitting item is found, a new default SearchFunctionality is returned
+     * 
+     * @return SearchFunctionality, not null
+     */
+    public SearchFunctionality getSearch() {
+        Optional<CMSContentItem> searchItem = getGlobalContentItems().stream()
+        .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
+        .findFirst();
+        if(searchItem.isPresent()) {
+            return (SearchFunctionality) searchItem.get().getFunctionality();
+        } else {
+            logger.warn("Did not find search functionality in page " + this);
+            return new SearchFunctionality("", getPageUrl());
+        }
+    }
+
+    /**
+     * @return
+     */
+    public Set<String> getHandledPages() {
+        Set<String> pages = new HashSet<String>();
+        if(StringUtils.isNotBlank(getStaticPageName())) {            
+            pages = new HashSet<String>(Arrays.asList(getStaticPageName().split(";")));
+        }
+        return pages;
+    }
+    
+    public void setHandledPages(Collection<String> staticPages) {
+        setStaticPageName(StringUtils.join(staticPages, ";"));
+    }
+
+    /**
+     * @param pageName
+     */
+    public void removeStaticPageName(String pageName) {
+        Set<String> staticPages = getHandledPages();
+        staticPages.remove(pageName);
+        setHandledPages(staticPages);
+        
+    }
+
+    /**
+     * @param pageName
+     */
+    public void addStaticPageName(String pageName) {
+        Set<String> staticPages = getHandledPages();
+        staticPages.add(pageName);
+        setHandledPages(staticPages);
+        
+    }
+    
+    public boolean isHasSidebarElements() {
+       if(!isUseDefaultSidebar()) {
+           return getSidebarElements() != null && !getSidebarElements().isEmpty();
+       } else {
+           return true;
+       }
+    }
 }

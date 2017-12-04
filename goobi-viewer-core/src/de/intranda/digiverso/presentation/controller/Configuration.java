@@ -415,6 +415,7 @@ public final class Configuration extends AbstractConfiguration {
      */
     @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getMainMetadataForTemplate(String template) {
+        logger.trace("getMainMetadataForTemplate: {}", template);
         HierarchicalConfiguration usingTemplate = null;
         List templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
         if (templateList != null) {
@@ -1206,6 +1207,15 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder");
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getTeiFolder() {
+        return getLocalString("teiFolder");
     }
 
     /**
@@ -2099,7 +2109,7 @@ public final class Configuration extends AbstractConfiguration {
                 }
             }
 
-            if (imageType != null) {
+            if (imageType != null && imageType.getFormat() != null) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
                 if (mimeTypes.isEmpty() || mimeTypes.contains(imageType.getFormat().getMimeType())) {
                     //match

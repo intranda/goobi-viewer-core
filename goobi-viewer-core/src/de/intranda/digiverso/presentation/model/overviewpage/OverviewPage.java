@@ -504,6 +504,11 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     public List<Metadata> getMetadata() {
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null && adb.isRecordLoaded()) {
+            return Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
+        }
+
         return metadata;
     }
 
@@ -549,7 +554,7 @@ public class OverviewPage implements Harvestable, Serializable {
         List<String> ret = new ArrayList<>();
 
         for (Metadata md : allMetadata) {
-            if (!metadata.contains(md) && !md.isEmpty()) {
+            if (!metadata.contains(md) && !md.isBlank()) {
                 ret.add(md.getLabel());
             }
         }

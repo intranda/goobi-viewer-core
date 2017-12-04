@@ -38,6 +38,9 @@
 	<!-- fulltextFolder: contains plain full-text files -->
 	<fulltextFolder>fulltext</fulltextFolder>
 
+    <!-- teiFolder: contains TEI metadata/fulltext files -->
+    <teiFolder>tei</teiFolder>
+
 	<!-- wcFolder: contains TEI word coordinate files -->
 	<wcFolder>wc</wcFolder>
 

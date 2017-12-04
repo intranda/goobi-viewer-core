@@ -63,6 +63,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
@@ -228,6 +229,7 @@ public class CmsBean {
                 page.getSidebarElements().forEach(element -> element.deSerialize());
             }
         }
+        numCreatedPages = createdPages.size();
         return createdPages;
     }
 
@@ -791,7 +793,7 @@ public class CmsBean {
     public void setSelectedMediaLocale(Locale selectedMediaLocale) {
         this.selectedMediaLocale = selectedMediaLocale;
     }
-    
+
     /**
      * Action method called when a CMS page is opened. The exact action depends on the page and content item type.
      * 
@@ -818,6 +820,11 @@ public class CmsBean {
             List<CMSContentItem> contentItems = currentPage.getGlobalContentItems();
             for (CMSContentItem item : contentItems) {
                 if (item != null && CMSContentItemType.SOLRQUERY.equals(item.getType())) {
+                    if (resetSearch && searchBean != null) {
+                        searchBean.resetSearchAction();
+                    }
+                    return searchAction(item);
+                } else if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
                     }
@@ -868,7 +875,9 @@ public class CmsBean {
             logger.error("Cannot search: SearchBean is null");
             return "";
         }
-        if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
+        if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
+            ((SearchFunctionality) item.getFunctionality()).search();
+        } else if (item != null && StringUtils.isNotBlank(item.getSolrQuery())) {
             searchBean.resetSearchResults();
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
@@ -888,17 +897,17 @@ public class CmsBean {
             searchBean.resetSearchResults();
             return "";
         }
-
-        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
-        searchBean.setHitsPerPage(item.getElementsPerPage());
-        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-        searchBean.setCurrentPage(item.getListPage());
-        if (item.getSolrSortFields() != null) {
-            searchBean.setSortString(item.getSolrSortFields());
-        }
-        //            searchBean.getFacets().setCurrentFacetString();
-        //            searchBean.getFacets().setCurrentCollection();
-        return searchBean.search();
+        return "";
+        //        searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+        //        searchBean.setHitsPerPage(item.getElementsPerPage());
+        //        searchBean.setExactSearchStringResetGui(item.getSolrQuery());
+        //        searchBean.setCurrentPage(item.getListPage());
+        //        if (item.getSolrSortFields() != null) {
+        //            searchBean.setSortString(item.getSolrSortFields());
+        //        }
+        //        //            searchBean.getFacets().setCurrentFacetString();
+        //        //            searchBean.getFacets().setCurrentCollection();
+        //        return searchBean.search();
     }
 
     public boolean hasSearchResults() {
@@ -914,11 +923,19 @@ public class CmsBean {
      * @throws PresentationException
      */
     public String removeHierarchicalFacetAction(String facetQuery) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("removeHierarchicalFacetAction: {}", facetQuery);
+        CMSPage currentPage = getCurrentPage();
+        if (currentPage != null) {
+            SearchFunctionality search = currentPage.getSearch();
+            if (search != null) {
+                search.setCollection("-");
+            }
+        }
         if (searchBean != null) {
             searchBean.removeHierarchicalFacetAction(facetQuery);
         }
 
-        return "pretty:cmsOpenPageWithSearch";
+        return "pretty:cmsOpenPageWithSearch2";
     }
 
     /**
@@ -930,11 +947,19 @@ public class CmsBean {
      * @throws PresentationException
      */
     public String removeFacetAction(String facetQuery) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("removeFacetAction: {}", facetQuery);
+        CMSPage currentPage = getCurrentPage();
+        if (currentPage != null) {
+            SearchFunctionality search = currentPage.getSearch();
+            if (search != null) {
+                search.setFacetString("-");
+            }
+        }
         if (searchBean != null) {
             searchBean.removeFacetAction(facetQuery);
         }
 
-        return "pretty:cmsOpenPageWithSearch";
+        return "pretty:cmsOpenPageWithSearch2";
     }
 
     /**
@@ -1113,14 +1138,19 @@ public class CmsBean {
      * @return
      * @throws DAOException
      */
-    private static List<CMSStaticPage> createStaticPageList() throws DAOException {
+    private List<CMSStaticPage> createStaticPageList() throws DAOException {
         List<CMSStaticPage> pages = new ArrayList<>();
         for (PageType pageType : PageType.getTypesHandledByCms()) {
-            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
             CMSStaticPage page = new CMSStaticPage(pageType.getName());
+            CMSPage cmsPage = getCreatedPages().stream().peek(p -> logger.trace("page {} staticPageName: {}", p.getId(), p.getStaticPageName())).peek(
+                    p -> logger.trace("page {} handles pages {}", p.getId(), p.getHandledPages())).filter(p -> p.getHandledPages().contains(pageType
+                            .name()) || p.getHandledPages().contains(pageType.getName())).findFirst().orElse(null);
+            //            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
             if (cmsPage != null) {
                 page.setCmsPage(cmsPage);
                 page.setUseCmsPage(true);
+            } else {
+                page.setCmsPage(null);
             }
             pages.add(page);
         }
@@ -1138,15 +1168,26 @@ public class CmsBean {
                 allPages.add(cmsPage);
             }
         }
-        for (CMSStaticPage staticPage : getStaticPages()) {
-            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-                allPages.remove(staticPage.getCmsPage());
-            }
-        }
+        //        for (CMSStaticPage staticPage : getStaticPages()) {
+        //            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
+        //                allPages.remove(staticPage.getCmsPage());
+        //            }
+        //        }
         return allPages;
     }
 
     public void saveCMSPages() throws DAOException {
+
+        for (CMSPage cmsPage : getCreatedPages()) {
+            cmsPage.setStaticPageName(null);
+        }
+
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if (staticPage.isHasCmsPage()) {
+                staticPage.getCmsPage().addStaticPageName(staticPage.getPageName());
+            }
+        }
+
         for (CMSPage cmsPage : getCreatedPages()) {
             if (!DataManager.getInstance().getDao().updateCMSPage(cmsPage)) {
                 Messages.error("cms_errorSavingStaticPages");
@@ -1160,15 +1201,22 @@ public class CmsBean {
         String pageName = navigationHelper.getCurrentPage();
         CMSStaticPage page = getStaticPageForPageType(PageType.getByName(pageName));
         if (page != null && page.isHasCmsPage() && page.getCmsPage().isPublished()) {
-            forwardToCMSPage(page.getCmsPage());
+            try {
+                forwardToCMSPage(page.getCmsPage());
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error("Unable to initialize cms functionality", e);
+            }
         }
     }
 
     /**
      * @param page
      * @throws IOException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public void forwardToCMSPage(CMSPage page) throws IOException {
+    public void forwardToCMSPage(CMSPage page) throws IOException, PresentationException, IndexUnreachableException, DAOException {
         logger.trace("forwardToCMSPage page: " + page);
         setCurrentPage(page);
         String path = CMSTemplateManager.getInstance().getTemplateViewUrl(page.getTemplate());
@@ -1182,6 +1230,7 @@ public class CmsBean {
         logger.trace("forwardToCMSPage path 2: {}", path);
         FacesContext context = getFacesContext();
         if (StringUtils.isNotBlank(path)) {
+            cmsContextAction(false);
             logger.debug("Forwarding to " + path);
             context.getExternalContext().dispatch(path);
             context.responseComplete();
@@ -1202,7 +1251,7 @@ public class CmsBean {
      */
     private CMSStaticPage getStaticPageForPageType(PageType pageType) throws DAOException {
         for (CMSStaticPage staticPage : getStaticPages()) {
-            if (staticPage.getPageName().equals(pageType.getName())) {
+            if (staticPage.getPageName().equals(pageType.getName()) || staticPage.getPageName().equals(pageType.name())) {
                 return staticPage;
             }
         }
@@ -1216,6 +1265,6 @@ public class CmsBean {
             List<String> values = SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
             return values;
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 }

@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<composite:interface>
+
+	</composite:interface>
+
+	<composite:implementation>
+
+		<h:panelGroup rendered="#{activeDocumentBean.hasLanguages}">
+			<h:form id="changeRecordLocaleForm1" prependId="false">
+				<div class="view-image__info-text-language">
+					<ul class="list list--horizontal">
+						<ui:repeat var="lang"
+							value="#{activeDocumentBean.recordLanguages}">
+							<li class="#{activeDocumentBean.selectedRecordLanguage == lang ? 'activeLang':''}"
+							data-isoCode="#{lang}">
+								<h:commandLink actionListener="index">
+<!-- 									<h:outputText value="[#{msg[lang]}]" /> -->
+											<h:outputText value="#{configurationBean.getTranslation(lang, navigationHelper.localeString)}" />
+									<f:setPropertyActionListener
+										target="#{activeDocumentBean.selectedRecordLanguage}"
+										value="#{lang}" />
+								</h:commandLink>
+							</li>
+						</ui:repeat>
+					</ul>
+
+				</div>
+			</h:form>
+		</h:panelGroup>
+
+	</composite:implementation>
+</ui:composition>

@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.viewer;
 
 import java.awt.Dimension;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -97,8 +98,8 @@ public class ViewManager implements Serializable {
     private int rotate = 0;
     private int zoomSlider;
     private int currentImageOrder = -1;
-    private List<SelectItem> dropdownPages = new ArrayList<>();
-    private List<SelectItem> dropdownFulltext = new ArrayList<>();
+    private final List<SelectItem> dropdownPages = new ArrayList<>();
+    private final List<SelectItem> dropdownFulltext = new ArrayList<>();
     private String dropdownSelected = "";
     private int currentThumbnailPage = 1;
     private String pi;
@@ -947,21 +948,10 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     * @param dropdownPages the dropdownPages to set
-     */
-    public void setDropdownPages(List<SelectItem> dropdownPages) {
-        this.dropdownPages = dropdownPages;
-    }
-
-    /**
      * @return the dropdownPages
      */
     public List<SelectItem> getDropdownPages() {
         return dropdownPages;
-    }
-
-    public void setDropdownFulltext(List<SelectItem> dropdownFulltext) {
-        this.dropdownFulltext = dropdownFulltext;
     }
 
     /**
@@ -1463,35 +1453,49 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public String getFulltext() throws IndexUnreachableException, DAOException {
-        return getFulltext(true);
+        return getFulltext(true, null);
     }
 
     /**
      *
      * @param escapeHtml If true HTML tags will be escaped to prevent pseudo-HTML from breaking the text.
+     * @param language
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws IOException
+     * @throws FileNotFoundException
      */
-    public String getFulltext(boolean escapeHtml) throws IndexUnreachableException, DAOException {
-        // Use existing string, if not null (this method gets called 8 times per
-        // page load!)
+    public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException {
         String currentFulltext = null;
 
-        // logger.debug("getFulltext() START");
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-            //            // Check permissions first
-            //            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
-            //                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            //            if (access) {
-            currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
-            //            } else {
-            //                currentFulltext = "ACCESS DENIED";
-            //            }
+        if (StringUtils.isNotEmpty(language) && topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants._LANG_
+                + language.toUpperCase())) {
+            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase());
+            String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
+            logger.trace("Loading {}", filePath);
+            currentFulltext = Helper.loadTeiFulltext(filePath);
+        } else if (topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI)) {
+            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI);
+            String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
+            logger.trace("Loading {}", filePath);
+            currentFulltext = Helper.loadTeiFulltext(filePath);
+        } else {
+            // Current page fulltext
+            PhysicalElement currentImg = getCurrentPage();
+            if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
+                //            // Check permissions first
+                //            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
+                //                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+                //            if (access) {
+                currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
+                //            } else {
+                //                currentFulltext = "ACCESS DENIED";
+                //            }
+            }
         }
-        // logger.debug("getFulltext() END");
 
+        // logger.trace(currentFulltext);
         return currentFulltext;
     }
 
@@ -2033,14 +2037,6 @@ public class ViewManager implements Serializable {
         this.displayImage = displayImage;
     }
 
-    public String getTitleBarLabel() {
-        if (topDocument != null && StringUtils.isNotEmpty(topDocument.getLabel())) {
-            return topDocument.getLabel();
-        }
-
-        return null;
-    }
-
     /**
      * @return the pi
      * @throws IndexUnreachableException
@@ -2162,5 +2158,40 @@ public class ViewManager implements Serializable {
         }
 
         return 0;
+    }
+
+    public String getTopDocumentTitle() {
+        return getDocumentTitle(this.topDocument);
+    }
+
+    public String getDocumentTitle(StructElement document) {
+        StringBuilder sb = new StringBuilder();
+        if (document != null) {
+            switch (document.docStructType) {
+                case "Comment":
+                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                    }
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                    }
+                    break;
+                case "FormationHistory":
+                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
+                    //TODO: Add Einsatzland z.b.: (Deutschland)
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
+                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
+                    }
+                    if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
+                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
+                    }
+                    break;
+                case "Source":
+                default:
+                    sb.append(document.getDisplayLabel());
+            }
+        }
+        return sb.toString();
     }
 }

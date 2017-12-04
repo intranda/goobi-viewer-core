@@ -28,6 +28,8 @@
     <abbyyFolder>abbyy</abbyyFolder>
     <!-- fulltextFolder: contains plain full-text files -->
     <fulltextFolder>fulltext</fulltextFolder>
+    <!-- teiFolder: contains TEI metadata/fulltext files -->
+    <teiFolder>tei</teiFolder>
     <!-- wcFolder: contains TEI word coordinate files -->
     <wcFolder>wc</wcFolder>
     <!-- hotfolder: defines the hotfolder from the solr Indexer for indexing uploaded born-digital-material (see <content> also) -->
@@ -255,7 +257,7 @@
         </docstructTargetPageTypes>
 
         <!-- theme: defines the theme that shall be used -->
-        <theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
+        <theme subTheme="false" mainTheme="geiwv" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
     </viewer>
 
     <search>

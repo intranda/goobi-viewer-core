@@ -22,6 +22,7 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -334,6 +335,10 @@ public class NavigationHelper implements Serializable {
 
     public String getLocaleString() {
         return locale.getLanguage();
+    }
+
+    public Iterator<Locale> getSupportedLocales() {
+        return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
     }
 
     public void setLocaleString(String inLocale) {
@@ -959,6 +964,12 @@ public class NavigationHelper implements Serializable {
                 msg = msg.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
             }
         }
+
+        return msg;
+    }
+
+    public String getTranslation(String msgKey, String language) {
+        String msg = Helper.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
 
         return msg;
     }
