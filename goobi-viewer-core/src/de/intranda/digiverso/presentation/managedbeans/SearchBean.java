@@ -198,7 +198,6 @@ public class SearchBean implements Serializable {
         return search();
     }
 
-    
     /**
      *
      * @return {@link String} null
@@ -1149,12 +1148,14 @@ public class SearchBean implements Serializable {
                 for (String field : sortStringSplit) {
                     sortFields.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
                     logger.trace("Added sort field: {}", field);
-                    //add translated sort fields
-                    Iterable<Locale> locales = () -> BeanUtils.getNavigationHelper().getSupportedLocales();
-                    StreamSupport.stream(locales.spliterator(), false).sorted(new LocaleComparator(BeanUtils.getLocale())).map(locale -> field
-                            + "_LANG_" + locale.getLanguage().toUpperCase()).peek(language -> logger.trace("Adding sort field: {}", language))
-                            .forEach(language -> sortFields.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc"
-                                    : "asc")));
+                    // add translated sort fields
+                    if (navigationHelper != null) {
+                        Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
+                        StreamSupport.stream(locales.spliterator(), false).sorted(new LocaleComparator(BeanUtils.getLocale())).map(locale -> field
+                                + SolrConstants._LANG_ + locale.getLanguage().toUpperCase()).peek(language -> logger.trace("Adding sort field: {}",
+                                        language)).forEach(language -> sortFields.add(new StringPair(language.replace("!", ""), language.charAt(
+                                                0) == '!' ? "desc" : "asc")));
+                    }
                 }
             }
         }
@@ -1975,7 +1976,7 @@ public class SearchBean implements Serializable {
     public void resetHitsPerPage() {
         setHitsPerPage(DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
     }
-    
+
     /**
      * @return the advancedSearchQueryInfo
      */

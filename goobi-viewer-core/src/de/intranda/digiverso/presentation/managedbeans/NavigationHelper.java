@@ -338,7 +338,11 @@ public class NavigationHelper implements Serializable {
     }
 
     public Iterator<Locale> getSupportedLocales() {
-        return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+        }
+
+        return null;
     }
 
     public void setLocaleString(String inLocale) {
