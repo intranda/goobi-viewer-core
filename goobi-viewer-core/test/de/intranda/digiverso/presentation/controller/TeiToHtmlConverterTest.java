@@ -41,14 +41,15 @@ public class TeiToHtmlConverterTest {
         for (int i = 36; i <= 50; ++i) {
             Assert.assertEquals(3, converter.getHierarchyLevel(i));
         }
-        for (int i = 51; i <= 72; ++i) {
+        for (int i = 51; i <= 71; ++i) {
+            System.out.println(i);
             Assert.assertEquals(4, converter.getHierarchyLevel(i));
         }
-        Assert.assertEquals(3, converter.getHierarchyLevel(73));
-        Assert.assertEquals(3, converter.getHierarchyLevel(78));
+        Assert.assertEquals(3, converter.getHierarchyLevel(72));
+        Assert.assertEquals(3, converter.getHierarchyLevel(77));
         Assert.assertEquals(2, converter.getHierarchyLevel(79));
-        Assert.assertEquals(2, converter.getHierarchyLevel(84));
+        Assert.assertEquals(2, converter.getHierarchyLevel(82));
         Assert.assertEquals(1, converter.getHierarchyLevel(85));
-        Assert.assertEquals(1, converter.getHierarchyLevel(90));
+        Assert.assertEquals(1, converter.getHierarchyLevel(89));
     }
 }
