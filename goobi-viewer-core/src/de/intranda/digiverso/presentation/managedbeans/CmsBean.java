@@ -1212,9 +1212,9 @@ public class CmsBean {
     /**
      * @param page
      * @throws IOException
-     * @throws DAOException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public void forwardToCMSPage(CMSPage page) throws IOException, PresentationException, IndexUnreachableException, DAOException {
         logger.trace("forwardToCMSPage page: " + page);
@@ -1265,6 +1265,6 @@ public class CmsBean {
             List<String> values = SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
             return values;
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 }

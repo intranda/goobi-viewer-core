@@ -18,15 +18,11 @@ package de.intranda.digiverso.presentation.controller.language;
 import java.util.Comparator;
 import java.util.Locale;
 
-/**
- * @author Florian Alpers
- *
- */
 public class LocaleComparator implements Comparator<Locale> {
 
     private final Locale primaryLocale;
     private final Locale secondaryLocale;
-    
+
     /**
      *
      * @param locale
@@ -41,17 +37,17 @@ public class LocaleComparator implements Comparator<Locale> {
      */
     @Override
     public int compare(Locale l1, Locale l2) {
-       if(l1 == null && l2 == null) {
-           return 0;
-       } else if(l1 == null) {
-           return 1;
-       } else if(l2 == null) {
-           return 2;
-       }
-       int i1 = l1.getLanguage().equals(primaryLocale.getLanguage()) ? 1 : (l1.getLanguage().equals(secondaryLocale.getLanguage()) ? 2 : 3);
-       int i2 = l2.getLanguage().equals(primaryLocale.getLanguage()) ? 1 : (l2.getLanguage().equals(secondaryLocale.getLanguage()) ? 2 : 3);
-       
-       return Integer.compare(i1, i2);
+        if (l1 == null && l2 == null) {
+            return 0;
+        } else if (l1 == null) {
+            return 1;
+        } else if (l2 == null) {
+            return 2;
+        }
+        int i1 = l1.getLanguage().equals(primaryLocale.getLanguage()) ? 1 : (l1.getLanguage().equals(secondaryLocale.getLanguage()) ? 2 : 3);
+        int i2 = l2.getLanguage().equals(primaryLocale.getLanguage()) ? 1 : (l2.getLanguage().equals(secondaryLocale.getLanguage()) ? 2 : 3);
+
+        return Integer.compare(i1, i2);
     }
 
 }
