@@ -89,7 +89,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = bean.getCreatedPages();
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
-        Assert.assertEquals(2, allPages.size() - availablePages.size());
+        Assert.assertEquals(1, allPages.size() - availablePages.size());
     }
 
     @Test
