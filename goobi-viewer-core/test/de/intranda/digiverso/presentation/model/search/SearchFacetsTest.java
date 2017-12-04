@@ -253,9 +253,9 @@ public class SearchFacetsTest {
     public void generateHierarchicalFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentHierarchicalFacetString("DC:a;;DC:aa;;");
-        Assert.assertEquals("(FACET_DC:a OR FACET_DC:a.*) AND (FACET_DC:aa OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(
+        Assert.assertEquals("(FACET_DC:\"a\" OR FACET_DC:a.*) AND (FACET_DC:\"aa\" OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(
                 0));
-        Assert.assertEquals("(FACET_DC:a OR FACET_DC:a.*) OR (FACET_DC:aa OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(1));
+        Assert.assertEquals("(FACET_DC:\"a\" OR FACET_DC:a.*) OR (FACET_DC:\"aa\" OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(1));
     }
 
     /**
