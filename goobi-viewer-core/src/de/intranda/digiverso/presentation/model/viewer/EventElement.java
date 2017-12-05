@@ -226,10 +226,27 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     public List<Metadata> getMetadata() {
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
         if (adb != null) {
-            return Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
+            List<Metadata> ret = Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
+            return ret;
         }
 
         return metadata;
+    }
+    
+    public boolean hasMetadata() {
+        if(metadata != null) {
+            return metadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean hasSidebarMetadata() {
+        if(sidebarMetadata != null) {
+            return sidebarMetadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
     }
 
     /**

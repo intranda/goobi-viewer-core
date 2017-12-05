@@ -338,6 +338,22 @@ public class MetadataElement {
     public List<Metadata> getMetadataList() {
         return Metadata.filterMetadataByLanguage(metadataList, selectedRecordLanguage);
     }
+    
+    public boolean hasMetadata() {
+        if(metadataList != null) {
+            return metadataList.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean hasSidebarMetadata() {
+        if(sidebarMetadataList != null) {
+            return sidebarMetadataList.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
+    }
 
     /**
      * @return the sidebarMetadataList
