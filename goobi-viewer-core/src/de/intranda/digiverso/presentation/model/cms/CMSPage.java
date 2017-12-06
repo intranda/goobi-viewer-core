@@ -593,6 +593,7 @@ public class CMSPage {
                     break;
                 case MEDIA:
                     contentString = CmsMediaBean.getMediaUrl(item.getMediaItem(), width, height);
+                    break;
                 case COMPONENT:
                     contentString = item.getComponent();
                     break;
