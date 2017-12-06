@@ -97,6 +97,21 @@ var cmsJS = ( function( cms ) {
                 // add popups
                 _map.on( 'click', 'markers', function( e ) {
                     new mapboxgl.Popup().setLngLat( e.features[ 0 ].geometry.coordinates ).setHTML( e.features[ 0 ].properties.infos ).addTo( _map );
+                    
+                    // GAUGS: save collection to local storage for slider use
+                    $( '.mapboxgl-popup-content a' ).on( 'click', function( event ) {
+                        event.preventDefault();
+                        var url = $( this ).attr( 'href' );
+                        var collection = $( this ).attr( 'data-collection' );
+                        
+                        if ( collection === 'false' ) {
+                            localStorage.setItem( 'sliderImagesFrom', 0 );
+                        }
+                        else {
+                            localStorage.setItem( 'sliderImagesFrom', collection );
+                        }
+                        window.location.href = url;
+                    } );
                 } );
             }
             
@@ -113,12 +128,21 @@ var cmsJS = ( function( cms ) {
     function _getMapFeatures( infos ) {
         if ( _debug ) {
             console.log( '---------- _getMapFeatures() ----------' );
+            console.log( '_getMapFeatures: infos - ', infos );
         }
         
         var features = [];
+        var collection = '';
         var infos = JSON.parse( infos );
         
         $.each( infos.locations, function( key, location ) {
+            // GAUGS: special condition to get the right collection number for image
+            // slider
+            if ( location.link.indexOf( '/sammlung/' ) != -1 ) {
+                var str = location.link;
+                collection = str.replace( '/sammlung/', '' ).replace( '/', '' );
+            }
+            
             var feature = {
                 'type': 'Feature',
                 'geometry': {
@@ -126,7 +150,8 @@ var cmsJS = ( function( cms ) {
                     'coordinates': [ location.longitude, location.latitude ]
                 },
                 'properties': {
-                    'infos': location.infos + '<br /><a href="' + _defaults.appUrl + location.link + '">' + _defaults.msg.propertiesLink + '</a>'
+                    'infos': location.infos + '<br /><a href="' + _defaults.appUrl + location.link + '" data-collection="' + ( ( collection !== '' ) ? collection : 'false' )
+                            + '">' + _defaults.msg.propertiesLink + '</a>'
                 }
             }
 
