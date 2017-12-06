@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
@@ -44,7 +45,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentIte
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
-public class CMSPageTest {
+public class CMSPageTest extends AbstractDatabaseEnabledTest{
 
     private static final String[] CLASSIFICATIONS = new String[]{"A", "B", "C", "D"};
     
@@ -53,6 +54,7 @@ public class CMSPageTest {
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         FacesContext facesContext = TestUtils.mockFacesContext();
         ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
         Mockito.when(servletContext.getRealPath("/")).thenReturn("WebContent");
@@ -64,6 +66,7 @@ public class CMSPageTest {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
@@ -174,7 +177,7 @@ public class CMSPageTest {
         Assert.assertEquals(updated, page.getDateUpdated());
         Assert.assertEquals(Arrays.asList(CLASSIFICATIONS), page.getClassifications());
         Assert.assertEquals(altUrl, page.getRelativeUrlPath(true));
-        Assert.assertEquals("cms/1/", page.getRelativeUrlPath(false));
+        Assert.assertEquals("cms/" + pageId + "/", page.getRelativeUrlPath(false));
         
         Assert.assertEquals(textContent, page.getContent(textId));
         
