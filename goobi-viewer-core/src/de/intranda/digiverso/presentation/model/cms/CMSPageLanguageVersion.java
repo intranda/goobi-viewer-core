@@ -214,7 +214,7 @@ public class CMSPageLanguageVersion {
 	/**
 	 *
 	 */
-	private void generateCompleteContentItemList() {
+	protected void generateCompleteContentItemList() {
 		CMSPageLanguageVersion global = getOwnerPage().getLanguageVersion(CMSPage.GLOBAL_LANGUAGE);
 		completeContentItemList = new ArrayList<>();
 		if (CMSPage.GLOBAL_LANGUAGE.equals(this.getLanguage())) {

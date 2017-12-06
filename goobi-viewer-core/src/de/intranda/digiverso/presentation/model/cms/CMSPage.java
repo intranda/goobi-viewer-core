@@ -860,4 +860,9 @@ public class CMSPage {
            return true;
        }
     }
+    
+    public void addLanguageVersion(CMSPageLanguageVersion version) {
+        this.languageVersions.add(version);
+        version.setOwnerPage(this);
+    }
 }
