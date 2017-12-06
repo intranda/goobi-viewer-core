@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -1155,6 +1156,19 @@ public class CmsBean {
             pages.add(page);
         }
         return pages;
+    }
+    
+    /**
+     * @return A list of all cmsPages except the given one
+     * @throws DAOException
+     */
+    public List<CMSPage> getAvailableParentPages(CMSPage page) throws DAOException {
+        List<CMSPage> allPages = new ArrayList<>();
+        Locale currentLocale = BeanUtils.getLocale();
+        return getCreatedPages().stream()
+                .filter(p -> !p.equals(page))
+                .sorted((p1, p2) -> p1.getMenuTitle(currentLocale).toLowerCase().compareTo(p2.getMenuTitle(currentLocale).toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     /**

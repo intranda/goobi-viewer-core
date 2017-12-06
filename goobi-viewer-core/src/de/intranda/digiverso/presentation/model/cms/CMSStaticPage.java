@@ -17,12 +17,7 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import java.util.Locale;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.exceptions.DAOException;
-
 public class CMSStaticPage {
-
-    private static final String DEFAULT_PAGE = "index.xhtml";
 
     private final String pageName;
     @Deprecated

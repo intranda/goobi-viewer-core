@@ -555,6 +555,9 @@ public class CMSPage {
         return new CMSPageLanguageVersion();
     }
     
+    /**
+     * @return the pretty url to this page (using alternative url if set)
+     */
     public String getPageUrl() {
         return BeanUtils.getCmsBean().getPageUrl(this.id);
     }

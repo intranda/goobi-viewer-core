@@ -201,6 +201,38 @@
 																</script>
 															</div>
 															
+															<!-- BREADCRUMB PARENT PAGE -->
+															<div class="edit-content-page__breadcrumb-parent">
+																<div class="form-group">
+																	<label class="col-sm-3 control-label">
+																		#{msg.cms_page_breadcrumb_parent}:
+																		<button type="button" class="btn-clean">
+																			<i class="fa fa-question-circle" aria-hidden="true"></i>
+																		</button>
+																	</label>
+																	<div class="col-sm-9">
+																		<div class="form-control__select">
+																			<h:selectOneMenu styleClass="form-control" id="page_breadcrumb-parent_select" value="#{cmsBean.selectedPage.parentPageId}">
+																				<f:selectItem itemLabel="#{msg.index}" itemValue="" />
+                                                          						<f:selectItems value="#{cmsBean.getAvailableParentPages(cmsBean.selectedPage)}" var="availablePage" itemValue="#{availablePage.id}" itemLabel="#{availablePage.menuTitle}" />
+																				<f:ajax render="@none"></f:ajax>
+																			</h:selectOneMenu>																			
+																		</div>
+																	</div>
+																</div>
+																
+																<script type="text/javascript">
+																	$( '.edit-content-page__breadcrumb-parent button' ).popover( {
+																	    html: true,
+																        title: '#{msg.cms_page_breadcrumb_parent}',
+																        content: '#{msg.cms_page_breadcrumb_parent_help}',
+																        placement: 'top',
+																        trigger: 'hover',
+																        container: 'body'
+																	} );
+																</script>
+															</div>
+															
 														</div>
 													</div>
 												</div>

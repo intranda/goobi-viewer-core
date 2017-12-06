@@ -19,14 +19,17 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
@@ -52,6 +55,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -773,6 +777,41 @@ public class NavigationHelper implements Serializable {
             }
 
             return null;
+        }
+    }
+
+    public void updateBreadcrumbs(CMSPage cmsPage) {
+        resetBreadcrumbs();
+        Set<CMSPage> linkedPages = new HashSet<>();
+        List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
+        while (cmsPage != null) {
+            if (linkedPages.contains(cmsPage)) {
+                //encountered a breadcrumb loop. Simply break here
+                return;
+            } else {
+                linkedPages.add(cmsPage);
+            }
+            if (cmsPage.getHandledPages().contains(PageType.index.getName())) {
+                //The current page is the start page. No need to add further breadcrumbs
+                return;
+            }
+            LabeledLink pageLink = new LabeledLink(cmsPage.getMenuTitle(), cmsPage.getPageUrl(), 0);
+            tempBreadcrumbs.add(0, pageLink);
+            if (StringUtils.isNotBlank(cmsPage.getParentPageId())) {
+                try {
+                    Long cmsPageId = Long.parseLong(cmsPage.getParentPageId());
+                    cmsPage = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
+                } catch (NumberFormatException | DAOException e) {
+                    logger.error("CMS breadcrumb creation: Parent page of page " + cmsPage.getId() + " is not a valid page id");
+                    cmsPage = null;
+                }
+            } else {
+                cmsPage = null;
+            }
+        }
+        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
+        synchronized (breadcrumbs) {
+            tempBreadcrumbs.forEach(bc -> breadcrumbs.add(bc));
         }
     }
 
