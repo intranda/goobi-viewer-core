@@ -118,6 +118,13 @@ public class CMSPage {
     @PrivateOwned
     private List<String> classifications = new ArrayList<>();
 
+    /**
+     * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page
+     * The system could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
+     */
+    @Column(name = "parent_page")
+    private String parentPageId = null;
+    
     @Transient
     private String sidebarElementString = null;
 
@@ -864,5 +871,19 @@ public class CMSPage {
     public void addLanguageVersion(CMSPageLanguageVersion version) {
         this.languageVersions.add(version);
         version.setOwnerPage(this);
+    }
+    
+    /**
+     * @param parentPageId the parentPageId to set
+     */
+    public void setParentPageId(String parentPageId) {
+        this.parentPageId = parentPageId;
+    }
+    
+    /**
+     * @return the parentPageId
+     */
+    public String getParentPageId() {
+        return parentPageId;
     }
 }

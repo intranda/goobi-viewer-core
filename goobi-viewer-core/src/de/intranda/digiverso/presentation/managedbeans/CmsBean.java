@@ -1267,4 +1267,5 @@ public class CmsBean {
         }
         return Collections.emptyList();
     }
+    
 }
