@@ -105,7 +105,7 @@
                             </li>
                             <li>
                                 <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
-                                    <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#{navigationHelper.currentUrl}" />
+                                    <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="pretty:index" />
                                 </h:commandLink>
                             </li>
                         </ul>
@@ -168,7 +168,7 @@
                                 </li>
                                 <li>
                                     <h:commandLink value="#{msg.logout}" action="#{userBean.logout}">
-                                        <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="#{navigationHelper.currentUrl}" />
+                                        <f:setPropertyActionListener target="#{userBean.redirectUrl}" value="pretty:index" />
                                     </h:commandLink>
                                 </li>
                             </ul>

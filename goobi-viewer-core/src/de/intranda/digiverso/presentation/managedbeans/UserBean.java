@@ -307,7 +307,8 @@ public class UserBean implements Serializable {
             //            Messages.info("logoutSuccessful");
 
             // Do not redirect to user backend pages because LoginFilter won't work here for some reason
-            if (!LoginFilter.isRestrictedUri(redirectUrl.substring(BeanUtils.getServletPathWithHostAsUrlFromJsfContext().length()))) {
+            String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+            if (redirectUrl.length() < servletPath.length() ||  !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
                 return redirectUrl;
             }
         }
