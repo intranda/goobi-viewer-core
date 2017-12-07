@@ -203,6 +203,10 @@ public class UserBean implements Serializable {
                     SearchHelper.updateFilterQuerySuffix(request);
                     // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
                     if (StringUtils.isNotEmpty(redirectUrl)) {
+                        if("#".equals(redirectUrl)) {
+                            logger.trace("Stay on current page");
+                            return "";
+                        }
                         logger.trace("Redirecting to {}", redirectUrl);
                         String redirectUrl = this.redirectUrl;
                         this.redirectUrl = "";
