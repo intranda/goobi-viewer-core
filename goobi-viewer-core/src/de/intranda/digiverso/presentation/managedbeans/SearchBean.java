@@ -1149,7 +1149,7 @@ public class SearchBean implements Serializable {
                     sortFields.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
                     logger.trace("Added sort field: {}", field);
                     // add translated sort fields
-                    if (navigationHelper != null) {
+                    if (navigationHelper != null && field.startsWith("SORT_")) {
                         Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
                         StreamSupport.stream(locales.spliterator(), false).sorted(new LocaleComparator(BeanUtils.getLocale())).map(locale -> field
                                 + SolrConstants._LANG_ + locale.getLanguage().toUpperCase()).peek(language -> logger.trace("Adding sort field: {}",
