@@ -195,11 +195,13 @@ public class CMSPageLanguageVersion {
 	 * @return
 	 */
 	public CMSContentItem getContentItem(String itemId) {
-		for (CMSContentItem item : getCompleteContentItemList()) {
-			if (item.getItemId().equals(itemId)) {
-				return item;
-			}
-		}
+	    if(getCompleteContentItemList() != null) {	        
+	        for (CMSContentItem item : getCompleteContentItemList()) {
+	            if (item.getItemId().equals(itemId)) {
+	                return item;
+	            }
+	        }
+	    }
 		return null;
 	}
 
