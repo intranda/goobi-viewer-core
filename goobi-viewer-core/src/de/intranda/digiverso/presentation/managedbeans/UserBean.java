@@ -305,6 +305,10 @@ public class UserBean implements Serializable {
         request.getSession(false).invalidate();
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
+            if("#".equals(redirectUrl)) {
+                logger.trace("Stay on current page");
+                return "";
+            }
             logger.trace("Redirecting to {}", redirectUrl);
             String redirectUrl = this.redirectUrl;
             this.redirectUrl = "";
