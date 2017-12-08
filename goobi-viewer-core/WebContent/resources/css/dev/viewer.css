@@ -1030,6 +1030,75 @@ div.mce-fullscreen {
 /* BREAKPOINT FOR SMARTPHONES */
 /* VIEWER COMPONENTS */
 /* ==============================================================
+   Bookshelves
+   style declarations for all bookshelf actions,
+   ==============================================================*/
+/* BOOKSHELF NAVIGATION */
+/* BLOCK */
+.bookshelf-navigation {
+  /* ELEMENT */
+}
+.bookshelf-navigation__icons.no-padding {
+  padding: 6px 0;
+}
+.bookshelf-navigation__icons span {
+  display: inline-block;
+  float: left;
+}
+.bookshelf-navigation__icon-heart {
+  width: 16px;
+  height: 16px;
+  margin-right: 3px;
+  background-image: url("../../images/icons/icon-bs-herz-blau_thin.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.bookshelf-navigation__icon-heart.added {
+  background-image: url("../../images/icons/icon-bs-herz-blau.svg");
+}
+.bookshelf-navigation__counter {
+  height: 16px;
+  line-height: 16px;
+  padding: 0 4px 0 3px;
+  font-size: 12px;
+  text-align: center;
+  color: #fff;
+  border-radius: 2px;
+  background-color: #428bca;
+}
+.bookshelf-navigation__dropdown-wrapper {
+  position: relative;
+}
+.bookshelf-navigation__dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  z-index: 999;
+}
+.bookshelf-navigation__dropdown-action {
+  padding: 10px;
+}
+/* ACTION BUTTONS */
+[data-bookshelf-type="dropdown"] {
+  padding: 6px 0;
+}
+[data-bookshelf-type="add"] {
+  background-image: url("../../images/icons/icon-bs-herz-blau_thin.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 72%;
+}
+[data-bookshelf-type="add"].added {
+  background-image: url("../../images/icons/icon-bs-herz-blau.svg");
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    Navigation
    style declarations for navigation.xhtml
    ==============================================================*/

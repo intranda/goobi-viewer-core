@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+      xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+      xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+      xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/gaugsammlungen/components">
+
+    <!-- interface options -->
+    <composite:interface />
+
+    <!-- component content -->
+    <composite:implementation>
+    	<div class="bookshelf-navigation">
+			<div class="row no-margin">
+				<div class="col-xs-5 no-padding bookshelf-navigation__icons">
+					<span class="bookshelf-navigation__icon-heart"></span>
+					<span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_watchListItems}"></span>
+				</div>
+				<div class="col-xs-7 no-padding bookshelf-navigation__dropdown-wrapper">
+					<button type="button" class="btn-clean" data-bookshelf-type="dropdown">
+						#{msg.bookshelf}
+					</button>
+					<div class="bookshelf-navigation__dropdown">
+						<div class="bookshelf-navigation__dropdown-list">LISTE VON ELEMENTEN</div>
+						
+						<ui:fragment rendered="#{userBean.loggedIn}">
+							<div class="bookshelf-navigation__dropdown-action">
+								<a href="#{navigationHelper.applicationUrl}mybookshelves/">#{msg.bookshelf_myBookshelves}</a>
+							</div>
+						</ui:fragment>
+					</div>
+				</div>
+			</div>
+    	</div>
+    </composite:implementation>
+</ui:composition>

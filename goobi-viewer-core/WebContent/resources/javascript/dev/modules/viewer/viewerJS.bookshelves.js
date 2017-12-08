@@ -1,0 +1,236 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Module to manage the user bookshelves.
+ * 
+ * @version 3.2.0
+ * @module viewerJS.bookshelves
+ * @requires jQuery
+ */
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    var _debug = false;
+    var _defaults = {
+        root: '',
+        bookshelvesEnabled: false,
+        userLoggedIn: false,
+    };
+    
+    viewer.bookshelves = {
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.bookshelves.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.bookshelves.init: config - ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // check if user is logged in
+            if ( _defaults.userLoggedIn ) {
+                console.log( 'user is logged in' );
+            }
+            else {
+                // toggle bookshelf dropdown
+                $( '[data-bookshelf-type="dropdown"]' ).on( 'click', function() {
+                    $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
+                } );
+                
+                // set element count of list to counter
+                _setSessionElementCount();
+                
+                // check add buttons if element is in list
+                $( '[data-bookshelf-type="add"]' ).each( function() {
+                    var currBtn = $( this );
+                    var currPi = currBtn.attr( 'data-pi' );
+                    
+                    _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
+                        if ( isSet ) {
+                            currBtn.addClass( 'added' );
+                        }
+                        else {
+                            currBtn.removeClass( 'added' );
+                        }
+                    } ).fail( function( error ) {
+                        console.error( 'ERROR - _isElementSet: ', error );
+                    } );
+                } );
+                
+                // add element to session
+                $( '[data-bookshelf-type="add"]' ).on( 'click', function() {
+                    var currBtn = $( this );
+                    var currPi = currBtn.attr( 'data-pi' );
+                    
+                    _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
+                        if ( !isSet ) {
+                            currBtn.addClass( 'added' );
+                            _setSessionElement( _defaults.root, currPi ).then( function() {
+                                _setSessionElementCount();
+                            } );
+                        }
+                        else {
+                            currBtn.removeClass( 'added' );
+                            _deleteSessionElement( _defaults.root, currPi ).then( function() {
+                                _setSessionElementCount();
+                            } );
+                        }
+                    } ).fail( function( error ) {
+                        console.error( 'ERROR - _isElementSet: ', error );
+                    } );
+                } );
+                
+            }
+        }
+    };
+    /**
+     * Method to set the count of elements in watchlist from current session (user not
+     * logged in).
+     * 
+     * @method _setSessionElementCount
+     * @param {String} root The application root path.
+     */
+    function _setSessionElementCount() {
+        if ( _debug ) {
+            console.log( '---------- _setSessionElementCount() ----------' );
+        }
+        
+        _getAllSessionElements( _defaults.root ).then( function( elements ) {
+            $( '[data-bookshelf-type="counter"]' ).empty().text( elements.items.length );
+            
+            if ( elements.items.length > 0 ) {
+                $( '.bookshelf-navigation__icon-heart' ).addClass( 'added' );
+            }
+            else {
+                $( '.bookshelf-navigation__icon-heart' ).removeClass( 'added' );
+            }
+        } ).fail( function( error ) {
+            console.error( 'ERROR - _getAllSessionElements: ', error );
+        } );
+    }
+    /**
+     * Method to get all elements in watchlist from current session (user not logged in).
+     * 
+     * @method _getAllSessionElements
+     * @param {String} root The application root path.
+     * @returns {Object} An JSON-Object which contains all session elements.
+     */
+    function _getAllSessionElements( root ) {
+        if ( _debug ) {
+            console.log( '---------- _getAllSessionElements() ----------' );
+            console.log( '_getAllSessionElements: root - ', root );
+        }
+        
+        var promise = Q( $.ajax( {
+            url: root + '/rest/bookshelves/session/get/',
+            type: "GET",
+            dataType: "JSON",
+            async: true
+        } ) );
+        
+        return promise;
+    }
+    /**
+     * Method to add an elements to watchlist in current session (user not logged in).
+     * 
+     * @method _setSessionElement
+     * @param {String} root The application root path.
+     * @param {String} pi The persistent identifier of the saved element.
+     */
+    function _setSessionElement( root, pi ) {
+        if ( _debug ) {
+            console.log( '---------- _setSessionElement() ----------' );
+            console.log( '_setSessionElement: root - ', root );
+            console.log( '_setSessionElement: pi - ', pi );
+        }
+        
+        var promise = Q( $.ajax( {
+            url: root + '/rest/bookshelves/session/add/' + pi + '/',
+            type: "GET",
+            dataType: "JSON",
+            async: true
+        } ) );
+        
+        return promise
+    }
+    /**
+     * Method to delete an element from watchlist in current session (user not logged in).
+     * 
+     * @method _deleteSessionElement
+     * @param {String} root The application root path.
+     * @param {String} pi The persistent identifier of the saved element.
+     */
+    function _deleteSessionElement( root, pi ) {
+        if ( _debug ) {
+            console.log( '---------- _deleteSessionElement() ----------' );
+            console.log( '_deleteSessionElement: root - ', root );
+            console.log( '_deleteSessionElement: pi - ', pi );
+        }
+        
+        var promise = Q( $.ajax( {
+            url: root + '/rest/bookshelves/session/delete/' + pi + '/',
+            type: "GET",
+            dataType: "JSON",
+            async: true
+        } ) );
+        
+        return promise
+    }
+    /**
+     * Method to check if element is in list (user not logged in).
+     * 
+     * @method _isElementSet
+     * @param {String} root The application root path.
+     * @param {String} pi The persistent identifier of the saved element.
+     * @returns {Boolean} True if element is set.
+     */
+    function _isElementSet( root, pi ) {
+        if ( _debug ) {
+            console.log( '---------- _isElementSet() ----------' );
+            console.log( '_isElementSet: root - ', root );
+            console.log( '_isElementSet: pi - ', pi );
+        }
+        
+        var promise = Q( $.ajax( {
+            url: root + '/rest/bookshelves/session/contains/' + pi + '/',
+            type: "GET",
+            dataType: "JSON",
+            async: true
+        } ) );
+        
+        return promise
+    }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+
+// /rest/bookshelves/session/add/{pi}/{logid}/{page}
+// Fügt der Merkliste ein Item mit der angegebenen pi, logId und Seitennummer an. Der Name
+// des Items wird automatisch aus dem zur pi gehörenden SOLR-Dokument erstellt
+// /rest/bookshelves/session/delete/{pi}/{logid}/{page}
+// Löscht das Item mit der angegebenen pi, logid und Seitennummer aus der Merkliste, wenn
+// es enthalten ist
+// /rest/bookshelves/session/delete
+// Löscht die gesamte Merkliste
+// /rest/bookshelves/session/contains/{pi}/{logid}/{page}
+// gibt "true" zurück, wenn die Merkliste ein Item mit der angegebenen pi, logid und
+// Seitennummer enthält; sonst "false"
+// /rest/bookshelves/session/count
+// Gibt die Zahl der in der Merkliste enthaltenen Items zurück.

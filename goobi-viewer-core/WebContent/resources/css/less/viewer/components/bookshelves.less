@@ -1,0 +1,84 @@
+/* ==============================================================
+   Bookshelves
+   style declarations for all bookshelf actions,
+   ==============================================================*/
+/* BOOKSHELF NAVIGATION */
+/* BLOCK */
+.bookshelf-navigation {
+	/* ELEMENT */
+	&__icons {
+		&.no-padding {
+			padding: 6px 0;
+		}
+		span {
+			display: inline-block;
+			float: left;
+		}
+	}
+	&__icon-heart {
+		width: 16px;
+		height: 16px;
+		margin-right: 3px;
+		background-image: url("@{images}/icons/icon-bs-herz-blau_thin.svg");
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: contain;
+		&.added {
+			background-image: url("@{images}/icons/icon-bs-herz-blau.svg");
+		}
+	}
+	&__counter {
+		height: 16px;
+		line-height: 16px;
+		padding: 0 4px 0 3px;
+		font-size: 12px;
+		text-align: center;
+		color: @white;
+		border-radius: 2px;
+		background-color: @blue;
+	}
+	&__dropdown-wrapper {
+		position: relative;
+		
+	}
+	&__dropdown {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		width: 300px;
+		z-index: 999;
+	}
+	&__dropdown-list {}
+	&__dropdown-action {
+		padding: 10px;
+	}
+}
+
+/* ACTION BUTTONS */
+[data-bookshelf-type="dropdown"] {
+	padding: 6px 0;
+}
+[data-bookshelf-type="get"] {}
+[data-bookshelf-type="add"] {
+	background-image: url("@{images}/icons/icon-bs-herz-blau_thin.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 72%;
+	&.added {
+		background-image: url("@{images}/icons/icon-bs-herz-blau.svg");
+	}
+}
+[data-bookshelf-type="delete"] {}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
