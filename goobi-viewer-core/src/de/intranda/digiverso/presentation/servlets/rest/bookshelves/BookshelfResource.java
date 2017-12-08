@@ -124,7 +124,7 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/session/add/{pi}/{logid}/{page}")
+    @Path("/session/add/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addToSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
@@ -179,7 +179,7 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/session/delete/{pi}/{logid}/{page}")
+    @Path("/session/delete/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteFromSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
@@ -248,7 +248,7 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/session/contains/{pi}/{logid}/{page}")
+    @Path("/session/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Boolean isInSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
             throws DAOException, IOException, RestApiException {
@@ -413,7 +413,7 @@ public class BookshelfResource {
      * 
      */
     @GET
-    @Path("/user/get/{id}/add/{pi}/{logid}/{page}")
+    @Path("/user/get/{id}/add/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
@@ -452,7 +452,7 @@ public class BookshelfResource {
      * 
      */
     @GET
-    @Path("/user/get/{id}/remove/{pi}/{logid}/{page}")
+    @Path("/user/get/{id}/delete/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi, @PathParam("logid") String logId,
             @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
@@ -483,7 +483,7 @@ public class BookshelfResource {
      * 
      */
     @GET
-    @Path("/user/get/{id}/remove/{pi}")
+    @Path("/user/get/{id}/delete/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi) throws DAOException, IOException,
             RestApiException {
@@ -629,7 +629,7 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/user/get/contains/{pi}/{logid}/{page}")
+    @Path("/user/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Object getContainingUserBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         List<Bookshelf> bookshelves = getAllUserBookshelfs();
@@ -662,7 +662,7 @@ public class BookshelfResource {
      * @throws RestApiException
      */
     @GET
-    @Path("/user/get/contains/{pi}")
+    @Path("/user/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Object getContainingUserBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
         return getContainingUserBookshelf(pi, null, null);
