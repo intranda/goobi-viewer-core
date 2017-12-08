@@ -38,7 +38,7 @@ public enum PageType {
     viewFullscreen("fullscreen"),
     viewReadingMode("readingmode"),
     viewCalendar("calendar"),
-    search("search"),
+    search("search", PageTypeHandling.cms),
     searchlist("searchlist", PageTypeHandling.cms),
     advancedSearch("searchadvanced", PageTypeHandling.cms),
     timelinesearch("searchtimeline"),

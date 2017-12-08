@@ -95,7 +95,8 @@ public class CombinedPath {
     }
     
     public String getCombinedUrl() {
-        String url = getHostUrl() + ("/" + getCombinedPath().toString() + "/").replaceAll("\\/+", "/");
+        
+        String url = ("/" + getCombinedPath().toString() + "/").replaceAll("\\/+", "/");
         return url;
     }
     
@@ -105,5 +106,14 @@ public class CombinedPath {
     @Override
     public String toString() {
         return getCombinedUrl();
+    }
+
+
+
+    /**
+     * @return true if the last url path part does not contain a dot ('.')
+     */
+    public boolean isPage() {
+        return !getCombinedPath().getFileName().toString().contains(".");
     }
 }

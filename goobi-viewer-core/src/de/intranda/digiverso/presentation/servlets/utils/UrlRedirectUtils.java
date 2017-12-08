@@ -74,34 +74,12 @@ public class UrlRedirectUtils {
                         serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
                     }
 
-                    serviceUrl = serviceUrl.replace(hostUrl, "").replaceAll("^\\/", ""); 
-                    final Path servicePath = getServicePath(serviceUrl);
-                    
-                    Path pagePath = null;
-                    Path paramsPath = null;
-                    
-                    
-                    if(servicePath.startsWith("cms") && servicePath.getName(1).toString().matches("\\d+")) {
-                        pagePath = servicePath.subpath(0, 2);
-                        paramsPath = pagePath.relativize(servicePath);
-                    } else {
-                        Optional<String> pageNameOfType = getPageTypePath(servicePath);
-                        if(pageNameOfType.isPresent()) {
-                            pagePath = Paths.get(pageNameOfType.get());
-                            paramsPath = pagePath.relativize(servicePath);
-                        } else {
-                            Optional<String> pageNameOfCmsUrl = getCmsUrlPath(servicePath);
-                            if(pageNameOfCmsUrl.isPresent()) {
-                                pagePath = Paths.get(pageNameOfCmsUrl.get());
-                                paramsPath = pagePath.relativize(servicePath);
-                            }
-                        }
-                    }
-                    if(pagePath != null) {
+                    Optional<CombinedPath> oCurrentPath = getCombinedUrl(hostUrl, serviceUrl);
+                    if(oCurrentPath.isPresent()) {
                         //viewer page url
-                        if(!isIgnoredView(pagePath)) {
+                        CombinedPath currentPath = oCurrentPath.get();
+                        if(!isIgnoredView(currentPath.getPagePath())) {
                             CombinedPath previousPath = (CombinedPath) session.getAttribute(CURRENT_URL);
-                            CombinedPath currentPath = new CombinedPath(hostUrl, pagePath, paramsPath);
                             session.setAttribute(CURRENT_URL, currentPath);
                             logger.trace("Set session attribute {} to {}", CURRENT_URL, currentPath);
                             if(previousPath != null && !currentPath.getPagePath().equals(previousPath.getPagePath())) {
@@ -123,16 +101,52 @@ public class UrlRedirectUtils {
     }
 
     /**
+     * @param hostUrl
+     * @param serviceUrl
+     * @return
+     * @throws DAOException
+     */
+    public static Optional<CombinedPath> getCombinedUrl(String hostUrl, String serviceUrl) throws DAOException {
+        serviceUrl = serviceUrl.replace(hostUrl, "").replaceAll("^\\/", ""); 
+        final Path servicePath = getServicePath(serviceUrl);
+        
+        Path pagePath = null;
+        Path paramsPath = null;
+        if(servicePath.startsWith("cms") && servicePath.getName(1).toString().matches("\\d+")) {
+            pagePath = servicePath.subpath(0, 2);
+            paramsPath = pagePath.relativize(servicePath);
+        } else {
+            Optional<String> pageNameOfType = getPageTypePath(servicePath);
+            if(pageNameOfType.isPresent()) {
+                pagePath = Paths.get(pageNameOfType.get());
+                paramsPath = pagePath.relativize(servicePath);
+            } else {
+                Optional<String> pageNameOfCmsUrl = getCmsUrlPath(servicePath);
+                if(pageNameOfCmsUrl.isPresent()) {
+                    pagePath = Paths.get(pageNameOfCmsUrl.get());
+                    paramsPath = pagePath.relativize(servicePath);
+                }
+            }
+        }
+        if(pagePath != null) {            
+            CombinedPath currentPath = new CombinedPath(hostUrl, pagePath, paramsPath);
+            return Optional.of(currentPath);
+        }
+        return Optional.empty();
+    }
+
+    /**
      * @param servicePath
      * @return
      * @throws DAOException 
      */
-    private static Optional<String> getCmsUrlPath(Path servicePath) throws DAOException {
+    public static Optional<String> getCmsUrlPath(Path servicePath) throws DAOException {
         return DataManager.getInstance().getDao().getAllCMSPages().stream()
                 .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getPersistentUrl()))
                 .map(CMSPage::getPersistentUrl)
                 .map(url -> url.replaceAll("^\\/|\\/$", ""))    //remove leading and trailing slashes
                 .filter(url -> servicePath.startsWith(url))
+                .sorted((url1, url2) -> Integer.compare(url1.length(), url2.length()))
                 .findFirst();
     }
 
@@ -146,7 +160,21 @@ public class UrlRedirectUtils {
         .map(name -> name.replaceAll("^\\/|\\/$", ""))    //remove leading and trailing slashes
 //        .peek(name -> System.out.println("Found page type name " + name))
         .filter(name -> servicePath.startsWith(name))
-        .findAny();
+        .sorted((name1, name2) -> Integer.compare(name1.length(), name2.length()))
+        .findFirst();
+        return pageNameOfType;
+    }
+    
+    /**
+     * @param servicePath
+     * @return
+     */
+    public static Optional<PageType> getPageType(final Path servicePath) {
+        Optional<PageType> pageNameOfType = Arrays.stream(PageType.values())
+        .filter(type -> !type.equals(PageType.other))
+        .filter(type -> servicePath.startsWith(type.getName().replaceAll("^\\/|\\/$", "")))
+        .sorted((type1, type2) -> Integer.compare(type1.getName().length(), type2.getName().length()))
+        .findFirst();
         return pageNameOfType;
     }
 
