@@ -1078,6 +1078,52 @@ div.mce-fullscreen {
   width: 300px;
   z-index: 999;
 }
+.bookshelf-navigation__dropdown-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.bookshelf-navigation__dropdown-list li {
+  padding: 2px 5px;
+  border-bottom: 1px solid #ccc;
+}
+.bookshelf-navigation__dropdown-list li:last-child {
+  border-bottom: none;
+}
+.bookshelf-navigation__dropdown-list h4 {
+  margin: 0;
+  padding: 5px;
+  font-size: 1rem;
+}
+.bookshelf-navigation__dropdown-list-reset {
+  border-top: 1px solid #ccc;
+}
+.bookshelf-navigation__dropdown-list-reset [data-bookshelf-type="reset"] {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  color: #428bca;
+  background-image: url("../../images/icons/icon-bs-remove.svg");
+  background-repeat: no-repeat;
+  background-position: 95% center;
+  background-size: 4%;
+}
+.bookshelf-navigation__dropdown-list-image {
+  height: 75px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.bookshelf-navigation__dropdown-list-remove {
+  text-align: center;
+}
+.bookshelf-navigation__dropdown-list-remove.no-padding {
+  padding: 5px 0;
+}
+.bookshelf-navigation__dropdown-list-remove [data-bookshelf-type="delete"] {
+  width: 16px;
+  height: 16px;
+  background-size: 72%;
+}
 .bookshelf-navigation__dropdown-action {
   padding: 10px;
 }
@@ -1091,8 +1137,19 @@ div.mce-fullscreen {
   background-position: center center;
   background-size: 72%;
 }
+[data-bookshelf-type="add"].white {
+  background-image: url("../../images/icons/icon-bs-herz-weiss_thin.svg");
+}
 [data-bookshelf-type="add"].added {
   background-image: url("../../images/icons/icon-bs-herz-blau.svg");
+}
+[data-bookshelf-type="add"].added.white {
+  background-image: url("../../images/icons/icon-bs-herz-weiss.svg");
+}
+[data-bookshelf-type="delete"] {
+  background-image: url("../../images/icons/icon-bs-remove.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

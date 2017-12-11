@@ -429,6 +429,10 @@ var viewerJS = ( function( viewer ) {
         root: '',
         bookshelvesEnabled: false,
         userLoggedIn: false,
+        msg: {
+            resetBookshelves: '',
+            resetBookshelvesConfirm: ''
+        }
     };
     
     viewer.bookshelves = {
@@ -447,8 +451,11 @@ var viewerJS = ( function( viewer ) {
                 console.log( 'user is logged in' );
             }
             else {
+                // render bookshelf dropdown list
+                _renderDropdownList();
+                
                 // toggle bookshelf dropdown
-                $( '[data-bookshelf-type="dropdown"]' ).on( 'click', function() {
+                $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
                     $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
                 } );
                 
@@ -456,24 +463,10 @@ var viewerJS = ( function( viewer ) {
                 _setSessionElementCount();
                 
                 // check add buttons if element is in list
-                $( '[data-bookshelf-type="add"]' ).each( function() {
-                    var currBtn = $( this );
-                    var currPi = currBtn.attr( 'data-pi' );
-                    
-                    _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
-                        if ( isSet ) {
-                            currBtn.addClass( 'added' );
-                        }
-                        else {
-                            currBtn.removeClass( 'added' );
-                        }
-                    } ).fail( function( error ) {
-                        console.error( 'ERROR - _isElementSet: ', error );
-                    } );
-                } );
+                _setAddActiveState();
                 
                 // add element to session
-                $( '[data-bookshelf-type="add"]' ).on( 'click', function() {
+                $( '[data-bookshelf-type="add"]' ).off().on( 'click', function() {
                     var currBtn = $( this );
                     var currPi = currBtn.attr( 'data-pi' );
                     
@@ -482,12 +475,14 @@ var viewerJS = ( function( viewer ) {
                             currBtn.addClass( 'added' );
                             _setSessionElement( _defaults.root, currPi ).then( function() {
                                 _setSessionElementCount();
+                                _renderDropdownList();
                             } );
                         }
                         else {
                             currBtn.removeClass( 'added' );
                             _deleteSessionElement( _defaults.root, currPi ).then( function() {
                                 _setSessionElementCount();
+                                _renderDropdownList();
                             } );
                         }
                     } ).fail( function( error ) {
@@ -592,6 +587,28 @@ var viewerJS = ( function( viewer ) {
         return promise
     }
     /**
+     * Method to delete all elements from watchlist in current session (user not logged
+     * in).
+     * 
+     * @method _deleteAllSessionElements
+     * @param {String} root The application root path.
+     */
+    function _deleteAllSessionElements( root ) {
+        if ( _debug ) {
+            console.log( '---------- _deleteAllSessionElements() ----------' );
+            console.log( '_deleteAllSessionElements: root - ', root );
+        }
+        
+        var promise = Q( $.ajax( {
+            url: root + '/rest/bookshelves/session/delete/',
+            type: "GET",
+            dataType: "JSON",
+            async: true
+        } ) );
+        
+        return promise
+    }
+    /**
      * Method to check if element is in list (user not logged in).
      * 
      * @method _isElementSet
@@ -615,6 +632,121 @@ var viewerJS = ( function( viewer ) {
         
         return promise
     }
+    /**
+     * Method to render the element list in bookshelf dropdown (user not logged in).
+     * 
+     * @method _renderDropdownList
+     */
+    function _renderDropdownList() {
+        if ( _debug ) {
+            console.log( '---------- _renderDropdownList() ----------' );
+        }
+        
+        _getAllSessionElements( _defaults.root ).then( function( elements ) {
+            // DOM-Elements
+            var dropdownListReset = $( '<button>' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'reset' ).text( _defaults.msg.resetBookshelves );
+            var dropdownList = $( '<ul />' ).addClass( 'list' );
+            var dropdownListItem = null;
+            var dropdownListItemRow = null;
+            var dropdownListItemColLeft = null;
+            var dropdownListItemColCenter = null;
+            var dropdownListItemColRight = null;
+            var dropdownListItemImage = null;
+            var dropdownListItemName = null;
+            var dropdownListItemNameLink = null;
+            var dropdownListItemDelete = null;
+            
+            elements.items
+                    .forEach( function( item ) {
+                        dropdownListItem = $( '<li />' );
+                        dropdownListItemRow = $( '<div />' ).addClass( 'row no-margin' );
+                        dropdownListItemColLeft = $( '<div />' ).addClass( 'col-xs-4 no-padding' );
+                        dropdownListItemColCenter = $( '<div />' ).addClass( 'col-xs-7 no-padding' );
+                        dropdownListItemColRight = $( '<div />' ).addClass( 'col-xs-1 no-padding bookshelf-navigation__dropdown-list-remove' );
+                        dropdownListItemImage = $( '<div />' ).addClass( 'bookshelf-navigation__dropdown-list-image' ).css( 'background-image', 'url('
+                                + item.representativeImageUrl + ')' );
+                        dropdownListItemName = $( '<h4 />' );
+                        dropdownListItemNameLink = $( '<a />' ).attr( 'href', _defaults.root + item.url ).text( item.name );
+                        dropdownListItemDelete = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'delete' )
+                                .attr( 'data-pi', item.pi );
+                        
+                        // build bookshelf item
+                        dropdownListItemName.append( dropdownListItemNameLink );
+                        dropdownListItemColLeft.append( dropdownListItemImage );
+                        dropdownListItemColCenter.append( dropdownListItemName );
+                        dropdownListItemColRight.append( dropdownListItemDelete );
+                        dropdownListItemRow.append( dropdownListItemColLeft ).append( dropdownListItemColCenter ).append( dropdownListItemColRight );
+                        dropdownListItem.append( dropdownListItemRow );
+                        dropdownList.append( dropdownListItem );
+                    } );
+            
+            // render complete list
+            $( '.bookshelf-navigation__dropdown-list' ).empty().append( dropdownList );
+            
+            // render reset if items exist
+            if ( elements.items.length > 0 ) {
+                $( '.bookshelf-navigation__dropdown-list-reset' ).empty().append( dropdownListReset );
+            }
+            else {
+                $( '.bookshelf-navigation__dropdown-list-reset' ).empty();
+            }
+            
+            // delete single item
+            $( '[data-bookshelf-type="delete"]' ).on( 'click', function() {
+                var currBtn = $( this );
+                var currPi = currBtn.attr( 'data-pi' );
+                
+                _deleteSessionElement( _defaults.root, currPi ).then( function() {
+                    _setSessionElementCount();
+                    _setAddActiveState();
+                    _renderDropdownList();
+                } );
+            } );
+            
+            // delete all items
+            $( '[data-bookshelf-type="reset"]' ).on( 'click', function() {
+                if ( confirm( _defaults.msg.resetBookshelvesConfirm ) ) {
+                    _deleteAllSessionElements( _defaults.root ).then( function() {
+                        _setSessionElementCount();
+                        _setAddActiveState();
+                        _renderDropdownList();
+                    } );
+                }
+                else {
+                    return false;
+                }
+            } );
+            
+        } ).fail( function( error ) {
+            console.error( 'ERROR - _getAllSessionElements: ', error );
+        } );
+    }
+    /**
+     * Method to set the active state of add buttons (user not logged in).
+     * 
+     * @method _setAddActiveState
+     */
+    function _setAddActiveState() {
+        if ( _debug ) {
+            console.log( '---------- _setAddActiveState() ----------' );
+        }
+        
+        $( '[data-bookshelf-type="add"]' ).each( function() {
+            var currBtn = $( this );
+            var currPi = currBtn.attr( 'data-pi' );
+            
+            _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
+                if ( isSet ) {
+                    currBtn.addClass( 'added' );
+                }
+                else {
+                    currBtn.removeClass( 'added' );
+                }
+            } ).fail( function( error ) {
+                console.error( 'ERROR - _isElementSet: ', error );
+            } );
+        } );
+    }
     
     return viewer;
     
@@ -626,8 +758,6 @@ var viewerJS = ( function( viewer ) {
 // /rest/bookshelves/session/delete/{pi}/{logid}/{page}
 // Löscht das Item mit der angegebenen pi, logid und Seitennummer aus der Merkliste, wenn
 // es enthalten ist
-// /rest/bookshelves/session/delete
-// Löscht die gesamte Merkliste
 // /rest/bookshelves/session/contains/{pi}/{logid}/{page}
 // gibt "true" zurück, wenn die Merkliste ein Item mit der angegebenen pi, logid und
 // Seitennummer enthält; sonst "false"
