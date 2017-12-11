@@ -366,6 +366,60 @@ table,
 .popover-content {
   color: #1a1a1a;
 }
+/* BS GRID RESETS */
+.row.no-margin {
+  margin: 0;
+}
+.col-xs-1.no-padding,
+.col-xs-2.no-padding,
+.col-xs-3.no-padding,
+.col-xs-4.no-padding,
+.col-xs-5.no-padding,
+.col-xs-6.no-padding,
+.col-xs-7.no-padding,
+.col-xs-8.no-padding,
+.col-xs-9.no-padding,
+.col-xs-10.no-padding,
+.col-xs-11.no-padding,
+.col-xs-12.no-padding,
+.col-sm-1.no-padding,
+.col-sm-2.no-padding,
+.col-sm-3.no-padding,
+.col-sm-4.no-padding,
+.col-sm-5.no-padding,
+.col-sm-6.no-padding,
+.col-sm-7.no-padding,
+.col-sm-8.no-padding,
+.col-sm-9.no-padding,
+.col-sm-10.no-padding,
+.col-sm-11.no-padding,
+.col-sm-12.no-padding,
+.col-md-1.no-padding,
+.col-md-2.no-padding,
+.col-md-3.no-padding,
+.col-md-4.no-padding,
+.col-md-5.no-padding,
+.col-md-6.no-padding,
+.col-md-7.no-padding,
+.col-md-8.no-padding,
+.col-md-9.no-padding,
+.col-md-10.no-padding,
+.col-md-11.no-padding,
+.col-md-12.no-padding,
+.col-lg-1.no-padding,
+.col-lg-2.no-padding,
+.col-lg-3.no-padding,
+.col-lg-4.no-padding,
+.col-lg-5.no-padding,
+.col-lg-6.no-padding,
+.col-lg-7.no-padding,
+.col-lg-8.no-padding,
+.col-lg-9.no-padding,
+.col-lg-10.no-padding,
+.col-lg-11.no-padding,
+.col-lg-12.no-padding {
+  padding: 0;
+}
 /* CHROME RESETS */
 button {
   border-radius: 0;
