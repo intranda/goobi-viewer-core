@@ -74,7 +74,7 @@ public class UrlRedirectUtils {
                         serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
                     }
 
-                    Optional<CombinedPath> oCurrentPath = getCombinedUrl(hostUrl, serviceUrl);
+                    Optional<CombinedPath> oCurrentPath = getCombinedUrl(hostUrl, serviceUrl, true);
                     if(oCurrentPath.isPresent()) {
                         //viewer page url
                         CombinedPath currentPath = oCurrentPath.get();
@@ -101,40 +101,60 @@ public class UrlRedirectUtils {
     }
 
     /**
-     * @param hostUrl
-     * @param serviceUrl
+     * Create a combined path from the given url. If the url leads to a known PageType, associates the PageType with the combined path.
+     * If the path matches the alternative ('persistent') url of a cmsPage, this cmsPage is associated with the path
+     * 
+     * @param hostUrl       The absolute path of the servlet including the host part ('viewer')
+     * @param serviceUrl    The concrete requested url, optionally including the hostUrl 
      * @return
      * @throws DAOException
      */
-    public static Optional<CombinedPath> getCombinedUrl(String hostUrl, String serviceUrl) throws DAOException {
+    public static Optional<CombinedPath> getCombinedUrl(String hostUrl, String serviceUrl, boolean usePretty) throws DAOException {
         serviceUrl = serviceUrl.replace(hostUrl, "").replaceAll("^\\/", ""); 
-        final Path servicePath = getServicePath(serviceUrl);
+        final Path servicePath = getServicePath(serviceUrl, usePretty);
         
-        Path pagePath = null;
-        Path paramsPath = null;
+        CombinedPath currentPath = new CombinedPath();
+        currentPath.setHostUrl(hostUrl);
+        
         if(servicePath.startsWith("cms") && servicePath.getName(1).toString().matches("\\d+")) {
-            pagePath = servicePath.subpath(0, 2);
-            paramsPath = pagePath.relativize(servicePath);
+            currentPath.setPagePath(servicePath.subpath(0, 2));
+            currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
         } else {
-            Optional<String> pageNameOfType = getPageTypePath(servicePath);
-            if(pageNameOfType.isPresent()) {
-                pagePath = Paths.get(pageNameOfType.get());
-                paramsPath = pagePath.relativize(servicePath);
+            Optional<PageType> pageType = getPageType(servicePath);
+            if(pageType.isPresent()) {
+                currentPath.setPagePath(Paths.get(pageType.get().getName()));
+                currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
+                currentPath.setPageType(pageType.get());
             } else {
-                Optional<String> pageNameOfCmsUrl = getCmsUrlPath(servicePath);
-                if(pageNameOfCmsUrl.isPresent()) {
-                    pagePath = Paths.get(pageNameOfCmsUrl.get());
-                    paramsPath = pagePath.relativize(servicePath);
+                Optional<CMSPage> cmsPage = getCmsPage(servicePath);
+                if(cmsPage.isPresent()) {
+                    currentPath.setPagePath(Paths.get(cmsPage.get().getPersistentUrl()));
+                    currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
+                    currentPath.setCmsPage(cmsPage.get());
                 }
             }
         }
-        if(pagePath != null) {            
-            CombinedPath currentPath = new CombinedPath(hostUrl, pagePath, paramsPath);
+        if(StringUtils.isNotBlank(currentPath.getPagePath().toString())) {            
             return Optional.of(currentPath);
         }
         return Optional.empty();
     }
 
+    /**
+     * Gets the best matching CMSPage which alternative url ('persistent url') matches the beginning of the given path
+     * 
+     * @param servicePath
+     * @return
+     * @throws DAOException 
+     */
+    public static Optional<CMSPage> getCmsPage(Path servicePath) throws DAOException {
+        return DataManager.getInstance().getDao().getAllCMSPages().stream()
+                .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getPersistentUrl()))
+                .filter(page -> servicePath.startsWith(page.getPersistentUrl().replaceAll("^\\/|\\/$", "")))
+                .sorted((page1, page2) -> Integer.compare(page1.getPersistentUrl().length(), page2.getPersistentUrl().length()))
+                .findFirst();
+    }
+    
     /**
      * @param servicePath
      * @return
@@ -149,7 +169,7 @@ public class UrlRedirectUtils {
                 .sorted((url1, url2) -> Integer.compare(url1.length(), url2.length()))
                 .findFirst();
     }
-
+    
     /**
      * @param servicePath
      * @return
@@ -158,7 +178,6 @@ public class UrlRedirectUtils {
         Optional<String> pageNameOfType = Arrays.stream(PageType.values())
         .map(type -> type.getName())
         .map(name -> name.replaceAll("^\\/|\\/$", ""))    //remove leading and trailing slashes
-//        .peek(name -> System.out.println("Found page type name " + name))
         .filter(name -> servicePath.startsWith(name))
         .sorted((name1, name2) -> Integer.compare(name1.length(), name2.length()))
         .findFirst();
@@ -171,8 +190,7 @@ public class UrlRedirectUtils {
      */
     public static Optional<PageType> getPageType(final Path servicePath) {
         Optional<PageType> pageNameOfType = Arrays.stream(PageType.values())
-        .filter(type -> !type.equals(PageType.other))
-        .filter(type -> servicePath.startsWith(type.getName().replaceAll("^\\/|\\/$", "")))
+        .filter(type -> type.matches(servicePath))
         .sorted((type1, type2) -> Integer.compare(type1.getName().length(), type2.getName().length()))
         .findFirst();
         return pageNameOfType;
@@ -183,9 +201,9 @@ public class UrlRedirectUtils {
      * @return
      * @throws DAOException
      */
-    private static Path getServicePath(String serviceUrl) throws DAOException {
+    private static Path getServicePath(String serviceUrl, boolean usePretty) throws DAOException {
         Path servicePath = Paths.get(serviceUrl);
-        if (servicePath.getName(0).toString().equals("cms")) {
+        if (usePretty && servicePath.getName(0).toString().equals("cms")) {
             //cms page
             final String cmsPageId = servicePath.getName(1).toString();
             if (StringUtils.isNotBlank(cmsPageId)) {

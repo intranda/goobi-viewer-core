@@ -121,6 +121,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
+    @Deprecated
     public void testForwardToCMSPage() throws IOException, DAOException {
 
         //mock faces

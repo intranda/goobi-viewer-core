@@ -52,6 +52,17 @@
 	</context-param>
 
 	<filter>
+		<filter-name>UrlRedirectFilter</filter-name>
+		<filter-class>de.intranda.digiverso.presentation.filters.UrlRedirectFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>UrlRedirectFilter</filter-name>
+		<url-pattern>*.xhtml</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+
+	<filter>
 		<filter-name>Pretty Filter</filter-name>
 		<filter-class>com.ocpsoft.pretty.PrettyFilter</filter-class>
 	</filter>
@@ -89,17 +100,6 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>LoginFilter</filter-name>
-		<url-pattern>*.xhtml</url-pattern>
-		<dispatcher>REQUEST</dispatcher>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
-	
-	<filter>
-		<filter-name>UrlRedirectFilter</filter-name>
-		<filter-class>de.intranda.digiverso.presentation.filters.UrlRedirectFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>UrlRedirectFilter</filter-name>
 		<url-pattern>*.xhtml</url-pattern>
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>

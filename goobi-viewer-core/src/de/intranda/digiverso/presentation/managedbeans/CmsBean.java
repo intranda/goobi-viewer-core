@@ -1211,6 +1211,7 @@ public class CmsBean {
         Messages.info("cms_staticPagesSaved");
     }
 
+    @Deprecated
     public void forwardToCMSPage() throws IOException, DAOException {
         String pageName = navigationHelper.getCurrentPage();
         CMSStaticPage page = getStaticPageForPageType(PageType.getByName(pageName));
@@ -1230,6 +1231,7 @@ public class CmsBean {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
+    @Deprecated
     public void forwardToCMSPage(CMSPage page) throws IOException, PresentationException, IndexUnreachableException, DAOException {
         logger.trace("forwardToCMSPage page: " + page);
         setCurrentPage(page);
@@ -1245,9 +1247,9 @@ public class CmsBean {
         FacesContext context = getFacesContext();
         if (StringUtils.isNotBlank(path)) {
             cmsContextAction(false);
-            logger.debug("Forwarding to " + path);
-            context.getExternalContext().dispatch(path);
-            context.responseComplete();
+            logger.warn("Attempting to forward to " + path);
+//            context.getExternalContext().dispatch(path);
+//            context.responseComplete();
         }
     }
 

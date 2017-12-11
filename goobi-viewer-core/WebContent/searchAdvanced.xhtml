@@ -8,7 +8,6 @@
 			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('searchadvanced', false, true)}" />
 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.searchAdvanced,1)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchParameters}" />
-			<f:event type="preRenderView" listener="#{cmsBean.forwardToCMSPage}" />
 		</f:metadata>
 	</ui:define>
 
