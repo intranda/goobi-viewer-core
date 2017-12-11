@@ -83,20 +83,23 @@ public class MetsResolver extends HttpServlet {
                     String format = (String) hits.get(0).getFieldValue(SolrConstants.SOURCEDOCFORMAT);
                     String dataRepository = (String) hits.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
                     if (StringUtils.isNotEmpty(dataRepository)) {
+                        String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                        if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                            sbPath.append(dataRepositoriesHome).append('/');
+                        }
                         if (format != null) {
                             switch (format.toUpperCase()) {
                                 case SolrConstants._METS:
-                                    sbPath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append('/').append(
-                                            dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                            .getIndexedMetsFolder());
                                     break;
                                 case SolrConstants._LIDO:
-                                    sbPath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append('/').append(
-                                            dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
+                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                            .getIndexedLidoFolder());
                                     break;
                             }
                         } else {
-                            sbPath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append('/').append(dataRepository)
-                                    .append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                            sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                         }
                     } else {
                         // Backwards compatibility for old indexes

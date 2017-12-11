@@ -187,6 +187,7 @@ public class ConfigurationTest {
      * @verifies return correct value
      */
     @Test
+    @Deprecated
     public void getDataRepositoriesHome_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("resources/test/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
     }

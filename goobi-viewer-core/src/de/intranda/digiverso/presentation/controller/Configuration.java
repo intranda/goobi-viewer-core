@@ -2366,8 +2366,9 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    @Deprecated
     public String getDataRepositoriesHome() {
-        return getLocalString("dataRepositoriesHome");
+        return getLocalString("dataRepositoriesHome", "");
     }
 
     /**

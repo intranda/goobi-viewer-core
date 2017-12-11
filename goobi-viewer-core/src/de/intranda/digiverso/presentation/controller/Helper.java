@@ -970,13 +970,13 @@ public class Helper {
 
         StringBuilder url = new StringBuilder(200);
         if (StringUtils.isNotEmpty(dataRepository)) {
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
             url.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=file:/").append(
-                    DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? "/" : "").append(DataManager
-                            .getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(DataManager
-                                    .getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append('/').append(fileName).append(
-                                            "&width=").append(width).append("&height=").append(height).append("&rotate=").append(rotation).append(
-                                                    "&resolution=72").append(DataManager.getInstance().getConfiguration().isForceJpegConversion()
-                                                            ? "&format=jpg" : "");
+                    (StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "").append(dataRepositoriesHome)
+                    .append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi)
+                    .append('/').append(fileName).append("&width=").append(width).append("&height=").append(height).append("&rotate=").append(
+                            rotation).append("&resolution=72").append(DataManager.getInstance().getConfiguration().isForceJpegConversion()
+                                    ? "&format=jpg" : "");
         } else {
             url.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=").append(pi)
                     .append('/').append(fileName).append("&width=").append(width).append("&height=").append(height).append("&rotate=").append(
@@ -1184,7 +1184,7 @@ public class Helper {
         }
         return string.intern();
     }
-    
+
     /**
      * Loads full-text via the REST service. ALTO is preferred, with a plain text fallback.
      * 

@@ -129,7 +129,7 @@ public class BrowseElement implements Serializable {
     private final Locale locale;
     @JsonIgnore
     private final String dataRepository;
-    
+
     private List<String> recordLanguages;
 
     /**
@@ -407,7 +407,8 @@ public class BrowseElement implements Serializable {
                 // Determine whether the file is in a data repository
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    sb.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
                             .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
                                     DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append('/').append(
                                             filepath);
@@ -531,7 +532,7 @@ public class BrowseElement implements Serializable {
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
             useOverviewPage = true;
         }
-        
+
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
 
@@ -815,10 +816,10 @@ public class BrowseElement implements Serializable {
                             anyTitle = se.getMetadataValue(key);
                         }
                     }
-                    if(StringUtils.isBlank(ret)) {
-                        if(StringUtils.isNotBlank(englishTitle)) {
+                    if (StringUtils.isBlank(ret)) {
+                        if (StringUtils.isNotBlank(englishTitle)) {
                             ret = englishTitle;
-                        } else if(StringUtils.isNotBlank(germanTitle)) {
+                        } else if (StringUtils.isNotBlank(germanTitle)) {
                             ret = germanTitle;
                         } else {
                             ret = anyTitle;
@@ -855,10 +856,10 @@ public class BrowseElement implements Serializable {
                 String dataRepository = (String) docs.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
-                            .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                                    DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(docs.get(0).getFieldValue(
-                                            SolrConstants.PI)).append('/').append(ret);
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    sb.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                            .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                    .getMediaFolder()).append('/').append(docs.get(0).getFieldValue(SolrConstants.PI)).append('/').append(ret);
                     ret = sb.toString();
                 } else {
                     ret = new StringBuilder((String) docs.get(0).getFieldValue(SolrConstants.PI)).append('/').append(ret).toString();
@@ -1236,7 +1237,7 @@ public class BrowseElement implements Serializable {
 
         return contextObject;
     }
-    
+
     /**
      * @return the recordLanguages
      */
