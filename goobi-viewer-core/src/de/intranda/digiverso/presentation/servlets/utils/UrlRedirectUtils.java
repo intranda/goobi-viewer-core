@@ -63,31 +63,20 @@ public class UrlRedirectUtils {
             if (request != null) {
                 HttpServletRequest httpRequest = (HttpServletRequest) request;
                 HttpSession session = httpRequest.getSession();
-
                 if (session != null) {
                     // http://localhost:8080/viewer/ || http://localhost:8080/
                     String hostUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest);
-
+                    String hostName = httpRequest.getContextPath();
                     String serviceUrl = ((HttpServletRequest) request).getRequestURI();
                     PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
                     if (context != null && context.getRequestURL() != null) {
                         serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + context.getRequestURL().toURL();
                     }
 
-                    Optional<CombinedPath> oCurrentPath = getCombinedUrl(hostUrl, serviceUrl, true);
+                    Optional<CombinedPath> oCurrentPath = getCombinedUrl(hostUrl, hostName, serviceUrl, true);
                     if(oCurrentPath.isPresent()) {
                         //viewer page url
-                        CombinedPath currentPath = oCurrentPath.get();
-                        if(!isIgnoredView(currentPath.getPagePath())) {
-                            CombinedPath previousPath = (CombinedPath) session.getAttribute(CURRENT_URL);
-                            session.setAttribute(CURRENT_URL, currentPath);
-                            logger.trace("Set session attribute {} to {}", CURRENT_URL, currentPath);
-                            if(previousPath != null && !currentPath.getPagePath().equals(previousPath.getPagePath())) {
-                                //different page
-                                session.setAttribute(PREVIOUS_URL, previousPath);
-                                logger.trace("Set session attribute {} to {}", PREVIOUS_URL, previousPath);
-                            }
-                        }
+                        setCurrentView(oCurrentPath.get(), session);
                     } else {
                         //some other url
                         return;
@@ -101,6 +90,23 @@ public class UrlRedirectUtils {
     }
 
     /**
+     * @param session
+     * @param currentPath
+     */
+    public static void setCurrentView(CombinedPath currentPath,HttpSession session) {
+        if(!isIgnoredView(currentPath.getPagePath())) {
+            CombinedPath previousPath = (CombinedPath) session.getAttribute(CURRENT_URL);
+            session.setAttribute(CURRENT_URL, currentPath);
+            logger.trace("Set session attribute {} to {}", CURRENT_URL, currentPath);
+            if(previousPath != null && !currentPath.getPagePath().equals(previousPath.getPagePath())) {
+                //different page
+                session.setAttribute(PREVIOUS_URL, previousPath);
+                logger.trace("Set session attribute {} to {}", PREVIOUS_URL, previousPath);
+            }
+        }
+    }
+
+    /**
      * Create a combined path from the given url. If the url leads to a known PageType, associates the PageType with the combined path.
      * If the path matches the alternative ('persistent') url of a cmsPage, this cmsPage is associated with the path
      * 
@@ -109,14 +115,20 @@ public class UrlRedirectUtils {
      * @return
      * @throws DAOException
      */
-    public static Optional<CombinedPath> getCombinedUrl(String hostUrl, String serviceUrl, boolean usePretty) throws DAOException {
+    public static Optional<CombinedPath> getCombinedUrl(String hostUrl, String hostName, String serviceUrl, boolean usePretty) throws DAOException {
         serviceUrl = serviceUrl.replace(hostUrl, "").replaceAll("^\\/", ""); 
         final Path servicePath = getServicePath(serviceUrl, usePretty);
         
         CombinedPath currentPath = new CombinedPath();
         currentPath.setHostUrl(hostUrl);
+        currentPath.setHostName(hostName);
         
         if(servicePath.startsWith("cms") && servicePath.getName(1).toString().matches("\\d+")) {
+            Long cmsPageId = Long.parseLong(servicePath.getName(1).toString());
+            CMSPage page = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
+            if(page != null) {
+                currentPath.setCmsPage(page);
+            }
             currentPath.setPagePath(servicePath.subpath(0, 2));
             currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
         } else {
@@ -125,6 +137,15 @@ public class UrlRedirectUtils {
                 currentPath.setPagePath(Paths.get(pageType.get().getName()));
                 currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                 currentPath.setPageType(pageType.get());
+                if(pageType.get().isHandledWithCms()) {
+                    Optional<CMSPage> oCmsPage = DataManager.getInstance().getDao().getAllCMSPages().stream()
+                            .filter(page -> StringUtils.isNotBlank(page.getStaticPageName()))
+                            .filter(page -> pageType.get().matches(page.getStaticPageName()))
+                            .findFirst();
+                    if(oCmsPage.isPresent()) {
+                        currentPath.setCmsPage(oCmsPage.get());
+                    }
+                }
             } else {
                 Optional<CMSPage> cmsPage = getCmsPage(servicePath);
                 if(cmsPage.isPresent()) {
@@ -243,20 +264,35 @@ public class UrlRedirectUtils {
         }
         return false;
     }
-
-    public synchronized static String getPreviousView(ServletRequest request) {
+    
+    public synchronized static Optional<CombinedPath> getCurrentView(ServletRequest request) {
         if (request != null) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpSession session = httpRequest.getSession();
 
             if (session != null) {
-                CombinedPath previousPath =  (CombinedPath)session.getAttribute(PREVIOUS_URL);
+                CombinedPath previousPath =  (CombinedPath) session.getAttribute(CURRENT_URL);
                 if(previousPath != null) {
-                    return previousPath.getCombinedUrl();
+                    return Optional.of(new CombinedPath(previousPath));
                 }
             }
         }
-        return "";
+        return Optional.empty();
+    }
+
+    public synchronized static Optional<CombinedPath> getPreviousView(ServletRequest request) {
+        if (request != null) {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            HttpSession session = httpRequest.getSession();
+
+            if (session != null) {
+                CombinedPath previousPath =  (CombinedPath) session.getAttribute(PREVIOUS_URL);
+                if(previousPath != null) {
+                    return Optional.of(new CombinedPath(previousPath));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     public synchronized static void redirectToUrl(String url) throws IOException {
@@ -265,16 +301,5 @@ public class UrlRedirectUtils {
         FacesContext.getCurrentInstance().getExternalContext().redirect(url);
     }
 
-    public synchronized static String getCurrentView(ServletRequest request) {
-        if (request != null) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession();
-
-            if (session != null) {
-                return (String) session.getAttribute(CURRENT_URL);
-            }
-        }
-        return "";
-    }
 
 }

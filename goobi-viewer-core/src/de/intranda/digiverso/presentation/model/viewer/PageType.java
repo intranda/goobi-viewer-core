@@ -259,7 +259,7 @@ public enum PageType {
             return false;
         } else {
             pagePath = pagePath.replaceAll("^\\/|\\/$", "");
-            return pagePath.equalsIgnoreCase(this.name) || pagePath.equalsIgnoreCase(getName());
+            return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.name) || pagePath.equalsIgnoreCase(getName());
         }
     }
     
@@ -273,7 +273,7 @@ public enum PageType {
         if(pagePath == null || StringUtils.isBlank(pagePath.toString())) {
             return false;
         } else {
-            return pagePath.startsWith(this.name) || pagePath.startsWith(getName());
+            return  pagePath.startsWith(this.name()) || pagePath.startsWith(this.name) || pagePath.startsWith(getName());
         }
     }
 }

@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.servlets.utils;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
@@ -28,6 +30,7 @@ import de.intranda.digiverso.presentation.model.viewer.PageType;
 public class CombinedPath {
 
     private String hostUrl;
+    private String hostName;
     private Path pagePath;
     private Path parameterPath;
     
@@ -39,6 +42,7 @@ public class CombinedPath {
      */
     public CombinedPath() {
         hostUrl = "";
+        
         pagePath = Paths.get("");
         parameterPath = Paths.get("");
     }
@@ -50,11 +54,26 @@ public class CombinedPath {
      * @param pagePath
      * @param parameterPath
      */
-    public CombinedPath(String hostUrl, Path pagePath, Path parameterPath) {
+    public CombinedPath(String hostUrl, String hostName, Path pagePath, Path parameterPath) {
         super();
         this.hostUrl = hostUrl;
+        this.hostName = hostName;
         this.pagePath = pagePath;
         this.parameterPath = parameterPath;
+    }
+
+
+
+    /**
+     * @param previousPath
+     */
+    public CombinedPath(CombinedPath blueprint) {
+        this.hostUrl = blueprint.hostUrl;
+        this.hostName = blueprint.hostName;
+        this.pagePath = blueprint.pagePath;
+        this.parameterPath = blueprint.parameterPath;
+        this.cmsPage = blueprint.cmsPage;
+        this.pageType = blueprint.pageType;
     }
 
 
@@ -98,6 +117,25 @@ public class CombinedPath {
     
     public Path getCombinedPath() {
         return pagePath.resolve(parameterPath);
+    }
+    
+    public Path getPrettifiedPagePath() {
+        if(getCmsPage() != null && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
+            return Paths.get(getCmsPage().getPersistentUrl().replaceAll("^\\/|\\/$", ""));
+        } else if(getCmsPage() != null && StringUtils.isNotBlank(getCmsPage().getStaticPageName())) {
+            return Paths.get(getCmsPage().getStaticPageName().replaceAll("^\\/|\\/$", ""));
+        } else {            
+            return getPagePath();
+        }
+    }
+    
+    public Path getCombinedPrettyfiedPath() {
+        return getPrettifiedPagePath().resolve(getParameterPath());
+    }
+    
+    public String getCombinedPrettyfiedUrl() {
+        String url = ("/" + getCombinedPrettyfiedPath().toString() + "/").replaceAll("\\/+", "/");
+        return url;
     }
     
     public String getCombinedUrl() {
@@ -160,4 +198,20 @@ public class CombinedPath {
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = cmsPage;
     }
+
+    /**
+     * @return the hostName
+     */
+    public String getHostName() {
+        return hostName;
+    }
+    
+    /**
+     * @param hostName the hostName to set
+     */
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
+
 }
+

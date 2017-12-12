@@ -193,7 +193,7 @@ public class NavigationHelper implements Serializable {
             resetCurrentDocument();
         }
 
-        this.savePageUrl();
+//        this.savePageUrl();
 
         setCmsPage(setCmsPage);
         this.currentPage = currentPage;
@@ -791,7 +791,7 @@ public class NavigationHelper implements Serializable {
             } else {
                 linkedPages.add(cmsPage);
             }
-            if (cmsPage.getHandledPages().contains(PageType.index.getName())) {
+            if (PageType.index.matches(cmsPage.getStaticPageName())) {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
@@ -1049,7 +1049,7 @@ public class NavigationHelper implements Serializable {
 
     public String getPreviousViewUrl() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String previousUrl = UrlRedirectUtils.getPreviousView(request);
+        String previousUrl = UrlRedirectUtils.getPreviousView(request).map(path -> path.getCombinedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
         }
@@ -1058,7 +1058,7 @@ public class NavigationHelper implements Serializable {
 
     public void redirectToPreviousView() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String previousUrl = UrlRedirectUtils.getPreviousView(request);
+        String previousUrl = UrlRedirectUtils.getPreviousView(request).map(path -> path.getCombinedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = homePage();
         }

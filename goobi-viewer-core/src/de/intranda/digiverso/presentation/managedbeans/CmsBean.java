@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -70,6 +71,8 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.servlets.utils.CombinedPath;
+import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * CMS functions.
@@ -826,6 +829,7 @@ public class CmsBean {
                     }
                     return searchAction(item);
                 } else if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
+//                    setSearchType();
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
                     }
@@ -1144,8 +1148,8 @@ public class CmsBean {
         for (PageType pageType : PageType.getTypesHandledByCms()) {
             CMSStaticPage page = new CMSStaticPage(pageType.getName());
             CMSPage cmsPage = getCreatedPages().stream().peek(p -> logger.trace("page {} staticPageName: {}", p.getId(), p.getStaticPageName())).peek(
-                    p -> logger.trace("page {} handles pages {}", p.getId(), p.getHandledPages())).filter(p -> p.getHandledPages().contains(pageType
-                            .name()) || p.getHandledPages().contains(pageType.getName())).findFirst().orElse(null);
+                    p -> logger.trace("page {} handles page {}", p.getId(), p.getStaticPageName())).filter(p -> pageType.matches(p
+                            .getStaticPageName()) || pageType.matches(p.getStaticPageName())).findFirst().orElse(null);
             //            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
             if (cmsPage != null) {
                 page.setCmsPage(cmsPage);
@@ -1157,7 +1161,7 @@ public class CmsBean {
         }
         return pages;
     }
-    
+
     /**
      * @return A list of all cmsPages except the given one
      * @throws DAOException
@@ -1165,10 +1169,8 @@ public class CmsBean {
     public List<CMSPage> getAvailableParentPages(CMSPage page) throws DAOException {
         List<CMSPage> allPages = new ArrayList<>();
         Locale currentLocale = BeanUtils.getLocale();
-        return getCreatedPages().stream()
-                .filter(p -> !p.equals(page))
-                .sorted((p1, p2) -> p1.getMenuTitle(currentLocale).toLowerCase().compareTo(p2.getMenuTitle(currentLocale).toLowerCase()))
-                .collect(Collectors.toList());
+        return getCreatedPages().stream().filter(p -> !p.equals(page)).sorted((p1, p2) -> p1.getMenuTitle(currentLocale).toLowerCase().compareTo(p2
+                .getMenuTitle(currentLocale).toLowerCase())).collect(Collectors.toList());
     }
 
     /**
@@ -1182,11 +1184,11 @@ public class CmsBean {
                 allPages.add(cmsPage);
             }
         }
-        //        for (CMSStaticPage staticPage : getStaticPages()) {
-        //            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-        //                allPages.remove(staticPage.getCmsPage());
-        //            }
-        //        }
+        for (CMSStaticPage staticPage : getStaticPages()) {
+            if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
+                allPages.remove(staticPage.getCmsPage());
+            }
+        }
         return allPages;
     }
 
@@ -1198,7 +1200,7 @@ public class CmsBean {
 
         for (CMSStaticPage staticPage : getStaticPages()) {
             if (staticPage.isHasCmsPage()) {
-                staticPage.getCmsPage().addStaticPageName(staticPage.getPageName());
+                staticPage.getCmsPage().setStaticPageName(staticPage.getPageName());
             }
         }
 
@@ -1248,8 +1250,8 @@ public class CmsBean {
         if (StringUtils.isNotBlank(path)) {
             cmsContextAction(false);
             logger.warn("Attempting to forward to " + path);
-//            context.getExternalContext().dispatch(path);
-//            context.responseComplete();
+            //            context.getExternalContext().dispatch(path);
+            //            context.responseComplete();
         }
     }
 
@@ -1283,5 +1285,30 @@ public class CmsBean {
         }
         return Collections.emptyList();
     }
-    
+
+    /**
+     * Sets the searchType in SearchBean to the type assciated with the current static view
+     * (e.g. if the current cms page replaces the static page 'advancedSearch' the search type is set to 'advanced')
+     * For the normal search pages this is done in the pretty mapping which isn't used if redirecting to cms page
+     * 
+     * @param currentPath
+     */
+    public void setSearchType() {
+        Optional<CombinedPath> currentPath = UrlRedirectUtils.getCurrentView(BeanUtils.getRequest());
+        if (currentPath.isPresent()) {
+            SearchBean searchBean = BeanUtils.getSearchBean();
+            if (searchBean != null) {
+                if (PageType.advancedSearch.equals(currentPath.get().getPageType())) {
+                    searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
+                } else if (PageType.calendarsearch.equals(currentPath.get().getPageType())) {
+                    searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_CALENDAR);
+                } else if (PageType.timelinesearch.equals(currentPath.get().getPageType())) {
+                    searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_TIMELINE);
+                } else if (PageType.search.equals(currentPath.get().getPageType())) {
+                    searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
+                }
+            }
+        }
+    }
+
 }

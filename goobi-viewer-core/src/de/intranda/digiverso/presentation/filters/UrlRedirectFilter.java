@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -27,6 +30,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,11 +41,15 @@ import com.ocpsoft.pretty.PrettyContext;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.managedbeans.SearchBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.utils.CombinedPath;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
+import jdk.nashorn.internal.runtime.Context.ThrowErrorManager;
 
 /**
  * Encodes responses into UTF-8 and prevents proxy caching.
@@ -52,37 +61,67 @@ public class UrlRedirectFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
             HttpServletRequest httpRequest = (HttpServletRequest) request;
+            DispatcherType dispatcherType = httpRequest.getDispatcherType();
+            //            try {                
+            //                PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
+            //                System.out.println("Request url = " + context.getRequestURL().toURL());
+            //            } catch(Throwable e) {
+            //                
+            //            }
 
             Optional<CombinedPath> currentPath = getCombinedPath(httpRequest);
-            if (currentPath.isPresent()) {
-
-                if (currentPath.get().isPage() && currentPath.get().getPageType().isHandledWithCms()) {
-                    Optional<CMSPage> oCmsPage = DataManager.getInstance().getDao().getAllCMSPages().stream()
-                            .filter(page -> StringUtils.isNotBlank(page.getStaticPageName()))
-                            .filter(page -> currentPath.get().getPageType().matches(page.getStaticPageName()))
-                            .findFirst();
-                    if (oCmsPage.isPresent()) {
-                        CombinedPath cmsPagePath = new CombinedPath(
-                                currentPath.get().getHostUrl(), 
-                                Paths.get(oCmsPage.get().getRelativeUrlPath(false)), 
-                                currentPath.get().getParameterPath());
-                        
+            if (DispatcherType.REQUEST.equals(httpRequest.getDispatcherType())) {
+                if (currentPath.isPresent()) {
+                    UrlRedirectUtils.setCurrentView(currentPath.get(), httpRequest.getSession());
+                    if (!currentPath.get().getPagePath().startsWith("cms/") && currentPath.get().getCmsPage() != null) {
+                        CombinedPath cmsPagePath = new CombinedPath(currentPath.get());
+                        cmsPagePath.setPagePath(Paths.get(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
                         logger.debug("Forwarding " + currentPath.get().toString() + " to " + cmsPagePath.getCombinedUrl());
                         RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
                         d.forward(request, response);
                         return;
+                    } else if (currentPath.get().getCmsPage() != null) {
+                        //path starts with 'cms'
+                        //                        PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
+                        //                        String prettyRequestUrl = prettyContext.getRequestURL().toString();
+                        //                        String prettyContextPath = prettyContext.getContextPath();
+                        //                        FacesContext facesContext = FacesContext.getCurrentInstance();
+                        //                        CombinedPath cmsPagePath = new CombinedPath(
+                        //                                currentPath.get().getHostUrl(), 
+                        //                                Paths.get(currentPath.get().getCmsPage().getRelativeUrlPath(false)), 
+                        //                                currentPath.get().getParameterPath());
+                        //                        cmsPagePath.setCmsPage(currentPath.get().getCmsPage());
+                        ////                        ExternalContext externalContext = facesContext.getExternalContext();
+                        //                        String redirectUrl = cmsPagePath.getHostUrl() + cmsPagePath.getCombinedPrettyfiedUrl();
+                        ////                        httpResponse.sendRedirect(redirectUrl);
+                        ////                        externalContext.redirect(redirectUrl);
+                        //                        final HttpServletRequestWrapper wrapped = new HttpServletRequestWrapper(httpRequest) {
+                        //                            @Override
+                        //                            public StringBuffer getRequestURL() {
+                        //                                final StringBuffer originalUrl = ((HttpServletRequest) getRequest()).getRequestURL();
+                        //                                return new StringBuffer(redirectUrl);
+                        //                            }
+                        //                        };
+                        //                        request = wrapped;
                     }
-                } else if (currentPath.get().getCmsPage() != null) {
-                        CombinedPath cmsPagePath = new CombinedPath(
-                                currentPath.get().getHostUrl(), 
-                                Paths.get(currentPath.get().getCmsPage().getRelativeUrlPath(false)), 
-                                currentPath.get().getParameterPath());
-                        
-                        logger.debug("Forwarding " + currentPath.get().toString() + " to " + cmsPagePath.getCombinedUrl());
-                        RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
-                        d.forward(request, response);
-                        return;
+
+                    //                    if (currentPath.get().isPage() && currentPath.get().getPageType().isHandledWithCms()) {
+                    //                        Optional<CMSPage> oCmsPage = DataManager.getInstance().getDao().getAllCMSPages().stream().filter(page -> StringUtils
+                    //                                .isNotBlank(page.getStaticPageName())).filter(page -> currentPath.get().getPageType().matches(page
+                    //                                        .getStaticPageName())).findFirst();
+                    //                        if (oCmsPage.isPresent()) {
+                    //                        }
+                    //                    } else if (currentPath.get().getCmsPage() != null) {
+                    //                        CombinedPath cmsPagePath = new CombinedPath(currentPath.get().getHostUrl(), Paths.get(currentPath.get().getCmsPage()
+                    //                                .getRelativeUrlPath(false)), currentPath.get().getParameterPath());
+                    //
+                    //                        logger.debug("Forwarding " + currentPath.get().toString() + " to " + cmsPagePath.getCombinedUrl());
+                    //                        RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
+                    //                        d.forward(request, response);
+                    //                        return;
+                    //                    }
                 }
             }
         } catch (DAOException e) {
@@ -91,6 +130,7 @@ public class UrlRedirectFilter implements Filter {
 
         chain.doFilter(request, response);
     }
+
 
     /**
      * @param httpRequest
@@ -101,14 +141,15 @@ public class UrlRedirectFilter implements Filter {
     private Optional<CombinedPath> getCombinedPath(HttpServletRequest httpRequest) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest); // http://localhost:8080/viewer
         String serviceUrl = httpRequest.getServletPath(); // /resources/.../index.xhtml
-//        String serviceUrl = httpRequest.getRequestURI(); // /viewer/resources/.../(index.xhtml)
+        //        String serviceUrl = httpRequest.getRequestURI(); // /viewer/resources/.../(index.xhtml)
+        String serverName = httpRequest.getContextPath();
         PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
-        if (!serviceUrl.contains("/cms/") &&  context != null && context.getRequestURL() != null) {
-            System.out.println(context.getRequestURL().toURL());
-            serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + ("/".equals(context.getRequestURL().toURL()) ? "/index" : context.getRequestURL().toURL());
+        if (!serviceUrl.contains("/cms/") && context != null && context.getRequestURL() != null) {
+            serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + ("/".equals(context.getRequestURL().toURL()) ? "/index"
+                    : context.getRequestURL().toURL());
         }
         serviceUrl = serviceUrl.replaceAll("\\/index\\.xhtml", "/");
-        return UrlRedirectUtils.getCombinedUrl(serverUrl, serviceUrl, false);
+        return UrlRedirectUtils.getCombinedUrl(serverUrl, serverName, serviceUrl, false);
 
     }
 

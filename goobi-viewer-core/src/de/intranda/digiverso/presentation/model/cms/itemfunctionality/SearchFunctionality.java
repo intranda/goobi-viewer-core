@@ -15,14 +15,17 @@
  */
 package de.intranda.digiverso.presentation.model.cms.itemfunctionality;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +34,9 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.modules.worldviews.managedbeans.TopicBean;
+import de.intranda.digiverso.presentation.servlets.utils.CombinedPath;
+import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * @author Florian Alpers
@@ -62,29 +67,46 @@ public class SearchFunctionality implements Functionality {
         this.baseUrl = baseUrl;
     }
 
-    public String resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
+    public void resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
         getSearchBean().resetSearchAction();
-        return "pretty:cmsOpenPageWithSearch5";
+        redirectToSearchUrl();
     }
 
-    public String searchSimple() throws PresentationException, IndexUnreachableException, DAOException {
+    /**
+     * 
+     */
+    public void redirectToSearchUrl() {
+        CombinedPath path = UrlRedirectUtils.getCurrentView(BeanUtils.getRequest()).get();
+        if(path != null) {            
+            path.setParameterPath(getParameterPath());
+            final FacesContext context = FacesContext.getCurrentInstance();
+            String redirectUrl = path.getHostName() + path.getCombinedPrettyfiedUrl();
+            try {
+                context.getExternalContext().redirect(redirectUrl);
+            } catch (IOException e) {
+                logger.error("Failed to redirect to url", e);
+            }
+        }
+    }
+
+    public void searchSimple() throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
-            return "";
+        } else{            
+            getSearchBean().searchSimple();
+            redirectToSearchUrl();
         }
-        getSearchBean().searchSimple();
-        return "pretty:cmsOpenPageWithSearch5";
     }
     
-    public String searchAdvanced() throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("searchSimple");
+    public void searchAdvanced() throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("searchAdvanced");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
-            return "";
+        } else {    
+            getSearchBean().searchAdvanced();
+            redirectToSearchUrl();
         }
-        getSearchBean().searchAdvanced();
-        return "pretty:cmsOpenPageWithSearch5";
     }
 
     public void search() throws PresentationException, IndexUnreachableException, DAOException {
@@ -123,7 +145,7 @@ public class SearchFunctionality implements Functionality {
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(getBaseUrl());
-        sb.append("search/").append(getQueryString()).append("/");
+        sb.append(getQueryString()).append("/");
         return sb.toString();
     }
 
@@ -235,11 +257,25 @@ public class SearchFunctionality implements Functionality {
         return baseUrl;
     }
 
+    private Path getParameterPath() {
+        Path path = Paths.get("");
+        path = path.resolve(getCollection());
+        path = path.resolve(getQueryString());
+        path = path.resolve(Integer.toString(getPageNo()));
+        path = path.resolve(getSolrSortFields());
+        path = path.resolve(getFacetString());
+        return path;
+    }
+    
     /**
      * @return the pageFacetString
      */
     public String getPageFacetString() {
         return pageFacetString;
+    }
+    
+    public String getNewSearchUrl() {
+        return getSortUrl("-", false);
     }
 
     public String getSortUrl(String sortString, boolean descending) {
@@ -256,5 +292,14 @@ public class SearchFunctionality implements Functionality {
             facetString = "-";
         }
         return facetString;
+    }
+    
+    public String getCurrentPagePath() {
+        CombinedPath path = UrlRedirectUtils.getCurrentView(BeanUtils.getRequest()).get();
+        if(path != null) {            
+            return path.getHostName() + path.getPrettifiedPagePath();
+        } else {
+            return "";
+        }
     }
 }

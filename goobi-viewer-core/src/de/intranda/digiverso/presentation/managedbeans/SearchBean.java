@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -38,8 +39,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -89,6 +88,8 @@ import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.servlets.utils.CombinedPath;
+import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * SearchBean
@@ -235,9 +236,15 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimple() {
+        return searchSimple(true);
+    }
+    
+    public String searchSimple(boolean resetParameters) {
         logger.trace("searchSimple");
         resetSearchResults();
-        resetSearchParameters();
+        if(resetParameters) {            
+            resetSearchParameters();
+        }
         return "pretty:newSearch5";
     }
 
@@ -253,10 +260,17 @@ public class SearchBean implements Serializable {
     }
 
     public String searchAdvanced() {
+        return searchAdvanced(true);
+    }
+
+    
+    public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
         updateBreadcrumbsForSearchHits();
         resetSearchResults();
-        resetSearchParameters();
+        if(resetParameters) {            
+            resetSearchParameters();
+        }
         searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
 
         return "pretty:searchAdvanced5";
