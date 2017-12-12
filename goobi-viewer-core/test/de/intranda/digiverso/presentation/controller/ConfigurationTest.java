@@ -1669,6 +1669,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getVersionLabelField()
+     * @verifies return correct value
+     */
+    @Test
+    public void getVersionLabelField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_VERSIONLABEL", DataManager.getInstance().getConfiguration().getVersionLabelField());
+    }
+
+    /**
      * @see Configuration#getSelectedRecords()
      * @verifies return all configured elements
      */
@@ -2263,6 +2272,15 @@ public class ConfigurationTest {
     @Test
     public void getDocstructTargetPageType_shouldReturnNullIfDocstructNotFound() throws Exception {
         Assert.assertNull(DataManager.getInstance().getConfiguration().getDocstructTargetPageType("notfound"));
+    }
+
+    /**
+     * @see Configuration#getFulltextPercentageWarningThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getFulltextPercentageWarningThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(99, DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold());
     }
 
     /**

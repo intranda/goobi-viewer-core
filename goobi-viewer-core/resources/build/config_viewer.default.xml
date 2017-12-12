@@ -295,6 +295,10 @@
 			<MultiVolumeWork>toc</MultiVolumeWork>
 			<Periodical>toc</Periodical>
 		</docstructTargetPageTypes>
+		
+        <!-- <fulltextPercentageWarningThreshold>: If a record's percentage of pages having full-Text/ALTO documents
+            falls below the configured value, a warning will be displayed for that record.    -->
+        <fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false" />
@@ -430,12 +434,15 @@
 		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
 		<staticQuerySuffix></staticQuerySuffix>
 
-		<!-- versioning: 'previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version,
-				 'nextVersionIdentifierField' defines the Solr field that contains the identifier for the succeeding version -->
-		<versioning>
-			<previousVersionIdentifierField></previousVersionIdentifierField>
-			<nextVersionIdentifierField></nextVersionIdentifierField>
-		</versioning>
+        <!-- versioning -->
+        <versioning>
+            <!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
+            <previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
+            <!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
+            <nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
+            <!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
+            <versionLabelField>MD_VERSIONLABEL</versionLabelField>
+        </versioning>
 
 		<!-- Search export settings -->
 		<export>
