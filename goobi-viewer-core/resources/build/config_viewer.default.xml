@@ -116,13 +116,6 @@
 		<!-- pageLoaderThreshold: number of pages a record has to have to switch to a lean page loading strategy that limit memory usage (default is 1000) -->
 		<pageLoaderThreshold>1000</pageLoaderThreshold>
 
-		<!--fulltextLazyLoading: it keeps the object small and minimizes the memory usage. True is always a good option and must be set for installations, that
-		    have many fulltexts (default is true). -->
-		<fulltextLazyLoading>true</fulltextLazyLoading>
-
-		<!-- wordCoordsLazyLoading: see above fulltextLazyLoading (default is true) -->
-		<wordCoordsLazyLoading>true</wordCoordsLazyLoading>
-
 		<!-- If true, all HTTP responses will contain attributes preventing proxies etc. from caching contents. Default is false. -->
 		<preventProxyCaching>false</preventProxyCaching>
 	</performance>

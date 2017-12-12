@@ -123,14 +123,6 @@
 			to a lean page loading strategy that limit memory usage (default is 1000) -->
 		<pageLoaderThreshold>1000</pageLoaderThreshold>
 
-		<!--fulltextLazyLoading: it keeps the object small and minimizes the memory 
-			usage. True is always a good option and must be set for installations, that 
-			have many fulltexts (default is true). -->
-		<fulltextLazyLoading>false</fulltextLazyLoading>
-
-		<!-- wordCoordsLazyLoading: see above fulltextLazyLoading (default is true) -->
-		<wordCoordsLazyLoading>false</wordCoordsLazyLoading>
-
 		<!-- If true, all HTTP responses will contain attributes preventing proxies 
 			etc. from caching contents. Default is false. -->
 		<preventProxyCaching>true</preventProxyCaching>

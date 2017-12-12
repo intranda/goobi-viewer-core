@@ -1071,15 +1071,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#isFulltextLazyLoading()
-     * @verifies return correct value
-     */
-    @Test
-    public void isFulltextLazyLoading_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isFulltextLazyLoading());
-    }
-
-    /**
      * @see Configuration#isHtmlHeadDCMetadata()
      * @verifies return correct value
      */
@@ -1302,15 +1293,6 @@ public class ConfigurationTest {
     @Test
     public void getUserCommentsConditionalQuery_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery());
-    }
-
-    /**
-     * @see Configuration#isWordCoordsLazyLoading()
-     * @verifies return correct value
-     */
-    @Test
-    public void isWordCoordsLazyLoading_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isWordCoordsLazyLoading());
     }
 
     /**

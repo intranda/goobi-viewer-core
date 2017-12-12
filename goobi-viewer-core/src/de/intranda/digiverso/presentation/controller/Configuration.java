@@ -2303,24 +2303,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isFulltextLazyLoading() {
-        return getLocalBoolean("performance.fulltextLazyLoading", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isWordCoordsLazyLoading() {
-        return getLocalBoolean("performance.wordCoordsLazyLoading", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
