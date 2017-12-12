@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  * 
- * Module to manage the user bookshelves.
+ * Module to manage bookshelves in the current session.
  * 
  * @version 3.2.0
- * @module viewerJS.bookshelves
+ * @module viewerJS.sessionBookshelves
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -28,70 +28,61 @@ var viewerJS = ( function( viewer ) {
     var _debug = false;
     var _defaults = {
         root: '',
-        bookshelvesEnabled: false,
-        userLoggedIn: false,
         msg: {
             resetBookshelves: '',
             resetBookshelvesConfirm: ''
         }
     };
     
-    viewer.bookshelves = {
+    viewer.sessionBookshelves = {
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'viewer.bookshelves.init' );
+                console.log( 'viewer.sessionBookshelves.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.bookshelves.init: config - ', config );
+                console.log( 'viewer.sessionBookshelves.init: config - ', config );
             }
             
             $.extend( true, _defaults, config );
             
-            // check if user is logged in
-            if ( _defaults.userLoggedIn ) {
-                console.log( 'user is logged in' );
-            }
-            else {
-                // render bookshelf dropdown list
-                _renderDropdownList();
+            // render bookshelf dropdown list
+            _renderDropdownList();
+            
+            // toggle bookshelf dropdown
+            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
+                $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
+            } );
+            
+            // set element count of list to counter
+            _setSessionElementCount();
+            
+            // check add buttons if element is in list
+            _setAddActiveState();
+            
+            // add element to session
+            $( '[data-bookshelf-type="add"]' ).off().on( 'click', function() {
+                var currBtn = $( this );
+                var currPi = currBtn.attr( 'data-pi' );
                 
-                // toggle bookshelf dropdown
-                $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
-                    $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
+                _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
+                    if ( !isSet ) {
+                        currBtn.addClass( 'added' );
+                        _setSessionElement( _defaults.root, currPi ).then( function() {
+                            _setSessionElementCount();
+                            _renderDropdownList();
+                        } );
+                    }
+                    else {
+                        currBtn.removeClass( 'added' );
+                        _deleteSessionElement( _defaults.root, currPi ).then( function() {
+                            _setSessionElementCount();
+                            _renderDropdownList();
+                        } );
+                    }
+                } ).fail( function( error ) {
+                    console.error( 'ERROR - _isElementSet: ', error );
                 } );
-                
-                // set element count of list to counter
-                _setSessionElementCount();
-                
-                // check add buttons if element is in list
-                _setAddActiveState();
-                
-                // add element to session
-                $( '[data-bookshelf-type="add"]' ).off().on( 'click', function() {
-                    var currBtn = $( this );
-                    var currPi = currBtn.attr( 'data-pi' );
-                    
-                    _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
-                        if ( !isSet ) {
-                            currBtn.addClass( 'added' );
-                            _setSessionElement( _defaults.root, currPi ).then( function() {
-                                _setSessionElementCount();
-                                _renderDropdownList();
-                            } );
-                        }
-                        else {
-                            currBtn.removeClass( 'added' );
-                            _deleteSessionElement( _defaults.root, currPi ).then( function() {
-                                _setSessionElementCount();
-                                _renderDropdownList();
-                            } );
-                        }
-                    } ).fail( function( error ) {
-                        console.error( 'ERROR - _isElementSet: ', error );
-                    } );
-                } );
-                
-            }
+            } );
         }
     };
     /**
