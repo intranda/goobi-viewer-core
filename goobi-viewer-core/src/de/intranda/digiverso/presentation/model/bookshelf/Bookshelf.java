@@ -56,7 +56,6 @@ public class Bookshelf implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookshelf_id")
-    @JsonIgnore
     private Long id;
 
     @JoinColumn(name = "owner_id", nullable = false)
