@@ -953,16 +953,20 @@ public class AdminBean implements Serializable {
         if (StringUtils.isNotEmpty(pi)) {
             Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
             try {
-                String filePath;
+                StringBuilder sbFilePath = new StringBuilder();
                 if (StringUtils.isNotEmpty(dataRepository)) {
-                    filePath = DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + File.separator + dataRepository
-                            + File.separator + DataManager.getInstance().getConfiguration().getIndexedMetsFolder() + File.separator + pi + ".xml";
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                        sbFilePath.append(dataRepositoriesHome).append(File.separator);
+                    }
+                    sbFilePath.append(dataRepository).append(File.separator).append(DataManager.getInstance().getConfiguration()
+                            .getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
                 } else {
                     // Backwards compatibility with old indexes
-                    filePath = DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration()
-                            .getIndexedMetsFolder() + File.separator + pi + ".xml";
+                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
+                            .getConfiguration().getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
                 }
-                Document doc = FileTools.readXmlFile(filePath);
+                Document doc = FileTools.readXmlFile(sbFilePath.toString());
 
                 XPath xp = XPath.newInstance("mets:mets/mets:fileSec/mets:fileGrp/mets:file");
                 xp.addNamespace(nsMets);

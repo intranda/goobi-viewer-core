@@ -140,8 +140,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         logger.trace("end Date: {}", endDate);
 
                         try {
-                            query = new StringBuilder().append('(').append(SolrConstants.ISWORK).append(":true AND YEAR:[").append(startDate)
-                                    .append(" TO ").append(endDate).append("])").append(SearchHelper.getAllSuffixes(true)).toString();
+                            query = new StringBuilder().append('(').append(SolrConstants.ISWORK).append(":true AND YEAR:[").append(startDate).append(
+                                    " TO ").append(endDate).append("])").append(SearchHelper.getAllSuffixes(true)).toString();
                             logger.debug("query: {}", query);
                         } catch (IndexUnreachableException e) {
                             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -548,12 +548,13 @@ public class WebApiServlet extends HttpServlet implements Serializable {
         StringBuilder sbMediumImage = new StringBuilder(250);
         sbMediumImage.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
         if (StringUtils.isNotEmpty(dataRepository)) {
-            sbThumbnailUrl.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
-                    .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                            DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
-            sbMediumImage.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
-                    .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                            DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            sbThumbnailUrl.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                            .getMediaFolder()).append('/');
+            sbMediumImage.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                            .getMediaFolder()).append('/');
         }
         sbThumbnailUrl.append(pi).append('/').append(fileName).append(
                 "&width=100&height=120&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()

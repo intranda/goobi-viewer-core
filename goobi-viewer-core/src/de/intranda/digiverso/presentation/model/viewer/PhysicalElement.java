@@ -358,9 +358,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 StringBuilder urlBuilder = new StringBuilder();
                 urlBuilder.append(url).append(actionString);
                 if (StringUtils.isNotEmpty(dataRepository)) {
-                    urlBuilder.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? "/"
-                            : "").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append("/")
-                            .append(DataManager.getInstance().getConfiguration().getMediaFolder()).append("/");
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    urlBuilder.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/'
+                            : "").append(dataRepositoriesHome).append(dataRepository).append("/").append(DataManager.getInstance().getConfiguration()
+                                    .getMediaFolder()).append("/");
                 }
                 urlBuilder.append(pi).append('/').append(localFilename);
 
@@ -514,13 +515,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                             "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
                                     .isForceJpegConversion() ? "&format=jpg" : "");
         } else if (StringUtils.isNotEmpty(dataRepository)) {
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
             sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=file:/").append(
-                    DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "").append(DataManager
-                            .getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(DataManager
-                                    .getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append("/").append(fileName).append(
-                                            "&width=").append(width).append("&height=").append(height).append(
-                                                    "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                                                            .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
+                    (StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "").append(dataRepositoriesHome)
+                    .append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi)
+                    .append("/").append(fileName).append("&width=").append(width).append("&height=").append(height).append(
+                            "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
+                                    .isForceJpegConversion() ? "&format=jpg" : "");
         } else {
             sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=").append(pi)
                     .append("/").append(fileName).append("&width=").append(width).append("&height=").append(height).append(
@@ -1318,9 +1319,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         StringBuilder sbUrl = new StringBuilder();
         if (StringUtils.isNotEmpty(dataRepository)) {
-            sbUrl.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? "/" : "").append(
-                    DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append("/").append(DataManager
-                            .getInstance().getConfiguration().getMediaFolder()).append("/");
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            sbUrl.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "").append(
+                    dataRepositoriesHome).append(dataRepository).append("/").append(DataManager.getInstance().getConfiguration().getMediaFolder())
+                    .append("/");
         }
         sbUrl.append(pi).append("/").append(fileName);
 

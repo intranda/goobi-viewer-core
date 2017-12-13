@@ -187,6 +187,7 @@ public class ConfigurationTest {
      * @verifies return correct value
      */
     @Test
+    @Deprecated
     public void getDataRepositoriesHome_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("resources/test/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
     }
@@ -1070,15 +1071,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#isFulltextLazyLoading()
-     * @verifies return correct value
-     */
-    @Test
-    public void isFulltextLazyLoading_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isFulltextLazyLoading());
-    }
-
-    /**
      * @see Configuration#isHtmlHeadDCMetadata()
      * @verifies return correct value
      */
@@ -1301,15 +1293,6 @@ public class ConfigurationTest {
     @Test
     public void getUserCommentsConditionalQuery_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery());
-    }
-
-    /**
-     * @see Configuration#isWordCoordsLazyLoading()
-     * @verifies return correct value
-     */
-    @Test
-    public void isWordCoordsLazyLoading_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isWordCoordsLazyLoading());
     }
 
     /**
@@ -1683,6 +1666,15 @@ public class ConfigurationTest {
     @Test
     public void getPreviousVersionIdentifierField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("MD_NEXT_VERSION", DataManager.getInstance().getConfiguration().getNextVersionIdentifierField());
+    }
+
+    /**
+     * @see Configuration#getVersionLabelField()
+     * @verifies return correct value
+     */
+    @Test
+    public void getVersionLabelField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_VERSIONLABEL", DataManager.getInstance().getConfiguration().getVersionLabelField());
     }
 
     /**
@@ -2280,6 +2272,15 @@ public class ConfigurationTest {
     @Test
     public void getDocstructTargetPageType_shouldReturnNullIfDocstructNotFound() throws Exception {
         Assert.assertNull(DataManager.getInstance().getConfiguration().getDocstructTargetPageType("notfound"));
+    }
+
+    /**
+     * @see Configuration#getFulltextPercentageWarningThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getFulltextPercentageWarningThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(99, DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold());
     }
 
     /**

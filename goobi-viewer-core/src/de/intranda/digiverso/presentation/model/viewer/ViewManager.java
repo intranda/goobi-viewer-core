@@ -1532,12 +1532,17 @@ public class ViewManager implements Serializable {
 
                 File sourceFileDir;
                 if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-                    sourceFileDir = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + File.separator + topDocument
-                            .getDataRepository() + File.separator + DataManager.getInstance().getConfiguration().getOrigContentFolder()
-                            + File.separator + getPi());
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    StringBuilder sbFilePath = new StringBuilder();
+                    if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                        sbFilePath.append(dataRepositoriesHome).append(File.separator);
+                    }
+                    sbFilePath.append(topDocument.getDataRepository()).append(File.separator).append(DataManager.getInstance().getConfiguration()
+                            .getOrigContentFolder()).append(File.separator).append(getPi());
+                    sourceFileDir = new File(sbFilePath.toString());
                 } else {
-                    sourceFileDir = new File(DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance()
-                            .getConfiguration().getOrigContentFolder() + File.separator + getPi());
+                    sourceFileDir = new File(new StringBuilder().append(DataManager.getInstance().getConfiguration().getViewerHome()).append(
+                            DataManager.getInstance().getConfiguration().getOrigContentFolder()).append(File.separator).append(getPi()).toString());
                 }
                 if (sourceFileDir.isDirectory() && sourceFileDir.listFiles().length > 0) {
                     return true;
@@ -1563,9 +1568,14 @@ public class ViewManager implements Serializable {
 
         File sourceFileDir;
         if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-            sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(File.separator)
-                    .append(topDocument.getDataRepository()).append(File.separator).append(DataManager.getInstance().getConfiguration()
-                            .getOrigContentFolder()).append(File.separator + getPi()).toString());
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            StringBuilder sbFilePath = new StringBuilder();
+            if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                sbFilePath.append(dataRepositoriesHome).append(File.separator);
+            }
+            sbFilePath.append(topDocument.getDataRepository()).append(File.separator).append(DataManager.getInstance().getConfiguration()
+                    .getOrigContentFolder()).append(File.separator).append(getPi());
+            sourceFileDir = new File(sbFilePath.toString());
         } else {
             sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
                     .getConfiguration().getOrigContentFolder()).append(File.separator).append(getPi()).toString());
@@ -1616,12 +1626,18 @@ public class ViewManager implements Serializable {
         String page = String.valueOf(currentImageOrder);
         File sourceFileDir;
         if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-            sourceFileDir = new File(DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + File.separator + topDocument
-                    .getDataRepository() + File.separator + DataManager.getInstance().getConfiguration().getOrigContentFolder() + File.separator
-                    + getPi() + File.separator + page);
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            StringBuilder sbFilePath = new StringBuilder();
+            if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                sbFilePath.append(dataRepositoriesHome).append(File.separator);
+            }
+            sbFilePath.append(topDocument.getDataRepository()).append(File.separator).append(DataManager.getInstance().getConfiguration()
+                    .getOrigContentFolder()).append(File.separator).append(getPi()).append(File.separator).append(page);
+            sourceFileDir = new File(sbFilePath.toString());
         } else {
-            sourceFileDir = new File(DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration()
-                    .getOrigContentFolder() + File.separator + getPi() + File.separator + page);
+            sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
+                    .getConfiguration().getOrigContentFolder()).append(File.separator).append(getPi()).append(File.separator).append(page)
+                    .toString());
 
         }
         if (sourceFileDir.isDirectory()) {
