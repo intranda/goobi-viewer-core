@@ -61,7 +61,7 @@ public class BeanUtils {
             return request;
         }
 
-        return getRequest();
+        return null;
     }
 
     /**
