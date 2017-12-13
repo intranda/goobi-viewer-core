@@ -34,9 +34,9 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.modules.worldviews.managedbeans.TopicBean;
-import de.intranda.digiverso.presentation.servlets.utils.CombinedPath;
-import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * @author Florian Alpers
@@ -76,11 +76,11 @@ public class SearchFunctionality implements Functionality {
      * 
      */
     public void redirectToSearchUrl() {
-        CombinedPath path = UrlRedirectUtils.getCurrentView(BeanUtils.getRequest()).get();
+        ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
         if(path != null) {            
             path.setParameterPath(getParameterPath());
             final FacesContext context = FacesContext.getCurrentInstance();
-            String redirectUrl = path.getHostName() + path.getCombinedPrettyfiedUrl();
+            String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
             try {
                 context.getExternalContext().redirect(redirectUrl);
             } catch (IOException e) {
@@ -291,9 +291,9 @@ public class SearchFunctionality implements Functionality {
     }
     
     public String getCurrentPagePath() {
-        CombinedPath path = UrlRedirectUtils.getCurrentView(BeanUtils.getRequest()).get();
+        ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
         if(path != null) {            
-            return path.getHostName() + path.getPrettifiedPagePath();
+            return path.getApplicationName() + path.getPrettifiedPagePath();
         } else {
             return "";
         }

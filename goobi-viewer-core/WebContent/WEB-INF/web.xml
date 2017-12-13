@@ -59,7 +59,6 @@
 		<filter-name>UrlRedirectFilter</filter-name>
 		<url-pattern>*.xhtml</url-pattern>
 		<dispatcher>REQUEST</dispatcher>
-<!-- 		<dispatcher>FORWARD</dispatcher> -->
 	</filter-mapping>
 
 	<filter>
@@ -73,17 +72,6 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>ERROR</dispatcher>
 	</filter-mapping>
-
-<!-- 	<filter> -->
-<!-- 		<filter-name>SecondaryUrlRedirectFilter</filter-name> -->
-<!-- 		<filter-class>de.intranda.digiverso.presentation.filters.SecondaryUrlRedirectFilter</filter-class> -->
-<!-- 	</filter> -->
-<!-- 	<filter-mapping> -->
-<!-- 		<filter-name>SecondaryUrlRedirectFilter</filter-name> -->
-<!-- 		<url-pattern>*.xhtml</url-pattern> -->
-<!-- 		<dispatcher>REQUEST</dispatcher> -->
-<!-- 		<dispatcher>FORWARD</dispatcher> -->
-<!-- 	</filter-mapping> -->
 
 	<filter>
 		<filter-name>PrimeFaces FileUpload Filter</filter-name>

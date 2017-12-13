@@ -69,10 +69,10 @@ import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunc
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.servlets.utils.CombinedPath;
-import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * CMS functions.
@@ -1232,6 +1232,7 @@ public class CmsBean {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @deprecated CMS page forwarding is now done in a servlet filter, before the page is loaded
      */
     @Deprecated
     public void forwardToCMSPage(CMSPage page) throws IOException, PresentationException, IndexUnreachableException, DAOException {
@@ -1250,8 +1251,8 @@ public class CmsBean {
         if (StringUtils.isNotBlank(path)) {
             cmsContextAction(false);
             logger.warn("Attempting to forward to " + path);
-            //            context.getExternalContext().dispatch(path);
-            //            context.responseComplete();
+            context.getExternalContext().dispatch(path);
+            context.responseComplete();
         }
     }
 
@@ -1294,7 +1295,7 @@ public class CmsBean {
      * @param currentPath
      */
     public void setSearchType() {
-        Optional<CombinedPath> currentPath = UrlRedirectUtils.getCurrentView(BeanUtils.getRequest());
+        Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (currentPath.isPresent()) {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
