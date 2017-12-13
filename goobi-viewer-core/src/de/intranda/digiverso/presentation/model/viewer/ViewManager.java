@@ -1452,13 +1452,13 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public boolean isDisplayFulltextThresholdWarning() throws PresentationException, IndexUnreachableException {
+    public boolean isHasSufficientFulltextPages() throws PresentationException, IndexUnreachableException {
         long pagesWithFulltext = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
                 + SolrConstants.FULLTEXTAVAILABLE + ":true");
         int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
         double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
         logger.trace("{}% of pages have full-text", percentage);
-        if (percentage < threshold) {
+        if (percentage >= threshold) {
             return true;
         }
 
