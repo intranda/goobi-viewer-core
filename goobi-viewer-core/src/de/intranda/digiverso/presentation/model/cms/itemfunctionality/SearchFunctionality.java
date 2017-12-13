@@ -36,7 +36,6 @@ import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
-import de.intranda.digiverso.presentation.modules.worldviews.managedbeans.TopicBean;
 
 /**
  * @author Florian Alpers

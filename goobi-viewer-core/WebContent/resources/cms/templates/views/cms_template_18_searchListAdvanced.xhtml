@@ -1,0 +1,106 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/geiwv/components"
+	xmlns:templateWidgetComponent="http://xmlns.jcp.org/jsf/composite/themes/geiwv/components/widget"
+	template="/resources/themes/#{navigationHelper.theme}/template.html"
+	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3">
+
+	<ui:param name="cmsPage" value="#{cmsBean.currentPage}" />
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('cmssearchlistAdvanced', false, true)}" />
+			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+            <f:event type="preRenderView" listener="#{searchBean.resetCurrentHitIndex}" />
+            <f:event type="preRenderView" listener="#{searchBean.updateBreadcrumbsForSearchHits}" />
+            <f:event type="preRenderView" listener="#{topicBean.setMarkedSelected(false)}" />
+		</f:metadata>
+	</ui:define>
+
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
+    <ui:define name="content">
+		<f:param name="currentPage" value="#{cmsBean.random}" />
+		<f:view contentType="text/html" encoding="utf-8">
+			<div id="templateSearchListAdvanced" class="tpl-search-list-advanced">
+				<!-- LEFT -->
+				<div class="tpl-search-list-advanced__left closed">
+					<!-- TOGGLE -->
+					<div class="tpl-search-list-advanced__left-toggle">
+						<button type="button" class="btn-clean" data-toggle="sidebar-left">
+							<i class="fa fa-chevron-left rotated" aria-hidden="true"></i>
+						</button>
+					</div>
+					<widgetComponent:widget_searchDrillDown />
+				</div>
+
+
+				<!-- CENTER -->
+				<div class="tpl-search-list-advanced__center all-closed">
+	                <h1>#{cmsPage.title}</h1>
+	                
+	                <!-- PAGE UNPUBLISHED -->
+	                <h:panelGroup rendered="#{!cmsPage.published}">
+	                    <div class="alert alert-warning" role="alert">
+	                        #{msg.cms_pagePreviewNotPublished}
+	                    </div>
+	                </h:panelGroup>
+	
+					<!-- ABOUT THE PROJECT -->
+	                <div class="tpl-search-list-advanced__intro">
+	                	<ui:include src="#{cmsPage.getContent('intro')}" />
+	                </div>
+			
+					<ui:fragment rendered="#{cmsPage.hasContent('component')}"></ui:fragment>
+	                <ui:include src="#{cmsPage.getContent('component')}"></ui:include>
+	                
+	                <!-- SEARCH LIST -->
+	                <templateComponent:templateSearchListAdvanced search="#{cmsPage.getContentItem('search').functionality}" />
+				</div>
+  
+				<!-- RIGHT -->
+				<ui:fragment rendered="#{cmsPage.hasSidebarElements}">
+					<div class="tpl-search-list-advanced__right closed">
+						<!-- TOGGLE -->
+						<div class="tpl-search-list-advanced__right-toggle">
+							<button type="button" class="btn-clean" data-toggle="sidebar-right">
+								<i class="fa fa-chevron-right rotated" aria-hidden="true"></i>
+							</button>
+						</div>
+						<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
+							<widgetComponent:widget_custom widget="#{element}"/>
+				    		<widgetComponent:widget_customDrillDown widget="#{element}"/>
+				    		<widgetComponent:widget_searchDrillDown widget="#{element}" />
+				            <widgetComponent:widget_searchField widget="#{element}"/>
+				            <widgetComponent:widget_browsing widget="#{element}"/>            
+				            <widgetComponent:widget_bookshelves widget="#{element}"/>
+				            <widgetComponent:widget_mySearches widget="#{element}"/>
+				            <widgetComponent:widget_user widget="#{element}"/>
+				            <widgetComponent:widget_rssFeed widget="#{element}" />		
+				            <widgetComponent:widget_cmsPageLinks widget="#{element}" />			    		
+				            <templateComponent:widget_searchDrillDownTopics widget="#{element}" />
+				    	</c:forEach>
+					</div>
+				</ui:fragment>
+				<ui:fragment rendered="#{!cmsPage.hasSidebarElements}">
+				<div class="tpl-search-list-advanced__right closed"/>
+				</ui:fragment>
+				<script type="text/javascript">
+					var geiwv_searchListConfig = {
+							templateClassSelector : '.tpl-search-list-advanced'
+					};
+				</script>
+            </div>
+		</f:view>
+	</ui:define>
+</ui:composition>
