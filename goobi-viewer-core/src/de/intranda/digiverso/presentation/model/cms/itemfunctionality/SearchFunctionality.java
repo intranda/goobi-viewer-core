@@ -161,8 +161,8 @@ public class SearchFunctionality implements Functionality {
      */
     public String getUrlSuffix(String solrSortFields) {
         StringBuilder sb = new StringBuilder();
-        sb.append(solrSortFields);
-        sb.append("/").append(getFacetString());
+        sb.append(solrSortFields).append("/");
+        sb.append(getFacetString()).append("/");
         return sb.toString();
     }
 
