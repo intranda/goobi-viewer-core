@@ -145,6 +145,7 @@ public class SearchFunctionality implements Functionality {
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(getBaseUrl());
+        sb.append(getCollection()).append("/");
         sb.append(getQueryString()).append("/");
         return sb.toString();
     }
@@ -162,7 +163,6 @@ public class SearchFunctionality implements Functionality {
         StringBuilder sb = new StringBuilder();
         sb.append(solrSortFields);
         sb.append("/").append(getFacetString());
-        sb.append("/").append(getCollection());
         return sb.toString();
     }
 
@@ -187,10 +187,6 @@ public class SearchFunctionality implements Functionality {
      */
     public SearchBean getSearchBean() {
         return BeanUtils.getSearchBean();
-//        if (this.searchBean == null) {
-//            this.searchBean = BeanUtils.getSearchBean();
-//        }
-//        return searchBean;
     }
 
     /**
