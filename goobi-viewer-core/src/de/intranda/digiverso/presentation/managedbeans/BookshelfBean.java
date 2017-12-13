@@ -41,6 +41,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
@@ -503,22 +504,27 @@ public class BookshelfBean implements Serializable {
      * @param currentBookshelf the currentBookshelf to set
      * @throws DAOException 
      */
-    public void setCurrentBookshelfId(Long bookshelfId) throws DAOException {
+    public void setCurrentBookshelfId(String bookshelfId) throws PresentationException, DAOException {
         if(bookshelfId != null) {
-            Optional<Bookshelf> o = getBookshelves().stream()
-                    .filter(bookshelf -> bookshelfId.equals(bookshelf.getId())) 
-                    .findFirst();
-            if(o.isPresent()) {
-                setCurrentBookshelf(o.get());
-            } else {
-                throw new DAOException("No bookshelf found with id " + bookshelfId + " of current user");
+            try {                
+                Long id = Long.parseLong(bookshelfId);
+                Optional<Bookshelf> o = getBookshelves().stream()
+                        .filter(bookshelf -> id.equals(bookshelf.getId())) 
+                        .findFirst();
+                if(o.isPresent()) {
+                    setCurrentBookshelf(o.get());
+                } else {
+                    throw new PresentationException("No bookshelf found with id " + bookshelfId + " of current user");
+                }
+            } catch(NumberFormatException e) {
+                throw new PresentationException(bookshelfId + " is not viable bookshelf id");
             }
         }
     }
     
-    public Long getCurrentBookshelfId() {
+    public String getCurrentBookshelfId() {
         if(getCurrentBookshelf() != null) {
-            return getCurrentBookshelf().getId();
+            return getCurrentBookshelf().getId().toString();
         } else {
             return null;
         }
