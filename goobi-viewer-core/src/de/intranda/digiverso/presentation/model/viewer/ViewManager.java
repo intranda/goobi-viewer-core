@@ -119,6 +119,7 @@ public class ViewManager implements Serializable {
     private int firstPdfPage;
     private int lastPdfPage;
     private CalendarView calendarView;
+    private Boolean belowFulltextThreshold = null;
 
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
             throws IndexUnreachableException {
@@ -1452,17 +1453,23 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public boolean isHasSufficientFulltextPages() throws PresentationException, IndexUnreachableException {
-        long pagesWithFulltext = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
-                + SolrConstants.FULLTEXTAVAILABLE + ":true");
-        int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
-        double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
-        logger.trace("{}% of pages have full-text", percentage);
-        if (percentage >= threshold) {
-            return true;
+    public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
+        if (belowFulltextThreshold == null) {
+
+            long pagesWithFulltext = DataManager.getInstance().getSearchIndex().getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':').append(pi).append(" +").append(SolrConstants.DOCTYPE).append(":PAGE").append(" +").append(
+                            SolrConstants.FULLTEXTAVAILABLE).append(":true").toString());
+            int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
+            double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
+            logger.trace("{}% of pages have full-text", percentage);
+            if (percentage < threshold) {
+                belowFulltextThreshold = true;
+            } else {
+                belowFulltextThreshold = false;
+            }
         }
 
-        return false;
+        return belowFulltextThreshold;
     }
 
     /**

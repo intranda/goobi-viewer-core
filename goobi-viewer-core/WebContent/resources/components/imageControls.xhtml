@@ -244,7 +244,7 @@
 		                    </li>
                                 </h:panelGroup>
                                 
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
                             <li class="image-control">
                                 <h:outputLink 
                                     value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/" 
