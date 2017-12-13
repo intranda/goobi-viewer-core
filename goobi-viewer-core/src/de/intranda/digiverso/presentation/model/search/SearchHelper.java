@@ -1711,6 +1711,7 @@ public final class SearchHelper {
                     }
                     switch (item.getField()) {
                         case SolrConstants.FULLTEXT:
+                        case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
                             searchInPageDocs = true;
                             break;
                     }
@@ -1740,7 +1741,7 @@ public final class SearchHelper {
                                 sbGroup.append(' ').append(group.getOperator().name()).append(' ');
                             }
                         }
-                        sbGroup.append(itemQuery);
+                        sbGroup.append('(').append(itemQuery).append(')');
                     }
                 }
                 if (sbGroup.length() > 0) {
