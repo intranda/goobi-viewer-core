@@ -922,10 +922,10 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-    *
-    * @return
-    * @should return correct value
-    */
+     *
+     * @return
+     * @should return correct value
+     */
     public String getContentRestApiUrl() {
         String urlString = getLocalString("urls.contentRestApi", "http://localhost:8080/viewer/rest/content/");
         if (!urlString.endsWith("/")) {
@@ -1133,6 +1133,15 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public String getVersionLabelField() {
+        return getLocalString("search.versioning.versionLabelField");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public String getIndexedMetsFolder() {
         return getLocalString("indexedMetsFolder");
     }
@@ -1208,7 +1217,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder");
     }
-    
+
     /**
      * 
      * @return
@@ -1718,7 +1727,7 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         field = SearchHelper.facetifyField(field);
-        
+
         // Regular fields
         List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
         if (drillDownFields != null && !drillDownFields.isEmpty()) {
@@ -2256,6 +2265,15 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
+     * @should return correct value
+     */
+    public int getFulltextPercentageWarningThreshold() {
+        return getLocalInt("viewer.fulltextPercentageWarningThreshold", 30);
+    }
+
+    /**
+     * 
+     * @return
      */
     @Deprecated
     public boolean isTocAlwaysDisplayDocstruct() {
@@ -2296,24 +2314,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getPageLoaderThreshold() {
         return getLocalInt("performance.pageLoaderThreshold", 1000);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isFulltextLazyLoading() {
-        return getLocalBoolean("performance.fulltextLazyLoading", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isWordCoordsLazyLoading() {
-        return getLocalBoolean("performance.wordCoordsLazyLoading", true);
     }
 
     /**
@@ -2366,8 +2366,9 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    @Deprecated
     public String getDataRepositoriesHome() {
-        return getLocalString("dataRepositoriesHome");
+        return getLocalString("dataRepositoriesHome", "");
     }
 
     /**

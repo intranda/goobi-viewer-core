@@ -171,22 +171,6 @@ public interface IDAO {
 
     public boolean deleteIpRange(IpRange ipRange) throws DAOException;
 
-    // Annotation
-
-    //    public List<AnnotationElement> getAllAnnotations() throws DAOException;
-    //
-    //    public List<AnnotationElement> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
-    //
-    //    public List<AnnotationElement> getAnnotationsForPage(String pi, int page) throws DAOException;
-    //
-    //    public AnnotationElement getAnnotation(long id) throws DAOException;
-    //
-    //    public boolean addAnnotation(AnnotationElement annotation) throws DAOException;
-    //
-    //    public boolean updateAnnotation(AnnotationElement annotation) throws DAOException;
-    //
-    //    public boolean deleteAnnotation(AnnotationElement annotation) throws DAOException;
-
     // Comment
 
     public List<Comment> getAllComments() throws DAOException;
