@@ -47,6 +47,7 @@ import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
@@ -1446,6 +1447,25 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean isDisplayFulltextThresholdWarning() throws PresentationException, IndexUnreachableException {
+        long pagesWithFulltext = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
+                + SolrConstants.FULLTEXTAVAILABLE + ":true");
+        int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
+        double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
+        logger.trace("{}% of pages have full-text", percentage);
+        if (percentage < threshold) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Default fulltext getter (with HTML escaping).
      *
      * @return
@@ -1865,6 +1885,8 @@ public class ViewManager implements Serializable {
         if (versionHistory == null) {
             versionHistory = new ArrayList<>();
 
+            String versionLabelField = DataManager.getInstance().getConfiguration().getVersionLabelField();
+
             {
                 String nextVersionIdentifierField = DataManager.getInstance().getConfiguration().getNextVersionIdentifierField();
                 if (StringUtils.isNotEmpty(nextVersionIdentifierField)) {
@@ -1874,6 +1896,11 @@ public class ViewManager implements Serializable {
                         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + identifier, null);
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
+                            String versionLabel = versionLabelField != null ? SolrSearchIndex.getSingleFieldStringValue(doc, versionLabelField)
+                                    : null;
+                            if (StringUtils.isNotEmpty(versionLabel)) {
+                                jsonObj.put("label", versionLabel);
+                            }
                             jsonObj.put("id", identifier);
                             if (doc.getFieldValues("MD_YEARPUBLISH") != null) {
                                 jsonObj.put("year", doc.getFieldValues("MD_YEARPUBLISH").iterator().next());
@@ -1895,10 +1922,13 @@ public class ViewManager implements Serializable {
             {
                 // This version
                 JSONObject jsonObj = new JSONObject();
+                String versionLabel = versionLabelField != null ? topDocument.getMetadataValue(versionLabelField) : null;
+                if (versionLabel != null) {
+                    jsonObj.put("label", versionLabel);
+                }
                 jsonObj.put("id", getPi());
                 jsonObj.put("year", topDocument.getMetadataValue("MD_YEARPUBLISH"));
-                jsonObj.put("order", "0"); // "0" identifies the currently
-                                           // loaded version
+                jsonObj.put("order", "0"); // "0" identifies the currently loaded version
                 versionHistory.add(jsonObj.toJSONString());
             }
 
@@ -1911,6 +1941,11 @@ public class ViewManager implements Serializable {
                         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + identifier, null);
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
+                            String versionLabel = versionLabelField != null ? SolrSearchIndex.getSingleFieldStringValue(doc, versionLabelField)
+                                    : null;
+                            if (StringUtils.isNotEmpty(versionLabel)) {
+                                jsonObj.put("label", versionLabel);
+                            }
                             jsonObj.put("id", identifier);
                             if (doc.getFieldValues("MD_YEARPUBLISH") != null) {
                                 jsonObj.put("year", doc.getFieldValues("MD_YEARPUBLISH").iterator().next());

@@ -254,7 +254,7 @@
         <fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
 
         <!-- theme: defines the theme that shall be used -->
-        <theme subTheme="false" mainTheme="geiwv" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
+        <theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
     </viewer>
 
     <search>

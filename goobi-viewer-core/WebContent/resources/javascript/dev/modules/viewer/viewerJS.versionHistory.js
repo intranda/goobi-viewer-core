@@ -75,9 +75,15 @@ var viewerJS = ( function( viewer ) {
                 
                 if ( _defaults.json.id === _defaults.imgPi ) {
                     // Aktuell geöffnete Version - kein Link
-                    _defaults.versionLink = '<li><span>' + _defaults.json.id;
-                    if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
-                    	_defaults.versionLink += ' (' + _defaults.json.year + ')';                    	
+                    _defaults.versionLink = '<li><span>';
+                    if ( _defaults.json.label != undefined && _defaults.json.label != '' ) {
+                    	_defaults.versionLink += _defaults.json.label;
+                    }
+                    else {
+                    	 _defaults.versionLink += _defaults.json.id;
+                    	 if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
+                    		 _defaults.versionLink += ' (' + _defaults.json.year + ')';                    	
+                    	 }
                     }
                     _defaults.versionLink += '</span></li>';
                     
@@ -85,9 +91,14 @@ var viewerJS = ( function( viewer ) {
                 }
                 else {
                     // Vorgänger und Nachfolger jeweils mit Link
-                    _defaults.versionLink = '<li><a href="' + _defaults.imgUrl + '/' + _defaults.json.id + '/1/">' + _defaults.json.id;
-                    if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
-                    	_defaults.versionLink += ' (' + _defaults.json.year + ')';
+                    _defaults.versionLink = '<li><a href="' + _defaults.imgUrl + '/' + _defaults.json.id + '/1/">';
+                    if ( _defaults.json.label != undefined && _defaults.json.label != '' ) {
+                    	_defaults.versionLink += _defaults.json.label;
+                    } else {
+                    	_defaults.versionLink += _defaults.json.id;
+                    	if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
+                    		_defaults.versionLink += ' (' + _defaults.json.year + ')';
+                    	}
                     }
                     _defaults.versionLink += '</a></li>';
                     
