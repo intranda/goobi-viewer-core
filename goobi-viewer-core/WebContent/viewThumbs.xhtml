@@ -46,6 +46,9 @@
 		                        </a>
 	                        </div>
 	                        <div class="thumb-element-number">#{image.order}:#{image.orderLabel}</div>
+	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+	                           <i class="fa fa-file-text-o" aria-hidden="true"></i>
+	                        </ui:fragment>
                         </div>
                     </div>
                 </ui:repeat>

@@ -243,6 +243,18 @@
 		                        </h:outputLink>
 		                    </li>
                                 </h:panelGroup>
+                                
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+                            <li class="image-control">
+                                <h:outputLink 
+                                    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/" 
+                                    title="#{msg.fulltext}">
+                                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                    <f:passThroughAttribute name="data-placement" value="bottom" />    
+                                </h:outputLink>
+                            </li>
+                        </ui:fragment>
 	                </h:panelGroup>
 	            </ul>
             </h:form>
