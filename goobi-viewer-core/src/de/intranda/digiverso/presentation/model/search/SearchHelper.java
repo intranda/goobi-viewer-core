@@ -1741,7 +1741,7 @@ public final class SearchHelper {
                                 sbGroup.append(' ').append(group.getOperator().name()).append(' ');
                             }
                         }
-                        sbGroup.append('(').append(itemQuery).append(')');
+                        sbGroup.append(itemQuery);
                     }
                 }
                 if (sbGroup.length() > 0) {
