@@ -50,6 +50,7 @@ var viewerJS = ( function( viewer ) {
             
             // toggle bookshelf dropdown
             $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
+                event.stopPropagation();
                 $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
             } );
             
@@ -82,6 +83,11 @@ var viewerJS = ( function( viewer ) {
                 } ).fail( function( error ) {
                     console.error( 'ERROR - _isElementSet: ', error );
                 } );
+            } );
+            
+            // hide menus by clicking on body
+            $( 'body' ).on( 'click', function() {
+                $( '.bookshelf-navigation__dropdown' ).hide();
             } );
         }
     };

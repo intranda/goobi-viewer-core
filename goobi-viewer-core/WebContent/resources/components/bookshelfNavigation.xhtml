@@ -26,15 +26,10 @@
 						#{msg.bookshelf}
 					</button>
 					<div class="bookshelf-navigation__dropdown">
-						<ui:fragment rendered="#{!userBean.loggedIn}">
-							<div class="bookshelf-navigation__dropdown-list"></div>
-							<div class="bookshelf-navigation__dropdown-list-reset"></div>
-						</ui:fragment>
+						<div class="bookshelf-navigation__dropdown-list"></div>
 						
-						<ui:fragment rendered="#{userBean.loggedIn}">
-							<div class="bookshelf-navigation__dropdown-action">
-								<a href="#{navigationHelper.applicationUrl}mybookshelves/">#{msg.bookshelf_myBookshelves}</a>
-							</div>
+						<ui:fragment rendered="#{!userBean.loggedIn}">
+							<div class="bookshelf-navigation__dropdown-list-reset"></div>
 						</ui:fragment>
 					</div>
 				</div>

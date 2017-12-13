@@ -32,6 +32,7 @@ var viewerJS = ( function( viewer ) {
             resetBookshelves: '',
             resetBookshelvesConfirm: '',
             noItemsAvailable: 'Keine Merklisten vorhanden',
+            selectBookshelf: 'Merkliste auswählen',
             addNewBookshelf: 'Merkliste hinzufügen'
         }
     };
@@ -47,13 +48,22 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
+            // render bookshelf navigation list
+            _renderBookshelfNavigationList();
+            
             // toggle bookshelf dropdown
             $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
+                event.stopPropagation();
                 $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
             } );
             
+            // check if element is in any bookshelf
+            _setAddedStatus();
+            
             // render bookshelf popup
             $( '[data-bookshelf-type="add"]' ).off().on( 'click', function() {
+                event.stopPropagation();
+                
                 var currBtn = $( this );
                 var currPi = currBtn.attr( 'data-pi' );
                 var currLogid = currBtn.attr( 'data-logid' );
@@ -66,6 +76,21 @@ var viewerJS = ( function( viewer ) {
                 
                 // render bookshelf popup
                 _renderBookshelfPopup( currPi, currLogid, currPage, currPos, currSize );
+            } );
+            
+            // hide menus/popups by clicking on body
+            $( 'body' ).on( 'click', function( event ) {
+                $( '.bookshelf-navigation__dropdown' ).hide();
+                
+                if ( $( '.bookshelf-popup' ).length > 0 ) {
+                    var target = $( event.target );
+                    var popup = $( '.bookshelf-popup' );
+                    var popupChild = popup.find( '*' );
+                    
+                    if ( !target.is( popup ) && !target.is( popupChild ) ) {
+                        $( '.bookshelf-popup' ).remove();
+                    }
+                }
             } );
         }
     };
@@ -527,9 +552,7 @@ var viewerJS = ( function( viewer ) {
             'left': ( posLeft - 142 ) + ( size.width / 2 ) + 'px'
         } );
         // build popup header
-        var bookshelfPopupHeader = $( '<div />' ).addClass( 'bookshelf-popup__header' );
-        var bookshelfPopupClose = $( '<button />' ).addClass( 'bookshelf-popup__header-close btn-clean' ).attr( 'type', 'button' );
-        bookshelfPopupHeader.append( bookshelfPopupClose );
+        var bookshelfPopupHeader = $( '<div />' ).addClass( 'bookshelf-popup__header' ).text( _defaults.msg.selectBookshelf );
         
         // build popup body
         var bookshelfPopupBody = $( '<div />' ).addClass( 'bookshelf-popup__body' );
@@ -552,11 +575,6 @@ var viewerJS = ( function( viewer ) {
         // append popup
         $( 'body' ).append( bookshelfPopup );
         
-        // close popup
-        $( '.bookshelf-popup__header-close' ).on( 'click', function() {
-            $( '.bookshelf-popup' ).remove();
-        } );
-        
         // render bookshelf list
         _renderBookshelfPopoverList( pi );
         
@@ -567,29 +585,30 @@ var viewerJS = ( function( viewer ) {
             
             if ( bsName != '' ) {
                 _addNamedBookshelf( _defaults.root, bsName ).then( function() {
+                    $( '.bookshelf-popup__footer input' ).val( '' );
                     _renderBookshelfPopoverList( currPi );
+                    _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
                     console.error( 'ERROR - _addNamedBookshelf: ', error );
                 } );
             }
             else {
                 _addAutomaticNamedBookshelf( _defaults.root ).then( function() {
+                    $( '.bookshelf-popup__footer input' ).val( '' );
                     _renderBookshelfPopoverList( currPi );
+                    _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
                     console.error( 'ERROR - _addAutomaticNamedBookshelf: ', error );
                 } );
             }
         } );
         
-        // reset all popups by clicking on body
-        // $( 'body' ).on( 'click', function( event ) {
-        // if ( event.target.className == 'bookshelf-popup' ) {
-        // return;
-        // }
-        // else {
-        // $( '.bookshelf-popup' ).remove();
-        // }
-        // } );
+        // add new bookshelf on enter
+        $( '.bookshelf-popup__footer input' ).on( 'keyup', function( event ) {
+            if ( event.keyCode == 13 ) {
+                $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).click();
+            }
+        } );
     }
     /**
      * Method to render the element list in bookshelf popover.
@@ -608,45 +627,25 @@ var viewerJS = ( function( viewer ) {
             var dropdownList = $( '<ul />' ).addClass( 'bookshelf-popup__body-list list' );
             var dropdownListItem = null;
             var dropdownListItemText = null;
-            var dropdownListItemRow = null;
-            var dropdownListItemColLeft = null;
-            var dropdownListItemColRight = null;
             var dropdownListItemAdd = null;
-            var dropdownListItemRemove = null;
+            var dropdownListItemAddCounter = null;
             
             if ( elements.length > 0 ) {
-                // activate heart in navigation
-                $( '.bookshelf-navigation__icon-heart' ).addClass( 'added' );
-                
                 elements.forEach( function( item ) {
                     dropdownListItem = $( '<li />' );
-                    dropdownListItemRow = $( '<div />' ).addClass( 'row no-margin' );
-                    
-                    // build col left
-                    dropdownListItemColLeft = $( '<div />' ).addClass( 'col-xs-9 no-padding' );
-                    dropdownListItemText = $( '<span />' ).text( item.name );
-                    dropdownListItemColLeft.append( dropdownListItemText );
-                    
-                    // build col right
-                    dropdownListItemColRight = $( '<div />' ).addClass( 'col-xs-3 no-padding' );
+                    dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
                     dropdownListItemAdd = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
-                            .attr( 'data-pi', pi );
-                    dropdownListItemRemove = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'delete' ).attr( 'data-id', item.id );
-                    dropdownListItemColRight.append( dropdownListItemAdd ).append( dropdownListItemRemove );
+                            .attr( 'data-pi', pi ).text( item.name ).append( dropdownListItemAddCounter );
                     
                     // build bookshelf item
-                    dropdownListItemRow.append( dropdownListItemColLeft ).append( dropdownListItemColRight );
-                    dropdownListItem.append( dropdownListItemRow );
+                    dropdownListItem.append( dropdownListItemAdd );
                     dropdownList.append( dropdownListItem );
                 } );
             }
             else {
-                // deactivate heart in navigation
-                $( '.bookshelf-navigation__icon-heart' ).removeClass( 'added' );
-                
                 // add empty list item
                 dropdownListItem = $( '<li />' );
-                dropdownListItemText = $( '<span />' ).text( _defaults.msg.noItemsAvailable );
+                dropdownListItemText = $( '<span />' ).addClass( 'empty' ).text( _defaults.msg.noItemsAvailable );
                 
                 dropdownListItem.append( dropdownListItemText );
                 dropdownList.append( dropdownListItem );
@@ -663,26 +662,110 @@ var viewerJS = ( function( viewer ) {
                 
                 _addBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
                     _renderBookshelfPopoverList( currPi );
+                    _renderBookshelfNavigationList();
+                    _setAddedStatus();
                 } ).fail( function( error ) {
                     console.error( 'ERROR - _addBookshelfItemByPi: ', error );
                 } );
             } );
             
-            // remove single bookshelf
-            $( '.bookshelf-popup__body-list [data-bookshelf-type="delete"]' ).on( 'click', function() {
-                var currBtn = $( this );
-                var currId = currBtn.attr( 'data-id' );
-                var currPi = '';
+        } ).fail( function( error ) {
+            console.error( 'ERROR - _getAllBookshelfItems: ', error );
+        } );
+    }
+    /**
+     * Method to render the element list in bookshelf navigation.
+     * 
+     * @method _renderBookshelfNavigationList
+     */
+    function _renderBookshelfNavigationList() {
+        if ( _debug ) {
+            console.log( '---------- _renderBookshelfNavigationList() ----------' );
+        }
+        
+        _getAllBookshelfItems( _defaults.root ).then( function( elements ) {
+            // DOM-Elements
+            var dropdownList = $( '<ul />' ).addClass( 'bookshelf-navigation__dropdown-list list' );
+            var dropdownListItem = null;
+            var dropdownListItemText = null;
+            var dropdownListItemLink = null;
+            var dropdownListItemAddCounter = null;
+            
+            if ( elements.length > 0 ) {
+                // activate heart in navigation
+                $( '.bookshelf-navigation__icon-heart' ).addClass( 'added' );
                 
-                _deleteBookshelfById( _defaults.root, currId ).then( function() {
-                    _renderBookshelfPopoverList( currPi );
-                } ).fail( function( error ) {
-                    console.error( 'ERROR - _deleteBookshelfById: ', error );
+                elements.forEach( function( item ) {
+                    dropdownListItem = $( '<li />' );
+                    dropdownListItemLink = $( '<a />' ).attr( 'href', _defaults.root + '/bookshelf/' + item.id + '/' ).attr( 'data-bookshelf-type', 'link' ).text( item.name );
+                    dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
+                    dropdownListItemLink.append( dropdownListItemAddCounter );
+                    
+                    // build bookshelf item
+                    dropdownListItem.append( dropdownListItemLink );
+                    dropdownList.append( dropdownListItem );
                 } );
-            } );
+            }
+            else {
+                // deactivate heart in navigation
+                $( '.bookshelf-navigation__icon-heart' ).removeClass( 'added' );
+                
+                // add empty list item
+                dropdownListItem = $( '<li />' );
+                dropdownListItemText = $( '<span />' ).addClass( 'empty' ).text( _defaults.msg.noItemsAvailable );
+                
+                dropdownListItem.append( dropdownListItemText );
+                dropdownList.append( dropdownListItem );
+            }
+            
+            // render complete list
+            $( '.bookshelf-navigation__dropdown-list' ).empty().append( dropdownList );
             
         } ).fail( function( error ) {
             console.error( 'ERROR - _getAllBookshelfItems: ', error );
+        } );
+    }
+    
+    /**
+     * Method to set an 'added' status to an object.
+     * 
+     * @method _setAddedStatus
+     */
+    function _setAddedStatus() {
+        if ( _debug ) {
+            console.log( '---------- _setAddedStatus() ----------' );
+        }
+        
+        $( '[data-bookshelf-type="add"]' ).each( function() {
+            var currTrigger = $( this );
+            var currTriggerPi = currTrigger.attr( 'data-pi' );
+            
+            _isItemInBookshelf( currTrigger, currTriggerPi );
+        } );
+    }
+    /**
+     * Method to check if item is in any bookshelf.
+     * 
+     * @method _isItemInBookshelf
+     * @param {Object} object An jQuery-Object of the current item.
+     * @param {String} pi The current PI of the selected item.
+     */
+    function _isItemInBookshelf( object, pi ) {
+        if ( _debug ) {
+            console.log( '---------- _isItemInBookshelf() ----------' );
+            console.log( '_isItemInBookshelf: pi - ', pi );
+            console.log( '_isItemInBookshelf: object - ', object );
+        }
+        
+        _getContainingBookshelfItemByPi( _defaults.root, pi ).then( function( item ) {
+            if ( item.success == false ) {
+                return false;
+            }
+            else {
+                object.addClass( 'added' );
+            }
+        } ).fail( function( error ) {
+            console.error( 'ERROR - _getContainingBookshelfItemByPi: ', error );
         } );
     }
     
