@@ -529,7 +529,7 @@ public class Metadata implements Serializable {
      * @should return generic version if no language specific version is found
      */
     public static List<Metadata> filterMetadataByLanguage(List<Metadata> metadataList, String recordLanguage) {
-        logger.trace("filterMetadataByLanguage: {}", recordLanguage);
+        // logger.trace("filterMetadataByLanguage: {}", recordLanguage);
         if (recordLanguage == null || metadataList == null || metadataList.isEmpty()) {
             return metadataList;
         }
