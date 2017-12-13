@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -496,6 +497,31 @@ public class BookshelfBean implements Serializable {
     public void setCurrentBookshelf(Bookshelf currentOwnBookshelf) {
         // logger.debug("currentOwnBookshelf set to "+currentOwnBookshelf.getName());
         this.currentBookshelf = currentOwnBookshelf;
+    }
+    
+    /**
+     * @param currentBookshelf the currentBookshelf to set
+     * @throws DAOException 
+     */
+    public void setCurrentBookshelfId(Long bookshelfId) throws DAOException {
+        if(bookshelfId != null) {
+            Optional<Bookshelf> o = getBookshelves().stream()
+                    .filter(bookshelf -> bookshelfId.equals(bookshelf.getId())) 
+                    .findFirst();
+            if(o.isPresent()) {
+                setCurrentBookshelf(o.get());
+            } else {
+                throw new DAOException("No bookshelf found with id " + bookshelfId + " of current user");
+            }
+        }
+    }
+    
+    public Long getCurrentBookshelfId() {
+        if(getCurrentBookshelf() != null) {
+            return getCurrentBookshelf().getId();
+        } else {
+            return null;
+        }
     }
 
     /**

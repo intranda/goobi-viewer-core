@@ -568,6 +568,16 @@
         <view-id value="/userBackendEditBookshelf.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="userMenuViewBookshelf1">
+		<pattern value="/bookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
+		<view-id value="/userBackendViewBookshelf.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+    <url-mapping id="userMenuEditBookshelf1">
+        <pattern value="/editbookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
+        <view-id value="/userBackendEditBookshelf.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
 	<url-mapping id="userMenuMySearches">
 		<pattern value="/mysearches/" />
