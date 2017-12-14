@@ -229,33 +229,29 @@
 		                    	<span class="zoom-slider-handle"></span>
 		                    </div>
 		                </li>
-		                
-		                <!-- PDF -->
-                                <h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
-		                    <li class="image-control image-control__pdf">
-		                        <h:outputLink 
-		                            value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" 
-		                            title="#{msg.pdfDownloadCurrentPage}"
-		                            rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}">
-		                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-		                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-		                            <f:passThroughAttribute name="data-placement" value="bottom" />    
-		                        </h:outputLink>
-		                    </li>
-                                </h:panelGroup>
-                                
-                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
-                            <li class="image-control">
-                                <h:outputLink 
-                                    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/" 
-                                    title="#{msg.fulltext}">
-                                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                    <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                    <f:passThroughAttribute name="data-placement" value="bottom" />    
-                                </h:outputLink>
-                            </li>
-                        </ui:fragment>
-	                </h:panelGroup>
+
+						<!-- PDF -->
+						<h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
+							<li class="image-control image-control__pdf">
+								<h:outputLink value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" title="#{msg.pdfDownloadCurrentPage}" rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}">
+									<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+									<f:passThroughAttribute name="data-toggle" value="tooltip" />
+									<f:passThroughAttribute name="data-placement" value="bottom" />
+								</h:outputLink>
+							</li>
+						</h:panelGroup>
+
+						<!-- FULLTEXT -->
+						<ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+							<li class="image-control image-control__fulltext">
+								<h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/" title="#{msg.fulltext}">
+									<i class="fa fa-file-text-o" aria-hidden="true"></i>
+									<f:passThroughAttribute name="data-toggle" value="tooltip" />
+									<f:passThroughAttribute name="data-placement" value="bottom" />
+								</h:outputLink>
+							</li>
+						</ui:fragment>
+					</h:panelGroup>
 	            </ul>
             </h:form>
         </nav>

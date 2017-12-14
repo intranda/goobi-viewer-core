@@ -45,11 +45,20 @@
 		                            	title="#{image.order}:#{image.orderLabel}" />
 		                        </a>
 	                        </div>
-	                        <div class="thumb-element-number">#{image.order}:#{image.orderLabel}</div>
-	                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
-	                           <i class="fa fa-file-text-o" aria-hidden="true"></i>
-	                        </ui:fragment>
-                        </div>
+
+							<div class="row no-margin">
+								<div class="col-xs-10 no-padding">
+									<div class="thumb-element-number">#{image.order}:#{image.orderLabel}</div>
+								</div>
+								<div class="col-xs-2 no-padding">
+									<ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+										<div class="thumb-element-fulltext">
+											<i class="fa fa-file-text-o" aria-hidden="true"></i>
+										</div>
+									</ui:fragment>
+								</div>
+							</div>
+						</div>	                    
                     </div>
                 </ui:repeat>
             </div>
