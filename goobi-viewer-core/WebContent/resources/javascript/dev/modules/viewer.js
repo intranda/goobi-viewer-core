@@ -6598,13 +6598,32 @@ var viewerJS = ( function( viewer ) {
                 
                 if ( _defaults.json.id === _defaults.imgPi ) {
                     // Aktuell geöffnete Version - kein Link
-                    _defaults.versionLink = '<li><span>' + _defaults.json.id + ' (' + _defaults.json.year + ')</span></li>';
+                    _defaults.versionLink = '<li><span>';
+                    if ( _defaults.json.label != undefined && _defaults.json.label != '' ) {
+                    	_defaults.versionLink += _defaults.json.label;
+                    }
+                    else {
+                    	 _defaults.versionLink += _defaults.json.id;
+                    	 if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
+                    		 _defaults.versionLink += ' (' + _defaults.json.year + ')';                    	
+                    	 }
+                    }
+                    _defaults.versionLink += '</span></li>';
                     
                     $( _defaults.widgetList ).append( _defaults.versionLink );
                 }
                 else {
                     // Vorgänger und Nachfolger jeweils mit Link
-                    _defaults.versionLink = '<li><a href="' + _defaults.imgUrl + '/' + _defaults.json.id + '/1/">' + _defaults.json.id + ' (' + _defaults.json.year + ')</a></li>';
+                    _defaults.versionLink = '<li><a href="' + _defaults.imgUrl + '/' + _defaults.json.id + '/1/">';
+                    if ( _defaults.json.label != undefined && _defaults.json.label != '' ) {
+                    	_defaults.versionLink += _defaults.json.label;
+                    } else {
+                    	_defaults.versionLink += _defaults.json.id;
+                    	if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
+                    		_defaults.versionLink += ' (' + _defaults.json.year + ')';
+                    	}
+                    }
+                    _defaults.versionLink += '</a></li>';
                     
                     $( _defaults.widgetList ).append( _defaults.versionLink );
                 }
@@ -7714,6 +7733,7 @@ var cmsJS = ( function( cms ) {
     
     // variables
     var _debug = false;
+    var _toggleAttr = false;
     var _defaults = {
         collectionsSelector: '.tpl-stacked-collection__collections',
         msg: {
@@ -7745,8 +7765,12 @@ var cmsJS = ( function( cms ) {
             _renderCollections( data );
             
             // set first panel visible
-            $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded', 'true' ).removeClass( 'collapsed' );
-            $( '#stackedCollections .panel:first' ).find( '.panel-collapse' ).attr( 'aria-expanded', 'true' ).addClass( 'in' );
+            _toggleAttr = $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded' );
+            
+            if ( typeof _toggleAttr !== typeof undefined && _toggleAttr !== false ) {
+                $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded', 'true' ).removeClass( 'collapsed' );
+                $( '#stackedCollections .panel:first' ).find( '.panel-collapse' ).attr( 'aria-expanded', 'true' ).addClass( 'in' );
+            }
         }
     };
     
@@ -7786,8 +7810,14 @@ var cmsJS = ( function( cms ) {
             // create panel title
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
-            panelTitleLink = $( '<a />' ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' ).attr( 'href', '#collapse-'
-                    + counter ).attr( 'aria-expanded', 'false' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
+            panelTitleLink = $( '<a />' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
+            if ( _getMetadataValue( member, 'volumes' ) < 1 ) {
+                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
+            }
+            else {
+                panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
+                        .attr( 'aria-expanded', 'false' );
+            }
             panelTitle.append( panelTitleLink );
             // create RSS link
             panelRSS = $( '<div />' ).addClass( 'panel-rss' );

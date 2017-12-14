@@ -41,7 +41,7 @@
                     
                     <div id="view_fulltext_wrapp">
 						<div id="fulltext-box">
-                            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false)}" escape="false"
+                            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false"
                                 rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
                             <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
                         </div>

@@ -115,6 +115,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int width = 0;
     /** Actual image/video height (if available). */
     private int height = 0;
+    /** Whether or not full-text is available for this page. */
+    private boolean fulltextAvailable = false;
     /** File name of the full-text document in the file system. */
     private String fulltextFileName;
     /** File name of the ALTO document in the file system. */
@@ -662,6 +664,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public void setFileIdRoot(String fileIdRoot) {
         this.fileIdRoot = fileIdRoot;
+    }
+
+    /**
+     * @return the fulltextAvailable
+     */
+    public boolean isFulltextAvailable() {
+        return fulltextAvailable;
+    }
+
+    /**
+     * @param fulltextAvailable the fulltextAvailable to set
+     */
+    public void setFulltextAvailable(boolean fulltextAvailable) {
+        this.fulltextAvailable = fulltextAvailable;
     }
 
     /**

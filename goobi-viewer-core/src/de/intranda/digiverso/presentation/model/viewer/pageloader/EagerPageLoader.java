@@ -304,6 +304,11 @@ public class EagerPageLoader implements IPageLoader, Serializable {
                 pe.setFileSize((long) doc.getFieldValue("MDNUM_FILESIZE"));
             }
 
+            // Full-text available
+            if (doc.containsKey(SolrConstants.FULLTEXTAVAILABLE)) {
+                pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
+            }
+
             //            // Eager load user generated contents from the DB
             //                try {
             //                    IUserGeneratedContent latestUGC = DataManager.getInstance().getCrowdsourcingDao().getLatestUserGeneratedContentForPage(pi, order);
