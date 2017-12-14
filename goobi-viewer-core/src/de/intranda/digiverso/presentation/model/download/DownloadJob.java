@@ -580,6 +580,14 @@ public abstract class DownloadJob implements Serializable {
     public void setObservers(List<String> observers) {
         this.observers = observers;
     }
+    
+    /**
+     * Empties the complete observer list.
+     *  Should be used after observers have been notified to avoid repeat notifications
+     */
+    public void resetObservers() {
+        this.observers = new ArrayList<String>();
+    }
 
     /**
      * @return the message
