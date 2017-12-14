@@ -382,6 +382,7 @@ public abstract class DownloadJob implements Serializable {
                 if (body != null) {
                     body = body.replace("{0}", pi);
                     body = body.replace("{1}", DataManager.getInstance().getConfiguration().getDownloadUrl() + identifier + "/"); // TODO
+                    body = body.replace("{4}", getType().toUpperCase());
                     MutableDateTime exirationDate = new MutableDateTime(lastRequested);
                     exirationDate.add(ttl);
                     body = body.replace("{2}", Helper.formatterISO8601Date.print(exirationDate));
@@ -394,6 +395,7 @@ public abstract class DownloadJob implements Serializable {
                 if (body != null) {
                     body = body.replace("{0}", pi);
                     body = body.replace("{1}", DataManager.getInstance().getConfiguration().getFeedbackEmailAddress());
+                    body = body.replace("{2}", getType().toUpperCase());
                 }
                 break;
             default:
