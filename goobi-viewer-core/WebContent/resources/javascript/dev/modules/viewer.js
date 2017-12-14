@@ -6410,9 +6410,8 @@ var viewerJS = ( function( viewer ) {
                     // check if item is in bookshelf
                     item.items.forEach( function( object ) {
                         if ( object.pi == pi ) {
+                            console.log( 'found pi' );
                             dropdownListItemIsInBookshelf = '<i class="fa fa-check" aria-hidden="true"></i> ';
-                            
-                            return false;
                         }
                     } );
                     dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
@@ -6539,8 +6538,8 @@ var viewerJS = ( function( viewer ) {
             console.log( '_isItemInBookshelf: object - ', object );
         }
         
-        _getContainingBookshelfItemByPi( _defaults.root, pi ).then( function( item ) {
-            if ( item.success == false ) {
+        _getContainingBookshelfItemByPi( _defaults.root, pi ).then( function( items ) {
+            if ( items.length == 0 ) {
                 return false;
             }
             else {
