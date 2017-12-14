@@ -1092,6 +1092,11 @@ div.mce-fullscreen {
 .bookshelf-navigation__dropdown-list li .empty {
   padding: 5px;
 }
+.bookshelf-navigation__dropdown-list h4 {
+  margin: 0;
+  padding: 5px;
+  font-size: 14px;
+}
 .bookshelf-navigation__dropdown-list [data-bookshelf-type="link"] {
   display: block;
   width: 100%;
@@ -1201,6 +1206,9 @@ div.mce-fullscreen {
   text-overflow: ellipsis;
   overflow: hidden;
   background-image: none;
+}
+.bookshelf-popup__body-list [data-bookshelf-type="add"] .fa {
+  color: green;
 }
 .bookshelf-popup__body-list [data-bookshelf-type="add"] span {
   display: inline-block;
