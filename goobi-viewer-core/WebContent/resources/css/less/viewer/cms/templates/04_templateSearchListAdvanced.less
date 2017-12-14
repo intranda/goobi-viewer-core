@@ -1,0 +1,120 @@
+/* ==============================================================
+   CMS Template "searchListAdvanced"
+   style declarations for cms_template_02_searchListAdvanced.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST */
+/* BLOCK */
+.tpl-search-list-advanced {
+    h1 {}
+    .mx-clearfloats;
+    /* ELEMENT */
+    &__left,
+    &__center,
+    &__right {
+    	position: relative;
+    	float: left;
+    	min-height: 600px;
+    	padding-right: 15px;
+    	padding-left: 15px;
+    	transition: all .3s linear;
+    }
+    &__left,
+    &__right {
+    	width: 30%;
+    	&.closed {
+    		width: 15px;
+    		& * {
+    			opacity: 0;
+    		}
+    		.tpl-search-list-advanced__left-toggle,
+    		.tpl-search-list-advanced__right-toggle,
+    		.tpl-search-list-advanced__left-toggle *,
+    		.tpl-search-list-advanced__right-toggle * {
+    			opacity: 1;
+    		}
+    	}
+    }
+    &__left {
+    	padding-right: 30px;
+    }
+    &__center {
+    	width: 40%;
+    	&.left-closed,
+    	&.right-closed {
+    		width: calc(~"70% - 45px");
+    	}
+    	&.all-closed {
+    		width: calc(~"100% - 90px");
+    	}
+    }
+    &__right {
+    	float: right;
+    	padding-left: 30px;
+    }
+    &__left-toggle,
+    &__right-toggle {
+    	position: absolute;
+    	top: 0;
+    	bottom: 0;
+    	width: 15px;
+    	z-index: 10;
+    	button {
+    		position: absolute;
+    		top: 0;
+    		left: 50%;
+    		width: 15px;
+		    height: 30px;
+		    line-height: 30px;
+    		margin: -7px;
+    		font-size: 12px;
+    		.fa {
+    			&.rotated {
+    				transform: rotate(180deg);
+    			}
+    		}
+    	}
+    }
+    &__left-toggle {
+    	right: 0;
+    	border-left: 1px solid @lightgray;
+    }
+    &__right-toggle {
+    	left: 0;
+    	border-right: 1px solid @lightgray;
+    }
+    &__intro {
+    	margin-bottom: 30px;
+    }
+	/* MODIFICATION */
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPs */
+@media screen and (max-width: @largeBreakpoint) {
+	.tpl-search-list-advanced__left, 
+	.tpl-search-list-advanced__right {
+		width: 25%;
+	}
+	.tpl-search-list-advanced__center {
+		width: 50%;
+	}
+}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {
+	.tpl-search-list-advanced__left, 
+	.tpl-search-list-advanced__right,
+	.tpl-search-list-advanced__center {
+		width: 100%;
+		padding: 0;
+	}
+	.tpl-search-list-advanced__left-toggle,
+    .tpl-search-list-advanced__right-toggle {
+    	display: none;
+    }
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

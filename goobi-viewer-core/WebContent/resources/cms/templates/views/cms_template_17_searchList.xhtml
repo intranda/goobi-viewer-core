@@ -8,8 +8,6 @@
 	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-	xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/geiwv/components"
-	xmlns:templateWidgetComponent="http://xmlns.jcp.org/jsf/composite/themes/geiwv/components/widget"
 	template="/resources/themes/#{navigationHelper.theme}/template.html"
 	xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3">
 
@@ -21,7 +19,6 @@
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
             <f:event type="preRenderView" listener="#{searchBean.resetCurrentHitIndex}" />
             <f:event type="preRenderView" listener="#{searchBean.updateBreadcrumbsForSearchHits}" />
-            <f:event type="preRenderView" listener="#{topicBean.setMarkedSelected(false)}" />
 		</f:metadata>
 	</ui:define>
 
@@ -65,7 +62,7 @@
 	                <ui:include src="#{cmsPage.getContent('component')}"></ui:include>
 	                
 	                <!-- SEARCH LIST -->
-	                <templateComponent:templateSearchList search="#{cmsPage.getContentItem('search').functionality}" />
+	                <viewerComponent:templateSearchList search="#{cmsPage.getContentItem('search').functionality}" />
 				</div>
   
 				<!-- RIGHT -->
@@ -88,7 +85,6 @@
 				            <widgetComponent:widget_user widget="#{element}"/>
 				            <widgetComponent:widget_rssFeed widget="#{element}" />		
 				            <widgetComponent:widget_cmsPageLinks widget="#{element}" />			    		
-				            <templateComponent:widget_searchDrillDownTopics widget="#{element}" />
 				    	</c:forEach>
 					</div>
 				</ui:fragment>
