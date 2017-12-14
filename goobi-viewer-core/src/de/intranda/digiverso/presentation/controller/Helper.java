@@ -75,9 +75,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.solr.common.SolrDocument;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -92,7 +89,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 import de.intranda.digiverso.presentation.Version;
-import de.intranda.digiverso.presentation.controller.TeiToHtmlConverter.ConverterMode;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
@@ -1072,39 +1068,6 @@ public class Helper {
         sb.append('/').append(pi).append('/').append(fileName);
 
         return sb.toString();
-    }
-
-    /**
-     * Loads TEI full-text from the given file path. The text portion is cut out of the main document and its markup is converted to HTML.
-     * 
-     * @param filePath
-     * @return
-     */
-    public static String loadTeiFulltext(String filePath) {
-        try {
-            Document doc = FileTools.getDocumentFromFile(new File(filePath));
-            if (doc != null && doc.getRootElement() != null) {
-                Element eleText = doc.getRootElement().getChild("text", null);
-                if (eleText != null && eleText.getChild("body", null) != null) {
-                    String language = eleText.getAttributeValue("lang", Namespace.getNamespace("xml", "http://www.w3.org/XML/1998/namespace"));
-                    Element eleBody = eleText.getChild("body", null);
-                    Element eleNewRoot = new Element("tempRoot");
-                    for (Element ele : eleBody.getChildren()) {
-                        eleNewRoot.addContent(ele.clone());
-                    }
-                    String html = FileTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
-                    return new TeiToHtmlConverter(ConverterMode.resource).convert(html, language);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (JDOMException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return null;
     }
 
     /**
