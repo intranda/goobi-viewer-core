@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.servlets.rest.bookshelves;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -631,22 +632,18 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Object getContainingUserBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
+    public List<Bookshelf> getContainingUserBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         List<Bookshelf> bookshelves = getAllUserBookshelfs();
         if(bookshelves  != null) {
             try {
                 BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
-                Optional<Bookshelf> bookshelf = bookshelves.stream().filter(bs -> bs.getItems().contains(item)).findFirst();
-                if(bookshelf.isPresent()) {
-                    return bookshelf.get();
-                } else {
-                    return new SuccessMessage(false, "No bookshelf found for current user countaining item with pi = '" + pi + "' logId = '" + logId + "' and page number = '" + pageString + "'");
-                }
+                List<Bookshelf> containingShelves= bookshelves.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
+                return containingShelves;
             } catch (IndexUnreachableException | PresentationException e) {
-                return new SuccessMessage(false, e.getMessage());
+                throw new RestApiException("Error retrieving bookshelves: " + e.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } else {
-            return new SuccessMessage(false, "No bookshelves found for current user");
+            return new ArrayList<Bookshelf>();
         }
     }
 
