@@ -2,6 +2,68 @@
    User view Bookshelf
    style declarations for userBackendViewBookshelf.xhtml
    ==============================================================*/
+/* USER VIEW BOOKSHELF */
+/* BLOCK */
+.view-bookshelf {
+	/* ELEMENT */
+	&__item {
+		height: 300px;
+		margin-bottom: 30px;
+		border: 1px solid @middlegray;
+		transition: all .3s ease-in;
+		&:hover {
+			background-color: @lightgray;
+		}
+	}
+	&__item-image,
+	&__item-info,
+	&__item-action {
+		float: left;
+		width: 50%;
+	}
+	&__item-image {
+		height: 300px;
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: cover;
+		a {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+	}
+	&__item-info {
+		height: 250px;
+		padding: 15px 15px 0 15px;
+		overflow-y: auto;
+		h4 {
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+		textarea {
+			width: 100%;
+			height: 150px;
+			resize: none;
+			border: none;
+			background-color: transparent;
+		}
+	}
+	&__item-action {
+		height: 50px;
+		padding: 15px;
+		text-align: right;
+		a {
+			display: inline-block;
+		    width: 16px;
+		    height: 16px;
+		}
+		[data-bookshelf-type="delete"] {
+			background-size: 70%;
+		}
+	}
+}
+
+
 #viewBookshelf {
     h2 {}
     h3 {}

@@ -1,148 +1,179 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:c="http://java.sun.com/jsp/jstl/core" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html" 
+	xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite" 
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
 	template="/resources/themes/#{navigationHelper.theme}/template.html">
 
 	<composite:interface />
-    
-    <ui:define name="metadata">
-        <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('mybookshelves', false, true)}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_myBookshelves,1)}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookshelfBean.currentBookshelf.name,2)}" />
-        </f:metadata>
-    </ui:define>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage('mybookshelves', false, true)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.bookshelf_myBookshelves,1)}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(bookshelfBean.currentBookshelf.name,2)}" />
+		</f:metadata>
+	</ui:define>
+	
+	<ui:define name="breadcrumbs">
+		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+	</ui:define>
 
 	<ui:define name="content">
-		<div id="viewBookshelf">
+		<div id="viewBookshelf" class="view-bookshelf">
 			<h:panelGroup rendered="#{userBean.loggedIn}">
 				<h2>#{msg.bookshelf_changeBookshelfText}: #{bookshelfBean.currentBookshelf.name}</h2>
-				
-                <!-- MESSAGE -->
-                <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
-                	<div class="alert alert-warning" role="alert">
-                        <h:outputText value="#{msg.errFunctionalityDisabled}" />                	
-                	</div>
-                </h:panelGroup>
 
-                <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
-				<h3>#{msg.bookshelf_items}</h3>
-				<h:panelGroup rendered="#{!bookshelfBean.newBookshelf}">
-				
-					<!-- warning if no entries exists -->
-					<h:panelGroup rendered="#{bookshelfBean.currentBookshelf.items.isEmpty()}">
-						<div class="alert alert-warning" role="alert">#{msg.bookshelves_noEntryWarning}</div>
-					</h:panelGroup>
-                    
-                    <!-- bookshelf entries -->
-					<h:panelGroup rendered="#{!bookshelfBean.currentBookshelf.items.isEmpty()}">				
-						<h:form id="userViewBookshelfForm" styleClass="form" prependId="false">
-							<h:dataTable 
-								id="single_bookshelf_data_table" 
-								styleClass="table table-condensed user-backend-table"
-								value="#{bookshelfBean.currentBookshelf.items}" 
-								var="item">
-								<h:column>
-									<f:facet name="header">
-										<h:outputText value="#{msg.bookshelf_thumbnail}" />
-									</f:facet>
-									<a href="#{item.url}">
-										<img src="#{item.representativeImageUrl}" alt="" />
-									</a>
-								</h:column>
-								<h:column>
-									<f:facet name="header">
-										<h:outputText value="#{msg.title}" />
-									</f:facet>
-									<a href="#{item.url}">
-										<h:outputText value="#{item.mainTitleUnescaped}" />
-									</a>
-								</h:column>
-	                            <h:column>
-	                                <f:facet name="header">
-	                                    <h:outputText value="#{msg.description}" />
-	                                </f:facet>
-	                                <a href="#{item.url}" title="#{item.description}">
-	                                    <h:outputText value="#{item.description}" />
-	                                </a>
-	                            </h:column>
-								<h:column>
-									<f:facet name="header">
-										<h:outputText value="#{msg.dateAdded}" />
-									</f:facet>
-									<h:outputText value="#{item.dateAdded}">
-										<f:convertDateTime type="both" dateStyle="medium" />
-									</h:outputText>
-								</h:column>
-								<h:column>
-									<f:facet name="header">
-										<h:outputText value="#{msg.action}" />
-									</f:facet>
-	
-									<!-- delete bookshelf item -->
-									<h:panelGroup rendered="#{bookshelfBean.currentBookshelfMine}">
-										<button type="button" class="btn deleteBookshelfItemBtn" data-toggle="modal">#{msg.delete}</button>
-									</h:panelGroup>
-	
-									<div class="modal fade deleteBookshelfItemModal" tabindex="-1" role="dialog">
-										<div class="modal-dialog">
-											<div class="modal-content">
-												<div class="modal-header">
-													<button type="button" class="close" data-dismiss="modal">
-														<span aria-hidden="true">
-															<h:outputText value="&amp;times;" escape="false" />
-														</span>
-														<span class="sr-only">Close</span>
-													</button>
-													<h4 class="modal-title" id="myModalLabel">#{msg.bookshelf_items}:
-														#{bookshelfBean.currentBookshelf.name}</h4>
-												</div>
-												<div class="modal-body">
-													<p>#{msg.bookshelf_deleteCurrentBookFromBookshelfConfirmationTextLeft}</p>
-												</div>
-												<div class="modal-footer">
-													<h:commandLink styleClass="btn" data-dismiss="modal">#{msg.cancel}</h:commandLink>
-													<h:commandLink value="#{msg.delete}" action="#{bookshelfBean.deleteCurrentItemAction(item)}"
-														styleClass="btn" />
-												</div>
-											</div>
-										</div>
-									</div>
-								</h:column>
-							</h:dataTable>
-						</h:form>
-					</h:panelGroup>
+				<!-- MESSAGE -->
+				<h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
+					<div class="alert alert-warning" role="alert">
+						<h:outputText value="#{msg.errFunctionalityDisabled}" />
+					</div>
 				</h:panelGroup>
 
-				<h:form id="viewBookshelfControlsForm" prependId="false">
-					<h:commandLink rendered="#{bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToMyBookshelves}"
-						action="pretty:userMenuMyBookshelves" styleClass="btn" />
-					<h:commandLink rendered="#{!bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToOtherBookshelves}"
-						action="pretty:userMenuOtherBookshelves" styleClass="btn" />
-				</h:form>
-			</h:panelGroup>
-			
+				<h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
+					<h:panelGroup rendered="#{!bookshelfBean.newBookshelf}">
+						<!-- warning if no entries exists -->
+						<h:panelGroup rendered="#{bookshelfBean.currentBookshelf.items.isEmpty()}">
+							<div class="alert alert-warning" role="alert">#{msg.bookshelves_noEntryWarning}</div>
+						</h:panelGroup>
+
+						<!-- bookshelf entries -->
+						<h:panelGroup rendered="#{!bookshelfBean.currentBookshelf.items.isEmpty()}">
+							<div class="row">
+								<ui:repeat value="#{bookshelfBean.currentBookshelf.items}" var="item" varStatus="status">
+									<div class="col-xs-12 col-sm-6">
+										<h:form id="viewBookshelfItemForm" prependId="false">
+											<div class="view-bookshelf__item">
+												<!--  IMAGE -->
+												<div class="view-bookshelf__item-image" style="background-image: url('#{item.getRepresentativeImageUrl(400,400)}');">
+													<a href="#{request.contextPath}#{item.url}"></a>
+												</div>
+												<div class="view-bookshelf__item-info">
+													<!--  NAME -->
+													<h4>#{item.name}</h4>
+													
+													<!--  DESCRIPTION -->
+													<ui:fragment rendered="#{!item.description}">														
+														<h:inputTextarea name="item-description">
+															<f:passThroughAttribute name="placeholder" value="#{msg.bookshelf_enterItemDescription}" />
+														</h:inputTextarea>
+													</ui:fragment>
+													
+													<ui:fragment rendered="#{item.description}">
+														<p>#{item.description}</p>
+													</ui:fragment>													
+												</div>
+												<!--  ACTION -->
+												<div class="view-bookshelf__item-action">
+													<h:commandLink action="#{bookshelfBean.deleteCurrentItemAction(item)}" title="#{msg.bookshelf_itemDelete}" role="button">
+														<f:passThroughAttribute name="data-bookshelf-type" value="delete" />
+														<f:passThroughAttribute name="data-toggle" value="tooltip" />
+														<f:passThroughAttribute name="data-placement" value="top" />
+													</h:commandLink>
+												</div>
+											</div>
+										</h:form>
+									</div>
+								</ui:repeat>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+
+
+
+<!-- 							<h:form id="userViewBookshelfForm" styleClass="form" prependId="false"> -->
+<!-- 								<h:dataTable id="single_bookshelf_data_table" styleClass="table table-condensed user-backend-table" value="#{bookshelfBean.currentBookshelf.items}" var="item"> -->
+<!-- 									<h:column> -->
+<!-- 										<f:facet name="header"> -->
+<!-- 											<h:outputText value="#{msg.bookshelf_thumbnail}" /> -->
+<!-- 										</f:facet> -->
+<!-- 										<a href="#{item.url}"> <img src="#{item.representativeImageUrl}" alt="" /> -->
+<!-- 										</a> -->
+<!-- 									</h:column> -->
+<!-- 									<h:column> -->
+<!-- 										<f:facet name="header"> -->
+<!-- 											<h:outputText value="#{msg.title}" /> -->
+<!-- 										</f:facet> -->
+<!-- 										<a href="#{item.url}"> <h:outputText value="#{item.mainTitleUnescaped}" /> -->
+<!-- 										</a> -->
+<!-- 									</h:column> -->
+<!-- 									<h:column> -->
+<!-- 										<f:facet name="header"> -->
+<!-- 											<h:outputText value="#{msg.description}" /> -->
+<!-- 										</f:facet> -->
+<!-- 										<a href="#{item.url}" title="#{item.description}"> <h:outputText value="#{item.description}" /> -->
+<!-- 										</a> -->
+<!-- 									</h:column> -->
+<!-- 									<h:column> -->
+<!-- 										<f:facet name="header"> -->
+<!-- 											<h:outputText value="#{msg.dateAdded}" /> -->
+<!-- 										</f:facet> -->
+<!-- 										<h:outputText value="#{item.dateAdded}"> -->
+<!-- 											<f:convertDateTime type="both" dateStyle="medium" /> -->
+<!-- 										</h:outputText> -->
+<!-- 									</h:column> -->
+<!-- 									<h:column> -->
+<!-- 										<f:facet name="header"> -->
+<!-- 											<h:outputText value="#{msg.action}" /> -->
+<!-- 										</f:facet> -->
+
+<!-- 										delete bookshelf item -->
+<!-- 										<h:panelGroup rendered="#{bookshelfBean.currentBookshelfMine}"> -->
+<!-- 											<button type="button" class="btn deleteBookshelfItemBtn" data-toggle="modal">#{msg.delete}</button> -->
+<!-- 										</h:panelGroup> -->
+
+<!-- 										<div class="modal fade deleteBookshelfItemModal" tabindex="-1" role="dialog"> -->
+<!-- 											<div class="modal-dialog"> -->
+<!-- 												<div class="modal-content"> -->
+<!-- 													<div class="modal-header"> -->
+<!-- 														<button type="button" class="close" data-dismiss="modal"> -->
+<!-- 															<span aria-hidden="true"> <h:outputText value="&amp;times;" escape="false" /> -->
+<!-- 															</span> <span class="sr-only">Close</span> -->
+<!-- 														</button> -->
+<!-- 														<h4 class="modal-title" id="myModalLabel">#{msg.bookshelf_items}: #{bookshelfBean.currentBookshelf.name}</h4> -->
+<!-- 													</div> -->
+<!-- 													<div class="modal-body"> -->
+<!-- 														<p>#{msg.bookshelf_deleteCurrentBookFromBookshelfConfirmationTextLeft}</p> -->
+<!-- 													</div> -->
+<!-- 													<div class="modal-footer"> -->
+<!-- 														<h:commandLink styleClass="btn" data-dismiss="modal">#{msg.cancel}</h:commandLink> -->
+<!-- 														<h:commandLink value="#{msg.delete}" action="#{bookshelfBean.deleteCurrentItemAction(item)}" styleClass="btn" /> -->
+<!-- 													</div> -->
+<!-- 												</div> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+<!-- 									</h:column> -->
+<!-- 								</h:dataTable> -->
+<!-- 							</h:form> -->
+						
+
+					<h:form id="viewBookshelfControlsForm" prependId="false">
+						<h:commandLink rendered="#{bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToMyBookshelves}" action="pretty:userMenuMyBookshelves" styleClass="btn" />
+						<h:commandLink rendered="#{!bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToOtherBookshelves}" action="pretty:userMenuOtherBookshelves" styleClass="btn" />
+					</h:form>
+				</h:panelGroup>
+
 			</h:panelGroup>
 		</div>
 		<script type="text/javascript">
-        $(document).ready(function() {
-            var btnCount = 0;
-            $.each($('.deleteBookshelfItemBtn'), function() {
-                $(this).attr('data-target', '#deleteBookshelfItemModal-' + btnCount);
-                btnCount++;
-            });
+//         $(document).ready(function() {
+//             var btnCount = 0;
+//             $.each($('.deleteBookshelfItemBtn'), function() {
+//                 $(this).attr('data-target', '#deleteBookshelfItemModal-' + btnCount);
+//                 btnCount++;
+//             });
             
-            var modalCount = 0;
-            $.each($('.deleteBookshelfItemModal'), function() {
-                $(this).attr('id', 'deleteBookshelfItemModal-' + modalCount);
-                modalCount++;
-            });
-        });
+//             var modalCount = 0;
+//             $.each($('.deleteBookshelfItemModal'), function() {
+//                 $(this).attr('id', 'deleteBookshelfItemModal-' + modalCount);
+//                 modalCount++;
+//             });
+//         });
         </script>
 	</ui:define>
 
@@ -150,27 +181,23 @@
 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
 			<widgetComponent:widget_browsing />
 		</h:panelGroup>
-		
+
 		<widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
-		
+
 		<h:panelGroup rendered="#{userBean.loggedIn}">
-        	<widgetComponent:widget_mySearches />
-        </h:panelGroup>
-        
-        <c:forEach var="module" items="#{configurationBean.modules}">
-            <c:forEach var="contribution" items="#{module.sidebarContributions}">
-                <ui:include src="/#{contribution}" />
-            </c:forEach>
-        </c:forEach>
-		
+			<widgetComponent:widget_mySearches />
+		</h:panelGroup>
+
+		<c:forEach var="module" items="#{configurationBean.modules}">
+			<c:forEach var="contribution" items="#{module.sidebarContributions}">
+				<ui:include src="/#{contribution}" />
+			</c:forEach>
+		</c:forEach>
+
 		<widgetComponent:widget_user />
 	</ui:define>
 
 	<ui:define name="rssFeed">
 		<ui:include src="resources/includes/rssFeed.xhtml" />
 	</ui:define>
-
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
 </ui:composition>
