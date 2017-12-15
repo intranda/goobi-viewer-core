@@ -68,26 +68,23 @@
 	                </h:panelGroup>
 	                
 	                <!-- BACK -->
-	                <ui:fragment rendered="!(navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)">
-	                <li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
-	                    <h:outputLink 
-	                        value="#{activeDocumentBean.getPreviousPageUrl(1 )}" 
-	                        title="#{msg.prevImage}"
-	                        disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
-	                        <i class="image-back"></i>
-	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                        <f:passThroughAttribute name="data-placement" value="bottom" />
-	                    </h:outputLink>
-	                </li>
-	                </ui:fragment>
-	                
-	                <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
-	                   <li class="image-control">
-                            <h:outputText value="#{msg.pageSelectDropdown}" />
-                        </li>
-                    </ui:fragment>
-	                
-	                <!-- SELECT -->
+					<ui:fragment rendered="!(navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)">
+						<li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+							<h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(1 )}" title="#{msg.prevImage}" disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
+								<i class="image-back"></i>
+								<f:passThroughAttribute name="data-toggle" value="tooltip" />
+								<f:passThroughAttribute name="data-placement" value="bottom" />
+							</h:outputLink>
+						</li>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
+						<li class="image-control image-control__select-text">
+							<span>#{msg.pageSelectDropdown}</span>
+						</li>
+					</ui:fragment>
+
+					<!-- SELECT -->
 	                <li class="image-control image-control__select">
 	                
 	                    <div class="form-control__select">

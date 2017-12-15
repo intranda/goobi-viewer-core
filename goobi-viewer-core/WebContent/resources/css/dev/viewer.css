@@ -1754,6 +1754,12 @@ div.mce-fullscreen {
 .image-control__page-browse {
   font-size: 1rem;
 }
+.image-control__select-text span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  border: none;
+  cursor: text;
+}
 .image-control__select .form-control__select {
   max-width: 100px;
   height: 32px;
