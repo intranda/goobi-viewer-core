@@ -628,14 +628,23 @@ var viewerJS = ( function( viewer ) {
             var dropdownListItem = null;
             var dropdownListItemText = null;
             var dropdownListItemAdd = null;
+            var dropdownListItemIsInBookshelf = null;
             var dropdownListItemAddCounter = null;
             
             if ( elements.length > 0 ) {
                 elements.forEach( function( item ) {
                     dropdownListItem = $( '<li />' );
+                    dropdownListItemIsInBookshelf = '';
+                    // check if item is in bookshelf
+                    item.items.forEach( function( object ) {
+                        if ( object.pi == pi ) {
+                            console.log( 'found pi' );
+                            dropdownListItemIsInBookshelf = '<i class="fa fa-check" aria-hidden="true"></i> ';
+                        }
+                    } );
                     dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
                     dropdownListItemAdd = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-id', item.id )
-                            .attr( 'data-pi', pi ).text( item.name ).append( dropdownListItemAddCounter );
+                            .attr( 'data-pi', pi ).text( item.name ).prepend( dropdownListItemIsInBookshelf ).append( dropdownListItemAddCounter );
                     
                     // build bookshelf item
                     dropdownListItem.append( dropdownListItemAdd );
@@ -757,8 +766,8 @@ var viewerJS = ( function( viewer ) {
             console.log( '_isItemInBookshelf: object - ', object );
         }
         
-        _getContainingBookshelfItemByPi( _defaults.root, pi ).then( function( item ) {
-            if ( item.success == false ) {
+        _getContainingBookshelfItemByPi( _defaults.root, pi ).then( function( items ) {
+            if ( items.length == 0 ) {
                 return false;
             }
             else {
