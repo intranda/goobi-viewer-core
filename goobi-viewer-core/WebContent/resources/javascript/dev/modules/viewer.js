@@ -1671,37 +1671,7 @@ var viewerJS = ( function( viewer ) {
             else {
                 return str;
             }
-        },
-        
-        /**
-         * Method to switch classnames of an object.
-         * 
-         * @deprecated use jQuery.toggleClass();
-         * @method switchClass
-         * @param {Object} $Obj The object which classname has to be switched.
-         * @param {String} classname1 The classname of the first class.
-         * @param {String} classname2 The classname of the second class.
-         * @returns {String} The new classname.
-         */
-        switchClass: function( $Obj, classname1, classname2 ) {
-            if ( _debug ) {
-                console.log( '---------- viewer.helper.switchClass() ----------' );
-                console.log( 'viewer.helper.switchClass: $Obj = ', $Obj );
-                console.log( 'viewer.helper.switchClass: classname1 = ', classname1 );
-                console.log( 'viewer.helper.switchClass: classname2 = ', classname2 );
-            }
-            
-            $Obj.toggleClass( function() {
-                if ( $Obj.hasClass( classname1 ) ) {
-                    $Obj.removeClass( classname1 );
-                    return classname2;
-                }
-                else {
-                    $Obj.removeClass( classname2 );
-                    return classname1;
-                }
-            } );
-        },
+        },        
         /**
          * Method which calculates the current position of the active element in sidebar
          * toc and the image container position and saves it to lacal storage.
@@ -1879,8 +1849,7 @@ var viewerJS = ( function( viewer ) {
             bsAlert += '</div>';
             
             return bsAlert;
-        },
-        
+        },        
         /**
          * Method to get the version number of the used MS Internet Explorer.
          * 
