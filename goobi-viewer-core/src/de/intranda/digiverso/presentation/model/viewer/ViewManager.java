@@ -121,8 +121,18 @@ public class ViewManager implements Serializable {
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
 
+    /**
+     * 
+     * @param topDocument
+     * @param pageLoader
+     * @param currentDocumentIddoc
+     * @param logId
+     * @param mainMimeType
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
-            throws IndexUnreachableException {
+            throws IndexUnreachableException, PresentationException {
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -146,7 +156,7 @@ public class ViewManager implements Serializable {
             dropdownPages.clear();
             dropdownFulltext.clear();
             if (pageLoader != null) {
-                pageLoader.generateSelectItems(dropdownPages, dropdownFulltext, BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+                pageLoader.generateSelectItems(dropdownPages, dropdownFulltext, BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), isBelowFulltextThreshold());
             }
         }
         this.mainMimeType = mainMimeType;
