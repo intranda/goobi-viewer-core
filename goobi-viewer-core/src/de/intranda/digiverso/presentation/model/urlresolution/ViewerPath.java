@@ -198,7 +198,7 @@ public class ViewerPath {
      */
     public String getCombinedUrl() {
         
-        String url = ("/" + getCombinedPath().toString() + "/").replaceAll("\\/+", "/");
+        String url = ("/" + getCombinedPath().toString() + "/").replace("\\", "/").replaceAll("\\/+", "/");
         return url;
     }
     
