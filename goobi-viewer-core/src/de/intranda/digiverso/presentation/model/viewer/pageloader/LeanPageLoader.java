@@ -161,7 +161,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
             for (SolrDocument doc : result) {
                 int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
                 String orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
-                boolean fulltextAvailable = (boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE);
+                boolean fulltextAvailable = doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(
+                        SolrConstants.FULLTEXTAVAILABLE) : false;
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
