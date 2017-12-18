@@ -6,13 +6,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
+import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
-public class ContentResourceTest extends AbstractSolrEnabledTest {
+public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
 
     private ContentResource resource;
 
