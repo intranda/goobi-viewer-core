@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -81,6 +82,8 @@ import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
@@ -233,9 +236,15 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimple() {
+        return searchSimple(true);
+    }
+    
+    public String searchSimple(boolean resetParameters) {
         logger.trace("searchSimple");
         resetSearchResults();
-        resetSearchParameters();
+        if(resetParameters) {            
+            resetSearchParameters();
+        }
         return "pretty:newSearch5";
     }
 
@@ -251,10 +260,17 @@ public class SearchBean implements Serializable {
     }
 
     public String searchAdvanced() {
+        return searchAdvanced(true);
+    }
+
+    
+    public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
         updateBreadcrumbsForSearchHits();
         resetSearchResults();
-        resetSearchParameters();
+        if(resetParameters) {            
+            resetSearchParameters();
+        }
         searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
 
         return "pretty:searchAdvanced5";

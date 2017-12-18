@@ -772,6 +772,10 @@ public class CMSPage {
         }
         throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
     }
+    
+    public String getRelativeUrlPath() {
+        return getRelativeUrlPath(true);
+    }
 
     /**
      * @return
@@ -779,6 +783,8 @@ public class CMSPage {
     public String getRelativeUrlPath(boolean pretty) {
         if (pretty && StringUtils.isNotBlank(getPersistentUrl())) {
             return getPersistentUrl() + "/";
+        } else if(pretty && StringUtils.isNotBlank(getStaticPageName())){
+            return getStaticPageName() + "/";
         }
         return "cms/" + getId() + "/";
     }
@@ -826,41 +832,6 @@ public class CMSPage {
             logger.warn("Did not find search functionality in page " + this);
             return new SearchFunctionality("", getPageUrl());
         }
-    }
-
-    /**
-     * @return
-     */
-    public Set<String> getHandledPages() {
-        Set<String> pages = new HashSet<String>();
-        if(StringUtils.isNotBlank(getStaticPageName())) {            
-            pages = new HashSet<String>(Arrays.asList(getStaticPageName().split(";")));
-        }
-        return pages;
-    }
-    
-    public void setHandledPages(Collection<String> staticPages) {
-        setStaticPageName(StringUtils.join(staticPages, ";"));
-    }
-
-    /**
-     * @param pageName
-     */
-    public void removeStaticPageName(String pageName) {
-        Set<String> staticPages = getHandledPages();
-        staticPages.remove(pageName);
-        setHandledPages(staticPages);
-        
-    }
-
-    /**
-     * @param pageName
-     */
-    public void addStaticPageName(String pageName) {
-        Set<String> staticPages = getHandledPages();
-        staticPages.add(pageName);
-        setHandledPages(staticPages);
-        
     }
     
     public boolean isHasSidebarElements() {

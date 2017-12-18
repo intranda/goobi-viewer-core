@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -38,8 +39,8 @@ public enum PageType {
     viewFullscreen("fullscreen"),
     viewReadingMode("readingmode"),
     viewCalendar("calendar"),
-    search("search"),
-    searchlist("searchlist", PageTypeHandling.cms),
+    search("search", PageTypeHandling.cms),
+    searchlist("searchlist"),
     advancedSearch("searchadvanced", PageTypeHandling.cms),
     timelinesearch("searchtimeline"),
     calendarsearch("searchcalendar"),
@@ -245,5 +246,34 @@ public enum PageType {
         }
 
         return PageType.viewMetadata;
+    }
+
+    /**
+     * @param pagePath
+     * @return true if the given path equals either the intrinsic or configured name of this pageType
+     * Leading and trailing slashes are ignored.
+     * PageType other is never matched
+     */
+    public boolean matches(String pagePath) {
+        if(StringUtils.isBlank(pagePath)) {
+            return false;
+        } else {
+            pagePath = pagePath.replaceAll("^\\/|\\/$", "");
+            return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.name) || pagePath.equalsIgnoreCase(getName());
+        }
+    }
+    
+    /**
+     * @param pagePath
+     * @return true if the given path starts with either the intrinsic or configured name of this pageType
+     * Leading and trailing slashes are ignored.
+     * PageType other is never matched
+     */
+    public boolean matches(Path pagePath) {
+        if(pagePath == null || StringUtils.isBlank(pagePath.toString())) {
+            return false;
+        } else {
+            return  pagePath.startsWith(this.name()) || pagePath.startsWith(this.name) || pagePath.startsWith(getName());
+        }
     }
 }

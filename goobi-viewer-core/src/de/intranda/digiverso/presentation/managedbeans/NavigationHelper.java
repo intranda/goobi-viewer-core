@@ -57,11 +57,11 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
-import de.intranda.digiverso.presentation.servlets.utils.UrlRedirectUtils;
 
 /**
  * This bean contains useful navigation parameters.
@@ -193,7 +193,7 @@ public class NavigationHelper implements Serializable {
             resetCurrentDocument();
         }
 
-        this.savePageUrl();
+//        this.savePageUrl();
 
         setCmsPage(setCmsPage);
         this.currentPage = currentPage;
@@ -791,7 +791,7 @@ public class NavigationHelper implements Serializable {
             } else {
                 linkedPages.add(cmsPage);
             }
-            if (cmsPage.getHandledPages().contains(PageType.index.getName())) {
+            if (PageType.index.matches(cmsPage.getStaticPageName())) {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
@@ -1049,7 +1049,7 @@ public class NavigationHelper implements Serializable {
 
     public String getPreviousViewUrl() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String previousUrl = UrlRedirectUtils.getPreviousView(request);
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
         }
@@ -1058,18 +1058,12 @@ public class NavigationHelper implements Serializable {
 
     public void redirectToPreviousView() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String previousUrl = UrlRedirectUtils.getPreviousView(request);
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedPrettyfiedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = homePage();
         }
-        UrlRedirectUtils.redirectToUrl(previousUrl);
+        ViewHistory.redirectToUrl(previousUrl);
 
-    }
-
-    public void savePageUrl() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        //save current View to session map
-        UrlRedirectUtils.setCurrentView(request);
     }
 
 }

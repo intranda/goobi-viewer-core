@@ -607,10 +607,10 @@ public class ConfigurationBean implements Serializable {
     }
 
     public List<String> getSortFields() {
-        return DataManager.getInstance().getConfiguration().getSortFields();
-//                .stream()
-//                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
-//                .collect(Collectors.toList());
+        return DataManager.getInstance().getConfiguration().getSortFields()
+                .stream()
+                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
+                .collect(Collectors.toList());
     }
 
     /**
