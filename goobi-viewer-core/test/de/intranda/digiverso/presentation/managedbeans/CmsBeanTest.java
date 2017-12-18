@@ -69,9 +69,6 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testGetLuceneFields() {
         List<String> fields = CmsBean.getLuceneFields();
-        for (String string : fields) {
-            System.out.println(string);
-        }
         Assert.assertTrue("Lucene field 'DC' is missing", fields.contains("DC"));
         Assert.assertTrue("Lucene field 'LABEL' is missing", fields.contains("LABEL"));
         Assert.assertTrue("Lucene field 'FILENAME' is missing", fields.contains("FILENAME"));
@@ -89,7 +86,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = bean.getCreatedPages();
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
-        Assert.assertEquals(1, allPages.size() - availablePages.size());
+        Assert.assertEquals(2, allPages.size() - availablePages.size());
     }
 
     @Test
