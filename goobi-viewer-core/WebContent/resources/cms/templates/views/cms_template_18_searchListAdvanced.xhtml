@@ -30,20 +30,8 @@
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
 			<div id="templateSearchListAdvanced" class="tpl-search-list-advanced">
-				<!-- LEFT -->
-				<div class="tpl-search-list-advanced__left closed">
-					<!-- TOGGLE -->
-					<div class="tpl-search-list-advanced__left-toggle">
-						<button type="button" class="btn-clean" data-toggle="sidebar-left">
-							<i class="fa fa-chevron-left rotated" aria-hidden="true"></i>
-						</button>
-					</div>
-					<widgetComponent:widget_searchDrillDown />
-				</div>
-
-
 				<!-- CENTER -->
-				<div class="tpl-search-list-advanced__center all-closed">
+				<div class="tpl-search-list-advanced__center">
 	                <h1>#{cmsPage.title}</h1>
 	                
 	                <!-- PAGE UNPUBLISHED -->
@@ -64,39 +52,23 @@
 	                <!-- SEARCH LIST -->
 	                <viewerComponent:templateSearchListAdvanced search="#{cmsPage.getContentItem('search').functionality}" />
 				</div>
-  
-				<!-- RIGHT -->
-				<ui:fragment rendered="#{cmsPage.hasSidebarElements}">
-					<div class="tpl-search-list-advanced__right closed">
-						<!-- TOGGLE -->
-						<div class="tpl-search-list-advanced__right-toggle">
-							<button type="button" class="btn-clean" data-toggle="sidebar-right">
-								<i class="fa fa-chevron-right rotated" aria-hidden="true"></i>
-							</button>
-						</div>
-						<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
-							<widgetComponent:widget_custom widget="#{element}"/>
-				    		<widgetComponent:widget_customDrillDown widget="#{element}"/>
-				    		<widgetComponent:widget_searchDrillDown widget="#{element}" />
-				            <widgetComponent:widget_searchField widget="#{element}"/>
-				            <widgetComponent:widget_browsing widget="#{element}"/>            
-				            <widgetComponent:widget_bookshelves widget="#{element}"/>
-				            <widgetComponent:widget_mySearches widget="#{element}"/>
-				            <widgetComponent:widget_user widget="#{element}"/>
-				            <widgetComponent:widget_rssFeed widget="#{element}" />		
-				            <widgetComponent:widget_cmsPageLinks widget="#{element}" />			    		
-				    	</c:forEach>
-					</div>
-				</ui:fragment>
-				<ui:fragment rendered="#{!cmsPage.hasSidebarElements}">
-				<div class="tpl-search-list-advanced__right closed"/>
-				</ui:fragment>
-				<script type="text/javascript">
-					var geiwv_searchListConfig = {
-							templateClassSelector : '.tpl-search-list-advanced'
-					};
-				</script>
             </div>
 		</f:view>
 	</ui:define>
+	<ui:define name="sidebar">
+    	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
+    		<widgetComponent:widget_custom widget="#{element}"/>
+    		<widgetComponent:widget_customDrillDown widget="#{element}"/>
+    		<widgetComponent:widget_searchDrillDown widget="#{element}" />
+            <widgetComponent:widget_searchField widget="#{element}"/>
+            <widgetComponent:widget_browsing widget="#{element}"/>            
+            <widgetComponent:widget_bookshelves widget="#{element}"/>
+            <widgetComponent:widget_mySearches widget="#{element}"/>
+            <widgetComponent:widget_user widget="#{element}"/>
+            <widgetComponent:widget_rssFeed widget="#{element}" />
+            <widgetComponent:widget_workCount widget="#{element}" />
+            <widgetComponent:widget_cmsPageLinks widget="#{element}" />
+            <widgetComponent:widget_geoLocations widget="#{element}" />
+    	</c:forEach>
+    </ui:define>
 </ui:composition>

@@ -7313,3 +7313,65 @@ img.cms-static-pages__page-language--complete {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "SearchList"
+   style declarations for cms_template_02_searchList.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST */
+/* BLOCK */
+.tpl-search-list {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-search-list:before,
+.tpl-search-list:after {
+  content: " ";
+  display: table;
+}
+.tpl-search-list:after {
+  clear: both;
+}
+.tpl-search-list__right {
+  position: relative;
+  float: left;
+  min-height: 600px;
+  padding-right: 15px;
+  padding-left: 15px;
+  transition: all .3s linear;
+}
+.tpl-search-list__intro {
+  margin-bottom: 30px;
+}
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "searchListAdvanced"
+   style declarations for cms_template_02_searchListAdvanced.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST */
+/* BLOCK */
+.tpl-search-list-advanced {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-search-list-advanced:before,
+.tpl-search-list-advanced:after {
+  content: " ";
+  display: table;
+}
+.tpl-search-list-advanced:after {
+  clear: both;
+}
+.tpl-search-list-advanced__right {
+  position: relative;
+  float: left;
+  min-height: 600px;
+  padding-right: 15px;
+  padding-left: 15px;
+  transition: all .3s linear;
+}
+.tpl-search-list-advanced__intro {
+  margin-bottom: 30px;
+}
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
