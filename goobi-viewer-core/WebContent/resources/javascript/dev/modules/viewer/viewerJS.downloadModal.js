@@ -27,7 +27,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -274,7 +274,7 @@ var viewerJS = ( function( viewer ) {
                 modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
-            if(infos.fileSize)  {            	
+            if(infos.size)  {            	
             	modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
             	modalBody += '<dd>~' + infos.size + '</dd>';
             	modalBody += '</dl>';
