@@ -1754,6 +1754,12 @@ div.mce-fullscreen {
 .image-control__page-browse {
   font-size: 1rem;
 }
+.image-control__select-text span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  border: none;
+  cursor: text;
+}
 .image-control__select .form-control__select {
   max-width: 100px;
   height: 32px;
@@ -1782,7 +1788,8 @@ div.mce-fullscreen {
   border: none;
   background-color: #6f6f6f;
 }
-.image-control__pdf a {
+.image-control__pdf a,
+.image-control__fulltext a {
   line-height: 26px;
   border: none;
 }
@@ -5468,7 +5475,8 @@ div.olMapViewport {
   max-height: 120px;
   margin: 0 auto;
 }
-#viewThumbsWrapper .thumb-element .thumb-element-number {
+#viewThumbsWrapper .thumb-element .thumb-element-number,
+#viewThumbsWrapper .thumb-element .thumb-element-fulltext {
   padding: 0.4375rem 0;
   text-align: center;
 }

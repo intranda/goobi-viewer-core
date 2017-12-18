@@ -1270,7 +1270,7 @@ var viewerJS = ( function( viewer ) {
                     _defaults.dataId = '-';
                 }
                 _defaults.dataPi = $( this ).attr( 'data-pi' );
-                _getWorkInfo( _defaults.dataPi, _defaults.dataId ).done( function( info ) {
+                _getWorkInfo( _defaults.dataPi, _defaults.dataId, _defaults.dataType ).done( function( info ) {
                     _defaults.workInfo = info;
                     
                     _defaults.modal = {
@@ -1398,9 +1398,11 @@ var viewerJS = ( function( viewer ) {
                 modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
-            modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            modalBody += '<dd>~' + infos.size + '</dd>';
-            modalBody += '</dl>';
+            if(infos.fileSize)  {            	
+            	modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+            	modalBody += '<dd>~' + infos.size + '</dd>';
+            	modalBody += '</dl>';
+            }
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
                 modalBody += '<hr />';
@@ -1506,18 +1508,19 @@ var viewerJS = ( function( viewer ) {
      * @param {String} logid The LOG_ID of the work.
      * @returns {Promise} A promise object if the info has been reached.
      */
-    function _getWorkInfo( pi, logid ) {
+    function _getWorkInfo( pi, logid, type ) {
         if ( _debug ) {
             console.log( '---------- _getWorkInfo() ----------' );
             console.log( '_getWorkInfo: pi = ', pi );
             console.log( '_getWorkInfo: logid = ', logid );
+            console.log( '_getWorkInfo: type = ', type );
         }
         
         var restCall = '';
         var workInfo = {};
         
         if ( logid !== '' || logid !== undefined ) {
-            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/' + logid + '/';
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/' + logid + '/';
             
             if ( _debug ) {
                 console.log( 'if' );
@@ -1525,7 +1528,7 @@ var viewerJS = ( function( viewer ) {
             }
         }
         else {
-            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/-/';
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/-/';
             
             if ( _debug ) {
                 console.log( 'else' );
@@ -1671,36 +1674,6 @@ var viewerJS = ( function( viewer ) {
             else {
                 return str;
             }
-        },
-        
-        /**
-         * Method to switch classnames of an object.
-         * 
-         * @deprecated use jQuery.toggleClass();
-         * @method switchClass
-         * @param {Object} $Obj The object which classname has to be switched.
-         * @param {String} classname1 The classname of the first class.
-         * @param {String} classname2 The classname of the second class.
-         * @returns {String} The new classname.
-         */
-        switchClass: function( $Obj, classname1, classname2 ) {
-            if ( _debug ) {
-                console.log( '---------- viewer.helper.switchClass() ----------' );
-                console.log( 'viewer.helper.switchClass: $Obj = ', $Obj );
-                console.log( 'viewer.helper.switchClass: classname1 = ', classname1 );
-                console.log( 'viewer.helper.switchClass: classname2 = ', classname2 );
-            }
-            
-            $Obj.toggleClass( function() {
-                if ( $Obj.hasClass( classname1 ) ) {
-                    $Obj.removeClass( classname1 );
-                    return classname2;
-                }
-                else {
-                    $Obj.removeClass( classname2 );
-                    return classname1;
-                }
-            } );
         },
         /**
          * Method which calculates the current position of the active element in sidebar
@@ -1880,7 +1853,6 @@ var viewerJS = ( function( viewer ) {
             
             return bsAlert;
         },
-        
         /**
          * Method to get the version number of the used MS Internet Explorer.
          * 
@@ -6642,6 +6614,7 @@ var cmsJS = ( function( cms ) {
     
     // variables
     var _debug = false;
+    var _toggleAttr = false;
     var _defaults = {
         collectionsSelector: '.tpl-stacked-collection__collections',
         msg: {
@@ -6673,8 +6646,12 @@ var cmsJS = ( function( cms ) {
             _renderCollections( data );
             
             // set first panel visible
-            $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded', 'true' ).removeClass( 'collapsed' );
-            $( '#stackedCollections .panel:first' ).find( '.panel-collapse' ).attr( 'aria-expanded', 'true' ).addClass( 'in' );
+            _toggleAttr = $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded' );
+            
+            if ( typeof _toggleAttr !== typeof undefined && _toggleAttr !== false ) {
+                $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded', 'true' ).removeClass( 'collapsed' );
+                $( '#stackedCollections .panel:first' ).find( '.panel-collapse' ).attr( 'aria-expanded', 'true' ).addClass( 'in' );
+            }
         }
     };
     
@@ -6714,8 +6691,14 @@ var cmsJS = ( function( cms ) {
             // create panel title
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
-            panelTitleLink = $( '<a />' ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' ).attr( 'href', '#collapse-'
-                    + counter ).attr( 'aria-expanded', 'false' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
+            panelTitleLink = $( '<a />' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
+            if ( _getMetadataValue( member, 'volumes' ) < 1 ) {
+                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
+            }
+            else {
+                panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
+                        .attr( 'aria-expanded', 'false' );
+            }
             panelTitle.append( panelTitleLink );
             // create RSS link
             panelRSS = $( '<div />' ).addClass( 'panel-rss' );

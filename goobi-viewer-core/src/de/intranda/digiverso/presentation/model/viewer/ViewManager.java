@@ -121,8 +121,18 @@ public class ViewManager implements Serializable {
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
 
+    /**
+     * 
+     * @param topDocument
+     * @param pageLoader
+     * @param currentDocumentIddoc
+     * @param logId
+     * @param mainMimeType
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
     public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
-            throws IndexUnreachableException {
+            throws IndexUnreachableException, PresentationException {
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -146,7 +156,7 @@ public class ViewManager implements Serializable {
             dropdownPages.clear();
             dropdownFulltext.clear();
             if (pageLoader != null) {
-                pageLoader.generateSelectItems(dropdownPages, dropdownFulltext, BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+                pageLoader.generateSelectItems(dropdownPages, dropdownFulltext, BeanUtils.getServletPathWithHostAsUrlFromJsfContext(), isBelowFulltextThreshold());
             }
         }
         this.mainMimeType = mainMimeType;
@@ -1496,30 +1506,17 @@ public class ViewManager implements Serializable {
     public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException {
         String currentFulltext = null;
 
-        if (StringUtils.isNotEmpty(language) && topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI + SolrConstants._LANG_
-                + language.toUpperCase())) {
-            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase());
-            String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
-            logger.trace("Loading {}", filePath);
-            currentFulltext = Helper.loadTeiFulltext(filePath);
-        } else if (topDocument.getMetadataFields().containsKey(SolrConstants.FILENAME_TEI)) {
-            String fileName = topDocument.getMetadataValue(SolrConstants.FILENAME_TEI);
-            String filePath = Helper.getTextFilePath(pi, fileName, topDocument.getDataRepository(), SolrConstants.FILENAME_TEI);
-            logger.trace("Loading {}", filePath);
-            currentFulltext = Helper.loadTeiFulltext(filePath);
-        } else {
-            // Current page fulltext
-            PhysicalElement currentImg = getCurrentPage();
-            if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-                //            // Check permissions first
-                //            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
-                //                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-                //            if (access) {
-                currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
-                //            } else {
-                //                currentFulltext = "ACCESS DENIED";
-                //            }
-            }
+        // Current page fulltext
+        PhysicalElement currentImg = getCurrentPage();
+        if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
+            //            // Check permissions first
+            //            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
+            //                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+            //            if (access) {
+            currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
+            //            } else {
+            //                currentFulltext = "ACCESS DENIED";
+            //            }
         }
 
         // logger.trace(currentFulltext);

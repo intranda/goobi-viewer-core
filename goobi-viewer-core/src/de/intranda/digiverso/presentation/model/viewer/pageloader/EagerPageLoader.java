@@ -131,10 +131,11 @@ public class EagerPageLoader implements IPageLoader, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String)
+     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean)
      */
     @Override
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot) {
+    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+            boolean recordBelowFulltextThreshold) {
         List<Integer> keys = new ArrayList<>(pages.keySet());
         Collections.sort(keys);
         for (int key : keys) {
@@ -143,10 +144,10 @@ public class EagerPageLoader implements IPageLoader, Serializable {
             si.setLabel(key + ":" + page.getOrderLabel());
             si.setValue(key);
             dropdownPages.add(si);
-            if (dropdownFulltext != null) {
+            if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !page.isFulltextAvailable())) {
                 SelectItem full = new SelectItem();
                 full.setLabel(key + ":" + page.getOrderLabel());
-                full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + page.getPurlPart());
+                full.setValue(key);
                 dropdownFulltext.add(full);
             }
         }

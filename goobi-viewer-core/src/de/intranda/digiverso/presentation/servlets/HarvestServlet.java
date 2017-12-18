@@ -248,28 +248,41 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Job not found");
                             return;
                         }
+                        JobStatus oldStatus = job.getStatus();
                         JobStatus djStatus = JobStatus.getByName(status);
-                        if (status == null) {
+                        if (djStatus == null) {
                             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown status: " + status);
                             return;
                         }
-                        // Update and save job
-                        job.setStatus(djStatus);
-                        if (StringUtils.isNotBlank(message)) {
-                            job.setMessage(message);
-                        }
-                        job.setLastRequested(new Date());
-                        if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                            return;
-                        }
-                        // Send out the word
-                        try {
-                            job.notifyObservers(djStatus, message);
-                        } catch (MessagingException e) {
-                            logger.error(e.getMessage(), e);
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
-                            return;
+                        logger.trace("Update for " + job.getType() + " job " + job.getIdentifier() + ": Status changed from " + oldStatus + " to "
+                                + djStatus);
+                        //only do something if job status has actually changed
+                        if (!djStatus.equals(oldStatus)) {
+                            // Update and save job
+                            synchronized (job) {
+                                try {
+                                    job.setStatus(djStatus);
+                                    if (StringUtils.isNotBlank(message)) {
+                                        job.setMessage(message);
+                                    }
+                                    job.setLastRequested(new Date());
+                                    if (JobStatus.ERROR.equals(djStatus) || JobStatus.READY.equals(djStatus)) {
+                                        // Send out the word
+                                        job.notifyObservers(djStatus, message);
+                                        job.resetObservers();
+                                    }
+                                } catch (MessagingException e) {
+                                    logger.error(e.getMessage(), e);
+                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
+                                } finally {
+                                    if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
+                                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                        return;
+                                    } else {
+                                        logger.trace("Downloadjob " + job + " updated in database with status " + job.getStatus());
+                                    }
+                                }
+                            }
                         }
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);

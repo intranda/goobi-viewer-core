@@ -1345,11 +1345,10 @@ public class SearchBean implements Serializable {
      */
     public long getHitsCount() {
         if (currentSearch != null) {
-            logger.trace("Hits count = {}", currentSearch.getHitsCount());
+            // logger.trace("Hits count = {}", currentSearch.getHitsCount());
             return currentSearch.getHitsCount();
-        } else {
-            logger.warn("No Search object available");
         }
+        logger.warn("No Search object available");
 
         return 0;
     }

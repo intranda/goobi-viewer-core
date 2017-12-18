@@ -1711,6 +1711,7 @@ public final class SearchHelper {
                     }
                     switch (item.getField()) {
                         case SolrConstants.FULLTEXT:
+                        case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
                             searchInPageDocs = true;
                             break;
                     }

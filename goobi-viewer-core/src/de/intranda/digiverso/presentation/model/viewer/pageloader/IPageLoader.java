@@ -46,6 +46,14 @@ public interface IPageLoader {
 
     public Long getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException;
 
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot)
-            throws IndexUnreachableException;
+    /**
+     * 
+     * @param dropdownPages Image view drop-down item
+     * @param dropdownFulltext Full-text view drop-down item list
+     * @param urlRoot
+     * @param recordBelowFulltextThreshold
+     * @throws IndexUnreachableException
+     */
+    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+            boolean recordBelowFulltextThreshold) throws IndexUnreachableException;
 }
