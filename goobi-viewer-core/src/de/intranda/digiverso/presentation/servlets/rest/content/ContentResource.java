@@ -51,7 +51,6 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 /**
  * Resource for delivering content documents such as ALTO and plain full-text.
  */
-
 @Path("/content")
 @ViewerRestServiceBinding
 public class ContentResource {
@@ -63,30 +62,48 @@ public class ContentResource {
     @Context
     private HttpServletResponse servletResponse;
 
+    public ContentResource() {
+    }
+
+    /**
+     * For testing
+     * 
+     * @param request
+     */
+    protected ContentResource(HttpServletRequest request) {
+        this.servletRequest = request;
+    }
+
     /**
      * @param pi
      * @param fileName
      * @return
      * @throws PresentationException
-     * @throws IndexUnreachableException * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
      */
     @GET
     @Path("/alto/{pi}/{fileName}")
     @Produces({ MediaType.APPLICATION_XML })
     public String getAltoDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
             IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         String filePath = DataManager.getInstance().getConfiguration().getAltoFolder() + '/' + pi + '/' + fileName;
 
+        logger.trace(filePath);
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
                 IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
         if (!access) {
             throw new ContentNotFoundException("No permission found");
         }
 
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
         if (file != null && Files.isRegularFile(file)) {
             Document doc;
@@ -114,22 +131,27 @@ public class ContentResource {
      * @throws IndexUnreachableException * @throws DAOException
      * @throws ContentNotFoundException
      * @throws IOException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
      */
     @GET
     @Path("/tei/{pi}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
     public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
             IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(),
                 pi);
         java.nio.file.Path filePath = null;
         if (Files.exists(teiPath)) {
+            // This will return the file with the requested language or alternatively the first file in the TEI folder
             filePath = Files.list(teiPath).filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst()
                     .orElse(Files.list(teiPath).findFirst().orElse(null));
         }
-
         if (filePath != null) {
             boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
                     servletRequest);
@@ -137,7 +159,6 @@ public class ContentResource {
                 throw new ContentNotFoundException("No permission found");
             }
 
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             if (Files.isRegularFile(filePath)) {
                 Document doc;
                 try {
@@ -166,12 +187,17 @@ public class ContentResource {
      * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
      */
     @GET
     @Path("/fulltext/{pi}/{fileName}")
     @Produces({ MediaType.TEXT_HTML })
     public String getFulltextDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
             IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
 
@@ -181,7 +207,6 @@ public class ContentResource {
             throw new ContentNotFoundException("No permission found");
         }
 
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
         ;
         if (file != null && Files.isRegularFile(file)) {
@@ -209,6 +234,8 @@ public class ContentResource {
      * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
      */
     @GET
     @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
@@ -216,8 +243,10 @@ public class ContentResource {
     public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
             @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
             MalformedURLException, ContentNotFoundException {
-        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-        if ("-".contentEquals(dataRepository)) {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+        }
+        if ("-".equals(dataRepository)) {
             dataRepository = null;
         }
         boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
