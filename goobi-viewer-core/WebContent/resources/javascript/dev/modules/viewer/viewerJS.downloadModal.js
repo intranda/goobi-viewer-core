@@ -146,7 +146,7 @@ var viewerJS = ( function( viewer ) {
                     _defaults.dataId = '-';
                 }
                 _defaults.dataPi = $( this ).attr( 'data-pi' );
-                _getWorkInfo( _defaults.dataPi, _defaults.dataId ).done( function( info ) {
+                _getWorkInfo( _defaults.dataPi, _defaults.dataId, _defaults.dataType ).done( function( info ) {
                     _defaults.workInfo = info;
                     
                     _defaults.modal = {
@@ -274,9 +274,11 @@ var viewerJS = ( function( viewer ) {
                 modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
-            modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            modalBody += '<dd>~' + infos.size + '</dd>';
-            modalBody += '</dl>';
+            if(infos.fileSize)  {            	
+            	modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+            	modalBody += '<dd>~' + infos.size + '</dd>';
+            	modalBody += '</dl>';
+            }
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
                 modalBody += '<hr />';
@@ -382,18 +384,19 @@ var viewerJS = ( function( viewer ) {
      * @param {String} logid The LOG_ID of the work.
      * @returns {Promise} A promise object if the info has been reached.
      */
-    function _getWorkInfo( pi, logid ) {
+    function _getWorkInfo( pi, logid, type ) {
         if ( _debug ) {
             console.log( '---------- _getWorkInfo() ----------' );
             console.log( '_getWorkInfo: pi = ', pi );
             console.log( '_getWorkInfo: logid = ', logid );
+            console.log( '_getWorkInfo: type = ', type );
         }
         
         var restCall = '';
         var workInfo = {};
         
         if ( logid !== '' || logid !== undefined ) {
-            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/' + logid + '/';
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/' + logid + '/';
             
             if ( _debug ) {
                 console.log( 'if' );
@@ -401,7 +404,7 @@ var viewerJS = ( function( viewer ) {
             }
         }
         else {
-            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/-/';
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/-/';
             
             if ( _debug ) {
                 console.log( 'else' );
