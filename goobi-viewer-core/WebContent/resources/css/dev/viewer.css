@@ -5308,27 +5308,6 @@ div.olMapViewport {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   View Preview
-   style declarations for viewPreview.xhtml 
-   ==============================================================*/
-#view_preview_img_wrapp,
-#view_preview_thumb_wrapp {
-  padding: 0.5rem 0;
-  overflow: hidden;
-}
-#view_preview_img_wrapp img,
-#view_preview_thumb_wrapp img {
-  display: block;
-  margin: 0 auto;
-}
-#view_preview_thumb_wrapp {
-  margin-bottom: 1.3125rem;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
    View Reading Mode
    style declarations for viewReadingMode.xhtml 
    ==============================================================*/
