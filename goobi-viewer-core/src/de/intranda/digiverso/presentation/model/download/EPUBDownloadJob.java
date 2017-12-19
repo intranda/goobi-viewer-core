@@ -61,7 +61,7 @@ public class EPUBDownloadJob extends DownloadJob {
         this.logId = logid;
         this.lastRequested = lastRequested;
         this.ttl = ttl;
-        this.setStatus(JobStatus.WAITING);
+        this.setStatus(JobStatus.INITIALIZED);
         generateDownloadIdentifier();
     }
 

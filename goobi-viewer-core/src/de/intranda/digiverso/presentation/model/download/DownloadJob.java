@@ -79,7 +79,8 @@ public abstract class DownloadJob implements Serializable {
         WAITING,
         READY,
         ERROR,
-        UNDEFINED;
+        UNDEFINED,
+        INITIALIZED;
 
         public static JobStatus getByName(String name) {
             if (name != null) {
@@ -92,6 +93,8 @@ public abstract class DownloadJob implements Serializable {
                         return ERROR;
                     case "UNDEFINED":
                         return JobStatus.UNDEFINED;
+                    case "INITIALIZED":
+                        return JobStatus.INITIALIZED;
                 }
             }
 
