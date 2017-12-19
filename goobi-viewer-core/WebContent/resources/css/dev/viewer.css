@@ -1461,6 +1461,14 @@ div.mce-fullscreen {
   width: 10%;
   text-align: right;
 }
+#titleWrapper .title-header__page-type {
+  display: none;
+  margin-right: 5px;
+}
+#titleWrapper .title-header__page-type:after {
+  content: "\2014";
+  margin-left: 5px;
+}
 #titleWrapper .title-body form .dl-horizontal {
   margin: 0;
 }
