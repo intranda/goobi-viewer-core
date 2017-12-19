@@ -35,13 +35,17 @@
         background-color: rgba(255,255,255,0.75);
         z-index: 10;
     }
-    &__connector {
+    &__connector,
+    &__connect-group {
     	.custom-control--select {
     		display: inline-block;
-    		width: 70px;
+    		width: 80px;
     		border: none;
     		&:after {
     			right: 10px;
+    		}
+    		select {
+    			padding: 0;
     		}
     	}
     }
@@ -71,7 +75,6 @@
             }
         }
         .custom-control--select {
-            width: 100%;
             &.disabled {
             	display: none;
             	&:after {
@@ -83,10 +86,6 @@
                 background-color: transparent;
                 opacity: 0.4;
             }
-        }
-        select {
-            padding-right: 1rem;
-            padding-left: 0;
         }
         button {
             padding: .5rem;

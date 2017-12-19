@@ -78,7 +78,7 @@
 								<div class="col-sm-9">
 									<div class="form-control__select">
 										<h:selectOneMenu styleClass="form-control" value="#{cmsBean.selectedPage.getLanguageVersion(locale).status}">
-											<f:selectItems value="#{cmsBean.languageStatusValues}" var="field" itemValue="#{field}" itemLabel="#{field.name()}" />
+											<f:selectItems value="#{cmsBean.languageStatusValues}" var="field" itemValue="#{field}" itemLabel="#{msg[field]}" />
 											<f:ajax render="@none" />
 										</h:selectOneMenu>
 									</div>

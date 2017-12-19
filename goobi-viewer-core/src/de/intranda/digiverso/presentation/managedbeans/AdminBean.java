@@ -47,13 +47,13 @@ import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvid
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
-import de.intranda.digiverso.presentation.model.user.IpRange;
-import de.intranda.digiverso.presentation.model.user.License;
-import de.intranda.digiverso.presentation.model.user.LicenseType;
-import de.intranda.digiverso.presentation.model.user.Role;
-import de.intranda.digiverso.presentation.model.user.User;
-import de.intranda.digiverso.presentation.model.user.UserGroup;
-import de.intranda.digiverso.presentation.model.user.UserRole;
+import de.intranda.digiverso.presentation.model.security.License;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
+import de.intranda.digiverso.presentation.model.security.Role;
+import de.intranda.digiverso.presentation.model.security.user.IpRange;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
+import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.unigoettingen.sub.commons.util.CacheUtils;
 
 /**
@@ -309,7 +309,7 @@ public class AdminBean implements Serializable {
                     Messages.error("user_passwordMismatch");
                     return "adminUser";
                 }
-                getCurrentUser().setNewPassword(passwordOne);
+                currentUser.setNewPassword(passwordOne);
             }
             if (DataManager.getInstance().getDao().updateUser(getCurrentUser())) {
                 Messages.info("user_saveSuccess");
@@ -319,6 +319,12 @@ public class AdminBean implements Serializable {
             }
         } else {
             // New user
+            if (DataManager.getInstance().getDao().getUserByEmail(currentUser.getEmail()) != null) {
+                // Do not allow the same email address being used for multiple users
+                Messages.error("newUserExist");
+                logger.debug("User account already exists for '" + currentUser.getEmail() + "'.");
+                return "adminUser";
+            }
             if (StringUtils.isEmpty(passwordOne) || StringUtils.isEmpty(passwordTwo)) {
                 Messages.error("newUserPasswordOneRequired");
                 return "adminUser";
@@ -947,16 +953,20 @@ public class AdminBean implements Serializable {
         if (StringUtils.isNotEmpty(pi)) {
             Namespace nsMets = Namespace.getNamespace("mets", "http://www.loc.gov/METS/");
             try {
-                String filePath;
+                StringBuilder sbFilePath = new StringBuilder();
                 if (StringUtils.isNotEmpty(dataRepository)) {
-                    filePath = DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + File.separator + dataRepository
-                            + File.separator + DataManager.getInstance().getConfiguration().getIndexedMetsFolder() + File.separator + pi + ".xml";
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                        sbFilePath.append(dataRepositoriesHome).append(File.separator);
+                    }
+                    sbFilePath.append(dataRepository).append(File.separator).append(DataManager.getInstance().getConfiguration()
+                            .getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
                 } else {
                     // Backwards compatibility with old indexes
-                    filePath = DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration()
-                            .getIndexedMetsFolder() + File.separator + pi + ".xml";
+                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
+                            .getConfiguration().getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
                 }
-                Document doc = FileTools.readXmlFile(filePath);
+                Document doc = FileTools.readXmlFile(sbFilePath.toString());
 
                 XPath xp = XPath.newInstance("mets:mets/mets:fileSec/mets:fileGrp/mets:file");
                 xp.addNamespace(nsMets);

@@ -22,7 +22,7 @@
 		<project>goobi-viewer-theme-sblue</project>
 		<project>goobi-viewer-theme-sim</project>
 		<project>goobi-viewer-theme-sulb</project>
-		<project>goobi-viewer-theme-themeBoilerplate</project>
+		<project>goobi-viewer-theme-boilerplate</project>
 		<project>goobi-viewer-theme-tib2</project>
 		<project>goobi-viewer-theme-twl</project>
 		<project>goobi-viewer-theme-ubkassel</project>
@@ -31,10 +31,19 @@
 		<project>goobi-viewer-theme-ubwien</project>
 		<project>goobi-viewer-theme-unisammlungen</project>
 		<project>goobi-viewer-theme-zlb2</project>
-		<project>goobi-viewer-module-crowdsourcing</project>
 		<project>goobi-viewer-theme-wuw</project>
 		<project>goobi-viewer-theme-hlbf</project>
 		<project>goobi-viewer-theme-geiwv</project>
+		<project>goobi-viewer-theme-zbw</project>
+		<project>goobi-viewer-theme-mvp</project>
+		<project>goobi-viewer-theme-orka</project>
+		<project>goobi-viewer-theme-grimm</project>
+		<project>goobi-viewer-theme-haab</project>
+		<project>goobi-viewer-theme-hub</project>
+		<project>goobi-viewer-theme-bsz</project>
+		<project>goobi-viewer-theme-gaugsammlungen</project>
+		<project>goobi-viewer-theme-mak</project>
+		<project>goobi-viewer-theme-mnha</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -95,11 +104,4 @@
 		<nature>net.sourceforge.pmd.eclipse.plugin.pmdNature</nature>
 		<nature>org.openmrs.generatetestcases.bddNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>config_viewer.xml</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/opt/digiverso/viewer/config/config_viewer.xml</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

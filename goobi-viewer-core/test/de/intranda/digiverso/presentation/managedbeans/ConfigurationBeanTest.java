@@ -33,17 +33,17 @@ public class ConfigurationBeanTest {
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationTest.class);
 
-    private static ConfigurationBean bean;
+    private ConfigurationBean bean;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-        bean = new ConfigurationBean();
     }
 
     @Before
     public void setUp() throws Exception {
+        bean = new ConfigurationBean();
     }
 
     @After
@@ -72,5 +72,86 @@ public class ConfigurationBeanTest {
         Assert.assertEquals(0, bean.getPageBrowseStep1());
         Assert.assertEquals(5, bean.getPageBrowseStep2());
         Assert.assertEquals(10, bean.getPageBrowseStep3());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarOverviewLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarOverviewLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarOverviewLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarPageLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarPageLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarPageLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarCalendarLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarCalendarLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarTocLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarTocLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarTocLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarThumbsLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarThumbsLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarThumbsLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarMetadataLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarMetadataLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarMetadataLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarFulltextLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarFulltextLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarFulltextLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarDfgLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarDfgLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarDfgLinkVisible());
+    }
+
+    /**
+     * @see ConfigurationBean#isSidebarOpacLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarOpacLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, bean.isSidebarOpacLinkVisible());
     }
 }

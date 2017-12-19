@@ -8,7 +8,7 @@
 	<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ * 
 	Path to local config file
 		/> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<localConfigPath value="c:/digiverso/viewer/config/config_contentServer.xml" />
+	<localConfigPath value="/opt/digiverso/contentServer/config/config_contentServer.xml" />
 
 	<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ * default 
 		resulution for results of image processing * sample: <defaultResolution value="600" 
@@ -66,6 +66,10 @@
 	<defaultPdfConfig alwaysUseRenderedImage="true"
 		alwaysCompressToJPEG="true" metsFileGroup="PRESENTATION" writeAsPdfA="true"
 		pagesize="original" />
+		
+	<!-- Factors to scale the estimated pdf size which is calculated by the size of all required image files -->
+	<imageToPdfSizeFactor tiff="0.35" jpg="1.0"/>
+		
 
 	<!--########################################################## *############################################################# 
 		* * ContentServer parameters * *############################################################# 
@@ -120,12 +124,15 @@
 		value="file:///home/goobi/metsRepository/" /> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<defaultRepositoryPathMets value="file:///opt/digiverso/viewer/indexed_mets/" />
 
-	<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ * configuration 
-		if titlepage for pdf file should be generated and * which config-file defines 
-		how the title page should look like * * sample: <defaultRepositoryPath value="file:///home/goobi/config/pdftitlepage.xml" 
-		/> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<pdfTitlePage use="false"
-		configFile="file:///opt/digiverso/viewer/config/config_pdfTitlePage.xml" />
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ * 
+		configuration if titlepage for pdf file should be generated. Each title page is build on a 
+		fo-template which is enriched by metadata from the mets/mods file.
+		All templates need to reside in the path given by @templateFolder. If no explicit template is 
+		given in the request, the file given in @defaultTemplate is used (with added extension ".fo")
+	/> *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<pdfTitlePage use="true" fontFile="font.ttf"
+		templateFolder="file:///opt/digiverso/viewer/config/PDFTitlePage/"
+		defaultTemplate="default" />
 
 	<restapi use="true"></restapi>
 

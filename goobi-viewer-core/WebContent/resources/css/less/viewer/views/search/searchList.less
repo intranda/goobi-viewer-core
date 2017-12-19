@@ -156,10 +156,12 @@
         }
     }
     &__hit-thumbnail {
+    	position: relative;
+    	min-height: 120px;
 		text-align: right;
         img {
-            max-width: 100px;
-            max-height: 100px;
+            width: 100%;
+            max-width: 80px;
             border: 2px solid @white;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
         }
@@ -241,14 +243,14 @@
         display: none;
         margin-top: 10px;
         dl {
-            margin: 0;
+            margin-bottom: 5px;
         }
         dt {
-            width: 30px;
-            text-align: left;
+        	width: auto;
+        	margin-right: 10px;
         }
         dd {
-            margin-left: 30px;
+        	margin-left: auto;
         }
     }
     &__hit-content-set {
@@ -284,16 +286,16 @@
     }
     &__metadata-info {
     	padding-left: 16px;
-    	dt {
-    		width: 20%;
-    		font-weight: normal;
-    		.fa {
-    			margin-right: 20px;
+    	td {
+    		vertical-align: top;
+    		&:first-child {
+    			padding-right: 5px;
+	    		white-space: nowrap;
     		}
     	}
-    	dd {
-    		margin-left: 20%;
-    	}
+    	.fa {
+           	margin-right: 10px;
+        }
     }
     &__struct-child-hits {
         padding-left: 15px;

@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.viewer.pageloader;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +28,6 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,10 +131,11 @@ public class EagerPageLoader implements IPageLoader, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String)
+     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean)
      */
     @Override
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot) {
+    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+            boolean recordBelowFulltextThreshold) {
         List<Integer> keys = new ArrayList<>(pages.keySet());
         Collections.sort(keys);
         for (int key : keys) {
@@ -145,10 +144,12 @@ public class EagerPageLoader implements IPageLoader, Serializable {
             si.setLabel(key + ":" + page.getOrderLabel());
             si.setValue(key);
             dropdownPages.add(si);
-            SelectItem full = new SelectItem();
-            full.setLabel(key + ":" + page.getOrderLabel());
-            full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + page.getPurlPart());
-            dropdownFulltext.add(full);
+            if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !page.isFulltextAvailable())) {
+                SelectItem full = new SelectItem();
+                full.setLabel(key + ":" + page.getOrderLabel());
+                full.setValue(key);
+                dropdownFulltext.add(full);
+            }
         }
     }
 
@@ -184,27 +185,17 @@ public class EagerPageLoader implements IPageLoader, Serializable {
 
         String pi = topElement.getPi();
         logger.debug("Loading pages for '{}'...", pi);
-
-        boolean lazyFulltext = DataManager.getInstance().getConfiguration().isFulltextLazyLoading();
-        boolean lazyWc = DataManager.getInstance().getConfiguration().isWordCoordsLazyLoading();
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
-        if (!lazyFulltext) {
-            fields.add(SolrConstants.FULLTEXT);
-            fields.add("MD_FULLTEXT");
-        }
-        if (!lazyWc) {
-            fields.add(SolrConstants.ALTO);
-        }
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
-                ':').append(DocType.PAGE);
+        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
+                .append(DocType.PAGE);
         SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections
                 .singletonList(new StringPair(SolrConstants.ORDER, "asc")), fields);
         if (result == null || result.isEmpty()) {
             sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.FILENAME)
-                    .append(":*");
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.FILENAME).append(
+                    ":*");
             result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections.singletonList(
                     new StringPair(SolrConstants.ORDER, "asc")), null);
         }
@@ -278,22 +269,10 @@ public class EagerPageLoader implements IPageLoader, Serializable {
                 }
             }
 
-            // Full text
-            if (doc.getFirstValue("MD_FULLTEXT") != null) {
-                // Prefer the unescaped MD_FULLTEXT
-                pe.setFullText((String) doc.getFirstValue("MD_FULLTEXT"));
-            } else if (doc.getFieldValue(SolrConstants.FULLTEXT) != null) {
-                pe.setFullText((String) doc.getFieldValue(SolrConstants.FULLTEXT));
-            }
-
-            // ALTO word coordinates
-            if (doc.getFieldValue(SolrConstants.ALTO) != null) {
-                try {
-                    pe.setAlto((String) doc.getFieldValue(SolrConstants.ALTO));
-                } catch (JDOMException | IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
+            // Full-text filename
+            pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+            // ALTO filename
+            pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
 
             // Access conditions
             if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {
@@ -308,8 +287,8 @@ public class EagerPageLoader implements IPageLoader, Serializable {
             // File names for different formats (required for A/V)
             String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
             for (String fieldName : doc.getFieldNames()) {
-                if (fieldName.startsWith(filenameRoot) && !fieldName.startsWith("FILENAME_TILED")) {
-                    logger.trace("Format: {}", fieldName);
+                if (fieldName.startsWith(filenameRoot)) {
+                    // logger.trace("Format: {}", fieldName);
                     String format = fieldName.split("_")[1].toLowerCase();
                     String value = (String) doc.getFieldValue(fieldName);
                     pe.getFileNames().put(format, value);
@@ -321,23 +300,14 @@ public class EagerPageLoader implements IPageLoader, Serializable {
                 pe.setFileIdRoot((String) doc.getFieldValue(SolrConstants.FILEIDROOT));
             }
 
-            // Pyramid TIFF file names
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_0) != null) {
-                pe.setFileNameTiled0((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_0));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_90) != null) {
-                pe.setFileNameTiled90((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_90));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_180) != null) {
-                pe.setFileNameTiled180((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_180));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_270) != null) {
-                pe.setFileNameTiled270((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_270));
-            }
-
             // File size
             if (doc.getFieldValue("MDNUM_FILESIZE") != null) {
                 pe.setFileSize((long) doc.getFieldValue("MDNUM_FILESIZE"));
+            }
+
+            // Full-text available
+            if (doc.containsKey(SolrConstants.FULLTEXTAVAILABLE)) {
+                pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
             }
 
             //            // Eager load user generated contents from the DB

@@ -29,13 +29,15 @@
                 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
             </h:panelGroup>
             
-			<div id="view_metadata" class="page-wrapp">
+			<div id="view_metadata">
 
 				<h2>#{msg.bibData}</h2>
+				
+				<viewerComponent:changeRecordLocale />
 
 				<div id="metadataElementWrapper">
-					<ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement">
-						<div class="metadata-element-box">
+					<ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
+						<div class="metadata-element-box" style="padding-left: #{status.index * 15}px">
 							<ui:repeat value="#{metadataElement.metadataList}" var="metadata">
 								<h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
 									<div class="metadata-element">
@@ -46,26 +48,27 @@
 											<h:panelGroup rendered="#{metadata.group}">
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
-														<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
-															<f:param value="#{val.paramLabels[0] != null ? val.getParamLabelWithColon(0) : ''}" />
+														<h:outputFormat value="#{msg[metadata.masterValue]}"
+															escape="false">
+															<f:param value="#{val.getParamLabelWithColon(0)}" />
 															<f:param value="#{val.getComboValueShort(0)}" />
-															<f:param value="#{val.paramLabels[1] != null ? val.getParamLabelWithColon(1) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(1)}" />
 															<f:param value="#{val.getComboValueShort(1)}" />
-															<f:param value="#{val.paramLabels[2] != null ? val.getParamLabelWithColon(2) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(2)}" />
 															<f:param value="#{val.getComboValueShort(2)}" />
-															<f:param value="#{val.paramLabels[3] != null ? val.getParamLabelWithColon(3) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(3)}" />
 															<f:param value="#{val.getComboValueShort(3)}" />
-															<f:param value="#{val.paramLabels[4] != null ? val.getParamLabelWithColon(4) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(4)}" />
 															<f:param value="#{val.getComboValueShort(4)}" />
-															<f:param value="#{val.paramLabels[5] != null ? val.getParamLabelWithColon(5) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(5)}" />
 															<f:param value="#{val.getComboValueShort(5)}" />
-															<f:param value="#{val.paramLabels[6] != null ? val.getParamLabelWithColon(6) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(6)}" />
 															<f:param value="#{val.getComboValueShort(6)}" />
-															<f:param value="#{val.paramLabels[7] != null ? val.getParamLabelWithColon(7) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(7)}" />
 															<f:param value="#{val.getComboValueShort(7)}" />
-															<f:param value="#{val.paramLabels[8] != null ? val.getParamLabelWithColon(8) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(8)}" />
 															<f:param value="#{val.getComboValueShort(8)}" />
-															<f:param value="#{val.paramLabels[9] != null ? val.getParamLabelWithColon(9) : ''}" />
+															<f:param value="#{val.getParamLabelWithColon(9)}" />
 															<f:param value="#{val.getComboValueShort(9)}" />
 														</h:outputFormat>
 
@@ -201,7 +204,14 @@
 								</li>
 							</h:panelGroup>
 
-							<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.hasPages}">
+
+							<h:panelGroup rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
+								<li class="dl-links__opac">
+									<a id="opacLink" href="#{activeDocumentBean.viewManager.opacUrl}" class="btn" target="_blank">#{msg.opacLink}</a>
+								</li>
+							</h:panelGroup>
+							
+							<h:panelGroup rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.linkForDFGViewer != null and !activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
 								<li class="dl-links__dfg">
 									<h:outputLink 
 										id="dfgLink" 
@@ -213,13 +223,7 @@
 								</li>
 							</h:panelGroup>
 
-							<h:panelGroup rendered="#{activeDocumentBean.viewManager.opacUrl != null}">
-								<li class="dl-links__opac">
-									<a id="opacLink" href="#{activeDocumentBean.viewManager.opacUrl}" class="btn" target="_blank">#{msg.opacLink}</a>
-								</li>
-							</h:panelGroup>
-
-							<h:panelGroup rendered="#{!activeDocumentBean.viewManager.filesOnly and !activeDocumentBean.viewManager.hasPages}">
+							<h:panelGroup rendered="#{!activeDocumentBean.viewManager.filesOnly and activeDocumentBean.viewManager.hasPages}">
 								<h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf}">
 									<h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
 										<li class="dl-links__pdf">
@@ -279,12 +283,19 @@
             viewerJS.normdata.init( normdataConfig );
             
             var downloadModalConfig = {
-                    downloadBtn: $( '.download-modal' ),
+                	downloadBtn: $( '.download-modal' ),
                     path: '#{navigationHelper.applicationUrl}',
+                    iiifPath: '#{configurationBean.iiifApiUrl}',
                     userEmail: $( '#userEmail' ).val(),
                     useReCaptcha: #{configurationBean.useReCaptcha},
                     reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
                     messages: {
+                        downloadInfo: {
+                            text: '#{msg.downloadInfoText}',
+                            title: '#{msg.downloadInfoTitle}',
+                            part: '#{msg.downloadInfoPart}',
+                            fileSize: '#{msg.downloadInfoFileSize}'
+                        },
                         reCaptchaText: '#{msg.downloadReCaptchaText}',
                         rcInvalid: '#{msg.downloadRcInvalid}',
                         rcValid: '#{msg.downloadRcValid}',
@@ -296,7 +307,7 @@
                     }
                 };
             
-            viewerJS.downloadModal.init( downloadModalConfig );
+                viewerJS.downloadModal.init( downloadModalConfig );
         </script>
 	</ui:define>
 

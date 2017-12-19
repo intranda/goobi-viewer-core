@@ -19,7 +19,7 @@
     </ui:define>
 	<ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="error" class="page-wrapp">
+			<div id="error">
                 <c:if test="#{type == null}">
 				    <c:set var="type" value="#{flash.keep.errorType}" scope="request" />
 				</c:if>
@@ -122,6 +122,28 @@
 
                     <p class="bg-danger">
                         <h:outputText value="#{msg.errDAOExceptionMsg}" />
+                    </p>
+
+                    <p class="bg-danger">
+                        <h:outputText rendered="#{!empty header['referer']}" value="URL: #{header['referer']}" />
+                        <h:outputText rendered="#{empty header['referer'] and sourceUrl != null}" value="URL: #{sourceUrl}" />
+                        <h:outputText rendered="#{empty header['referer'] and sourceUrl == null}" value="URL: #{flash.sourceUrl}" />
+                    </p>
+
+                    <p>
+                        <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
+                        <br />
+                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
+                    </p>
+                </h:panelGroup>
+                
+                <!-- Download error -->             
+                <h:panelGroup rendered="#{type == 'download'}">
+                    <h2>#{msg.errDownloadExceptionTitle}</h2>
+                
+                    <p>
+                        <h:outputText rendered="#{errMsg != null}" value="#{msg[errMsg]}" />
+                        <h:outputText rendered="#{errMsg == null}" value="#{msg[flash.keep.errorDetails]}" />
                     </p>
 
                     <p class="bg-danger">

@@ -23,7 +23,7 @@
 
 	<ui:define name="content">
         <h:panelGroup id="cmsOverviewAccessControl" rendered="#{configurationBean.cmsEnabled}">
-            <div id="cmsOverview" class="page-wrapp">
+            <div id="cmsOverview">
                 <h:panelGroup rendered="#{userBean.admin}">
                     <h2>#{msg.cms_overview}</h2>
 
@@ -54,21 +54,11 @@
                                                 src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" /></td>
                                             <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                 <td class="column_language">
-                                                    <h:graphicImage
-                                                        library="themes/#{navigationHelper.theme}/images/lang" name="flag_de.gif"
-                                                        title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}"
-                                                        styleClass="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}"
-                                                        rendered="#{locale == 'de'}" /> 
-                                                    <h:graphicImage
-                                                        library="themes/#{navigationHelper.theme}/images/lang" name="flag_en.gif"
-                                                        title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}"
-                                                        styleClass="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}"
-                                                        rendered="#{locale == 'en'}" />
-                                                    <h:graphicImage
-                                                        library="themes/#{navigationHelper.theme}/images/lang" name="flag_es.gif"
-                                                        title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}"
-                                                        styleClass="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}"
-                                                        rendered="#{locale == 'es'}" />
+													<img 
+                                                        src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{locale}.gif" 
+                                                        class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
+                                                        title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
+                                                        alt="Flag Icon" />
                                                  </td>
                                             </c:forEach>
                                             <td class="column_title"><h:outputText value="#{page.menuTitle}" /></td>

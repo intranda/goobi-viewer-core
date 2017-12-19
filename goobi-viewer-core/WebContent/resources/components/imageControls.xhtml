@@ -12,19 +12,23 @@
         	<h:form id="imageControlsForm" prependId="false">
 	            <ul>
 	                <!-- START -->
-	                <li class="image-control image-control__start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
-	                    <h:outputLink 
-	                        value="#{activeDocumentBean.firstPageUrl}" 
-	                        title="#{msg.firstImage}"
-	                        disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
-	                        <i class="image-start"></i>
-	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                        <f:passThroughAttribute name="data-placement" value="bottom" />
-	                    </h:outputLink>
-	                </li>
+	                <h:panelGroup rendered="#{activeDocumentBean.viewManager.multiPageRecord}">
+	                
+	                    <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
+	                    <li class="image-control image-control__start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+	                        <h:outputLink 
+	                            value="#{activeDocumentBean.firstPageUrl}" 
+	                            title="#{msg.firstImage}"
+	                            disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
+	                            <i class="image-start"></i>
+	                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
+	                            <f:passThroughAttribute name="data-placement" value="bottom" />
+	                        </h:outputLink>
+	                    </li>
+	                    </ui:fragment>
 	                
 	                <!-- PAGE BROWSE BACK -->
-	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
+	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
 	                    <h:panelGroup rendered="#{configurationBean.pageBrowseStep3Visible}">
 	                        <li class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'inactive' : ''}">
 	                            <h:outputLink 
@@ -64,30 +68,45 @@
 	                </h:panelGroup>
 	                
 	                <!-- BACK -->
-	                <li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
-	                    <h:outputLink 
-	                        value="#{activeDocumentBean.getPreviousPageUrl(1 )}" 
-	                        title="#{msg.prevImage}"
-	                        disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
-	                        <i class="image-back"></i>
-	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                        <f:passThroughAttribute name="data-placement" value="bottom" />
-	                    </h:outputLink>
-	                </li>
-	                
-	                <!-- SELECT -->
+					<ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
+						<li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+							<h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(1 )}" title="#{msg.prevImage}" disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
+								<i class="image-back"></i>
+								<f:passThroughAttribute name="data-toggle" value="tooltip" />
+								<f:passThroughAttribute name="data-placement" value="bottom" />
+							</h:outputLink>
+						</li>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
+						<li class="image-control image-control__select-text">
+							<span>#{msg.pageSelectDropdown}</span>
+						</li>
+					</ui:fragment>
+
+					<!-- SELECT -->
 	                <li class="image-control image-control__select">
+	                
 	                    <div class="form-control__select">
-	                        <h:selectOneMenu
-	                            onchange="location.href='#{activeDocumentBean.getPageUrl()}' + $(this).val(); + '/';"
+	                        <!-- Image view select -->
+	                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'image'}"
+	                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
 	                            value="#{activeDocumentBean.viewManager.dropdownSelected}"
 	                            styleClass="form-control">
 	                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
 	                        </h:selectOneMenu>
+	                        <!-- Full-text view select -->
+                            <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
+                                onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+                                value="#{activeDocumentBean.viewManager.dropdownSelected}"
+                                styleClass="form-control">
+                                <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
+                            </h:selectOneMenu>
 	                    </div>
 	                </li>
 	                
 	                <!-- FORWARD -->
+	                <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
 	                <li class="image-control image-control__forward #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
 	                    <h:outputLink 
 	                        value="#{activeDocumentBean.getNextPageUrl(1 )}" 
@@ -98,6 +117,7 @@
 	                        <f:passThroughAttribute name="data-placement" value="bottom" />
 	                    </h:outputLink>
 	                </li>
+	                </ui:fragment>
 	                
 	                <!-- PAGE BROWSE FORWARD -->
 	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
@@ -140,6 +160,7 @@
 	                </h:panelGroup>
 	                
 	                <!-- END -->
+	                <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
 	                <li class="image-control image-control__end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
 	                    <h:outputLink 
 	                        value="#{activeDocumentBean.getLastPageUrl()}" 
@@ -150,9 +171,10 @@
 	                        <f:passThroughAttribute name="data-placement" value="bottom" />
 	                    </h:outputLink>
 	                </li>
+	                </ui:fragment>
 	                
-	                <!-- DUOBLEPAGEVIEW -->
-	                <h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
+	                <!-- DOUBLEPAGEVIEW -->
+	                <h:panelGroup rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
 		                <li class="image-control image-control__double-page-view">
 		                    <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
 		                    	<i class="image-doublePageView"></i>
@@ -180,25 +202,13 @@
 		                    		<span class="path6"></span>
 		                    		<span class="path7"></span>
 		                    		<span class="path8"></span>
-		                    		<span class="path9"></span>
-		                    		<span class="path10"></span>
-		                    		<span class="path11"></span>
-		                    		<span class="path12"></span>
-		                    		<span class="path13"></span>
-		                    		<span class="path14"></span>
-		                    		<span class="path15"></span>
-		                    		<span class="path16"></span>
-		                    		<span class="path17"></span>
-		                    		<span class="path18"></span>
-		                    		<span class="path19"></span>
-		                    		<span class="path20"></span>
-		                    		<span class="path21"></span>
-		                    		<span class="path22"></span>
 		                    	</i>
 		                    	<f:passThroughAttribute name="data-toggle" value="tooltip" />
 		                    	<f:passThroughAttribute name="data-placement" value="bottom" />
 		                    </h:commandLink>
 		                </li>
+					</h:panelGroup>
+					
 					</h:panelGroup>
 	                
 	                <h:panelGroup rendered="#{navigationHelper.currentPage != 'fulltext'}">
@@ -239,21 +249,29 @@
 		                    	<span class="zoom-slider-handle"></span>
 		                    </div>
 		                </li>
-		                
-		                <!-- PDF -->
-		                <h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
-		                    <li class="image-control image-control__pdf">
-		                        <h:outputLink 
-		                            value="#{activeDocumentBean.viewManager.currentPage.imageToPdfUrl}" 
-		                            title="#{msg.pdfDownloadCurrentPage}"
-		                            rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}">
-		                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-		                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-		                            <f:passThroughAttribute name="data-placement" value="bottom" />    
-		                        </h:outputLink>
-		                    </li>
-		                </h:panelGroup>
-	                </h:panelGroup>
+
+						<!-- PDF -->
+						<h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
+							<li class="image-control image-control__pdf">
+								<h:outputLink value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" title="#{msg.pdfDownloadCurrentPage}" rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}">
+									<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+									<f:passThroughAttribute name="data-toggle" value="tooltip" />
+									<f:passThroughAttribute name="data-placement" value="bottom" />
+								</h:outputLink>
+							</li>
+						</h:panelGroup>
+
+						<!-- FULLTEXT -->
+						<ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+							<li class="image-control image-control__fulltext">
+								<h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/" title="#{msg.fulltext}">
+									<i class="fa fa-file-text-o" aria-hidden="true"></i>
+									<f:passThroughAttribute name="data-toggle" value="tooltip" />
+									<f:passThroughAttribute name="data-placement" value="bottom" />
+								</h:outputLink>
+							</li>
+						</ui:fragment>
+					</h:panelGroup>
 	            </ul>
             </h:form>
         </nav>

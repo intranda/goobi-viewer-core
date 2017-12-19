@@ -16,10 +16,10 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
@@ -48,6 +47,7 @@ import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -55,9 +55,11 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ConfigurationBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
@@ -98,10 +100,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private final String physId;
     private final String filePath;
     private String fileName;
-    private String fileNameTiled0;
-    private String fileNameTiled90;
-    private String fileNameTiled180;
-    private String fileNameTiled270;
     private String fileIdRoot;
     private long fileSize = 0;
     /** Physical page number of this element in the list of all pages (this value is always 1 below the ORDER value in the METS file). */
@@ -117,13 +115,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private int width = 0;
     /** Actual image/video height (if available). */
     private int height = 0;
-    /** Plain text. */
+    /** Whether or not full-text is available for this page. */
+    private boolean fulltextAvailable = false;
+    /** File name of the full-text document in the file system. */
+    private String fulltextFileName;
+    /** File name of the ALTO document in the file system. */
+    private String altoFileName;
+    /** Plain full-text. */
     private String fullText;
     /** XML document containing the ALTO document for this page. Saved into a variable so it doesn't have to be expensively loaded multiple times. */
     private String altoText;
     /** Format of the loaded word coordinates XML document. */
     private CoordsFormat wordCoordsFormat = CoordsFormat.UNCHECKED;
-
+    /** Data repository name for the record to which this page belongs. */
     private final String dataRepository;
 
     private Map<String, String> fileNames = new HashMap<>();
@@ -210,7 +214,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     protected static String determineFileName(String filePath) {
         String ret = filePath;
-        if (!isExternalUrl(ret)) {
+        if (StringUtils.isNotBlank(ret) && !isExternalUrl(ret)) {
             File file = new File(ret);
             ret = file.getName();
             //                String[] filePathSplit = ret.split("[/]");
@@ -326,12 +330,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getUrl(int width, int height, int rotate, boolean showWatermark, boolean fullscreen, List<String> highlightCoords)
-            throws IndexUnreachableException, ConfigurationException {
+            throws IndexUnreachableException {
         return getUrl(width, height, rotate, showWatermark, fullscreen, highlightCoords, null);
     }
 
     public String getUrl(int width, int height, int rotate, boolean showWatermark, boolean fullscreen, List<String> highlightCoords,
-            String watermarkId) throws IndexUnreachableException, ConfigurationException {
+            String watermarkId) throws IndexUnreachableException {
         String iiifUrl = getModifiedIIIFFUrl(filePath, width, height);
         if (!iiifUrl.equals(filePath)) {
             return iiifUrl;
@@ -341,42 +345,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             fileName = determineFileName(filePath);
         }
 
-        boolean useTiles = (DataManager.getInstance().getConfiguration().useTiles() && this.isTilesExist());
-        if (fullscreen) {
-            useTiles = DataManager.getInstance().getConfiguration().useTilesFullscreen() && this.isTilesExist();
-        }
-
         String localFilename = fileName;
 
         switch (mimeType) {
             case MIME_TYPE_IMAGE: {
                 String actionString = "?action=image&sourcepath=";
-                //check if we display tiles
-                if (useTiles) {
-                    actionString = "?Zoomify=";
-                    if (isRotationTilesExist()) {
-                        switch (rotate) {
-                            case 0:
-                                localFilename = this.getFileNameTiled0();
-                                break;
-                            case 90:
-                                localFilename = this.getFileNameTiled90();
-                                break;
-                            case 180:
-                                localFilename = this.getFileNameTiled180();
-                                break;
-                            case 270:
-                                localFilename = this.getFileNameTiled270();
-                                break;
-                            default:
-                                localFilename = this.getFileNameTiled0();
-                        }
-                        //                localFilename = this.getFileNameBase() + "_" + rotate + "degree.tif";
-                    } else {
-                        localFilename = this.getFileNameTiled0();
-                    }
-                }
-
                 String url = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
                 if (StringUtils.isEmpty(url)) {
                     url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").toString();
@@ -387,49 +360,46 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 StringBuilder urlBuilder = new StringBuilder();
                 urlBuilder.append(url).append(actionString);
                 if (StringUtils.isNotEmpty(dataRepository)) {
-                    urlBuilder.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? "/"
-                            : "").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append("/")
-                            .append(DataManager.getInstance().getConfiguration().getMediaFolder()).append("/");
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    urlBuilder.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/'
+                            : "").append(dataRepositoriesHome).append(dataRepository).append("/").append(DataManager.getInstance().getConfiguration()
+                                    .getMediaFolder()).append("/");
                 }
-                if (useTiles) {
-                    urlBuilder.append(pi).append("/").append(localFilename).append("/");
+                urlBuilder.append(pi).append('/').append(localFilename);
+
+                if (width > 0) {
+                    urlBuilder.append("&width=").append(width);
+                }
+
+                if (height > 0) {
+                    urlBuilder.append("&height=").append(height);
+                }
+
+                urlBuilder.append("&rotate=").append(rotate).append("&resolution=72").append(DataManager.getInstance().getConfiguration()
+                        .isForceJpegConversion() ? "&format=jpg" : "");
+
+                if (watermarkTextConfiguration != null && watermarkTextConfiguration.size() > 0 && showWatermark) {
+                    // Add watermark text as configured
+                    urlBuilder.append(getWatermarkText());
+
                 } else {
-                    urlBuilder.append(pi).append('/').append(localFilename);
-
-                    if (width > 0) {
-                        urlBuilder.append("&width=").append(width);
-                    }
-
-                    if (height > 0) {
-                        urlBuilder.append("&height=").append(height);
-                    }
-
-                    urlBuilder.append("&rotate=").append(rotate).append("&resolution=72").append(DataManager.getInstance().getConfiguration()
-                            .isForceJpegConversion() ? "&format=jpg" : "");
-
-                    if (watermarkTextConfiguration != null && watermarkTextConfiguration.size() > 0 && showWatermark) {
-                        // Add watermark text as configured
-                        urlBuilder.append(getWatermarkText());
-
-                    } else {
-                        urlBuilder.append("&ignoreWatermark");
-                    }
-                    //                urlBuilder.append("&ignoreCache=true");
-
-                    if (highlightCoords != null && !highlightCoords.isEmpty()) {
-                        urlBuilder.append("&highlight=");
-                        for (String s : highlightCoords) {
-                            urlBuilder.append(s).append('$');
-                        }
-                        urlBuilder.deleteCharAt(urlBuilder.length() - 1);
-                    }
-
-                    if (watermarkId != null) {
-                        urlBuilder.append("&watermarkId=").append(watermarkId);
-                    }
-                    //                urlBuilder.append("&ignoreCache=true");
-
+                    urlBuilder.append("&ignoreWatermark");
                 }
+                //                urlBuilder.append("&ignoreCache=true");
+
+                if (highlightCoords != null && !highlightCoords.isEmpty()) {
+                    urlBuilder.append("&highlight=");
+                    for (String s : highlightCoords) {
+                        urlBuilder.append(s).append('$');
+                    }
+                    urlBuilder.deleteCharAt(urlBuilder.length() - 1);
+                }
+
+                if (watermarkId != null) {
+                    urlBuilder.append("&watermarkId=").append(watermarkId);
+                }
+                //                urlBuilder.append("&ignoreCache=true");
+
                 logger.trace("Image URL: {}", urlBuilder.toString());
                 return urlBuilder.toString();
             }
@@ -547,13 +517,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                             "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
                                     .isForceJpegConversion() ? "&format=jpg" : "");
         } else if (StringUtils.isNotEmpty(dataRepository)) {
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
             sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=file:/").append(
-                    DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "").append(DataManager
-                            .getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(DataManager
-                                    .getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append("/").append(fileName).append(
-                                            "&width=").append(width).append("&height=").append(height).append(
-                                                    "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                                                            .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
+                    (StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "").append(dataRepositoriesHome)
+                    .append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi)
+                    .append("/").append(fileName).append("&width=").append(width).append("&height=").append(height).append(
+                            "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
+                                    .isForceJpegConversion() ? "&format=jpg" : "");
         } else {
             sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=").append(pi)
                     .append("/").append(fileName).append("&width=").append(width).append("&height=").append(height).append(
@@ -615,11 +585,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return
      */
     public String getDisplayMimeType() {
-        String baseType = getMimeType();
+        return getFullMimeType(getMimeType(), fileName);
+    }
+
+    /**
+     * 
+     * @param baseType
+     * @param fileName
+     * @return
+     */
+    public static String getFullMimeType(String baseType, String fileName) {
         if (baseType.equals(MIME_TYPE_IMAGE)) {
             //            return baseType + "/jpeg";
             ImageFileFormat fileFormat = ImageFileFormat.getImageFileFormatFromFileExtension(fileName);
-            if (fileFormat.equals(ImageFileFormat.PNG)) {
+            if (ImageFileFormat.PNG.equals(fileFormat)) {
                 return fileFormat.getMimeType();
             }
             return ImageFileFormat.JPG.getMimeType();
@@ -674,62 +653,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * @return the fileNameTiled0
-     */
-    public String getFileNameTiled0() {
-        return fileNameTiled0;
-    }
-
-    /**
-     * @param fileNameTiled0 the fileNameTiled0 to set
-     */
-    public void setFileNameTiled0(String fileNameTiled0) {
-        this.fileNameTiled0 = fileNameTiled0;
-    }
-
-    /**
-     * @return the fileNameTiled90
-     */
-    public String getFileNameTiled90() {
-        return fileNameTiled90;
-    }
-
-    /**
-     * @param fileNameTiled90 the fileNameTiled90 to set
-     */
-    public void setFileNameTiled90(String fileNameTiled90) {
-        this.fileNameTiled90 = fileNameTiled90;
-    }
-
-    /**
-     * @return the fileNameTiled180
-     */
-    public String getFileNameTiled180() {
-        return fileNameTiled180;
-    }
-
-    /**
-     * @param fileNameTiled180 the fileNameTiled180 to set
-     */
-    public void setFileNameTiled180(String fileNameTiled180) {
-        this.fileNameTiled180 = fileNameTiled180;
-    }
-
-    /**
-     * @return the fileNameTiled270
-     */
-    public String getFileNameTiled270() {
-        return fileNameTiled270;
-    }
-
-    /**
-     * @param fileNameTiled270 the fileNameTiled270 to set
-     */
-    public void setFileNameTiled270(String fileNameTiled270) {
-        this.fileNameTiled270 = fileNameTiled270;
-    }
-
-    /**
      * @return the fileIdRoot
      */
     public String getFileIdRoot() {
@@ -744,27 +667,77 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
+     * @return the fulltextAvailable
+     */
+    public boolean isFulltextAvailable() {
+        return fulltextAvailable;
+    }
+
+    /**
+     * @param fulltextAvailable the fulltextAvailable to set
+     */
+    public void setFulltextAvailable(boolean fulltextAvailable) {
+        this.fulltextAvailable = fulltextAvailable;
+    }
+
+    /**
+     * @return the fulltextFileName
+     */
+    public String getFulltextFileName() {
+        return fulltextFileName;
+    }
+
+    /**
+     * @param fulltextFileName the fulltextFileName to set
+     */
+    public void setFulltextFileName(String fulltextFileName) {
+        this.fulltextFileName = fulltextFileName;
+    }
+
+    /**
+     * @return the altoFileName
+     */
+    public String getAltoFileName() {
+        return altoFileName;
+    }
+
+    /**
+     * @param altoFileName the altoFileName to set
+     */
+    public void setAltoFileName(String altoFileName) {
+        this.altoFileName = altoFileName;
+    }
+
+    /**
      * @return the fullText
-     * @throws IOException
-     * @throws JDOMException
      */
     public String getFullText() {
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
-                if (!loadAlto()) {
-                    wordCoordsFormat = CoordsFormat.NONE;
-                }
-            } catch (JDOMException | IOException e) {
+                altoText = loadAlto();
+            } catch (AccessDeniedException e) {
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
+            } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
-                wordCoordsFormat = CoordsFormat.NONE;
             }
         }
-        if (altoText != null) {
+        if (StringUtils.isNotEmpty(altoText)) {
+            wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFullText(altoText);
             return text;
-        } else if (DataManager.getInstance().getConfiguration().isFulltextLazyLoading() && fullText == null) {
-            loadFullText();
+        }
+        wordCoordsFormat = CoordsFormat.NONE;
+        if (fullText == null) {
+            try {
+                fullText = loadFullText();
+            } catch (AccessDeniedException e) {
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
+            } catch (FileNotFoundException e) {
+                logger.error(e.getMessage());
+            } catch (IOException | IndexUnreachableException | DAOException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
 
         return fullText;
@@ -778,38 +751,35 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Loads full-text data for this page from the Solr index, if not yet loaded.
+     * Loads full-text data for this page via the REST service, if not yet loaded.
      *
-     * @return
+     * @return true if fulltext loaded successfully false otherwise
+     * @throws AccessDeniedException
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DAOException
+     * @throws IndexUnreachableException
      * @should load full-text correctly if not yet loaded
-     * @should return false if already loaded
+     * @should return null if already loaded
      */
-    protected boolean loadFullText() {
-        if (fullText == null) {
-            logger.trace("Loading full-text for page {}", order);
+    String loadFullText() throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+        if (fullText == null && fulltextFileName != null) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for full-text file {}", fulltextFileName);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+            logger.trace("Loading full-text for page {}", fulltextFileName);
+            String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
             try {
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi).append(" AND ").append(SolrConstants.ORDER).append(":").append(
-                        order);
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), Arrays.asList(new String[] {
-                        SolrConstants.FULLTEXT, "MD_FULLTEXT" }));
-                if (doc != null) {
-                    if (doc.getFieldValue("MD_FULLTEXT") != null) {
-                        // Prefer the unescaped MD_FULLTEXT
-                        fullText = SolrSearchIndex.getAsString(doc.getFieldValue("MD_FULLTEXT"));
-                    } else if (doc.getFieldValue(SolrConstants.FULLTEXT) != null) {
-                        fullText = (String) doc.getFieldValue(SolrConstants.FULLTEXT);
-                        return true;
-                    }
-                }
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                return Helper.getWebContentGET(url);
+            } catch (HTTPException e) {
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
             }
         }
 
-        return false;
+        return null;
     }
 
     public List<String> getWordCoords(Set<String> searchTerms) {
@@ -834,12 +804,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
-                if (!loadAlto()) {
-                    wordCoordsFormat = CoordsFormat.NONE;
-                }
-            } catch (JDOMException | IOException e) {
+                loadAlto();
+            } catch (AccessDeniedException e) {
+                fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
+            } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
-                wordCoordsFormat = CoordsFormat.NONE;
             }
         }
 
@@ -851,56 +820,49 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             } catch (JDOMException | IOException e) {
                 logger.error(e.getMessage(), e);
             }
+        } else {
+            wordCoordsFormat = CoordsFormat.NONE;
         }
 
         return Collections.emptyList();
     }
 
     /**
-     * @return the alto
+     * Loads ALTO data for this page via the REST service, if not yet loaded.
+     * 
+     * @return true if ALTO successfully loaded; false otherwise
+     * @throws AccessDeniedException
      * @throws IOException
      * @throws JDOMException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @should load and set alto correctly
+     * @should set wordCoordsFormat correctly
      */
-    public boolean loadAlto() throws JDOMException, IOException {
-
-        if (altoText == null) {
+    public String loadAlto() throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException {
+        logger.trace("loadAlto: {}", altoFileName);
+        if (altoText == null && altoFileName != null) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFileName);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+            String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
+            logger.trace("URL: {}", url);
             try {
-                StringBuilder sbQuery = new StringBuilder();
-                sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(":").append(pi).append(" AND ").append(SolrConstants.ORDER).append(":").append(
-                        order);
-                logger.trace("loadAlto: {}", sbQuery.toString());
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), Collections.singletonList(
-                        SolrConstants.ALTO));
-                if (doc != null && doc.getFieldValue(SolrConstants.ALTO) != null) {
-                    logger.trace("Lazy loaded ALTO");
+                altoText = Helper.getWebContentGET(url);
+                if (altoText != null) {
                     wordCoordsFormat = CoordsFormat.ALTO;
-                    return setAlto((String) doc.getFieldValue(SolrConstants.ALTO));
                 }
-                logger.trace("ALTO not found for {}", pi);
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            } catch (IndexUnreachableException e) {
-                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                return altoText;
+            } catch (HTTPException e) {
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
             }
         }
 
-        return false;
-    }
+        return null;
 
-    /**
-     * @param alto the alto to set
-     * @throws IOException
-     * @throws JDOMException
-     * @should load wordCoordsDoc correctly and set wordCoordsFormat to ALTO
-     */
-    public boolean setAlto(String alto) throws JDOMException, IOException {
-        if (altoText == null) {
-            altoText = alto;
-            wordCoordsFormat = CoordsFormat.ALTO;
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -926,8 +888,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getImageToPdfUrl() {
-        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
-                + "&targetFileName=" + pi + "_" + order + ".pdf";
+        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
+        sb.append("?action=pdf").append("&images=").append(pi).append("/").append(fileName).append("&metsFile=").append(pi).append(".xml").append(
+                "&targetFileName=").append(pi).append("_").append(order).append(".pdf");
+        return sb.toString();
+        //        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
+        //                + "&targetFileName=" + pi + "_" + order + ".pdf";
     }
 
     /**
@@ -1172,14 +1138,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return "viewImage";
     }
 
-    public boolean isTilesExist() {
-        return fileNameTiled0 != null;
-    }
-
-    public boolean isRotationTilesExist() {
-        return fileNameTiled90 != null && fileNameTiled180 != null && fileNameTiled270 != null;
-    }
-
     /**
      * Remnant from when image access had to be checked for each tile. Still used for OpenSeaDragon, so it just redirects to the access permission
      * check.
@@ -1195,7 +1153,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            return SearchHelper.checkAccessPermissionForImage(request, pi, fileName);
+            return AccessConditionUtils.checkAccessPermissionForImage(request, pi, fileName);
         } else {
             logger.trace("FacesContext not found");
         }
@@ -1381,9 +1339,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         StringBuilder sbUrl = new StringBuilder();
         if (StringUtils.isNotEmpty(dataRepository)) {
-            sbUrl.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? "/" : "").append(
-                    DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append("/").append(DataManager
-                            .getInstance().getConfiguration().getMediaFolder()).append("/");
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            sbUrl.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "").append(
+                    dataRepositoriesHome).append(dataRepository).append("/").append(DataManager.getInstance().getConfiguration().getMediaFolder())
+                    .append("/");
         }
         sbUrl.append(pi).append("/").append(fileName);
 

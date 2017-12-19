@@ -37,8 +37,8 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 
 /**
  * Servlet implementation class MetsResolver
@@ -73,7 +73,7 @@ public class MetsResolver extends HttpServlet {
                 SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + id);
                 if (hits != null && !hits.isEmpty()) {
                     // If the user has no listing privilege for this record, act as if it does not exist
-                    boolean access = SearchHelper.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
+                    boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
                     if (!access) {
                         logger.debug("User may not list {}", id);
                         response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
@@ -83,20 +83,23 @@ public class MetsResolver extends HttpServlet {
                     String format = (String) hits.get(0).getFieldValue(SolrConstants.SOURCEDOCFORMAT);
                     String dataRepository = (String) hits.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
                     if (StringUtils.isNotEmpty(dataRepository)) {
+                        String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                        if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
+                            sbPath.append(dataRepositoriesHome).append('/');
+                        }
                         if (format != null) {
                             switch (format.toUpperCase()) {
                                 case SolrConstants._METS:
-                                    sbPath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append('/').append(
-                                            dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                            .getIndexedMetsFolder());
                                     break;
                                 case SolrConstants._LIDO:
-                                    sbPath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append('/').append(
-                                            dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
+                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                            .getIndexedLidoFolder());
                                     break;
                             }
                         } else {
-                            sbPath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append('/').append(dataRepository)
-                                    .append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
+                            sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                         }
                     } else {
                         // Backwards compatibility for old indexes

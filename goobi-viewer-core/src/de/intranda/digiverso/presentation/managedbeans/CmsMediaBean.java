@@ -46,7 +46,6 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
-import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile.DisplaySize;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 
 @ManagedBean
@@ -61,7 +60,7 @@ public class CmsMediaBean {
     private ImageFileUploadThread uploadThread;
     private int uploadProgress;
     private String selectedTag;
-    private List<CMSMediaItem> mediaItems;
+    //    private List<CMSMediaItem> mediaItems;
 
     public String uploadMedia() {
         logger.trace("uploadMedia");
@@ -173,8 +172,14 @@ public class CmsMediaBean {
      */
     public static String getMediaUrl(CMSMediaItem item, String width, String height) {
         if (item != null && item.getFileName() != null) {
+            StringBuilder imageUrlBuilder = new StringBuilder("file:/");
 
-            StringBuilder imageUrlBuilder = new StringBuilder("file://");
+            // Add an extra slash if not on Windows
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.indexOf("win") == -1) {
+                imageUrlBuilder.append('/');
+            }
+
             imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
             imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
             imageUrlBuilder.append(item.getFileName());
@@ -191,7 +196,7 @@ public class CmsMediaBean {
             }
             csUrlBuilder.append("&ignoreWatermark");
 
-            logger.trace("Getting media url " + csUrlBuilder.toString());
+            logger.trace("Getting media URL {}", csUrlBuilder.toString());
 
             return csUrlBuilder.toString();
         }
@@ -418,11 +423,31 @@ public class CmsMediaBean {
         return collectionNames;
     }
 
+    public List<String> getAllowedCollections(String collectionField) throws DAOException, IndexUnreachableException {
+        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        if (browseBean == null) {
+            browseBean = new BrowseBean();
+        }
+        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(collectionField);
+        List<BrowseDcElement> collections = browseBean.getList(collectionField, displayDepth);
+        List<String> collectionNames = new ArrayList<>();
+        List<String> usedCollections = getUsedCollections();
+        for (BrowseDcElement element : collections) {
+            String collectionName = element.getName();
+            if (!usedCollections.contains(collectionName) || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem()
+                    .getCollectionName()))) {
+                collectionNames.add(collectionName);
+            }
+        }
+
+        return collectionNames;
+    }
+
     /**
      * @return
      * @throws DAOException
      */
-    private List<String> getUsedCollections() throws DAOException {
+    private static List<String> getUsedCollections() throws DAOException {
         List<String> collectionNames = new ArrayList<>();
         for (CMSMediaItem media : getAllMedia()) {
             if (media.isCollection()) {

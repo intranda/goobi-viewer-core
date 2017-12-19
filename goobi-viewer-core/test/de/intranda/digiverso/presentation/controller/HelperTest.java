@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.controller;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -90,7 +91,7 @@ public class HelperTest {
     @Test
     public void getImageUrl_shouldBuildURLCorrectlyWithRepository() throws Exception {
         Assert.assertEquals(
-                "contentServerWrapper_value?action=image&sourcepath=file:/resources/test/data/viewer/data/REPO/mediaFolder_value/PPN123456789/00000001.tif&width=600&height=800&rotate=180&resolution=72&format=jpg&thumbnail=true&ignoreWatermark=true",
+                "contentServerWrapper_value?action=image&sourcepath=file:/resources/test/data/viewer/data/REPO/media/PPN123456789/00000001.tif&width=600&height=800&rotate=180&resolution=72&format=jpg&thumbnail=true&ignoreWatermark=true",
                 Helper.getImageUrl("PPN123456789", "00000001.tif", "REPO", 600, 800, 180, true, true));
     }
 
@@ -162,11 +163,137 @@ public class HelperTest {
     }
 
     /**
+     * @see Helper#getTextFilePath(String,String,String,String)
+     * @verifies return correct path
+     */
+    @Test
+    public void getTextFilePath_shouldReturnCorrectPath() throws Exception {
+        Assert.assertEquals("resources/test/data/viewer/data/1/alto/PPN123/1.xml", Helper.getTextFilePath("PPN123", "1.xml", "1",
+                SolrConstants.FILENAME_ALTO));
+        Assert.assertEquals("resources/test/data/viewer/data/1/fulltext/PPN123/1.txt", Helper.getTextFilePath("PPN123", "1.txt", "1",
+                SolrConstants.FILENAME_FULLTEXT));
+        Assert.assertEquals("resources/test/data/viewer/data/1/tei/PPN123/1.xml", Helper.getTextFilePath("PPN123", "1.xml", "1",
+                SolrConstants.FILENAME_TEI));
+    }
+
+    /**
      * @see Helper#parseMultipleIpAddresses(String)
      * @verifies filter multiple addresses correctly
      */
     @Test
     public void parseMultipleIpAddresses_shouldFilterMultipleAddressesCorrectly() throws Exception {
         Assert.assertEquals("3.3.3.3", Helper.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
+    }
+
+    /**
+     * @see Helper#buildFullTextUrl(String,String)
+     * @verifies build url correctly
+     */
+    @Test
+    public void buildFullTextUrl_shouldBuildUrlCorrectly() throws Exception {
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001.xml/", Helper
+                .buildFullTextUrl(null, "alto/PPN123/00000001.xml"));
+    }
+
+    /**
+     * @see Helper#parseDateTimeFromString(String,boolean)
+     * @verifies parse iso date formats correctly
+     */
+    @Test
+    public void parseDateTimeFromString_shouldParseIsoDateFormatsCorrectly() throws Exception {
+        {
+            DateTime date = Helper.parseDateTimeFromString("2017-12-19 00:00:00", false);
+            Assert.assertNotNull(date);
+            Assert.assertEquals(2017, date.getYear());
+            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(19, date.getDayOfMonth());
+        }
+        {
+            DateTime date = Helper.parseDateTimeFromString("2017-12-19 00:00:00.000", false);
+            Assert.assertNotNull(date);
+            Assert.assertEquals(2017, date.getYear());
+            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(19, date.getDayOfMonth());
+        }
+        {
+            DateTime date = Helper.parseDateTimeFromString("2017-12-19T00:00:00", false);
+            Assert.assertNotNull(date);
+            Assert.assertEquals(2017, date.getYear());
+            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(19, date.getDayOfMonth());
+        }
+        {
+            DateTime date = Helper.parseDateTimeFromString("2017-12-19T00:00:00Z", false);
+            Assert.assertNotNull(date);
+            Assert.assertEquals(2017, date.getYear());
+            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(19, date.getDayOfMonth());
+        }
+        {
+            DateTime date = Helper.parseDateTimeFromString("2017-12-19", false);
+            Assert.assertNotNull(date);
+            Assert.assertEquals(2017, date.getYear());
+            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(19, date.getDayOfMonth());
+        }
+        {
+            DateTime date = Helper.parseDateTimeFromString("2017-12", false);
+            Assert.assertNotNull(date);
+            Assert.assertEquals(2017, date.getYear());
+            Assert.assertEquals(12, date.getMonthOfYear());
+            Assert.assertEquals(1, date.getDayOfMonth());
+        }
+    }
+
+    /**
+     * @see Helper#parseDateTimeFromString(String,boolean)
+     * @verifies parse german date formats correctly
+     */
+    @Test
+    public void parseDateTimeFromString_shouldParseGermanDateFormatsCorrectly() throws Exception {
+        DateTime date = Helper.parseDateTimeFromString("19.12.2017", false);
+        Assert.assertNotNull(date);
+        Assert.assertEquals(2017, date.getYear());
+        Assert.assertEquals(12, date.getMonthOfYear());
+        Assert.assertEquals(19, date.getDayOfMonth());
+    }
+
+    /**
+     * @see Helper#parseDateTimeFromString(String,boolean)
+     * @verifies parse english date formats correctly
+     */
+    @Test
+    public void parseDateTimeFromString_shouldParseEnglishDateFormatsCorrectly() throws Exception {
+        DateTime date = Helper.parseDateTimeFromString("12/19/2017", false);
+        Assert.assertNotNull(date);
+        Assert.assertEquals(2017, date.getYear());
+        Assert.assertEquals(12, date.getMonthOfYear());
+        Assert.assertEquals(19, date.getDayOfMonth());
+    }
+
+    /**
+     * @see Helper#parseDateTimeFromString(String,boolean)
+     * @verifies parse chinese date formats correctly
+     */
+    @Test
+    public void parseDateTimeFromString_shouldParseChineseDateFormatsCorrectly() throws Exception {
+        DateTime date = Helper.parseDateTimeFromString("2017.12.19", false);
+        Assert.assertNotNull(date);
+        Assert.assertEquals(2017, date.getYear());
+        Assert.assertEquals(12, date.getMonthOfYear());
+        Assert.assertEquals(19, date.getDayOfMonth());
+    }
+
+    /**
+     * @see Helper#parseDateTimeFromString(String,boolean)
+     * @verifies parse japanese date formats correctly
+     */
+    @Test
+    public void parseDateTimeFromString_shouldParseJapaneseDateFormatsCorrectly() throws Exception {
+        DateTime date = Helper.parseDateTimeFromString("2017/12/19", false);
+        Assert.assertNotNull(date);
+        Assert.assertEquals(2017, date.getYear());
+        Assert.assertEquals(12, date.getMonthOfYear());
+        Assert.assertEquals(19, date.getDayOfMonth());
     }
 }

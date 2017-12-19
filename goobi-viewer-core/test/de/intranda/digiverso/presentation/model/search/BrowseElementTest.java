@@ -25,14 +25,24 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 public class BrowseElementTest extends AbstractSolrEnabledTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see BrowseElement#getFirstVolumeThumbnailPath(String)
@@ -50,7 +60,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldAddMetadataFieldsThatMatchSearchTerms() throws Exception {
-        BrowseElement be = new BrowseElement("label", null);
+        BrowseElement be = new BrowseElement(null, 1, "label", null, false, Locale.ENGLISH, null);
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR"));
@@ -61,7 +71,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
         searchTerms.put("MD_YEARPUBLISH", new HashSet<>(Arrays.asList(new String[] { "1984" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null);
 
         {
             String field = "MD_TITLE";
@@ -86,7 +96,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromDefaultTerms() throws Exception {
-        BrowseElement be = new BrowseElement("FROM FOO TO BAR", null);
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
 
         StructElement se = new StructElement();
         se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
@@ -95,8 +105,83 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
 
-        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null);
         Assert.assertTrue(be.getMetadataList("MD_TITLE").isEmpty());
+    }
+
+    /**
+     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map)
+     * @verifies not add duplicates from explicit terms
+     */
+    @Test
+    public void addAdditionalMetadataContainingSearchTerms_shouldNotAddDuplicatesFromExplicitTerms() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
+        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+
+        StructElement se = new StructElement();
+        se.getMetadataFields().put("MD_TITLE", Collections.singletonList("FROM FOO TO BAR")); // same value as the main label
+        Assert.assertEquals(1, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
+
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null);
+        Assert.assertEquals(1, be.getMetadataList("MD_TITLE").size());
+    }
+
+    /**
+     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set)
+     * @verifies not add ignored fields
+     */
+    @Test
+    public void addAdditionalMetadataContainingSearchTerms_shouldNotAddIgnoredFields() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
+        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+
+        StructElement se = new StructElement();
+        se.getMetadataFields().put("MD_IGNOREME", Collections.singletonList("foo ignores bar"));
+        Assert.assertEquals(1, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
+
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, new HashSet<>(Collections.singletonList("MD_IGNOREME")), null);
+        Assert.assertEquals(0, be.getMetadataList("MD_IGNOREME").size());
+    }
+
+    /**
+     * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Set,Set)
+     * @verifies translate configured field values correctly
+     */
+    @Test
+    public void addAdditionalMetadataContainingSearchTerms_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", null, false, Locale.ENGLISH, null);
+        be.getMetadataList().add(new Metadata("MD_TITLE", "", "FROM FOO TO BAR"));
+
+        StructElement se = new StructElement();
+        se.getMetadataFields().put(SolrConstants.DC, Collections.singletonList("admin"));
+        Assert.assertEquals(1, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
+        searchTerms.put(SolrConstants.DC, new HashSet<>(Arrays.asList(new String[] { "admin" })));
+
+        String[] translateFields = { SolrConstants.DC };
+        be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, new HashSet<>(Arrays.asList(translateFields)));
+        Assert.assertEquals(1, be.getMetadataList(SolrConstants.DC).size());
+    }
+
+    /**
+     * @see BrowseElement#generateDefaultLabel(StructElement)
+     * @verifies translate docstruct label
+     */
+    @Test
+    public void generateDefaultLabel_shouldTranslateDocstructLabel() throws Exception {
+        BrowseElement be = new BrowseElement("PPN123", 1, null, null, false, Locale.GERMAN, null);
+        StructElement se = new StructElement();
+        se.setDocStructType("Monograph");
+        String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
+        Assert.assertEquals("Monographie", label);
     }
 
 }

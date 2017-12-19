@@ -14,20 +14,22 @@
 
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle)}" />
-
-			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle, false, false, true)}" />
+<!-- 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.currentPage.menuTitle, 1)}" /> -->
+			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
 		</f:metadata>
 	</ui:define>
+	
 
 	<ui:define name="breadcrumbs">
 		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
 	</ui:define>
 
 	<ui:define name="content">
+
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateGeneric" class="page-wrapp tpl-generic">
+			<div id="templateGeneric" class="tpl-generic">
 				<h1>#{cmsPage.title}</h1>
 
 				<!-- PAGE UNPUBLISHED -->
@@ -104,35 +106,37 @@
 				</div>
 
 				<!-- SOLR QUERY COLLECTION -->
-				<div class="solr-query-collection">
-					<div class="solr-query-collection__thumbs">
-						<div class="row">
-							<ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('gallery'))}">
-								<div class="col-xs-12 col-sm-4">
-									<div class="solr-query-collection__thumb">
-										<!-- IMAGE -->
-										<div class="solr-query-collection__image">
-											<h:outputLink value="#{hit.browseElement.url}" rendered="#{!hit.browseElement.anchor}">
-												<h:graphicImage url="#{hit.browseElement.thumbnailUrl}" styleClass="img-responsive" title="#{hit.browseElement.label}" />
-											</h:outputLink>
-										</div>
-
-										<!-- TITLE -->
-										<div class="solr-query-collection__title">
-											<h:outputLink value="#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
-                                                #{msg[hit.browseElement.label]}
-                                            </h:outputLink>
+				<h:panelGroup rendered="#{cmsBean.hasSearchResults()}">
+					<div class="solr-query-collection">
+						<div class="solr-query-collection__thumbs">
+							<div class="row">
+								<ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('gallery'))}">
+									<div class="col-xs-12 col-sm-4">
+										<div class="solr-query-collection__thumb">
+											<!-- IMAGE -->
+											<div class="solr-query-collection__image">
+												<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{!hit.browseElement.anchor}">
+													<img src="#{hit.browseElement.thumbnailUrl}" class="img-responsive" alt="#{hit.browseElement.label}" />
+												</h:outputLink>
+											</div>
+	
+											<!-- TITLE -->
+											<div class="solr-query-collection__title">
+												<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}">
+	                                                #{msg[hit.browseElement.label]}
+	                                            </h:outputLink>
+											</div>
 										</div>
 									</div>
-								</div>
-							</ui:repeat>
+								</ui:repeat>
+							</div>
 						</div>
+	
+						<!-- paginator -->
+						<viewerComponent:simplePaginator itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('gallery'))}" itemActive="#{cmsPage.listPage}"
+							urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
 					</div>
-
-					<!-- paginator -->
-					<viewerComponent:simplePaginator itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('gallery'))}" itemActive="#{cmsPage.listPage}"
-						urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
-				</div>
+				</h:panelGroup>
 			</div>
 		</f:view>
 	</ui:define>
@@ -141,11 +145,15 @@
 		<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
 			<widgetComponent:widget_custom widget="#{element}" />
 			<widgetComponent:widget_customDrillDown widget="#{element}" />
+			<widgetComponent:widget_searchDrillDown widget="#{element}" />
 			<widgetComponent:widget_searchField widget="#{element}" />
 			<widgetComponent:widget_browsing widget="#{element}" />
 			<widgetComponent:widget_bookshelves widget="#{element}" />
 			<widgetComponent:widget_mySearches widget="#{element}" />
 			<widgetComponent:widget_user widget="#{element}" />
+			<widgetComponent:widget_rssFeed widget="#{element}" />
+			<widgetComponent:widget_workCount widget="#{element}" />
+			<widgetComponent:widget_geoLocations widget="#{element}" />
 		</c:forEach>
 	</ui:define>
 </ui:composition>

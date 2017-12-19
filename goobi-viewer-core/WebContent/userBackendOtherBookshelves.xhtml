@@ -18,53 +18,62 @@
     </ui:define>
 
     <ui:define name="content">    
-        <div id="otherBookshelves" class="page-wrapp">
+        <div id="otherBookshelves">
             <h2>#{msg.bookshelf_otherBookshelves}</h2>
-            
-            <!-- warning if no other bookshelves exists -->
-			<h:panelGroup rendered="#{bookshelfBean.publicBookshelves.isEmpty()}">
-				<div class="alert alert-warning" role="alert">#{msg.bookshelves_noOpenBookshelvesWarning}</div>
+
+			<!-- MESSAGE -->
+			<h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
+				<div class="alert alert-warning" role="alert">
+					<h:outputText value="#{msg.errFunctionalityDisabled}" />
+				</div>
 			</h:panelGroup>
-			
-			<!-- other bookshelves -->
-			<h:panelGroup rendered="#{!bookshelfBean.publicBookshelves.isEmpty()}">
-	            <h:form id="userOtherBookshelvesForm" prependId="false">
-	                <h:dataTable 
-	                	id="other_bookshelf_data_table" 
-	                	styleClass="table table-condensed user-backend-table" 
-	                	value="#{bookshelfBean.publicBookshelves}" 
-	                	var="bookshelf">
-	                    <h:column>
-	                        <f:facet name="header">
-	                            <h:outputText value="#{msg.name}" />
-	                        </f:facet>
-	                        <h:commandLink title="#{bookshelf.name}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}" value="#{bookshelf.name}">
-	                        </h:commandLink>
-	                    </h:column>
-	    
-	                    <h:column>
-	                        <f:facet name="header">
-	                            <h:outputText value="#{msg.description}" />
-	                        </f:facet>
-	    					#{bookshelf.description}
-	    				</h:column>
-	                    
-	                    <h:column>
-	                        <f:facet name="header">
-	                            <h:outputText value="#{msg.owner}" />
-	                        </f:facet>
-	                        #{bookshelf.owner.displayNameObfuscated}
-	                    </h:column>
-	                    
-	                    <h:column>
-	                        <f:facet name="header">
-	                            <h:outputText value="#{msg.action}" />
-	                        </f:facet>
-	                        <h:outputLink value="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}?bookshelfId=#{bookshelf.id}"
-	                            styleClass="icon-rss16x16" title="#{msg.rssSubscribe}" target="_blank" />
-	                    </h:column>
-	                </h:dataTable>
-	            </h:form>
+
+			<h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">            
+	            <!-- warning if no other bookshelves exists -->
+				<h:panelGroup rendered="#{bookshelfBean.publicBookshelves.isEmpty()}">
+					<div class="alert alert-warning" role="alert">#{msg.bookshelves_noOpenBookshelvesWarning}</div>
+				</h:panelGroup>
+				
+				<!-- other bookshelves -->
+				<h:panelGroup rendered="#{!bookshelfBean.publicBookshelves.isEmpty()}">
+		            <h:form id="userOtherBookshelvesForm" prependId="false">
+		                <h:dataTable 
+		                	id="other_bookshelf_data_table" 
+		                	styleClass="table table-condensed user-backend-table" 
+		                	value="#{bookshelfBean.publicBookshelves}" 
+		                	var="bookshelf">
+		                    <h:column>
+		                        <f:facet name="header">
+		                            <h:outputText value="#{msg.name}" />
+		                        </f:facet>
+		                        <h:commandLink title="#{bookshelf.name}" action="#{bookshelfBean.viewBookshelfAction(bookshelf)}" value="#{bookshelf.name}">
+		                        </h:commandLink>
+		                    </h:column>
+		    
+		                    <h:column>
+		                        <f:facet name="header">
+		                            <h:outputText value="#{msg.description}" />
+		                        </f:facet>
+		    					#{bookshelf.description}
+		    				</h:column>
+		                    
+		                    <h:column>
+		                        <f:facet name="header">
+		                            <h:outputText value="#{msg.owner}" />
+		                        </f:facet>
+		                        #{bookshelf.owner.displayNameObfuscated}
+		                    </h:column>
+		                    
+		                    <h:column>
+		                        <f:facet name="header">
+		                            <h:outputText value="#{msg.action}" />
+		                        </f:facet>
+		                        <h:outputLink value="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}?bookshelfId=#{bookshelf.id}"
+		                            styleClass="icon-rss16x16" title="#{msg.rssSubscribe}" target="_blank" />
+		                    </h:column>
+		                </h:dataTable>
+		            </h:form>
+	            </h:panelGroup>            
             </h:panelGroup>
         </div>
     </ui:define>

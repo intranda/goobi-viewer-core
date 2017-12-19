@@ -152,7 +152,7 @@ public class TocWriter {
         String label = LOREM.substring(startIndex, endIndex).trim();
         String pageNo = Integer.toString(random.nextInt(9000) + 1);
 
-        return new TOCElement(label, pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, "", null);
+        return new TOCElement(label, pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, "", null, null);
     }
 
 }

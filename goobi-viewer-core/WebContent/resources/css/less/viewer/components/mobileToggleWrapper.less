@@ -1,0 +1,84 @@
+/* ==============================================================
+   Mobile Toggle Wrapper
+   style declarations for mobileToggles.xhtml
+   ==============================================================*/
+/* MOBILE TOGGLE WRAPPER */
+/* BLOCK */
+#mobileToggleWrapper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+    display: none;
+    padding: 10px 24px;
+    background-color: @white;
+    z-index: 999;
+    /* ELEMENT */
+    .customer-header-logo {
+        img {
+            max-height: 32px;
+        }
+    }
+    .btn-toggle {
+        position: relative;
+        width: 2rem;
+        height: 2rem;
+        margin: 0 5px;
+        padding: 0;
+        border: 1px solid @lightgray;
+        background: none;
+        cursor: pointer;
+        &:hover,
+        &:focus,
+        &:active {
+        	outline: none;
+        }
+    }
+    .sidebar {
+        margin: 0;
+        &.pull-left {
+            margin-right: 10px;
+        }
+        &.pull-right {
+            margin-left: 5px;
+        }
+    }    
+    .mobilenav {}
+    .language,
+    .search {
+        
+        &.in {
+            &:before {
+                content: "";
+                display: block;
+                position: absolute;
+                bottom: -12px;
+                left: 50%;
+                width: 0;
+                height: 0;
+                margin-left: -10px;
+                border-width: 10px;
+                border-style: solid;
+                border-color: transparent transparent @lightgray transparent;
+            }
+        }        
+    }
+    .language {}
+    .search {}    
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #mobileToggleWrapper { display: block; }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    #mobileToggleWrapper { padding: 10px 18px 10px 15px; }
+}

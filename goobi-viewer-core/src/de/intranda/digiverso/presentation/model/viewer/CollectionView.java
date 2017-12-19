@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,14 +54,27 @@ public class CollectionView {
         this.dataProvider = dataProvider;
     }
 
+    /**
+     * Creates a new CollectionView from an already existing one, keeping only the list of all collections without any display information
+     * 
+     * @param blueprint
+     */
+    public CollectionView(CollectionView blueprint) {
+        this.completeCollectionList = blueprint.completeCollectionList.stream().map(element -> new HierarchicalBrowseDcElement(element)).collect(
+                Collectors.toList());
+        this.field = blueprint.field;
+        this.dataProvider = blueprint.dataProvider;
+    }
+
     public void populateCollectionList() throws IndexUnreachableException {
         synchronized (this) {
             try {
-                logger.debug("populateDcList");
+                logger.trace("populateCollectionList");
                 Map<String, Long> dcStrings = dataProvider.getData();
+                logger.trace("Creating browse elements...");
                 completeCollectionList = new ArrayList<>(); // this has to be null and not empty at first; make sure it is initialized after the call to Solr
                 HierarchicalBrowseDcElement lastElement = null;
-                ArrayList<String> list = new ArrayList<>(dcStrings.keySet());
+                List<String> list = new ArrayList<>(dcStrings.keySet());
                 Collections.sort(list);
                 for (String dcName : list) {
                     String collectionName = dcName.intern();
@@ -86,7 +100,7 @@ public class CollectionView {
                 }
                 //            Collections.sort(completeCollectionList);
                 calculateVisibleDcElements();
-                logger.debug("populateDcList end");
+                logger.trace("populateCollectionList end");
             } catch (PresentationException e) {
                 logger.error("Failed to initialize collection: " + e.toString());
             }
@@ -120,6 +134,7 @@ public class CollectionView {
     }
 
     public void calculateVisibleDcElements(boolean loadDescriptions) {
+        logger.trace("calculateVisibleDcElements: {}", loadDescriptions);
         if (completeCollectionList == null) {
             return;
         }
@@ -192,6 +207,7 @@ public class CollectionView {
     }
 
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
+        logger.trace("getVisibleDcElements");
         return visibleCollectionList;
     }
 
@@ -596,22 +612,23 @@ public class CollectionView {
     }
 
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
-        if (collection.getInfo().getLinkURI() != null) {
-            return collection.getInfo().getLinkURI().toString();
+        if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
+            return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
         } else if (collection.isOpensInNewWindow()) {
             String baseUri = BeanUtils.getRequest().getRequestURL().toString();
-            int cutoffIndex = baseUri.indexOf(PageType.expandCollection.name());
+            int cutoffIndex = baseUri.indexOf(PageType.expandCollection.getName());
             if (cutoffIndex > 0) {
                 baseUri = baseUri.substring(0, cutoffIndex - 1);
             }
-            return baseUri + "/" + PageType.expandCollection + "/" + collection.getName() + "/";
+            return baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
         } else if (collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
             return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.firstWorkInCollection.getName() + "/" + this.field + "/"
                     + collection.getLuceneName() + "/";
         } else {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse + "/" + field + ':' + collection.getLuceneName()
-                    + "/-/1/" + collection.getSortField() + "/-/";
+            String url =  BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + field + ':' + collection
+                    .getLuceneName() + "/-/1/" + collection.getSortField() + "/-/";
+            return url;
         }
     }
 

@@ -35,9 +35,8 @@ import com.ocpsoft.pretty.PrettyContext;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
@@ -60,7 +59,10 @@ public class LoginFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        // Create new personal filter query suffix
+        // Create new personal filter query suffix        
+
+
+        
         if (httpRequest.getSession().getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
             try {
                 SearchHelper.updateFilterQuerySuffix(httpRequest);
@@ -103,6 +105,7 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response); // continue
         }
     }
+
 
     /**
      * Checks whether the given URI requires a logged in user.

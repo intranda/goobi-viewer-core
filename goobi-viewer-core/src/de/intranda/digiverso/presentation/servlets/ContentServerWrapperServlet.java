@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -48,8 +47,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetImageAction;
@@ -60,16 +58,9 @@ import net.balusc.webapp.ContentDeliveryServlet;
  */
 public class ContentServerWrapperServlet extends HttpServlet implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -4174862970784876821L;
 
     private static final Logger logger = LoggerFactory.getLogger(ContentServerWrapperServlet.class);
-
-    private static int maxImageWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
-    private static int maxImageHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
-    private static int maxImageScale = DataManager.getInstance().getConfiguration().getViewerMaxImageScale();
 
     // private HttpClient httpClient;
 
@@ -102,8 +93,6 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
         String dataRepository = null;
         String mediaFilePath = null;
         String contentFileName = null;
-        String zoomifyPath = "";
-        String zoomifyUrlParam = null;
 
         int imageWidth = 600;
         boolean access = true;
@@ -120,7 +109,9 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 if (values[0] != null) {
                     switch (s) {
                         case "metsFile":
-                            csType = "gcs";
+                            if (request.getParameterMap().get("images") == null) {
+                                csType = "gcs";
+                            }
                             urlArgs.append('&').append(s).append('=').append(values[0]);
                             break;
                         case "action":
@@ -165,49 +156,6 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                         case "targetFileName":
                             // pdfFileName = values[0];
                             break;
-                        case "Zoomify":
-                            // http://viewertest.fritz.box/mvpOpenLayers/content?Zoomify=/opt/digiverso/viewer/ptif/PPN407/00000001_0.tif/TileGroup0/1-1-0.jpg
-                            action = "zoomify";
-                            zoomifyUrlParam = values[0];
-                            String ptifFolder = DataManager.getInstance().getConfiguration().getPtifFolder();
-                            if (ptifFolder != null) {
-                                // delete the last /
-                                int endIndex = ptifFolder.lastIndexOf('/');
-                                if (endIndex > 0) {
-                                    ptifFolder = ptifFolder.substring(0, endIndex);
-                                }
-                            }
-                            zoomifyPath = zoomifyUrlParam.replaceAll(ptifFolder + "/", "");
-                            String[] tmp = zoomifyPath.split("/");
-                            contentFileName = tmp[1];
-                            contentFileName = contentFileName.replace("_0degree", "");
-                            contentFileName = contentFileName.replace("_90degree", "");
-                            contentFileName = contentFileName.replace("_180degree", "");
-                            contentFileName = contentFileName.replace("_270degree", "");
-                            pi = tmp[0];
-
-                            zoomifyUrlParam.split("/");
-                            // tileGroup = tmpTileGroup[tmpTileGroup.length - 1];
-                            logger.debug("Found: {} PPN in the Zoomify url parameter.", pi);
-                            try {
-                                dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-                            } catch (PresentationException e) {
-                                logger.debug("PresentationException thrown here: {}", e.getMessage());
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                                return;
-                            } catch (IndexUnreachableException e) {
-                                logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                                return;
-                            }
-                            if (StringUtils.isNotEmpty(dataRepository)) {
-                                zoomifyUrlParam = new StringBuilder(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(
-                                        dataRepository).append('/').append(zoomifyUrlParam).toString();
-                            } else {
-                                zoomifyUrlParam = new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager
-                                        .getInstance().getConfiguration().getPtifFolder()).append('/').append(zoomifyUrlParam).toString();
-                            }
-                            break;
                         default:
                             urlArgs.append('&').append(s).append('=').append(values[0]);
                     }
@@ -241,8 +189,8 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 if ("image".equals(action) && pi != null) {
                     // Search for the real file name in Lucene
                     String watermarkIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
-                    String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(
-                            SolrConstants.FILENAME).append(':').append(imageFileNameSplit[0]).append('*').toString();
+                    String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.FILENAME)
+                            .append(':').append(imageFileNameSplit[0]).append('*').toString();
                     String[] fieldNameFilter = { SolrConstants.FILENAME, SolrConstants.IMAGEURN, watermarkIdField };
                     SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, SolrSearchIndex.MAX_HITS, null, Arrays.asList(
                             fieldNameFilter));
@@ -303,6 +251,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 format = imageFileNameSplit[1];
                 try {
                     int width = Integer.parseInt(paramsSplit[1]);
+                    int maxImageWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
                     if (maxImageWidth > 0 && width > maxImageWidth) {
                         width = maxImageWidth;
                     }
@@ -337,7 +286,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
             // 3) otherwise check via checkAccessPermissionByPhysicalElement() and set pif physicalElement.accessGranted to whatever
             // checkAccessPermission returns
             try {
-                access = checkAccess(request, action, pi, contentFileName, isThumbnail);
+                access = AccessConditionUtils.checkAccess(request, action, pi, contentFileName, isThumbnail);
             } catch (IndexUnreachableException e) {
                 logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -389,6 +338,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                                 // If no image size has been given, add a static size to prevent full size image loading
                                 if (requestMapCopy.get("width") != null) {
                                     int width = Integer.parseInt(requestMapCopy.get("width")[0]);
+                                    int maxImageWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
                                     if (maxImageWidth > 0 && width > maxImageWidth) {
                                         logger.debug("Image width parameter out of range ({}), replacing with {}", width, maxImageWidth);
                                         width = maxImageWidth;
@@ -397,6 +347,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                                 }
                                 if (requestMapCopy.get("height") != null) {
                                     int height = Integer.parseInt(requestMapCopy.get("height")[0]);
+                                    int maxImageHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
                                     if (maxImageHeight > 0 && height > maxImageHeight) {
                                         logger.debug("Image height parameter out of range ({}), replacing with {}", height, maxImageHeight);
                                         height = maxImageHeight;
@@ -405,6 +356,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                                 }
                                 if (requestMapCopy.get("scale") != null) {
                                     int scale = Integer.parseInt(requestMapCopy.get("scale")[0]);
+                                    int maxImageScale = DataManager.getInstance().getConfiguration().getViewerMaxImageScale();
                                     if (maxImageScale > 0 && scale > maxImageScale) {
                                         logger.debug("Image scale parameter out of range ({}), replacing with {}", scale, maxImageScale);
                                         scale = maxImageScale;
@@ -563,58 +515,5 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
-    }
-
-    protected static boolean checkAccess(HttpServletRequest request, String action, String pi, String contentFileName, boolean isThumbnail)
-            throws IndexUnreachableException, DAOException {
-        if (request == null) {
-            throw new IllegalArgumentException("request may not be null");
-        }
-        if (action == null) {
-            throw new IllegalArgumentException("action may not be null");
-        }
-        if (pi == null) {
-            throw new IllegalArgumentException("pi may not be null");
-        }
-        
-        switch (action) {
-            case "image":
-            case "zoomify":
-            case "application":
-                switch (FilenameUtils.getExtension(contentFileName).toLowerCase()) {
-                    // This check is needed so that the "application" action cannot be abused to download images w/o the proper permission
-                    case "pdf":
-                        return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                                IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-                    default:
-                        if (isThumbnail) {
-                            return SearchHelper.checkAccessPermissionForThumbnail(request, pi, contentFileName);
-                            //                                logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access);
-                        }
-                        return SearchHelper.checkAccessPermissionForImage(request, pi, contentFileName);
-                    //                                logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access);
-                }
-            case "text":
-            case "ocrdump":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            case "pdf":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_PDF);
-            case "video":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_VIDEO);
-            case "audio":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_AUDIO);
-            case "dimensions":
-            case "version":
-                return SearchHelper.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName,
-                        IPrivilegeHolder.PRIV_VIEW_IMAGES); // TODO is priv checking needed here?
-            default: // nothing
-                break;
-        }
-
-        return false;
     }
 }

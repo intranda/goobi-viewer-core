@@ -60,7 +60,7 @@ public class PDFDownloadJob extends DownloadJob {
         this.logId = logid;
         this.lastRequested = lastRequested;
         this.ttl = ttl;
-        this.setStatus(JobStatus.WAITING);
+        this.setStatus(JobStatus.INITIALIZED);
         generateDownloadIdentifier();
     }
 
@@ -139,10 +139,12 @@ public class PDFDownloadJob extends DownloadJob {
             throw new DownloadException("Cannot create download folder: " + targetFolder);
         }
         String title = pi + "_" + logId;
+        logger.debug("Trigger pdf generation for " + title);
 
         int priority = 10;
         HttpClient client = HttpClients.createDefault();
         String taskManagerUrl = DataManager.getInstance().getConfiguration().getTaskManagerServiceUrl();
+        logger.debug("Calling taskManager at " + taskManagerUrl);
         File metsFile = new File(mediaRepository + "/indexed_mets", pi + ".xml");
         HttpPost post = OcrClient.createPost(taskManagerUrl, metsFile.getAbsolutePath(), targetFolder.getAbsolutePath(), "", "", priority, logId,
                 title, mediaRepository.getAbsolutePath(), "VIEWERPDF", downloadIdentifier, "noServerTypeInTaskClient", "", "", "", "", false);

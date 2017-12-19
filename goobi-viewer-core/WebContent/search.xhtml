@@ -23,7 +23,7 @@
 
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="searchStandard" class="page-wrapp">
+            <div id="searchStandard">
                 <h2>#{msg.searchHeader}</h2>
                 
                 <!-- SEARCH STANDARD -->
@@ -42,7 +42,7 @@
                                 <h:outputText rendered="#{!searchBean.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
                                 <h:panelGroup rendered="#{searchBean.searchInDcFlag}">
                                     <h:outputText value="#{msg.searchIn}: " />
-                                    <ui:repeat var="facet" value="#{searchBean.currentHierarchicalFacets}">
+                                    <ui:repeat var="facet" value="#{searchBean.facets.currentHierarchicalFacets}">
                                         <br />
                                         <h:outputText value="#{msg[facet.field]}: #{msg[facet.value]}" />
                                     </ui:repeat>
@@ -110,73 +110,7 @@
                                 <h4 class="modal-title" id="searchHelpModalLabel">#{msg.search_helpModalTitle}</h4>
                             </div>
                             <div class="modal-body">
-                                <div class="panel-group" id="searchHelpAccordion" role="tablist" aria-multiselectable="true">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading" role="tab" id="headingOne">
-                                            <h4 class="panel-title">
-                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseOne"
-                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading01}</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                                            <div class="panel-body">
-                                                <h:outputText value="#{msg.searchExplanationText_paragraph01}" escape="false" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading" role="tab" id="headingTwo">
-                                            <h4 class="panel-title">
-                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseTwo"
-                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading02}</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-                                            <div class="panel-body">
-                                                <h:outputText value="#{msg.searchExplanationText_paragraph02}" escape="false" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading" role="tab" id="headingThree">
-                                            <h4 class="panel-title">
-                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseThree"
-                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading03}</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-                                            <div class="panel-body">
-                                                <h:outputText value="#{msg.searchExplanationText_paragraph03}" escape="false" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading" role="tab" id="headingFour">
-                                            <h4 class="panel-title">
-                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFour"
-                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading04}</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-                                            <div class="panel-body">
-                                                <h:outputText value="#{msg.searchExplanationText_paragraph04}" escape="false" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading" role="tab" id="headingFive">
-                                            <h4 class="panel-title">
-                                                <a role="button" data-toggle="collapse" data-parent="#searchHelpAccordion" href="#collapseFive"
-                                                    aria-expanded="true" aria-controls="collapseOne">#{msg.searchExplanationText_heading05}</a>
-                                            </h4>
-                                        </div>
-                                        <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
-                                            <div class="panel-body">
-                                                <h:outputText value="#{msg.searchExplanationText_paragraph05}" escape="false" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <viewerComponent:searchHelpText />
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn" data-dismiss="modal">#{msg.search_helpModalClose}</button>

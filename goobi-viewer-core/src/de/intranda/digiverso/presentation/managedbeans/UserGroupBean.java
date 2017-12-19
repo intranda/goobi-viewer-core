@@ -35,9 +35,9 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.model.user.Role;
-import de.intranda.digiverso.presentation.model.user.User;
-import de.intranda.digiverso.presentation.model.user.UserGroup;
+import de.intranda.digiverso.presentation.model.security.Role;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 
 @ManagedBean
 @SessionScoped

@@ -340,35 +340,38 @@ var viewImage = ( function() {
             return null;
         },
         getScaleToOriginalSize: function(imageNo) {
-        	if(!imageNo) {
-        		imageNo = 0;
-        	}
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
+        	return 1.0;
+//        	if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
         },
         scaleToOriginalSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         scaleToImageSize: function( value, imageNo ) {
-            if ( _debug ) {
-                console.log( 'Overlays _scaleToImageSize: value - ' + value );
-            }
-            
-            if(!imageNo) {
-        		imageNo = 0;
-        	}
-            
-            var displaySize = osViewer.viewer.viewport._contentSize.x;
-            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToImageSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         close: function() {
             if ( _debug ) {
@@ -402,7 +405,7 @@ var viewImage = ( function() {
         },
         setTileSizes: function(imageInfo, tiles) {
         	if(tiles) {        		
-        		var tileString = configViewer.global.tileSizes.replace(/(\d+)/, '"$1"').replace("=", ":");
+        		var tileString = viewImage.getConfig().global.tileSizes.replace(/(\d+)/, '"$1"').replace("=", ":");
         		var tiles = JSON.parse(tileString);
         		var iiifTiles = [];
         		
@@ -523,8 +526,18 @@ var viewImage = ( function() {
                 return observer.onNext(event);
             } );
         });
+        observables.animationComplete = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation-finish', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
         observables.viewportUpdate = Rx.Observable.create(function(observer) {
             viewer.addHandler( 'update-viewport', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.animation = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation', function( event ) {
                 return observer.onNext(event);
             } );
         });

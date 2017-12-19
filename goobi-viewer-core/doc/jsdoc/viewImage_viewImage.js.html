@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>DocStrap Source: viewImage/viewImage.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">DocStrap</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="cmsJS.module_createPage.html">cmsJS.createPage</a></li><li><a href="cmsJS.module_geoLocations.html">cmsJS.geoLocations</a></li><li><a href="cmsJS.module_masonry.html">cmsJS.masonry</a></li><li><a href="cmsJS.module_rssFeed.html">cmsJS.rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">cmsJS.sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">cmsJS.stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">cmsJS.staticGrid</a></li><li><a href="cmsJS.module_tagList.html">cmsJS.tagList</a></li><li><a href="cmsJS.module_tileGrid.html">cmsJS.tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_calendarPopover.html">viewerJS.calendarPopover</a></li><li><a href="viewerJS.module_changeFontSize.html">viewerJS.changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">viewerJS.dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">viewerJS.dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">viewerJS.download</a></li><li><a href="viewerJS.module_downloadModal.html">viewerJS.downloadModal</a></li><li><a href="viewerJS.module_editComment.html">viewerJS.editComment</a></li><li><a href="viewerJS.module_helper.html">viewerJS.helper</a></li><li><a href="viewerJS.module_navigation.html">viewerJS.navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">viewerJS.nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">viewerJS.nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">viewerJS.normdata</a></li><li><a href="viewerJS.module_pageScroll.html">viewerJS.pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">viewerJS.responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">viewerJS.searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">viewerJS.searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">viewerJS.searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">viewerJS.simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">viewerJS.stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">viewerJS.timematrix</a></li><li><a href="viewerJS.module_tinyMce.html">viewerJS.tinyMce</a></li><li><a href="viewerJS.module_versionHistory.html">viewerJS.versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">viewImage.controls.persistence</a></li><li><a href="viewImage.module_controls.html">viewImage.controls</a></li><li><a href="viewImage.module_drawLine.html">viewImage.drawLine</a></li><li><a href="viewImage.module_drawRect.html">viewImage.drawRect</a></li><li><a href="viewImage.module_Measures.html">viewImage.Measures</a></li><li><a href="viewImage.module_overlays.html">viewImage.overlays</a></li><li><a href="viewImage.module_readingMode.html">viewImage.readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">viewImage.tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">viewImage.transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">viewImage.zoomSlider</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getCenterCoords">_getCenterCoords</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getMapFeatures">_getMapFeatures</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: viewImage/viewImage.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ * 
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ * 
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see &lt;http://www.gnu.org/licenses/>.
+ * 
+ * Module which initializes the viewerJS module.
+ * 
+ * @version 3.2.0
+ * @module viewImage
+ * @requires jQuery
+ */
+var viewImage = ( function() {
+    'use strict';
+    
+    var osViewer = {};
+    var _debug = false;
+    var _footerImage = null;
+    var _canvasScale;
+    var _container;
+    var _defaults = {  
+        global: {
+            divId: "map",
+            zoomSlider: ".zoom-slider",
+            zoomSliderHandle: '.zoom-slider-handle',
+            overlayGroups: [ {
+                name: "searchHighlighting",
+                styleClass: "searchHighlight",
+                interactive: false
+            }, {
+                name: "ugc",
+                styleClass: "ugcBox",
+                interactive: true
+            
+            } ],
+            zoomSpeed: 1.25,
+            maxZoomLevel: 20,
+            minZoomLevel: 1,
+            useTiles: true,
+            imageControlsActive: true,
+            visibilityRatio: 0.4,
+            loadImageTimeout: 10 * 60 * 1000,
+            maxParallelImageLoads: 4,
+            adaptContainerHeight: false,
+            footerHeight: 50,
+            rememberZoom: false,
+            rememberRotation: false,
+        },
+        image: {},
+        getOverlayGroup: function( name ) {
+            var allGroups = _defaults.global.overlayGroups;
+            for ( var int = 0; int &lt; allGroups.length; int++ ) {
+                var group = allGroups[ int ];
+                if ( group.name === name ) {
+                    return group;
+                }
+            }
+        },
+        getCoordinates: function( name ) {
+            var coodinatesArray = _defaults.image.highlightCoords;
+            if ( coodinatesArray ) {
+                for ( var int = 0; int &lt; coodinatesArray.length; int++ ) {
+                    var coords = coodinatesArray[ int ];
+                    if ( coords.name === name ) {
+                        return coords;
+                    }
+                }
+            }
+        },
+    };
+    
+    osViewer = {
+        viewer: null,
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'osViewer.init' );
+                console.log( '##############################' );
+            }
+            
+            // constructor
+            $.extend( true, _defaults, config );
+            // convert mimeType "image/jpeg" to "image/jpg" to provide correct
+			// iiif calls
+            _defaults.image.mimeType = _defaults.image.mimeType.replace("jpeg","jpg");
+            _container = $( "#" + _defaults.global.divId );
+            
+            var sources = _defaults.image.tileSource;
+            if(typeof sources === 'string' &amp;&amp; sources.startsWith("[")) {
+            	sources = JSON.parse(sources);
+            } else if(!$.isArray(sources)) {
+            	sources = [sources];
+            }
+            var promises = [];
+            for ( var i=0; i&lt;sources.length; i++) {
+            	var source = sources[i];
+            	// returns the OpenSeadragon.TileSource if it can be created,
+				// otherweise
+                // rejects the promise
+            	var promise = viewImage.createTileSource(source);
+            	promises.push(promise);	
+	                }                
+            return Q.all(promises).then(function(tileSources) {
+            	var minWidth = Number.MAX_VALUE;  
+            	var minHeight = Number.MAX_VALUE;
+            	var minAspectRatio = Number.MAX_VALUE;
+            	for ( var j=0; j&lt;tileSources.length; j++) {
+            		var tileSource = tileSources[j];
+            		minWidth = Math.min(minWidth, tileSource.width);
+            		minHeight = Math.min(minHeight, tileSource.height);
+            		minAspectRatio = Math.min(minAspectRatio, tileSource.aspectRatio);
+	                }
+	                    if(_debug) {                    
+            	    console.log("Min aspect ratio = " + minAspectRatio);            	    
+	                    }
+            	var x = 0;
+            	for ( var i=0; i&lt;tileSources.length; i++) {
+	        		var tileSource = tileSources[i];
+	        		tileSources[i] = {
+	        				tileSource: tileSource,
+	        				width: tileSource.aspectRatio/minAspectRatio,
+// height: minHeight/tileSource.height,
+	                		x : x,
+	                		y: 0,
+	                    }
+	        		x += tileSources[i].width;
+	                }              
+            	return viewImage.loadImage(tileSources);
+            });
+            
+        },
+        loadImage : function(tileSources) {
+            if ( _debug ) {
+                console.log( 'Loading image with tilesource: ', tileSources );
+            }
+              
+            osViewer.loadFooter();            
+         
+            osViewer.viewer = new OpenSeadragon( {
+                immediateRender: false,
+                visibilityRatio: _defaults.global.visibilityRatio,
+                sequenceMode: false,
+                id: _defaults.global.divId,
+                controlsEnabled: false,
+                prefixUrl: "/openseadragon-bin/images/",
+                zoomPerClick: 1,
+                maxZoomLevel: _defaults.global.maxZoomLevel,
+                minZoomLevel: _defaults.global.minZoomLevel,
+                zoomPerScroll: _defaults.global.zoomSpeed,
+                mouseNavEnabled: _defaults.global.zoomSpeed > 1,
+                showNavigationControl: false,
+                showZoomControl: false,
+                showHomeControl: false,
+                showFullPageControl: true,
+                timeout: _defaults.global.loadImageTimeout,
+                tileSources: tileSources,
+                blendTime: .5,
+                alwaysBlend: false,
+                imageLoaderLimit: _defaults.global.maxParallelImageLoads,
+                viewportMargins: {
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: _defaults.global.footerHeight
+                }
+            } );
+
+            var result = Q.defer();
+                
+            osViewer.observables = createObservables(window, osViewer.viewer);  
+                
+            osViewer.observables.viewerOpen.subscribe(function(openevent, loadevent) {            
+                result.resolve(osViewer);                
+            }, function(error) {            
+                result.reject(error);                
+            });                
+                
+                
+            // Calculate sizes if redraw is required
+            
+            osViewer.observables.redrawRequired.subscribe(function(event) {            
+                if(_debug) {
+                    console.log("viewer " + event.osState + "ed with target location ", event.targetLocation);                    
+                }
+                
+                osViewer.redraw();
+            });
+                
+            if ( osViewer.controls ) {                    
+                osViewer.controls.init( _defaults );
+            }
+            
+            if ( osViewer.zoomSlider ) {
+                osViewer.zoomSlider.init( _defaults );                
+            }
+            
+            if ( osViewer.overlays ) {
+                osViewer.overlays.init( _defaults );                
+            }                
+            
+            if ( osViewer.drawRect ) {
+                osViewer.drawRect.init();                
+            }   
+            
+            if ( osViewer.transformRect ) {            
+                osViewer.transformRect.init();                
+            }                
+            
+            osViewer.observables.redrawRequired.connect();                
+            
+            return result.promise;
+        },
+        getObservables: function() {
+        	console.log("Observables = ", osViewer.observables);
+        	return osViewer.observables;
+        },
+        hasFooter: function() {
+            return _footerImage != null;
+        },
+        getConfig: function() {
+            return _defaults;
+        },
+        loadFooter: function() {
+            if ( _defaults.image.baseFooterUrl &amp;&amp; _defaults.global.footerHeight > 0 ) {                
+                _footerImage = new Image();
+                _footerImage.src = _defaults.image.baseFooterUrl.replace( "{width}", Math.round( _container.width() ) ).replace( "{height}", Math.round( _defaults.global.footerHeight ) );                
+                _footerImage.onload = function() {
+                    if ( _debug ) {
+                        console.log( "loading footer image ", _footerImage );
+                        console.log( "Calculating image Footer size" );
+                    }
+                    
+                    osViewer.drawFooter();
+                };
+            }
+        },
+        drawFooter: function() {
+            if ( osViewer.viewer ) {
+                _overlayFooter();
+            }
+            
+            osViewer.viewer.removeHandler( 'update-viewport', _overlayFooter );
+            osViewer.viewer.addHandler( 'update-viewport', _overlayFooter );
+        },        
+        getOverlayGroup: function( name ) {
+            return _defaults.getOverlayGroup( name );
+        },
+        getHighlightCoordinates: function( name ) {
+            return _defaults.getCoordinates( name );
+        },
+        createPyramid: function( imageInfo ) {
+            var fileExtension = _defaults.image.mimeType;
+            fileExtension = fileExtension.replace( "image/", "" );
+            fileExtension = fileExtension.replace("jpeg", "jpg").replace("tiff", "tif");
+            var imageLevels = [];
+            var tileSource;
+            if(Array.isArray(imageInfo)) {
+            	imageInfo.forEach(function(level) {
+            		level.mimetype = _defaults.image.mimeType;
+            	});
+            	tileSource = new OpenSeadragon.LegacyTileSource(imageInfo);
+            } else if(imageInfo.sizes) {
+	            imageInfo.sizes.forEach(function(size) {
+	                if(_debug) {                    
+	                    console.log("Image level width = ", size.width)
+	                    console.log("Image level height = ", size.height)
+	                }
+	                
+	                var level = {
+	                    mimetype: _defaults.image.mimeType,
+	                    url: imageInfo["@id"].replace( "/info.json", "" ) + "/full/" + size.width + ",/0/default." + fileExtension,
+	                    width: imageInfo.width,
+	                    height: imageInfo.height
+	                };
+	                
+	                if(_debug) {
+	                    console.log("Created level ", level);
+	                }
+	                
+	                imageLevels.push( level );
+	            });
+	            
+	            tileSource = new OpenSeadragon.LegacyTileSource(imageLevels);
+            } else {
+            	tileSource = new OpenSeadragon.ImageTileSource({
+            		url: imageInfo["@id"].replace( "/info.json", "" ) + "/full/full/0/default." + fileExtension,
+            		crossOriginPolicy: "Anonymous",
+            		buildPyramid: false
+            	});
+            }
+            
+            return tileSource;
+        },
+        getSizes: function() {
+            return osViewer.sizes;
+        },
+        addImage: function( url, width, height ) {
+            if ( _debug ) {
+                console.log( 'osViewer.addImage: url - ' + url );
+                console.log( 'osViewer.addImage: width - ' + width );
+                console.log( 'osViewer.addImage: height - ' + height );
+            }
+            if ( osViewer.viewer ) {
+                osViewer.viewer.addTiledImage( {
+                    tileSource: {
+                        type: "legacy-image-pyramid",
+                        levels: [ {
+                            url: url,
+                            height: height,
+                            width: width
+                        } ]
+                    },
+                    x: 0,
+                    y: 1.6,
+                    width: 1
+                } );
+            }
+            else {
+                if ( _debug ) {
+                    console.log( "Viewer not initialized yet; cannot add image" );
+                }
+            }
+        },
+        getImageInfo: function() {
+            if(osViewer.viewer) {
+                return osViewer.viewer.tileSources;
+            }
+            return null;
+        },
+        getScaleToOriginalSize: function(imageNo) {
+        	return 1.0;
+//        	if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
+        },
+        scaleToOriginalSize: function( value, imageNo ) {
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
+        },
+        scaleToImageSize: function( value, imageNo ) {
+        	return value;
+//            if ( _debug ) {
+//                console.log( 'Overlays _scaleToImageSize: value - ' + value );
+//            }
+//            
+//            if(!imageNo) {
+//        		imageNo = 0;
+//        	}
+//            
+//            var displaySize = osViewer.viewer.viewport._contentSize.x;
+//            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
+        },
+        close: function() {
+            if ( _debug ) {
+                console.log( "Closing openSeadragon viewer" );
+            }
+            
+            if ( osViewer.viewer ) {
+                osViewer.viewer.destroy();
+            }
+        },
+        redraw: function() {
+            if(osViewer.controls) {                    	
+            	osViewer.controls.setPanning( true );
+            }
+            _calculateSizes(osViewer);
+        },
+        setImageSizes: function(imageInfo, sizes) {
+        	if(sizes) {        		
+        		var string = sizes.replace(/[\{\}]/, "");
+        		var sizes = JSON.parse(sizes);
+        		var iiifSizes = [];
+        		sizes.forEach(function(size) {
+        			iiifSizes.push({"width": parseInt(size), "height": parseInt(size)});
+        		});
+        		if(iiifSizes.length > 0) {				
+        			imageInfo.sizes = iiifSizes;
+        		} else {
+        			delete imageInfo.sizes;
+        		}
+        	}
+        },
+        setTileSizes: function(imageInfo, tiles) {
+        	if(tiles) {        		
+        		var tileString = viewImage.getConfig().global.tileSizes.replace(/(\d+)/, '"$1"').replace("=", ":");
+        		var tiles = JSON.parse(tileString);
+        		var iiifTiles = [];
+        		
+        		Object.keys(tiles).forEach(function(size) {
+        			var scaleFactors = tiles[size];
+        			iiifTiles.push({"width": parseInt(size), "height": parseInt(size), "scaleFactors": scaleFactors})
+        		});
+        		
+        		imageInfo.tiles = iiifTiles;
+        	}
+        },
+        onFirstTileLoaded: function() {
+        	var defer = Q.defer();
+        	
+        	if(viewImage.observables) {
+        		viewImage.observables.firstTileLoaded.subscribe(function(event) {
+        			defer.resolve(event);
+        		}, function(error) {
+        			defer.reject(error)
+        		});
+        	} else {
+        		defer.reject("No observables defined");
+        	}
+        	
+        	return defer.promise;
+        },
+        createTileSource: function(source) {
+
+        	var result = Q.defer();
+
+            viewImage.tileSourceResolver.resolveAsJson(source)
+            .then(
+            		function(imageInfo) {                        
+		                if(_debug) {                
+		                    console.log("IIIF image info ", imageInfo);                        
+		                }               
+		                viewImage.setImageSizes(imageInfo, _defaults.global.imageSizes);       
+		                viewImage.setTileSizes(imageInfo, _defaults.global.tileSizes);                
+		                var tileSource;
+		                if(_defaults.global.useTiles) {
+		                    tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
+		                } else {                
+		                    tileSource  = osViewer.createPyramid(imageInfo);                    
+		                }
+		                
+		                return tileSource;                
+            		},
+		            function(error) {            
+		                if(viewImage.tileSourceResolver.isURI(_defaults.image.tileSource)) {
+		                    if(_debug) {                    
+		                        console.log("Image URL", _defaults.image.tileSource);                        
+		                    }
+		                    
+		                    var tileSource = new OpenSeadragon.ImageTileSource( {                    
+		                        url: _defaults.image.tileSource,                        
+		                        buildPyramid: true,                        
+		                        crossOriginPolicy: false                        
+		                    } );
+		
+		                    return tileSource;                    
+		                } else {                
+		                    var errorMsg = "Failed to load tilesource from " + tileSource;
+		                    
+		                    if(_debug) {                    
+		                        console.log(errorMsg);                        
+        }
+		                    
+		                    return Q.reject(errorMsg);
+		                    
+		                }              
+		            })
+            .then(function(tileSource) {              
+                result.resolve(tileSource);          
+            }).catch(function(errorMessage) {              
+                result.reject(errorMessage);          
+            });
+            return result.promise;
+        }
+    };
+    
+    function createObservables(window, viewer) {
+        var observables = {};
+        
+        observables.viewerOpen = Rx.Observable.create(function(observer) {
+            viewer.addOnceHandler( 'open', function( event ) {
+                event.osState = "open";
+                
+                if(Number.isNaN(event.eventSource.viewport.getHomeBounds().x)) {
+                    return observer.onError("Unknow error loading image from ", _defaults.image.tileSource);
+                } else {                    
+                    return observer.onNext(event);
+                }
+            } );
+            viewer.addOnceHandler( 'open-failed', function( event ) {
+                event.osState = "open-failed";
+                console.log("Failed to open openseadragon ");
+                
+                return observer.onError(event);
+            } );
+        });
+        
+        observables.firstTileLoaded = Rx.Observable.create(function(observer) {
+        	viewer.addOnceHandler( 'tile-loaded', function( event ) {
+                event.osState = "tile-loaded";
+                
+                return observer.onNext(event);
+            } );
+        	viewer.addOnceHandler( 'tile-load-failed', function( event ) {
+                event.osState = "tile-load-failed";
+                console.log("Failed to load tile");
+                
+                return observer.onError(event);
+            } );
+        });
+        
+        observables.viewerZoom = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'zoom', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.animationComplete = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation-finish', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.viewportUpdate = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'update-viewport', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.animation = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'animation', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.viewerRotate = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'rotate', function( event ) {
+                event.osState = "rotate";
+                return observer.onNext(event);
+            } );
+        });
+        observables.canvasResize = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'resize', function( event ) {
+                event.osState = "resize";
+                
+                return observer.onNext(event);
+            } );
+        });
+        observables.windowResize = Rx.Observable.fromEvent(window, "resize").map(function(event) {
+            event.osState = "window resize";
+            
+            return event;
+        });
+        observables.overlayRemove = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'remove-overlay', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.overlayUpdate = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'update-overlay', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.levelUpdate = Rx.Observable.create(function(observer) {
+            viewer.addHandler( 'update-level', function( event ) {
+                return observer.onNext(event);
+            } );
+        });
+        observables.redrawRequired = observables.viewerOpen
+        .merge(observables.viewerRotate
+        		.merge(observables.canvasResize)
+        		.debounce(10))
+        .map(function(event) {
+            var location = {};
+            
+            if(osViewer.controls) {
+                location = osViewer.controls.getLocation();
+            }
+            
+            if(event.osState === "open") {
+                location.zoom = osViewer.viewer.viewport.getHomeZoom();
+                if(_defaults.image.location) {
+                   location = _defaults.image.location;
+                }
+            }
+            
+            event.targetLocation = location;
+            
+            return event;
+        }).publish();
+        
+        return observables;
+    }
+    
+    function _calculateSizes(osViewer) {
+        if ( _debug ) {
+            console.log( "viewImage: calcualte sizes" );
+            console.log("Home zoom = ", osViewer.viewer.viewport.getHomeZoom());
+        }
+        
+        osViewer.sizes = new viewImage.Measures( osViewer );
+        
+        if ( _defaults.global.adaptContainerHeight ) {
+            osViewer.sizes.resizeCanvas();
+        }
+        
+        if ( osViewer.viewer != null ) {
+            osViewer.viewer.viewport.setMargins( {bottom: osViewer.sizes.footerHeight + osViewer.sizes.calculateExcessHeight()} );
+        }
+        
+        if ( _debug ) {
+            console.log( "sizes: ", osViewer.sizes );
+        }
+        
+    };
+
+    
+    function _overlayFooter( event ) {
+        if ( _defaults.global.footerHeight > 0 ) {
+            var footerHeight = _defaults.global.footerHeight;
+            var footerPos = new OpenSeadragon.Point( 0, _container.height() - footerHeight );
+            var footerSize = new OpenSeadragon.Point( _container.width(), footerHeight );
+            
+            if ( !_canvasScale ) {
+                _canvasScale = osViewer.viewer.drawer.context.canvas.width / osViewer.viewer.drawer.context.canvas.clientWidth;
+            }
+            
+            if ( _canvasScale != 1 ) {
+                footerPos = footerPos.times( _canvasScale );
+                footerSize = footerSize.times( _canvasScale );
+            }
+            osViewer.viewer.drawer.context.drawImage( _footerImage, footerPos.x, footerPos.y, footerSize.x, footerSize.y );
+        }
+    };
+    
+    function _timeout(promise, time) {
+        var deferred = new jQuery.Deferred();
+
+        $.when(promise).done(deferred.resolve).fail(deferred.reject).progress(deferred.notify);
+
+        setTimeout(function() {
+            deferred.reject("timeout");
+        }, time);
+
+        return deferred.promise();
+    }
+    
+    return osViewer;    
+}
+
+)( jQuery, OpenSeadragon );
+
+// browser backward compability
+if(!String.prototype.startsWith) {
+    String.prototype.startsWith = function(subString) {
+        var start = this.substring(0,subString.length);
+        return start.localeCompare(subString) === 0;
+    }
+}
+if(!String.prototype.endsWith) {
+    String.prototype.endsWith = function(subString) {
+        var start = this.substring(this.length-subString.length,this.length);
+        return start.localeCompare(subString) === 0;
+    }
+}
+if(!Array.prototype.find) {
+    Array.prototype.find = function(comparator) {
+        for ( var int = 0; int &lt; this.length; int++ ) {
+            var element = this[int];
+            if(comparator(element)) {
+                return element;
+            }
+        }
+    }
+}
+if(!Number.isNaN) {
+    Number.isNaN = function(number) {
+        return number !== number;
+    }
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2015 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Fri Dec 1st 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

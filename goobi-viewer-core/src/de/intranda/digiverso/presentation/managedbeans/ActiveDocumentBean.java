@@ -57,13 +57,14 @@ import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.toc.TOC;
 import de.intranda.digiverso.presentation.model.toc.TOCElement;
 import de.intranda.digiverso.presentation.model.toc.export.pdf.TocWriter;
 import de.intranda.digiverso.presentation.model.toc.export.pdf.WriteTocException;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
+import de.intranda.digiverso.presentation.model.viewer.PageOrientation;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
@@ -121,6 +122,10 @@ public class ActiveDocumentBean implements Serializable {
 
     /** This persists the last value given to setPersistentIdentifier() and is used for handling a RecordNotFoundException. */
     private String lastReceivedIdentifier;
+    /** Available languages for this record. */
+    private List<String> recordLanguages;
+    /** Currently selected language for multilingual records. */
+    private String selectedRecordLanguage;
 
     /** Empty constructor. */
     public ActiveDocumentBean() {
@@ -247,17 +252,25 @@ public class ActiveDocumentBean implements Serializable {
             }
 
             // Do these steps only if a new document has been loaded
+            boolean mayChangeHitIndex = false;
             if (viewManager == null || viewManager.getTopDocument() == null || viewManager.getTopDocumentIddoc() != topDocumentIddoc) {
                 toc = null;
                 anchor = false;
                 volume = false;
                 group = false;
+
+                // Change current hit index only if loading a new record
+                if (searchBean != null && searchBean.getCurrentSearch() != null) {
+                    searchBean.increaseCurrentHitIndex();
+                    mayChangeHitIndex = true;
+                }
+
                 StructElement topDocument = new StructElement(topDocumentIddoc);
 
                 // Do not open records who may not be listed for the current user
                 List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
                 if (requiredAccessConditions != null && !requiredAccessConditions.isEmpty()) {
-                    boolean access = SearchHelper.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
+                    boolean access = AccessConditionUtils.checkAccessPermission(new HashSet<>(requiredAccessConditions), IPrivilegeHolder.PRIV_LIST,
                             new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(topDocument.getPi()).toString(),
                             (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                     if (!access) {
@@ -283,11 +296,6 @@ public class ActiveDocumentBean implements Serializable {
                 toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
             }
 
-            // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
-            if (searchBean != null && searchBean.getCurrentHitIndex() < 0) {
-                searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow);
-            }
-
             // If LOGID is set, update the current element
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
                 // TODO set new values instead of re-creating ViewManager, perhaps
@@ -302,8 +310,10 @@ public class ActiveDocumentBean implements Serializable {
                 if (!docList.isEmpty()) {
                     subElementIddoc = Long.valueOf((String) docList.get(0).getFieldValue(SolrConstants.IDDOC));
                     // Re-initialize ViewManager with the new current element
+                    PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid, viewManager
                             .getMainMimeType());
+                    viewManager.setFirstPageOrientation(firstPageOrientation);
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);
                 }
@@ -331,16 +341,43 @@ public class ActiveDocumentBean implements Serializable {
                 // logger.debug("topSe: " + topSe.getId());
                 for (Metadata md : DataManager.getInstance().getConfiguration().getTitleBarMetadata()) {
                     md.populate(topSe.getMetadataFields(), BeanUtils.getLocale());
-                    if (!md.isEmpty()) {
+                    if (!md.isBlank()) {
                         titleBarMetadata.add(md);
                     }
                 }
 
+                // When not aggregating hits, a new page will also be a new search hit in the list
+                if (imageToShow != viewManager.getCurrentImageNo() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                    mayChangeHitIndex = true;
+                }
                 viewManager.setCurrentImageNo(imageToShow);
                 viewManager.updateDropdownSelected();
+
+                // Search hit navigation
+                if (searchBean != null && searchBean.getCurrentSearch() != null) {
+                    if (searchBean.getCurrentHitIndex() < 0) {
+                        // Determine the index of this element in the search result list. Must be done after re-initializing ViewManager so that the PI is correct!
+                        searchBean.findCurrentHitIndex(getPersistentIdentifier(), imageToShow, DataManager.getInstance().getConfiguration()
+                                .isAggregateHits());
+                    } else if (mayChangeHitIndex) {
+                        // Modify the current hit index
+                        searchBean.increaseCurrentHitIndex();
+                    } else if (searchBean.getHitIndexOperand() != 0) {
+                        // Reset hit index operand (should only be necessary if the URL was called twice, but the current hit has not changed
+                        // logger.trace("Hit index modifier operand is {}, resetting...", searchBean.getHitIndexOperand());
+                        searchBean.setHitIndexOperand(0);
+                    }
+                }
             } else {
                 logger.debug("ViewManager is null or ViewManager.currentDocument is null.");
                 throw new RecordNotFoundException(lastReceivedIdentifier);
+            }
+
+            // Metadata language versions
+            recordLanguages = viewManager.getTopDocument().getMetadataValues(SolrConstants.LANGUAGE);
+            // If the record has metadata language versions, pre-select the current locale as the record language
+            if (StringUtils.isBlank(selectedRecordLanguage) && !recordLanguages.isEmpty()) {
+                selectedRecordLanguage = navigationHelper.getLocaleString();
             }
 
             // Prepare a new bookshelf item
@@ -460,7 +497,7 @@ public class ActiveDocumentBean implements Serializable {
      * @return the titleBarMetadata
      */
     public List<Metadata> getTitleBarMetadata() {
-        return titleBarMetadata;
+        return Metadata.filterMetadataByLanguage(titleBarMetadata, selectedRecordLanguage);
     }
 
     /**
@@ -524,24 +561,23 @@ public class ActiveDocumentBean implements Serializable {
      */
     public void setAction(String action) {
         synchronized (this) {
-            // logger.debug("setAction: " + action);
+            logger.trace("setAction: " + action);
             this.action = action;
-            if (searchBean != null) {
-                if ("nextHit".equals(action)) {
-                    searchBean.increaseCurrentHitIndex();
-                } else if ("prevHit".equals(action)) {
-                    searchBean.decreaseCurrentHitIndex();
+            if (searchBean != null && action != null) {
+                switch (action) {
+                    case "nextHit":
+                        searchBean.setHitIndexOperand(1);
+                        break;
+                    case "prevHit":
+                        searchBean.setHitIndexOperand(-1);
+                        break;
+                    default:
+                        // do nothing
+                        break;
+
                 }
             }
         }
-    }
-
-    public int getCurrentHitIndexDisplay() {
-        if (searchBean != null) {
-            return searchBean.getCurrentHitIndex() + 1;
-        }
-
-        return 0;
     }
 
     /**
@@ -639,11 +675,12 @@ public class ActiveDocumentBean implements Serializable {
             logger.trace("current view: {}", pageType);
         }
 
-        page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
-        page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
-
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(pageType).append('/').append(getPersistentIdentifier())
-                .append('/').append(page).append('/');
+        if (viewManager != null) {
+            page = Math.max(page, viewManager.getPageLoader().getFirstPageOrder());
+            page = Math.min(page, viewManager.getPageLoader().getLastPageOrder());
+        }
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/').append(page).append('/');
 
         return sbUrl.toString();
     }
@@ -653,7 +690,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public String getPageUrl() throws IndexUnreachableException {
-        StringBuilder sbUrl = new StringBuilder();
         String pageType = null;
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getPreferredView();
@@ -661,22 +697,40 @@ public class ActiveDocumentBean implements Serializable {
         if (StringUtils.isBlank(pageType)) {
             pageType = navigationHelper.getCurrentView();
         }
-        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(pageType).append('/').append(getPersistentIdentifier())
-                .append('/');
+        return getPageUrl(pageType);
+    }
+
+    /**
+     * @param pageType
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getPageUrl(String pageType) throws IndexUnreachableException {
+        StringBuilder sbUrl = new StringBuilder();
+        sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.getByName(pageType).getName()).append('/')
+                .append(getPersistentIdentifier()).append('/');
 
         return sbUrl.toString();
     }
 
     public String getFirstPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getFirstPageOrder());
+        }
+
+        return null;
     }
 
     public String getLastPageUrl() throws IndexUnreachableException {
-        return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        if (viewManager != null) {
+            return getPageUrl(viewManager.getPageLoader().getLastPageOrder());
+        }
+
+        return null;
     }
 
     public String getPreviousPageUrl(int step) throws IndexUnreachableException {
-        if (viewManager.isDoublePageMode()) {
+        if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
         int number = imageToShow - step;
@@ -684,7 +738,7 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public String getNextPageUrl(int step) throws IndexUnreachableException {
-        if (viewManager.isDoublePageMode()) {
+        if (viewManager != null && viewManager.isDoublePageMode()) {
             step *= 2;
         }
         int number = imageToShow + step;
@@ -716,7 +770,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getFullscreenImageUrl() throws IndexUnreachableException {
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
     }
-
+    
     /**
      *
      * @return
@@ -821,11 +875,28 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * 
      * @return
+     * @throws IndexUnreachableException
      */
-    public String getTitleBarLabel() {
+    public String getTitleBarLabel() throws IndexUnreachableException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTitleBarLabel() != null) {
-            return viewManager.getTitleBarLabel();
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
+            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
+            }
+        }
+        if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
+            // Prefer the label of the current TOC element
+            if (toc != null && toc.getTocElements() != null && !toc.getTocElements().isEmpty()) {
+                String label = toc.getLabel(viewManager.getPi());
+                if (label != null) {
+                    return label;
+                }
+            }
+            String label = viewManager.getTopDocument().getLabel(selectedRecordLanguage);
+            if (StringUtils.isNotEmpty(label)) {
+                return label;
+            }
         } else if (cmsBean != null) {
             CMSPage cmsPage = cmsBean.getCurrentPage();
             if (cmsPage != null) {
@@ -841,15 +912,15 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * LABEL value escaped for JavaScript.
+     * Title bar label value escaped for JavaScript.
      * 
      * @return
+     * @throws IndexUnreachableException 
      */
-    public String getLabelForJS() {
-        if (viewManager != null) {
-            String label = viewManager.getTitleBarLabel();
-            label = StringEscapeUtils.escapeJavaScript(label);
-            return label;
+    public String getLabelForJS() throws IndexUnreachableException {
+        String label = getTitleBarLabel();
+        if (label != null) {
+            return StringEscapeUtils.escapeJavaScript(label);
         }
 
         return null;
@@ -966,6 +1037,42 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean isHasLanguages() {
+        return recordLanguages != null && !recordLanguages.isEmpty();
+    }
+
+    /**
+     * @return the recordLanguages
+     */
+    public List<String> getRecordLanguages() {
+        return recordLanguages;
+    }
+
+    /**
+     * @param recordLanguages the recordLanguages to set
+     */
+    public void setRecordLanguages(List<String> recordLanguages) {
+        this.recordLanguages = recordLanguages;
+    }
+
+    /**
+     * @return the selectedRecordLanguage
+     */
+    public String getSelectedRecordLanguage() {
+        return selectedRecordLanguage;
+    }
+
+    /**
+     * @param selectedRecordLanguage the selectedRecordLanguage to set
+     */
+    public void setSelectedRecordLanguage(String selectedRecordLanguage) {
+        this.selectedRecordLanguage = selectedRecordLanguage;
+    }
+
     public boolean isAccessPermissionEpub() {
         synchronized (this) {
             try {
@@ -1043,4 +1150,5 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Error writing toc: " + e.getMessage(), e);
         }
     }
+        
 }

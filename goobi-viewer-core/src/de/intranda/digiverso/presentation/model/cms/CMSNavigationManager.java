@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import org.apache.poi.ddf.EscherColorRef.SysIndexSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,18 +53,20 @@ public class CMSNavigationManager {
         addAvailableItem(start);
         CMSNavigationItem search = new CMSNavigationItem("search", "search");
         addAvailableItem(search);
-        CMSNavigationItem browse = new CMSNavigationItem("browse", "browse");
-        addAvailableItem(browse);
-        CMSNavigationItem tags = new CMSNavigationItem("tags", "tagclouds");
-        addAvailableItem(tags);
-        CMSNavigationItem statistics = new CMSNavigationItem("statistics", "statistics");
-        addAvailableItem(statistics);
-        CMSNavigationItem timematrix = new CMSNavigationItem("timematrix", "timematrix");
-        addAvailableItem(timematrix);
+        CMSNavigationItem searchadvanced = new CMSNavigationItem("searchadvanced", "searchAdvanced");
+        addAvailableItem(searchadvanced);
         CMSNavigationItem searchtimeline = new CMSNavigationItem("searchtimeline", "searchTimeline");
         addAvailableItem(searchtimeline);
         CMSNavigationItem searchcalendar = new CMSNavigationItem("searchcalendar", "searchCalendar");
         addAvailableItem(searchcalendar);
+        CMSNavigationItem browse = new CMSNavigationItem("browse", "browse");
+        addAvailableItem(browse);
+        CMSNavigationItem timematrix = new CMSNavigationItem("timematrix", "timematrix");
+        addAvailableItem(timematrix);
+        CMSNavigationItem statistics = new CMSNavigationItem("statistics", "statistics");
+        addAvailableItem(statistics);
+        CMSNavigationItem tags = new CMSNavigationItem("tags", "tagclouds");
+        addAvailableItem(tags);
         CMSNavigationItem user = new CMSNavigationItem("user", "user");
         user.setDisplayForUsersOnly(true);
         addAvailableItem(user);

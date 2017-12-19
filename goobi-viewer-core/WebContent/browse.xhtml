@@ -11,12 +11,11 @@
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageBrowse}" />
             <f:event type="preRenderView" listener="#{searchBean.resetActiveSearchType}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
-            <f:event type="preRenderView" listener="#{cmsBean.forwardToCMSPage}" />
         </f:metadata>
     </ui:define>
 
     <ui:define name="content">    
-        <div id="browse" class="page-wrapp">
+        <div id="browse">
             <h2>#{msg.browseCollectionHeader}</h2>
 
             <h:panelGroup rendered="#{msg.browseCollectionDescription != 'browseCollectionDescription'}">

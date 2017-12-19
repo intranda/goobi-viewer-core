@@ -15,8 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.search;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +35,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -60,22 +60,22 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.metadata.Metadata;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.search.SearchHit.HitType;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
-import de.intranda.digiverso.presentation.model.user.IpRange;
-import de.intranda.digiverso.presentation.model.user.LicenseType;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
-import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Search utility class. Static methods only.
@@ -116,26 +116,31 @@ public final class SearchHelper {
      * @param rows {@link Integer} bis
      * @param sortFields
      * @param resultFields
+     * @param filterQueries
      * @param params
      * @param searchTerms
      * @param exportFields
      * @param locale
+     * @param request
      * @return List of <code>StructElement</code>s containing the search hits.
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale) throws PresentationException,
-            IndexUnreachableException, DAOException {
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
+            HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, params);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries,
+                params);
         if (resp.getResults() == null) {
             return Collections.emptyList();
         }
         if (params != null) {
             logger.trace("params: {}", params.toString());
         }
+        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         for (SolrDocument doc : resp.getResults()) {
@@ -153,16 +158,25 @@ public final class SearchHelper {
                     }
                 }
 
-                fulltext = (String) doc.getFirstValue("MD_FULLTEXT");
-                if (fulltext == null) {
-                    fulltext = (String) doc.getFieldValue(SolrConstants.FULLTEXT);
+                // Load full-text
+                try {
+                    fulltext = Helper.loadFulltext((String) doc.getFirstValue(SolrConstants.PI_TOPSTRUCT), (String) doc.getFirstValue(
+                            SolrConstants.DATAREPOSITORY), (String) doc.getFirstValue(SolrConstants.FILENAME_ALTO), (String) doc.getFirstValue(
+                                    SolrConstants.FILENAME_FULLTEXT), request);
+                } catch (AccessDeniedException e) {
+                    fulltext = ViewerResourceBundle.getTranslation(e.getMessage(), null);
+                } catch (FileNotFoundException e) {
+                    logger.error(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
                 }
             } else {
                 // Add docstruct documents to the owner doc map, just in case
                 ownerDocs.put((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
             }
 
-            SearchHit hit = createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true);
+            SearchHit hit = SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields, translateFields,
+                    null);
             ret.add(hit);
         }
 
@@ -177,6 +191,7 @@ public final class SearchHelper {
      * @param rows {@link Integer} bis
      * @param sortFields
      * @param resultFields
+     * @param filterQueries
      * @param params
      * @param searchTerms
      * @param exportFields
@@ -188,12 +203,15 @@ public final class SearchHelper {
      * @should return all hits
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
-            Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale) throws PresentationException,
-            IndexUnreachableException, DAOException {
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, params);
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
+            throws PresentationException, IndexUnreachableException, DAOException {
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries,
+                params);
         if (resp.getResults() == null) {
             return new ArrayList<>();
         }
+        Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
+        Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         for (SolrDocument doc : resp.getResults()) {
@@ -201,71 +219,31 @@ public final class SearchHelper {
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
-            SearchHit hit = createSearchHit(doc, null, locale, null, searchTerms, exportFields, true);
+            // logger.trace("Creating search hit from {}", doc);
+            SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
             ret.add(hit);
             hit.addOverviewPageChild();
-
+            logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits 
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (pi != null && childDocs != null && childDocs.containsKey(pi)) {
                 logger.trace("{} child hits found for {}", childDocs.get(pi).size(), pi);
                 hit.setChildDocs(childDocs.get(pi));
-                logger.trace("Counting children START");
                 for (SolrDocument childDoc : childDocs.get(pi)) {
-                    HitType hitType = HitType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
+                    // childDoc.remove(SolrConstants.ALTO); // remove ALTO texts to avoid OOM
+                    String docType = (String) childDoc.getFieldValue(SolrConstants.DOCTYPE);
+                    if (DocType.METADATA.name().equals(docType)) {
+                        // Hack: count metadata hits as docstruct for now (because both are labeled "Metadata")
+                        docType = DocType.DOCSTRCT.name();
+                    }
+                    HitType hitType = HitType.getByName(docType);
                     int count = hit.getHitTypeCounts().get(hitType) != null ? hit.getHitTypeCounts().get(hitType) : 0;
                     hit.getHitTypeCounts().put(hitType, count + 1);
                 }
-                logger.trace("Counting chindren END");
             }
         }
-
+        logger.trace("Return {} search hits", ret.size());
         return ret;
-    }
-
-    /**
-     * 
-     * @param doc
-     * @param ownerDoc
-     * @param locale
-     * @param fulltext Optional fulltext (page docs only).
-     * @param searchTerms
-     * @param exportFields Optional fields for (Excel) export purposes.
-     * @param useThumbnail
-     * @param matchTermsToMetadataValues
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @should add export fields correctly
-     */
-    public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
-            Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail) throws PresentationException,
-            IndexUnreachableException, DAOException {
-        String fulltextFragment = fulltext == null ? null : truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext, DataManager
-                .getInstance().getConfiguration().getFulltextFragmentLength());
-        StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
-        String docstructType = se.getDocStructType();
-        if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
-            docstructType = DocType.METADATA.name();
-        }
-        List<Metadata> metadataList = DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate(docstructType);
-        BrowseElement browseElement = new BrowseElement(se, metadataList, locale, fulltextFragment, useThumbnail, searchTerms);
-        // Add additional metadata fields that aren't configured for search hits but contain search term values
-        browseElement.addAdditionalMetadataContainingSearchTerms(se, searchTerms);
-        SearchHit hit = new SearchHit(HitType.getByName(se.getMetadataValue(SolrConstants.DOCTYPE)), browseElement, searchTerms, locale);
-        hit.populateFoundMetadata(doc);
-
-        // Export fields for Excel export
-        if (exportFields != null && !exportFields.isEmpty()) {
-            for (String field : exportFields) {
-                String value = se.getMetadataValue(field);
-                if (value != null) {
-                    hit.getExportMetadata().put(field, value);
-                }
-            }
-        }
-        return hit;
     }
 
     /**
@@ -349,13 +327,14 @@ public final class SearchHelper {
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      */
-    public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, Map<String, String> params,
-            Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws PresentationException, IndexUnreachableException,
-            DAOException {
-        // logger.debug("getBrowseElement(): " + query);
+    public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
+            throws PresentationException, IndexUnreachableException, DAOException {
         String finalQuery = buildFinalQuery(query, aggregateHits);
-        List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, params, searchTerms, null,
-                locale) : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, params, searchTerms, null, locale);
+        logger.debug("getBrowseElement final query: {}", finalQuery);
+        List<SearchHit> hits = aggregateHits ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params,
+                searchTerms, null, locale) : SearchHelper.searchWithFulltext(finalQuery, index, 1, sortFields, null, filterQueries, params,
+                        searchTerms, null, locale, request);
         if (!hits.isEmpty()) {
             return hits.get(0).getBrowseElement();
         }
@@ -402,26 +381,25 @@ public final class SearchHelper {
         sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
         sbQuery.append(" AND (").append(luceneField).append(":").append(value).append(" OR ").append(luceneField).append(":").append(value
                 + separatorString + "*)");
-        List<String> blacklist = new ArrayList<>();
+        Set<String> blacklist = new HashSet<>();
         if (filterForBlacklist) {
             String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
             switch (blacklistMode) {
                 case "all":
-                    blacklist = new ArrayList<>();
+                    blacklist = new HashSet<>();
                     sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
                     break;
                 case "dcList":
-                    blacklist = DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField);
+                    blacklist = new HashSet<>(DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField));
                     break;
                 default:
-                    blacklist = new ArrayList<>();
+                    blacklist = new HashSet<>();
                     break;
             }
         }
 
         logger.debug("query: {}", sbQuery.toString());
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, null, null,
-                null);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, null, null);
         logger.trace("query done");
 
         if (resp.getResults().size() > 0) {
@@ -430,7 +408,7 @@ public final class SearchHelper {
                     Collection<Object> fieldList = doc.getFieldValues(luceneField);
                     if (fieldList != null) {
                         for (Object o : fieldList) {
-                            String dc = (String) o;
+                            String dc = SolrSearchIndex.getAsString(o);
                             if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
                                 continue;
                             }
@@ -466,6 +444,7 @@ public final class SearchHelper {
      */
     public static Map<String, Long> findAllCollectionsFromField(String luceneField, String facetField, boolean filterForWhitelist,
             boolean filterForBlacklist, boolean filterForWorks, boolean filterForAnchors) throws IndexUnreachableException {
+        logger.trace("findAllCollectionsFromField: {}", luceneField);
         Map<String, Long> ret = new HashMap<>();
         try {
             StringBuilder sbQuery = new StringBuilder();
@@ -488,128 +467,105 @@ public final class SearchHelper {
                 sbQuery.append(getDocstrctWhitelistFilterSuffix());
             }
             sbQuery.append(SearchHelper.getAllSuffixesExceptCollectionBlacklist(true));
-            List<String> blacklist = new ArrayList<>();
+            Set<String> blacklist = new HashSet<>();
             if (filterForBlacklist) {
                 String blacklistMode = DataManager.getInstance().getConfiguration().getCollectionBlacklistMode(luceneField);
                 switch (blacklistMode) {
                     case "all":
-                        blacklist = new ArrayList<>();
+                        blacklist = new HashSet<>();
                         sbQuery.append(getCollectionBlacklistFilterSuffix(luceneField));
                         break;
                     case "dcList":
-                        blacklist = DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField);
+                        blacklist = new HashSet<>(DataManager.getInstance().getConfiguration().getCollectionBlacklist(luceneField));
                         break;
                     default:
-                        blacklist = new ArrayList<>();
+                        blacklist = new HashSet<>();
                         break;
                 }
             }
 
-            logger.debug("query: {}", sbQuery.toString());
-            // String query = "(ISWORK:true OR ISANCHOR:true) AND (DOCSTRCT:Monograph OR DOCSTRCT:monograph OR
-            // DOCSTRCT:MultiVolumeWork OR DOCSTRCT:Periodical OR DOCSTRCT:VolumeRun OR DOCSTRCT:Deed OR DOCSTRCT:Picture OR
-            // DOCSTRCT:Sequence OR DOCSTRCT:Seal OR DOCSTRCT:Map OR DOCSTRCT:SingleRecord OR DOCSTRCT:library_object OR
-            // DOCSTRCT:museum_object OR DOCSTRCT:Record OR DOCSTRCT:SingleLetter OR DOCSTRCT:Video OR DOCSTRCT:Audio OR
-            // DOCSTRCT:MusicSupplies OR DOCSTRCT:manuscript OR DOCSTRCT:Incunable OR DOCSTRCT:Drawing OR DOCSTRCT:Painting
-            // OR DOCSTRCT:Newspaper OR DOCSTRCT:Botanik OR DOCSTRCT:Illustration OR DOCSTRCT:pathologisches_Präparat OR
-            // DOCSTRCT:PathologicalSpecimen OR DOCSTRCT:Plastisches_Objekt OR DOCSTRCT:Abzug OR DOCSTRCT:Ansichtskarte OR
-            // DOCSTRCT:Deckfarbe OR DOCSTRCT:Faltprospekt OR DOCSTRCT:Formstein OR DOCSTRCT:Kreidezeichnung OR
-            // DOCSTRCT:Münze OR DOCSTRCT:Coin OR DOCSTRCT:Painting OR DOCSTRCT:Plastik OR DOCSTRCT:Portalpfosten OR
-            // DOCSTRCT:Puppe OR DOCSTRCT:Relief OR DOCSTRCT:Reliefbild OR DOCSTRCT:Tisch OR
-            // DOCSTRCT:Wendeltreppe_\\(Modell\\) OR DOCSTRCT:Zeichnung) AND NOT ((ACCESSCONDITION:\"test\")) AND NOT
-            // (DC:mmmsammlungen.500unigreifswald.030anatomischesammlungen* OR
-            // DC:mmmsammlungen.500unigreifswald.050botanischesammlungen* OR
-            // DC:mmmsammlungen.500unigreifswald.080dalmansammlung OR
-            // DC:mmmsammlungen.500unigreifswald.200vorgeschichtlichesammlung OR
-            // DC:mmmsammlungen.500unigreifswald.250zoologischesammlung OR
-            // DC:institutfrpathologiederernstmoritzarndtuniversittgreifswald OR
-            // DC:mmmsammlungen500unigreifswald030anatomischesammlungen200vergleichendanatomischesammlung)";
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, null, Collections
-                    .singletonList(facetField), Collections.singletonList(luceneField), null);
-            logger.trace("query done");
-
-            // Construct splitting regex
-            // String splitRegex = BrowseDcElement.split;
-            // if (BrowseDcElement.split.equals(".")) {
-            // splitRegex = "[.]";
-            // }
-
             // Fill the map from the facet (faster, but unfortunately, precise parent collection size cannot be determined
             // this way)
-            // if (resp.getFacetField(LuceneConstants.DC) != null && resp.getFacetField(LuceneConstants.DC).getValues() !=
-            // null) {
-            // for (Count count : resp.getFacetField(LuceneConstants.DC).getValues()) {
-            // Long recordCount = ret.get(count.getName());
-            // if (recordCount == null) {
-            // recordCount = 0L;
-            // }
-            // ret.put(count.getName(), recordCount + count.getCount());
-            //
-            // // Add count to parent collections
-            // String[] nameSplit = count.getName().split(splitRegex);
-            // if (nameSplit.length > 1) {
-            // for (int i = 0; i < nameSplit.length; ++i) {
-            // StringBuilder sbParentName = new StringBuilder();
-            // for (int j = 0; j <= i; ++j) {
-            // if (sbParentName.length() > 0) {
-            // sbParentName.append(BrowseDcElement.split);
-            // }
-            // sbParentName.append(nameSplit[j]);
-            // }
-            // String parentName = sbParentName.toString();
-            // if (parentName.length() < count.getName().length()) {
-            // Long parentRecordCount = ret.get(parentName);
-            // if (parentRecordCount == null) {
-            // parentRecordCount = 0L;
-            // }
-            // ret.put(parentName, parentRecordCount + count.getCount());
-            // if(nameSplit[0].equals("belletristik"))
-            // logger.debug(count.getName() + " parent '" + parentName + "' count is now " + ret.get(parentName));
-            // }
-            // }
-            // }
-            // }
-            // }
+            {
+                //              logger.debug("query: {}", sbQuery.toString());
+                // QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null,
+                // Collections.singletonList(
+                //                    facetField), null, null, null);
+                //              logger.trace("query done");
+                //                if (resp.getFacetField(facetField) != null && resp.getFacetField(facetField).getValues() != null) {
+                //                    for (Count count : resp.getFacetField(facetField).getValues()) {
+                // if (count.getName() == null || (!blacklist.isEmpty() && checkCollectionInBlacklist(count.getName(),
+                // blacklist))) {
+                //                            continue;
+                //                        }
+                //                        Long recordCount = ret.get(count.getName());
+                //                        if (recordCount == null) {
+                //                            recordCount = 0L;
+                //                        }
+                //                        ret.put(count.getName(), recordCount + count.getCount());
+                //
+                //                        // Add count to parent collections
+                //                        if (count.getName().contains(BrowseDcElement.split)) {
+                //                            String parent = count.getName();
+                //                            while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
+                //                                parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
+                //                                Long parentRecordCount = ret.get(parent);
+                //                                if (parentRecordCount == null) {
+                //                                    parentRecordCount = 0L;
+                //                                }
+                //                                ret.put(parent, parentRecordCount + count.getCount());
+                //                            }
+                //                        }
+                //                    }
+                //                }
+            }
 
             // Iterate over record hits instead of using facets to determine the size of the parent collections
-            for (SolrDocument doc : resp.getResults()) {
-                Set<String> dcDoneForThisRecord = new HashSet<>();
-                Collection<Object> fieldList = doc.getFieldValues(luceneField);
-                if (fieldList != null) {
-                    for (Object o : fieldList) {
-                        String dc = (String) o;
-                        if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
-                            continue;
-                        }
-                        {
-                            Long count = ret.get(dc);
-                            if (count == null) {
-                                count = 0L;
+            {
+                logger.debug("query: {}", sbQuery.toString());
+                // No faceting needed when fetching field names manually (faceting adds to the total execution time)
+                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), Collections.singletonList(
+                        luceneField));
+                logger.trace("query done");
+                for (SolrDocument doc : results) {
+                    Set<String> dcDoneForThisRecord = new HashSet<>();
+                    Collection<Object> fieldList = doc.getFieldValues(luceneField);
+                    if (fieldList != null) {
+                        for (Object o : fieldList) {
+                            String dc = SolrSearchIndex.getAsString(o);
+                            //                            String dc = (String) o;
+                            if (!blacklist.isEmpty() && checkCollectionInBlacklist(dc, blacklist)) {
+                                continue;
                             }
-                            count++;
-                            ret.put(dc, count);
-                            dcDoneForThisRecord.add(dc);
-                        }
+                            {
+                                Long count = ret.get(dc);
+                                if (count == null) {
+                                    count = 0L;
+                                }
+                                count++;
+                                ret.put(dc, count);
+                                dcDoneForThisRecord.add(dc);
+                            }
 
-                        if (dc.contains(BrowseDcElement.split)) {
-                            String parent = dc;
-                            while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
-                                parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
-                                if (!dcDoneForThisRecord.contains(parent)) {
-                                    Long count = ret.get(parent);
-                                    if (count == null) {
-                                        count = 0L;
+                            if (dc.contains(BrowseDcElement.split)) {
+                                String parent = dc;
+                                while (parent.lastIndexOf(BrowseDcElement.split) != -1) {
+                                    parent = parent.substring(0, parent.lastIndexOf(BrowseDcElement.split));
+                                    if (!dcDoneForThisRecord.contains(parent)) {
+                                        Long count = ret.get(parent);
+                                        if (count == null) {
+                                            count = 0L;
+                                        }
+                                        count++;
+                                        ret.put(parent, count);
+                                        dcDoneForThisRecord.add(parent);
                                     }
-                                    count++;
-                                    ret.put(parent, count);
-                                    dcDoneForThisRecord.add(parent);
                                 }
                             }
                         }
                     }
                 }
             }
-
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
         }
@@ -629,7 +585,7 @@ public final class SearchHelper {
      * @should throw IllegalArgumentException if dc is null
      * @should throw IllegalArgumentException if blacklist is null
      */
-    protected static boolean checkCollectionInBlacklist(String dc, List<String> blacklist) {
+    protected static boolean checkCollectionInBlacklist(String dc, Set<String> blacklist) {
         if (dc == null) {
             throw new IllegalArgumentException("dc may not be null");
         }
@@ -656,18 +612,20 @@ public final class SearchHelper {
 
     /**
      *
-     * @param filterQuerySuffix
+     * @param query
      * @param facetFields
+     * @param facetMinCount
      * @param getFieldStatistics
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static QueryResponse searchCalendar(String query, List<String> facetFields, boolean getFieldStatistics) throws PresentationException,
-            IndexUnreachableException {
+    public static QueryResponse searchCalendar(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
+            throws PresentationException, IndexUnreachableException {
         logger.trace("searchCalendar: {}", query);
         StringBuilder sbQuery = new StringBuilder(query).append(getAllSuffixes(true));
-        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, getFieldStatistics);
+        return DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(sbQuery.toString(), facetFields, facetMinCount,
+                getFieldStatistics);
     }
 
     public static int[] getMinMaxYears(String subQuery) throws PresentationException, IndexUnreachableException {
@@ -679,7 +637,7 @@ public final class SearchHelper {
             sbSearchString.append(subQuery);
         }
         // logger.debug("searchString: {}", searchString);
-        QueryResponse resp = searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), true);
+        QueryResponse resp = searchCalendar(sbSearchString.toString(), Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, true);
 
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Object min = info.getMin();
@@ -796,7 +754,7 @@ public final class SearchHelper {
      * Returns a Solr query suffix that filters out collections defined in the collection blacklist. This suffix is only generated once per
      * application lifecycle.
      *
-     * @param field
+     * @param fiel
      * @return
      */
     public static String getCollectionBlacklistFilterSuffix(String field) {
@@ -918,8 +876,8 @@ public final class SearchHelper {
         for (LicenseType licenseType : DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes()) {
             // Consider only license types that do not allow listing by default and are not static licenses
             if (!licenseType.isStaticLicenseType() && !licenseType.getPrivileges().contains(IPrivilegeHolder.PRIV_LIST)) {
-                if (checkAccessPermission(Collections.singletonList(licenseType), new HashSet<>(Collections.singletonList(licenseType.getName())),
-                        IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
+                if (AccessConditionUtils.checkAccessPermission(Collections.singletonList(licenseType), new HashSet<>(Collections.singletonList(
+                        licenseType.getName())), IPrivilegeHolder.PRIV_LIST, user, ipAddress, null)) {
                     // If the use has an explicit priv to list a certain license type, ignore all other license types
                     logger.trace("User has listing privilege for license type '{}'.", licenseType.getName());
                     query = new StringBuilder();
@@ -944,501 +902,26 @@ public final class SearchHelper {
     }
 
     /**
-     * 
-     * @param fileName
-     * @param identifier
-     * @return
-     * @should use correct field name for AV files
-     * @should use correct file name for text files
-     */
-    static String[] generateAccessCheckQuery(String identifier, String fileName) {
-        String[] ret = new String[2];
-
-        StringBuilder sbQuery = new StringBuilder();
-        String useFileField = SolrConstants.FILENAME;
-        String useFileName = fileName;
-        // Different media types have the file name in different fields
-        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-        switch (extension) {
-            case "webm":
-                useFileField = SolrConstants.FILENAME_WEBM;
-                break;
-            case "mp4":
-                useFileField = SolrConstants.FILENAME_MP4;
-                break;
-            case "mp3":
-                // if the mime type in METS is not audio/mpeg3 but something else, access will be false
-                useFileField = SolrConstants.FILENAME_MPEG3;
-                break;
-            case "ogg":
-            case "ogv":
-                useFileField = SolrConstants.FILENAME_OGG;
-                break;
-            case "txt":
-            case "xml":
-                useFileName = fileName.replace(extension, "*");
-                break;
-            default:
-                break;
-        }
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier).append(" AND ").append(useFileField).append(':');
-        if (useFileName.endsWith(".*")) {
-            sbQuery.append(useFileName);
-        } else {
-            sbQuery.append("\"").append(useFileName).append("\"");
-        }
-
-        // logger.trace(sbQuery.toString());
-        ret[0] = sbQuery.toString();
-        ret[1] = useFileField;
-
-        return ret;
-    }
-
-    /**
-     * Checks whether the client may access an image (by PI + file name).
-     *
-     * @param identifier Work identifier (PI).
-     * @param fileName Image file name. For all files of a record, use "*".
-     * @param request Calling HttpServiceRequest.
-     * @return true if access is granted; false otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    protected static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
-            HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {}, {})", identifier, fileName, privilegeName,
-        // request.getAttributeNames().toString());
-        if (StringUtils.isNotEmpty(identifier)) {
-            String[] query = generateAccessCheckQuery(identifier, fileName);
-            try {
-                // Collect access conditions required by the page
-                Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(query[0], "*".equals(fileName) ? SolrSearchIndex.MAX_HITS
-                        : 1, null, Arrays.asList(new String[] { query[1], SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            Set<String> pageAccessConditions = new HashSet<>();
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                pageAccessConditions.add(accessCondition.toString());
-                                // logger.debug(accessCondition.toString());
-                            }
-                            requiredAccessConditions.put(fileName, pageAccessConditions);
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
-                for (String pageFileName : requiredAccessConditions.keySet()) {
-                    Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
-                    boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), pageAccessConditions,
-                            privilegeName, user, Helper.getIpAddress(request), query[0]);
-                    ret.put(pageFileName, access);
-                }
-                return ret;
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return new HashMap<>(0);
-
-    }
-
-    /**
-     * Checks whether the current users has the given access permissions to the element with the given identifier and LOGID.
-     *
-     * @param identifier The PI to check.
-     * @param logId The LOGID to check (optional).
-     * @param privilegeName Particular privilege for which to check the permission.
-     * @param request
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {}, {})", identifier, logId, privilegeName,
-        // request.getAttributeNames());
-        if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
-            if (StringUtils.isNotEmpty(logId)) {
-                sbQuery.append(" AND ").append(SolrConstants.LOGID).append(':').append(logId);
-            }
-            // Only query docstruct docs because metadata/event docs may not contain values defined in the license type
-            // filter query
-            sbQuery.append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                                // logger.debug(accessCondition.toString());
-                            }
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean checkContentFileAccessPermission(String identifier, HttpServletRequest request) throws IndexUnreachableException,
-            DAOException {
-        // logger.trace("checkContentFileAccessPermission({})", identifier);
-        if (StringUtils.isNotEmpty(identifier)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI).append(':').append(identifier);
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION }));
-                if (results != null) {
-                    for (SolrDocument doc : results) {
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                                // logger.debug(accessCondition.toString());
-                            }
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, Helper.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether the client may access an image (by image URN).
-     *
-     * @param imageUrn Image URN.
-     * @param request Calling HttpServiceRequest.
-     * @return true if access is granted; false otherwise.
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionByImageUrn(String imageUrn, String privilegeName, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByImageUrn({}, {}, {}, {})", imageUrn, privilegeName, request.getAttributeNames());
-        if (StringUtils.isNotEmpty(imageUrn)) {
-            StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.IMAGEURN).append(':').append(imageUrn.replace(":", "\\:"));
-            try {
-                Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
-                for (SolrDocument doc : hits) {
-                    Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                    if (fieldsAccessConddition != null) {
-                        for (Object accessCondition : fieldsAccessConddition) {
-                            requiredAccessConditions.add((String) accessCondition);
-                            // logger.debug((String) accessCondition);
-                        }
-                    }
-                }
-
-                User user = BeanUtils.getUserFromRequest(request);
-                return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
-                        privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
-            } catch (PresentationException e) {
-                logger.debug("PresentationException thrown here: {}", e.getMessage());
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     * @param requiredAccessConditions
-     * @param privilegeName
-     * @param pi
-     * @param request
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query, HttpServletRequest request)
-            throws IndexUnreachableException, PresentationException, DAOException {
-        User user = BeanUtils.getUserFromRequest(request);
-        return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions, privilegeName, user,
-                Helper.getIpAddress(request), query);
-    }
-
-    /**
-     * Checks access permission for the given image and puts the permission status into the corresponding session map.
-     *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionForImage(HttpServletRequest request, String pi, String contentFileName)
-            throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionForImage: {}/{}", pi, contentFileName);
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_IMAGES);
-    }
-
-    /**
-     * Checks access permission for the given thumbnail and puts the permission status into the corresponding session map.
-     *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    public static boolean checkAccessPermissionForThumbnail(HttpServletRequest request, String pi, String contentFileName)
-            throws IndexUnreachableException, DAOException {
-        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request, pi, contentFileName, IPrivilegeHolder.PRIV_VIEW_THUMBNAILS);
-    }
-
-    /**
-     * Checks access permission of the given privilege type for the given image and puts the permission status into the corresponding session map.
-     *
-     * @param request
-     * @param pi
-     * @param contentFileName
-     * @param privilegeType
-     * @return
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     */
-    @SuppressWarnings("unchecked")
-    public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
-            String privilegeType) throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap");
-        if (privilegeType == null) {
-            throw new IllegalArgumentException("privilegeType may not be null");
-        }
-        boolean access = false;
-        // logger.debug("session id: " + request.getSession().getId());
-        // Session persistent permission check: Servlet-local method.
-        String attributeName = IPrivilegeHolder._PRIV_PREFIX + privilegeType;
-        logger.trace("Checking session attribute: {}", attributeName);
-        Map<String, Boolean> permissions = (Map<String, Boolean>) request.getSession().getAttribute(attributeName);
-        if (permissions == null) {
-            permissions = new HashMap<>();
-            logger.trace("Session attribute not found, creating new");
-        }
-        // logger.debug("Permissions found, " + permissions.size() + " items.");
-        // new pi -> create an new empty map in the session
-        if (!pi.equals(request.getSession().getAttribute("currentPi"))) {
-            // logger.trace("new PI: {}", pi);
-            request.getSession().setAttribute("currentPi", pi);
-            request.getSession().removeAttribute(attributeName);
-            permissions = new HashMap<>();
-            logger.trace("PI has changed, permissions map reset.");
-        }
-
-        String key = new StringBuilder(pi).append('_').append(contentFileName).toString();
-        // pi already checked -> look in the session
-        // logger.debug("permissions key: " + key + ": " + permissions.get(key));
-        if (permissions.containsKey(key)) {
-            access = permissions.get(key);
-            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName, request
-                    .getSession().getId());
-        } else {
-            // TODO check for all images and save to map
-            Map<String, Boolean> accessMap = SearchHelper.checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
-            for (String pageFileName : accessMap.keySet()) {
-                String newKey = new StringBuilder(pi).append('_').append(pageFileName).toString();
-                boolean pageAccess = accessMap.get(pageFileName);
-                permissions.put(newKey, pageAccess);
-            }
-            access = permissions.get(key) != null ? permissions.get(key) : false;
-            // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName,
-            // access);
-            request.getSession().setAttribute(attributeName, permissions);
-        }
-
-        return access;
-    }
-
-    /**
-     *
-     * @param allLicenseTypes
-     * @param requiredAccessConditions Set of access condition names to satisfy (one suffices).
-     * @param privilegeName The particular privilege to check.
-     * @param user Logged in user.
-     * @param query Solr query describing the resource in question.
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     * @should return true if required access conditions empty
-     * @should return true if required access conditions contain only open access
-     * @should return true if all license types allow privilege by default
-     * @should return false if not all license types allow privilege by default
-     * @should return true if ip range allows access
-     * @should not return true if no ip range matches
-     * 
-     *         TODO user license checks
-     */
-    static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName, User user,
-            String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
-        // logger.trace("checkAccessPermission({},{},{})", allLicenseTypes, requiredAccessConditions, privilegeName);
-        // If OPENACCESS is the only condition, allow immediately
-        if (requiredAccessConditions.isEmpty()) {
-            logger.debug("No required access conditions given, access granted.");
-            return true;
-        }
-        if (requiredAccessConditions.size() == 1 && (requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE) || requiredAccessConditions
-                .contains(SolrConstants.OPEN_ACCESS_VALUE.toLowerCase()))) {
-            return true;
-        }
-        // If no license types are configured or no privilege name is given, allow immediately
-        if (allLicenseTypes == null || !StringUtils.isNotEmpty(privilegeName)) {
-            logger.trace("No license types or no privilege name given.");
-            return true;
-        }
-
-        List<LicenseType> relevantLicenseTypes = getRelevantLicenseTypesOnly(allLicenseTypes, requiredAccessConditions, query);
-        requiredAccessConditions = new HashSet<>(relevantLicenseTypes.size());
-        if (relevantLicenseTypes.isEmpty()) {
-            logger.trace("No relevant license types.");
-            return true;
-        }
-
-        // If all relevant license types allow the requested privilege by default, allow access
-        {
-            boolean licenseTypeAllowsPriv = true;
-            // Check whether *all* relevant license types allow the requested privilege by default
-            for (LicenseType licenseType : relevantLicenseTypes) {
-                requiredAccessConditions.add(licenseType.getName());
-                if (!licenseType.getPrivileges().contains(privilegeName)) {
-                    // logger.debug("LicenseType '" + licenseType.getName() + "' does not allow the action '" + privilegeName
-                    // + "' by default.");
-                    licenseTypeAllowsPriv = false;
-                }
-            }
-            if (licenseTypeAllowsPriv) {
-                logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName);
-                return true;
-            }
-        }
-
-        // Check IP range
-        if (StringUtils.isNotEmpty(remoteAddress)) {
-            // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-            Map<String, Boolean> permissionMap = new HashMap<>(requiredAccessConditions.size());
-            for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                // logger.debug("ip range: " + ipRange.getSubnetMask());
-                if (ipRange.matchIp(remoteAddress) && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                    logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                    return true;
-                }
-            }
-        }
-
-        // If not within an allowed IP range, check the current user's satisfied access conditions
-        if (user != null && user.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-            return true;
-        }
-
-        // logger.trace("not allowed");
-        return false;
-    }
-
-    /**
-     * Filters the given list of license types my removing those that have Solr query conditions that do not match the given identifier.
-     *
-     * @param allLicenseTypes
-     * @param requiredAccessConditions
-     * @param query
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @should remove license types whose names do not match access conditions
-     * @should remove license types whose condition query excludes the given pi
-     */
-    static List<LicenseType> getRelevantLicenseTypesOnly(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String query)
-            throws IndexUnreachableException, PresentationException {
-        if (requiredAccessConditions == null || requiredAccessConditions.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        logger.trace("getRelevantLicenseTypesOnly: {} | {}", query, requiredAccessConditions);
-        List<LicenseType> ret = new ArrayList<>(allLicenseTypes.size());
-        for (LicenseType licenseType : allLicenseTypes) {
-            // logger.trace(licenseType.getName());
-            if (!requiredAccessConditions.contains(licenseType.getName())) {
-                continue;
-            }
-            // Check whether the license type contains conditions that exclude the given record, in that case disregard this
-            // license type
-            if (StringUtils.isNotEmpty(licenseType.getConditions()) && StringUtils.isNotEmpty(query)) {
-                String conditions = licenseType.getProcessedConditions();
-                // logger.trace("License conditions: {}", conditions);
-                StringBuilder sbQuery = new StringBuilder(query);
-                if (conditions.charAt(0) == '-') {
-                    // do not wrap the conditions in parentheses if it starts with a negation, otherwise it won't work
-                    sbQuery.append(" AND ").append(conditions);
-                } else {
-                    sbQuery.append(" AND (").append(conditions).append(')');
-                }
-                // logger.trace("License relevance query: {}", sbQuery.toString());
-                if (DataManager.getInstance().getSearchIndex().getHitCount(sbQuery.toString()) == 0) {
-                    // logger.trace("LicenseType '{}' does not apply to resource described by '{}' due to configured the
-                    // license subquery.", licenseType
-                    // .getName(), query);
-                    continue;
-                }
-                logger.trace("LicenseType '{}' applies to resource described by '{}' due to configured license subquery.", licenseType.getName(),
-                        query);
-            }
-            ret.add(licenseType);
-        }
-
-        return ret;
-    }
-
-    /**
      * TODO This method might be quite expensive.
      *
      * @param searchTerms
      * @param fulltext
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
+     * @param firstMatchOnly If true, only the fragment for the first match will be returned
      * @return
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
      * @should truncate string to 200 chars if no term has been found
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
+     * @should return multiple match fragments correctly
+     * @should replace line breaks with spaces
      */
-    public static String truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength) {
+    public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
-        StringBuilder sbFulltextFragment = new StringBuilder();
+        List<String> ret = new ArrayList<>();
 
         String fulltextFragment = "";
 
@@ -1457,8 +940,9 @@ public final class SearchHelper {
                     fulltextFragment += " ";
                     break;
                 }
-                int indexOfTerm = fulltext.toLowerCase().indexOf(searchTerm.toLowerCase());
-                if (indexOfTerm >= 0) {
+                Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
+                while (m.find()) {
+                    int indexOfTerm = m.start();
 
                     // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
                     fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
@@ -1482,8 +966,23 @@ public final class SearchHelper {
                         fulltextFragment = applyHighlightingToPhrase(fulltextFragment, searchTerm);
                         fulltextFragment = replaceHighlightingPlaceholders(fulltextFragment);
                     }
+                    if (StringUtils.isNotBlank(fulltextFragment)) {
+                        // Check for unclosed HTML tags
+                        int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
+                        int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
+                        if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                            fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                        }
+                        // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                        fulltextFragment = fulltextFragment.replace("<br>", " ");
+                        ret.add(fulltextFragment);
+                    }
+                    if (firstMatchOnly) {
+                        break;
+                    }
                 }
             }
+
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
             if (StringUtils.isEmpty(fulltextFragment)) {
                 if (fulltext.length() > 200) {
@@ -1491,6 +990,9 @@ public final class SearchHelper {
                 } else {
                     fulltextFragment = fulltext;
                 }
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
+                ret.add(fulltextFragment);
             }
         } else {
             if (fulltext.length() > 200) {
@@ -1498,21 +1000,20 @@ public final class SearchHelper {
             } else {
                 fulltextFragment = fulltext;
             }
-        }
-
-        if (StringUtils.isNotBlank(fulltextFragment)) {
-            // Check for unclosed HTML tags
-            int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
-            int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
-            if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
-                fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+            if (StringUtils.isNotBlank(fulltextFragment)) {
+                // Check for unclosed HTML tags
+                int lastIndexOfLT = fulltextFragment.lastIndexOf('<');
+                int lastIndexOfGT = fulltextFragment.lastIndexOf('>');
+                if (lastIndexOfLT != -1 && lastIndexOfLT > lastIndexOfGT) {
+                    fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
+                }
+                // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
+                fulltextFragment = fulltextFragment.replace("<br>", " ");
+                ret.add(fulltextFragment);
             }
-            // Add prefix + suffix
-            // sbFulltextFragment.append("[...] ").append(fulltextFragment).append(" [...]");
-            sbFulltextFragment.append(fulltextFragment);
         }
 
-        return sbFulltextFragment.toString();
+        return ret;
     }
 
     /**
@@ -1522,6 +1023,7 @@ public final class SearchHelper {
      * @param terms
      * @return
      * @should apply highlighting for all terms
+     * @should skip single character terms
      */
     public static String applyHighlightingToPhrase(String phrase, Set<String> terms) {
         if (phrase == null) {
@@ -1533,7 +1035,13 @@ public final class SearchHelper {
 
         String highlightedValue = phrase;
         for (String term : terms) {
-            if (StringUtils.containsIgnoreCase(phrase, term)) {
+            // Highlighting single-character terms can take a long time, so skip them
+            if (term.length() < 2) {
+                continue;
+            }
+            String normalizedPhrase = normalizeString(phrase);
+            String normalizedTerm = normalizeString(term);
+            if (StringUtils.contains(normalizedPhrase, normalizedTerm)) {
                 highlightedValue = SearchHelper.applyHighlightingToPhrase(highlightedValue, term);
             }
         }
@@ -1548,6 +1056,8 @@ public final class SearchHelper {
      * @param term
      * @return
      * @should apply highlighting to all occurrences of term
+     * @should ignore special characters
+     * @should skip single character terms
      */
     static String applyHighlightingToPhrase(String phrase, String term) {
         if (phrase == null) {
@@ -1557,8 +1067,15 @@ public final class SearchHelper {
             throw new IllegalArgumentException("term may not be null");
         }
 
+        // Highlighting single-character terms can take a long time, so skip them
+        if (term.length() < 2) {
+            return phrase;
+        }
+
         StringBuilder sb = new StringBuilder();
-        int startIndex = phrase.toLowerCase().indexOf(term.toLowerCase());
+        String normalizedPhrase = normalizeString(phrase);
+        String normalizedTerm = normalizeString(term);
+        int startIndex = normalizedPhrase.indexOf(normalizedTerm);
         if (startIndex == -1) {
             return phrase;
         }
@@ -1568,6 +1085,19 @@ public final class SearchHelper {
         String after = phrase.substring(endIndex);
 
         return sb.append(applyHighlightingToPhrase(before, term)).append(highlightedTerm).append(applyHighlightingToPhrase(after, term)).toString();
+    }
+
+    /**
+     * 
+     * @param string
+     * @return
+     */
+    static String normalizeString(String string) {
+        if (string == null) {
+            return null;
+        }
+
+        return string.toLowerCase().replaceAll("[^a-zA-Z0-9#]", " ");
     }
 
     /**
@@ -1600,6 +1130,7 @@ public final class SearchHelper {
      * @param indexOfTerm
      * @return
      */
+    @SuppressWarnings("unused")
     private static String getTextFragmentStatic(String fulltext, int targetFragmentLength, String fulltextFragment, String searchTerm,
             int indexOfTerm) {
         if (fulltextFragment.length() == 0) {
@@ -1645,6 +1176,7 @@ public final class SearchHelper {
      * @param halfLength
      * @return
      */
+    @SuppressWarnings("unused")
     private static String getTextFragmentFromLine(String fulltext, String searchTerm, int indexOfTerm, int fragmentLength) {
         String fulltextFragment;
         String stringBefore = fulltext.substring(0, indexOfTerm);
@@ -1664,11 +1196,13 @@ public final class SearchHelper {
      *
      * @param query
      * @param facetFieldName
+     * @param facetMinCount
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<String> getFacetValues(String query, String facetFieldName) throws PresentationException, IndexUnreachableException {
+    public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount) throws PresentationException,
+            IndexUnreachableException {
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
         }
@@ -1677,11 +1211,11 @@ public final class SearchHelper {
         }
 
         QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
-                false);
+                facetMinCount, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
-            if (StringUtils.isNotEmpty(count.getName())) {
+            if (StringUtils.isNotEmpty(count.getName()) && count.getCount() >= facetMinCount) {
                 ret.add(count.getName());
             }
         }
@@ -1743,8 +1277,9 @@ public final class SearchHelper {
                 params.put(GroupParams.GROUP_MAIN, "true");
                 params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
             }
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, null, fieldList, params);
-            // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(), facetFields, false);
+            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, fieldList, null, params);
+            // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
+            // facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
             if ("0-9".equals(startsWith)) {
                 // Numerical filtering
@@ -1872,6 +1407,7 @@ public final class SearchHelper {
      * @should extract all values from query except from NOT blocks
      * @should handle multiple phrases in query correctly
      * @should skip discriminator value
+     * @should remove truncation
      * @should throw IllegalArgumentException if query is null
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(String query, String discriminatorValue) {
@@ -1908,6 +1444,8 @@ public final class SearchHelper {
                     field = SolrConstants.DEFAULT;
                 } else if (SolrConstants.SUPERFULLTEXT.equals(field)) {
                     field = SolrConstants.FULLTEXT;
+                } else if (field.endsWith(SolrConstants._UNTOKENIZED)) {
+                    field = field.substring(0, field.length() - SolrConstants._UNTOKENIZED.length());
                 }
                 String phraseWoQuot = phraseSplit[1].replace("\"", "");
                 if (phraseWoQuot.length() > 0 && !stopwords.contains(phraseWoQuot)) {
@@ -1927,31 +1465,49 @@ public final class SearchHelper {
         String currentField = null;
         for (String s : querySplit) {
             s = s.trim();
+            // logger.trace("term: {}", s);
             // Extract the value part
-            if (s.contains(":")) {
-                String[] pairSplit = s.split(":");
-                if (pairSplit.length > 1) {
-                    currentField = pairSplit[0];
+            if (s.contains(":") && !s.startsWith(":")) {
+                int split = s.indexOf(':');
+                String field = s.substring(0, split);
+                String value = s.length() > split ? s.substring(split + 1) : null;
+                if (StringUtils.isNotBlank(value)) {
+                    currentField = field;
                     if (SolrConstants.SUPERDEFAULT.equals(currentField)) {
                         currentField = SolrConstants.DEFAULT;
                     } else if (SolrConstants.SUPERFULLTEXT.equals(currentField)) {
                         currentField = SolrConstants.FULLTEXT;
                     }
-                    // Remove quotation marks from phrases
-                    if (pairSplit[1].charAt(0) == '"' && pairSplit[1].charAt(pairSplit[1].length() - 1) == '"') {
-                        pairSplit[1] = pairSplit[1].replace("\"", "");
+                    if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
+                        currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
                     }
-                    if (pairSplit[1].length() > 0 && !stopwords.contains(pairSplit[1])) {
+                    // Remove quotation marks from phrases
+                    // logger.trace("field: {}", field);
+                    // logger.trace("value: {}", value);
+                    if (value.charAt(0) == '"' && value.charAt(value.length() - 1) == '"') {
+                        value = value.replace("\"", "");
+                    }
+                    // Remove left truncation
+                    if (value.charAt(0) == '*' && value.length() > 1) {
+                        value = value.substring(1);
+                    }
+                    // Remove right truncation
+                    if (value.charAt(value.length() - 1) == '*' && value.length() > 1) {
+                        value = value.substring(0, value.length() - 1);
+                    }
+                    if (value.length() > 0 && !stopwords.contains(value)) {
                         if (ret.get(currentField) == null) {
                             ret.put(currentField, new HashSet<String>());
                         }
-                        ret.get(currentField).add(pairSplit[1]);
+                        ret.get(currentField).add(value);
                     }
                 }
             } else if (s.length() > 0 && !stopwords.contains(s)) {
                 // single values w/o a field
                 if (currentField == null) {
                     currentField = SolrConstants.DEFAULT;
+                } else if (currentField.endsWith(SolrConstants._UNTOKENIZED)) {
+                    currentField = currentField.substring(0, currentField.length() - SolrConstants._UNTOKENIZED.length());
                 }
                 if (ret.get(currentField) == null) {
                     ret.put(currentField, new HashSet<String>());
@@ -1960,10 +1516,13 @@ public final class SearchHelper {
             }
         }
 
-        logger.trace("extracted terms: {}", ret.toString());
         return ret;
     }
 
+    /**
+     * 
+     * @return
+     */
     public static Map<String, String> generateQueryParams() {
         Map<String, String> params = new HashMap<>();
         if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits() && !DataManager.getInstance().getConfiguration().isAggregateHits()) {
@@ -1988,9 +1547,6 @@ public final class SearchHelper {
         if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
             facetFields.add(SolrConstants.GROUPFIELD);
         }
-        // if (DataManager.getInstance().getConfiguration().isCollectionDrilldownEnabled()) {
-        // facetFields.add(LuceneConstants.FACET_DC);
-        // }
         for (String field : DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields()) {
             if (!facetFields.contains(field)) {
                 facetFields.add(field);
@@ -2017,20 +1573,37 @@ public final class SearchHelper {
         if (sourceList != null) {
             List<String> ret = new ArrayList<>(sourceList.size());
             for (String s : sourceList) {
-                switch (s) {
-                    case SolrConstants.DC:
-                        ret.add(SolrConstants.FACET_DC);
-                        break;
-                    default:
-                        if (s.startsWith("MD_")) {
-                            s = s.replace("MD_", "FACET_");
-                        }
-                        s = s.replace(SolrConstants._UNTOKENIZED, "");
-                        ret.add(s);
-                        break;
+                String fieldName = facetifyField(s);
+                if (fieldName != null) {
+                    ret.add(fieldName);
                 }
             }
             return ret;
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param fieldName
+     * @return
+     * @should facetify correctly
+     */
+    public static String facetifyField(String fieldName) {
+        if (fieldName != null) {
+            switch (fieldName) {
+                case SolrConstants.DC:
+                    return SolrConstants.FACET_DC;
+
+                case SolrConstants.DOCSTRCT:
+                    return "FACET_DOCSTRCT";
+                default:
+                    if (fieldName.startsWith("MD_")) {
+                        fieldName = fieldName.replace("MD_", "FACET_");
+                    }
+                    fieldName = fieldName.replace(SolrConstants._UNTOKENIZED, "");
+                    return fieldName;
+            }
         }
         return null;
     }
@@ -2066,22 +1639,23 @@ public final class SearchHelper {
      * @return
      * @should generate query correctly
      * @should return empty string if no fields match
-     * @should skip PI_TOPSTRUCT
+     * @should skip reserved fields
+     * @should escape reserved characters
      */
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms) {
+        logger.trace("generateExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
-        // sbOuter.append("NOT(").append(LuceneConstants.ISWORK).append(":true OR
-        // ").append(LuceneConstants.ISANCHOR).append(":true)");
         if (!searchTerms.isEmpty()) {
             logger.trace("fields: {}", fields.toString());
             logger.trace("searchTerms: {}", searchTerms.toString());
             boolean moreThanOne = false;
             for (String field : fields) {
                 // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return
-                // every single doc}
+                // every single doc
                 switch (field) {
                     case SolrConstants.PI_TOPSTRUCT:
                     case SolrConstants.DC:
+                    case SolrConstants.DOCSTRCT:
                         continue;
                 }
                 Set<String> terms = searchTerms.get(field);
@@ -2099,7 +1673,7 @@ public final class SearchHelper {
                     if (sbInner.length() > 0) {
                         sbInner.append(" OR ");
                     }
-                    sbInner.append(term);
+                    sbInner.append(ClientUtils.escapeQueryChars(term));
                 }
                 sbOuter.append(field).append(":(").append(sbInner.toString()).append(')');
                 moreThanOne = true;
@@ -2116,23 +1690,42 @@ public final class SearchHelper {
      * Creates a Solr expand query string out of advanced search query item groups.
      * 
      * @param groups
+     * @param advancedSearchGroupOperator
      * @return
      * @should generate query correctly
-     * @should skip PI_TOPSTRUCT
+     * @should skip reserved fields
      */
-    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups) {
+    public static String generateAdvancedExpandQuery(List<SearchQueryGroup> groups, int advancedSearchGroupOperator) {
+        logger.trace("generateAdvancedExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
-        // sbOuter.append("NOT(").append(LuceneConstants.ISWORK).append(":true OR
-        // ").append(LuceneConstants.ISANCHOR).append(":true)");
+
         if (!groups.isEmpty()) {
             for (SearchQueryGroup group : groups) {
                 StringBuilder sbGroup = new StringBuilder();
+
+                // Identify any fields that only exist in page docs and enable the page search mode
+                boolean searchInPageDocs = false;
                 for (SearchQueryItem item : group.getQueryItems()) {
-                    // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
-                    // return every single doc}
                     if (item.getField() == null) {
                         continue;
                     }
+                    switch (item.getField()) {
+                        case SolrConstants.FULLTEXT:
+                        case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
+                            searchInPageDocs = true;
+                            break;
+                    }
+                    if (searchInPageDocs) {
+                        break;
+                    }
+                }
+
+                for (SearchQueryItem item : group.getQueryItems()) {
+                    if (item.getField() == null) {
+                        continue;
+                    }
+                    // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't
+                    // return every single doc
                     switch (item.getField()) {
                         case SolrConstants.PI_TOPSTRUCT:
                         case SolrConstants.DC:
@@ -2141,14 +1734,29 @@ public final class SearchHelper {
                     String itemQuery = item.generateQuery(new HashSet<String>(), false);
                     if (StringUtils.isNotEmpty(itemQuery)) {
                         if (sbGroup.length() > 0) {
-                            sbGroup.append(" OR ");
+                            if (searchInPageDocs) {
+                                // When also searching in page document fields, the operator must be 'OR'
+                                sbGroup.append(" OR ");
+                            } else {
+                                sbGroup.append(' ').append(group.getOperator().name()).append(' ');
+                            }
                         }
                         sbGroup.append(itemQuery);
                     }
                 }
                 if (sbGroup.length() > 0) {
                     if (sbOuter.length() > 0) {
-                        sbOuter.append(" OR ");
+                        switch (advancedSearchGroupOperator) {
+                            case 0:
+                                sbOuter.append(" AND ");
+                                break;
+                            case 1:
+                                sbOuter.append(" OR ");
+                                break;
+                            default:
+                                sbOuter.append(" OR ");
+                                break;
+                        }
                     }
                     sbOuter.append('(').append(sbGroup).append(')');
                 }
@@ -2156,6 +1764,7 @@ public final class SearchHelper {
         }
         if (sbOuter.length() > 0) {
             return " +(" + sbOuter.toString() + ')';
+            //            return sbOuter.toString();
         }
 
         return "";
@@ -2220,8 +1829,10 @@ public final class SearchHelper {
                 // TODO
                 break;
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                ret.add(SolrConstants.DEFAULT);
-                // TODO
+                // ret.add(SolrConstants.DEFAULT);
+                ret.add(SolrConstants._CALENDAR_DAY);
+                ret.add(SolrConstants._CALENDAR_MONTH);
+                ret.add(SolrConstants._CALENDAR_YEAR);
                 break;
             default:
                 if (searchFilter == null || searchFilter.equals(SEARCH_FILTER_ALL)) {
@@ -2232,6 +1843,7 @@ public final class SearchHelper {
                     ret.add(SolrConstants.UGCTERMS);
                     ret.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
                     ret.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
+                    ret.add(SolrConstants._CALENDAR_DAY);
                 } else {
                     ret.add(searchFilter.getField());
                 }
@@ -2286,6 +1898,7 @@ public final class SearchHelper {
      * @param exportQuery Query constructed from the user's input, without any secret suffixes.
      * @param sortFields
      * @param resultFields
+     * @param filterQueries
      * @param params
      * @return
      * @throws IndexUnreachableException
@@ -2293,9 +1906,9 @@ public final class SearchHelper {
      * @throws PresentationException
      * @should create excel workbook correctly
      */
-    public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, Map<String, String> params,
-            Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits) throws IndexUnreachableException, DAOException,
-            PresentationException {
+    public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
+            Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException, PresentationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
         List<SXSSFSheet> sheets = new ArrayList<>();
         int currentSheetIndex = 0;
@@ -2343,9 +1956,10 @@ public final class SearchHelper {
             logger.trace("Fetching search hits {}-{} out of {}", first, max, totalHits);
             List<SearchHit> batch;
             if (aggregateHits) {
-                batch = searchWithAggregation(query, first, batchSize, sortFields, null, params, searchTerms, exportFields, locale);
+                batch = searchWithAggregation(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale);
             } else {
-                batch = searchWithFulltext(query, first, batchSize, sortFields, null, params, searchTerms, exportFields, locale);
+                batch = searchWithFulltext(query, first, batchSize, sortFields, null, filterQueries, params, searchTerms, exportFields, locale,
+                        request);
             }
             for (SearchHit hit : batch) {
                 // Create row

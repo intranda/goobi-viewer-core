@@ -4,9 +4,15 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/tools"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
+<!--         <dependent-module archiveName="viewer-module-skeleton.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-skeleton/goobi-viewer-module-skeleton"> -->
+<!--             <dependency-type>uses</dependency-type> -->
+<!--         </dependent-module>  -->
         <dependent-module archiveName="viewer-module-crowdsourcing.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/viewer-module-crowdsourcing/viewer-module-crowdsourcing">
             <dependency-type>uses</dependency-type>
-        </dependent-module> 
+        </dependent-module>
+        <dependent-module archiveName="viewer-module-worldviews.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-worldviews/goobi-viewer-module-worldviews">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <!-- AKWIEN -->
         <dependent-module archiveName="viewer-theme-akwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-akwien/goobi-viewer-theme-akwien">
             <dependency-type>uses</dependency-type>
@@ -83,8 +89,8 @@
         <dependent-module archiveName="viewer-theme-sulb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sulb/goobi-viewer-theme-sulb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <!-- THEME BOILERPLATE -->
-        <dependent-module archiveName="viewer-theme-themeBoilerplate.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-themeBoilerplate/goobi-viewer-theme-themeBoilerplate">
+        <!-- BOILERPLATE -->
+        <dependent-module archiveName="goobi-viewer-theme-boilerplate.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-boilerplate/goobi-viewer-theme-boilerplate">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- TIB 2 -->
@@ -129,6 +135,46 @@
         </dependent-module>
         <!-- GEI WordViews -->
         <dependent-module archiveName="goobi-viewer-theme-geiwv.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-geiwv/goobi-viewer-theme-geiwv">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- ZBW -->
+        <dependent-module archiveName="goobi-viewer-theme-zbw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-zbw/goobi-viewer-theme-zbw">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- MVP -->
+        <dependent-module archiveName="goobi-viewer-theme-mvp.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mvp/goobi-viewer-theme-mvp">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- ORKA -->
+        <dependent-module archiveName="goobi-viewer-theme-orka.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-orka/goobi-viewer-theme-orka">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- GRIMM -->
+        <dependent-module archiveName="goobi-viewer-theme-grimm.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-grimm/goobi-viewer-theme-grimm">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- HAAB -->
+        <dependent-module archiveName="goobi-viewer-theme-haab.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-haab/goobi-viewer-theme-haab">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- HUB -->
+        <dependent-module archiveName="goobi-viewer-theme-hub.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-hub/goobi-viewer-theme-hub">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- BSZ -->
+        <dependent-module archiveName="goobi-viewer-theme-bsz.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-bsz/goobi-viewer-theme-bsz">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- UNI-SAMMLUNGEN -->
+        <dependent-module archiveName="goobi-viewer-theme-gaugsammlungen.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-gaugsammlungen/goobi-viewer-theme-gaugsammlungen">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- MAK -->
+        <dependent-module archiveName="goobi-viewer-theme-mak.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mak/goobi-viewer-theme-mak">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- MNHA -->
+        <dependent-module archiveName="goobi-viewer-theme-mnha.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mnha/goobi-viewer-theme-mnha">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>

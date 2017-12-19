@@ -30,14 +30,14 @@ import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
 import de.intranda.digiverso.presentation.model.search.Search;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
+import de.intranda.digiverso.presentation.model.security.Role;
+import de.intranda.digiverso.presentation.model.security.user.IpRange;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
+import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob.JobStatus;
-import de.intranda.digiverso.presentation.model.user.IpRange;
-import de.intranda.digiverso.presentation.model.user.LicenseType;
-import de.intranda.digiverso.presentation.model.user.Role;
-import de.intranda.digiverso.presentation.model.user.User;
-import de.intranda.digiverso.presentation.model.user.UserGroup;
-import de.intranda.digiverso.presentation.model.user.UserRole;
 
 public interface IDAO {
 
@@ -170,22 +170,6 @@ public interface IDAO {
     public boolean updateIpRange(IpRange ipRange) throws DAOException;
 
     public boolean deleteIpRange(IpRange ipRange) throws DAOException;
-
-    // Annotation
-
-    //    public List<AnnotationElement> getAllAnnotations() throws DAOException;
-    //
-    //    public List<AnnotationElement> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException;
-    //
-    //    public List<AnnotationElement> getAnnotationsForPage(String pi, int page) throws DAOException;
-    //
-    //    public AnnotationElement getAnnotation(long id) throws DAOException;
-    //
-    //    public boolean addAnnotation(AnnotationElement annotation) throws DAOException;
-    //
-    //    public boolean updateAnnotation(AnnotationElement annotation) throws DAOException;
-    //
-    //    public boolean deleteAnnotation(AnnotationElement annotation) throws DAOException;
 
     // Comment
 

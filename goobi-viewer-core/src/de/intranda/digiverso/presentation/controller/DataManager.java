@@ -22,10 +22,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
+import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 public final class DataManager {
@@ -39,10 +41,14 @@ public final class DataManager {
     private final List<IModule> modules = new ArrayList<>();
 
     private Configuration configuration;
+    
+    private LanguageHelper languageHelper;
 
     private SolrSearchIndex searchIndex;
 
     private IDAO dao;
+    
+    private SessionStoreBookshelfManager bookshelfManager;
 
     public static DataManager getInstance() {
         DataManager dm = instance;
@@ -111,10 +117,25 @@ public final class DataManager {
     /**
      * 
      * @param module
+     * @should not add module if it's already registered
      */
-    public void registerModule(IModule module) {
+    public boolean registerModule(IModule module) {
+        if (module == null) {
+            throw new IllegalArgumentException("module may not be null");
+        }
+
+        for (IModule m : modules) {
+            if (m.getId().equals(module.getId())) {
+                logger.warn(
+                        "Module rejected because a module with the same ID is already registered.\nRegistered module: {} ({}) v{}\nRejected module: {} ({}) v{}",
+                        m.getId(), m.getName(), m.getVersion(), module.getId(), module.getName(), module.getVersion());
+                return false;
+            }
+        }
+
         modules.add(module);
         logger.info("Module registered: {} ({}) v{}", module.getId(), module.getName(), module.getVersion());
+        return true;
     }
 
     /**
@@ -128,6 +149,21 @@ public final class DataManager {
         }
 
         return configuration;
+    }
+    
+    
+
+    /**
+     * @return the languageHelper
+     */
+    public LanguageHelper getLanguageHelper() {
+        if (languageHelper == null) {
+            synchronized (lock) {
+                languageHelper = new LanguageHelper("languages.xml");
+            }
+        }
+        
+        return languageHelper;
     }
 
     /**
@@ -186,5 +222,18 @@ public final class DataManager {
      */
     public void injectDao(IDAO dao) {
         this.dao = dao;
+    }
+    
+    public SessionStoreBookshelfManager getBookshelfManager() {
+        if(this.bookshelfManager == null) {
+            synchronized (lock) {
+                this.bookshelfManager = new SessionStoreBookshelfManager();
+            }
+        }
+        return this.bookshelfManager;
+    }
+    
+    public void injectBookshelfManager(SessionStoreBookshelfManager bookshelfManager) {
+        this.bookshelfManager = bookshelfManager;
     }
 }

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
-import de.intranda.digiverso.presentation.model.user.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import net.sf.ehcache.config.ConfigurationHelper;
@@ -165,10 +165,29 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getDownloadUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getDownloadUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8080/viewer/download/", DataManager.getInstance().getConfiguration().getDownloadUrl());
+    }
+
+    /**
+     * @see Configuration#getContentRestApiUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getContentRestApiUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8080/viewer/rest/content/", DataManager.getInstance().getConfiguration().getContentRestApiUrl());
+    }
+
+    /**
      * @see Configuration#getDataRepositoriesHome()
      * @verifies return correct value
      */
     @Test
+    @Deprecated
     public void getDataRepositoriesHome_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("resources/test/data/viewer/data/", DataManager.getInstance().getConfiguration().getDataRepositoriesHome());
     }
@@ -305,16 +324,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getHotfolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("hotfolder_value", DataManager.getInstance().getConfiguration().getHotfolder());
-    }
-
-    /**
-     * @see Configuration#getIIPImageServer()
-     * @verifies return correct value
-     */
-    @Test
-    public void getIIPImageServer_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("iipimageServer_value", DataManager.getInstance().getConfiguration().getIIPImageServer());
+        Assert.assertEquals("hotfolder", DataManager.getInstance().getConfiguration().getHotfolder());
     }
 
     /**
@@ -416,7 +426,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getMediaFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("mediaFolder_value", DataManager.getInstance().getConfiguration().getMediaFolder());
+        Assert.assertEquals("media", DataManager.getInstance().getConfiguration().getMediaFolder());
     }
 
     /**
@@ -485,7 +495,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getOrigContentFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("origContentFolder_value", DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        Assert.assertEquals("src", DataManager.getInstance().getConfiguration().getOrigContentFolder());
     }
 
     /**
@@ -504,15 +514,6 @@ public class ConfigurationTest {
     @Test
     public void getPageType_shouldReturnTheCorrectValueForTheGivenType() throws Exception {
         Assert.assertEquals("viewImage_value", DataManager.getInstance().getConfiguration().getPageType(PageType.viewImage));
-    }
-
-    /**
-     * @see Configuration#getPtifFolder()
-     * @verifies return correct value
-     */
-    @Test
-    public void getPtifFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("ptifFolder_value", DataManager.getInstance().getConfiguration().getPtifFolder());
     }
 
     /**
@@ -881,7 +882,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getTempFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("tempFolder_value", DataManager.getInstance().getConfiguration().getTempFolder());
+        Assert.assertEquals("temp", DataManager.getInstance().getConfiguration().getTempFolder());
     }
 
     /**
@@ -1070,15 +1071,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#isFulltextLazyLoading()
-     * @verifies return correct value
-     */
-    @Test
-    public void isFulltextLazyLoading_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isFulltextLazyLoading());
-    }
-
-    /**
      * @see Configuration#isHtmlHeadDCMetadata()
      * @verifies return correct value
      */
@@ -1196,6 +1188,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#isSidebarCalendarLinkVisible()
+     * @verifies return correct value
+     */
+    @Test
+    public void isSidebarCalendarLinkVisible_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible());
+    }
+
+    /**
      * @see Configuration#isSidebarThumbsLinkVisible()
      * @verifies return correct value
      */
@@ -1292,15 +1293,6 @@ public class ConfigurationTest {
     @Test
     public void getUserCommentsConditionalQuery_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("DC:varia", DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery());
-    }
-
-    /**
-     * @see Configuration#isWordCoordsLazyLoading()
-     * @verifies return correct value
-     */
-    @Test
-    public void isWordCoordsLazyLoading_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isWordCoordsLazyLoading());
     }
 
     /**
@@ -1446,15 +1438,6 @@ public class ConfigurationTest {
     @Test
     public void getSidebarTocLowestLevelToCollapseForLength_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(333, DataManager.getInstance().getConfiguration().getSidebarTocLowestLevelToCollapseForLength());
-    }
-
-    /**
-     * @see Configuration#isSidebarPreviewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarPreviewLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarPreviewLinkVisible());
     }
 
     /**
@@ -1677,6 +1660,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getVersionLabelField()
+     * @verifies return correct value
+     */
+    @Test
+    public void getVersionLabelField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("MD_VERSIONLABEL", DataManager.getInstance().getConfiguration().getVersionLabelField());
+    }
+
+    /**
      * @see Configuration#getSelectedRecords()
      * @verifies return all configured elements
      */
@@ -1693,7 +1685,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getOverviewFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("overviewFolder_value", DataManager.getInstance().getConfiguration().getOverviewFolder());
+        Assert.assertEquals("overview", DataManager.getInstance().getConfiguration().getOverviewFolder());
     }
 
     /**
@@ -1712,15 +1704,6 @@ public class ConfigurationTest {
     @Test
     public void getSidebarOverviewLinkCondition_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("condition_value", DataManager.getInstance().getConfiguration().getSidebarOverviewLinkCondition());
-    }
-
-    /**
-     * @see Configuration#getGoobiWebApiUrl()
-     * @verifies return correct value
-     */
-    @Test
-    public void getGoobiWebApiUrl_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("goobiWebApi_value", DataManager.getInstance().getConfiguration().getGoobiWebApiUrl());
     }
 
     /**
@@ -1756,7 +1739,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getFulltextFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("fulltextFolder_value", DataManager.getInstance().getConfiguration().getFulltextFolder());
+        Assert.assertEquals("fulltext", DataManager.getInstance().getConfiguration().getFulltextFolder());
     }
 
     /**
@@ -1765,7 +1748,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getWcFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("wcFolder_value", DataManager.getInstance().getConfiguration().getWcFolder());
+        Assert.assertEquals("wc", DataManager.getInstance().getConfiguration().getWcFolder());
     }
 
     /**
@@ -1774,7 +1757,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getAbbyyFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("abbyyFolder_value", DataManager.getInstance().getConfiguration().getAbbyyFolder());
+        Assert.assertEquals("abbyy", DataManager.getInstance().getConfiguration().getAbbyyFolder());
     }
 
     /**
@@ -2159,9 +2142,22 @@ public class ConfigurationTest {
         Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isSearchInItemEnabled());
     }
 
+    /**
+     * @see Configuration#getCollectionDisplayDepthForSearch(String)
+     * @verifies return correct value
+     */
     @Test
-    public void testGetCollectionDisplayDepthForSearch() {
-        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("DC"));
+    public void getCollectionDisplayDepthForSearch_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(SolrConstants.DC));
+    }
+
+    /**
+     * @see Configuration#getCollectionDisplayDepthForSearch(String)
+     * @verifies return -1 if no collection config was found
+     */
+    @Test
+    public void getCollectionDisplayDepthForSearch_shouldReturn1IfNoCollectionConfigWasFound() throws Exception {
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NOSUCHFIELD"));
     }
 
     @Test
@@ -2270,6 +2266,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getFulltextPercentageWarningThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    public void getFulltextPercentageWarningThreshold_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(99, DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold());
+    }
+
+    /**
      * @see Configuration#getSearchExcelExportFields()
      * @verifies return all values
      */
@@ -2300,11 +2305,48 @@ public class ConfigurationTest {
         Assert.assertEquals(false, DataManager.getInstance().getConfiguration().isAggregateHits());
     }
 
+    /**
+     * @see Configuration#isDisplayAdditionalMetadataEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    public void isDisplayAdditionalMetadataEnabled_shouldReturnCorrectValue() throws Exception {
+
+        Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled());
+    }
+
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataIgnoreFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataIgnoreFields_shouldReturnCorrectValues() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(3, results.size());
+        Assert.assertEquals(SolrConstants.ISANCHOR, results.get(0));
+        Assert.assertEquals(SolrConstants.ISWORK, results.get(1));
+        Assert.assertEquals(SolrConstants.PI_TOPSTRUCT, results.get(2));
+    }
+
+    /**
+     * @see Configuration#getDisplayAdditionalMetadataTranslateFields()
+     * @verifies return correct values
+     */
+    @Test
+    public void getDisplayAdditionalMetadataTranslateFields_shouldReturnCorrectValues() throws Exception {
+        List<String> results = DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields();
+        Assert.assertNotNull(results);
+        Assert.assertEquals(2, results.size());
+        Assert.assertEquals(SolrConstants.DC, results.get(0));
+        Assert.assertEquals(SolrConstants.DOCSTRCT, results.get(1));
+    }
+
     @Test
     public void testSidebarTocVisibleIfEmpty() throws Exception {
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar());
     }
-    
+
     @Test
     public void testIsDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageModeEnabled());

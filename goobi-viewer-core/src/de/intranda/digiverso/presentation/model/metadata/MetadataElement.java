@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -152,15 +153,18 @@ public class MetadataElement {
     private final boolean topElement;
     private final boolean anchor;
     private final boolean filesOnly;
+    private final String selectedRecordLanguage;
 
     /**
      * @param se {@link StructElement}
-     * @param locale
+     * @param sessionLocale
+     * @param selectedRecordLanguage
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public MetadataElement(StructElement se, Locale locale) throws PresentationException, IndexUnreachableException, DAOException {
+    public MetadataElement(StructElement se, Locale sessionLocale, String selectedRecordLanguage) throws PresentationException,
+            IndexUnreachableException, DAOException {
         if (se == null) {
             logger.error("StructElement not defined!");
             throw new PresentationException("errMetaRead");
@@ -178,13 +182,13 @@ public class MetadataElement {
         se.getPi(); // TODO why?
         anchor = se.isAnchor();
         filesOnly = "application".equalsIgnoreCase(getMimeType(se));
+        this.selectedRecordLanguage = selectedRecordLanguage;
 
         PageType pageType = PageType.determinePageType(docStructType, getMimeType(se), se.isAnchor(), true, false, false);
         url = se.getUrl(pageType);
 
-        // Populate main metadata
         for (Metadata metadata : DataManager.getInstance().getConfiguration().getMainMetadataForTemplate(se.getDocStructType())) {
-            if (metadata.populate(se.getMetadataFields(), locale)) {
+            if (metadata.populate(se.getMetadataFields(), sessionLocale)) {
                 if (metadata.hasParam(SolrConstants.URN) || metadata.hasParam(SolrConstants.IMAGEURN_OAI)) {
                     if (se.isWork() || se.isAnchor()) {
                         metadataList.add(metadata);
@@ -205,7 +209,7 @@ public class MetadataElement {
             // The component is only rendered if sidebarMetadataList != null
             sidebarMetadataList = new ArrayList<>();
             for (Metadata metadata : sidebarMetadataTempList) {
-                if (metadata.populate(se.getMetadataFields(), locale)) {
+                if (metadata.populate(se.getMetadataFields(), sessionLocale)) {
                     if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
                         // TODO remove bean retrieval
                         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
@@ -265,6 +269,63 @@ public class MetadataElement {
     }
 
     /**
+     * Returns the first instance of a Metadata object whose label matches the given field name.
+     * 
+     * @param name
+     * @return
+     */
+    public Metadata getMetadata(String name) {
+        Metadata md = getMetadata(name, null);
+        return md;
+    }
+
+    /**
+     * Returns the first instance of a Metadata object whose label matches the given field name. If a langauge is given, a localized field name will
+     * be used.
+     * 
+     * @param name
+     * @param language Optional language
+     * @return
+     * @should return correct language metadata field
+     * @should fall back to non language field if language field not found
+     */
+    public Metadata getMetadata(String name, String language) {
+        if (StringUtils.isNotEmpty(name) && metadataList != null && !metadataList.isEmpty()) {
+            String fullFieldName = name;
+            String fullFieldNameDe = name + SolrConstants._LANG_ + "DE";
+            String fullFieldNameEn = name + SolrConstants._LANG_ + "EN";
+            if (StringUtils.isNotEmpty(language)) {
+                fullFieldName += SolrConstants._LANG_ + language.toUpperCase();
+            }
+            Metadata fallback = null;
+            Metadata fallbackDe = null;
+            Metadata fallbackEn = null;
+            for (Metadata md : metadataList) {
+                if (md.getLabel().equals(fullFieldName)) {
+                    // logger.trace("{}: {}", fullFieldName, md.getValues().size());
+                    return md;
+                } else if (md.getLabel().equals(fullFieldNameDe)) {
+                    fallbackDe = md;
+                } else if (md.getLabel().equals(fullFieldNameEn)) {
+                    fallbackEn = md;
+                } else if (md.getLabel().equals(name)) {
+                    fallback = md;
+                }
+            }
+
+            if (fallbackEn != null) {
+                return fallbackEn;
+            } else if (fallbackDe != null) {
+                return fallbackDe;
+            } else {
+                return fallback;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param metadataList the metadataList to set
      */
     public void setMetadataList(List<Metadata> metadataList) {
@@ -275,7 +336,23 @@ public class MetadataElement {
      * @return the oneMetadataList
      */
     public List<Metadata> getMetadataList() {
-        return metadataList;
+        return Metadata.filterMetadataByLanguage(metadataList, selectedRecordLanguage);
+    }
+    
+    public boolean hasMetadata() {
+        if(metadataList != null) {
+            return metadataList.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean hasSidebarMetadata() {
+        if(sidebarMetadataList != null) {
+            return sidebarMetadataList.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -350,5 +427,44 @@ public class MetadataElement {
 
     public boolean isFilesOnly() {
         return filesOnly;
+    }
+
+    /**
+     * 
+     * 
+     * @param name The name of the metadata
+     * @return the best available metadata value, or an empty string if no metadata was found
+     */
+    public String getFirstMetadataValue(String name) {
+        Metadata md = getMetadata(name);
+        if (md == null) {
+            md = getMetadata(name, BeanUtils.getActiveDocumentBean().getSelectedRecordLanguage());
+        }
+        if (md != null) {
+            if (StringUtils.isNotBlank(md.getMasterValue()) && !md.getMasterValue().equals("{0}") && !md.isGroup()) {
+                return md.getMasterValue();
+            } else if (!md.getValues().isEmpty()) {
+                return md.getValues().get(0).getComboValueShort(0);
+            }
+        }
+        return "";
+    }
+    
+    public Optional<String> getFirstMetadataValueIfExists(String name) {
+        String value = getFirstMetadataValue(name);
+        if(StringUtils.isNotBlank(value)) {
+            return Optional.of(value);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public String getFirstMetadataValue(String prefix, String name, String suffix) {
+        String value = getFirstMetadataValue(name);
+        if (StringUtils.isNotBlank(value)) {
+            return prefix + value + suffix;
+        } else {
+            return value;
+        }
     }
 }

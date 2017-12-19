@@ -106,8 +106,9 @@ public class SearchDownloadResource {
                 .currentTimeMillis()) + ".xlsx\"");
 
         Map<String, String> params = SearchHelper.generateQueryParams();
-        final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields, params, searchTerms, BeanUtils.getLocale(),
-                DataManager.getInstance().getConfiguration().isAggregateHits());
+        final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields, searchBean.getFacets().generateFacetFilterQueries(
+                searchBean.getAdvancedSearchGroupOperator()), params, searchTerms, BeanUtils.getLocale(), DataManager.getInstance().getConfiguration()
+                        .isAggregateHits(), servletRequest);
         try {
             return new ExcelStreamingOutput(wb);
         } finally {

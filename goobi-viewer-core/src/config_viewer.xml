@@ -18,8 +18,6 @@
     <indexedLidoFolder>indexed_lido</indexedLidoFolder>
     <!-- mediaFolder: contains media files that are displayed in the intranda viewer (images, audio, video) -->
     <mediaFolder>media</mediaFolder>
-    <!-- ptifFolder: contains pyramidal tiffs that should be displayed in the tiles fullscreen view -->
-    <ptifFolder>ptif</ptifFolder>
     <!-- sourceContentFolder: contains born-digital material that was uploaded in the intranda viewer (see <content> also) -->
     <origContentFolder>source</origContentFolder>
     <!-- overviewFolder: contains the configuration file for overview pages -->
@@ -30,6 +28,8 @@
     <abbyyFolder>abbyy</abbyyFolder>
     <!-- fulltextFolder: contains plain full-text files -->
     <fulltextFolder>fulltext</fulltextFolder>
+    <!-- teiFolder: contains TEI metadata/fulltext files -->
+    <teiFolder>tei</teiFolder>
     <!-- wcFolder: contains TEI word coordinate files -->
     <wcFolder>wc</wcFolder>
     <!-- hotfolder: defines the hotfolder from the solr Indexer for indexing uploaded born-digital-material (see <content> also) -->
@@ -77,17 +77,15 @@
 
         <!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data -->
         <dfg-viewer>http://dfg-viewer.de/v2?set[mets]=</dfg-viewer>
-        <!-- iipimageServer: path to the base url of the iipimage server -->
-        <iipimageServer>http://viewertest.fritz.box/fcgi-bin/iipsrv.fcgi</iipimageServer>
-        <!-- Goobi web API URL. Must contain the valid authorization token as a 
-            GET parameter. Leave blank if no Goobi export is desired. -->
-        <goobiWebApi></goobiWebApi>
 	    <!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 		    widget, etc. Default is the current application URL + "/resolver?urn=" -->
 	    <urnResolver>http://nbn-resolving.de/</urnResolver>
 	    
-	            <!-- The base urls to access download pages for pdf and epub downloads -->
+	    <!-- The base urls to access download pages for pdf and epub downloads -->
 		<download>http://localhost:8080/viewer/download/</download>
+		
+        <!-- contentRestApi: REST API URL for content files -->
+        <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi>
     </urls>
 
     <user>
@@ -114,14 +112,7 @@
     <performance>
         <!-- pageLoaderThreshold: number of pages a record has to have to switch to a lean page loading strategy that limit memory usage (default is 1000) -->
         <pageLoaderThreshold>1000</pageLoaderThreshold>
-
-        <!--fulltextLazyLoading: it keeps the object small and minimizes the memory usage. True is always a good option and must be set for installations, 
-            that have many fulltexts (default is true). -->
-        <fulltextLazyLoading>true</fulltextLazyLoading>
-
-        <!-- wordCoordsLazyLoading: see above fulltextLazyLoading (default is true) -->
-        <wordCoordsLazyLoading>true</wordCoordsLazyLoading>
-
+        
         <!-- If true, all HTTP responses will contain attributes preventing proxies etc. from caching contents. Default is false. -->
         <preventProxyCaching>false</preventProxyCaching>
     </performance>
@@ -255,10 +246,15 @@
              An optinal _DEFAULT configuration can be used for all docstruct types without an explicit configuration. -->
         <docstructTargetPageTypes>
             <Catalogue>toc</Catalogue>
+            <NewspaperVolume>calendar</NewspaperVolume>
         </docstructTargetPageTypes>
+        
+        <!-- fulltextPercentageWarningThreshold: If a record's percentage of pages having full-Text/ALTO documents
+            falls below the configured value, a warning will be displayed for that record.    -->
+        <fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
 
         <!-- theme: defines the theme that shall be used -->
-        <theme subTheme="false" mainTheme="reference2" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
+        <theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
     </viewer>
 
     <search>
@@ -299,11 +295,9 @@
         <drillDown>
             <hierarchicalField initialElementNumber="4">DC</hierarchicalField>
             <field initialElementNumber="3">DOCSTRCT</field>
-            <field initialElementNumber="3">MD_CREATOR</field>
-            <field initialElementNumber="3">MD_PLACEPUBLISH</field>
-            <field>MD_YEARPUBLISH</field>
-            <!-- initialElementNumber: sets the initial number of drill-down elements to be displayed (any field including DC). Default is 20. -->
-            <initialElementNumber>3</initialElementNumber>
+            <field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
+	    <field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
+            <field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
         </drillDown>
         <advanced>
             <!-- Enables the advanced search (default is true) -->
@@ -348,12 +342,38 @@
         <groupDuplicateHits>true</groupDuplicateHits>
         <!-- aggregateHits: If true, only topstructs will be returned as hits, with child docstructs and pages being retrieved in an extra search. Default is true. -->
         <aggregateHits>true</aggregateHits>
+        <!-- displayAdditionalMetadata: Add relevant metadata fields and values to the search hits if they contain requested search terms. Default is enabled=true. -->
+        <displayAdditionalMetadata>
+            <enabled>true</enabled>
+            <!-- ignoreField: Fields that add no value to the search hits but take up space (e.g. PI_TOPSTRUCT, DOCSTRCT)
+                can be configured to not be added as additional metadata. This element can be repeated. -->
+            <ignoreField>DC</ignoreField>
+            <ignoreField>DOCTYPE</ignoreField>
+            <ignoreField>ISANCHOR</ignoreField>
+            <ignoreField>ISWORK</ignoreField>
+            <ignoreField>MD_FIRSTNAME</ignoreField>
+            <ignoreField>MD_LASTNAME</ignoreField>
+            <ignoreField>MD_VALUE</ignoreField>
+            <ignoreField>NORMDATATERMS</ignoreField>
+            <ignoreField>PI_ANCHOR</ignoreField>
+            <ignoreField>PI_TOPSTRUCT</ignoreField>
+            <ignoreField>UGCTERMS</ignoreField>
+            <ignoreField>YEARMONTH</ignoreField>
+            <ignoreField>YEARMONTHDAY</ignoreField>
+            <!-- translateField: Fields in this list will be highlighted with their translated value rather than raw. -->
+            <translateField>DC</translateField>
+            <translateField>DOCSTRCT</translateField>
+        </displayAdditionalMetadata>
         <!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
         <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
-        <!-- versioning: 'previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version, 'nextVersionIdentifierField' defines the Solr field that contains the identifier for the succeeding version -->
+        <!-- versioning -->
         <versioning>
+            <!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
             <previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
+            <!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
             <nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
+            <!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
+            <versionLabelField>MD_VERSIONLABEL</versionLabelField>
         </versioning>
         <!-- Search export settings -->
         <export>
@@ -864,10 +884,12 @@
 	    <!-- labelConfig: Layout configuration for the label of TOC elements. The 
 		    configuration is analogous to a metadata template. -->
         <labelConfig>
-            <metadata label="" value="{LABEL}{MD_CREATOR}">
-                <param type="field" key="LABEL" />
-                <param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
-            </metadata>
+            <template name="_DEFAULT">
+                <metadata label="" value="{LABEL}{MD_CREATOR}">
+                    <param type="translatedfield" key="LABEL" />
+                    <param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
+                </metadata>
+            </template>
         </labelConfig>
 
         <!-- tocAnchorGroupElementsPerPage: Number of elements displayed per page 
@@ -920,7 +942,6 @@
             is missing, a default order is used, including all possible Elements (provided their visibility is set to true). -->
         <workNavItems>
             <item type="page"></item>
-            <item type="preview"></item>
             <item type="toc"></item>
             <item type="thumbs"></item>
             <item type="metadata"></item>
@@ -940,8 +961,13 @@
         <page>
             <visible>true</visible>
         </page>
+        
+        <!-- calendar: if false, the calendar view link is hidden -->
+        <calendar>
+            <visible>true</visible>
+        </calendar>
 
-        <!-- to/opt if false, the TOC link is hidden (This is the link to the TOC page in the work menu, not the sidebar TOC component!) -->
+        <!-- toc: if false, the TOC link is hidden (This is the link to the TOC page in the work menu, not the sidebar TOC component!) -->
         <toc>
             <visible>true</visible>
         </toc>
@@ -951,10 +977,6 @@
             <visible>true</visible>
         </thumbs>
 
-        <!-- image preview: if false, the preview view is hidden -->
-        <preview>
-            <visible>true</visible>
-        </preview>
         
         <!-- search in current item: if false, the widget is hidden -->
         <searchInItem>
@@ -1092,17 +1114,6 @@
 		</notificationEmailAddress>
 	</userComments>
 
-    <crowdsourcing>
-        <!-- enabled: enables crowdsourcing functionality globally (default is false) -->
-        <enabled>true</enabled>
-        <!-- editFullText: enables crowdsourcing functions for full-texts (default is true) -->
-        <editFullText>true</editFullText>
-        <!-- editUG/opt enables crowdsourcing functions for user-generated content (default is true) -->
-        <editUGC>true</editUGC>
-        <!--  reindexOnSave: if true, the work is reindexed after every save of fulltext and user generated content 
-        Otherwise reindexing is only performed upon page completion-->
-        <reindexOnSave>false</reindexOnSave>
-    </crowdsourcing>
     <cms>
         <!-- enabled: enables cms functionality globally (default is false) -->
         <enabled>true</enabled>

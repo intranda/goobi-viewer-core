@@ -44,12 +44,9 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.ContextMocker;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
-import de.intranda.digiverso.presentation.model.search.FacetItem;
-import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.search.SearchHit;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
-import de.intranda.digiverso.presentation.model.user.LicenseType;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.search.SearchQueryGroup.SearchQueryGroupOperator;
+import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 
 public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -70,207 +67,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         super.setUp();
         SearchHelper.docstrctWhitelistFilterSuffix = null;
         SearchHelper.collectionBlacklistFilterSuffix = null;
-    }
-
-    /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
-     * @verifies return true if required access conditions empty
-     */
-    @Test
-    public void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsEmpty() throws Exception {
-        Assert.assertTrue(SearchHelper.checkAccessPermission(new ArrayList<LicenseType>(), new HashSet<String>(), IPrivilegeHolder.PRIV_VIEW_IMAGES,
-                null, null, null));
-    }
-
-    /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
-     * @verifies return true if ip range allows access
-     */
-    @Test
-    public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccess() throws Exception {
-        Assert.assertTrue(SearchHelper.checkAccessPermission(DataManager.getInstance().getDao().getAllLicenseTypes(), new HashSet<>(Collections
-                .singletonList("license type 3 name")), IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1", null));
-    }
-
-    /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
-     * @verifies return true if required access conditions contain only open access
-     */
-    @Test
-    public void checkAccessPermission_shouldReturnTrueIfRequiredAccessConditionsContainOnlyOpenAccess() throws Exception {
-        List<LicenseType> licenseTypes = new ArrayList<>();
-        LicenseType lt = new LicenseType();
-        licenseTypes.add(lt);
-        lt.setName("type1");
-        lt = new LicenseType();
-        licenseTypes.add(lt);
-        lt.setName("type2");
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add(SolrConstants.OPEN_ACCESS_VALUE);
-        Assert.assertTrue(SearchHelper.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null,
-                null));
-
-        recordAccessConditions.add("type1");
-        recordAccessConditions.add("type2");
-        Assert.assertFalse(SearchHelper.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null,
-                null));
-    }
-
-    /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
-     * @verifies return true if all license types allow privilege by default
-     */
-    @Test
-    public void checkAccessPermission_shouldReturnTrueIfAllLicenseTypesAllowPrivilegeByDefault() throws Exception {
-        List<LicenseType> licenseTypes = new ArrayList<>();
-        LicenseType lt = new LicenseType();
-        licenseTypes.add(lt);
-        lt.setName("type1");
-        lt.getPrivileges().add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        lt = new LicenseType();
-        licenseTypes.add(lt);
-        lt.setName("type2");
-        lt.getPrivileges().add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("type1");
-        recordAccessConditions.add("condition2");
-
-        Assert.assertTrue(SearchHelper.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null,
-                null));
-    }
-
-    /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
-     * @verifies return false if not all license types allow privilege by default
-     */
-    @Test
-    public void checkAccessPermission_shouldReturnFalseIfNotAllLicenseTypesAllowPrivilegeByDefault() throws Exception {
-        List<LicenseType> licenseTypes = new ArrayList<>();
-        LicenseType lt = new LicenseType();
-        licenseTypes.add(lt);
-        lt.setName("type1");
-        lt.getPrivileges().add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        lt = new LicenseType();
-        licenseTypes.add(lt);
-        lt.setName("type2");
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("type1");
-        recordAccessConditions.add("type2");
-
-        Assert.assertFalse(SearchHelper.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_VIEW_IMAGES, null, null,
-                null));
-    }
-
-    /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
-     * @verifies return true if ip range allows access to all conditions
-     */
-    @Test
-    public void checkAccessPermission_shouldReturnTrueIfIpRangeAllowsAccessToAllConditions() throws Exception {
-        List<LicenseType> licenseTypes = new ArrayList<>();
-        {
-            // 'license type 1 name' doesn't allow anything by default
-            LicenseType lt = new LicenseType();
-            lt.setName("license type 1 name");
-            licenseTypes.add(lt);
-        }
-        {
-            // IP range has an explicit license for PRIV_LIST for 'license type 3 name'
-            LicenseType lt = new LicenseType();
-            lt.setName("license type 3 name");
-            licenseTypes.add(lt);
-        }
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("license type 3 name");
-        Assert.assertTrue(SearchHelper.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1",
-                null));
-
-        recordAccessConditions.add("license type 1 name");
-        Assert.assertFalse(SearchHelper.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null, "127.0.0.1",
-                null));
-    }
-
-    /**
-     * @see SearchHelper#checkAccessPermission(List,Set,String,User,String,String)
-     * @verifies not return true if no ip range matches
-     */
-    @Test
-    public void checkAccessPermission_shouldNotReturnTrueIfNoIpRangeMatches() throws Exception {
-        List<LicenseType> licenseTypes = new ArrayList<>();
-        {
-            // 'license type 1 name' doesn't allow anything by default
-            LicenseType lt = new LicenseType();
-            lt.setName("license type 1 name");
-            licenseTypes.add(lt);
-        }
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("license type 1 name");
-        Assert.assertFalse(SearchHelper.checkAccessPermission(licenseTypes, recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null, "11.22.33.44",
-                null));
-    }
-
-    /**
-     * @see SearchHelper#getRelevantLicenseTypesOnly(List,Set,String)
-     * @verifies remove license types whose names do not match access conditions
-     */
-    @Test
-    public void getRelevantLicenseTypesOnly_shouldRemoveLicenseTypesWhoseNamesDoNotMatchAccessConditions() throws Exception {
-        List<LicenseType> allLicenseTypes = new ArrayList<>();
-
-        LicenseType lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type1");
-
-        lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type2");
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("type2");
-
-        List<LicenseType> ret = SearchHelper.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions, SolrConstants.PI_TOPSTRUCT
-                + ":PPN517154005");
-        Assert.assertEquals(1, ret.size());
-        Assert.assertEquals("type2", ret.get(0).getName());
-    }
-
-    /**
-     * @see SearchHelper#getRelevantLicenseTypesOnly(List,Set,String)
-     * @verifies remove license types whose condition query excludes the given pi
-     */
-    @Test
-    public void getRelevantLicenseTypesOnly_shouldRemoveLicenseTypesWhoseConditionQueryExcludesTheGivenPi() throws Exception {
-        List<LicenseType> allLicenseTypes = new ArrayList<>();
-
-        LicenseType lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type1");
-        lt.setConditions(SolrConstants.PI_TOPSTRUCT + ":unknownidentifier");
-
-        lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type2");
-        lt.setConditions(SolrConstants.PI_TOPSTRUCT + ":PPN517154005");
-
-        lt = new LicenseType();
-        allLicenseTypes.add(lt);
-        lt.setName("type3");
-
-        Set<String> recordAccessConditions = new HashSet<>();
-        recordAccessConditions.add("type1");
-        recordAccessConditions.add("type2");
-        recordAccessConditions.add("type3");
-
-        List<LicenseType> ret = SearchHelper.getRelevantLicenseTypesOnly(allLicenseTypes, recordAccessConditions, SolrConstants.PI_TOPSTRUCT
-                + ":PPN517154005");
-        Assert.assertEquals(2, ret.size());
-        Assert.assertEquals("type2", ret.get(0).getName());
-        Assert.assertEquals("type3", ret.get(1).getName());
     }
 
     /**
@@ -314,6 +110,63 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         // First, make sure the docstruct whitelist and the collection blacklist always come from the same config file;
         Map<String, Long> collections = SearchHelper.findAllCollectionsFromField(SolrConstants.DC, SolrConstants.DC, true, true, true, true);
         Assert.assertEquals(16, collections.size());
+        List<String> keys = new ArrayList<>(collections.keySet());
+        // Collections.sort(keys);
+        for (String key : keys) {
+            switch (key) {
+                case ("a"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b.c"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("a.b.c.d"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("alle"):
+                    Assert.assertEquals(Long.valueOf(13), collections.get(key));
+                    break;
+                case ("mehrbaendigeswerk"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("monographie"):
+                    Assert.assertEquals(Long.valueOf(4), collections.get(key));
+                    break;
+                case ("multimedia"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("ocr"):
+                    Assert.assertEquals(Long.valueOf(6), collections.get(key));
+                    break;
+                case ("ocr.antiqua"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                case ("ocr.fraktur"):
+                    Assert.assertEquals(Long.valueOf(3), collections.get(key));
+                    break;
+                case ("paedagogik"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("sonstiges"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                case ("sonstiges.langestoc"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("sonstiges.querformat"):
+                    Assert.assertEquals(Long.valueOf(1), collections.get(key));
+                    break;
+                case ("zeitschrift"):
+                    Assert.assertEquals(Long.valueOf(2), collections.get(key));
+                    break;
+                default:
+                    Assert.fail("Unknown collection name: " + key);
+                    break;
+            }
+        }
     }
 
     /**
@@ -323,8 +176,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectly() throws Exception {
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(null, null);
-        Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -"
-                + SolrConstants.ACCESSCONDITION + ":\"license type 3 name\"", suffix);
+        Assert.assertEquals(" -(" + SolrConstants.ACCESSCONDITION + ":\"license type 1 name\" AND YEAR:[* TO 3000]) -" + SolrConstants.ACCESSCONDITION
+                + ":\"license type 3 name\"", suffix);
     }
 
     /**
@@ -375,10 +228,12 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldMakeTermsBoldIfFoundInText() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "ipsum", "tempor", "labore" };
-        String truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200);
-        Assert.assertTrue(truncated.contains("<span class=\"search-list--highlight\">ipsum</span>"));
-        //        Assert.assertTrue(truncated.contains("<span class=\"search-list--highlight\">tempor</span>"));
-        //        Assert.assertTrue(truncated.contains("<span class=\"search-list--highlight\">labore</span>"));
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true);
+        Assert.assertFalse(truncated.isEmpty());
+        System.out.println(truncated.get(0));
+        //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
+        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">tempor</span>"));
+        //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">labore</span>"));
         // TODO The other two terms aren't highlighted when using random length phrase
     }
 
@@ -389,8 +244,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void truncateFulltext_shouldNotAddPrefixAndSuffixToText() throws Exception {
         String original = "text";
-        String truncated = SearchHelper.truncateFulltext(null, original, 200);
-        Assert.assertEquals("text", truncated);
+        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true);
+        Assert.assertFalse(truncated.isEmpty());
+        Assert.assertEquals("text", truncated.get(0));
     }
 
     /**
@@ -400,8 +256,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGiven() throws Exception {
         String original = LOREM_IPSUM;
-        String truncated = SearchHelper.truncateFulltext(null, original, 200);
-        Assert.assertEquals(original.substring(0, 200), truncated);
+        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true);
+        Assert.assertFalse(truncated.isEmpty());
+        Assert.assertEquals(original.substring(0, 200), truncated.get(0));
     }
 
     /**
@@ -412,8 +269,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermHasBeenFound() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "boogers" };
-        String truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200);
-        Assert.assertEquals(original.substring(0, 200), truncated);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true);
+        Assert.assertFalse(truncated.isEmpty());
+        Assert.assertEquals(original.substring(0, 200), truncated.get(0));
     }
 
     /**
@@ -422,10 +280,41 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void truncateFulltext_shouldRemoveUnclosedHTMLTags() throws Exception {
-        String truncated = SearchHelper.truncateFulltext(null, "Hello <a href", 200);
-        Assert.assertEquals("Hello", truncated);
-        truncated = SearchHelper.truncateFulltext(null, "Hello <a href ...> and then <b", 200);
-        Assert.assertEquals("Hello <a href ...> and then", truncated);
+        List<String> truncated = SearchHelper.truncateFulltext(null, "Hello <a href", 200, true);
+        Assert.assertFalse(truncated.isEmpty());
+        Assert.assertEquals("Hello", truncated.get(0));
+        truncated = SearchHelper.truncateFulltext(null, "Hello <a href ...> and then <b", 200, true);
+        Assert.assertEquals("Hello <a href ...> and then", truncated.get(0));
+    }
+
+    /**
+     * @see SearchHelper#truncateFulltext(Set,String,int,boolean)
+     * @verifies return multiple match fragments correctly
+     */
+    @Test
+    public void truncateFulltext_shouldReturnMultipleMatchFragmentsCorrectly() throws Exception {
+        String original = LOREM_IPSUM;
+        String[] terms = { "in" };
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false);
+        Assert.assertEquals(7, truncated.size());
+        for (String fragment : truncated) {
+            Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">in</span>"));
+        }
+    }
+
+    /**
+     * @see SearchHelper#truncateFulltext(Set,String,int,boolean)
+     * @verifies replace line breaks with spaces
+     */
+    @Test
+    public void truncateFulltext_shouldReplaceLineBreaksWithSpaces() throws Exception {
+        String original = "one<br>two<br>three";
+        String[] terms = { "two" };
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false);
+        Assert.assertEquals(1, truncated.size());
+        for (String fragment : truncated) {
+            Assert.assertTrue(fragment.contains("one <span class=\"search-list--highlight\">two</span> three"));
+        }
     }
 
     /**
@@ -435,7 +324,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void extractSearchTermsFromQuery_shouldExtractAllValuesFromQueryExceptFromNOTBlocks() throws Exception {
         Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND value4)) AND SUPERFULLTEXT:\"hello-world\" AND NOT(MD_Y:value_not)", null);
+                "(MD_X:value1 OR MD_X:value2 OR (SUPERDEFAULT:value3 AND :value4:)) AND SUPERFULLTEXT:\"hello-world\" AND NOT(MD_Y:value_not)", null);
         Assert.assertEquals(3, result.size());
         {
             Set<String> terms = result.get("MD_X");
@@ -449,7 +338,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             Assert.assertNotNull(terms);
             Assert.assertEquals(2, terms.size());
             Assert.assertTrue(terms.contains("value3"));
-            Assert.assertTrue(terms.contains("value4"));
+            Assert.assertTrue(terms.contains(":value4:"));
         }
         {
             Set<String> terms = result.get(SolrConstants.FULLTEXT);
@@ -520,6 +409,22 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#extractSearchTermsFromQuery(String,String)
+     * @verifies remove truncation
+     */
+    @Test
+    public void extractSearchTermsFromQuery_shouldRemoveTruncation() throws Exception {
+        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery("MD_A:*foo*", null);
+        Assert.assertEquals(1, result.size());
+        {
+            Set<String> terms = result.get("MD_A");
+            Assert.assertNotNull(terms);
+            Assert.assertEquals(1, terms.size());
+            Assert.assertTrue(terms.contains("foo"));
+        }
+    }
+
+    /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
      * @verifies throw IllegalArgumentException if query is null
      */
@@ -552,12 +457,16 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void checkCollectionInBlacklist_shouldMatchSimpleCollectionsCorrectly() throws Exception {
-        List<String> blacklist = Collections.singletonList("a");
-        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist));
-        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist));
-        blacklist = Collections.singletonList("a.b.c.d");
-        Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
-        Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist));
+        {
+            Set<String> blacklist = new HashSet<>(Collections.singletonList("a"));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a", blacklist));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("z", blacklist));
+        }
+        {
+            Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b.c.d"));
+            Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
+            Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.b.c.z", blacklist));
+        }
     }
 
     /**
@@ -566,7 +475,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void checkCollectionInBlacklist_shouldMatchSubcollectionsCorrectly() throws Exception {
-        List<String> blacklist = Collections.singletonList("a.b");
+        Set<String> blacklist = new HashSet<>(Collections.singletonList("a.b"));
         Assert.assertTrue(SearchHelper.checkCollectionInBlacklist("a.b.c.d", blacklist));
         Assert.assertFalse(SearchHelper.checkCollectionInBlacklist("a.z", blacklist));
     }
@@ -577,7 +486,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void checkCollectionInBlacklist_shouldThrowIllegalArgumentExceptionIfDcIsNull() throws Exception {
-        SearchHelper.checkCollectionInBlacklist(null, Collections.singletonList("a*"));
+        SearchHelper.checkCollectionInBlacklist(null, new HashSet<>(Collections.singletonList("a*")));
     }
 
     /**
@@ -619,7 +528,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void defacetifyField_shouldDefacetifyCorrectly() throws Exception {
         Assert.assertEquals(SolrConstants.DC, SearchHelper.defacetifyField(SolrConstants.FACET_DC));
+        Assert.assertEquals(SolrConstants.DOCSTRCT, SearchHelper.defacetifyField("FACET_DOCSTRCT"));
         Assert.assertEquals("MD_TITLE", SearchHelper.defacetifyField("FACET_TITLE"));
+    }
+
+    /**
+     * @see SearchHelper#facetifyField(String)
+     * @verifies facetify correctly
+     */
+    @Test
+    public void facetifyField_shouldFacetifyCorrectly() throws Exception {
+        Assert.assertEquals(SolrConstants.FACET_DC, SearchHelper.facetifyField(SolrConstants.DC));
+        Assert.assertEquals("FACET_DOCSTRCT", SearchHelper.facetifyField(SolrConstants.DOCSTRCT));
+        Assert.assertEquals("FACET_TITLE", SearchHelper.facetifyField("MD_TITLE_UNTOKENIZED"));
     }
 
     /**
@@ -686,59 +607,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHelper#generateAccessCheckQuery(String,String)
-     * @verifies use correct field name for AV files
-     */
-    @Test
-    public void generateAccessCheckQuery_shouldUseCorrectFieldNameForAVFiles() throws Exception {
-        {
-            String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.tif");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":\"00000001.tif\"", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
-        }
-        {
-            String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.webm");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_WEBM + ":\"00000001.webm\"",
-                    result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME_WEBM, result[1]);
-        }
-        {
-            String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.mp4");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_MP4 + ":\"00000001.mp4\"", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME_MP4, result[1]);
-        }
-        {
-            String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.mp3");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_MPEG3 + ":\"00000001.mp3\"",
-                    result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME_MPEG3, result[1]);
-        }
-        {
-            String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.ogg");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME_OGG + ":\"00000001.ogg\"", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME_OGG, result[1]);
-        }
-    }
-
-    /**
-     * @see SearchHelper#generateAccessCheckQuery(String,String)
-     * @verifies use correct file name for text files
-     */
-    @Test
-    public void generateAccessCheckQuery_shouldUseCorrectFileNameForTextFiles() throws Exception {
-        {
-            String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.txt");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
-        }
-        {
-            String[] result = SearchHelper.generateAccessCheckQuery("PPN123456789", "00000001.xml");
-            Assert.assertEquals(SolrConstants.PI_TOPSTRUCT + ":PPN123456789 AND " + SolrConstants.FILENAME + ":00000001.*", result[0]);
-            Assert.assertEquals(SolrConstants.FILENAME, result[1]);
-        }
-    }
-
-    /**
      * @see SearchHelper#generateExpandQuery(List,Set)
      * @verifies generate query correctly
      */
@@ -768,7 +636,99 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 SolrConstants.UGCTERMS, SolrConstants.OVERVIEWPAGE_DESCRIPTION, SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
+
         Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map)
+     * @verifies skip reserved fields
+     */
+    @Test
+    public void generateExpandQuery_shouldSkipReservedFields() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT, SolrConstants.FULLTEXT, SolrConstants.NORMDATATERMS,
+                SolrConstants.UGCTERMS, SolrConstants.OVERVIEWPAGE_DESCRIPTION, SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT,
+                SolrConstants.PI_TOPSTRUCT, SolrConstants.DC, SolrConstants.DOCSTRCT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
+        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<>(Arrays.asList(new String[] { "two", "three" })));
+        searchTerms.put(SolrConstants.NORMDATATERMS, new HashSet<>(Arrays.asList(new String[] { "four", "five" })));
+        searchTerms.put(SolrConstants.UGCTERMS, new HashSet<>(Arrays.asList(new String[] { "six" })));
+        searchTerms.put(SolrConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<>(Arrays.asList(new String[] { "seven" })));
+        searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
+        Assert.assertEquals(
+                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:(six) OR OVERVIEWPAGE_DESCRIPTION:(seven) OR OVERVIEWPAGE_PUBLICATIONTEXT:(eight))",
+                SearchHelper.generateExpandQuery(fields, searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map)
+     * @verifies escape reserved characters
+     */
+    @Test
+    public void generateExpandQuery_shouldEscapeReservedCharacters() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "[one]", ":two:" })));
+        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
+     * @verifies generate query correctly
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldGenerateQueryCorrectly() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(2);
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.AND);
+            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems().get(0).setValue("Monograph");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
+            group.getQueryItems().get(1).setValue("foo bar");
+            groups.add(group);
+        }
+        {
+            SearchQueryGroup group = new SearchQueryGroup(null, 2);
+            group.setOperator(SearchQueryGroupOperator.OR);
+            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems().get(0).setValue("Volume");
+            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
+            group.getQueryItems().get(1).setField("MD_SHELFMARK");
+            group.getQueryItems().get(1).setValue("bla blup");
+            groups.add(group);
+        }
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        Assert.assertEquals(" +((DOCSTRCT:Monograph AND MD_TITLE:(foo AND bar)) AND (DOCSTRCT:Volume OR MD_SHELFMARK:(bla OR blup)))", result);
+    }
+
+    /**
+     * @see SearchHelper#generateAdvancedExpandQuery(List,int)
+     * @verifies skip reserved fields
+     */
+    @Test
+    public void generateAdvancedExpandQuery_shouldSkipReservedFields() throws Exception {
+        List<SearchQueryGroup> groups = new ArrayList<>(1);
+
+        SearchQueryGroup group = new SearchQueryGroup(null, 3);
+        group.setOperator(SearchQueryGroupOperator.AND);
+        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
+        group.getQueryItems().get(0).setValue("Monograph");
+        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(1).setField(SolrConstants.PI_TOPSTRUCT);
+        group.getQueryItems().get(1).setValue("PPN123");
+        group.getQueryItems().get(2).setOperator(SearchItemOperator.AND);
+        group.getQueryItems().get(2).setField(SolrConstants.DC);
+        group.getQueryItems().get(2).setValue("co1");
+        groups.add(group);
+
+        String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
+        Assert.assertEquals(" +((DOCSTRCT:Monograph))", result);
     }
 
     /**
@@ -779,7 +739,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
         String query = "DOCSTRCT:Monograph AND MD_YEARPUBLISH:19*";
         SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query + " AND NOT(DC:forbidden)", query, Collections.singletonList(new StringPair(
-                "SORT_YEARPUBLISH", "asc")), null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false);
+                "SORT_YEARPUBLISH", "asc")), null, null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
         String[] cellValues0 = new String[] { "Persistent identifier", "PPN728566745", "b18029048", "AC01054587", "1592397" };
         String[] cellValues1 = new String[] { "Label", "Vaterländische Handels- und Verkehrsgeographie",
                 "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
@@ -810,11 +770,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getBrowseElement_shouldReturnCorrectHitForNonaggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, false), 0, 10, null, null, null, null, null,
-                Locale.ENGLISH);
+                null, Locale.ENGLISH, null);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, Locale.ENGLISH, false);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, false, null);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -827,11 +787,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getBrowseElement_shouldReturnCorrectHitForAggregatedSearch() throws Exception {
         String rawQuery = SolrConstants.IDDOC + ":*";
         List<SearchHit> hits = SearchHelper.searchWithFulltext(SearchHelper.buildFinalQuery(rawQuery, true), 0, 10, null, null, null, null, null,
-                Locale.ENGLISH);
+                null, Locale.ENGLISH, null);
         Assert.assertNotNull(hits);
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
-            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, Locale.ENGLISH, true);
+            BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, null);
             Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
         }
     }
@@ -856,6 +816,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#applyHighlightingToPhrase(String,Set)
+     * @verifies skip single character terms
+     */
+    @Test
+    public void applyHighlightingToPhrase_shouldSkipSingleCharacterTerms() throws Exception {
+        String phrase = "FOO BAR Foo Bar foo bar";
+        Set<String> terms = new HashSet<>();
+        terms.add("o");
+        String highlightedPhrase = SearchHelper.applyHighlightingToPhrase(phrase, terms);
+        Assert.assertEquals(phrase, highlightedPhrase);
+    }
+
+    /**
      * @see SearchHelper#applyHighlightingToPhrase(String,String)
      * @verifies apply highlighting to all occurrences of term
      */
@@ -873,6 +846,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
                 + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
                 + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase2);
+    }
+
+    /**
+     * @see SearchHelper#applyHighlightingToPhrase(String,String)
+     * @verifies ignore special characters
+     */
+    @Test
+    public void applyHighlightingToPhrase_shouldIgnoreSpecialCharacters() throws Exception {
+        String phrase = "FOO BAR Foo Bar foo bar";
+        String highlightedPhrase1 = SearchHelper.applyHighlightingToPhrase(phrase, "foo-bar");
+        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO BAR" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Foo Bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
+                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo bar" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, highlightedPhrase1);
     }
 
     /**
@@ -894,4 +880,24 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper.replaceHighlightingPlaceholders(
                 SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
     }
+
+//    /**
+//     * @see SearchHelper#loadFulltext(String,String,String,String)
+//     * @verifies load fulltext from alto correctly
+//     */
+//    @Test
+//    public void loadFulltext_shouldLoadFulltextFromAltoCorrectly() throws Exception {
+//        String fulltext = SearchHelper.loadFulltext("PPN648829383", null, "alto/PPN648829383/00000001.xml", null);
+//        Assert.assertTrue(StringUtils.isNotEmpty(fulltext));
+//    }
+//
+//    /**
+//     * @see SearchHelper#loadFulltext(String,String,String,String)
+//     * @verifies load fulltext from plain text correctly
+//     */
+//    @Test
+//    public void loadFulltext_shouldLoadFulltextFromPlainTextCorrectly() throws Exception {
+//        String fulltext = SearchHelper.loadFulltext("PPN123", null, null, "fulltext/PPN123/00000001.txt");
+//        Assert.assertEquals("sample text", fulltext);
+//    }
 }

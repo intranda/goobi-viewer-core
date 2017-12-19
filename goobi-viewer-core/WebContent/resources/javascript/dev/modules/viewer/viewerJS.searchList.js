@@ -71,9 +71,10 @@ var viewerJS = ( function( viewer ) {
                 $( _defaults.saveSearchInputSelector ).focus();
             } );
             
-            // reset current search
+            // reset current search and redirect to standard search
             $( _defaults.resetSearchSelector ).on( 'click', function() {
                 $( _defaults.searchInputSelector ).val( '' );
+                location.href = _defaults.contextPath + '/search/';
             } );
             
             // show/hide loader for excel export
@@ -83,9 +84,8 @@ var viewerJS = ( function( viewer ) {
                 
                 trigger.hide();
                 excelLoader.show();
-               
+                
                 var url = _defaults.contextPath + '/rest/download/search/waitFor/';
-                console.log("Calling ", url);
                 var promise = Q( $.ajax( {
                     url: decodeURI( url ),
                     type: "GET",
@@ -93,22 +93,21 @@ var viewerJS = ( function( viewer ) {
                     async: true
                 } ) );
                 
-                promise
-                .then(function(data) {
-                	if(_debug) {                		
-                		console.log("Download started");
-                	}
-                	excelLoader.hide();
-                	trigger.show();
-                })
-                .catch(function(error) {
-                	if(_debug) {                		
-                		console.log("Error downloading excel sheet: ", error.responseText);
-                	}
-                	excelLoader.hide();
-                	trigger.show();
-                });
-                
+                promise.then( function( data ) {
+                    if ( _debug ) {
+                        console.log("Download started");
+                    }
+                    
+                    excelLoader.hide();
+                    trigger.show();
+                } ).catch( function( error ) {
+                    if ( _debug ) {
+                        console.log("Error downloading excel sheet: ", error.responseText);
+                    }
+                    
+                    excelLoader.hide();
+                    trigger.show();
+                });                
             } );
             
             // get child hits
@@ -140,17 +139,17 @@ var viewerJS = ( function( viewer ) {
                         } );
                     }
                     else {
-                      // remove loader
-                      currBtn.find( _defaults.hitContentLoaderSelector ).hide();
-                      // set event to toggle current hits
-                      currBtn.off().on( 'click', function() {
-                          // render child hits into the DOM
-                          _renderChildHits( data, currBtn );
-                          // check if more children exist and render link
-                          _renderGetMoreChildren( data, currIdDoc, currBtn );
-                          $( this ).toggleClass( 'in' ).next().slideToggle();                         
-                      } );
-                    }                    
+                        // remove loader
+                        currBtn.find( _defaults.hitContentLoaderSelector ).hide();
+                        // set event to toggle current hits
+                        currBtn.off().on( 'click', function() {
+                            // render child hits into the DOM
+                            _renderChildHits( data, currBtn );
+                            // check if more children exist and render link
+                            _renderGetMoreChildren( data, currIdDoc, currBtn );
+                            $( this ).toggleClass( 'in' ).next().slideToggle();
+                        } );
+                    }
                 } ).then( null, function() {
                     currBtn.next().append( viewer.helper.renderAlert( 'alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false ) );
                     console.error( 'ERROR: viewer.searchList.init - ', error );
@@ -201,7 +200,7 @@ var viewerJS = ( function( viewer ) {
             
             // build title
             hitSet.append( _renderHitSetTitle( child.browseElement ) );
-
+            
             // append metadata if exist
             hitSet.append( _renderMetdataInfo( child.foundMetadata, child.url ) );
             
@@ -241,7 +240,7 @@ var viewerJS = ( function( viewer ) {
         hitSetTitle = $( '<div class="search-list__struct-title" />' );
         hitSetTitleH5 = $( '<h5 />' );
         hitSetTitleLink = $( '<a />' );
-        hitSetTitleLink.attr( 'href', _defaults.contextPath + data.url );
+        hitSetTitleLink.attr( 'href', _defaults.contextPath + '/' + data.url );
         hitSetTitleLink.append( data.labelShort );
         hitSetTitleH5.append( hitSetTitleLink );
         hitSetTitle.append( hitSetTitleH5 );
@@ -265,36 +264,43 @@ var viewerJS = ( function( viewer ) {
         }
         
         var metadataWrapper = null;
-        var metadataList = null;
-        var metadataKey = null;
+        var metadataTable = null;
+        var metadataTableBody = null;
+        var metadataTableRow = null;
+        var metadataTableCellLeft = null;
+        var metadataTableCellRight = null;
         var metadataKeyIcon = null;
         var metadataKeyLink = null;
-        var metadataValue = null;
         var metadataValueLink = null;
         
         if ( !$.isEmptyObject( data ) ) {
             metadataWrapper = $( '<div class="search-list__metadata-info" />' );
-            metadataList = $( '<dl class="dl-horizontal" />' );
-
-            $.each( data, function( metadata, item ) {
-                // build metadata key
-                metadataKey = $( '<dt />' );
-                metadataKeyIcon = $( '<i class="fa fa-bookmark-o" aria-hidden="true" />' );
-                metadataKeyLink = $( '<a />' );
-                metadataKeyLink.attr( 'href', _defaults.contextPath + url );
-                metadataKeyLink.append( item.one + ':' );
-                metadataKey.append( metadataKeyIcon ).append( metadataKeyLink );
-                // build metadata value
-                metadataValue = $( '<dd />' );
-                metadataValueLink = $( '<a />' );
-                metadataValueLink.attr( 'href', _defaults.contextPath + url );
-                metadataValueLink.append( item.two );
-                metadataValue.append( metadataValueLink );
-                // build metadata list
-                metadataList.append( metadataKey ).append( metadataValue );
-                metadataWrapper.append( metadataList );
-            } );            
+            metadataTable = $( '<table />' );
+            metadataTableBody = $( '<tbody />' );
+            
+            data.forEach( function( metadata ) {
+                // left cell
+                metadataTableCellLeft = $( '<td />' );
+                metadataKeyIcon = $( '<i />' ).attr( 'aria-hidden', 'true' ).addClass( 'fa fa-bookmark-o' );
+                metadataKeyLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.one + ':' );
+                metadataTableCellLeft.append( metadataKeyIcon ).append( metadataKeyLink );
                 
+                // right cell
+                metadataTableCellRight = $( '<td />' );
+                metadataValueLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.two );
+                metadataTableCellRight.append( metadataValueLink );
+                
+                // row
+                metadataTableRow = $( '<tr />' );
+                metadataTableRow.append( metadataTableCellLeft ).append( metadataTableCellRight );
+                
+                // body
+                metadataTableBody.append( metadataTableRow );
+            } );
+            
+            metadataTable.append( metadataTableBody );
+            metadataWrapper.append( metadataTable );
+            
             return metadataWrapper;
         }
     }
@@ -326,22 +332,40 @@ var viewerJS = ( function( viewer ) {
         // check hit type
         switch ( type ) {
             case 'PAGE':
-                hitSetChildrenDt.append( '<i class="fa fa-file-text-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-file-text" aria-hidden="true"></i>' );
+                break;
+            case 'PERSON':
+                hitSetChildrenDt.append( '<i class="fa fa-user" aria-hidden="true"></i>' );
+                break;
+            case 'CORPORATION':
+                hitSetChildrenDt.append( '<i class="fa fa-university" aria-hidden="true"></i>' );
+                break;
+            case 'LOCATION':
+                hitSetChildrenDt.append( '<i class="fa fa-location-arrow" aria-hidden="true"></i>' );
+                break;
+            case 'SUBJECT':
+                hitSetChildrenDt.append( '<i class="fa fa-question-circle-o" aria-hidden="true"></i>' );
+                break;
+            case 'PUBLISHER':
+                hitSetChildrenDt.append( '<i class="fa fa-copyright" aria-hidden="true"></i>' );
                 break;
             case 'EVENT':
-                hitSetChildrenDt.append( '<i class="fa fa-calendar-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-calendar" aria-hidden="true"></i>' );
+                break;
+            case 'ACCESSDENIED':
+                hitSetChildrenDt.append( '<i class="fa fa-lock" aria-hidden="true"></i>' );
                 break;
         }
         hitSetChildrenDd = $( '<dd />' );
-        hitSetChildrenLink = $( '<a />' );
-        hitSetChildrenLink.attr( 'href', _defaults.contextPath + data.url );
+        hitSetChildrenLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url );
         switch ( type ) {
             case 'PAGE':
+            case 'ACCESSDENIED':
                 hitSetChildrenLink.append( data.fulltextForHtml );
-            break;
+                break;
             default:
                 hitSetChildrenLink.append( data.labelShort );
-            break;
+                break;
         }
         hitSetChildrenDd.append( hitSetChildrenLink );
         hitSetChildrenDl.append( hitSetChildrenDt ).append( hitSetChildrenDd );

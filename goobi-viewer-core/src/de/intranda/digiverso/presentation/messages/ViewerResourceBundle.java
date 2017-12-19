@@ -16,17 +16,29 @@
 package de.intranda.digiverso.presentation.messages;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +49,81 @@ public class ViewerResourceBundle extends ResourceBundle {
 
     private static final Logger logger = LoggerFactory.getLogger(ViewerResourceBundle.class);
 
-    private static ResourceBundle bundle = null;
-    private static ResourceBundle localBundle = null;
+    private static final Object lock = new Object();
+    private static final Map<Locale, ResourceBundle> defaultBundles = new ConcurrentHashMap<>();
+    protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
+    protected static final Map<String, Boolean> reloadNeededMap = new ConcurrentHashMap<>();
+    protected static volatile Locale defaultLocale;
+
+    public ViewerResourceBundle() {
+        registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
+    }
 
     /**
-     * laden des ResourceBundle(general_xx.properties), abhängig davon was im FacesContext Lokalisirungsstring steht.
+     * Registers a WatchService that checks for modified messages.properties files and tags them for reloading.
+     * 
+     * @param path
+     * @throws IOException
+     * @throws InterruptedException
      */
-    public static synchronized void loadResourceBundle(Locale inLocale) {
+    private static void registerFileChangedService(Path path) {
+        logger.trace("registerFileChangedService: {}", path);
+        Thread backgroundThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
+                    final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                    while (true) {
+                        final WatchKey wk = watchService.take();
+                        for (WatchEvent<?> event : wk.pollEvents()) {
+                            final Path changed = (Path) event.context();
+                            final String fileName = changed.getFileName().toString();
+                            logger.trace("File has been modified: {}", fileName);
+                            if (fileName.startsWith("messages_")) {
+                                final String language = fileName.substring(9, 11);
+                                reloadNeededMap.put(language, true);
+                                logger.debug("File '{}' (language: {}) has been modified, triggering bundle reload...", changed.getFileName()
+                                        .toString(), language);
+                            }
+                        }
+                        if (!wk.reset()) {
+                            break;
+                        }
+                        // Thread.sleep(100);
+                    }
+                } catch (IOException | InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        });
+
+        backgroundThread.start();
+    }
+
+    /**
+     * Loads default resource bundles if not yet loaded.
+     */
+    private static void checkAndLoadDefaultResourceBundles() {
+        if (defaultLocale == null) {
+            synchronized (lock) {
+                if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+                    defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+                } else {
+                    defaultLocale = Locale.ENGLISH;
+                }
+                checkAndLoadResourceBundles(defaultLocale);
+            }
+        }
+    }
+
+    /**
+     * Loads resource bundles for the current locale and reloads them if the locale has since changed.
+     * 
+     * @param inLocale
+     * @return The selected locale
+     */
+    private static Locale checkAndLoadResourceBundles(Locale inLocale) {
         Locale locale;
         if (inLocale != null) {
             locale = inLocale;
@@ -52,16 +132,45 @@ public class ViewerResourceBundle extends ResourceBundle {
         } else {
             locale = Locale.ENGLISH;
         }
-        if (bundle == null || !bundle.getLocale().equals(locale)) {
-            bundle = ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale);
+        // Reload default bundle if the locale is different
+        if (!defaultBundles.containsKey(locale)) {
+            synchronized (lock) {
+                // Bundle could have been initialized by a different thread in the meanwhile
+                if (!defaultBundles.containsKey(locale)) {
+                    defaultBundles.put(locale, ResourceBundle.getBundle("de.intranda.digiverso.presentation.messages.messages", locale));
+                }
+            }
         }
-        if (localBundle == null || !localBundle.getLocale().equals(locale)) {
-            logger.trace("Reloading local resource bundle for '{}'...", locale.getLanguage());
-            localBundle = loadLocalResourceBundle(locale);
+        // Reload local bundle if the locale is different or the corresponding messages files has been modified
+        if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale.getLanguage()))) {
+            synchronized (lock) {
+                // Bundle could have been initialized by a different thread in the meanwhile
+                if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale
+                        .getLanguage()))) {
+                    logger.debug("Reloading local resource bundle for '{}'...", locale.getLanguage());
+                    try {
+                        ResourceBundle localBundle = loadLocalResourceBundle(locale);
+                        if (localBundle != null) {
+                            localBundles.put(locale, localBundle);
+                        } else {
+                            logger.warn("Could not load local resource bundle.");
+                        }
+                    } finally {
+                        reloadNeededMap.remove(locale.getLanguage());
+                    }
+                }
+            }
         }
+
+        return locale;
     }
 
-    private static ResourceBundle loadLocalResourceBundle(Locale locale) {
+    /**
+     * 
+     * @param locale
+     * @return
+     */
+    private static ResourceBundle loadLocalResourceBundle(final Locale locale) {
         File file = new File(DataManager.getInstance().getConfiguration().getLocalRessourceBundleFile());
         if (file.exists()) {
             try {
@@ -70,16 +179,18 @@ public class ViewerResourceBundle extends ResourceBundle {
                 URLClassLoader urlLoader = new URLClassLoader(new URL[] { resourceURL });
                 return ResourceBundle.getBundle("messages", locale, urlLoader);
             } catch (Exception e) {
-                // some error while loading bundle from file system; use
-                // default bundle now ...
+                // some error while loading bundle from file system; use default bundle now ...
             }
         }
 
         return null;
     }
 
+    /**
+     * This is the method that is called for HTML translations.
+     */
     @Override
-    protected Object handleGetObject(String key) {
+    protected Object handleGetObject(final String key) {
         return getTranslation(key, FacesContext.getCurrentInstance().getViewRoot().getLocale());
     }
 
@@ -89,126 +200,160 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param locale
      * @return
      */
-    public static String getTranslation(String text, Locale locale) {
-        //        logger.trace("Translation for: {}", text);
-        loadResourceBundle(locale);
-        return getTranslation(text, bundle, localBundle);
+    public static String getTranslation(final String key, Locale locale) {
+        //        logger.trace("Translation for: {}", key);
+        checkAndLoadDefaultResourceBundles();
+        locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
+        String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
+        if (StringUtils.isEmpty(value) && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
+            value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale));
+        }
+        if (value == null) {
+            value = key;
+        }
+
+        return value;
     }
 
     /**
+     * Translation method with ResourceBundle parameters. It can be overridden from inheriting classes which may pass their own bundles.
      * 
-     * @param key
-     * @param globalBundle
-     * @param localBundle
+     * @param key Message key
+     * @param fallbackBundle Fallback bundle if no value is found in preferredBundle
+     * @param preferredBundle Check for a translation in this bundle first
      * @return
      */
-    protected static String getTranslation(String key, ResourceBundle globalBundle, ResourceBundle localBundle) {
+    protected static String getTranslation(String key, ResourceBundle fallbackBundle, ResourceBundle preferredBundle) {
         if (key != null) {
             // Remove trailing asterisk
             if (key.endsWith("*")) {
                 key = key.substring(0, key.length() - 1);
             }
+            //            if (key.matches(".*(_LANG_\\w{2,3})$")) {
+            //                key = key.substring(0, key.lastIndexOf("_LANG_"));
+            //            }
 
-            if (localBundle != null) {
-                if (localBundle.containsKey(key)) {
-                    return localBundle.getString(key);
-                }
-                // Remove trailing _DD (collection names for drill-down)
-                if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
-                    String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
-                }
-                // Remove trailing _UNTOKENIZED
-                if (key.endsWith(SolrConstants._UNTOKENIZED)) {
-                    String newKey = key.replace(SolrConstants._UNTOKENIZED, "");
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
-                }
-                // Remove leading MD_ (metadata fields)
-                if (key.startsWith("MD_")) {
-                    String newKey = key.substring(3);
-                    if (newKey.endsWith(SolrConstants._UNTOKENIZED)) {
-                        newKey = newKey.replace(SolrConstants._UNTOKENIZED, "");
-                    }
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
-                }
-                // Remove leading SORT_
-                if (key.startsWith("SORT_")) {
-                    String newKey = key.replace("SORT_", "");
-                    if (localBundle.containsKey("MD_" + newKey)) {
-                        return localBundle.getString("MD_" + newKey);
-                    }
-                    if (localBundle.containsKey(newKey)) {
-                        return localBundle.getString(newKey);
-                    }
+            if (preferredBundle != null) {
+                String value = getTranslationFromBundle(key, preferredBundle);
+                if (value != null) {
+                    return cleanUpTranslation(value);
                 }
             }
-            if (globalBundle != null) {
-                try {
-                    if (globalBundle.containsKey(key)) {
-                        return globalBundle.getString(key);
-                    }
-                    // Remove trailing _DD (collection names for drill-down)
-                    if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
-                        String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove trailing _UNTOKENIZED
-                    if (key.endsWith(SolrConstants._UNTOKENIZED)) {
-                        String newKey = key.replace(SolrConstants._UNTOKENIZED, "");
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove leading MD_ (metadata fields)
-                    if (key.startsWith("MD_")) {
-                        String newKey = key.substring(3);
-                        if (newKey.endsWith(SolrConstants._UNTOKENIZED)) {
-                            newKey = newKey.replace(SolrConstants._UNTOKENIZED, "");
-                        }
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove leading SORT_
-                    if (key.startsWith("SORT_")) {
-                        String newKey = key.replace("SORT_", "");
-                        if (globalBundle.containsKey("MD_" + newKey)) {
-                            return globalBundle.getString("MD_" + newKey);
-                        }
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    // Remove leading FACET_
-                    if (key.startsWith("FACET_")) {
-                        String newKey = key.replace("FACET_", "");
-                        if (globalBundle.containsKey("MD_" + newKey)) {
-                            return globalBundle.getString("MD_" + newKey);
-                        }
-                        if (globalBundle.containsKey(newKey)) {
-                            return globalBundle.getString(newKey);
-                        }
-                    }
-                    return globalBundle.getString(key);
-                } catch (RuntimeException e) {
-                    // This is needed for some reason
+            if (fallbackBundle != null) {
+                String value = getTranslationFromBundle(key, fallbackBundle);
+                if (value != null) {
+                    return cleanUpTranslation(value);
                 }
-            } else {
-                logger.warn("globalBundle is null");
+                try {
+                    if (fallbackBundle.containsKey(key)) {
+                        return cleanUpTranslation(fallbackBundle.getString(key));
+                    }
+                } catch (MissingResourceException e) {
+                    // There is a MissingResourceException when calling this from the RSS feed
+                }
+            }
+        } else {
+            logger.warn("globalBundle is null");
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param key
+     * @param bundle
+     * @return
+     */
+    private static String getTranslationFromBundle(String key, ResourceBundle bundle) {
+        if (key == null) {
+            throw new IllegalArgumentException("key may not be null");
+        }
+        if (bundle == null) {
+            throw new IllegalArgumentException("bundle may not be null");
+        }
+
+        if (bundle.containsKey(key)) {
+            return bundle.getString(key);
+        }
+        // Remove trailing _DD (collection names for drill-down)
+        if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
+            String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove trailing _UNTOKENIZED
+        if (key.endsWith(SolrConstants._UNTOKENIZED)) {
+            String newKey = key.replace(SolrConstants._UNTOKENIZED, "");
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading MD_ (metadata fields)
+        if (key.startsWith("MD_")) {
+            String newKey = key.substring(3);
+            if (newKey.endsWith(SolrConstants._UNTOKENIZED)) {
+                newKey = newKey.replace(SolrConstants._UNTOKENIZED, "");
+            }
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading SORT_
+        if (key.startsWith("SORT_")) {
+            String newKey = key.replace("SORT_", "");
+            if (bundle.containsKey("MD_" + newKey)) {
+                return bundle.getString("MD_" + newKey);
+            }
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading FACET_
+        if (key.startsWith("FACET_")) {
+            String newKey = key.replace("FACET_", "");
+            if (bundle.containsKey("MD_" + newKey)) {
+                return bundle.getString("MD_" + newKey);
+            }
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
+            }
+        }
+        // Remove leading _LANG_XX
+        if (key.contains(SolrConstants._LANG_)) {
+            String newKey = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
+            logger.trace("newKey: {}", newKey);
+            if (bundle.containsKey(newKey)) {
+                return bundle.getString(newKey);
             }
         }
 
-        return key;
+        return null;
     }
 
+    /**
+     * Removes the "zzz" marker from the given string.
+     * 
+     * @param value
+     * @return
+     */
+    public static String cleanUpTranslation(String value) {
+        if (value == null) {
+            return null;
+        }
+        if (value.endsWith("zzz")) {
+            return value.replace(" zzz", "").replace("zzz", "");
+        }
+        return value;
+    }
+
+    /**
+     * 
+     * @param locale
+     * @param keyPrefix
+     * @return
+     */
     public static List<String> getMessagesValues(Locale locale, String keyPrefix) {
         ResourceBundle rb = loadLocalResourceBundle(locale);
         List<String> res = new ArrayList<>();

@@ -35,7 +35,7 @@ public class Tile {
      * @param title
      * @param name
      * @param caption
-     * @param url
+     * @param id
      */
     public Tile(String title, String imageUrl, String caption, String linkUrl, boolean important, CMSMediaItem.DisplaySize size, List<String> tags,
             String collection, int displayOrder) {

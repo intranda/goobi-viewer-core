@@ -22,9 +22,6 @@
 	<!-- mediaFolder: contains media files that are displayed in the intranda 
 		viewer (images, audio, video) -->
 	<mediaFolder>mediaFolder_value</mediaFolder>
-	<!-- ptifFolder: contains pyramidal tiffs that should be displayed in the 
-		tiles fullscreen view -->
-	<ptifFolder>ptifFolder_value</ptifFolder>
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
 		in the intranda viewer (see <content> also) -->
 	<origContentFolder>origContentFolder_value</origContentFolder>
@@ -86,9 +83,6 @@
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
 		<dfg-viewer>dfg-viewer_value</dfg-viewer>
-		<!-- iipimageServer: path to the base url of the iipimage server -->
-		<iipimageServer>iipimageServer_value</iipimageServer>
-		<goobiWebApi>goobiWebApi_value</goobiWebApi>
 		<!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
@@ -343,9 +337,6 @@
 			<luceneField>SORT_YEARPUBLISH</luceneField>
 		</sorting>
 		<drillDown>
-			<!-- collectionDrilldownEnabled: if false, the collection drill down is 
-				hidden -->
-			<collectionDrilldownEnabled>false</collectionDrilldownEnabled>
 			<field>FIELD1</field>
 			<field>FIELD2</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 

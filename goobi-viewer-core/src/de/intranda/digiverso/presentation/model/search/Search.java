@@ -16,6 +16,8 @@
 package de.intranda.digiverso.presentation.model.search;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,8 +35,9 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
@@ -141,15 +144,16 @@ public class Search implements Serializable {
      * Constructs a search URL using the query parameters contained in this object.
      *
      * @return
+     * @throws UnsupportedEncodingException 
      */
-    public String getUrl() {
+    public String getUrl() throws UnsupportedEncodingException {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
         sbUrl.append('/').append(PageType.search.getName());
-        sbUrl.append('/').append((StringUtils.isNotEmpty(collection) ? collection : "-"));
-        sbUrl.append('/').append(query).append('/').append(page);
+        sbUrl.append('/').append((StringUtils.isNotEmpty(collection) ? URLEncoder.encode(collection, SearchBean.URL_ENCODING) : "-"));
+        sbUrl.append('/').append(URLEncoder.encode(query, SearchBean.URL_ENCODING)).append('/').append(page);
         sbUrl.append('/').append((StringUtils.isNotEmpty(sortField) ? sortField : "-"));
-        sbUrl.append('/').append((StringUtils.isNotEmpty(filter) ? filter : "-")).append('/');
+        sbUrl.append('/').append((StringUtils.isNotEmpty(filter) ? URLEncoder.encode(filter, SearchBean.URL_ENCODING) : "-")).append('/');
         return sbUrl.toString();
     }
 

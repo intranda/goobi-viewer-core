@@ -31,6 +31,7 @@ var cmsJS = ( function( cms ) {
     var _lazyGrid = null;
     var _defaults = {
         $grid: null,
+        loaderSelector: '.tpl-masonry__loader'
     };
     
     // DOM-Elements
@@ -42,7 +43,6 @@ var cmsJS = ( function( cms ) {
     var $gridItemCaption = null;
     var $gridItemCaptionHeading = null;
     var $gridItemCaptionLink = null;
-    var $gridItemCaptionIcon = null;
     
     cms.masonry = {
         /**
@@ -66,6 +66,9 @@ var cmsJS = ( function( cms ) {
             
             $.extend( true, _defaults, config );
             
+            // show loader
+            $( _defaults.loaderSelector ).show();
+            
             // render grid
             _renderMasonryGrid( data );
             
@@ -79,6 +82,15 @@ var cmsJS = ( function( cms ) {
                     percentPosition: true
                 } );
             } );
+            
+            // fade in grid after rendering
+            _lazyGrid.on( 'layoutComplete', function( event, laidOutItems ) {
+                // hide loader
+                $( _defaults.loaderSelector ).hide();
+                // show images
+                _defaults.$grid.addClass( 'ready' );
+            } );
+            
         }
     };
     
@@ -139,12 +151,7 @@ var cmsJS = ( function( cms ) {
                     $gridItemCaptionLink.attr( 'href', item.url );
                     $gridItemCaptionLink.attr( 'title', item.title );
                     
-                    // grid item caption icon
-                    $gridItemCaptionIcon = $( '<i aria-hidden="true" />' );
-                    $gridItemCaptionIcon.addClass( 'fa fa-arrow-right' );
-                    
                     // append to grid item
-                    $gridItemCaption.append( $gridItemCaptionIcon );
                     $gridItemCaptionLink.append( $gridItemCaption );
                     $gridItem.append( $gridItemCaptionLink );
                 }

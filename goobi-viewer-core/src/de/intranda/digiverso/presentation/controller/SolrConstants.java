@@ -23,6 +23,7 @@ import java.util.Locale;
 public class SolrConstants {
 
     public enum DocType {
+        ACCESSDENIED,
         DOCSTRCT,
         PAGE,
         METADATA, // grouped metadata
@@ -33,6 +34,8 @@ public class SolrConstants {
         public static DocType getByName(String name) {
             if (name != null) {
                 switch (name) {
+                    case "ACCESSDENIED":
+                        return ACCESSDENIED;
                     case "DOCSTRCT":
                         return DOCSTRCT;
                     case "PAGE":
@@ -89,7 +92,7 @@ public class SolrConstants {
     }
 
     public static final String ACCESSCONDITION = "ACCESSCONDITION";
-    public static final String ALTO = "ALTO";
+    //    public static final String ALTO = "ALTO";
     public static final String CURRENTNO = "CURRENTNO";
     public static final String CURRENTNOSORT = "CURRENTNOSORT";
     public static final String DATAREPOSITORY = "DATAREPOSITORY";
@@ -110,15 +113,14 @@ public class SolrConstants {
     public static final String DATEUPDATED = "DATEUPDATED";
     public static final String FILEIDROOT = "FILEIDROOT";
     public static final String FILENAME = "FILENAME";
+    public static final String FILENAME_ALTO = "FILENAME_ALTO";
+    public static final String FILENAME_FULLTEXT = "FILENAME_FULLTEXT";
     public static final String FILENAME_HTML_SANDBOXED = "FILENAME_HTML-SANDBOXED";
     public static final String FILENAME_MPEG = "FILENAME_MPEG";
     public static final String FILENAME_MPEG3 = "FILENAME_MPEG3";
     public static final String FILENAME_MP4 = "FILENAME_MP4";
     public static final String FILENAME_OGG = "FILENAME_OGG";
-    public static final String FILENAME_TILED_0 = "FILENAME_TILED_0";
-    public static final String FILENAME_TILED_90 = "FILENAME_TILED_90";
-    public static final String FILENAME_TILED_180 = "FILENAME_TILED_180";
-    public static final String FILENAME_TILED_270 = "FILENAME_TILED_270";
+    public static final String FILENAME_TEI = "FILENAME_TEI";
     public static final String FILENAME_WEBM = "FILENAME_WEBM";
     public static final String FULLTEXT = "FULLTEXT";
     public static final String FULLTEXTAVAILABLE = "FULLTEXTAVAILABLE";
@@ -130,6 +132,7 @@ public class SolrConstants {
     public static final String ISANCHOR = "ISANCHOR";
     public static final String ISWORK = "ISWORK";
     public static final String LABEL = "LABEL";
+    public static final String LANGUAGE = "LANGUAGE";
     public static final String LOGID = "LOGID";
     public static final String METADATATYPE = "METADATATYPE";
     public static final String NORMDATATERMS = "NORMDATATERMS";
@@ -145,6 +148,7 @@ public class SolrConstants {
     public static final String PERSON_ONEFIELD = "MD_CREATOR";
     public static final String PHYSID = "PHYSID";
     public static final String PI = "PI";
+    public static final String PI_ANCHOR = "PI_ANCHOR";
     public static final String PI_PARENT = "PI_PARENT";
     public static final String PI_TOPSTRUCT = "PI_TOPSTRUCT";
     public static final String PLACEPUBLISH = "MD_PLACEPUBLISH";
@@ -169,6 +173,7 @@ public class SolrConstants {
 
     public static final String GROUPID_ = "GROUPID_";
     public static final String GROUPORDER_ = "GROUPORDER_";
+    public static final String _LANG_ = "_LANG_";
     public static final String _NOESCAPE = "_NOESCAPE";
     public static final String _UNTOKENIZED = "_UNTOKENIZED";
     public static final String _DRILLDOWN_SUFFIX = "_DD";

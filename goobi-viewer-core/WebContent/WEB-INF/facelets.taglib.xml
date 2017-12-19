@@ -114,7 +114,7 @@
             de.intranda.digiverso.presentation.controller.TagLib
         </function-class>
         <function-signature>
-            java.util.List getDrillDown(java.lang.String, java.lang.String, java.lang.Integer)
+            java.util.List getDrillDown(java.lang.String, java.lang.String, java.lang.Integer, java.lang.Boolean)
         </function-signature>
     </function>
     

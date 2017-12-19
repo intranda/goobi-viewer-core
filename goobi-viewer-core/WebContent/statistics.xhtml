@@ -10,6 +10,7 @@
 	<ui:define name="metadata">
 	    <f:metadata> 
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageStatistics}" />
+            <f:event type="preRenderView" listener="#{searchBean.resetSearchAction}" />
         </f:metadata>
     </ui:define>
 
@@ -19,48 +20,49 @@
 
     <ui:define name="content">
         <link type="text/css" rel="stylesheet" href="#{request.contextPath}/resources/javascript/jqplot/jquery.jqplot.min.css" />
-        <h:outputScript library="javascript/jqplot" name="jquery.jqplot.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.pieRenderer.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.barRenderer.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.categoryAxisRenderer.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.pointLabels.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.canvasAxisTickRenderer.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.canvasTextRenderer.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.dateAxisRenderer.min.js" target="head" />
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.BezierCurveRenderer.min.js" target="head" />
-<!-- 		<h:outputScript library="javascript/jqplot/plugins" name="jqplot.cursor.min.js" target="head" /> -->
-        <h:outputScript library="javascript/jqplot/plugins" name="jqplot.highlighter.min.js" target="head" />
-        <h:outputScript library="javascript/dev/modules/statistics" name="statistics.js" target="head" />
+        
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/jquery.jqplot.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.pieRenderer.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.barRenderer.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.pointLabels.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.BezierCurveRenderer.min.js"></script>
+<!--         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.cursor.min.js"></script> -->
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jqplot/plugins/jqplot.highlighter.min.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dev/modules/statistics/statistics.js"></script>
 
         <script type="text/javascript">
-        $(document).ready(function() {
-            var publicationTypes = new Statistics.PublicationTypes( {
-                labelList : "#{statisticsBean.topStructTypesByNumber}",
-                labelDesc : "#{msg.statistics_publicationTypes_dataLabel}",
-            });
-            publicationTypes.plot('chart-publication');
-            publicationTypes.initSearchQuery('chart-publication', 'searchInput', 'searchBtn');
-            
-            var importedWorks = new Statistics.MostImportedWorksTrend( {
-                labelList : "#{statisticsBean.getImportedRecordsTrend(6*30, 12)}",
-                labelDesc : "#{msg.statistics_importedWorksTrend_dataLabel}",
-            });
-            importedWorks.plot('chart-import-over-time');
-            
-            var numPages = new Statistics.NumberOfPages( {
-                titlePages : "#{msg.statistics_importedPages}",
-                numPages : "#{statisticsBean.importedPages}",
-                titleFullTexts : "#{msg.statistics_importedFullTexts}",
-                numFullTexts : "#{statisticsBean.importedFullTexts}",
-            });
-            numPages.plot("chart-import-pages-fulltext");
-            
-            Statistics.initMouseover(document, window);
-        });
+	        $(document).ready(function() {
+	            var publicationTypes = new Statistics.PublicationTypes( {
+	                labelList : "#{statisticsBean.topStructTypesByNumber}",
+	                labelDesc : "#{msg.statistics_publicationTypes_dataLabel}",
+	            });
+	            publicationTypes.plot('chart-publication');
+	            publicationTypes.initSearchQuery('chart-publication', 'searchInput', 'searchBtn');
+	            
+	            var importedWorks = new Statistics.MostImportedWorksTrend( {
+	                labelList : "#{statisticsBean.getImportedRecordsTrend(6*30, 12)}",
+	                labelDesc : "#{msg.statistics_importedWorksTrend_dataLabel}",
+	            });
+	            importedWorks.plot('chart-import-over-time');
+	            
+	            var numPages = new Statistics.NumberOfPages( {
+	                titlePages : "#{msg.statistics_importedPages}",
+	                numPages : "#{statisticsBean.importedPages}",
+	                titleFullTexts : "#{msg.statistics_importedFullTexts}",
+	                numFullTexts : "#{statisticsBean.importedFullTexts}",
+	            });
+	            numPages.plot("chart-import-pages-fulltext");
+	            
+	            Statistics.initMouseover(document, window);
+	        });
         </script>
 
         <f:view contentType="text/html" encoding="utf-8">
-            <div id="statistics" class="page-wrapp">
+            <div id="statistics">
                 <h2>#{msg.statisticsTitle}</h2>
                 <h:outputText rendered="#{statisticsBean.indexEmpty}">#{msg.statistics_noRecords}</h:outputText>
                 <h:panelGroup layout="block" class="statistics-grid" rendered="#{!statisticsBean.indexEmpty}">
@@ -99,10 +101,11 @@
                             <ui:include src="/#{contribution}" />
                         </c:forEach>
                     </c:forEach>
- 
-                    
                 </h:panelGroup>
+                
+                <div class="clearfix"></div>
             </div>
+            
             <h:form prependId="false" id="dsSearchForm" style="display: none;">
             	<h:inputText id="searchInput" value="#{searchBean.exactSearchString}"></h:inputText>
             	<h:commandButton id="searchBtn"

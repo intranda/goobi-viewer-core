@@ -25,6 +25,8 @@ import java.util.Set;
 
 import javax.faces.event.ValueChangeEvent;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,28 +205,42 @@ public class SearchQueryItem implements Serializable {
      * @param aggregateHits
      * @return
      * @should generate query correctly
+     * @should escape reserved characters
+     * @should always use OR operator if searching in all fields
+     * @should preserve truncation
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
         StringBuilder sbItem = new StringBuilder();
 
-        if (value.trim().isEmpty()) {
+        if (StringUtils.isBlank(value)) {
             return "";
         }
 
         List<String> fields = new ArrayList<>();
         if (ADVANCED_SEARCH_ALL_FIELDS.equals(field)) {
             // Search everywhere
-            fields.add(aggregateHits ? SolrConstants.SUPERDEFAULT : SolrConstants.DEFAULT);
-            fields.add(aggregateHits ? SolrConstants.SUPERFULLTEXT : SolrConstants.FULLTEXT);
+            if (aggregateHits) {
+                // When doing an aggregated search, make sure to include both SUPER and regular fields (because sub-elements don't have the SUPER)
+                fields.add(SolrConstants.SUPERDEFAULT);
+                fields.add(SolrConstants.SUPERFULLTEXT);
+            }
+            fields.add(SolrConstants.DEFAULT);
+            fields.add(SolrConstants.FULLTEXT);
             fields.add(SolrConstants.NORMDATATERMS);
             fields.add(SolrConstants.UGCTERMS);
             fields.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
             fields.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
         } else {
-            if (aggregateHits && (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field))) {
-                fields.add(SolrConstants.SUPERDEFAULT);
-            } else if (aggregateHits && (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field))) {
-                fields.add(SolrConstants.SUPERFULLTEXT);
+            if (SolrConstants.SUPERDEFAULT.equals(field) || SolrConstants.DEFAULT.equals(field)) {
+                if (aggregateHits) {
+                    fields.add(SolrConstants.SUPERDEFAULT);
+                }
+                fields.add(SolrConstants.DEFAULT);
+            } else if (SolrConstants.SUPERFULLTEXT.equals(field) || SolrConstants.FULLTEXT.equals(field)) {
+                if (aggregateHits) {
+                    fields.add(SolrConstants.SUPERFULLTEXT);
+                }
+                fields.add(SolrConstants.FULLTEXT);
             } else if (SolrConstants.OVERVIEWPAGE.equals(field)) {
                 fields.add(SolrConstants.OVERVIEWPAGE_DESCRIPTION);
                 fields.add(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT);
@@ -275,9 +291,9 @@ public class SearchQueryItem implements Serializable {
             {
                 if (!value.trim().isEmpty()) {
                     String[] valueSplit = value.trim().split(" ");
-                    boolean additionalField = false;
+                    boolean moreThanOneField = false;
                     for (String field : fields) {
-                        if (additionalField) {
+                        if (moreThanOneField) {
                             sbItem.append(" OR ");
                         }
                         String useField = field;
@@ -289,7 +305,7 @@ public class SearchQueryItem implements Serializable {
                         if (valueSplit.length > 1) {
                             sbItem.append('(');
                         }
-                        boolean additionalValue = false;
+                        boolean moreThanOneValue = false;
                         for (String value : valueSplit) {
                             value = value.trim();
                             if (value.charAt(0) == '"') {
@@ -310,8 +326,15 @@ public class SearchQueryItem implements Serializable {
                                 //                            }
                                 sbItem.append(" -");
                                 value = value.substring(1);
-                            } else if (additionalValue) {
-                                sbItem.append(' ').append(operator.name()).append(' ');
+                            } else if (moreThanOneValue) {
+                                switch (this.field) {
+                                    case ADVANCED_SEARCH_ALL_FIELDS:
+                                        sbItem.append(" OR ");
+                                        break;
+                                    default:
+                                        sbItem.append(' ').append(operator.name()).append(' ');
+                                        break;
+                                }
                             }
                             // Lowercase the search term for certain fields
                             switch (useField) {
@@ -331,11 +354,25 @@ public class SearchQueryItem implements Serializable {
                                     }
                                     break;
                             }
+
                             if (value.contains("-")) {
                                 // Hack to enable fuzzy searching for terms that contain hyphens
-                                sbItem.append('"').append(value).append('"');
+                                sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
                             } else {
-                                sbItem.append(value);
+                                // Preserve truncation before escaping
+                                String prefix = "";
+                                String useValue = value;
+                                String suffix = "";
+                                if (useValue.startsWith("*")) {
+                                    prefix = "*";
+                                    useValue = useValue.substring(1);
+                                }
+                                if (useValue.endsWith("*")) {
+                                    suffix = "*";
+                                    useValue = useValue.substring(0, useValue.length() - 1);
+                                }
+                                
+                                sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
                             }
                             if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
                                 String val = value.replace("\"", "");
@@ -344,12 +381,12 @@ public class SearchQueryItem implements Serializable {
                                     // TODO do not add negated terms
                                 }
                             }
-                            additionalValue = true;
+                            moreThanOneValue = true;
                         }
                         if (valueSplit.length > 1) {
                             sbItem.append(')');
                         }
-                        additionalField = true;
+                        moreThanOneField = true;
                     }
                 }
             }

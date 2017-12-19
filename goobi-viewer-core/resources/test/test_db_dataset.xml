@@ -66,11 +66,11 @@
     <bookshelf_items bookshelf_item_id="1" bookshelf_id="1"
         name="bookshelf 1 item 1 name" description="bookshelf 1 item 1 desc"
         pi="PPN123456789" logid="LOG_0000" urn="urn:nbn:bookshelf1item1"
-        main_title="bookshelf 1 item 1 main title" />
+        main_title="bookshelf 1 item 1 main title"/>
     <bookshelf_items bookshelf_item_id="2" bookshelf_id="1"
         name="bookshelf 1 item 2 name" description="bookshelf 1 item 2 desc"
         pi="AC123456789" logid="LOG_1111" urn="urn:nbn:bookshelf1item2"
-        main_title="bookshelf 1 item 2 main title" />
+        main_title="bookshelf 1 item 2 main title"/>
 
 	<!-- <annotations annotation_id="1" pi="PI 1" page="1" owner_id="1" -->
 	<!-- date_created="2013-07-15 00:00:00.000000000" status="PUBLIC" -->
@@ -165,7 +165,7 @@
     <cms_page_classifications page_id="1" classification="other" />
     <cms_page_classifications page_id="2" classification="news" />
     
-    <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD" inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" />
+    <cms_sidebar_elements cms_sidebar_element_id="1" owner_page_id="1" type="browse" widget_mode="STANDARD" inner_html="&lt;h1&gt;Hello Sidebar&lt;/h1&gt;" widget_type="CMSSidebarElement" value="MD_TITLE_UNTOKENIZED" descending_order="false"/>
     
     <cms_navigation_items cms_navigation_item_id="1" item_label="item 1" page_url="url 1" item_order="1" />
     <cms_navigation_items cms_navigation_item_id="2" item_label="item 2" page_url="url 2" item_order="1"

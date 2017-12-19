@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -154,7 +156,7 @@ public class CMSPageLanguageVersion {
 	 *            the title to set
 	 */
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title != null ? Normalizer.normalize(title, Form.NFC) : title;
 	}
 
 	/**
@@ -169,7 +171,7 @@ public class CMSPageLanguageVersion {
 	 *            the menuTitle to set
 	 */
 	public void setMenuTitle(String menuTitle) {
-		this.menuTitle = menuTitle;
+		this.menuTitle = menuTitle != null ? Normalizer.normalize(menuTitle, Form.NFC) : "";
 	}
 
 	/**
@@ -193,11 +195,13 @@ public class CMSPageLanguageVersion {
 	 * @return
 	 */
 	public CMSContentItem getContentItem(String itemId) {
-		for (CMSContentItem item : getCompleteContentItemList()) {
-			if (item.getItemId().equals(itemId)) {
-				return item;
-			}
-		}
+	    if(getCompleteContentItemList() != null) {	        
+	        for (CMSContentItem item : getCompleteContentItemList()) {
+	            if (item.getItemId().equals(itemId)) {
+	                return item;
+	            }
+	        }
+	    }
 		return null;
 	}
 
@@ -207,11 +211,12 @@ public class CMSPageLanguageVersion {
 		}
 		return completeContentItemList;
 	}
+	
 
 	/**
 	 *
 	 */
-	private void generateCompleteContentItemList() {
+	protected void generateCompleteContentItemList() {
 		CMSPageLanguageVersion global = getOwnerPage().getLanguageVersion(CMSPage.GLOBAL_LANGUAGE);
 		completeContentItemList = new ArrayList<>();
 		if (CMSPage.GLOBAL_LANGUAGE.equals(this.getLanguage())) {
@@ -256,6 +261,8 @@ public class CMSPageLanguageVersion {
 				return;
 			}
 		}
+		item.setOwnerPageLanguageVersion(this);
 		contentItems.add(item);
+		generateCompleteContentItemList();
 	}
 }

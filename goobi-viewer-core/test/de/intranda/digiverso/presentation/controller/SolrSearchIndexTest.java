@@ -136,8 +136,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFacetsCorrectly() throws Exception {
         String[] facetFields = { SolrConstants._CALENDAR_YEAR, SolrConstants._CALENDAR_MONTH };
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays
-                .asList(facetFields), false);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays.asList(
+                facetFields), 0, false);
         Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_YEAR));
         Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_MONTH));
     }
@@ -149,8 +149,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFieldStatisticsForEveryFacetFieldIfRequested() throws Exception {
         String[] facetFields = { SolrConstants._CALENDAR_YEAR };
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays
-                .asList(facetFields), true);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays.asList(
+                facetFields), 0, true);
         Assert.assertNotNull(resp.getFieldStatsInfo());
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Assert.assertNotNull(info);
@@ -163,7 +163,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void searchFacetsAndStatistics_shouldNotReturnAnyDocs() throws Exception {
         QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Collections
-                .singletonList(SolrConstants._CALENDAR_YEAR), false);
+                .singletonList(SolrConstants._CALENDAR_YEAR), 0, false);
         Assert.assertTrue(resp.getResults().isEmpty());
     }
 

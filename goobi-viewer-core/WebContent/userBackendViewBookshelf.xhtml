@@ -19,10 +19,18 @@
     </ui:define>
 
 	<ui:define name="content">
-		<div id="viewBookshelf" class="page-wrapp">
+		<div id="viewBookshelf">
 			<h:panelGroup rendered="#{userBean.loggedIn}">
 				<h2>#{msg.bookshelf_changeBookshelfText}: #{bookshelfBean.currentBookshelf.name}</h2>
+				
+                <!-- MESSAGE -->
+                <h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
+                	<div class="alert alert-warning" role="alert">
+                        <h:outputText value="#{msg.errFunctionalityDisabled}" />                	
+                	</div>
+                </h:panelGroup>
 
+                <h:panelGroup rendered="#{configurationBean.bookshelvesEnabled}">
 				<h3>#{msg.bookshelf_items}</h3>
 				<h:panelGroup rendered="#{!bookshelfBean.newBookshelf}">
 				
@@ -117,6 +125,8 @@
 					<h:commandLink rendered="#{!bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToOtherBookshelves}"
 						action="pretty:userMenuOtherBookshelves" styleClass="btn" />
 				</h:form>
+			</h:panelGroup>
+			
 			</h:panelGroup>
 		</div>
 		<script type="text/javascript">

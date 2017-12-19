@@ -32,6 +32,8 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 
 /**
@@ -52,6 +54,12 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     private List<Metadata> metadata;
     private List<Metadata> sidebarMetadata;
 
+    /**
+     * 
+     * @param doc
+     * @param locale
+     * @throws IndexUnreachableException
+     */
     public EventElement(SolrDocument doc, Locale locale) throws IndexUnreachableException {
         type = (String) doc.getFieldValue(SolrConstants.EVENTTYPE);
         logger.debug("new EventElement: {}", (type == null ? "(no type)" : type));
@@ -116,6 +124,15 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         return 0;
     }
 
+    /**
+     * 
+     * @param metadata
+     * @param type
+     * @param doc
+     * @param locale
+     * @param recordLanguage
+     * @throws IndexUnreachableException
+     */
     private static void populateMetadata(List<Metadata> metadata, String type, SolrDocument doc, Locale locale) throws IndexUnreachableException {
         // Get metadata list for the event type
         if (metadata != null) {
@@ -207,7 +224,29 @@ public class EventElement implements Comparable<EventElement>, Serializable {
      * @return the metadata
      */
     public List<Metadata> getMetadata() {
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null) {
+            List<Metadata> ret = Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
+            return ret;
+        }
+
         return metadata;
+    }
+    
+    public boolean hasMetadata() {
+        if(metadata != null) {
+            return metadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean hasSidebarMetadata() {
+        if(sidebarMetadata != null) {
+            return sidebarMetadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        } else {
+            return false;
+        }
     }
 
     /**

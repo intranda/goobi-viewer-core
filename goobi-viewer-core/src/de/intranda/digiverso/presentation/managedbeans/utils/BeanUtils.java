@@ -32,7 +32,7 @@ import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
@@ -47,17 +47,13 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
 
     /**
+     * Gets the current Request from the faces context
      * 
      * @return
      */
     public static HttpServletRequest getRequest() {
         FacesContext context = FacesContext.getCurrentInstance();
-        if (context != null && context.getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-            return request;
-        }
-
-        return null;
+        return getRequest(context);
     }
 
     public static HttpServletRequest getRequest(FacesContext context) {
@@ -66,7 +62,7 @@ public class BeanUtils {
             return request;
         }
 
-        return getRequest();
+        return null;
     }
 
     /**

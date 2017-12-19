@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +42,10 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TocFunctionality;
+import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TrivialFunctionality;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
@@ -52,6 +58,13 @@ import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
 @Table(name = "cms_content_items")
 public class CMSContentItem implements Comparable<CMSContentItem> {
 
+    /**
+     * The different types if content items. The names of these types need to be
+     * entered into the cms-template xml files to define the type of content item
+     * 
+     * @author Florian Alpers
+     *
+     */
     public enum CMSContentItemType {
         TEXT,
         HTML,
@@ -59,11 +72,21 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         SOLRQUERY,
         PAGELIST,
         COLLECTION,
-        TILEGRID;
+        TILEGRID,
+        TOC,
+        RSS,
+        SEARCH,
+        COMPONENT;
 
+        /**
+         * This method evaluates the text from cms-template xml files to select the correct item type
+         * 
+         * @param name
+         * @return
+         */
         public static CMSContentItemType getByName(String name) {
             if (name != null) {
-                switch (name) {
+                switch (name.toUpperCase()) {
                     case "TEXT":
                         return TEXT;
                     case "HTML":
@@ -78,12 +101,36 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
                         return COLLECTION;
                     case "TILEGRID":
                         return TILEGRID;
+                    case "RSS":
+                        return RSS;
+                    case "TOC":
+                        return TOC;
+                    case "SEARCH":
+                        return CMSContentItemType.SEARCH;
+                    case "COMPONENT":
+                        return COMPONENT;
                     default:
                         return null;
                 }
             }
 
             return null;
+        }
+
+        /**
+         * Returns the required functionality object for this content item
+         * 
+         * @return
+         */
+        public Functionality createFunctionality(CMSContentItem item) {
+            switch (this) {
+                case TOC:
+                    return new TocFunctionality(item.getTocPI());
+                case SEARCH:
+                    return new SearchFunctionality(item.getSearchPrefix(), item.getOwnerPageLanguageVersion().getOwnerPage().getPageUrl());
+                default:
+                    return new TrivialFunctionality();
+            }
         }
     }
 
@@ -162,6 +209,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     @Column(name = "base_collection")
     private String baseCollection = null;
 
+    @Column(name = "toc_pi")
+    private String tocPI = "";
+    
+    @Column(name = "search_prefix")
+    private String searchPrefix;
+
     /**
      * For TileGrid
      */
@@ -179,10 +232,27 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Column(name = "tile_count")
     private int numberOfTiles = 9;
+    
+    @Column(name = "component")
+    private String component = null;
 
+    /**
+     * This object may contain item type specific functionality (methods and transient properties)
+     * 
+     */
+    @Transient
+    private Functionality functionality = null;
+
+    /**
+     * The collection for a collection view item
+     * TODO: Migrate this into a Functionality 
+     */
     @Transient
     private CollectionView collection = null;
 
+    /**
+     *  
+     */
     @Transient
     private boolean visible = false;
 
@@ -194,8 +264,61 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
 
     @Transient
     private int order = 0;
-    
-    
+
+    /**
+     * Noop constructor for javax.persistence 
+     */
+    public CMSContentItem() {
+        // TODO Auto-generated constructor stub
+    }
+
+    /**
+     * Contructs a copy of the given item, inheriting all non-transient properties
+     * This is a shallow copy, but all affected properties are either primitives or strings anyway
+     * Except mediaItem which is a shared resource
+     * 
+     * @param blueprint
+     */
+    public CMSContentItem(CMSContentItem blueprint) {
+        this.setItemId(blueprint.itemId);
+        this.setItemLabel(blueprint.itemLabel);
+        this.setType(blueprint.type);
+        this.setMandatory(blueprint.mandatory);
+        this.setOrder(blueprint.order);
+        this.setHtmlFragment(blueprint.getHtmlFragment());
+        this.setElementsPerPage(blueprint.elementsPerPage);
+        this.setBaseCollection(blueprint.getBaseCollection());
+        this.setCollectionBaseLevels(blueprint.getCollectionBaseLevels());
+        this.setCollectionField(blueprint.getCollectionField());
+        this.setCollectionOpenExpanded(blueprint.isCollectionOpenExpanded());
+        this.setBaseCollection(blueprint.getBaseCollection());
+        this.setMediaItem(blueprint.getMediaItem());
+        this.setPageClassification(blueprint.getPageClassification());
+    }
+
+    /**
+     * @return the functionality
+     */
+    public Functionality getFunctionality() {
+        if (functionality == null) {
+            initFunctionality();
+        }
+        return functionality;
+    }
+
+    /**
+     * @param type2
+     */
+    public CMSContentItem(CMSContentItemType type) {
+        this.type = type;
+    }
+
+    /**
+     * Creates the child class providing item-type specific functionality 
+     */
+    public void initFunctionality() {
+        this.functionality = getType().createFunctionality(this);
+    }
 
     /*
      * (non-Javadoc)
@@ -220,21 +343,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Override
     public CMSContentItem clone() {
-        CMSContentItem clone = new CMSContentItem();
-        clone.setItemId(itemId);
-        clone.setItemLabel(itemLabel);
-        clone.setType(type);
-        clone.setMandatory(mandatory);
-        clone.setOrder(order);
-        clone.setHtmlFragment(getHtmlFragment());
-        clone.setElementsPerPage(elementsPerPage);
-        clone.setBaseCollection(getBaseCollection());
-        clone.setCollectionBaseLevels(getCollectionBaseLevels());
-        clone.setCollectionField(getCollectionField());
-        clone.setCollectionOpenExpanded(isCollectionOpenExpanded());
-        clone.setBaseCollection(getBaseCollection());
-        clone.setMediaItem(getMediaItem());
-        clone.setPageClassification(getPageClassification());
+        CMSContentItem clone = new CMSContentItem(this);
         return clone;
     }
 
@@ -351,13 +460,16 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @param htmlFragment the htmlFragment to set
      */
     public void setHtmlFragment(String htmlFragment) {
-        this.htmlFragment = htmlFragment;
+        this.htmlFragment = htmlFragment != null ? Normalizer.normalize(htmlFragment, Form.NFC) : "";
     }
 
     /**
      * @return the solrQuery
      */
     public String getSolrQuery() {
+        if(getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality)getFunctionality()).getQueryString();
+        }
         return solrQuery;
     }
 
@@ -372,6 +484,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * @return the solrSortFields
      */
     public String getSolrSortFields() {
+        if(getType().equals(CMSContentItemType.SEARCH)) {
+            return ((SearchFunctionality)getFunctionality()).getSolrSortFields();
+        }
         return solrSortFields;
     }
 
@@ -537,6 +652,12 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.collection = null;
     }
 
+    /**
+     * Querys solr for a list of all values of the set collectionField which my serve as a collection
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
     public List<String> getPossibleBaseCollectionList() throws IndexUnreachableException {
         if (StringUtils.isBlank(collectionField)) {
             return Collections.singletonList("");
@@ -548,6 +669,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return list;
     }
 
+    /**
+     * Gets the current collection, creating it if neccessary
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
         if (this.collection == null) {
             this.collection = initializeCollection();
@@ -555,6 +683,13 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         return this.collection;
     }
 
+    /**
+     * Creates a collection view object from the item's collection related properties
+     * 
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     public CollectionView initializeCollection() throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(getCollectionField())) {
             throw new PresentationException("No solr field provided to create collection view");
@@ -645,9 +780,66 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.numberOfTiles = numberOfTiles;
     }
 
+    /**
+     * @return the piPeriodical
+     */
+    public String getTocPI() {
+        return tocPI;
+    }
+
+    /**
+     * @param piPeriodical the piPeriodical to set
+     */
+    public void setTocPI(String pi) {
+        this.tocPI = pi;
+        initFunctionality();
+    }
+
+    /**
+     * @return the searchPrefix
+     */
+    public String getSearchPrefix() {
+        return searchPrefix;
+    }
+    
+    /**
+     * @param searchPrefix the searchPrefix to set
+     */
+    public void setSearchPrefix(String searchPrefix) {
+        this.searchPrefix = searchPrefix;
+        initFunctionality();
+    }
+    
     @Override
     public String toString() {
         return CMSContentItem.class.getSimpleName() + ": " + getType() + " (" + getItemId() + ")";
+    }
+
+    /**
+     * Returns the content item mode from the template associated with the owning cmsPage 
+     * (i.e. The value always reflects the mode for this contentItem in the template xml for this page)
+     * Mode offers the ability to allow special options for a content item in some templates 
+     * (for example for the collection item, the extended mode allows finer control of the way the collection
+     * hierarchy is handled)
+     * 
+     * @return
+     */
+    public ContentItemMode getMode() {
+        return getOwnerPageLanguageVersion().getOwnerPage().getTemplate().getContentItem(getItemId()).getMode();
+    }
+    
+    /**
+     * @return the component
+     */
+    public String getComponent() {
+        return component;
+    }
+    
+    /**
+     * @param component the component to set
+     */
+    public void setComponent(String component) {
+        this.component = component;
     }
 
 }

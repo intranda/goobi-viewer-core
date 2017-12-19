@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 	<display-name>intranda viewer</display-name>
 	<listener>
 		<listener-class>de.intranda.digiverso.presentation.ContextListener</listener-class>
@@ -40,20 +40,26 @@
 		<param-name>primefaces.THEME</param-name>
 		<param-value>none</param-value>
 	</context-param>
-<!-- 	<context-param> -->
-<!-- 		<param-name>javax.faces.CONFIG_FILES</param-name> -->
-<!-- 		<param-value>faces-config.xml, /WEB-INF/faces-standard-config.xml</param-value> -->
-<!-- 	</context-param> -->
-    <context-param>
-        <param-name>com.ocpsoft.pretty.CONFIG_FILES</param-name>
-        <param-value>theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-crowd-config.xml</param-value>
-    </context-param>
+<!--     <context-param> -->
+<!--         <param-name>com.ocpsoft.pretty.CONFIG_FILES</param-name> -->
+<!--         <param-value>theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml</param-value> -->
+<!--     </context-param> -->
 	<!-- All f:convertDateTime widgets will use the server's time zone for output. 
 		Remove once the widgets are able to use the client's time zone. -->
 	<context-param>
 		<param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
 		<param-value>true</param-value>
 	</context-param>
+
+	<filter>
+		<filter-name>UrlRedirectFilter</filter-name>
+		<filter-class>de.intranda.digiverso.presentation.filters.UrlRedirectFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>UrlRedirectFilter</filter-name>
+		<url-pattern>*.xhtml</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
 
 	<filter>
 		<filter-name>Pretty Filter</filter-name>
@@ -93,17 +99,6 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>LoginFilter</filter-name>
-		<url-pattern>*.xhtml</url-pattern>
-		<dispatcher>REQUEST</dispatcher>
-		<dispatcher>FORWARD</dispatcher>
-	</filter-mapping>
-	
-	<filter>
-		<filter-name>UrlRedirectFilter</filter-name>
-		<filter-class>de.intranda.digiverso.presentation.filters.UrlRedirectFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>UrlRedirectFilter</filter-name>
 		<url-pattern>*.xhtml</url-pattern>
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>

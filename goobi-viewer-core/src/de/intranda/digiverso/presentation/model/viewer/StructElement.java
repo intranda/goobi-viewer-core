@@ -205,8 +205,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     private SolrDocument getDocument() throws PresentationException, IndexUnreachableException {
         // logger.trace("getDocument(): {}", luceneId);
-        SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC).append(':').append(
-                luceneId).toString(), 1, null, null);
+        SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC).append(':').append(luceneId)
+                .toString(), 1, null, null);
         if (!hits.isEmpty()) {
             exists = true;
             return hits.get(0);
@@ -422,8 +422,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getImageUrl(int width, int height, int rotation, boolean thumbnail, boolean ignoreWatermark) {
         String filename = getMetadataValue(SolrConstants.THUMBNAIL);
         if (filename != null) {
-            return Helper.getImageUrl(getMetadataValue(SolrConstants.PI_TOPSTRUCT), filename, getMetadataValue(SolrConstants.DATAREPOSITORY),
-                    width, height, rotation, thumbnail, ignoreWatermark);
+            return Helper.getImageUrl(getMetadataValue(SolrConstants.PI_TOPSTRUCT), filename, getMetadataValue(SolrConstants.DATAREPOSITORY), width,
+                    height, rotation, thumbnail, ignoreWatermark);
         }
 
         return null;
@@ -500,7 +500,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public boolean isAltoAvailable() throws IndexUnreachableException, PresentationException {
         if (altoAvailable == null) {
             altoAvailable = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND "
-                    + SolrConstants.ALTO + ":*") > 0;
+                    + SolrConstants.FILENAME_ALTO + ":*") > 0;
         }
 
         return altoAvailable;
@@ -600,8 +600,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             throw new IllegalArgumentException("field may not be null");
         }
         if (anchor) {
-            SolrDocument docParent = DataManager.getInstance().getSearchIndex().getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(
-                    ':').append(luceneId).toString(), Collections.singletonList(field));
+            SolrDocument docParent = DataManager.getInstance().getSearchIndex().getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':')
+                    .append(luceneId).toString(), Collections.singletonList(field));
             if (docParent == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {

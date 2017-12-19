@@ -54,34 +54,32 @@
 		<pattern value="/search/" />
 		<view-id value="/search.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
     <url-mapping id="searchadvanced">
         <pattern value="/searchadvanced/" />
         <view-id value="/searchAdvanced.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetCurrentCollection}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-    </url-mapping>
-        <url-mapping id="searchadvanced1">
-        <pattern value="/searchadvanced/#{currentCollection:searchBean.currentCollection}/" />
-        <view-id value="/searchAdvanced.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
     </url-mapping>
     <url-mapping id="searchtimeline">
         <pattern value="/searchtimeline/" />
         <view-id value="/searchTimeline.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(2)}</action>
     </url-mapping>
     <url-mapping id="searchcalendar">
         <pattern value="/searchcalendar/" />
         <view-id value="/searchCalendar.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
     </url-mapping>
 	<url-mapping id="statistics">
@@ -139,12 +137,14 @@
 		<view-id value="/user.xhtml" />
 	</url-mapping>
 
+    <!-- search -->
 	<url-mapping id="browse5">
 		<pattern
-			value="/browse/#{dc:searchBean.currentCollection}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{filter:searchBean.currentFacetString}/" />
+			value="/browse/#{dc:searchBean.facets.currentCollection}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{filter:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.newSearch}</action>
+		<action onPostback="false">#{searchBean.search}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 	</url-mapping>
 	<url-mapping id="newSearchTerm2">
 		<pattern
@@ -162,36 +162,84 @@
 	</url-mapping>
 	<url-mapping id="newSearch1">
         <pattern
-            value="/search/#{dc:searchBean.currentCollection}/" />
+            value="/search/#{dc:searchBean.facets.currentCollection}/" />
         <view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{searchBean.newSearch}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+    </url-mapping>
+        <url-mapping id="searchAdvanced1">
+        <pattern value="/searchadvanced/#{currentCollection:searchBean.facets.currentCollection}/" />
+        <view-id value="/searchAdvanced.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
     </url-mapping>
 	<url-mapping id="newSearch3">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.searchString}/#{page:searchBean.currentPage}/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.resetCurrentFacetString}</action>
-		<action onPostback="false">#{searchBean.newSearch}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch4">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
 		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.resetCurrentFacetString}</action>
-		<action onPostback="false">#{searchBean.newSearch}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
+    <url-mapping id="searchAdvanced4">
+        <pattern
+            value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
 	<url-mapping id="newSearch5">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.currentFacetString}/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.newSearch}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
+    <url-mapping id="searchAdvanced5">
+        <pattern
+            value="/searchadvanced/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
 	<url-mapping id="search6">
 		<pattern
-			value="/search/#{dc:searchBean.currentCollection}/#{dc:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.currentFacetString}/-/" />
+			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.newSearch}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
+	   <url-mapping id="searchAdvanced6">
+        <pattern
+            value="/searchadvanced/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
+    <url-mapping id="searchCalendar5">
+        <pattern
+            value="/searchcalendar/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
 
     <!-- overview -->
     <url-mapping id="overview2">
@@ -439,6 +487,37 @@
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	
+	<!-- calendar -->
+    <url-mapping id="calendar1">
+        <pattern
+            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="calendar2">
+        <pattern
+            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="calendar3">
+        <pattern
+            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="calendar3active">
+        <pattern
+            value="/!calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="calendar4">
+        <pattern
+            value="/calendar/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewCalendar.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 	
 	<!-- download -->
 	   <url-mapping id="download1">
@@ -517,6 +596,24 @@
         <pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="cmsOpenPageWithSearch">
+        <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" />
+        <view-id value="#{cmsBean.getCurrentPageUrl}" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+    </url-mapping>
+<!--     <url-mapping id="cmsOpenPageWithSearchSimple"> -->
+<!--         <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/#{sort:cmsBean.currentPage.search.solrSortFields}/#{currentFacetString:cmsBean.currentPage.search.facetString}/#{dc:cmsBean.currentPage.search.collection}/" /> -->
+<!--         <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+<!--         <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+<!--         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
+<!--     </url-mapping> -->
+    <url-mapping id="cmsOpenPageWithSearch5">
+        <pattern value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <view-id value="#{cmsBean.getCurrentPageUrl}" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
     </url-mapping>
     <url-mapping id="cmsOpenPagePreview">
         <pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />

@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -39,8 +41,11 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.language.Language;
+import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
@@ -225,16 +230,6 @@ public class ConfigurationBean implements Serializable {
         }
 
         return height;
-    }
-
-    public String getIipimageServerAddress() {
-        return DataManager.getInstance().getConfiguration().getIIPImageServer();
-    }
-
-    public String getPtifFolder() {
-        return "/opt/digiverso/viewer/ptif/";
-        // TODO change it in production
-        // return DataManager.getInstance().getConfiguration().getPtifFolder();
     }
 
     public boolean isShowSidebarEventMetadata() {
@@ -432,6 +427,78 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isSidebarTocTreeView();
     }
 
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarOverviewLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarPageLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarTocLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarCalendarLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarMetadataLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarThumbsLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarFulltextLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarDfgLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible();
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public boolean isSidebarOpacLinkVisible() {
+        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
+    }
+
     public boolean isTocTreeView(String docStructType) {
         return DataManager.getInstance().getConfiguration().isTocTreeView(docStructType);
     }
@@ -532,7 +599,17 @@ public class ConfigurationBean implements Serializable {
     }
 
     public List<String> getSortFields() {
-        return DataManager.getInstance().getConfiguration().getSortFields();
+        return DataManager.getInstance().getConfiguration().getSortFields().stream().filter(field -> !isLanguageVersionOtherThan(field, BeanUtils
+                .getLocale().getLanguage())).collect(Collectors.toList());
+    }
+
+    /**
+     * @param field
+     * @param language
+     * @return
+     */
+    private boolean isLanguageVersionOtherThan(String field, String language) {
+        return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
 
     public int getTocIndentation() {
@@ -638,8 +715,35 @@ public class ConfigurationBean implements Serializable {
     public boolean isSearchExcelExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
-    
-    public boolean isDoublePageModeEnabled()  {
+
+    public boolean isDoublePageModeEnabled() {
         return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
+    }
+
+    public String getIiifApiUrl() {
+        return DataManager.getInstance().getConfiguration().getIiifUrl();
+    }
+
+    public String getIso639_1(String language) {
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCodeOld();
+    }
+
+    public String getIso639_2B(String language) {
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCode();
+    }
+
+    public String getTranslation(String language, String locale) {
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
+        switch (locale.toLowerCase()) {
+            case "de":
+            case "ger":
+                return lang.getGermanName();
+            case "fre":
+            case "fra":
+            case "fr":
+                return lang.getFrenchName();
+            default:
+                return lang.getEnglishName();
+        }
     }
 }

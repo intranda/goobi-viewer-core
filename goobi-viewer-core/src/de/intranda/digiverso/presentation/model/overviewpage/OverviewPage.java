@@ -20,8 +20,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +63,7 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.misc.Harvestable;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
@@ -309,7 +307,7 @@ public class OverviewPage implements Harvestable, Serializable {
                         description = config.getRootElement().getChildText("description", null);
                     }
                 }
-                 logger.trace("Description: {}", description);
+                logger.trace("Description: {}", description);
             }
             // Publication text (only load from XML if not yet in the database column)
             if (publicationText == null) {
@@ -506,6 +504,11 @@ public class OverviewPage implements Harvestable, Serializable {
     }
 
     public List<Metadata> getMetadata() {
+        ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+        if (adb != null && adb.isRecordLoaded()) {
+            return Metadata.filterMetadataByLanguage(metadata, adb.getSelectedRecordLanguage());
+        }
+
         return metadata;
     }
 
@@ -551,7 +554,7 @@ public class OverviewPage implements Harvestable, Serializable {
         List<String> ret = new ArrayList<>();
 
         for (Metadata md : allMetadata) {
-            if (!metadata.contains(md) && !md.isEmpty()) {
+            if (!metadata.contains(md) && !md.isBlank()) {
                 ret.add(md.getLabel());
             }
         }
@@ -821,16 +824,7 @@ public class OverviewPage implements Harvestable, Serializable {
             }
 
             // Re-index record
-            Helper.reIndexRecord(pi, structElement.getSourceDocFormat(), this);
-
-            // Serialize for Goobi
-            if (exportToGoobi && StringUtils.isNotEmpty(DataManager.getInstance().getConfiguration().getGoobiWebApiUrl())) {
-                if (exportConfigToGoobi()) {
-                    Messages.info("goobiExportSuccess");
-                } else {
-                    Messages.error("errGoobiExport");
-                }
-            }
+            Helper.triggerReIndexRecord(pi, structElement.getSourceDocFormat(), this);
         }
 
         resetEditModes();
@@ -884,23 +878,6 @@ public class OverviewPage implements Harvestable, Serializable {
         return "";
     }
 
-    /**
-     *
-     * @return
-     */
-    protected boolean exportConfigToGoobi() {
-        try (StringWriter sw = new StringWriter()) {
-            new XMLOutputter().output(config, sw);
-            String configString = sw.getBuffer().toString();
-            String url = new StringBuilder(DataManager.getInstance().getConfiguration().getGoobiWebApiUrl()).append("&command=viewer_update&process=")
-                    .append(pi).append("&foldername=").append(pi).append("_overview&filename=").append(pi).append(".xml").toString();
-            return Helper.sendDataAsStream(url, configString);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            return false;
-        }
-    }
-
     public List<OverviewPageUpdate> getHistory() throws DAOException {
         return DataManager.getInstance().getDao().getOverviewPageUpdatesForRecord(pi);
     }
@@ -950,12 +927,14 @@ public class OverviewPage implements Harvestable, Serializable {
         }
 
         Path overviewPageDir = Paths.get(hotfolderPath, namingScheme + "_overview");
-        Files.createDirectory(overviewPageDir);
+        if (!Files.isDirectory(overviewPageDir)) {
+            Files.createDirectory(overviewPageDir);
+        }
         logger.trace("Created overview page subdirectory: {}", overviewPageDir.toAbsolutePath().toString());
         if (StringUtils.isNotEmpty(description)) {
             File file = new File(overviewPageDir.toFile(), "description.xml");
             try {
-                FileUtils.writeStringToFile(file, description, Charset.forName(Helper.DEFAULT_ENCODING));
+                FileUtils.writeStringToFile(file, description, Helper.DEFAULT_ENCODING);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
@@ -963,7 +942,7 @@ public class OverviewPage implements Harvestable, Serializable {
         if (StringUtils.isNotEmpty(publicationText)) {
             File file = new File(overviewPageDir.toFile(), "publicationtext.xml");
             try {
-                FileUtils.writeStringToFile(file, publicationText, Charset.forName(Helper.DEFAULT_ENCODING));
+                FileUtils.writeStringToFile(file, publicationText, Helper.DEFAULT_ENCODING);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }

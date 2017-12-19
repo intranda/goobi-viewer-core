@@ -44,8 +44,8 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem;
-import de.intranda.digiverso.presentation.model.user.User;
-import de.intranda.digiverso.presentation.model.user.UserGroup;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
 
 @ManagedBean

@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -88,12 +89,17 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 import de.intranda.digiverso.presentation.Version;
+import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 /**
@@ -134,9 +140,12 @@ public class Helper {
     public static DateTimeFormatter formatterENDateTime = DateTimeFormat.forPattern("MM/dd/yyyy h:mm:ss a");
     public static DateTimeFormatter formatterDEDate = DateTimeFormat.forPattern("dd.MM.yyyy");
     public static DateTimeFormatter formatterENDate = DateTimeFormat.forPattern("MM/dd/yyyy");
+    public static DateTimeFormatter formatterCNDate = DateTimeFormat.forPattern("yyyy.MM.dd");
+    public static DateTimeFormatter formatterJPDate = DateTimeFormat.forPattern("yyyy/MM/dd");;
     public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
     public static DecimalFormat dfTwoDecimals = new DecimalFormat("0.00");
+    public static DecimalFormat dfTwoDigitInteger = new DecimalFormat("00");
 
     public static Namespace nsAlto = Namespace.getNamespace("alto", "http://www.loc.gov/standards/alto/ns-v2#");
     // TODO final namespaces
@@ -198,15 +207,14 @@ public class Helper {
     public static List<Date> parseMultipleDatesFromString(String dateString) {
         List<Date> ret = new ArrayList<>();
 
-        // logger.debug("Parsing date string : " + dateString);
+        // logger.debug("Parsing date string : {}", dateString);
         if (StringUtils.isNotEmpty(dateString)) {
             String splittingChar = "/";
             String[] dateStringSplit = dateString.split(splittingChar);
             for (String s : dateStringSplit) {
                 s = s.trim();
 
-                // Try finding a complete date in the string (enclosed in
-                // parentheses)
+                // Try finding a complete date in the string (enclosed in parentheses)
                 Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
                 Matcher m = p.matcher(s);
                 if (m.find()) {
@@ -215,6 +223,7 @@ public class Helper {
                     Date date = parseDateFromString(s);
                     if (date != null) {
                         ret.add(date);
+                        continue;
                     }
                 }
 
@@ -241,6 +250,11 @@ public class Helper {
      *
      * @param dateString
      * @return
+     * @should parse iso date formats correctly
+     * @should parse german date formats correctly
+     * @should parse english date formats correctly
+     * @should parse chinese date formats correctly
+     * @should parse japanese date formats correctly
      *
      */
     public static DateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
@@ -272,6 +286,10 @@ public class Helper {
         } catch (IllegalArgumentException e) {
         }
         try {
+            return formatterISO8601YearMonth.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
             return formatterDEDateTime.parseDateTime(dateString);
         } catch (IllegalArgumentException e) {
         }
@@ -285,6 +303,14 @@ public class Helper {
         }
         try {
             return formatterENDate.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            return formatterJPDate.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            return formatterCNDate.parseDateTime(dateString);
         } catch (IllegalArgumentException e) {
         }
 
@@ -365,7 +391,7 @@ public class Helper {
             }
         }
 
-        logger.trace("Parsed IP address: {}", address);
+        // logger.trace("Parsed IP address: {}", address);
         return address;
     }
 
@@ -608,7 +634,39 @@ public class Helper {
     }
 
     /**
-     *
+     * Re-index in background thread to significantly decrease saving times.
+     * 
+     * @param pageCompleted
+     * @return
+     * @throws ModuleMissingException
+     */
+    public static void triggerReIndexRecord(String pi, String recordType, OverviewPage overviewPage) {
+        Thread backgroundThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    if (!Helper.reIndexRecord(pi, recordType, overviewPage)) {
+                        logger.error("Failed to re-index  record {}", pi);
+                        Messages.error("reIndexRecordFailure");
+                    } else {
+                        Messages.info("reIndexRecordSuccess");
+                    }
+                } catch (DAOException e) {
+                    logger.error("Failed to reindex record " + pi + ": " + e.getMessage(), e);
+                    Messages.error("reIndexRecordFailure");
+                }
+            }
+        });
+
+        logger.debug("Re-indexing record {}", pi);
+        backgroundThread.start();
+    }
+
+    /**
+     * Writes the record into the hotfolder for re-indexing. Modules can contribute data for re-indexing. Execution of method can take a while, so if
+     * performance is of importance, use <code>triggerReIndexRecord</code> instead.
+     * 
      * @param pi
      * @param recordType
      * @param overviewPage
@@ -669,7 +727,7 @@ public class Helper {
             try {
                 overviewPage.exportTextData(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -718,8 +776,8 @@ public class Helper {
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
-                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.ALTO, SolrConstants.FULLTEXT,
-                        SolrConstants.UGCTERMS }));
+                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO,
+                        SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);
@@ -729,24 +787,24 @@ public class Helper {
         StringBuilder sbNamingScheme = new StringBuilder(pi).append('#').append(iddoc);
 
         // Module augmentations
+        boolean writeTriggerFile = true;
         for (IModule module : DataManager.getInstance().getModules()) {
             try {
-                module.augmentReIndexPage(pi, page, doc, recordType, dataRepository, sbNamingScheme.toString());
+                if (!module.augmentReIndexPage(pi, page, doc, recordType, dataRepository, sbNamingScheme.toString())) {
+                    writeTriggerFile = false;
+                }
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
 
         // Create trigger file in hotfolder
-        Path triggerFile = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".docupdate");
-        try {
+        if (writeTriggerFile) {
+            Path triggerFile = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".docupdate");
             Files.createFile(triggerFile);
-            return true;
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -803,6 +861,18 @@ public class Helper {
 
     /**
      * 
+     * @param dataRepository
+     * @param filePath
+     * @return
+     * @should build url correctly
+     */
+    public static String buildFullTextUrl(String dataRepository, String filePath) {
+        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(StringUtils.isEmpty(
+                dataRepository) ? '-' : dataRepository).append('/').append(filePath).append('/').toString();
+    }
+
+    /**
+     * 
      * @param urlString
      * @return
      * @throws ClientProtocolException
@@ -818,7 +888,6 @@ public class Helper {
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
-                    logger.trace(code + ": " + response.getStatusLine().getReasonPhrase());
                     IOUtils.copy(response.getEntity().getContent(), writer);
                     return writer.toString();
                 }
@@ -916,13 +985,13 @@ public class Helper {
 
         StringBuilder url = new StringBuilder(200);
         if (StringUtils.isNotEmpty(dataRepository)) {
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
             url.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=file:/").append(
-                    DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? "/" : "").append(DataManager
-                            .getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(DataManager
-                                    .getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append('/').append(fileName).append(
-                                            "&width=").append(width).append("&height=").append(height).append("&rotate=").append(rotation).append(
-                                                    "&resolution=72").append(DataManager.getInstance().getConfiguration().isForceJpegConversion()
-                                                            ? "&format=jpg" : "");
+                    (StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "").append(dataRepositoriesHome)
+                    .append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi)
+                    .append('/').append(fileName).append("&width=").append(width).append("&height=").append(height).append("&rotate=").append(
+                            rotation).append("&resolution=72").append(DataManager.getInstance().getConfiguration().isForceJpegConversion()
+                                    ? "&format=jpg" : "");
         } else {
             url.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=").append(pi)
                     .append('/').append(fileName).append("&width=").append(width).append("&height=").append(height).append("&rotate=").append(
@@ -940,6 +1009,7 @@ public class Helper {
     }
 
     /**
+     * Returns the absolute path to the data repository with the given name (including a slash at the end).
      *
      * @param dataRepository
      * @return
@@ -984,6 +1054,37 @@ public class Helper {
                 break;
         }
         sb.append('/').append(fileName);
+
+        return sb.toString();
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param fileName
+     * @param dataRepository
+     * @param format
+     * @return
+     * @should return correct path
+     */
+    public static String getTextFilePath(String pi, String fileName, String dataRepository, String format) {
+        if (StringUtils.isEmpty(fileName)) {
+            throw new IllegalArgumentException("fileName may not be null or empty");
+        }
+
+        StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
+        switch (format) {
+            case SolrConstants.FILENAME_ALTO:
+                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
+                break;
+            case SolrConstants.FILENAME_FULLTEXT:
+                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
+                break;
+            case SolrConstants.FILENAME_TEI:
+                sb.append(DataManager.getInstance().getConfiguration().getTeiFolder());
+                break;
+        }
+        sb.append('/').append(pi).append('/').append(fileName);
 
         return sb.toString();
     }
@@ -1064,5 +1165,63 @@ public class Helper {
             return null;
         }
         return string.intern();
+    }
+
+    /**
+     * Loads full-text via the REST service. ALTO is preferred, with a plain text fallback.
+     * 
+     * @param pi
+     * @param dataRepository
+     * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
+     * @param fulltextFilePath plain full-text file path relative to the repository root (e.g. "fulltext/PPN123/00000001.xml")
+     * @param request
+     * @return
+     * @throws AccessDeniedException
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @should load fulltext from alto correctly
+     * @should load fulltext from plain text correctly
+     */
+    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
+            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+        String ret = null;
+
+        if (altoFilePath != null) {
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, altoFilePath,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFilePath);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+
+            // ALTO file
+            String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
+            try {
+                String alto = Helper.getWebContentGET(url);
+                ret = ALTOTools.getFullText(alto);
+            } catch (HTTPException e) {
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
+            }
+        }
+
+        if (ret == null && fulltextFilePath != null) {
+            // Plain full-text file
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, fulltextFilePath,
+                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+                logger.debug("Access denied for ALTO file {}", altoFilePath);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+            String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
+            try {
+                ret = Helper.getWebContentGET(url);
+            } catch (HTTPException e) {
+                logger.error("Could not retrieve file from {}", url);
+                logger.error(e.getMessage());
+            }
+        }
+
+        return ret;
     }
 }

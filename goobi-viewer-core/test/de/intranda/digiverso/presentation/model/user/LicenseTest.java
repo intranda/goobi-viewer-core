@@ -20,6 +20,8 @@ import java.util.Calendar;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.model.security.License;
+
 public class LicenseTest {
 
     /**

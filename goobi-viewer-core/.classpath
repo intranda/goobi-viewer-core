@@ -26,7 +26,7 @@
 	<classpathentry kind="lib" path="lib/lucene-join-4.10.4.jar"/>
 	<classpathentry kind="lib" path="lib/org.restlet-2.1.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/alto.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ics.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/ics.jar" sourcepath="/intrandaContentServer"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/primefaces-6.0.jar"/>
 	<classpathentry kind="lib" path="lib/h2-1.4.193.jar"/>
 	<classpathentry kind="lib" path="lib/dbunit-2.5.3.jar"/>
@@ -36,10 +36,7 @@
 			<attribute name="owner.project.facets" value="#system#;jst.web"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

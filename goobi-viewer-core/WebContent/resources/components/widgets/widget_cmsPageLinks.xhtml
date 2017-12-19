@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+
+	<composite:interface>
+			<composite:attribute name="widget" type="de.intranda.digiverso.presentation.model.cms.CMSSidebarElement" required="true" />
+	</composite:interface>
+
+    <composite:implementation>
+    	<h:form id="customDrillDownForm" prependId="false">
+			<h:panelGroup class="cms-page-links" rendered="#{cc.attrs.widget != null and cc.attrs.widget.type == 'widgetCmsPageLinks'}">
+				<div id="widgetCmsPageLinks-#{cc.attrs.widget.order}" class="widget #{cc.attrs.widget.cssClass}">
+					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD'}">
+						<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+							<h3>#{msg[cc.attrs.widget.widgetTitle]}</h3>
+						</ui:fragment>
+
+						<ul>
+							<ui:repeat value="#{cc.attrs.widget.linkedPages.pages}" var="pageId">
+								<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.toString().equals(pageId) ? 'active': ''}">
+									<a href="#{cmsBean.getPageUrl(pageId)}">
+										#{cmsBean.getPage(pageId).menuTitle}
+									</a>
+								</li>
+							</ui:repeat>
+						</ul>
+					</h:panelGroup>
+					<h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'FOLDOUT'}">
+						<h3>
+							<ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
+								#{msg[cc.attrs.widget.widgetTitle]}
+							</ui:fragment>
+							<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
+								#{msg[cc.attrs.widget.type]}
+							</ui:fragment>
+							<a href="#customCollapse-#{cc.attrs.widget.order}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse"> #{msg[cc.attrs.widget.type]} <span
+								class="glyphicon glyphicon-arrow-down"></span>
+							</a>
+						</h3>
+
+						<ul>
+							<ui:repeat value="#{cc.attrs.widget.linkedPages}" var="pageId">
+								<li class="#{cmsBean.currentPage.id != null and cmsBean.currentPage.id.equals(pageId)}">
+									<a href="">
+										#{msg[pageId]}
+									</a>
+								</li>
+							</ui:repeat>
+						</ul>
+						<div id="customCollapse-#{cc.attrs.widget.order}" class="collapse">
+							<ui:include src="#{cc.attrs.widget.content}" />
+						</div>
+					</h:panelGroup>
+				</div>
+        	</h:panelGroup>
+		</h:form>
+    </composite:implementation>
+</ui:composition>

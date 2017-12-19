@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>DocStrap Module: downloadModal</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">DocStrap</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="cmsJS.module_createPage.html">cmsJS.createPage</a></li><li><a href="cmsJS.module_geoLocations.html">cmsJS.geoLocations</a></li><li><a href="cmsJS.module_masonry.html">cmsJS.masonry</a></li><li><a href="cmsJS.module_rssFeed.html">cmsJS.rssFeed</a></li><li><a href="cmsJS.module_sortableList.html">cmsJS.sortableList</a></li><li><a href="cmsJS.module_stackedCollection.html">cmsJS.stackedCollection</a></li><li><a href="cmsJS.module_staticGrid.html">cmsJS.staticGrid</a></li><li><a href="cmsJS.module_tagList.html">cmsJS.tagList</a></li><li><a href="cmsJS.module_tileGrid.html">cmsJS.tileGrid</a></li><li><a href="module-cmsJS.html">cmsJS</a></li><li><a href="module-viewerJS.html">viewerJS</a></li><li><a href="module-viewImage.html">viewImage</a></li><li><a href="viewerJS.module_calendarPopover.html">viewerJS.calendarPopover</a></li><li><a href="viewerJS.module_changeFontSize.html">viewerJS.changeFontSize</a></li><li><a href="viewerJS.module_dataTable.html">viewerJS.dataTable</a></li><li><a href="viewerJS.module_dateSortedFeed.html">viewerJS.dateSortedFeed</a></li><li><a href="viewerJS.module_download.html">viewerJS.download</a></li><li><a href="viewerJS.module_downloadModal.html">viewerJS.downloadModal</a></li><li><a href="viewerJS.module_editComment.html">viewerJS.editComment</a></li><li><a href="viewerJS.module_helper.html">viewerJS.helper</a></li><li><a href="viewerJS.module_navigation.html">viewerJS.navigation</a></li><li><a href="viewerJS.module_nerFacetting.html">viewerJS.nerFacetting</a></li><li><a href="viewerJS.module_nerFulltext.html">viewerJS.nerFulltext</a></li><li><a href="viewerJS.module_normdata.html">viewerJS.normdata</a></li><li><a href="viewerJS.module_pageScroll.html">viewerJS.pageScroll</a></li><li><a href="viewerJS.module_responsiveColumnGallery.html">viewerJS.responsiveColumnGallery</a></li><li><a href="viewerJS.module_searchAdvanced.html">viewerJS.searchAdvanced</a></li><li><a href="viewerJS.module_searchList.html">viewerJS.searchList</a></li><li><a href="viewerJS.module_searchSortingDropdown.html">viewerJS.searchSortingDropdown</a></li><li><a href="viewerJS.module_simpleLightbox.html">viewerJS.simpleLightbox</a></li><li><a href="viewerJS.module_stackedThumbnails.html">viewerJS.stackedThumbnails</a></li><li><a href="viewerJS.module_timematrix.html">viewerJS.timematrix</a></li><li><a href="viewerJS.module_tinyMce.html">viewerJS.tinyMce</a></li><li><a href="viewerJS.module_versionHistory.html">viewerJS.versionHistory</a></li><li><a href="viewImage.controls.module_persistence.html">viewImage.controls.persistence</a></li><li><a href="viewImage.module_controls.html">viewImage.controls</a></li><li><a href="viewImage.module_drawLine.html">viewImage.drawLine</a></li><li><a href="viewImage.module_drawRect.html">viewImage.drawRect</a></li><li><a href="viewImage.module_Measures.html">viewImage.Measures</a></li><li><a href="viewImage.module_overlays.html">viewImage.overlays</a></li><li><a href="viewImage.module_readingMode.html">viewImage.readingMode</a></li><li><a href="viewImage.module_tileSourceResolver.html">viewImage.tileSourceResolver</a></li><li><a href="viewImage.module_transformRect.html">viewImage.transformRect</a></li><li><a href="viewImage.module_zoomSlider.html">viewImage.zoomSlider</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#_buildGrid">_buildGrid</a></li><li><a href="global.html#_buildPopover">_buildPopover</a></li><li><a href="global.html#_calcSubMenuPosition">_calcSubMenuPosition</a></li><li><a href="global.html#_calculateFirstLevelPopoverPosition">_calculateFirstLevelPopoverPosition</a></li><li><a href="global.html#_calculateNerPopoverPosition">_calculateNerPopoverPosition</a></li><li><a href="global.html#_calculatePopoverPosition">_calculatePopoverPosition</a></li><li><a href="global.html#_centerModalBox">_centerModalBox</a></li><li><a href="global.html#_changePos">_changePos</a></li><li><a href="global.html#_checkSidebarStatus">_checkSidebarStatus</a></li><li><a href="global.html#_cleanUpLocalStorage">_cleanUpLocalStorage</a></li><li><a href="global.html#_closeAllNormdataPopovers">_closeAllNormdataPopovers</a></li><li><a href="global.html#_closeNormdataPopover">_closeNormdataPopover</a></li><li><a href="global.html#_createListElement">_createListElement</a></li><li><a href="global.html#_createTagInputElement">_createTagInputElement</a></li><li><a href="global.html#_dateConverter">_dateConverter</a></li><li><a href="global.html#_degradeFontSize">_degradeFontSize</a></li><li><a href="global.html#_getApiUrl">_getApiUrl</a></li><li><a href="global.html#_getCenterCoords">_getCenterCoords</a></li><li><a href="global.html#_getImageName">_getImageName</a></li><li><a href="global.html#_getImagePath">_getImagePath</a></li><li><a href="global.html#_getJQueryItem">_getJQueryItem</a></li><li><a href="global.html#_getLevel">_getLevel</a></li><li><a href="global.html#_getMapFeatures">_getMapFeatures</a></li><li><a href="global.html#_getPageCount">_getPageCount</a></li><li><a href="global.html#_getPopoverContent">_getPopoverContent</a></li><li><a href="global.html#_getRemoteData">_getRemoteData</a></li><li><a href="global.html#_handleBeforeDropFromAvailable">_handleBeforeDropFromAvailable</a></li><li><a href="global.html#_handleClickTerminator">_handleClickTerminator</a></li><li><a href="global.html#_handleDrop">_handleDrop</a></li><li><a href="global.html#_handleInputChange">_handleInputChange</a></li><li><a href="global.html#_hideCurrentTags">_hideCurrentTags</a></li><li><a href="global.html#_initNerPopover">_initNerPopover</a></li><li><a href="global.html#_parseFontSize">_parseFontSize</a></li><li><a href="global.html#_raiseFontSize">_raiseFontSize</a></li><li><a href="global.html#_readTags">_readTags</a></li><li><a href="global.html#_removeNerPopover">_removeNerPopover</a></li><li><a href="global.html#_removePopovers">_removePopovers</a></li><li><a href="global.html#_renderChildHits">_renderChildHits</a></li><li><a href="global.html#_renderCollections">_renderCollections</a></li><li><a href="global.html#_renderFeed">_renderFeed</a></li><li><a href="global.html#_renderGetMoreChildren">_renderGetMoreChildren</a></li><li><a href="global.html#_renderHitSetTitle">_renderHitSetTitle</a></li><li><a href="global.html#_renderList">_renderList</a></li><li><a href="global.html#_renderMasonryGrid">_renderMasonryGrid</a></li><li><a href="global.html#_renderMetdataInfo">_renderMetdataInfo</a></li><li><a href="global.html#_renderNerPopover">_renderNerPopover</a></li><li><a href="global.html#_renderNerPopoverDetail">_renderNerPopoverDetail</a></li><li><a href="global.html#_renderOverview">_renderOverview</a></li><li><a href="global.html#_renderPageBubble">_renderPageBubble</a></li><li><a href="global.html#_renderPopover">_renderPopover</a></li><li><a href="global.html#_renderPopoverAction">_renderPopoverAction</a></li><li><a href="global.html#_renderRssFeed">_renderRssFeed</a></li><li><a href="global.html#_renderSection">_renderSection</a></li><li><a href="global.html#_renderSectionTags">_renderSectionTags</a></li><li><a href="global.html#_renderSliderBubble">_renderSliderBubble</a></li><li><a href="global.html#_renderSubChildHits">_renderSubChildHits</a></li><li><a href="global.html#_renderSubCollections">_renderSubCollections</a></li><li><a href="global.html#_renderThumbs">_renderThumbs</a></li><li><a href="global.html#_resetFacettingIcons">_resetFacettingIcons</a></li><li><a href="global.html#_resetMenus">_resetMenus</a></li><li><a href="global.html#_resetSubMenus">_resetSubMenus</a></li><li><a href="global.html#_saveFontSize">_saveFontSize</a></li><li><a href="global.html#_scrollPage">_scrollPage</a></li><li><a href="global.html#_serializeVisibleItems">_serializeVisibleItems</a></li><li><a href="global.html#_setButtonState">_setButtonState</a></li><li><a href="global.html#_setFontSize">_setFontSize</a></li><li><a href="global.html#_setSidebarButtonPosition">_setSidebarButtonPosition</a></li><li><a href="global.html#_setSidebarTabHeight">_setSidebarTabHeight</a></li><li><a href="global.html#_setupLightBox">_setupLightBox</a></li><li><a href="global.html#_setViewportHeight">_setViewportHeight</a></li><li><a href="global.html#_showContent">_showContent</a></li><li><a href="global.html#_showCurrentTags">_showCurrentTags</a></li><li><a href="global.html#_updateAllSortIcons">_updateAllSortIcons</a></li><li><a href="global.html#_updateSortIcons">_updateSortIcons</a></li><li><a href="global.html#_writeTags">_writeTags</a></li><li><a href="global.html#addTag">addTag</a></li><li><a href="global.html#buildAPICall">buildAPICall</a></li><li><a href="global.html#centerLightbox">centerLightbox</a></li><li><a href="global.html#checkboxValidation">checkboxValidation</a></li><li><a href="global.html#checkForSmallViewport">checkForSmallViewport</a></li><li><a href="global.html#checkLocalStorage">checkLocalStorage</a></li><li><a href="global.html#close">close</a></li><li><a href="global.html#contains">contains</a></li><li><a href="global.html#decreaseLevel">decreaseLevel</a></li><li><a href="global.html#deleteTag">deleteTag</a></li><li><a href="global.html#detectIEVersion">detectIEVersion</a></li><li><a href="global.html#disablePreview">disablePreview</a></li><li><a href="global.html#enablePreview">enablePreview</a></li><li><a href="global.html#equalHeight">equalHeight</a></li><li><a href="global.html#fixedHeight">fixedHeight</a></li><li><a href="global.html#getCurrentBrowser">getCurrentBrowser</a></li><li><a href="global.html#getDataEncoding">getDataEncoding</a></li><li><a href="global.html#getDataSortOrder">getDataSortOrder</a></li><li><a href="global.html#getRemoteData">getRemoteData</a></li><li><a href="global.html#getTag">getTag</a></li><li><a href="global.html#getTags">getTags</a></li><li><a href="global.html#getTagValues">getTagValues</a></li><li><a href="global.html#getValue">getValue</a></li><li><a href="global.html#getWorkInfo">getWorkInfo</a></li><li><a href="global.html#increaseLevel">increaseLevel</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initModal">initModal</a></li><li><a href="global.html#initSortables">initSortables</a></li><li><a href="global.html#prepareLightbox">prepareLightbox</a></li><li><a href="global.html#renderAlert">renderAlert</a></li><li><a href="global.html#renderColumns">renderColumns</a></li><li><a href="global.html#renderImages">renderImages</a></li><li><a href="global.html#renderLightbox">renderLightbox</a></li><li><a href="global.html#renderModal">renderModal</a></li><li><a href="global.html#renderModalBody">renderModalBody</a></li><li><a href="global.html#renderWarningPopover">renderWarningPopover</a></li><li><a href="global.html#saveSidebarTocPosition">saveSidebarTocPosition</a></li><li><a href="global.html#saveTags">saveTags</a></li><li><a href="global.html#setDataCount">setDataCount</a></li><li><a href="global.html#setDataEncoding">setDataEncoding</a></li><li><a href="global.html#Statistics">Statistics</a></li><li><a href="global.html#switchClass">switchClass</a></li><li><a href="global.html#truncateString">truncateString</a></li><li><a href="global.html#validateReCaptcha">validateReCaptcha</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Module: downloadModal</h1>
+<section>
+
+<header>
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>This file is part of the Goobi viewer - a content presentation and management<br>application for digitized objects.</p>
+<p>Visit these websites for more information. - http://www.intranda.com -<br>http://digiverso.com</p>
+<p>This program is free software; you can redistribute it and/or modify it under the terms<br>of the GNU General Public License as published by the Free Software Foundation; either<br>version 2 of the License, or (at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY<br>WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A<br>PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along with this<br>program. If not, see <http://www.gnu.org/licenses/>.</p>
+<p>Module which generates a download modal which dynamic content.</p></div>
+        
+
+        
+<dl class="details">
+    
+
+	
+	<dt class="tag-version method-doc-label method-doc-details-label">Version:</dt>
+	<dd class="tag-version">
+		<ul class="dummy">
+			<li>3.2.0</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.downloadModal.js.html">viewer/viewerJS.downloadModal.js</a>,
+				 <a href="viewer_viewerJS.downloadModal.js.html#sunlight-1-line-1">line 1</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+        <h3 class="subsection-title">Requires</h3>
+
+        <ul>
+            <li>module:jQuery</li>
+        </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="~buildAPICall"><span class="type-signature">&lt;inner> </span>buildAPICall(path, type, pi, logid, email)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method which returns an URL to trigger the ITM download task.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The current application path.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The current file type to download.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pi</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The PI of the current work.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>logid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The LOG_ID of the current work.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The current user email.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.downloadModal.js.html">viewer/viewerJS.downloadModal.js</a>,
+				 <a href="viewer_viewerJS.downloadModal.js.html#sunlight-1-line-324">line 324</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The URL to trigger the ITM download task.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~getWorkInfo"><span class="type-signature">&lt;inner> </span>getWorkInfo(pi, logid)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method which returns a promise if the work info has been reached.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pi</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The PI of the work.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>logid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The LOG_ID of the work.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.downloadModal.js.html">viewer/viewerJS.downloadModal.js</a>,
+				 <a href="viewer_viewerJS.downloadModal.js.html#sunlight-1-line-377">line 377</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>A promise object if the info has been reached.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~init"><span class="type-signature">&lt;inner> </span>init(config)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method to initialize the download modal mechanic.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>config</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An config object which overwrites the defaults.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dataType</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The data type of the current file to download.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dataTitle</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The title of the current file to download.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dataId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The LOG_ID of the current file to download.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dataPi</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The PI of the current file to download.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>downloadBtn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A collection of all buttons with the class<br>attribute 'download-modal'.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reCaptchaSiteKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The site key for the google reCAPTCHA,<br>fetched from the viewer config.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The current application path.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>apiUrl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The URL to trigger the ITM download task.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userEmail</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The current user email if the user is logged<br>in. Otherwise the one which the user enters or leaves blank.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>modal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A configuration object for the download modal.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The ID of the modal.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>label</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The label of the modal.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>string</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An object of strings for the modal content.</p>
+                <h6 class="method-params-label method-subparams-label">Properties</h6>
+                
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The title of the modal.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>body</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The content of the modal as HTML.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>closeBtn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Buttontext</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>saveBtn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Buttontext</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>messages</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An object of strings for the used text<br>snippets.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.downloadModal.js.html">viewer/viewerJS.downloadModal.js</a>,
+				 <a href="viewer_viewerJS.downloadModal.js.html#sunlight-1-line-72">line 72</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">&lt;pre&gt;
+var downloadModalConfig = {
+    downloadBtn: $( &#x27;.download-modal&#x27; ),
+    path: &#x27;#{navigationHelper.applicationUrl}&#x27;,
+    userEmail: $( &#x27;#userEmail&#x27; ).val(),
+    messages: {
+        reCaptchaText: &#x27;#{msg.downloadReCaptchaText}&#x27;,
+        rcInvalid: &#x27;#{msg.downloadRcInvalid}&#x27;,
+        rcValid: &#x27;#{msg.downloadRcValid}&#x27;,
+        eMailText: &#x27;#{msg.downloadEMailText}&#x27;,
+        eMailTextLoggedIn: &#x27;#{msg.downloadEMailTextLoggedIn}&#x27;,
+        eMail: &#x27;#{msg.downloadEmail}&#x27;,
+        closeBtn: &#x27;#{msg.downloadCloseModal}&#x27;,
+        saveBtn: &#x27;#{msg.downloadGenerateFile}&#x27;,
+    }
+};
+
+viewerJS.downloadModal.init( downloadModalConfig );
+&lt;/pre&gt;</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~initModal"><span class="type-signature">&lt;inner> </span>initModal(params)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method which initializes the download modal and its content.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An config object which overwrites the defaults.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.downloadModal.js.html">viewer/viewerJS.downloadModal.js</a>,
+				 <a href="viewer_viewerJS.downloadModal.js.html#sunlight-1-line-171">line 171</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~renderModalBody"><span class="type-signature">&lt;inner> </span>renderModalBody(type, title)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method which returns a HTML-String to render the download modal body.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The current file type to download.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The title of the current download file.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.downloadModal.js.html">viewer/viewerJS.downloadModal.js</a>,
+				 <a href="viewer_viewerJS.downloadModal.js.html#sunlight-1-line-237">line 237</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>The HTML-String to render the download modal body.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~validateReCaptcha"><span class="type-signature">&lt;inner> </span>validateReCaptcha(response)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Method which checks the reCAPTCHA response.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>response</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The reCAPTCHA response.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="viewer_viewerJS.downloadModal.js.html">viewer/viewerJS.downloadModal.js</a>,
+				 <a href="viewer_viewerJS.downloadModal.js.html#sunlight-1-line-305">line 305</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>Returns true if the reCAPTCHA sent a response.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2015 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Fri Dec 1st 2017
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

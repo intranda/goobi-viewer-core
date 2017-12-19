@@ -43,10 +43,12 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowseTerm;
@@ -117,6 +119,16 @@ public class BrowseBean implements Serializable {
      */
     public void setSearchBean(SearchBean searchBean) {
         this.searchBean = searchBean;
+    }
+
+    /**
+     * Resets all lists for term browsing.
+     */
+    public void resetTerms() {
+        browseTermList.clear();
+        browseTermListEscaped.clear();
+        browseTermHitCountList.clear();
+        availableStringFilters.clear();
     }
 
     public void resetAllLists() {
@@ -253,6 +265,7 @@ public class BrowseBean implements Serializable {
      */
     public String searchTerms() throws PresentationException, IndexUnreachableException {
         synchronized (this) {
+            logger.trace("searchTerms");
             updateBreadcrumbsWithCurrentUrl("browseTitle", NavigationHelper.WEIGHT_SEARCH_TERMS);
             if (searchBean != null) {
                 searchBean.setSearchString("");
@@ -271,6 +284,8 @@ public class BrowseBean implements Serializable {
             }
             if (currentBmfc == null) {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
+                resetTerms();
+                Messages.error(Helper.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
                 return "searchTermList";
             }
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
@@ -345,6 +360,8 @@ public class BrowseBean implements Serializable {
                     }
                     browseTermListEscaped.add(term.intern());
                 }
+            } else {
+                resetTerms();
             }
 
             return "searchTermList";
@@ -557,6 +574,7 @@ public class BrowseBean implements Serializable {
      * @param sortField
      */
     public void initializeCollection(final String collectionField, final String facetField) {
+        logger.trace("initializeCollection: {}", collectionField);
         collections.put(collectionField, new CollectionView(collectionField, new BrowseDataProvider() {
 
             @Override

@@ -25,9 +25,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -38,6 +39,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -64,6 +66,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.language.LocaleComparator;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -72,12 +75,15 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
 import de.intranda.digiverso.presentation.model.search.FacetItem;
 import de.intranda.digiverso.presentation.model.search.Search;
+import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
@@ -122,16 +128,9 @@ public class SearchBean implements Serializable {
     private int currentPage = 1;
     /** Index of the currently open search result (used for search result browsing). */
     private int currentHitIndex = -1;
-    /** Available regular facets for the current search result. */
-    private final Map<String, List<FacetItem>> availableFacets = new LinkedHashMap<>();
-    /** Available hierarchical facets for the current search result . */
-    private final Map<String, List<FacetItem>> availableHierarchicalFacets = new LinkedHashMap<>();
-    /** Currently applied facets. */
-    private final List<FacetItem> currentFacets = new ArrayList<>();
-    /** List representation of all active collection facets. */
-    protected final List<FacetItem> currentHierarchicalFacets = new ArrayList<>();
-
-    private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
+    /** Number by which currentHitIndex shall be increased or decreased. */
+    private int hitIndexOperand = 0;
+    private SearchFacets facets = new SearchFacets();
     /** User-selected Solr field name by which the search results shall be sorted. A leading exclamation mark means descending sorting. */
     private String sortString = "";
     /** Solr fields for seach result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
@@ -186,18 +185,107 @@ public class SearchBean implements Serializable {
      * @throws PresentationException
      * @throws DAOException
      */
+    @Deprecated
     public String newSearch() throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("newSearch");
-        updateBreadcrumbsForSearchHits();
 
         // set the current page for the horizontal template navigation, therefore this determines the current-cat css class
-        Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
-        if (o != null) {
-            NavigationHelper nh = (NavigationHelper) o;
-            nh.setCurrentPage("search");
-        }
+        //        Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
+        //        if (o != null) {
+        //            NavigationHelper nh = (NavigationHelper) o;
+        //            nh.setCurrentPage("search");
+        //        }
 
         return search();
+    }
+
+    /**
+     *
+     * @return {@link String} null
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public String search() throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("search");
+        updateBreadcrumbsForSearchHits();
+        resetSearchResults();
+        StringBuilder sbQuery = new StringBuilder();
+        if (StringUtils.isNotEmpty(searchString)) {
+            sbQuery.append('(').append(searchString).append(')');
+        } else {
+            // Collection browsing (no search query)
+            sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+            sbQuery.append(SearchHelper.getDocstrctWhitelistFilterSuffix());
+        }
+        currentQuery = sbQuery.toString();
+
+        logger.trace("{}", sbQuery.toString());
+        // Only execute search if the query is not empty
+        // TODO replace dirty hack with something more elegant
+        if (!currentQuery.contains("()")) {
+            executeSearch();
+        }
+
+        return "";
+    }
+
+    /**
+     * Action method for search buttons (simple search).
+     * 
+     * @return
+     */
+    public String searchSimple() {
+        return searchSimple(true);
+    }
+    
+    public String searchSimple(boolean resetParameters) {
+        logger.trace("searchSimple");
+        resetSearchResults();
+        if(resetParameters) {            
+            resetSearchParameters();
+        }
+        return "pretty:newSearch5";
+    }
+
+    /**
+     * Same as <code>searchSimple()</code> but resets the current facets.
+     * 
+     * @return
+     */
+    public String searchSimpleResetCollections() {
+        facets.resetCurrentCollection();
+        facets.resetCurrentFacetString();
+        return searchSimple();
+    }
+
+    public String searchAdvanced() {
+        return searchAdvanced(true);
+    }
+
+    
+    public String searchAdvanced(boolean resetParameters) {
+        logger.trace("searchAdvanced");
+        updateBreadcrumbsForSearchHits();
+        resetSearchResults();
+        if(resetParameters) {            
+            resetSearchParameters();
+        }
+        searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
+
+        return "pretty:searchAdvanced5";
+    }
+
+    /**
+     * Search using currently set search string
+     *
+     * @return
+     */
+    public String searchDirect() {
+        logger.trace("searchDirect");
+        resetSearchResults();
+        facets.resetCurrentFacetString();
+        return "pretty:newSearch5";
     }
 
     /**
@@ -211,20 +299,21 @@ public class SearchBean implements Serializable {
         setSearchStringKeepCurrentPage("");
         setCurrentPage(1);
         setExactSearchString("");
-        resetCurrentCollection();
+        facets.resetCurrentFacets();
+        mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
         resetSearchParameters(true);
         searchInCurrentItemString = null;
 
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
-                return "pretty:" + PageType.advancedSearch.getName();
+                return "pretty:" + PageType.advancedSearch.name();
             case SearchHelper.SEARCH_TYPE_TIMELINE:
-                return "pretty:" + PageType.timelinesearch.getName();
+                return "pretty:" + PageType.timelinesearch.name();
             case SearchHelper.SEARCH_TYPE_CALENDAR:
-                return "pretty:" + PageType.calendarsearch.getName();
+                return "pretty:" + PageType.calendarsearch.name();
             default:
-                return "pretty:" + PageType.search.getName();
+                return "pretty:" + PageType.search.name();
         }
     }
 
@@ -238,9 +327,8 @@ public class SearchBean implements Serializable {
             currentSearch.setHitsCount(0);
             currentSearch.getHits().clear();
         }
-        availableFacets.clear();
-        availableHierarchicalFacets.clear();
-        drillDownExpanded.clear();
+        // Only reset available facets here, not selected facets!
+        facets.resetAvailableFacets();
 
         // Reset preferred record view when doing a new search
         if (navigationHelper != null) {
@@ -294,7 +382,6 @@ public class SearchBean implements Serializable {
                 default: // nothing
             }
         }
-        // resetCurrentCollection();
         setSortString("");
     }
 
@@ -341,127 +428,6 @@ public class SearchBean implements Serializable {
         if (reset) {
             resetAdvancedSearchParameters(1, DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultItemNumber());
         }
-    }
-
-    /**
-     *
-     * @return {@link String} null
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    public String search() throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("search");
-        resetSearchResults();
-        currentQuery = generateQuery();
-        // Only execute search if the query is not empty
-        // TODO replace dirty hack with something more elegant
-        if (!currentQuery.contains("()")) {
-            executeSearch();
-        }
-
-        return "";
-    }
-
-    /**
-     * Action method for search buttons (simple search).
-     * 
-     * @return
-     */
-    public String searchSimple() {
-        logger.trace("searchSimple");
-        resetSearchResults();
-        resetSearchParameters();
-        resetCurrentFacetString();
-        return "pretty:newSearch5";
-    }
-
-    /**
-     * Same as <code>searchSimple()</code> but resets the current facets.
-     * 
-     * @return
-     */
-    public String searchSimpleResetCollections() {
-        resetCurrentCollection();
-        return searchSimple();
-    }
-
-    /**
-     * Search using currently set search string
-     *
-     * @return
-     */
-    public String searchDirect() {
-        logger.trace("searchDirect");
-        resetSearchResults();
-        resetCurrentFacetString();
-        return "pretty:newSearch5";
-    }
-
-    /**
-     * Generates the final Solr query for all search types. The query includes facets/collections, blacklists and any user-specific restrictions.
-     * 
-     * @return
-     * @throws IndexUnreachableException
-     */
-    private String generateQuery() throws IndexUnreachableException {
-        logger.trace("generateQuery");
-        StringBuilder sbQuery = new StringBuilder();
-
-        // Add hierarchical facets
-        if (!currentHierarchicalFacets.isEmpty()) {
-            if (StringUtils.isNotEmpty(searchString)) {
-                sbQuery.append('(').append(searchString).append(')');
-            } else {
-                // Collection browsing (no search query)
-                sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
-                sbQuery.append(SearchHelper.getDocstrctWhitelistFilterSuffix());
-            }
-            sbQuery.append(" AND (");
-            int count = 0;
-            for (FacetItem facetItem : currentHierarchicalFacets) {
-                if (count > 0) {
-                    if (advancedSearchGroupOperator == 1) {
-                        sbQuery.append(" OR ");
-                    } else {
-                        sbQuery.append(" AND ");
-                    }
-                }
-                sbQuery.append('(').append(facetItem.getField()).append(':').append(facetItem.getValue()).append(" OR ").append(facetItem.getField())
-                        .append(':').append(facetItem.getValue()).append(".*)");
-                count++;
-            }
-            sbQuery.append(')');
-        } else if (StringUtils.isNotEmpty(searchString)) {
-            sbQuery.append(searchString);
-        }
-
-        // Add regular facets
-        if (!currentFacets.isEmpty()) {
-            if (sbQuery.length() > 0) {
-                sbQuery.insert(0, '(');
-                sbQuery.append(')');
-            }
-            for (FacetItem facetItem : currentFacets) {
-                if (sbQuery.length() > 0) {
-                    sbQuery.append(" AND ");
-                }
-                sbQuery.append(facetItem.getQueryEscapedLink());
-                logger.trace("Added facet: {}", facetItem.getLink());
-            }
-        }
-
-        logger.trace("{}", sbQuery.toString());
-        return sbQuery.toString();
-    }
-
-    public String searchAdvanced() {
-        logger.trace("searchAdvanced");
-        resetSearchResults();
-        resetSearchParameters();
-        searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
-
-        return "pretty:newSearch5";
     }
 
     /**
@@ -524,12 +490,12 @@ public class SearchBean implements Serializable {
                     switch (queryItem.getOperator()) {
                         case IS:
                         case PHRASE:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"").append(queryItem
-                                    .getValue()).append('"');
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": \"").append(Helper
+                                    .getTranslation(queryItem.getValue(), BeanUtils.getLocale())).append('"');
                             break;
                         default:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ").append(queryItem
-                                    .getValue());
+                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ").append(Helper
+                                    .getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
 
                     // Add item query part to the group query
@@ -563,18 +529,18 @@ public class SearchBean implements Serializable {
             }
         }
         if (sbCurrentCollection.length() > 0) {
-            setCurrentCollection(sbCurrentCollection.toString());
+            facets.setCurrentHierarchicalFacetString(sbCurrentCollection.toString());
         } else {
-            setCurrentCollection("-");
+            facets.setCurrentHierarchicalFacetString("-");
         }
 
         // Add faceting
-        if (!currentFacets.isEmpty()) {
+        if (!facets.getCurrentFacets().isEmpty()) {
             if (sb.length() > 0) {
                 sb.insert(0, '(');
                 sb.append(')');
             }
-            for (FacetItem facetItem : currentFacets) {
+            for (FacetItem facetItem : facets.getCurrentFacets()) {
                 if (!facetItem.isHierarchial()) {
                     if (sb.length() > 0) {
                         sb.append(" AND ");
@@ -600,6 +566,10 @@ public class SearchBean implements Serializable {
         }
 
         advancedSearchQueryInfo = sbInfo.toString();
+        // Quickfix for single hierarchical item query info having an opening parenthesis only
+        if (advancedSearchQueryInfo.startsWith("(") && !advancedSearchQueryInfo.endsWith(")")) {
+            advancedSearchQueryInfo = advancedSearchQueryInfo.substring(1);
+        }
         logger.trace("query info: {}", advancedSearchQueryInfo);
 
         logger.debug("advanced query: {}", sb.toString());
@@ -635,15 +605,18 @@ public class SearchBean implements Serializable {
         List<StructElement> luceneElements = new ArrayList<>();
         QueryResponse resp = null;
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
+        List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
+        for (String fq : facetFilterQueries) {
+            logger.trace("Facet query: {}", fq);
+        }
         if (currentSearch.getHitsCount() == 0) {
             logger.trace("Final main query: {}", query);
             resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields, Collections.singletonList(
-                    SolrConstants.IDDOC), params);
+                    SolrConstants.IDDOC), facetFilterQueries, params);
             if (resp != null && resp.getResults() != null) {
                 currentSearch.setHitsCount(resp.getResults().getNumFound());
                 logger.trace("Pre-grouping search hits: {}", currentSearch.getHitsCount());
-                // Check for duplicate values in the GROUPFIELD facet and
-                // substract the number from the total hits.
+                // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                 for (FacetField facetField : resp.getFacetFields()) {
                     if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
                         for (Count count : facetField.getValues()) {
@@ -671,13 +644,12 @@ public class SearchBean implements Serializable {
                     }
                     facetResult.put(count.getName(), count.getCount());
                 }
-                // Use non-FACET_ field names outside of the actual faceting
-                // query
+                // Use non-FACET_ field names outside of the actual faceting query
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (hierarchicalFacetFields.contains(fieldName)) {
-                    availableHierarchicalFacets.put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
+                    facets.getAvailableHierarchicalFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
                 } else {
-                    availableFacets.put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
+                    facets.getAvailableFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
                 }
             }
 
@@ -690,21 +662,23 @@ public class SearchBean implements Serializable {
             int from = (currentPage - 1) * hitsPerPage;
             if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
                 // Add search hit aggregation parameters, if enabled
-                String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups) : SearchHelper
-                        .generateExpandQuery(SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups),
-                                searchTerms);
+                String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups,
+                        advancedSearchGroupOperator) : SearchHelper.generateExpandQuery(SearchHelper.getExpandQueryFieldList(activeSearchType,
+                                currentSearchFilter, advancedQueryGroups), searchTerms);
                 logger.trace("Expand query: {}", expandQuery);
                 if (StringUtils.isNotEmpty(expandQuery)) {
-                    params.put(ExpandParams.EXPAND_Q, expandQuery);
                     params.put(ExpandParams.EXPAND, "true");
+                    params.put(ExpandParams.EXPAND_Q, expandQuery);
                     params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
                     params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
                     params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
+                    params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
                 }
             }
             List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits() ? SearchHelper.searchWithAggregation(query, from,
-                    hitsPerPage, sortFields, null, params, searchTerms, null, BeanUtils.getLocale()) : SearchHelper.searchWithFulltext(query, from,
-                            hitsPerPage, sortFields, null, params, searchTerms, null, BeanUtils.getLocale());
+                    hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null, BeanUtils.getLocale()) : SearchHelper
+                            .searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null, BeanUtils
+                                    .getLocale(), BeanUtils.getRequest());
             currentSearch.getHits().addAll(hits);
             // logger.debug("seList: " + seList );
             // logger.debug("Current page query END");
@@ -743,6 +717,7 @@ public class SearchBean implements Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
                     }
                     break;
                 case 2:
@@ -750,6 +725,7 @@ public class SearchBean implements Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
                     }
                     break;
                 case 3:
@@ -757,12 +733,13 @@ public class SearchBean implements Serializable {
                         this.activeSearchType = activeSearchType;
                     } else {
                         this.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+                        logger.debug("Cannot set search type {} because it's disabled.", activeSearchType);
                     }
                     break;
                 default:
                     this.activeSearchType = activeSearchType;
             }
-            resetCurrentFacetString();
+            facets.resetCurrentFacetString();
         }
         logger.trace("activeSearchType: {}", activeSearchType);
     }
@@ -773,14 +750,14 @@ public class SearchBean implements Serializable {
 
     public List<String> autocomplete(String suggest) throws IndexUnreachableException {
         logger.trace("autocomplete: {}", suggest);
-        List<String> result = SearchHelper.searchAutosuggestion(suggest, currentHierarchicalFacets, currentFacets);
+        List<String> result = SearchHelper.searchAutosuggestion(suggest, facets.getCurrentHierarchicalFacets(), facets.getCurrentFacets());
         Collections.sort(result);
 
         return result;
     }
 
     public boolean isSearchInDcFlag() {
-        return !currentHierarchicalFacets.isEmpty();
+        return !facets.getCurrentHierarchicalFacets().isEmpty();
     }
 
     /**
@@ -842,7 +819,7 @@ public class SearchBean implements Serializable {
         }
 
         logger.trace("Resetting selected facets...");
-        setCurrentFacetString("-");
+        facets.setCurrentFacetString("-");
 
         guiSearchString = inSearchString;
         searchString = "";
@@ -894,32 +871,13 @@ public class SearchBean implements Serializable {
                     phrase = phrase.replace("\"", "");
                     if (phrase.length() > 0) {
                         if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                            //                            // No filters defined or ALL: use DEFAULT + FULLTEXT + NORMDATATERMS + UGCTERMS
-                            //                            if (searchTerms.get(LuceneConstants.DEFAULT) == null) {
-                            //                                searchTerms.put(LuceneConstants.DEFAULT, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.FULLTEXT) == null) {
-                            //                                searchTerms.put(LuceneConstants.FULLTEXT, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.NORMDATATERMS) == null) {
-                            //                                searchTerms.put(LuceneConstants.NORMDATATERMS, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.UGCTERMS) == null) {
-                            //                                searchTerms.put(LuceneConstants.UGCTERMS, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.OVERVIEWPAGE_DESCRIPTION) == null) {
-                            //                                searchTerms.put(LuceneConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<String>());
-                            //                            }
-                            //                            if (searchTerms.get(LuceneConstants.OVERVIEWPAGE_PUBLICATIONTEXT) == null) {
-                            //                                searchTerms.put(LuceneConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<String>());
-                            //                            }
                             if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                                // For aggregated searches include both SUPER and regular DEFAULT/FULLTEXT fields
                                 sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\") OR ");
-                            } else {
-                                sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
-                                sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                             }
+                            sb.append(SolrConstants.DEFAULT).append(":(\"").append(phrase).append("\") OR ");
+                            sb.append(SolrConstants.FULLTEXT).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.NORMDATATERMS).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.UGCTERMS).append(":(\"").append(phrase).append("\") OR ");
                             sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR ");
@@ -934,10 +892,25 @@ public class SearchBean implements Serializable {
                                 searchTerms.put(SolrConstants.FULLTEXT, terms);
                             }
                             if (currentSearchFilter.getField().equals(SolrConstants.OVERVIEWPAGE)) {
-                                sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR");
+                                sb.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(\"").append(phrase).append("\") OR ");
                                 sb.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(\"").append(phrase).append("\")");
                             } else {
-                                sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                                if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                                    switch (currentSearchFilter.getField()) {
+                                        case SolrConstants.DEFAULT:
+                                            sb.append(SolrConstants.SUPERDEFAULT).append(":(\"").append(phrase).append("\")");
+                                            break;
+                                        case SolrConstants.FULLTEXT:
+                                            sb.append(SolrConstants.SUPERFULLTEXT).append(":(\"").append(phrase).append("\")");
+                                            break;
+                                        default:
+                                            sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                                            break;
+                                    }
+                                } else {
+                                    sb.append(currentSearchFilter.getField()).append(":(\"").append(phrase).append("\")");
+                                }
+
                             }
                             searchTerms.get(currentSearchFilter.getField()).add(phrase);
                         }
@@ -995,15 +968,16 @@ public class SearchBean implements Serializable {
                 if (sbInner.length() > 0) {
                     StringBuilder sbOuter = new StringBuilder();
                     if (currentSearchFilter == null || currentSearchFilter.equals(SearchHelper.SEARCH_FILTER_ALL)) {
-                        // No filters defined or ALL: use DEFAULT + FULLTEXT +
-                        // UGCTERMS
+                        // No filters defined or ALL
                         if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
                             sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString());
                             sbOuter.append(") OR ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString());
-                        } else {
-                            sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
-                            sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
+                            sbOuter.append(") OR ");
                         }
+                        //                        else {
+                        sbOuter.append(SolrConstants.DEFAULT).append(":(").append(sbInner.toString());
+                        sbOuter.append(") OR ").append(SolrConstants.FULLTEXT).append(":(").append(sbInner.toString());
+                        //                        }
                         sbOuter.append(") OR ").append(SolrConstants.NORMDATATERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.UGCTERMS).append(":(").append(sbInner.toString());
                         sbOuter.append(") OR ").append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString());
@@ -1011,7 +985,29 @@ public class SearchBean implements Serializable {
                                 ')');
                     } else {
                         // Specific filter selected
-                        sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                        if (DataManager.getInstance().getConfiguration().isAggregateHits()) {
+                            switch (currentSearchFilter.getField()) {
+                                case SolrConstants.DEFAULT:
+                                    sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                                case SolrConstants.FULLTEXT:
+                                    sbOuter.append(SolrConstants.SUPERFULLTEXT).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                                case SolrConstants.OVERVIEWPAGE:
+                                    if (currentSearchFilter.getField().equals(SolrConstants.OVERVIEWPAGE)) {
+                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_DESCRIPTION).append(":(").append(sbInner.toString()).append(
+                                                ") OR ");
+                                        sbOuter.append(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT).append(":(").append(sbInner.toString()).append(
+                                                ')');
+                                    }
+                                    break;
+                                default:
+                                    sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                                    break;
+                            }
+                        } else {
+                            sbOuter.append(currentSearchFilter.getField()).append(":(").append(sbInner.toString()).append(')');
+                        }
                     }
                     searchString += sbOuter.toString();
                 }
@@ -1126,6 +1122,8 @@ public class SearchBean implements Serializable {
         }
         searchTerms = SearchHelper.extractSearchTermsFromQuery(searchString.replace("\\", ""), discriminatorValue);
         logger.trace("searchTerms: {}", searchTerms);
+
+        // TODO reset mode?
     }
 
     /**
@@ -1148,265 +1146,6 @@ public class SearchBean implements Serializable {
     }
 
     /**
-     * @return the availableFacets
-     */
-    public Map<String, List<FacetItem>> getAvailableFacets() {
-        return availableFacets;
-    }
-
-    /**
-     * @return the availableFacets
-     */
-    public Map<String, List<FacetItem>> getAvailableHierarchicalFacets() {
-        return availableHierarchicalFacets;
-    }
-
-    /**
-     * @return the currentFacets
-     */
-    public List<FacetItem> getCurrentFacets() {
-        return currentFacets;
-    }
-
-    /**
-     * @return the currentHierarchicalFacets
-     */
-    public List<FacetItem> getCurrentHierarchicalFacets() {
-        return currentHierarchicalFacets;
-    }
-
-    /**
-     *
-     * @return Size of <code>currentFacets</code>.
-     */
-    public int getCurrentFacetsSizeForField(String field) {
-        return getCurrentFacetsForField(field).size();
-    }
-
-    /**
-     *
-     * @return Size of <code>currentFacets</code>.
-     */
-    public int getCurrentHierarchicalFacetsSizeForField(String field) {
-        return getCurrentHierarchicalFacetsForField(field).size();
-    }
-
-    /**
-     * Returns a list of FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
-     *
-     * @param field The field name to match.
-     * @return
-     */
-    public List<FacetItem> getCurrentFacetsForField(String field) {
-        List<FacetItem> ret = new ArrayList<>();
-
-        for (FacetItem facet : currentFacets) {
-            if (facet.getField().equals(field)) {
-                ret.add(facet);
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Returns a list of FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
-     *
-     * @param field The field name to match.
-     * @return
-     */
-    public List<FacetItem> getCurrentHierarchicalFacetsForField(String field) {
-        List<FacetItem> ret = new ArrayList<>();
-
-        for (FacetItem facet : currentHierarchicalFacets) {
-            if (facet.getField().equals(field)) {
-                ret.add(facet);
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Checks whether the given facet is currently in use.
-     *
-     * @param facet The facet to check.
-     * @return
-     */
-    public boolean isFacetCurrentlyUsed(FacetItem facet) {
-        for (FacetItem fi : getCurrentFacetsForField(facet.getField())) {
-            if (fi.getLink().equals(facet.getLink())) {
-                return true;
-            }
-        }
-        for (FacetItem fi : getCurrentHierarchicalFacetsForField(facet.getField())) {
-            if (fi.getLink().equals(facet.getLink())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns the size of the full element list of the facet for the given field.
-     */
-    public int getAvailableFacetsListSizeForField(String field) {
-        if (availableFacets.get(field) != null) {
-            return availableFacets.get(field).size();
-        }
-        if (availableHierarchicalFacets.get(field) != null) {
-            return availableHierarchicalFacets.get(field).size();
-        }
-
-        return 0;
-    }
-
-    /**
-     * Returns a collapsed sublist of the available facet elements for the given field.
-     *
-     * @param field
-     * @return
-     * @should return full DC facet list if expanded
-     * @should return full DC facet list if list size less than default
-     * @should return reduced DC facet list if list size larger than default
-     * @should return full facet list if expanded
-     * @should return full facet list if list size less than default
-     * @should return reduced facet list if list size larger than default
-     * @should not contain currently used facets
-     */
-    public List<FacetItem> getLimitedFacetListForField(String field) {
-        List<FacetItem> facetItems = availableFacets.get(field);
-        if (facetItems != null) {
-            // Remove currently used facets
-            facetItems.removeAll(currentFacets);
-            if (!isDrillDownExpanded(field) && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(
-                    field)) {
-                return facetItems.subList(0, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field));
-            }
-            // logger.trace("facet items {}: {}", field, facetItems.size());
-            return facetItems;
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a collapsed sublist of the available facet elements for the given field.
-     *
-     * @param field
-     * @return
-     * @should return full DC facet list if expanded
-     * @should return full DC facet list if list size less than default
-     * @should return reduced DC facet list if list size larger than default
-     * @should return full facet list if expanded
-     * @should return full facet list if list size less than default
-     * @should return reduced facet list if list size larger than default
-     * @should not contain currently used facets
-     */
-    public List<FacetItem> getLimitedHierarchicalFacetListForField(String field) {
-        List<FacetItem> facetItems = availableHierarchicalFacets.get(field);
-        if (facetItems != null) {
-            // Remove currently used facets
-            facetItems.removeAll(currentHierarchicalFacets);
-            if (!isDrillDownExpanded(field) && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(
-                    field)) {
-                return facetItems.subList(0, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field));
-            }
-            // logger.trace("facet items {}: {}", field, facetItems.size());
-            return facetItems;
-        }
-
-        return null;
-    }
-
-    /**
-     * If the drill-down for given field is expanded, return the size of the facet, otherwise the initial (collapsed) number of elements as
-     * configured.
-     *
-     * @return
-     * @should return full facet size if expanded
-     * @should return default if collapsed
-     */
-    public int getDrillDownElementDisplayNumber(String field) {
-        if (isDrillDownExpanded(field) && availableFacets.get(field) != null) {
-            return availableFacets.get(field).size();
-        }
-        return DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
-    }
-
-    /**
-     * Sets the expanded flag to <code>true</code> for the given drill-down field.
-     *
-     * @param field
-     */
-    public void expandDrillDown(String field) {
-        logger.trace("expandDrillDown: {}", field);
-        drillDownExpanded.put(field, true);
-    }
-
-    /**
-     * Sets the expanded flag to <code>false</code> for the given drill-down field.
-     *
-     * @param field
-     */
-    public void collapseDrillDown(String field) {
-        logger.trace("collapseDrillDown: {}", field);
-        drillDownExpanded.put(field, false);
-    }
-
-    /**
-     * Returns true if the "(more)" link is to be displayed for a drill-down box. This is the case if the facet has more elements than the initial
-     * number of displayed elements and the facet hasn't been manually expanded yet.
-     *
-     * @param field
-     * @return
-     * @should return true if DC facet collapsed and has more elements than default
-     * @should return true if facet collapsed and has more elements than default
-     * @should return false if DC facet expanded
-     * @should return false if facet expanded
-     * @should return false if DC facet smaller than default
-     * @should return false if facet smaller than default
-     */
-    public boolean isDisplayDrillDownExpandLink(String field) {
-        List<FacetItem> facetItems = availableFacets.get(field);
-        if (facetItems == null) {
-            facetItems = availableHierarchicalFacets.get(field);
-        }
-        if (facetItems != null && !isDrillDownExpanded(field) && facetItems.size() > DataManager.getInstance().getConfiguration()
-                .getInitialDrillDownElementNumber(field)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     * @param field
-     * @return
-     */
-    public boolean isDisplayDrillDownCollapseLink(String field) {
-        return isDrillDownExpanded(field);
-    }
-
-    /**
-     * Returns true if the value for the given field type in <code>drillDownExpanded</code> has been previously set to true.
-     *
-     * @param field
-     * @return
-     * @should return false if value null
-     * @should return true if value true
-     */
-    public boolean isDrillDownExpanded(String field) {
-        return drillDownExpanded.get(field) != null && drillDownExpanded.get(field);
-    }
-
-    public boolean isDrillDownCollapsed(String field) {
-        return !isDrillDownExpanded(field);
-    }
-
-    /**
      * @param sortString the sortString to set
      * @should split value correctly
      */
@@ -1423,6 +1162,14 @@ public class SearchBean implements Serializable {
                 for (String field : sortStringSplit) {
                     sortFields.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
                     logger.trace("Added sort field: {}", field);
+                    // add translated sort fields
+                    if (navigationHelper != null && field.startsWith("SORT_")) {
+                        Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
+                        StreamSupport.stream(locales.spliterator(), false).sorted(new LocaleComparator(BeanUtils.getLocale())).map(locale -> field
+                                + SolrConstants._LANG_ + locale.getLanguage().toUpperCase()).peek(language -> logger.trace("Adding sort field: {}",
+                                        language)).forEach(language -> sortFields.add(new StringPair(language.replace("!", ""), language.charAt(
+                                                0) == '!' ? "desc" : "asc")));
+                    }
                 }
             }
         }
@@ -1432,7 +1179,7 @@ public class SearchBean implements Serializable {
      * @return the sortString
      */
     public String getSortString() {
-        if (sortString.length() == 0) {
+        if (StringUtils.isEmpty(sortString)) {
             return "-";
         }
 
@@ -1447,14 +1194,14 @@ public class SearchBean implements Serializable {
      * @should add extra search query item if all items full
      * @should not replace query items already in use
      */
-    void mirrorAdvancedSearchCurrentHierarchicalFacets() {
-        logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets: {}", getCurrentCollection());
-        if (!currentHierarchicalFacets.isEmpty()) {
+    public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
+        logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets: {}", facets.getCurrentCollection());
+        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
             if (!advancedQueryGroups.isEmpty()) {
                 SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
                 if (!queryGroup.getQueryItems().isEmpty()) {
                     int index = 0;
-                    for (FacetItem facetItem : currentHierarchicalFacets) {
+                    for (FacetItem facetItem : facets.getCurrentHierarchicalFacets()) {
                         if (index < queryGroup.getQueryItems().size()) {
                             // Fill existing search query items
                             SearchQueryItem item = queryGroup.getQueryItems().get(index);
@@ -1507,184 +1254,14 @@ public class SearchBean implements Serializable {
     }
 
     /**
-     * Returns a URL encoded SSV string of facet fields and values from the elements in currentFacets (hyphen if empty).
-     *
-     * @return SSV string of facet queries or "-" if empty
-     * @should contain queries from all FacetItems
-     * @should return hyphen if currentFacets empty
-     */
-    public String getCurrentFacetString() {
-        String ret = generateFacetPrefix(currentFacets, true);
-        if (StringUtils.isEmpty(ret)) {
-            ret = "-";
-        }
-        try {
-            return URLEncoder.encode(ret, URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return ret;
-        }
-    }
-
-    /**
-     * @return the currentCollection
-     */
-    public String getCurrentHierarchicalFacetString() {
-        String ret = generateFacetPrefix(currentHierarchicalFacets, true);
-        if (StringUtils.isEmpty(ret)) {
-            ret = "-";
-        }
-        try {
-            return URLEncoder.encode(ret, URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return ret;
-        }
-    }
-
-    /**
-     * @return the currentCollection
-     */
-    public String getCurrentCollection() {
-        String ret = generateFacetPrefix(currentHierarchicalFacets, true);
-        if (StringUtils.isEmpty(ret)) {
-            ret = "-";
-        }
-
-        return ret;
-    }
-
-    /**
-     * Receives an SSV string of facet fields and values (FIELD1:value1;FIELD2:value2;FIELD3:value3) and generates new Elements for currentFacets.
-     *
-     * @param currentFacetString
-     * @should create FacetItems from all links
-     * @should decode slashes and backslashes
-     */
-    public void setCurrentFacetString(String currentFacetString) {
-        logger.trace("setCurrentFacetString: {}", currentFacetString);
-        parseFacetString(currentFacetString, currentFacets, false);
-    }
-
-    /**
-     * @param currentCollection the currentCollection to set
-     */
-    public void setCurrentCollection(String currentCollection) {
-        logger.trace("setCurrentCollection: {}", currentCollection);
-        parseFacetString(currentCollection, currentHierarchicalFacets, true);
-        // do not mirror the values into the advanced query items here
-    }
-
-    /**
-     * 
-     * @param facetString
-     * @param facetItems
-     * @should fill list correctly
-     * @should empty list before filling
-     * @should add DC field prefix if no field name is given
-     * @should set hierarchical status correctly
-     */
-    static void parseFacetString(String facetString, List<FacetItem> facetItems, boolean hiearchical) {
-        if (facetItems == null) {
-            facetItems = new ArrayList<>();
-        } else {
-            facetItems.clear();
-        }
-        if (StringUtils.isNotEmpty(facetString) && !"-".equals(facetString)) {
-            try {
-                facetString = URLDecoder.decode(facetString, "utf-8");
-                facetString = BeanUtils.unescapeCriticalUrlChracters(facetString);
-            } catch (UnsupportedEncodingException e) {
-            }
-            String[] facetStringSplit = facetString.split(";;");
-            for (String facetLink : facetStringSplit) {
-                if (StringUtils.isNotEmpty(facetLink)) {
-                    if (!facetLink.contains(":")) {
-                        facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
-                    }
-                    facetItems.add(new FacetItem(facetLink, hiearchical));
-                }
-            }
-        }
-    }
-
-    public void resetCurrentFacetString() {
-        logger.trace("resetCurrentFacetString");
-        setCurrentFacetString("-");
-    }
-
-    public void resetCurrentCollection() {
-        logger.trace("resetCurrentCollection");
-        setCurrentCollection("-");
-        mirrorAdvancedSearchCurrentHierarchicalFacets();
-    }
-
-    /**
-     * Returns a URL encoded value returned by generateFacetPrefix() for regular facets.
-     *
-     * @return
-     */
-    public String getCurrentFacetStringPrefix() {
-        try {
-            return URLEncoder.encode(generateFacetPrefix(currentFacets, true), URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return generateFacetPrefix(currentFacets, true);
-        }
-    }
-
-    /**
-     * Returns a URL encoded value returned by generateFacetPrefix() for hierarchical facets.
-     *
-     * @return
-     */
-    public String getCurrentHierarchicalFacetPrefix() {
-        try {
-            return URLEncoder.encode(generateFacetPrefix(currentHierarchicalFacets, true), URL_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return generateFacetPrefix(currentHierarchicalFacets, true);
-        }
-    }
-
-    /**
-     * Generates an SSV string of facet fields and values from the elements in the given List<FacetString> (empty string if empty).
-     *
-     * @param facetItems
-     * @param escapeSlashes If true, slashes and backslashes are replaced with URL-compatible replacement strings
-     * @return
-     * @should encode slashed and backslashes
-     */
-    static String generateFacetPrefix(List<FacetItem> facetItems, boolean escapeSlashes) {
-        if (facetItems == null) {
-            throw new IllegalArgumentException("facetItems may not be null");
-        }
-        StringBuilder sb = new StringBuilder();
-        for (FacetItem facetItem : facetItems) {
-            if (escapeSlashes) {
-                sb.append(BeanUtils.escapeCriticalUrlChracters(facetItem.getLink()));
-            } else {
-                sb.append(facetItem.getLink());
-            }
-            sb.append(";;");
-        }
-
-        return sb.toString();
-    }
-
-    /**
      * 
      * @param facetQuery
      * @return
      * @should remove facet correctly
      */
     public String removeHierarchicalFacetAction(String facetQuery) {
-        // facetQuery = facetQuery.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT);
-        logger.trace("removeHierarchicalFacetAction: {}", facetQuery);
-        String currentCollection = generateFacetPrefix(currentHierarchicalFacets, false);
-        logger.trace("currentCollection: {}", currentCollection);
-        if (currentCollection.contains(facetQuery)) {
-            currentCollection = currentCollection.replaceAll("(" + facetQuery + ")(?=;|(?=/))", "").replace(";;;;", ";;");
-            setCurrentCollection(currentCollection);
-        }
-
-        return "pretty:newSearch5";
+        return facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+                : "pretty:newSearch5");
     }
 
     /**
@@ -1694,15 +1271,8 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeFacetAction(String facetQuery) {
-        // facetQuery = facetQuery.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT);
-        logger.trace("removeFacetAction: {}", facetQuery);
-        String currentFacetString = generateFacetPrefix(currentFacets, false);
-        if (currentFacetString.contains(facetQuery)) {
-            currentFacetString = currentFacetString.replaceAll("(" + facetQuery + ")(?=;|(?=/))", "").replace(";;;;", ";;");
-            setCurrentFacetString(currentFacetString);
-        }
-
-        return "pretty:newSearch5";
+        return facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+                : "pretty:newSearch5");
     }
 
     /*
@@ -1775,8 +1345,10 @@ public class SearchBean implements Serializable {
      */
     public long getHitsCount() {
         if (currentSearch != null) {
+            // logger.trace("Hits count = {}", currentSearch.getHitsCount());
             return currentSearch.getHitsCount();
         }
+        logger.warn("No Search object available");
 
         return 0;
     }
@@ -1785,7 +1357,9 @@ public class SearchBean implements Serializable {
      * @param hitsCount the hitsCount to set
      */
     public void setHitsCount(long hitsCount) {
-        currentSearch.setHitsCount(hitsCount);
+        if (currentSearch != null) {
+            currentSearch.setHitsCount(hitsCount);
+        }
     }
 
     /**
@@ -1802,33 +1376,55 @@ public class SearchBean implements Serializable {
         return currentHitIndex;
     }
 
+    public int getCurrentHitIndexDisplay() {
+        return currentHitIndex + 1;
+    }
+
     public void increaseCurrentHitIndex() {
-        if (currentHitIndex < currentSearch.getHitsCount() - 1) {
-            currentHitIndex++;
+        if (hitIndexOperand != 0 && currentSearch != null && currentHitIndex < currentSearch.getHitsCount() - 1) {
+            int old = currentHitIndex;
+            currentHitIndex += hitIndexOperand;
+            if (currentHitIndex < 0) {
+                currentHitIndex = 0;
+            } else if (currentHitIndex >= currentSearch.getHitsCount()) {
+                currentHitIndex = (int) (currentSearch.getHitsCount() - 1);
+            }
+            hitIndexOperand = 0; // reset operand
+
+            logger.trace("increaseCurrentHitIndex: {}->{}", old, currentHitIndex);
         }
     }
 
-    public void decreaseCurrentHitIndex() {
-        if (currentHitIndex > 0) {
-            currentHitIndex--;
-        }
+    /**
+     * @return the hitIndexOperand
+     */
+    public int getHitIndexOperand() {
+        return hitIndexOperand;
+    }
+
+    /**
+     * @param hitIndexOperand the hitIndexOperand to set
+     */
+    public void setHitIndexOperand(int hitIndexOperand) {
+        this.hitIndexOperand = hitIndexOperand;
     }
 
     /**
      * Returns the index of the currently displayed BrowseElement, if it is present in the search hit list.
      *
-     * @param currentElementIddoc
-     * @param currentImageNo
+     * @param pi Record identifier of the loaded record.
+     * @param page Page number of he loaded record.
+     * @param aggregateHits If true, only the identifier has to match, page number is ignored.
      * @return The index of the currently displayed BrowseElement in the search hit list; -1 if not present.
      */
-    public void findCurrentHitIndex(String currentElementPi, int currentImageNo) {
-        logger.trace("findCurrentHitIndex: {}/{}", currentElementPi, currentImageNo);
+    public void findCurrentHitIndex(String pi, int page, boolean aggregateHits) {
+        logger.trace("findCurrentHitIndex: {}/{}", pi, page);
         currentHitIndex = 0;
         if (currentSearch != null && !currentSearch.getHits().isEmpty()) {
             for (SearchHit hit : currentSearch.getHits()) {
-                BrowseElement el = hit.getBrowseElement();
-                logger.trace("BrowseElement: {}/{}", el.getPi(), el.getImageNo());
-                if (el.getPi().equals(currentElementPi) && el.getImageNo() == currentImageNo) {
+                BrowseElement be = hit.getBrowseElement();
+                logger.trace("BrowseElement: {}/{}", be.getPi(), be.getImageNo());
+                if (be.getPi().equals(pi) && (aggregateHits || be.getImageNo() == page)) {
                     logger.trace("currentPage: {}", currentPage);
                     currentHitIndex += (currentPage - 1) * hitsPerPage;
                     logger.trace("currentHitIndex: {}", currentHitIndex);
@@ -1853,11 +1449,13 @@ public class SearchBean implements Serializable {
         logger.trace("getNextElement: {}", currentHitIndex);
         if (currentHitIndex > -1) {
             if (currentHitIndex < currentSearch.getHitsCount() - 1) {
-                return SearchHelper.getBrowseElement(currentQuery, currentHitIndex + 1, sortFields, SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits());
+                return SearchHelper.getBrowseElement(currentQuery, currentHitIndex + 1, sortFields, facets.generateFacetFilterQueries(
+                        advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager
+                                .getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             }
-            return SearchHelper.getBrowseElement(currentQuery, currentHitIndex, sortFields, SearchHelper.generateQueryParams(), searchTerms, BeanUtils
-                    .getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits());
+            return SearchHelper.getBrowseElement(currentQuery, currentHitIndex, sortFields, facets.generateFacetFilterQueries(
+                    advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager.getInstance()
+                            .getConfiguration().isAggregateHits(), BeanUtils.getRequest());
         }
 
         return null;
@@ -1875,11 +1473,13 @@ public class SearchBean implements Serializable {
         logger.trace("getPreviousElement: {}", currentHitIndex);
         if (currentHitIndex > -1) {
             if (currentHitIndex > 0) {
-                return SearchHelper.getBrowseElement(currentQuery, currentHitIndex - 1, sortFields, SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits());
+                return SearchHelper.getBrowseElement(currentQuery, currentHitIndex - 1, sortFields, facets.generateFacetFilterQueries(
+                        advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager
+                                .getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             } else if (currentSearch.getHitsCount() > 0) {
-                return SearchHelper.getBrowseElement(currentQuery, currentHitIndex, sortFields, SearchHelper.generateQueryParams(), searchTerms,
-                        BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits());
+                return SearchHelper.getBrowseElement(currentQuery, currentHitIndex, sortFields, facets.generateFacetFilterQueries(
+                        advancedSearchGroupOperator), SearchHelper.generateQueryParams(), searchTerms, BeanUtils.getLocale(), DataManager
+                                .getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             }
         }
 
@@ -1933,10 +1533,6 @@ public class SearchBean implements Serializable {
         currentHitIndex = -1;
     }
 
-    public boolean isCollectionDrilldownEnabled() {
-        return DataManager.getInstance().getConfiguration().isCollectionDrilldownEnabled();
-    }
-
     public boolean isSortingEnabled() {
         return DataManager.getInstance().getConfiguration().isSortingEnabled();
     }
@@ -1945,8 +1541,9 @@ public class SearchBean implements Serializable {
      * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
      */
     public void updateBreadcrumbsForSearchHits() {
-        if (!currentHierarchicalFacets.isEmpty()) {
-            updateBreadcrumbsWithCurrentUrl(currentHierarchicalFacets.get(0).getValue().replace("*", ""), NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
+        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
+            updateBreadcrumbsWithCurrentUrl(facets.getCurrentHierarchicalFacets().get(0).getValue().replace("*", ""),
+                    NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
         } else {
             updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
         }
@@ -2042,6 +1639,7 @@ public class SearchBean implements Serializable {
                 if (browseBean == null) {
                     browseBean = new BrowseBean();
                 }
+                // Make sure displayDepth is at configured to the desired depth for this field (or -1 for complete depth)
                 int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
                 List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
                 StringBuilder sbItemLabel = new StringBuilder();
@@ -2058,7 +1656,7 @@ public class SearchBean implements Serializable {
                 new BrowsingMenuFieldConfig(field, null, null, false);
                 String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
                 String facetField = field.replace(SolrConstants._UNTOKENIZED, "").replace("MD_", "FACET_");
-                List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, facetField);
+                List<String> values = SearchHelper.getFacetValues(field + ":[* TO *]" + suffix, facetField, 0);
                 for (String value : values) {
                     ret.add(new StringPair(value, Helper.getTranslation(value, null)));
                 }
@@ -2165,6 +1763,7 @@ public class SearchBean implements Serializable {
      * @param currentSearch the currentSearch to set
      */
     public void setCurrentSearch(Search currentSearch) {
+        logger.trace("Setting current search to {}", currentSearch);
         this.currentSearch = currentSearch;
     }
 
@@ -2181,13 +1780,13 @@ public class SearchBean implements Serializable {
         currentSearch.setUserInput(guiSearchString);
         currentSearch.setQuery(searchString);
         currentSearch.setPage(currentPage);
-        for (FacetItem facetItem : currentFacets) {
+        for (FacetItem facetItem : facets.getCurrentFacets()) {
             if (SolrConstants.DOCSTRCT.equals(facetItem.getField())) {
                 currentSearch.setFilter(facetItem.getValue());
             }
         }
-        if (!currentHierarchicalFacets.isEmpty()) {
-            currentSearch.setCollection(getCurrentCollection());
+        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
+            currentSearch.setCollection(facets.getCurrentCollection());
         }
         if (StringUtils.isNotEmpty(sortString)) {
             currentSearch.setSortField(sortString);
@@ -2208,14 +1807,18 @@ public class SearchBean implements Serializable {
     }
 
     public String getRssUrl() {
-        try {
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append("?q=")
-                    .append(URLEncoder.encode(currentQuery, URL_ENCODING)).toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Could not encode query '{}' for URL", currentQuery);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append("?q=")
-                    .append(currentQuery).toString();
+        if (currentQuery != null) {
+            try {
+                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append(
+                        "?q=").append(URLEncoder.encode(currentQuery, URL_ENCODING)).toString();
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("Could not encode query '{}' for URL", currentQuery);
+                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(NavigationHelper.URL_RSS).append(
+                        "?q=").append(currentQuery).toString();
+            }
         }
+
+        return null;
     }
 
     /**
@@ -2348,8 +1951,9 @@ public class SearchBean implements Serializable {
         try {
             final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
             Map<String, String> params = SearchHelper.generateQueryParams();
-            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields, params, searchTerms, navigationHelper
-                    .getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits());
+            final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields, facets.generateFacetFilterQueries(
+                    advancedSearchGroupOperator), params, searchTerms, navigationHelper.getLocale(), DataManager.getInstance().getConfiguration()
+                            .isAggregateHits(), BeanUtils.getRequest());
             if (Thread.interrupted()) {
                 throw new InterruptedException();
             }
@@ -2382,6 +1986,10 @@ public class SearchBean implements Serializable {
         this.hitsPerPage = hitsPerPage;
     }
 
+    public void resetHitsPerPage() {
+        setHitsPerPage(DataManager.getInstance().getConfiguration().getSearchHitsPerPage());
+    }
+
     /**
      * @return the advancedSearchQueryInfo
      */
@@ -2397,6 +2005,13 @@ public class SearchBean implements Serializable {
     }
 
     /**
+     * @return the facets
+     */
+    public SearchFacets getFacets() {
+        return facets;
+    }
+
+    /**
      * 
      * @return
      */
@@ -2408,6 +2023,11 @@ public class SearchBean implements Serializable {
         } catch (NullPointerException e) {
             return downloadReady;
         }
+    }
+
+    public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
+        String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
+        return DataManager.getInstance().getSearchIndex().count(query);
     }
 
 }

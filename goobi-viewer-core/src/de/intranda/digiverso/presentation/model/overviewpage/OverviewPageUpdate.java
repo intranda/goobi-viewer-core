@@ -29,7 +29,7 @@ import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.Index;
 
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.user.User;
 
 /**
  * Database entry for overview page history updates.

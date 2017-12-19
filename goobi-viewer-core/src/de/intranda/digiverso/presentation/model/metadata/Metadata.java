@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,27 +55,19 @@ public class Metadata implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(Metadata.class);
 
     /** Label from messages.properties. */
-    private String label = null;
-
+    private final String label;
     /** Value from messages.properties (with placeholders) */
-    private String masterValue = null;
-    private String valueLink = null;
+    private final String masterValue;
+    private final String valueLink = null;
     private int type = 0;
     private int number = -1;
-    private List<MetadataValue> values;
-    private List<MetadataParameter> params;
+    private final List<MetadataValue> values = new ArrayList<>();
+    private final List<MetadataParameter> params = new ArrayList<>();
     private boolean group = false;
-
-    public Metadata(String label, List<MetadataValue> values, String masterValue) {
-        this.label = label;
-        this.masterValue = masterValue;
-        this.values = values;
-    }
 
     public Metadata(String label, String masterValue, String paramValue) {
         this.label = label;
         this.masterValue = masterValue;
-        this.values = new ArrayList<>();
         values.add(new MetadataValue());
         values.get(0).getParamValues().add(paramValue);
     }
@@ -81,9 +75,7 @@ public class Metadata implements Serializable {
     public Metadata(String label, String masterValue, MetadataParameter param, String paramValue) {
         this.label = label;
         this.masterValue = masterValue;
-        this.params = new ArrayList<>();
         params.add(param);
-        this.values = new ArrayList<>();
         values.add(new MetadataValue());
         values.get(0).getParamValues().add(paramValue);
     }
@@ -92,7 +84,7 @@ public class Metadata implements Serializable {
         this.label = label;
         this.masterValue = masterValue;
         this.type = type;
-        this.params = params;
+        this.params.addAll(params);
         this.group = group;
     }
 
@@ -100,7 +92,7 @@ public class Metadata implements Serializable {
         this.label = label;
         this.masterValue = masterValue;
         this.type = type;
-        this.params = params;
+        this.params.addAll(params);
         this.group = group;
         this.number = number;
     }
@@ -164,13 +156,6 @@ public class Metadata implements Serializable {
         return label;
     }
 
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
             // if (values != null && !values.isEmpty() && values.get(0) != null) {
@@ -182,22 +167,11 @@ public class Metadata implements Serializable {
         return masterValue;
     }
 
-    public void setMasterValue(String value) {
-        this.masterValue = value;
-    }
-
     /**
      * @return the valueLink
      */
     public String getValueLink() {
         return valueLink;
-    }
-
-    /**
-     * @param valueLink the valueLink to set
-     */
-    public void setValueLink(String valueLink) {
-        this.valueLink = valueLink;
     }
 
     /**
@@ -221,18 +195,8 @@ public class Metadata implements Serializable {
         return values;
     }
 
-    /**
-     * @param values the values to set
-     */
-    public void setValues(List<MetadataValue> values) {
-        this.values = values;
-    }
-
     public void setParamValue(int valueIndex, int paramIndex, String value, String label, String url, Map<String, String> normDataUrl,
             Locale locale) {
-        if (values == null) {
-            values = new ArrayList<>();
-        }
         if (value != null) {
             value = value.trim();
             if (params.get(paramIndex).getType() != null) {
@@ -308,7 +272,7 @@ public class Metadata implements Serializable {
             mdValue.getParamUrls().add(paramIndex, url);
             if (normDataUrl != null) {
                 mdValue.getNormDataUrls().putAll(normDataUrl);
-                logger.debug("added norm data url: " + normDataUrl.toString());
+                // logger.trace("added norm data url: {}", normDataUrl.toString());
             }
         }
     }
@@ -318,13 +282,6 @@ public class Metadata implements Serializable {
      */
     public List<MetadataParameter> getParams() {
         return params;
-    }
-
-    /**
-     * @param params the params to set
-     */
-    public void setParams(List<MetadataParameter> params) {
-        this.params = params;
     }
 
     public boolean hasParam(String paramName) {
@@ -351,7 +308,7 @@ public class Metadata implements Serializable {
      *
      * @return true if all paramValues are empty; false otherwise.
      */
-    public boolean isEmpty() {
+    private boolean isEmpty() {
         if (values != null) {
             for (MetadataValue value : values) {
                 if (value.getParamValues().isEmpty()) {
@@ -371,7 +328,8 @@ public class Metadata implements Serializable {
     /**
      * Populates the parameters of the given metadata with values from the given StructElement.
      *
-     * @param se
+     * @param metadataMap
+     * @param locale
      * @return
      * @throws IndexUnreachableException
      */
@@ -560,6 +518,50 @@ public class Metadata implements Serializable {
      */
     public void setGroup(boolean group) {
         this.group = group;
+    }
+
+    /**
+     * 
+     * @param metadataList
+     * @param recordLanguage
+     * @return
+     * @should return language-specific version of a field
+     * @should return generic version if no language specific version is found
+     */
+    public static List<Metadata> filterMetadataByLanguage(List<Metadata> metadataList, String recordLanguage) {
+        // logger.trace("filterMetadataByLanguage: {}", recordLanguage);
+        if (recordLanguage == null || metadataList == null || metadataList.isEmpty()) {
+            return metadataList;
+        }
+
+        List<Metadata> ret = new ArrayList<>(metadataList.size());
+        // Fields that have no language code; will be addded to ret in case no language specific version is found
+        List<Metadata> backupList = new ArrayList<>(metadataList.size());
+        // Fields that have already been added to ret and can be skipped
+        Set<String> addedFields = new HashSet<>();
+        String languageCode = recordLanguage.toUpperCase();
+        for (Metadata md : metadataList) {
+            if (md.getLabel().contains("_LANG_")) {
+                String lang = md.getLabel().substring(md.getLabel().length() - 2);
+                logger.trace("{}, {}", md.getLabel(), lang);
+                if (languageCode.equals(lang)) {
+                    ret.add(md);
+                    addedFields.add(md.getLabel().substring(0, md.getLabel().length() - 8));
+                }
+            } else if (!addedFields.contains(md.getLabel())) {
+                backupList.add(md);
+            }
+        }
+        // Add non-language fields
+        if (!backupList.isEmpty()) {
+            for (Metadata md : backupList) {
+                if (!addedFields.contains(md.getLabel())) {
+                    ret.add(md);
+                }
+            }
+        }
+
+        return ret;
     }
 
     @Override

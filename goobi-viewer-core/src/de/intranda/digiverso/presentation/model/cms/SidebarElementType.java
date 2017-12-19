@@ -15,7 +15,10 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.util.ArrayList;
+
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement.WidgetMode;
+import de.intranda.digiverso.presentation.model.misc.GeoLocationInfo;
 
 public enum SidebarElementType {
 
@@ -25,7 +28,13 @@ public enum SidebarElementType {
     bookshelves("widgetBookshelves"),
     crowdsourcing("widgetCrowdsourcing"),
     mySearches("widgetMySearches"),
-    fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery);
+    fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),
+    rssFeed("widgetRssFeed"),
+    user("widgetUser"),
+    workCount("widgetWorkCount"),
+    searchDrillDownTopics("widgetSearchDrillDownTopics"),
+    cmsPageLinks("widgetCmsPageLinks", Category.pageLinks),
+    geoLocations("widgetGeoLocations", Category.geoLocations);
 
     private final String label;
     private final Category type;
@@ -63,6 +72,14 @@ public enum SidebarElementType {
             case fieldQuery:
                 element = new CMSSidebarElementWithQuery();
                 break;
+            case pageLinks:
+                element = new CMSSidebarElement();
+                element.setLinkedPages(new PageList());
+                break;
+            case geoLocations:
+                element = new CMSSidebarElement();
+                element.initGeolocations(new GeoLocationInfo());
+                break;
             default:
                 element = new CMSSidebarElement();
         }
@@ -74,6 +91,8 @@ public enum SidebarElementType {
     public enum Category {
         standard,
         custom,
-        fieldQuery;
+        fieldQuery,
+        pageLinks, 
+        geoLocations;
     }
 }

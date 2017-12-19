@@ -45,6 +45,7 @@
         border-bottom: 1px solid @middlegray;
     }
     &__month {
+        min-height: 270px;
         margin-bottom: 15px;
     }
     &__month-title {
@@ -74,9 +75,27 @@
         text-align: center;
         color: @middlegray;
         a, 
-        span {
+        span,
+        button {
             display: block;
             padding: 5px 10px;
+        }
+        a,
+        button {
+        	width: 100%;
+        	color: @blue;
+        	text-decoration: none;
+            background-color: @lightgray;
+        	&:hover,
+        	&:focus,
+        	&:active {
+        		text-decoration: none;
+        		color: @white;
+        		background-color: @blue;
+        	}
+        }
+        .popover-title {
+        	line-height: normal;
         }
     }
     &__month-day-empty {
@@ -109,9 +128,7 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-    .search-calendar__input { display: none; }
-}
+@media screen and (max-width: @smallBreakpoint) {}
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {}

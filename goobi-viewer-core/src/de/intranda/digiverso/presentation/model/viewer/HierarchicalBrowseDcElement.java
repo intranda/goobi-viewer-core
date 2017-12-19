@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.viewer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,11 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
      */
     public HierarchicalBrowseDcElement(String name, long number, String field, String sortField) throws PresentationException {
         super(name, number, field, sortField);
+    }
+    
+    public HierarchicalBrowseDcElement(HierarchicalBrowseDcElement blueprint) {
+        super(blueprint);
+        blueprint.children.stream().map(child -> new HierarchicalBrowseDcElement(child)).forEach(child -> this.addChild(child));
     }
 
     public List<HierarchicalBrowseDcElement> getChildren() {
@@ -153,6 +159,21 @@ public class HierarchicalBrowseDcElement extends BrowseDcElement {
     @Override
     public int hashCode() {
         return this.getName().hashCode();
+    }
+
+    /**
+     * @param b
+     * @return
+     */
+    public List<HierarchicalBrowseDcElement> getAllDescendents(final boolean includeMyself) {
+        List<HierarchicalBrowseDcElement> list = getChildren().stream()
+                .flatMap(child -> child.getAllDescendents(true).stream())
+                .collect(Collectors.toList());
+        if(includeMyself) {            
+            list.add(0, this);
+        }
+        return list;
+                
     }
 
 }

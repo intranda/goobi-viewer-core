@@ -15,13 +15,15 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,25 +38,31 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.persistence.annotations.CascadeOnDelete;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.misc.GeoLocation;
+import de.intranda.digiverso.presentation.model.misc.GeoLocationInfo;
 import de.intranda.digiverso.presentation.model.misc.NumberIterator;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 
 @Entity
 @Table(name = "cms_sidebar_elements")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="widget_type")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "widget_type")
 public class CMSSidebarElement {
 
+    /**
+     * 
+     */
+    private static final String JSON_PROPERTYNAME_GEOLOCATIONS = "locations";
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarElement.class);
     protected static final int HASH_MULTIPLIER = 11;
     private static final NumberIterator ID_COUNTER = new NumberIterator();
-
 
     private static Pattern patternHtmlTag = Pattern.compile("<.*?>");
     private static Pattern patternHtmlAttribute = Pattern.compile("[ ].*?[=][\"].*?[\"]");
@@ -88,10 +96,23 @@ public class CMSSidebarElement {
     @Enumerated(EnumType.STRING)
     @Column(name = "widget_mode", nullable = false)
     private WidgetMode widgetMode = WidgetMode.STANDARD;
-    
+
+    @Column(name = "linked_pages", nullable = true)
+    private String linkedPagesString = "";
+    @Transient
+    private PageList linkedPages = null;
+
+    @Column(name = "geo_locations", columnDefinition = "LONGTEXT")
+    private String geoLocationsString = null;
+    @Transient
+    private GeoLocationInfo geoLocations = null;
+
     @Column(name = "widget_type", nullable = false)
     private String widgetType = this.getClass().getSimpleName();
 
+    @Column(name = "widget_title")
+    private String widgetTitle = null;
+    
     @Transient
     private final int sortingId = ID_COUNTER.next();
 
@@ -116,29 +137,31 @@ public class CMSSidebarElement {
         return -1;
     }
 
-     /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    /* (non-Javadoc)
+    * @see java.lang.Object#hashCode()
+    */
     @Override
     public int hashCode() {
         int code = 21;
         code += HASH_MULTIPLIER * getType().hashCode();
-        if(StringUtils.isNotBlank(getHtml())) {            
+        if (StringUtils.isNotBlank(getHtml())) {
             code += HASH_MULTIPLIER * getHtml().hashCode();
         }
-        if(StringUtils.isNotBlank(getCssClass())) {            
+        if (StringUtils.isNotBlank(getCssClass())) {
             code += HASH_MULTIPLIER * getCssClass().hashCode();
+        }
+        if (getLinkedPages() != null) {
+            code += HASH_MULTIPLIER * getLinkedPages().hashCode();
         }
         return code;
     }
-    
+
     @Override
     public boolean equals(Object o) {
-        return o.getClass().equals(CMSSidebarElement.class) 
-                && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
-                && bothNullOrEqual(getHtml(), ((CMSSidebarElement) o).getHtml())
-                && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass());
-        }
+        return o.getClass().equals(CMSSidebarElement.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType()) && bothNullOrEqual(
+                getHtml(), ((CMSSidebarElement) o).getHtml()) && bothNullOrEqual(getCssClass(), ((CMSSidebarElement) o).getCssClass())
+                && bothNullOrEqual(getLinkedPages(), ((CMSSidebarElement) o).getLinkedPages());
+    }
 
     protected static boolean bothNullOrEqual(Object o1, Object o2) {
         if (o1 == null) {
@@ -261,35 +284,35 @@ public class CMSSidebarElement {
         }
         this.widgetMode = widgetMode;
     }
-    
-    /**
-	 * @return the cssClass
-	 */
-	public String getCssClass() {
-		return cssClass;
-	}
-	
-	/**
-	 * @param cssClass the cssClass to set
-	 */
-	public void setCssClass(String className) {
-		if(!validateCssClass(className)) {
-			String msg = Helper.getTranslation("cms_validationWarningCssClassInvalid", null);
-			Messages.error(msg.replace("{0}", this.getType()));
-		} else {			
-			this.cssClass = className;
-		}
-	}
 
     /**
-	 * @param className
-	 * @return
-	 */
-	private static boolean validateCssClass(String className) {
-		return patternCssClass.matcher(className).matches();
-	}
+     * @return the cssClass
+     */
+    public String getCssClass() {
+        return cssClass;
+    }
 
-	/**
+    /**
+     * @param cssClass the cssClass to set
+     */
+    public void setCssClass(String className) {
+        if (!validateCssClass(className)) {
+            String msg = Helper.getTranslation("cms_validationWarningCssClassInvalid", null);
+            Messages.error(msg.replace("{0}", this.getType()));
+        } else {
+            this.cssClass = className;
+        }
+    }
+
+    /**
+     * @param className
+     * @return
+     */
+    private static boolean validateCssClass(String className) {
+        return patternCssClass.matcher(className).matches();
+    }
+
+    /**
      * Tests whether the html contains only the allowed html-tags
      *
      * @return
@@ -315,7 +338,6 @@ public class CMSSidebarElement {
         return true;
     }
 
-
     /**
      * Normalizes the given HTML tag so that it can be matched against <code>CMSSidebarManager.getAllowedHtmlTags()</code>.
      *
@@ -335,10 +357,15 @@ public class CMSSidebarElement {
 
         return tag;
     }
-    
+
     public SidebarElementType.Category getCategory() {
-        if(this instanceof CMSSidebarElementWithQuery) {
+
+        if (this instanceof CMSSidebarElementWithQuery) {
             return SidebarElementType.Category.fieldQuery;
+        } else if (this.getLinkedPages() != null) {
+            return SidebarElementType.Category.pageLinks;
+        } else if (this.getGeoLocations() != null) {
+            return SidebarElementType.Category.geoLocations;
         }
         return this.getHtml() != null ? SidebarElementType.Category.custom : SidebarElementType.Category.standard;
     }
@@ -351,12 +378,159 @@ public class CMSSidebarElement {
         sb.append(" (").append(getId()).append(") ");
         return sb.toString();
     }
-    
+
     /**
      * @return the sortingId
      */
     public int getSortingId() {
         return sortingId;
+    }
+
+    /**
+     * @return the linkedPages
+     */
+    public PageList getLinkedPages() {
+        //        this.linkedPages = new PageList(this.linkedPagesString);
+        return linkedPages;
+    }
+
+    /**
+     * @param linkedPages the linkedPages to set
+     */
+    public void setLinkedPages(PageList linkedPages) {
+        this.linkedPages = linkedPages;
+    }
+
+    /**
+     * @return the linkedPagesList
+     */
+    public String getLinkedPagesString() {
+        //        this.linkedPagesString = linkedPages.toString();
+        return linkedPagesString;
+    }
+
+    /**
+     * @param linkedPagesList the linkedPagesList to set
+     */
+    public void setLinkedPagesString(String linkedPagesList) {
+        this.linkedPagesString = linkedPagesList;
+    }
+
+    public void serialize() {
+        if (this.linkedPages != null) {
+            this.linkedPagesString = linkedPages.toString();
+        } else {
+            this.linkedPagesString = null;
+        }
+        if (geoLocations != null) {
+            this.geoLocationsString = createGeoLocationsString(geoLocations);
+        }
+
+    }
+
+    public void deSerialize() {
+        if (StringUtils.isNotEmpty(this.linkedPagesString)) {
+            this.linkedPages = new PageList(this.linkedPagesString);
+        } else {
+            this.linkedPages = null;
+        }
+        if (StringUtils.isNotBlank(this.geoLocationsString)) {
+            this.geoLocations = createGeoLocationsFromString(this.geoLocationsString);
+        }
+    }
+
+    /**
+     * 
+     */
+    public void initGeolocations(GeoLocationInfo info) {
+        if(info.getLocationList().isEmpty()) {
+            info.getLocationList().add(new GeoLocation());
+        }
+        this.geoLocations = info;
+        this.geoLocationsString = createGeoLocationsString(this.geoLocations);
+    }
+
+    public GeoLocationInfo getGeoLocations() {
+        return this.geoLocations;
+    }
+
+    public void addGeoLocation() {
+        this.geoLocations.getLocationList().add(new GeoLocation());
+    }
+
+    public void removeGeoLocation() {
+        if(geoLocations != null) {            
+            this.geoLocations.getLocationList().remove(this.geoLocations.getLocationList().size()-1);
+            if(this.geoLocations.getLocationList().isEmpty()) {
+                this.geoLocations.getLocationList().add(new GeoLocation());
+            }
+        }
+    }
+
+    /**
+     * @param geoLocationsString2
+     * @return
+     */
+    private GeoLocationInfo createGeoLocationsFromString(String string) {
+
+        try {
+            JSONObject json = new JSONObject(string);
+            GeoLocationInfo info = new GeoLocationInfo(json);
+//            if(locations != null) {                
+//                for (int i = 0; i < locations.length(); i++) {
+//                    JSONObject obj = locations.getJSONObject(i);
+//                    list.add(new GeoLocation(obj));
+//                }
+//            }
+            return info;
+        } catch (ParseException e) {
+            logger.error("Failed to create geolocation list from string \n" + string, e);
+        }
+        return new GeoLocationInfo();
+//        if(list.isEmpty()) {
+//            list.add(new GeoLocation());
+//        }
+    }
+
+    /**
+     * @param geoLocations2
+     * @return
+     */
+    private String createGeoLocationsString(GeoLocationInfo info) {
+
+        JSONObject json = info.getAsJson();
+
+//        JSONArray locations = new JSONArray();
+//        list.stream()
+//        .filter(loc -> !loc.isEmpty())
+//        .map(loc -> loc.getAsJson())
+//        .forEach(loc -> locations.put(loc));
+//        
+//        JSONObject json = new JSONObject();
+//        json.put(JSON_PROPERTYNAME_GEOLOCATIONS, locations);
+
+        return json.toString();
+    }
+
+    public String getGeoLocationsString() {
+        return this.geoLocationsString;
+    }
+    /**
+     * @return the widgetTitle
+     */
+    public String getWidgetTitle() {
+        return widgetTitle;
+    }
+    
+    /**
+     * @param widgetTitle the widgetTitle to set
+     */
+    public void setWidgetTitle(String widgetTitle) {
+        this.widgetTitle = widgetTitle;
+    }
+    
+    public boolean isHasWidgetTitle() {
+        return StringUtils.isNotBlank(getWidgetTitle());
     }
 
 }

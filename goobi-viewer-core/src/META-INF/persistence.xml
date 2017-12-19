@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
-	version="2.0" xmlns="http://java.sun.com/xml/ns/persistence">
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+    version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence">
     <persistence-unit name="intranda_viewer_tomcat" transaction-type="JTA">
+        <jta-data-source>java:comp/env/viewer</jta-data-source>
+        
         <!-- <class>de.intranda.digiverso.presentation.model.annotation.AnnotationElement</class> -->
         <class>de.intranda.digiverso.presentation.model.annotation.Comment</class>
         <class>de.intranda.digiverso.presentation.model.bookshelf.Bookshelf</class>
@@ -21,29 +23,30 @@
         <class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPage</class>
         <class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate</class>
         <class>de.intranda.digiverso.presentation.model.search.Search</class>
+        <class>de.intranda.digiverso.presentation.model.security.License</class>
+        <class>de.intranda.digiverso.presentation.model.security.LicenseType</class>
+        <class>de.intranda.digiverso.presentation.model.security.Role</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.IpRange</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.User</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserGroup</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserRole</class>
         <class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
-        <class>de.intranda.digiverso.presentation.model.user.IpRange</class>
-        <class>de.intranda.digiverso.presentation.model.user.License</class>
-        <class>de.intranda.digiverso.presentation.model.user.LicenseType</class>
-        <class>de.intranda.digiverso.presentation.model.user.Role</class>
-        <class>de.intranda.digiverso.presentation.model.user.User</class>
-        <class>de.intranda.digiverso.presentation.model.user.UserGroup</class>
-        <class>de.intranda.digiverso.presentation.model.user.UserRole</class>
-        <jta-data-source>java:comp/env/viewer</jta-data-source>
         
+        <properties>
         <!-- EclipseLink should create the database schema automatically -->
-        <property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
-        <property name="eclipselink.ddl-generation.output-mode" value="database" />
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables" />
+            <property name="eclipselink.ddl-generation.output-mode" value="database" />
             
-        <!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
+            <!-- <property name="eclipselink.cache.shared.default" value="false" /> -->
         
-        <property name="logging.level" value="SEVERE"/> 
-        <property name="eclipselink.logging.level" value="SEVERE" />
-<!--         <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" /> -->
-<!--         <property name="eclipselink.logging.logger" value="ServerLogger" /> -->
-<!--         <property name="eclipselink.logging.level.sql" value="ALL" /> -->
-<!--         <property name="eclipselink.logging.parameters" value="true" /> -->
-<!--         <property name="eclipselink.logging.thread" value="true"/> -->
+            <property name="logging.level" value="SEVERE"/> 
+            <property name="eclipselink.logging.level" value="SEVERE" />
+            <property name="eclipselink.logging.file" value="/opt/digiverso/logs/viewer_sql.log" />
+<!--             <property name="eclipselink.logging.logger" value="ServerLogger" /> -->
+<!--             <property name="eclipselink.logging.level.sql" value="ALL" /> -->
+<!--             <property name="eclipselink.logging.parameters" value="true" /> -->
+<!--             <property name="eclipselink.logging.thread" value="true"/> -->
+        </properties>
     </persistence-unit>
 	<persistence-unit name="intranda_viewer_test" transaction-type="RESOURCE_LOCAL">
 		<!-- <class>de.intranda.digiverso.presentation.model.annotation.AnnotationElement</class> -->
@@ -64,14 +67,14 @@
 		<class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPage</class>
 		<class>de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate</class>
 		<class>de.intranda.digiverso.presentation.model.search.Search</class>
-		<class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
-		<class>de.intranda.digiverso.presentation.model.user.IpRange</class>
-		<class>de.intranda.digiverso.presentation.model.user.License</class>
-		<class>de.intranda.digiverso.presentation.model.user.LicenseType</class>
-		<class>de.intranda.digiverso.presentation.model.user.Role</class>
-		<class>de.intranda.digiverso.presentation.model.user.User</class>
-		<class>de.intranda.digiverso.presentation.model.user.UserGroup</class>
-		<class>de.intranda.digiverso.presentation.model.user.UserRole</class>
+        <class>de.intranda.digiverso.presentation.model.security.License</class>
+        <class>de.intranda.digiverso.presentation.model.security.LicenseType</class>
+        <class>de.intranda.digiverso.presentation.model.security.Role</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.IpRange</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.User</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserGroup</class>
+        <class>de.intranda.digiverso.presentation.model.security.user.UserRole</class>
+        <class>de.intranda.digiverso.presentation.model.transkribus.TranskribusJob</class>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" />

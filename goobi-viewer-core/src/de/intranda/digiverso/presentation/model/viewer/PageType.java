@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -31,21 +32,23 @@ public enum PageType {
     viewImage("image"),
     viewToc("toc"),
     viewThumbs("thumbs"),
-    viewPreview("preview"),
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
     viewOverview("overview"),
-    search("search"),
-    advancedSearch("advancedsearch"),
-    timelinesearch("timelinesearch"),
-    calendarsearch("calendarsearch"),
+    viewFullscreen("fullscreen"),
+    viewReadingMode("readingmode"),
+    viewCalendar("calendar"),
+    search("search", PageTypeHandling.cms),
+    searchlist("searchlist"),
+    advancedSearch("searchadvanced", PageTypeHandling.cms),
+    timelinesearch("searchtimeline"),
+    calendarsearch("searchcalendar"),
     term("term"),
     browse("browse", PageTypeHandling.cms),
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
-    viewFullscreen("fullscreen"),
-    viewReadingMode("readingmode"),
     sites("sites"),
+    // TODO remove
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
@@ -76,20 +79,44 @@ public enum PageType {
         return this.handling.equals(PageTypeHandling.cms);
     }
 
-    public boolean isDocumentPage() {
+    public boolean isCmsPage() {
         switch (this) {
-            case viewFullscreen:
             case editContent:
             case editHistory:
             case editOcr:
+            case viewCalendar:
+            case viewFullscreen:
             case viewFulltext:
             case viewImage:
             case viewMetadata:
             case viewOverview:
-            case viewPreview:
+            case viewReadingMode:
             case viewThumbs:
             case viewToc:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isDocumentPage() {
+        switch (this) {
+            case editContent:
+            case editHistory:
+            case editOcr:
+            case viewCalendar:
+            case viewFullscreen:
+            case viewFulltext:
+            case viewImage:
+            case viewMetadata:
+            case viewOverview:
             case viewReadingMode:
+            case viewThumbs:
+            case viewToc:
                 return true;
             default:
                 return false;
@@ -107,12 +134,27 @@ public enum PageType {
         return cmsPages;
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     * @should return correct type for raw names
+     * @should return correct type for mapped names
+     * @should return correct type for enum names
+     */
     public static PageType getByName(String name) {
         if (name == null) {
             return null;
         }
         for (PageType p : PageType.values()) {
-            if (p.getName().equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
+            if (p.getName().equalsIgnoreCase(name) || p.name.equalsIgnoreCase(name) || p.name().equalsIgnoreCase(name)) {
+                return p;
+            }
+        }
+        //look for configured names
+        for (PageType p : PageType.values()) {
+            String configName = DataManager.getInstance().getConfiguration().getPageType(p);
+            if (configName != null && configName.equalsIgnoreCase(name)) {
                 return p;
             }
         }
@@ -201,5 +243,30 @@ public enum PageType {
         }
 
         return PageType.viewMetadata;
+    }
+
+    /**
+     * @param pagePath
+     * @return true if the given path equals either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
+     *         PageType other is never matched
+     */
+    public boolean matches(String pagePath) {
+        if (StringUtils.isBlank(pagePath)) {
+            return false;
+        }
+        pagePath = pagePath.replaceAll("^\\/|\\/$", "");
+        return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.name) || pagePath.equalsIgnoreCase(getName());
+    }
+
+    /**
+     * @param pagePath
+     * @return true if the given path starts with either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
+     *         PageType other is never matched
+     */
+    public boolean matches(Path pagePath) {
+        if (pagePath == null || StringUtils.isBlank(pagePath.toString())) {
+            return false;
+        }
+        return pagePath.startsWith(this.name()) || pagePath.startsWith(this.name) || pagePath.startsWith(getName());
     }
 }

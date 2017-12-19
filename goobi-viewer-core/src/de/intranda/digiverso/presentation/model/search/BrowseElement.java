@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +57,7 @@ import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
@@ -123,12 +125,33 @@ public class BrowseElement implements Serializable {
     private String sidebarPrevUrl;
     @JsonIgnore
     private String sidebarNextUrl;
+    @JsonIgnore
+    private final Locale locale;
+    @JsonIgnore
+    private final String dataRepository;
 
-    // Constructor for unit tests and special instances.
-    public BrowseElement(String label, String fulltext) {
+    private List<String> recordLanguages;
+
+    /**
+     * Constructor for unit tests and special instances.
+     * 
+     * @param pi
+     * @param label
+     * @param locale
+     * @param fulltext
+     * @param useOverviewPage
+     * @should build overview page url correctly
+     */
+    BrowseElement(String pi, int imageNo, String label, String fulltext, boolean useOverviewPage, Locale locale, String dataRepository) {
+        this.pi = pi;
+        this.imageNo = imageNo;
         this.label = label;
         this.fulltext = fulltext;
+        this.useOverviewPage = useOverviewPage;
+        this.locale = locale;
         this.metadataList = new ArrayList<>();
+        this.url = generateUrl();
+        this.dataRepository = dataRepository;
     }
 
     /**
@@ -144,9 +167,10 @@ public class BrowseElement implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
+    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
             Map<String, Set<String>> searchTerms) throws PresentationException, IndexUnreachableException, DAOException {
         this.metadataList = metadataList;
+        this.locale = locale;
         this.fulltext = fulltext;
 
         // Collect the docstruct hierarchy
@@ -188,7 +212,7 @@ public class BrowseElement implements Serializable {
                     // Add anchor to the docstruct hierarchy
                     structElements.add(anchorStructElement.createStub());
                     if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                        String anchorLabel = generateLabel(anchorStructElement);
+                        String anchorLabel = generateLabel(anchorStructElement, locale);
                         if (StringUtils.isNotEmpty(anchorLabel)) {
                             this.metadataList.add(position, new Metadata(anchorStructElement.getDocStructType(), null, new MetadataParameter(
                                     MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(), null, null, null, false, false), Helper
@@ -200,7 +224,7 @@ public class BrowseElement implements Serializable {
             }
             // Add topstruct label to lower docstructs
             if (!structElement.isWork() && DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
-                String topstructLabel = generateLabel(topStructElement);
+                String topstructLabel = generateLabel(topStructElement, locale);
                 if (StringUtils.isNotEmpty(topstructLabel)) {
                     // Add volume number, if the parent is a volume
                     if (topStructElement.isAnchorChild() && StringUtils.isNotEmpty(topStructElement.getVolumeNo())) {
@@ -290,11 +314,12 @@ public class BrowseElement implements Serializable {
         anchor = structElement.isAnchor();
         numVolumes = structElement.getNumVolumes();
         docStructType = structElement.getDocStructType();
+        dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
 
         if (DocType.GROUP.equals(docType)) {
             label = docType.getLabel(null);
         } else {
-            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement));
+            StringBuilder sbLabel = new StringBuilder(generateLabel(structElement, locale));
             String subtitle = structElement.getMetadataValue(SolrConstants.SUBTITLE);
             if (StringUtils.isNotEmpty(subtitle)) {
                 sbLabel.append(" : ").append(subtitle);
@@ -380,10 +405,10 @@ public class BrowseElement implements Serializable {
             String filepath = filename;
             if (StringUtils.isNotEmpty(filepath)) {
                 // Determine whether the file is in a data repository
-                String dataRepository = structElement.getMetadataValue(SolrConstants.DATAREPOSITORY);
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    sb.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
                             .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
                                     DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append('/').append(
                                             filepath);
@@ -433,8 +458,9 @@ public class BrowseElement implements Serializable {
                             // Regular page or docstruct
                             if (useThumbnail) {
                                 boolean access = FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext()
-                                        .getRequest() != null ? SearchHelper.checkAccessPermissionForThumbnail((HttpServletRequest) FacesContext
-                                                .getCurrentInstance().getExternalContext().getRequest(), pi, filename) : false;
+                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail(
+                                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), pi,
+                                                filename) : false;
                                 // Flag the thumbnail for this element as access denied, so that further visualization can be triggered in HTML.
                                 // The display of the "access denied" thumbnail is done in the ContentServerWrapperServlet.
                                 if (!access) {
@@ -503,12 +529,14 @@ public class BrowseElement implements Serializable {
         }
 
         // Only topstructs should be openened with their overview page view (if they have one)
-        if (DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible() && (structElement.isWork() || structElement.isAnchor())
-                && OverviewPage.loadOverviewPage(structElement, locale) != null) {
+        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
             useOverviewPage = true;
         }
 
-        url = generateUrl();
+        //record languages
+        this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
+
+        this.url = generateUrl();
         sidebarPrevUrl = generateSidebarUrl("prevHit");
         sidebarNextUrl = generateSidebarUrl("nextHit");
 
@@ -520,32 +548,37 @@ public class BrowseElement implements Serializable {
      * 
      * @param structElement
      * @param searchTerms
-     * @param locale
+     * @param ignoreFields Fields to be skipped
+     * @param translateFields Fields to be translated
      * @should add metadata fields that match search terms
-     * @should add
      * @should not add duplicates from default terms
+     * @should not add duplicates from explicit terms
+     * @should not add ignored fields
+     * @should translate configured field values correctly
      */
-    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms) {
-        logger.trace("addAdditionalMetadataContainingSearchTerms");
+    void addAdditionalMetadataContainingSearchTerms(StructElement structElement, Map<String, Set<String>> searchTerms, Set<String> ignoreFields,
+            Set<String> translateFields) {
+        // logger.trace("addAdditionalMetadataContainingSearchTerms");
         if (searchTerms == null) {
             return;
         }
         boolean overviewPageFetched = false;
-        for (String fieldName : searchTerms.keySet()) {
+        for (String termsFieldName : searchTerms.keySet()) {
+            // Skip fields that are in the ignore list
+            if (ignoreFields != null && ignoreFields.contains(termsFieldName)) {
+                continue;
+            }
             // Skip fields that are already in the list
             boolean skip = false;
             for (Metadata md : metadataList) {
-                if (md.getLabel().equals(fieldName)) {
+                if (md.getLabel().equals(termsFieldName)) {
                     continue;
                 }
             }
             if (skip) {
                 continue;
             }
-            switch (fieldName) {
-                case SolrConstants.NORMDATATERMS:
-                case SolrConstants.UGCTERMS:
-                    break;
+            switch (termsFieldName) {
                 //                case SolrConstants.OVERVIEWPAGE_DESCRIPTION:
                 //                case SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT:
                 //                    if (!overviewPageFetched && (structElement.isWork() || structElement.isAnchor())) {
@@ -584,6 +617,10 @@ public class BrowseElement implements Serializable {
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : structElement.getMetadataFields().keySet()) {
+                        // Skip fields that are in the ignore list
+                        if (ignoreFields != null && ignoreFields.contains(docFieldName)) {
+                            continue;
+                        }
                         if (!docFieldName.startsWith("MD_") || docFieldName.endsWith(SolrConstants._UNTOKENIZED)) {
                             continue;
                         }
@@ -591,6 +628,7 @@ public class BrowseElement implements Serializable {
                         for (Metadata md : metadataList) {
                             if (md.getLabel().equals(docFieldName)) {
                                 skip = true;
+                                break;
                             }
                         }
                         if (skip) {
@@ -603,8 +641,14 @@ public class BrowseElement implements Serializable {
                             if (fieldValue.equals(label)) {
                                 continue;
                             }
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
+                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
+                                // Translate values for certain fields
+                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
+                                            + translatedValue + "$3");
+                                }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
                             }
@@ -612,14 +656,27 @@ public class BrowseElement implements Serializable {
                     }
                     break;
                 default:
-                    // Look up the exact field name in he Solr doc and add its values that contain any of the terms for that field
-                    if (structElement.getMetadataFields().containsKey(fieldName)) {
-                        List<String> fieldValues = structElement.getMetadataFields().get(fieldName);
+                    // Skip fields that are already in the list
+                    for (Metadata md : metadataList) {
+                        if (md.getLabel().equals(termsFieldName)) {
+                            skip = true;
+                            break;
+                        }
+                    }
+                    // Look up the exact field name in the Solr doc and add its values that contain any of the terms for that field
+                    if (!skip && structElement.getMetadataFields().containsKey(termsFieldName)) {
+                        List<String> fieldValues = structElement.getMetadataFields().get(termsFieldName);
                         for (String fieldValue : fieldValues) {
-                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(fieldName));
+                            String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
+                                // Translate values for certain fields
+                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                    String translatedValue = Helper.getTranslation(fieldValue, locale);
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
+                                            + translatedValue + "$3");
+                                }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
-                                metadataList.add(new Metadata(fieldName, "", highlightedValue));
+                                metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
                             }
                         }
                     }
@@ -657,7 +714,13 @@ public class BrowseElement implements Serializable {
         return null;
     }
 
-    private String generateLabel(StructElement se) {
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     */
+    private String generateLabel(StructElement se, Locale locale) {
         String ret = "";
 
         if (docType != null) {
@@ -668,10 +731,16 @@ public class BrowseElement implements Serializable {
                         switch (metadataGroupType) {
                             case PERSON:
                             case CORPORATION:
+                            case LOCATION:
+                            case SUBJECT:
+                            case PUBLISHER:
                                 if (se.getMetadataValue("NORM_NAME") != null) {
                                     ret = se.getMetadataValue("NORM_NAME");
                                 } else {
-                                    ret = se.getMetadataValue("MD_DISPLAYFORM");
+                                    ret = se.getMetadataValue("MD_VALUE");
+                                }
+                                if (ret == null) {
+                                    ret = se.getMetadataValue(SolrConstants.LABEL);
                                 }
                                 break;
                             default:
@@ -702,30 +771,67 @@ public class BrowseElement implements Serializable {
                     }
                     break;
                 default:
-                    ret = generateDefaultLabel(se);
+                    ret = generateDefaultLabel(se, locale);
                     break;
             }
         } else {
             logger.warn("{} field seems to be missing on Solr document {}", SolrConstants.DOCTYPE, se.getLuceneId());
-            return generateDefaultLabel(se);
+            ret = generateDefaultLabel(se, locale);
+        }
+
+        if (ret == null) {
+            ret = "";
+            logger.error("Index document {}, has no LABEL, MD_TITLE or DOCSTRUCT fields. Perhaps there is no connection to the owner doc?", se
+                    .getLuceneId());
         }
 
         return ret;
     }
 
-    private String generateDefaultLabel(StructElement se) {
+    /**
+     * 
+     * @param se
+     * @param locale
+     * @return
+     * @should translate docstruct label
+     */
+    static String generateDefaultLabel(StructElement se, Locale locale) {
         String ret = se.getMetadataValue(SolrConstants.LABEL);
         if (StringUtils.isEmpty(ret)) {
             ret = se.getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(ret)) {
-                ret = getDocStructType();
+                if (locale != null) {
+                    String englishTitle = null;
+                    String germanTitle = null;
+                    String anyTitle = null;
+                    for (String key : se.getMetadataFields().keySet()) {
+                        if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
+                            ret = se.getMetadataValue(key);
+                            break;
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
+                            germanTitle = se.getMetadataValue(key);
+                        } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
+                            englishTitle = se.getMetadataValue(key);
+                        } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
+                            anyTitle = se.getMetadataValue(key);
+                        }
+                    }
+                    if (StringUtils.isBlank(ret)) {
+                        if (StringUtils.isNotBlank(englishTitle)) {
+                            ret = englishTitle;
+                        } else if (StringUtils.isNotBlank(germanTitle)) {
+                            ret = germanTitle;
+                        } else {
+                            ret = anyTitle;
+                        }
+                    }
+                }
+                if (StringUtils.isEmpty(ret)) {
+                    ret = Helper.getTranslation(se.getDocStructType(), locale);
+                }
             }
         }
 
-        if (ret == null) {
-            ret = "";
-            logger.error("Index document {}, has no LABEL, MD_TITLE or DOCSTRUCT fields. Perhaps there is no connection to the owner doc?");
-        }
         return ret;
     }
 
@@ -750,10 +856,10 @@ public class BrowseElement implements Serializable {
                 String dataRepository = (String) docs.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
-                            .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                                    DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(docs.get(0).getFieldValue(
-                                            SolrConstants.PI)).append('/').append(ret);
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    sb.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                            .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                    .getMediaFolder()).append('/').append(docs.get(0).getFieldValue(SolrConstants.PI)).append('/').append(ret);
                     ret = sb.toString();
                 } else {
                     ret = new StringBuilder((String) docs.get(0).getFieldValue(SolrConstants.PI)).append('/').append(ret).toString();
@@ -817,15 +923,19 @@ public class BrowseElement implements Serializable {
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
             String url = getThumbnailUrl();
-            url = url.replaceAll("width=\\d+", "").replaceAll("height=\\d+", "");
-            StringBuilder urlBuilder = new StringBuilder(url);
-            if (width != null) {
-                urlBuilder.append("&width=").append(width);
+            if (url != null) {
+                url = url.replaceAll("width=\\d+", "").replaceAll("height=\\d+", "");
+                StringBuilder urlBuilder = new StringBuilder(url);
+                if (width != null) {
+                    urlBuilder.append("&width=").append(width);
+                }
+                if (height != null) {
+                    urlBuilder.append("&height=").append(height);
+                }
+                return urlBuilder.toString();
+            } else {
+                return "";
             }
-            if (height != null) {
-                urlBuilder.append("&height=").append(height);
-            }
-            return urlBuilder.toString();
         }
     }
 
@@ -949,6 +1059,8 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * Returns the search hint URL (without the application root!).
+     * 
      * @return the url
      */
     public String getUrl() {
@@ -976,25 +1088,41 @@ public class BrowseElement implements Serializable {
     private String generateUrl() {
         // For aggregated person search hits, start another search (label contains the person's name in this case)
         StringBuilder sb = new StringBuilder();
-        if (MetadataGroupType.PERSON.equals(metadataGroupType)) {
-            // Person metadata search hit ==> execute search for that person
-            try {
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(URLEncoder.encode(label, SearchBean.URL_ENCODING)).append("\"/1/-/-/");
-            } catch (UnsupportedEncodingException e) {
-                logger.error("{}: {}", e.getMessage(), label);
-                sb = new StringBuilder();
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.search.getName()).append("/-/").append(
-                        originalFieldName).append(":\"").append(label).append("\"/1/-/-/");
+        if (metadataGroupType != null) {
+            switch (metadataGroupType) {
+                case PERSON:
+                case CORPORATION:
+                case LOCATION:
+                case SUBJECT:
+                case PUBLISHER:
+                    // Person metadata search hit ==> execute search for that person
+                    // TODO not for aggregated hits?
+                    try {
+                        sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
+                                SearchBean.URL_ENCODING)).append("\"/1/-/-/");
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error("{}: {}", e.getMessage(), label);
+                        sb = new StringBuilder();
+                        sb.append('/').append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(label).append(
+                                "\"/1/-/-/");
+                    }
+
+                    break;
+                default:
+                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
+                            useOverviewPage, false);
+                    sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId)
+                            ? logId : '-').append('/');
+                    break;
             }
         } else {
-            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/');
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
                     useOverviewPage, false);
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId
                     : '-').append('/');
         }
 
+        // logger.trace("generateUrl: {}", sb.toString());
         return sb.toString();
     }
 
@@ -1083,6 +1211,13 @@ public class BrowseElement implements Serializable {
     }
 
     /**
+     * @return the dataRepository
+     */
+    public String getDataRepository() {
+        return dataRepository;
+    }
+
+    /**
      * Returns the ContextObject value for a COinS element using the docstruct hierarchy for this search hit..
      *
      * @return
@@ -1101,5 +1236,12 @@ public class BrowseElement implements Serializable {
         }
 
         return contextObject;
+    }
+
+    /**
+     * @return the recordLanguages
+     */
+    public List<String> getRecordLanguages() {
+        return recordLanguages;
     }
 }

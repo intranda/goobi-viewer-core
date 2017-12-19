@@ -11,14 +11,11 @@
 
     <composite:implementation>
    		 <ui:param name="collection" value="#{cc.attrs.collection}" />
-   		 #{collection.reset(!collection.displayParentCollections)}
+<!--    		 #{collection.reset(!collection.displayParentCollections)} -->
    		  
    		 <div class="collections">
    		 	<h:form id="collectionsForm" prependId="false">
-   		 		<div class="collections__wrapper">
-   		 			<!-- AJAX Loader -->
-                	<div id="AJAXLoader"></div>
-                	
+   		 		<div class="collections__wrapper">                	
                 	<!-- COLLECTIONS -->
                 	<ul class="collection">
                 		<ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
@@ -30,10 +27,10 @@
                                             <div class="collection__structure text-center">
                                                 <h:commandLink action="#{collection.toggleChildren(browseDcElement)}">
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
-                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        <i class="fa fa-plus-square-o" aria-hidden="true"></i>
                                                     </h:panelGroup>
                                                     <h:panelGroup rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
-                                                        <i class="fa fa-minus" aria-hidden="true"></i>
+                                                        <i class="fa fa-minus-square-o" aria-hidden="true"></i>
                                                     </h:panelGroup>
                                                     <f:ajax render="@form" />
                                                 </h:commandLink>

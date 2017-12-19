@@ -19,7 +19,7 @@
  * <Short Module Description>
  * 
  * @version 3.2.0
- * @module viewerJS.
+ * @module viewerJS.tinyMce
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -32,12 +32,8 @@ var viewerJS = ( function( viewer ) {
         width: '100%',
         height: 400,
         theme: 'modern',
-        plugins: [ "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
-                "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-                "save table contextmenu directionality emoticons template paste textcolor"
-
-        ],
-        toolbar: "bold italic underline | forecolor backcolor | fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist  | link | code preview",
+        plugins: 'print preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists textcolor wordcount spellchecker imagetools media contextmenu colorpicker textpattern help',
+        toolbar: 'formatselect | undo redo | bold italic underline strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code',
         menubar: false,
         statusbar: false,
         relative_urls: false,
@@ -76,6 +72,40 @@ var viewerJS = ( function( viewer ) {
             
             // init editor
             tinymce.init( _defaults );
+        },
+        overview: function() {
+            // check if description or publication editing is enabled and
+            // set fullscreen options
+            if ( $( '.overview__description-editor' ).length > 0 ) {
+                viewerJS.tinyConfig.setup = function( editor ) {
+                    editor.on( 'init', function( e ) {
+                        $( '.overview__publication-action .btn' ).hide();
+                    } );
+                    editor.on( 'FullscreenStateChanged', function( e ) {
+                        if ( e.state ) {
+                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
+                        }
+                        else {
+                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
+                        }
+                    } );
+                };
+            }
+            else {
+                viewerJS.tinyConfig.setup = function( editor ) {
+                    editor.on( 'init', function( e ) {
+                        $( '.overview__description-action .btn' ).hide();
+                    } );
+                    editor.on( 'FullscreenStateChanged', function( e ) {
+                        if ( e.state ) {
+                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
+                        }
+                        else {
+                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
+                        }
+                    } );
+                };
+            }
         },
     };
     

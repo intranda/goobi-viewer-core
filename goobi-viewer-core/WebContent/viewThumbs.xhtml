@@ -27,7 +27,7 @@
             <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
         </h:panelGroup>
 
-        <div id="viewThumbs" class="page-wrapp">
+        <div id="viewThumbs">
             <ui:include src="/resources/includes/title.xhtml">
                 <ui:param name="structure" value="false" />
                 <ui:param name="purl" value="true" />
@@ -45,8 +45,20 @@
 		                            	title="#{image.order}:#{image.orderLabel}" />
 		                        </a>
 	                        </div>
-	                        <div class="thumb-element-number">#{image.order}:#{image.orderLabel}</div>
-                        </div>
+
+							<div class="row no-margin">
+								<div class="col-xs-10 no-padding">
+									<div class="thumb-element-number">#{image.order}:#{image.orderLabel}</div>
+								</div>
+								<div class="col-xs-2 no-padding">
+									<ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+										<div class="thumb-element-fulltext">
+											<i class="fa fa-file-text-o" aria-hidden="true"></i>
+										</div>
+									</ui:fragment>
+								</div>
+							</div>
+						</div>	                    
                     </div>
                 </ui:repeat>
             </div>
@@ -62,13 +74,20 @@
         </h:panelGroup>
 
         <script type="text/javascript">
-            var downloadModalConfig = {
-                downloadBtn: $( '.download-modal' ),
+        var downloadModalConfig = {
+            	downloadBtn: $( '.download-modal' ),
                 path: '#{navigationHelper.applicationUrl}',
+                iiifPath: '#{configurationBean.iiifApiUrl}',
                 userEmail: $( '#userEmail' ).val(),
                 useReCaptcha: #{configurationBean.useReCaptcha},
                 reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
                 messages: {
+                    downloadInfo: {
+                        text: '#{msg.downloadInfoText}',
+                        title: '#{msg.downloadInfoTitle}',
+                        part: '#{msg.downloadInfoPart}',
+                        fileSize: '#{msg.downloadInfoFileSize}'
+                    },
                     reCaptchaText: '#{msg.downloadReCaptchaText}',
                     rcInvalid: '#{msg.downloadRcInvalid}',
                     rcValid: '#{msg.downloadRcValid}',
@@ -79,6 +98,7 @@
                     saveBtn: '#{msg.downloadGenerateFile}',
                 }
             };
+        
             viewerJS.downloadModal.init( downloadModalConfig );
         </script>
     </ui:define>

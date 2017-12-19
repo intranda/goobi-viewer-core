@@ -27,6 +27,7 @@ var viewerJS = ( function() {
     var _debug = false;
     var _defaults = {
         currentPage: '',
+        browser: '',
         sidebarSelector: '#sidebar',
         contentSelector: '#main',
         equalHeightRSSInterval: 1000,
@@ -51,7 +52,11 @@ var viewerJS = ( function() {
         
         $.extend( true, _defaults, config );
         
+        // detect current browser
+        _defaults.browser = viewerJS.helper.getCurrentBrowser();
+        
         console.info( 'Current Page = ', _defaults.currentPage );
+        console.info( 'Current Browser = ', _defaults.browser );
         
         /*
          * ! IE10 viewport hack for Surface/desktop Windows 8 bug Copyright 2014-2015
@@ -77,7 +82,7 @@ var viewerJS = ( function() {
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
             var warningPopover = this.helper
-                    .renderWarningPopover( 'Ihr Browser befindet sich im privaten Modus und unterstützt momentan nicht die Möglichkeit Daten lokal zu speichern. Aus diesem Grund sind nicht alle Funktionenn des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.' );
+                    .renderWarningPopover( 'Ihr Browser befindet sich im privaten Modus und unterstützt die Möglichkeit Informationen zur Seite lokal zu speichern nicht. Aus diesem Grund sind nicht alle Funktionen des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.' );
             
             $( 'body' ).append( warningPopover );
             
@@ -277,6 +282,11 @@ var viewerJS = ( function() {
             } );
         }
         
+        // disable submit button on feedback
+        if ( currentPage === 'feedback' ) {
+            $( '#submitFeedbackBtn' ).attr( 'disabled', true );
+        }
+        
         // set sidebar position for NER-Widget
         if ( $( '#widgetNerFacetting' ).length > 0 ) {
             nerFacettingConfig.sidebarRight = _defaults.widgetNerSidebarRight;
@@ -289,6 +299,37 @@ var viewerJS = ( function() {
             if ( event.which < 48 || event.which > 57 ) {
                 return false;
             }
+        } );
+        
+     // make sure only integer values may be entered in input fields of class
+        // 'input-integer'
+        $( '.input-float' ).on( "keypress", function( event ) {
+        	console.log(event);
+        	switch(event.which) {
+        		case 8:	//delete
+        		case 9:	//tab
+        		case 13: //enter
+        		case 46: //dot
+        		case 44: //comma
+        		case 43: //plus
+        		case 45: //minus
+        			return true;
+        		case 118:
+        			return event.ctrlKey;	//copy
+        		default:
+        			switch(event.keyCode) {
+        			case 8:	//delete
+            		case 9:	//tab
+            		case 13: //enter
+            			return true;
+        			default:
+	        			if ( event.which < 48 || event.which > 57 ) {
+	        				return false;
+	        			} else {
+	        				return true;
+	        			}
+        			}
+        	}
         } );
         
         // set tinymce language
@@ -313,6 +354,12 @@ var viewerJS = ( function() {
             // "ZLB-Hellblau", "28779f", "ZLB-Blau" ];
         }
         
+        if ( currentPage === 'overview' ) {
+            // activate menubar
+            viewerJS.tinyConfig.menubar = true;
+            viewerJS.tinyMce.overview();
+        }
+        
         // AJAX Loader Eventlistener for tinyMCE
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {
@@ -321,41 +368,7 @@ var viewerJS = ( function() {
                 switch ( ajaxstatus ) {
                     case "success":
                         if ( currentPage === 'overview' ) {
-                            // activate menubar
-                            viewerJS.tinyConfig.menubar = true;
-                            
-                            // check if description or publication editing is enabled and
-                            // set fullscreen options
-                            if ( $( '.overview__description-editor' ).length > 0 ) {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__publication-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
-                            else {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__description-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
+                            viewerJS.tinyMce.overview();
                         }
                         
                         viewerJS.tinyMce.init( viewerJS.tinyConfig );
@@ -367,6 +380,46 @@ var viewerJS = ( function() {
         // init tinymce if it exists
         if ( $( '.tinyMCE' ).length > 0 ) {
             viewerJS.tinyMce.init( this.tinyConfig );
+        }
+        
+        // handle browser bugs
+        switch ( _defaults.browser ) {
+            case 'Chrome':
+                /* BROKEN IMAGES */
+                $( 'img' ).error( function() {
+                    $( this ).addClass( 'broken' );
+                } );
+                break;
+            case 'Firefox':
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                /* 1px BUG */
+                if ( $( '.image-doublePageView' ).length > 0 ) {
+                    $( '.image-doublePageView' ).addClass( 'oneUp' );
+                }
+                break;
+            case 'IE':
+                /* SET IE CLASS TO HTML */
+                $( 'html' ).addClass( 'is-IE' );
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Edge':
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Safari':
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
         }
     };
     

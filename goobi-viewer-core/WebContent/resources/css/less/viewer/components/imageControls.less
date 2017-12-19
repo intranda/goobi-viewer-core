@@ -50,6 +50,7 @@
         text-align: center;
         color: @gray;
         border: 1px solid @gray;
+        cursor: pointer;
         &:hover {
             text-decoration: none;
         }
@@ -74,6 +75,14 @@
         a, span {}
     }
     &__back {}
+    &__select-text {
+    	span {
+	    	font-family: @fontFamily;
+	    	font-size: 14px;
+    		border: none;
+	    	cursor: text;
+    	}
+    }
     &__select {
         .form-control__select {
             max-width: 100px;
@@ -114,12 +123,14 @@
         }
         
     }
-    &__pdf {
+    &__pdf,
+    &__fulltext {
     	a {
     		line-height: 26px;
     		border: none;
     	}
     }
+    &__fulltext {}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -142,8 +153,7 @@
     .image-control__switch-pages,
     .image-control__rotate-left,
     .image-control__rotate-right,
-    .image-control__reset,
-    .image-control__fullscreen {
+    .image-control__reset {
         display: none;
     }
 }

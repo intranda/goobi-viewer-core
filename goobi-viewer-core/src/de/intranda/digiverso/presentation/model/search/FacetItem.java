@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -207,11 +208,23 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @param field
      * @param values
      * @param sort
+     * @param reverseOrder
+     * @param hierarchical
+     * @param locale
      * @return
+     * @should sort items correctly
      */
-    public static List<FacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean hierarchical) {
-        List<FacetItem> retList = new ArrayList<>();
-        NavigationHelper nh = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
+    public static List<FacetItem> generateFacetItems(String field, Map<String, Long> values, boolean sort, boolean reverseOrder, boolean hierarchical,
+            Locale locale) {
+        if (field == null) {
+            throw new IllegalArgumentException("field may not be null");
+        }
+        if (values == null) {
+            throw new IllegalArgumentException("values may not be null");
+        }
+
+        List<FacetItem> retList = new ArrayList<>(values.keySet().size());
+
         boolean numeric = true;
         for (String s : values.keySet()) {
             try {
@@ -229,12 +242,18 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                     numberKeys.add(Long.valueOf(s));
                 }
                 Collections.sort(numberKeys);
+                if (reverseOrder) {
+                    Collections.reverse(numberKeys);
+                }
                 keys.clear();
                 for (Long l : numberKeys) {
                     keys.add(String.valueOf(l));
                 }
             } else {
                 Collections.sort(keys);
+                if (reverseOrder) {
+                    Collections.reverse(keys);
+                }
             }
         }
 
@@ -244,9 +263,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 label += SolrConstants._DRILLDOWN_SUFFIX;
             }
             String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
-            retList.add(new FacetItem(field, link, label, Helper.getTranslation(label, nh != null ? nh.getLocale() : null), values.get(String.valueOf(
-                    value)), hierarchical));
+            retList.add(new FacetItem(field, link, label, Helper.getTranslation(label, locale), values.get(String.valueOf(value)), hierarchical));
         }
+        
         // logger.debug("filters: " + retList.size());
         return retList;
     }
@@ -260,15 +279,25 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should construct hierarchical link correctly
      */
     public String getQueryEscapedLink() {
-        String escapedValue = ClientUtils.escapeQueryChars(value);
+        String escapedValue = getEscapedValue();
         if (hierarchial) {
             return new StringBuilder("(").append(field).append(':').append(escapedValue).append(" OR ").append(field).append(':').append(escapedValue)
                     .append(".*)").toString();
         }
+        return new StringBuilder(field).append(':').append(escapedValue).toString();
+    }
+    
+    /**
+     * 
+     * @return
+     */
+    public String getEscapedValue() {
+        String escapedValue = ClientUtils.escapeQueryChars(value); 
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
             escapedValue = '"' + escapedValue + '"';
         }
-        return new StringBuilder(field).append(':').append(escapedValue).toString();
+        
+        return escapedValue;
     }
 
     /**

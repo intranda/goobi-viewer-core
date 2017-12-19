@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,12 +39,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 
 public class FileTools {
 
@@ -83,6 +88,12 @@ public class FileTools {
      */
     public static Document readXmlFile(URL url) throws FileNotFoundException, IOException, JDOMException {
         try (InputStream is = url.openStream()) {
+            return new SAXBuilder().build(is);
+        }
+    }
+
+    public static Document readXmlFile(Path path) throws FileNotFoundException, IOException, JDOMException {
+        try (InputStream is = Files.newInputStream(path)) {
             return new SAXBuilder().build(is);
         }
     }
@@ -136,7 +147,11 @@ public class FileTools {
      */
     public static String getStringFromFile(File file, String encoding) throws FileNotFoundException, IOException {
         if (encoding == null) {
-            encoding = Helper.DEFAULT_ENCODING;
+            encoding = getCharset(new FileInputStream(file));
+            logger.trace("{} encoding: {}", file.getName(), encoding);
+            if (encoding == null) {
+                encoding = Helper.DEFAULT_ENCODING;
+            }
         }
 
         StringBuilder text = new StringBuilder();
@@ -148,6 +163,27 @@ public class FileTools {
         }
 
         return text.toString().trim();
+    }
+
+    /**
+     * Uses ICU4J to determine the charset of the given InputStream.
+     * 
+     * @param input
+     * @return Detected charset name; null if not detected.
+     * @throws IOException
+     * @should detect charset correctly
+     */
+    public static String getCharset(InputStream input) throws IOException {
+        CharsetDetector cd = new CharsetDetector();
+        try (BufferedInputStream bis = new BufferedInputStream(input)) {
+            cd.setText(bis);
+            CharsetMatch cm = cd.detect();
+            if (cm != null) {
+                return cm.getName();
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -216,27 +252,24 @@ public class FileTools {
      * @should write file correctly
      */
     public static void getFileFromDocument(String filePath, Document doc) throws IOException {
-        getFileFromString(getStringFromDocument(doc, Helper.DEFAULT_ENCODING), filePath, Helper.DEFAULT_ENCODING, false);
+        getFileFromString(getStringFromElement(doc, Helper.DEFAULT_ENCODING), filePath, Helper.DEFAULT_ENCODING, false);
     }
 
     /**
-     *
-     * Creates a single String out of the Document document
-     *
-     * @param document
-     * @param encoding The character encoding to use. If null, a standard utf-8 encoding will be used
+     * @param element
+     * @param encoding
      * @return
-     * @should return XML string correctly
+     * @should return XML string correctly for documents
+     * @should return XML string correctly for elements
      */
-    public static String getStringFromDocument(Document document, String encoding) {
-        if (document == null) {
-            logger.warn("Trying to convert null document to String. Aborting");
-            return null;
+    public static String getStringFromElement(Object element, String encoding) {
+        if (element == null) {
+            throw new IllegalArgumentException("element may not be null");
         }
         if (encoding == null) {
             encoding = Helper.DEFAULT_ENCODING;
         }
-        Format format = Format.getPrettyFormat();
+        Format format = Format.getRawFormat();
         XMLOutputter outputter = new XMLOutputter(format);
         Format xmlFormat = outputter.getFormat();
         if (StringUtils.isNotEmpty(encoding)) {
@@ -244,9 +277,31 @@ public class FileTools {
         }
         xmlFormat.setExpandEmptyElements(true);
         outputter.setFormat(xmlFormat);
-        String docString = outputter.outputString(document);
 
+        String docString = null;
+        if (element instanceof Document) {
+            docString = outputter.outputString((Document) element);
+        } else if (element instanceof Element) {
+            docString = outputter.outputString((Element) element);
+        }
         return docString;
+
+    }
+
+    /**
+     * 
+     * @param file
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws JDOMException
+     * @should build document correctly
+     */
+    public static Document getDocumentFromFile(File file) throws FileNotFoundException, IOException, JDOMException {
+        SAXBuilder builder = new SAXBuilder();
+        try (FileInputStream fis = new FileInputStream(file)) {
+            return builder.build(fis);
+        }
     }
 
     /**

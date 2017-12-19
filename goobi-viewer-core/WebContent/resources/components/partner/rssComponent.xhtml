@@ -6,9 +6,8 @@
 
 	<composite:implementation>
 
-		<h:outputScript name="jquery.aRSSFeed.js" library="javascript"></h:outputScript>
-		<script language="javascript" type="text/javascript" src="#{navigationHelper.applicationUrl}resources/javascript/jquery.jfeed.js"></script>
-		<!-- 		<script language="javascript" type="text/javascript" src="resources/javascript/jquery.aRSSFeed.js"></script> -->
+		<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.jfeed.js"></script>
+		<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/jquery.aRSSFeed.js"></script>
 
 		<div class="compName_rssFeed rss_wrapp men_wrapp ">
 			<h2>

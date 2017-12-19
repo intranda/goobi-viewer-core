@@ -22,7 +22,7 @@ import javax.faces.convert.FacesConverter;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.user.User;
 
 @FacesConverter("userConverter")
 public class UserConverter implements Converter {

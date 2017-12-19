@@ -42,8 +42,6 @@ import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.response.LukeResponse;
 import org.apache.solr.client.solrj.response.LukeResponse.FieldInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.TermsResponse;
-import org.apache.solr.client.solrj.response.TermsResponse.Term;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.jdom2.Document;
@@ -64,7 +62,7 @@ public final class SolrSearchIndex {
 
     private static final Logger logger = LoggerFactory.getLogger(SolrSearchIndex.class);
 
-    private static final int MIN_SCHEMA_VERSION = 20170607;
+    private static final int MIN_SCHEMA_VERSION = 20170710;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
     public static final int MAX_HITS = 1000000;
     private static final int TIMEOUT_SO = 30000;
@@ -121,6 +119,7 @@ public final class SolrSearchIndex {
      * @param facetFields
      * @param facetSort
      * @param fieldList If not null, only the fields in the list will be returned.
+     * @param filterQueries
      * @param params Additional query parameters.
      * @return {@link QueryResponse}
      * @throws PresentationException
@@ -132,7 +131,7 @@ public final class SolrSearchIndex {
      * @should filter fields correctly
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
-            List<String> fieldList, Map<String, String> params) throws PresentationException, IndexUnreachableException {
+            List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(first);
         solrQuery.setRows(rows);
@@ -166,6 +165,11 @@ public final class SolrSearchIndex {
                 if (StringUtils.isNotEmpty(field)) {
                     solrQuery.addField(field);
                 }
+            }
+        }
+        if (filterQueries != null && !filterQueries.isEmpty()) {
+            for (String fq : filterQueries) {
+                solrQuery.addFilterQuery(fq);
             }
         }
         if (params != null && !params.isEmpty()) {
@@ -224,15 +228,16 @@ public final class SolrSearchIndex {
      * @param sortFields
      * @param facetFields
      * @param fieldList If not null, only the fields in the list will be returned.
+     * @param filterQueries
      * @param params
      * @return {@link QueryResponse}
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList,
-            Map<String, String> params) throws PresentationException, IndexUnreachableException {
+            List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
-        return search(query, first, rows, sortFields, facetFields, null, fieldList, params);
+        return search(query, first, rows, sortFields, facetFields, null, fieldList, filterQueries, params);
     }
 
     /**
@@ -250,7 +255,7 @@ public final class SolrSearchIndex {
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, List<String> fieldList)
             throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
-        return search(query, first, rows, sortFields, facetFields, fieldList, null);
+        return search(query, first, rows, sortFields, facetFields, fieldList, null, null);
     }
 
     /**
@@ -299,6 +304,11 @@ public final class SolrSearchIndex {
         return search(query, 0, MAX_HITS, null, null, null).getResults();
     }
 
+    public long count(String query) throws PresentationException, IndexUnreachableException {
+        //        logger.trace("search: {}", query);
+        return search(query, 0, 0, null, null, null).getResults().getNumFound();
+    }
+
     /**
      *
      * @param query
@@ -327,7 +337,7 @@ public final class SolrSearchIndex {
      * @should return correct doc
      */
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
-        logger.trace("getDocumentByIddoc: {}", iddoc);
+        // logger.trace("getDocumentByIddoc: {}", iddoc);
         SolrDocument ret = null;
         SolrDocumentList hits = search(new StringBuilder(SolrConstants.IDDOC).append(':').append(iddoc).toString(), 0, 1, null, null, null)
                 .getResults();
@@ -440,7 +450,7 @@ public final class SolrSearchIndex {
      * @should retrieve correct IDDOC
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
-        logger.trace("getIddocFromIdentifier: {}", identifier);
+        // logger.trace("getIddocFromIdentifier: {}", identifier);
         SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(identifier).toString(), 1, null, Collections
                 .singletonList(SolrConstants.IDDOC));
         if (!docs.isEmpty()) {
@@ -547,13 +557,23 @@ public final class SolrSearchIndex {
      * @param field
      * @return
      */
-    public static String getSingleFieldStringValue(SolrDocument doc, String field) {
+    public static Object getSingleFieldValue(SolrDocument doc, String field) {
         Collection<Object> valueList = doc.getFieldValues(field);
         if (valueList != null && !valueList.isEmpty()) {
-            return (String) valueList.iterator().next();
+            return valueList.iterator().next();
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @param doc
+     * @param field
+     * @return
+     */
+    public static String getSingleFieldStringValue(SolrDocument doc, String field) {
+        return (String) getSingleFieldValue(doc, field);
     }
 
     /**
@@ -597,7 +617,7 @@ public final class SolrSearchIndex {
         for (String fieldName : doc.getFieldNames()) {
             switch (fieldName) {
                 case SolrConstants.IMAGEURN_OAI:
-                case SolrConstants.ALTO:
+                    // case SolrConstants.ALTO:
                 case "WORDCOORDS":
                 case "PAGEURNS":
                 case "ABBYYXML":
@@ -752,6 +772,7 @@ public final class SolrSearchIndex {
      *
      * @param query The query to use.
      * @param facetFields List of facet fields.
+     * @param facetMinCount
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
      * @return
      * @throws PresentationException
@@ -760,8 +781,8 @@ public final class SolrSearchIndex {
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
      */
-    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, boolean getFieldStatistics) throws PresentationException,
-            IndexUnreachableException {
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
+            throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -774,7 +795,7 @@ public final class SolrSearchIndex {
                 solrQuery.setGetFieldStatistics(field);
             }
         }
-        solrQuery.setFacetMinCount(0);
+        solrQuery.setFacetMinCount(facetMinCount);
         solrQuery.setFacetLimit(-1); // no limit
         try {
             QueryResponse resp = server.query(solrQuery);
@@ -860,6 +881,9 @@ public final class SolrSearchIndex {
      */
     @SuppressWarnings("unchecked")
     public static String getAsString(Object fieldValue) {
+        if (fieldValue == null) {
+            return null;
+        }
         if (fieldValue instanceof String) {
             return (String) fieldValue;
         } else if (fieldValue instanceof List) {
@@ -871,6 +895,22 @@ public final class SolrSearchIndex {
             return sb.toString().trim();
         } else {
             return fieldValue.toString();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Integer getAsInt(Object fieldValue) {
+        if (fieldValue == null) {
+            return null;
+        }
+        if (fieldValue instanceof Integer) {
+            return (Integer) fieldValue;
+        } else {
+            try {
+                return Integer.parseInt(fieldValue.toString());
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
     }
 
@@ -892,21 +932,18 @@ public final class SolrSearchIndex {
     public List<String> getAllFieldNames() throws SolrServerException, IOException {
         LukeRequest lukeRequest = new LukeRequest();
         lukeRequest.setNumTerms(0);
-
         LukeResponse lukeResponse = lukeRequest.process(server);
-
         Map<String, FieldInfo> fieldInfoMap = lukeResponse.getFieldInfo();
 
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if (info.getType().toLowerCase().contains("string") || info.getType().toLowerCase().contains("text")) {
+            if (info != null && info.getType() != null && info.getType().toLowerCase().contains("string") || info.getType().toLowerCase().contains(
+                    "text") || info.getType().toLowerCase().contains("tlong")) {
                 list.add(name);
             }
         }
 
         return list;
-        //        return new ArrayList<String>(fieldInfoMap.keySet());
-
     }
 }

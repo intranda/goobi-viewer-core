@@ -18,6 +18,7 @@
     var _debug = false;
     var _defaults = {
         currentPage: '',
+        browser: '',
         sidebarSelector: '#sidebar',
         contentSelector: '#main',
         equalHeightRSSInterval: 1000,
@@ -42,7 +43,11 @@
         
         $.extend( true, _defaults, config );
         
+        // detect current browser
+        _defaults.browser = viewerJS.helper.getCurrentBrowser();
+        
         console.info( 'Current Page = ', _defaults.currentPage );
+        console.info( 'Current Browser = ', _defaults.browser );
         
         /*
          * ! IE10 viewport hack for Surface/desktop Windows 8 bug Copyright 2014-2015
@@ -68,7 +73,7 @@
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
             var warningPopover = this.helper
-                    .renderWarningPopover( 'Ihr Browser befindet sich im privaten Modus und unterstützt momentan nicht die Möglichkeit Daten lokal zu speichern. Aus diesem Grund sind nicht alle Funktionenn des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.' );
+                    .renderWarningPopover( 'Ihr Browser befindet sich im privaten Modus und unterstützt die Möglichkeit Informationen zur Seite lokal zu speichern nicht. Aus diesem Grund sind nicht alle Funktionen des viewers verfügbar. Bitte verlasen Sie den privaten Modus oder benutzen einen alternativen Browser. Vielen Dank.' );
             
             $( 'body' ).append( warningPopover );
             
@@ -268,6 +273,11 @@
             } );
         }
         
+        // disable submit button on feedback
+        if ( currentPage === 'feedback' ) {
+            $( '#submitFeedbackBtn' ).attr( 'disabled', true );
+        }
+        
         // set sidebar position for NER-Widget
         if ( $( '#widgetNerFacetting' ).length > 0 ) {
             nerFacettingConfig.sidebarRight = _defaults.widgetNerSidebarRight;
@@ -280,6 +290,37 @@
             if ( event.which < 48 || event.which > 57 ) {
                 return false;
             }
+        } );
+        
+     // make sure only integer values may be entered in input fields of class
+        // 'input-integer'
+        $( '.input-float' ).on( "keypress", function( event ) {
+        	console.log(event);
+        	switch(event.which) {
+        		case 8:	//delete
+        		case 9:	//tab
+        		case 13: //enter
+        		case 46: //dot
+        		case 44: //comma
+        		case 43: //plus
+        		case 45: //minus
+        			return true;
+        		case 118:
+        			return event.ctrlKey;	//copy
+        		default:
+        			switch(event.keyCode) {
+        			case 8:	//delete
+            		case 9:	//tab
+            		case 13: //enter
+            			return true;
+        			default:
+	        			if ( event.which < 48 || event.which > 57 ) {
+	        				return false;
+	        			} else {
+	        				return true;
+	        			}
+        			}
+        	}
         } );
         
         // set tinymce language
@@ -304,6 +345,12 @@
             // "ZLB-Hellblau", "28779f", "ZLB-Blau" ];
         }
         
+        if ( currentPage === 'overview' ) {
+            // activate menubar
+            viewerJS.tinyConfig.menubar = true;
+            viewerJS.tinyMce.overview();
+        }
+        
         // AJAX Loader Eventlistener for tinyMCE
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {
@@ -312,41 +359,7 @@
                 switch ( ajaxstatus ) {
                     case "success":
                         if ( currentPage === 'overview' ) {
-                            // activate menubar
-                            viewerJS.tinyConfig.menubar = true;
-                            
-                            // check if description or publication editing is enabled and
-                            // set fullscreen options
-                            if ( $( '.overview__description-editor' ).length > 0 ) {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__publication-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
-                            else {
-                                viewerJS.tinyConfig.setup = function( editor ) {
-                                    editor.on( 'init', function( e ) {
-                                        $( '.overview__description-action .btn' ).hide();
-                                    } );
-                                    editor.on( 'FullscreenStateChanged', function( e ) {
-                                        if ( e.state ) {
-                                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
-                                        }
-                                        else {
-                                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
-                                        }
-                                    } );
-                                };
-                            }
+                            viewerJS.tinyMce.overview();
                         }
                         
                         viewerJS.tinyMce.init( viewerJS.tinyConfig );
@@ -359,6 +372,46 @@
         if ( $( '.tinyMCE' ).length > 0 ) {
             viewerJS.tinyMce.init( this.tinyConfig );
         }
+        
+        // handle browser bugs
+        switch ( _defaults.browser ) {
+            case 'Chrome':
+                /* BROKEN IMAGES */
+                $( 'img' ).error( function() {
+                    $( this ).addClass( 'broken' );
+                } );
+                break;
+            case 'Firefox':
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                /* 1px BUG */
+                if ( $( '.image-doublePageView' ).length > 0 ) {
+                    $( '.image-doublePageView' ).addClass( 'oneUp' );
+                }
+                break;
+            case 'IE':
+                /* SET IE CLASS TO HTML */
+                $( 'html' ).addClass( 'is-IE' );
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Edge':
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+            case 'Safari':
+                /* BROKEN IMAGES */
+                $( "img" ).error( function() {
+                    $( this ).hide();
+                } );
+                break;
+        }
     };
     
     // global object for tinymce config
@@ -367,7 +420,112 @@
     return viewer;
     
 } )( jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    var _debug = false;
+    var _this = null;
+    var _currApiCall = '';
+    var _json = {};
+    var _popoverConfig = {};
+    var _popoverContent = null;
+    var _defaults = {
+        appUrl: '',
+        calendarWrapperSelector: '.search-calendar__months',
+        popoverTriggerSelector: '[data-popover-trigger="calendar-po-trigger"]',
+        popoverTitle: 'Bitte übergeben Sie den Titel des Werks',
+    };
+    
+    viewer.calendarPopover = {
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.calendarPopover.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.calendarPopover.init: config - ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // TODO: Fehlermeldung in der Konsole beseitigen, wenn man auf den Tag ein
+            // zweites Mal klickt.
+            
+            // show popover for current day
+            $( _defaults.popoverTriggerSelector ).on( 'click', function() {
+                _this = $( this );
+                _currApiCall = encodeURI( _this.attr( 'data-api' ) );
+                
+                viewerJS.helper.getRemoteData( _currApiCall ).done( function( _json ) {
+                    _popoverContent = _getPopoverContent( _json, _defaults );
+                    _popoverConfig = {
+                        placement: 'auto bottom',
+                        title: _defaults.popoverTitle,
+                        content: _popoverContent,
+                        viewport: {
+                            selector: _defaults.calendarWrapperSelector
+                        },
+                        html: true
+                    };
+                    
+                    $( _defaults.popoverTriggerSelector ).popover( 'destroy' );
+                    _this.popover( _popoverConfig );
+                    _this.popover( 'show' );
+                } );
+            } );
+            
+            // remove all popovers by clicking on body
+            $( 'body' ).on( 'click', function( event ) {
+                if ( $( event.target ).closest( _defaults.popoverTriggerSelector ).length ) {
+                    return;
+                }
+                else {
+                    $( _defaults.popoverTriggerSelector ).popover( 'destroy' );
+                }
+            } );
+        }
+    };
+    
+    /**
+     * Method to render the popover content.
+     * 
+     * @method _getPopoverContent
+     * @param {Object} data A JSON-Object which contains the necessary data.
+     * @param {Object} config The config object of the module.
+     * @returns {String} The HTML-String of the popover content.
+     */
+    function _getPopoverContent( data, config ) {
+        if ( _debug ) {
+            console.log( '---------- _getPopoverContent() ----------' );
+            console.log( '_getPopoverContent: data = ', data );
+            console.log( '_getPopoverContent: config = ', config );
+        }
+        
+        var workList = '';
+        var workListLink = '';
+        
+        workList += '<ul class="list">';
+        
+        $.each( data, function( works, values ) {
+            workListLink = config.appUrl + 'image/' + values.PI_TOPSTRUCT + '/' + values.THUMBPAGENO + '/' + values.LOGID + '/';
+            
+            workList += '<li>';
+            workList += '<a href="' + workListLink + '">';
+            workList += values.LABEL;
+            workList += '</a>';
+            workList += '</li>';
+        } );
+        
+        workList += '</ul>';
+        
+        return workList;
+    }
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -589,7 +747,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -742,7 +901,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -928,7 +1088,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
@@ -985,11 +1146,12 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -999,8 +1161,10 @@
         reCaptchaSiteKey: '',
         useReCaptcha: true,
         path: '',
+        iiifPath: '',
         apiUrl: '',
         userEmail: null,
+        workInfo: {},
         modal: {
             id: '',
             label: '',
@@ -1012,14 +1176,21 @@
             }
         },
         messages: {
-            reCaptchaText: 'Bitte bestätigen Sie uns, dass Sie ein Mensch sind.',
+            downloadInfo: {
+                text: 'Informationen zum angeforderten Download',
+                title: 'Werk',
+                part: 'Teil',
+                fileSize: 'Größe'
+            },
+            reCaptchaText: 'Um die Generierung von Dokumenten durch Suchmaschinen zu verhindern bestätigen Sie bitte das reCAPTCHA.',
             rcInvalid: 'Die Überprüfung war nicht erfolgreich. Bitte bestätigen Sie die reCAPTCHA Anfrage.',
             rcValid: 'Vielen Dank. Sie können nun ihre ausgewählte Datei generieren lassen.',
-            eMailText: 'Wenn Sie über den Fortschritt ihrer Datei informiert werden möchten, dann teilen Sie uns ihre E-Mail Adresse mit.',
+            eMailText: 'Um per E-Mail informiert zu werden sobald der Download zur Verfügung steht, können Sie hier optional Ihre E-Mail Adresse hinterlassen',
             eMailTextLoggedIn: 'Sie werden über Ihre registrierte E-Mail Adresse von uns über den Fortschritt des Downloads informiert.',
             eMail: ''
         }
     };
+    var _loadingOverlay = null;
     
     viewer.downloadModal = {
         /**
@@ -1081,44 +1252,44 @@
             
             $.extend( true, _defaults, config );
             
+            // build loading overlay
+            _loadingOverlay = $( '<div />' );
+            _loadingOverlay.addClass( 'dl-modal__overlay' );
+            $( 'body' ).append( _loadingOverlay );
+            
             _defaults.downloadBtn.on( 'click', function() {
+                // show loading overlay
+                $( '.dl-modal__overlay' ).fadeIn( 'fast' );
+                
                 _defaults.dataType = $( this ).attr( 'data-type' );
                 _defaults.dataTitle = $( this ).attr( 'data-title' );
-                _defaults.dataId = $( this ).attr( 'data-id' );
-                _defaults.dataPi = $( this ).attr( 'data-pi' );
-                
-                _defaults.modal = {
-                    id: _defaults.dataId + 'Modal',
-                    label: _defaults.dataId + 'Label',
-                    string: {
-                        title: _defaults.dataTitle,
-                        body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.dataTitle ),
-                        closeBtn: _defaults.messages.closeBtn,
-                        saveBtn: _defaults.messages.saveBtn,
-                    }
-                };
-                
-                // check datatype
-                if ( _defaults.dataType === 'pdf' ) {
-                    if ( _debug ) {
-                        console.log( '---------- PDF Download ----------' );
-                        console.log( 'Title = ', _defaults.dataTitle );
-                        console.log( 'ID = ', _defaults.dataId );
-                        console.log( 'PI = ', _defaults.dataPi );
-                    }
-                    
-                    viewer.downloadModal.initModal( _defaults );
+                if ( $( this ).attr( 'data-id' ) !== '' ) {
+                    _defaults.dataId = $( this ).attr( 'data-id' );
                 }
                 else {
-                    if ( _debug ) {
-                        console.log( '---------- ePub Download ----------' );
-                        console.log( 'Title = ', _defaults.dataTitle );
-                        console.log( 'ID = ', _defaults.dataId );
-                        console.log( 'PI = ', _defaults.dataPi );
-                    }
-                    
-                    viewer.downloadModal.initModal( _defaults );
+                    _defaults.dataId = '-';
                 }
+                _defaults.dataPi = $( this ).attr( 'data-pi' );
+                _getWorkInfo( _defaults.dataPi, _defaults.dataId, _defaults.dataType ).done( function( info ) {
+                    _defaults.workInfo = info;
+                    
+                    _defaults.modal = {
+                        id: _defaults.dataPi + '-Modal',
+                        label: _defaults.dataPi + '-Label',
+                        string: {
+                            title: _defaults.dataTitle,
+                            body: viewer.downloadModal.renderModalBody( _defaults.dataType, _defaults.workInfo ),
+                            closeBtn: _defaults.messages.closeBtn,
+                            saveBtn: _defaults.messages.saveBtn,
+                        }
+                    };
+                    
+                    // hide loading overlay
+                    $( '.dl-modal__overlay' ).fadeOut( 'fast' );
+                    
+                    // init modal
+                    viewer.downloadModal.initModal( _defaults );
+                } );
             } );
         },
         /**
@@ -1195,11 +1366,11 @@
          * @param {String} title The title of the current download file.
          * @returns {String} The HTML-String to render the download modal body.
          */
-        renderModalBody: function( type, title ) {
+        renderModalBody: function( type, infos ) {
             if ( _debug ) {
                 console.log( '---------- viewer.downloadModal.renderModalBody() ----------' );
                 console.log( 'viewer.downloadModal.renderModalBody: type = ', type );
-                console.log( 'viewer.downloadModal.renderModalBody: title = ', title );
+                console.log( 'viewer.downloadModal.renderModalBody: infos = ', infos );
             }
             var rcResponse = null;
             var modalBody = '';
@@ -1211,16 +1382,32 @@
             if ( type === 'pdf' ) {
                 modalBody += '<h4>';
                 modalBody += '<i class="fa fa-file-pdf-o" aria-hidden="true"></i> PDF-Download: ';
-                modalBody += title + '</h4>';
+                modalBody += '</h4>';
             }
             else {
                 modalBody += '<h4>';
                 modalBody += '<i class="fa fa-file-text-o" aria-hidden="true"></i> ePub-Download: ';
-                modalBody += title + '</h4>';
+                modalBody += '</h4>';
+            }
+            // Info
+            modalBody += '<p>' + _defaults.messages.downloadInfo.text + ':</p>';
+            modalBody += '<dl class="dl-horizontal">';
+            modalBody += '<dt>' + _defaults.messages.downloadInfo.title + ':</dt>';
+            modalBody += '<dd>' + infos.title + '</dd>';
+            if ( infos.div !== null ) {
+                modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
+                modalBody += '<dd>' + infos.div + '</dd>';
+            }
+            if(infos.size)  {            	
+            	modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+            	modalBody += '<dd>~' + infos.size + '</dd>';
+            	modalBody += '</dl>';
             }
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
-                modalBody += '<p>' + _defaults.messages.reCaptchaText + '</p>';
+                modalBody += '<hr />';
+                modalBody += '<p><strong>reCAPTCHA</strong></p>';
+                modalBody += '<p>' + _defaults.messages.reCaptchaText + ':</p>';
                 modalBody += '<div id="reCaptchaWrapper"></div>';
             }
             // E-Mail
@@ -1229,12 +1416,12 @@
             modalBody += '<div class="form-group">';
             modalBody += '<label for="recallEMail">' + _defaults.messages.eMail + '</label>';
             if ( _defaults.userEmail != undefined ) {
-                modalBody += '<input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
                 modalBody += '<p class="help-block">' + _defaults.messages.eMailTextLoggedIn + '</p>';
+                modalBody += '<input type="email" class="form-control" id="recallEMail" value="' + _defaults.userEmail + '" disabled="disabled" />';
             }
             else {
+                modalBody += '<p class="help-block">' + _defaults.messages.eMailText + ':</p>';
                 modalBody += '<input type="email" class="form-control" id="recallEMail" />';
-                modalBody += '<p class="help-block">' + _defaults.messages.eMailText + '</p>';
             }
             modalBody += '</div>';
             modalBody += '</form>';
@@ -1310,14 +1497,53 @@
             }
             
             return encodeURI( url );
-        },
-    
+        }
     };
+    
+    /**
+     * Method which returns a promise if the work info has been reached.
+     * 
+     * @method getWorkInfo
+     * @param {String} pi The PI of the work.
+     * @param {String} logid The LOG_ID of the work.
+     * @returns {Promise} A promise object if the info has been reached.
+     */
+    function _getWorkInfo( pi, logid, type ) {
+        if ( _debug ) {
+            console.log( '---------- _getWorkInfo() ----------' );
+            console.log( '_getWorkInfo: pi = ', pi );
+            console.log( '_getWorkInfo: logid = ', logid );
+            console.log( '_getWorkInfo: type = ', type );
+        }
+        
+        var restCall = '';
+        var workInfo = {};
+        
+        if ( logid !== '' || logid !== undefined ) {
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/' + logid + '/';
+            
+            if ( _debug ) {
+                console.log( 'if' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        else {
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/-/';
+            
+            if ( _debug ) {
+                console.log( 'else' );
+                console.log( '_getWorkInfo: restCall = ', restCall );
+            }
+        }
+        
+        return viewerJS.helper.getRemoteData( restCall );
+    }
     
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -1411,7 +1637,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
@@ -1447,36 +1674,6 @@
             else {
                 return str;
             }
-        },
-        
-        /**
-         * Method to switch classnames of an object.
-         * 
-         * @deprecated use jQuery.toggleClass();
-         * @method switchClass
-         * @param {Object} $Obj The object which classname has to be switched.
-         * @param {String} classname1 The classname of the first class.
-         * @param {String} classname2 The classname of the second class.
-         * @returns {String} The new classname.
-         */
-        switchClass: function( $Obj, classname1, classname2 ) {
-            if ( _debug ) {
-                console.log( '---------- viewer.helper.switchClass() ----------' );
-                console.log( 'viewer.helper.switchClass: $Obj = ', $Obj );
-                console.log( 'viewer.helper.switchClass: classname1 = ', classname1 );
-                console.log( 'viewer.helper.switchClass: classname2 = ', classname2 );
-            }
-            
-            $Obj.toggleClass( function() {
-                if ( $Obj.hasClass( classname1 ) ) {
-                    $Obj.removeClass( classname1 );
-                    return classname2;
-                }
-                else {
-                    $Obj.removeClass( classname2 );
-                    return classname1;
-                }
-            } );
         },
         /**
          * Method which calculates the current position of the active element in sidebar
@@ -1656,7 +1853,6 @@
             
             return bsAlert;
         },
-        
         /**
          * Method to get the version number of the used MS Internet Explorer.
          * 
@@ -1794,6 +1990,50 @@
                 }
             } );
         },
+        
+        /**
+         * Method to get the current used browser.
+         * 
+         * @method getCurrentBrowser
+         * @returns {String} The name of the current Browser.
+         */
+        getCurrentBrowser: function() {
+            // Opera 8.0+
+            var isOpera = ( !!window.opr && !!opr.addons ) || !!window.opera || navigator.userAgent.indexOf( ' OPR/' ) >= 0;
+            // Firefox 1.0+
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+            // Safari 3.0+ "[object HTMLElementConstructor]"
+            var isSafari = /constructor/i.test( window.HTMLElement ) || ( function( p ) {
+                return p.toString() === "[object SafariRemoteNotification]";
+            } )( !window[ 'safari' ] || ( typeof safari !== 'undefined' && safari.pushNotification ) );
+            // Internet Explorer 6-11
+            var isIE = /* @cc_on!@ */false || !!document.documentMode;
+            // Edge 20+
+            var isEdge = !isIE && !!window.StyleMedia;
+            // Chrome 1+
+            var isChrome = !!window.chrome && !!window.chrome.webstore;
+            // Blink engine detection
+            // var isBlink = ( isChrome || isOpera ) && !!window.CSS;
+            
+            if ( isOpera ) {
+                return 'Opera';
+            }
+            else if ( isFirefox ) {
+                return 'Firefox';
+            }
+            else if ( isSafari ) {
+                return 'Safari';
+            }
+            else if ( isIE ) {
+                return 'IE';
+            }
+            else if ( isEdge ) {
+                return 'Edge';
+            }
+            else if ( isChrome ) {
+                return 'Chrome';
+            }
+        },
     };
     
     viewer.localStoragePossible = viewer.helper.checkLocalStorage();
@@ -1801,7 +2041,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -1949,7 +2190,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -2912,7 +3154,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     // define variables
@@ -3234,7 +3477,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -3294,8 +3538,15 @@
             $( '.closeAllPopovers' ).hide();
             
             // first level click
+            // console.log("Init Click on normdata");
+            // console.log("normdatalink = ", $( '.normdataLink') )
             $( '.normdataLink' ).on( 'click', function() {
+                console.log( "Click on normdata" );
+                
                 _$this = $( this );
+                
+                _$this.off( 'focus' );
+                
                 _renderPopoverAction( _$this, _defaults.id );
             } );
         },
@@ -3340,6 +3591,9 @@
         $( document ).find( '#normdataPopover-' + id ).hide().fadeIn( 'fast', function() {
             // disable source button
             $Obj.attr( 'disabled', 'disabled' ).addClass( 'disabled' );
+            
+            // hide tooltip
+            $Obj.tooltip( 'hide' );
             
             // set event for nth level popovers
             $( '.normdataDetailLink' ).off( 'click' ).on( 'click', function() {
@@ -3522,7 +3776,7 @@
                 } );
                 
                 // set trigger to enable
-                $Obj.removeAttr( 'disabled' ).removeClass( 'disabled' );
+                $( '.normdataLink' ).removeAttr( 'disabled' ).removeClass( 'disabled' );
             } );
         }
         else {
@@ -3564,7 +3818,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _elem = null;
@@ -3615,7 +3870,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
@@ -3940,7 +4196,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -4077,7 +4334,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -4126,9 +4384,10 @@
                 $( _defaults.saveSearchInputSelector ).focus();
             } );
             
-            // reset current search
+            // reset current search and redirect to standard search
             $( _defaults.resetSearchSelector ).on( 'click', function() {
                 $( _defaults.searchInputSelector ).val( '' );
+                location.href = _defaults.contextPath + '/search/';
             } );
             
             // show/hide loader for excel export
@@ -4138,9 +4397,8 @@
                 
                 trigger.hide();
                 excelLoader.show();
-               
+                
                 var url = _defaults.contextPath + '/rest/download/search/waitFor/';
-                console.log("Calling ", url);
                 var promise = Q( $.ajax( {
                     url: decodeURI( url ),
                     type: "GET",
@@ -4148,22 +4406,21 @@
                     async: true
                 } ) );
                 
-                promise
-                .then(function(data) {
-                	if(_debug) {                		
-                		console.log("Download started");
-                	}
-                	excelLoader.hide();
-                	trigger.show();
-                })
-                .catch(function(error) {
-                	if(_debug) {                		
-                		console.log("Error downloading excel sheet: ", error.responseText);
-                	}
-                	excelLoader.hide();
-                	trigger.show();
-                });
-                
+                promise.then( function( data ) {
+                    if ( _debug ) {
+                        console.log("Download started");
+                    }
+                    
+                    excelLoader.hide();
+                    trigger.show();
+                } ).catch( function( error ) {
+                    if ( _debug ) {
+                        console.log("Error downloading excel sheet: ", error.responseText);
+                    }
+                    
+                    excelLoader.hide();
+                    trigger.show();
+                });                
             } );
             
             // get child hits
@@ -4195,17 +4452,17 @@
                         } );
                     }
                     else {
-                      // remove loader
-                      currBtn.find( _defaults.hitContentLoaderSelector ).hide();
-                      // set event to toggle current hits
-                      currBtn.off().on( 'click', function() {
-                          // render child hits into the DOM
-                          _renderChildHits( data, currBtn );
-                          // check if more children exist and render link
-                          _renderGetMoreChildren( data, currIdDoc, currBtn );
-                          $( this ).toggleClass( 'in' ).next().slideToggle();                         
-                      } );
-                    }                    
+                        // remove loader
+                        currBtn.find( _defaults.hitContentLoaderSelector ).hide();
+                        // set event to toggle current hits
+                        currBtn.off().on( 'click', function() {
+                            // render child hits into the DOM
+                            _renderChildHits( data, currBtn );
+                            // check if more children exist and render link
+                            _renderGetMoreChildren( data, currIdDoc, currBtn );
+                            $( this ).toggleClass( 'in' ).next().slideToggle();
+                        } );
+                    }
                 } ).then( null, function() {
                     currBtn.next().append( viewer.helper.renderAlert( 'alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false ) );
                     console.error( 'ERROR: viewer.searchList.init - ', error );
@@ -4256,7 +4513,7 @@
             
             // build title
             hitSet.append( _renderHitSetTitle( child.browseElement ) );
-
+            
             // append metadata if exist
             hitSet.append( _renderMetdataInfo( child.foundMetadata, child.url ) );
             
@@ -4296,7 +4553,7 @@
         hitSetTitle = $( '<div class="search-list__struct-title" />' );
         hitSetTitleH5 = $( '<h5 />' );
         hitSetTitleLink = $( '<a />' );
-        hitSetTitleLink.attr( 'href', _defaults.contextPath + data.url );
+        hitSetTitleLink.attr( 'href', _defaults.contextPath + '/' + data.url );
         hitSetTitleLink.append( data.labelShort );
         hitSetTitleH5.append( hitSetTitleLink );
         hitSetTitle.append( hitSetTitleH5 );
@@ -4320,36 +4577,43 @@
         }
         
         var metadataWrapper = null;
-        var metadataList = null;
-        var metadataKey = null;
+        var metadataTable = null;
+        var metadataTableBody = null;
+        var metadataTableRow = null;
+        var metadataTableCellLeft = null;
+        var metadataTableCellRight = null;
         var metadataKeyIcon = null;
         var metadataKeyLink = null;
-        var metadataValue = null;
         var metadataValueLink = null;
         
         if ( !$.isEmptyObject( data ) ) {
             metadataWrapper = $( '<div class="search-list__metadata-info" />' );
-            metadataList = $( '<dl class="dl-horizontal" />' );
-
-            $.each( data, function( metadata, item ) {
-                // build metadata key
-                metadataKey = $( '<dt />' );
-                metadataKeyIcon = $( '<i class="fa fa-bookmark-o" aria-hidden="true" />' );
-                metadataKeyLink = $( '<a />' );
-                metadataKeyLink.attr( 'href', _defaults.contextPath + url );
-                metadataKeyLink.append( item.one + ':' );
-                metadataKey.append( metadataKeyIcon ).append( metadataKeyLink );
-                // build metadata value
-                metadataValue = $( '<dd />' );
-                metadataValueLink = $( '<a />' );
-                metadataValueLink.attr( 'href', _defaults.contextPath + url );
-                metadataValueLink.append( item.two );
-                metadataValue.append( metadataValueLink );
-                // build metadata list
-                metadataList.append( metadataKey ).append( metadataValue );
-                metadataWrapper.append( metadataList );
-            } );            
+            metadataTable = $( '<table />' );
+            metadataTableBody = $( '<tbody />' );
+            
+            data.forEach( function( metadata ) {
+                // left cell
+                metadataTableCellLeft = $( '<td />' );
+                metadataKeyIcon = $( '<i />' ).attr( 'aria-hidden', 'true' ).addClass( 'fa fa-bookmark-o' );
+                metadataKeyLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.one + ':' );
+                metadataTableCellLeft.append( metadataKeyIcon ).append( metadataKeyLink );
                 
+                // right cell
+                metadataTableCellRight = $( '<td />' );
+                metadataValueLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.two );
+                metadataTableCellRight.append( metadataValueLink );
+                
+                // row
+                metadataTableRow = $( '<tr />' );
+                metadataTableRow.append( metadataTableCellLeft ).append( metadataTableCellRight );
+                
+                // body
+                metadataTableBody.append( metadataTableRow );
+            } );
+            
+            metadataTable.append( metadataTableBody );
+            metadataWrapper.append( metadataTable );
+            
             return metadataWrapper;
         }
     }
@@ -4381,22 +4645,40 @@
         // check hit type
         switch ( type ) {
             case 'PAGE':
-                hitSetChildrenDt.append( '<i class="fa fa-file-text-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-file-text" aria-hidden="true"></i>' );
+                break;
+            case 'PERSON':
+                hitSetChildrenDt.append( '<i class="fa fa-user" aria-hidden="true"></i>' );
+                break;
+            case 'CORPORATION':
+                hitSetChildrenDt.append( '<i class="fa fa-university" aria-hidden="true"></i>' );
+                break;
+            case 'LOCATION':
+                hitSetChildrenDt.append( '<i class="fa fa-location-arrow" aria-hidden="true"></i>' );
+                break;
+            case 'SUBJECT':
+                hitSetChildrenDt.append( '<i class="fa fa-question-circle-o" aria-hidden="true"></i>' );
+                break;
+            case 'PUBLISHER':
+                hitSetChildrenDt.append( '<i class="fa fa-copyright" aria-hidden="true"></i>' );
                 break;
             case 'EVENT':
-                hitSetChildrenDt.append( '<i class="fa fa-calendar-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-calendar" aria-hidden="true"></i>' );
+                break;
+            case 'ACCESSDENIED':
+                hitSetChildrenDt.append( '<i class="fa fa-lock" aria-hidden="true"></i>' );
                 break;
         }
         hitSetChildrenDd = $( '<dd />' );
-        hitSetChildrenLink = $( '<a />' );
-        hitSetChildrenLink.attr( 'href', _defaults.contextPath + data.url );
+        hitSetChildrenLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url );
         switch ( type ) {
             case 'PAGE':
+            case 'ACCESSDENIED':
                 hitSetChildrenLink.append( data.fulltextForHtml );
-            break;
+                break;
             default:
                 hitSetChildrenLink.append( data.labelShort );
-            break;
+                break;
         }
         hitSetChildrenDd.append( hitSetChildrenLink );
         hitSetChildrenDl.append( hitSetChildrenDt ).append( hitSetChildrenDd );
@@ -4460,7 +4742,9 @@
     
     return viewer;
     
-} )( viewerJS || {}, jQuery );;var viewerJS = ( function( viewer ) {
+} )( viewerJS || {}, jQuery );
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -4538,7 +4822,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _box = null;
@@ -4650,7 +4935,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -4718,7 +5004,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
@@ -5052,7 +5339,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -5062,12 +5350,8 @@
         width: '100%',
         height: 400,
         theme: 'modern',
-        plugins: [ "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
-                "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
-                "save table contextmenu directionality emoticons template paste textcolor"
-
-        ],
-        toolbar: "bold italic underline | forecolor backcolor | fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist  | link | code preview",
+        plugins: 'print preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists textcolor wordcount spellchecker imagetools media contextmenu colorpicker textpattern help',
+        toolbar: 'formatselect | undo redo | bold italic underline strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code',
         menubar: false,
         statusbar: false,
         relative_urls: false,
@@ -5107,12 +5391,47 @@
             // init editor
             tinymce.init( _defaults );
         },
+        overview: function() {
+            // check if description or publication editing is enabled and
+            // set fullscreen options
+            if ( $( '.overview__description-editor' ).length > 0 ) {
+                viewerJS.tinyConfig.setup = function( editor ) {
+                    editor.on( 'init', function( e ) {
+                        $( '.overview__publication-action .btn' ).hide();
+                    } );
+                    editor.on( 'FullscreenStateChanged', function( e ) {
+                        if ( e.state ) {
+                            $( '.overview__description-action-fullscreen' ).addClass( 'in' );
+                        }
+                        else {
+                            $( '.overview__description-action-fullscreen' ).removeClass( 'in' );
+                        }
+                    } );
+                };
+            }
+            else {
+                viewerJS.tinyConfig.setup = function( editor ) {
+                    editor.on( 'init', function( e ) {
+                        $( '.overview__description-action .btn' ).hide();
+                    } );
+                    editor.on( 'FullscreenStateChanged', function( e ) {
+                        if ( e.state ) {
+                            $( '.overview__publication-action-fullscreen' ).addClass( 'in' );
+                        }
+                        else {
+                            $( '.overview__publication-action-fullscreen' ).removeClass( 'in' );
+                        }
+                    } );
+                };
+            }
+        },
     };
     
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var viewerJS = ( function( viewer ) {
+
+var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
@@ -5165,13 +5484,32 @@
                 
                 if ( _defaults.json.id === _defaults.imgPi ) {
                     // Aktuell geöffnete Version - kein Link
-                    _defaults.versionLink = '<li><span>' + _defaults.json.id + ' (' + _defaults.json.year + ')</span></li>';
+                    _defaults.versionLink = '<li><span>';
+                    if ( _defaults.json.label != undefined && _defaults.json.label != '' ) {
+                    	_defaults.versionLink += _defaults.json.label;
+                    }
+                    else {
+                    	 _defaults.versionLink += _defaults.json.id;
+                    	 if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
+                    		 _defaults.versionLink += ' (' + _defaults.json.year + ')';                    	
+                    	 }
+                    }
+                    _defaults.versionLink += '</span></li>';
                     
                     $( _defaults.widgetList ).append( _defaults.versionLink );
                 }
                 else {
                     // Vorgänger und Nachfolger jeweils mit Link
-                    _defaults.versionLink = '<li><a href="' + _defaults.imgUrl + '/' + _defaults.json.id + '/1/">' + _defaults.json.id + ' (' + _defaults.json.year + ')</a></li>';
+                    _defaults.versionLink = '<li><a href="' + _defaults.imgUrl + '/' + _defaults.json.id + '/1/">';
+                    if ( _defaults.json.label != undefined && _defaults.json.label != '' ) {
+                    	_defaults.versionLink += _defaults.json.label;
+                    } else {
+                    	_defaults.versionLink += _defaults.json.id;
+                    	if ( _defaults.json.year != undefined && _defaults.json.year != '' ) {
+                    		_defaults.versionLink += ' (' + _defaults.json.year + ')';
+                    	}
+                    }
+                    _defaults.versionLink += '</a></li>';
                     
                     $( _defaults.widgetList ).append( _defaults.versionLink );
                 }
@@ -5182,7 +5520,8 @@
     return viewer;
     
 } )( viewerJS || {}, jQuery );
-;var cmsJS = ( function() {
+
+var cmsJS = ( function() {
     'use strict';
     
     var _debug = false;
@@ -5307,7 +5646,8 @@
     return cms;
     
 } )( jQuery );
-;var cmsJS = ( function( cms ) {
+
+var cmsJS = ( function( cms ) {
     'use strict';
     
     var _debug = false;
@@ -5441,7 +5781,178 @@
     return cms;
     
 } )( cmsJS || {}, jQuery );
-;var cmsJS = ( function( cms ) {
+
+var cmsJS = ( function( cms ) {
+    'use strict';
+    
+    // variables
+    var _debug = false;
+    var _map = {};
+    var _mapEnlarged = {};
+    var _features = [];
+    var _centerCoords = [];
+    var _defaults = {
+        appUrl: '',
+        locations: '',
+        mapboxAccessToken: 'pk.eyJ1IjoibGlydW1nYnYiLCJhIjoiY2lobjRzamkyMDBnM3U5bTR4cHp0NDdyeCJ9.AjNCRBlBb57j-dziFxf58A',
+        mapBoxContainerSelector: 'widgetGeoLocationsMap',
+        mapBoxContainerEnlargedSelector: 'widgetGeoLocationsMapEnlarged',
+        mapBoxStyle: 'mapbox://styles/lirumgbv/cii024wxn009aiolzgy2zlycj',
+        msg: {
+            propertiesLink: ''
+        }
+    };
+    
+    cms.geoLocations = {
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'cms.geoLocations.init' );
+                console.log( '##############################' );
+                console.log( 'cms.geoLocations.init: config - ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            if ( $( '#widgetGeoLocationsMap' ).length > 0 ) {
+                mapboxgl.accessToken = _defaults.mapboxAccessToken;
+                
+                // get map data and infos
+                _centerCoords = _getCenterCoords( _defaults.locations );
+                _features = _getMapFeatures( _defaults.locations );
+                
+                // create map
+                _map = new mapboxgl.Map( {
+                    container: _defaults.mapBoxContainerSelector,
+                    style: _defaults.mapBoxStyle,
+                    center: _centerCoords,
+                    zoom: 12.5,
+                    interactive: true
+                } );
+                
+                // build markers
+                _map.on( 'style.load', function() {
+                    _map.addSource( "markers", {
+                        "type": "geojson",
+                        "data": {
+                            "type": "FeatureCollection",
+                            "features": _features
+                        }
+                    } );
+                    
+                    _map.addLayer( {
+                        "id": "markers",
+                        "type": "symbol",
+                        "source": "markers",
+                        "layout": {
+                            "icon-image": "pin",
+                            "icon-allow-overlap": true
+                        }
+                    } );
+                    
+                    _map.addControl( new mapboxgl.FullscreenControl() );
+                    _map.addControl( new mapboxgl.NavigationControl() );
+                } );
+                
+                // add popups
+                _map.on( 'click', 'markers', function( e ) {
+                    new mapboxgl.Popup().setLngLat( e.features[ 0 ].geometry.coordinates ).setHTML( e.features[ 0 ].properties.infos ).addTo( _map );
+                    
+                    // GAUGS: save collection to local storage for slider use
+                    $( '.mapboxgl-popup-content a' ).on( 'click', function( event ) {
+                        event.preventDefault();
+                        var url = $( this ).attr( 'href' );
+                        var collection = $( this ).attr( 'data-collection' );
+                        
+                        if ( collection === 'false' ) {
+                            localStorage.setItem( 'sliderImagesFrom', 0 );
+                        }
+                        else {
+                            localStorage.setItem( 'sliderImagesFrom', collection );
+                        }
+                        window.location.href = url;
+                    } );
+                } );
+            }
+            
+        }
+    };
+    
+    /**
+     * Method which returns an object of map features.
+     * 
+     * @method _getMapFeatures
+     * @param {String} infos A JSON-String which contains the feature infos.
+     * @returns {Array} An array of features.
+     */
+    function _getMapFeatures( infos ) {
+        if ( _debug ) {
+            console.log( '---------- _getMapFeatures() ----------' );
+            console.log( '_getMapFeatures: infos - ', infos );
+        }
+        
+        var features = [];
+        var collection = '';
+        var infos = JSON.parse( infos );
+        
+        $.each( infos.locations, function( key, location ) {
+            // GAUGS: special condition to get the right collection number for image
+            // slider
+            if ( location.link.indexOf( '/sammlung/' ) != -1 ) {
+                var str = location.link;
+                collection = str.replace( '/sammlung/', '' ).replace( '/', '' );
+            }
+            
+            var feature = {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [ location.longitude, location.latitude ]
+                },
+                'properties': {
+                    'infos': location.infos + '<br /><a href="' + _defaults.appUrl + location.link + '" data-collection="' + ( ( collection !== '' ) ? collection : 'false' )
+                            + '">' + _defaults.msg.propertiesLink + '</a>'
+                }
+            }
+
+            features.push( feature );
+        } );
+        
+        return features;
+    }
+    
+    /**
+     * Method which returns an array of coordinates for centering the map.
+     * 
+     * @method _getCenterCoords
+     * @param {String} infos A JSON-String which contains the feature infos.
+     * @returns {Array} An array of coords.
+     */
+    function _getCenterCoords( infos ) {
+        if ( _debug ) {
+            console.log( '---------- _getCenterCoords() ----------' );
+        }
+        
+        var coords = [];
+        var infos = JSON.parse( infos );
+        
+        if ( infos.centerLocation.longitude != '' || infos.centerLocation.latitude != '' ) {
+            coords.push( infos.centerLocation.longitude );
+            coords.push( infos.centerLocation.latitude );
+        }
+        else {
+            coords.push( infos.locations[ 0 ].longitude );
+            coords.push( infos.locations[ 0 ].latitude );
+        }
+        
+        return coords;
+    }
+    
+    return cms;
+    
+} )( cmsJS || {}, jQuery );
+
+var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables
@@ -5450,6 +5961,7 @@
     var _lazyGrid = null;
     var _defaults = {
         $grid: null,
+        loaderSelector: '.tpl-masonry__loader'
     };
     
     // DOM-Elements
@@ -5461,7 +5973,6 @@
     var $gridItemCaption = null;
     var $gridItemCaptionHeading = null;
     var $gridItemCaptionLink = null;
-    var $gridItemCaptionIcon = null;
     
     cms.masonry = {
         /**
@@ -5485,6 +5996,9 @@
             
             $.extend( true, _defaults, config );
             
+            // show loader
+            $( _defaults.loaderSelector ).show();
+            
             // render grid
             _renderMasonryGrid( data );
             
@@ -5498,6 +6012,15 @@
                     percentPosition: true
                 } );
             } );
+            
+            // fade in grid after rendering
+            _lazyGrid.on( 'layoutComplete', function( event, laidOutItems ) {
+                // hide loader
+                $( _defaults.loaderSelector ).hide();
+                // show images
+                _defaults.$grid.addClass( 'ready' );
+            } );
+            
         }
     };
     
@@ -5558,12 +6081,7 @@
                     $gridItemCaptionLink.attr( 'href', item.url );
                     $gridItemCaptionLink.attr( 'title', item.title );
                     
-                    // grid item caption icon
-                    $gridItemCaptionIcon = $( '<i aria-hidden="true" />' );
-                    $gridItemCaptionIcon.addClass( 'fa fa-arrow-right' );
-                    
                     // append to grid item
-                    $gridItemCaption.append( $gridItemCaptionIcon );
                     $gridItemCaptionLink.append( $gridItemCaption );
                     $gridItem.append( $gridItemCaptionLink );
                 }
@@ -5597,7 +6115,127 @@
     return cms;
     
 } )( cmsJS || {}, jQuery );
-;var cmsJS = ( function( cms ) {
+
+var cmsJS = ( function( cms ) {
+    'use strict';
+    
+    // variables
+    var _debug = false;
+    var _defaults = {
+        rssFeedSelector: '.tpl-rss__feed',
+    };
+    
+    cms.rssFeed = {
+        /**
+         * Method which initializes the RSS Feed.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {Object} data An data object which contains the images sources for the
+         * grid.
+         */
+        init: function( config, data ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'cmsJS.rssFeed.init' );
+                console.log( '##############################' );
+                console.log( 'cmsJS.rssFeed.init: config - ', config );
+                console.log( 'cmsJS.rssFeed.init: data - ', data );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // render RSS Feed
+            _renderRssFeed( data );
+        }
+    };
+    
+    /**
+     * Method which renders the RSS feed into the DOM.
+     * 
+     * @method _renderRssFeed
+     * @param {Object} data The RSS information data object.
+     */
+    function _renderRssFeed( data ) {
+        if ( _debug ) {
+            console.log( '---------- _renderRssFeed() ----------' );
+            console.log( '_renderRssFeed: data = ', data );
+        }
+        
+        // DOM elements
+        var rssItem = null;
+        var rssItemTitle = null;
+        var rssItemTitleH3 = null;
+        var rssItemTitleLink = null;
+        var rssItemRow = null;
+        var rssItemColLeft = null;
+        var rssItemColRight = null;
+        var rssItemImageWrapper = null;
+        var rssItemImage = null;
+        var rssItemImageLink = null;
+        var rssItemDate = null;
+        var rssItemTime = null;
+        var rssItemMetadata = null;
+        var rssItemMetadataKey = null;
+        var rssItemMetadataValue = null;
+        
+        // create items
+        data.items.forEach( function( item ) {
+            // create item wrapper
+            rssItem = $( '<div />' );
+            rssItem.addClass( 'tpl-rss__item' );
+            
+            // create item content
+            rssItemRow = $( '<div />' ).addClass( 'row' );
+            
+            // left
+            rssItemColLeft = $( '<div />' ).addClass( 'col-xs-3' );
+            rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
+            rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
+            rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-responsive' );
+            rssItemImageLink.append( rssItemImage );
+            rssItemImageWrapper.append( rssItemImageLink );
+            rssItemColLeft.append( rssItemImageWrapper );
+            
+            // right
+            rssItemColRight = $( '<div />' ).addClass( 'col-xs-9' );
+            
+            // create item title
+            rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
+            rssItemTitleH3 = $( '<h3 />' );
+            rssItemTitleLink = $( '<a />' ).attr( 'href', item.link ).text( item.title );
+            rssItemTitleH3.append( rssItemTitleLink );
+            rssItemTitle.append( rssItemTitleH3 );
+            
+            // create date
+            rssItemDate = $( '<div />' ).addClass( 'tpl-rss__item-date' );
+            rssItemTime = new Date( item.pubDate );
+            rssItemDate.text( rssItemTime.toLocaleString() );
+            
+            // create metadata
+            rssItemMetadata = $( '<dl />' ).addClass( 'tpl-rss__item-metadata dl-horizontal' );
+            item.description.metadata.forEach( function( metadata ) {
+                rssItemMetadataKey = $( '<dt />' ).text( metadata.label + ':' );
+                rssItemMetadataValue = $( '<dd />' ).text( metadata.value );
+                rssItemMetadata.append( rssItemMetadataKey ).append( rssItemMetadataValue );
+            } );
+            rssItemColRight.append( rssItemTitle ).append( rssItemDate ).append( rssItemMetadata );
+            
+            // append to row
+            rssItemRow.append( rssItemColLeft ).append( rssItemColRight );
+            
+            // create item
+            rssItem.append( rssItemRow );
+            
+            $( _defaults.rssFeedSelector ).append( rssItem );
+        } );
+    }
+    
+    return cms;
+    
+} )( cmsJS || {}, jQuery );
+
+var cmsJS = ( function( cms ) {
     'use strict';
     
     var _debug = false;
@@ -5745,14 +6383,26 @@
             console.log( 'cmsJS.sortableList _handleBeforeDropFromAvailable: ui - ', ui );
         }
         
-        var item = $( ui.item );
-        var firstCheckbox = item.find( "td input" ).get( 0 );
-        var secondCheckbox = item.find( "td input" ).get( 1 );
-        if ( firstCheckbox && secondCheckbox && !$( firstCheckbox ).prop( 'checked' ) && !$( secondCheckbox ).prop( 'checked' ) ) {
-            $( firstCheckbox ).prop( 'checked', true );
-        }
-        if ( _allowMultipleOccurances && item.parent().attr( "id" ) === "visibleItemList" ) {
-            item.clone().appendTo( $( "#availableItemList" ) );
+        var $item = $( ui.item );
+
+        var $radioMenues = $item.find("table");
+        $radioMenues.each(function(index, element) {
+        	var $checkboxes = $(element).find("input");
+        	if($checkboxes.length > 0) {
+        		var anychecked = false;
+        		$checkboxes.each(function(index, element) {
+        			if($(element).prop('checked')) {
+        				anychecked = true;
+        				return false;
+        			}
+        		})
+        		if(!anychecked) {
+        			$checkboxes.first().prop('checked', true);
+        		}
+        	}
+        })
+        if ( _allowMultipleOccurances && $item.parent().attr( "id" ) === "visibleItemList" ) {
+            $item.clone().appendTo( $( "#availableItemList" ) );
         }
         
     }
@@ -5954,7 +6604,315 @@
     return cms;
     
 } )( cmsJS || {}, jQuery );
-;var cmsJS = ( function( cms ) {
+
+var cmsJS = ( function( cms ) {
+    'use strict';
+    
+    // variables
+    var _debug = false;
+    var _toggleAttr = false;
+    var _defaults = {
+        collectionsSelector: '.tpl-stacked-collection__collections',
+        msg: {
+            noSubCollectionText: ''
+        }
+    };
+    
+    cms.stackedCollection = {
+        /**
+         * Method which initializes the RSS Feed.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {Object} data An data object which contains the images sources for the
+         * grid.
+         */
+        init: function( config, data ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'cmsJS.stackedCollections.init' );
+                console.log( '##############################' );
+                console.log( 'cmsJS.stackedCollections.init: config - ', config );
+                console.log( 'cmsJS.stackedCollections.init: data - ', data );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // render RSS Feed
+            _renderCollections( data );
+            
+            // set first panel visible
+            _toggleAttr = $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded' );
+            
+            if ( typeof _toggleAttr !== typeof undefined && _toggleAttr !== false ) {
+                $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded', 'true' ).removeClass( 'collapsed' );
+                $( '#stackedCollections .panel:first' ).find( '.panel-collapse' ).attr( 'aria-expanded', 'true' ).addClass( 'in' );
+            }
+        }
+    };
+    
+    /**
+     * Method which renders the collection accordion.
+     * 
+     * @method _renderCollections
+     * @param {Object} data The RSS information data object.
+     */
+    function _renderCollections( data ) {
+        if ( _debug ) {
+            console.log( '---------- _renderCollections() ----------' );
+            console.log( '_renderCollections: data = ', data );
+        }
+        
+        var counter = 0;
+        
+        // DOM elements
+        var panelGroup = $( '<div />' ).attr( 'id', 'stackedCollections' ).attr( 'role', 'tablist' ).addClass( 'panel-group' );
+        var panel = null;
+        var panelHeading = null;
+        var panelThumbnail = null;
+        var panelThumbnailImage = null;
+        var panelTitle = null;
+        var panelTitleLink = null;
+        var panelRSS = null;
+        var panelRSSLink = null;
+        var panelCollapse = null;
+        var panelBody = null;
+        
+        // create members
+        data.members.forEach( function( member ) {
+            // increase counter
+            counter++;
+            // create panels
+            panel = $( '<div />' ).addClass( 'panel' );
+            // create panel title
+            panelHeading = $( '<div />' ).addClass( 'panel-heading' );
+            panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
+            panelTitleLink = $( '<a />' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
+            // check if subcollections exist
+            if ( _getMetadataValue( member, 'subCollections' ) > 0 ) {
+                panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
+                        .attr( 'aria-expanded', 'false' );
+            }
+            else {
+                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
+            }
+            panelTitle.append( panelTitleLink );
+            // create RSS link
+            panelRSS = $( '<div />' ).addClass( 'panel-rss' );
+            panelRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
+            panelRSS.append( panelRSSLink );
+            // create panel thumbnail if exist
+            panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
+            if ( member.thumbnail ) {
+                panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail ).addClass( 'img-responsive' );
+                panelThumbnail.append( panelThumbnailImage );
+            }
+            // build title
+            panelHeading.append( panelThumbnail ).append( panelTitle ).append( panelRSS );
+            // create collapse
+            panelCollapse = $( '<div />' ).attr( 'id', 'collapse-' + counter ).attr( 'role', 'tabpanel' ).attr( 'aria-expanded', 'false' ).addClass( 'panel-collapse collapse' );
+            // create panel body
+            panelBody = $( '<div />' ).addClass( 'panel-body' ).append( _renderSubCollections( member[ "@id" ] ) );
+            // build collapse
+            panelCollapse.append( panelBody );
+            // build panel
+            panel.append( panelHeading ).append( panelCollapse );
+            // build panel group
+            panelGroup.append( panel );
+            
+            $( _defaults.collectionsSelector ).append( panelGroup );
+        } );
+    }
+    
+    /**
+     * Method to retrieve metadata value of the metadata object with the given label and
+     * within the given collection object.
+     * 
+     * @param collection {Object} The iiif-presentation collection object cotaining the
+     * metadata.
+     * @param label {String} The label property value of the metadata to return.
+     * @returns {String} The count of works in the collection.
+     */
+    function _getMetadataValue( collection, label ) {
+        if ( _debug ) {
+            console.log( '---------- _getMetadataValue() ----------' );
+            console.log( '_getMetadataValue: collection = ', collection );
+            console.log( '_getMetadataValue: label = ', label );
+        }
+        
+        var value = '';
+        
+        collection.metadata.forEach( function( metadata ) {
+            if ( metadata.label == label ) {
+                value = metadata.value;
+            }
+        } );
+        
+        return value;
+    }
+    
+    /**
+     * Method which renders the subcollections.
+     * 
+     * @method _renderSubCollections
+     * @param {String} url The URL to the API which fetches the subcollection data.
+     * @returns {String} The HTML string of the subcollections.
+     */
+    function _renderSubCollections( url ) {
+        if ( _debug ) {
+            console.log( '---------- _renderSubCollections() ----------' );
+            console.log( '_renderSubCollections: url = ', url );
+        }
+        
+        // DOM elements
+        var subCollections = $( '<ul />' ).addClass( 'list' );
+        var subCollectionItem = null;
+        var subCollectionItemLink = null;
+        var subCollectionItemRSSLink = null;
+        
+        // get subcollection data
+        $.ajax( {
+            url: url,
+            type: 'GET',
+            datatype: 'JSON'
+        } ).then( function( data ) {
+            subCollectionItem = $( '<li />' );
+            
+            if ( !$.isEmptyObject( data.members ) ) {
+                // add subcollection items
+                data.members.forEach( function( member ) {
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( member.label );
+                    subCollectionItemRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
+                            .html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
+                    // build subcollection item
+                    subCollectionItem.append( subCollectionItemLink ).append( subCollectionItemRSSLink );
+                    subCollections.append( subCollectionItem );
+                } );
+            }
+            else {
+                // create empty item link
+                subCollectionItemLink = $( '<a />' ).attr( 'href', data.rendering[ '@id' ] ).text( _defaults.msg.noSubCollectionText + '.' );
+                // build empty item
+                subCollectionItem.append( subCollectionItemLink );
+                subCollections.append( subCollectionItem );
+            }
+        } );
+        
+        return subCollections;
+    }
+    
+    return cms;
+    
+} )( cmsJS || {}, jQuery );
+
+var cmsJS = ( function( cms ) {
+    'use strict';
+    
+    // variables
+    var _debug = false;
+    var _data = null;
+    var _defaults = {
+        gridSelector: '.tpl-static-grid__grid'
+    };
+    
+    // DOM elements
+    var _grid = null;
+    var _gridRow = null;
+    var _gridCol = null;
+    var _gridTile = null;
+    var _gridTileTitle = null;
+    var _gridTileTitleLink = null;
+    var _gridTileTitleH4 = null;
+    var _gridTileImage = null;
+    var _gridTileImageLink = null;
+    
+    cms.staticGrid = {
+        /**
+         * Method which initializes the Masonry Grid.
+         * 
+         * @method init
+         * @param {Object} config An config object which overwrites the defaults.
+         * @param {String} config.gridSelector The selector for the grid container.
+         * @param {Object} data An data object which contains the images sources for the
+         * grid.
+         */
+        init: function( config, data ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'cmsJS.staticGrid.init' );
+                console.log( '##############################' );
+                console.log( 'cmsJS.staticGrid.init: config - ', config );
+                console.log( 'cmsJS.staticGrid.init: data - ', data );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            // render grid
+            _grid = _buildGrid( data );
+            $( _defaults.gridSelector ).append( _grid );
+        }
+    };
+    
+    /**
+     * Method to build the elements of the static grid.
+     * 
+     * @method _buildGrid
+     * @param {Object} data A JSON data object which contains the image informations.
+     * @returns {Object} An jQuery object which contains all grid elements.
+     */
+    function _buildGrid( data ) {
+        if ( _debug ) {
+            console.log( '---------- _buildGrid() ----------' );
+            console.log( '_buildGrid: data = ', data );
+        }
+        
+        _gridRow = $( '<div class="row" />' );
+        
+        data.items.forEach( function( item ) {
+            _gridCol = $( '<div class="col-xs-6 col-sm-3" />' );
+            // tile
+            _gridTile = $( '<div class="grid-tile" />' );
+            // title
+            _gridTileTitle = $( '<div class="grid-tile__title" />' );
+            _gridTileTitleH4 = $( '<h4 />' );
+            _gridTileTitleLink = $( '<a />' );
+            if ( item.url !== '' ) {
+                _gridTileTitleLink.attr( 'href', item.url );
+            }
+            else {
+                _gridTileTitleLink.attr( 'href', '#' );
+            }
+            _gridTileTitleLink.attr( 'title', item.title );
+            _gridTileTitleLink.append( item.title );
+            _gridTileTitleH4.append( _gridTileTitleLink );
+            // image
+            _gridTileImage = $( '<div class="grid-tile__image" />' );
+            _gridTileImage.css( 'background-image', 'url(' + item.name + ')' );
+            _gridTileImageLink = $( '<a />' );
+            if ( item.url !== '' ) {
+                _gridTileImageLink.attr( 'href', item.url );
+            }
+            else {
+                _gridTileImageLink.attr( 'href', '#' );
+            }
+            // concat everything
+            _gridTileTitle.append( _gridTileTitleH4 );
+            _gridTile.append( _gridTileTitle );
+            _gridTileImage.append( _gridTileImageLink );
+            _gridTile.append( _gridTileTitle );
+            _gridTile.append( _gridTileImage );
+            _gridCol.append( _gridTile );
+            _gridRow.append( _gridCol );
+        } );
+        
+        return _gridRow;
+    }
+    
+    return cms;
+    
+} )( cmsJS || {}, jQuery );
+
+var cmsJS = ( function( cms ) {
     'use strict';
     
     var _debug = false;
@@ -6405,7 +7363,8 @@
     return cms;
     
 } )( cmsJS || {}, jQuery );
-;var cmsJS = ( function( cms ) {
+
+var cmsJS = ( function( cms ) {
     'use strict';
     
     // variables

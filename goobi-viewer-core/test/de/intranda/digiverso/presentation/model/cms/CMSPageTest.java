@@ -17,8 +17,16 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,22 +34,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
+import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
-public class CMSPageTest {
+public class CMSPageTest extends AbstractDatabaseEnabledTest{
 
+    private static final String[] CLASSIFICATIONS = new String[]{"A", "B", "C", "D"};
+    
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         FacesContext facesContext = TestUtils.mockFacesContext();
         ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
         Mockito.when(servletContext.getRealPath("/")).thenReturn("WebContent");
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
     }
 
     /**
@@ -49,6 +66,7 @@ public class CMSPageTest {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     @Test
@@ -90,6 +108,91 @@ public class CMSPageTest {
             fail("Item not found");
         }
 
+    }
+    
+    @Test
+    public void testCMSPage() throws DAOException, IOException, ServletException {
+        //setup
+        CMSPage page = new CMSPage();
+        String templateId = "template";
+        page.setTemplateId(templateId);
+        
+        CMSPageLanguageVersion german = new CMSPageLanguageVersion();
+        german.setLanguage("de");
+        page.addLanguageVersion(german);
+        CMSPageLanguageVersion global = new CMSPageLanguageVersion();
+        global.setLanguage("global");
+        page.addLanguageVersion(global);
+        
+        Date created = new Date();
+        created.setYear(created.getYear()-2);
+        Date updated = new Date();
+        page.setDateCreated(created);
+        page.setDateUpdated(updated);
+        
+        page.setClassifications(new ArrayList<String>(Arrays.asList(CLASSIFICATIONS)));
+        
+        String altUrl = "test/page/";
+        page.setPersistentUrl(altUrl);
+        
+        String textContent = "Text";
+        String textId = "text";
+        CMSContentItem text = new CMSContentItem(CMSContentItemType.TEXT);
+        text.setItemId(textId);
+        text.setHtmlFragment(textContent);
+        page.addContentItem(text);
+        
+        String htmlContent = "<div>Content</div>";
+        String htmlId = "html";
+        CMSContentItem html = new CMSContentItem(CMSContentItemType.HTML);
+        html.setItemId(htmlId);
+        html.setHtmlFragment(htmlContent);
+        page.addContentItem(html);
+        
+        CMSMediaItem media = new CMSMediaItem();
+        String mediaFilename = "image.jpg";
+        media.setFileName(mediaFilename);
+        String imageId = "image";
+        CMSContentItem image = new CMSContentItem(CMSContentItemType.MEDIA);
+        image.setItemId(imageId);
+        image.setMediaItem(media);
+        page.addContentItem(image);
+        
+        String componentName = "sampleComponent";
+        String componentId = "component";
+        CMSContentItem component = new CMSContentItem(CMSContentItemType.COMPONENT);
+        component.setItemId(componentId);
+        component.setComponent(componentName);
+        page.addContentItem(component);
+        
+        DataManager.getInstance().getDao().addCMSMediaItem(media);
+        Long mediaId = media.getId();
+        DataManager.getInstance().getDao().addCMSPage(page);
+        Long pageId = page.getId();
+        
+        german.generateCompleteContentItemList();
+        
+        //tests
+        Assert.assertEquals(created, page.getDateCreated());
+        Assert.assertEquals(updated, page.getDateUpdated());
+        Assert.assertEquals(Arrays.asList(CLASSIFICATIONS), page.getClassifications());
+        Assert.assertEquals(altUrl, page.getRelativeUrlPath(true));
+        Assert.assertEquals("cms/" + pageId + "/", page.getRelativeUrlPath(false));
+        
+        Assert.assertEquals(textContent, page.getContent(textId));
+        
+        String htmlUrl = page.getContent(htmlId);
+        Path htmlUrlPath = Paths.get(htmlUrl);
+        String htmlResponse = new CMSContentResource().getContentHtml(Long.parseLong(htmlUrlPath.subpath(3, 4).toString()), htmlUrlPath.subpath(4, 5).toString(), htmlUrlPath.subpath(5, 6).toString());
+        Assert.assertEquals("<span>" + htmlContent + "</span>", htmlResponse);
+       
+        String contentServerUrl = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
+        String viewerPath = DataManager.getInstance().getConfiguration().getViewerHome();
+        String mediaFolderName = DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+        String imageUrl = contentServerUrl + "?action=image&sourcepath=file://" + viewerPath + mediaFolderName + "/" + mediaFilename + "&ignoreWatermark";
+        Assert.assertEquals(imageUrl, page.getContent(imageId));
+        Assert.assertEquals(componentName, page.getContent(componentId));
+        
     }
 
 }

@@ -50,7 +50,7 @@ import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.search.SearchFilter;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.DcSortingList;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -415,6 +415,7 @@ public final class Configuration extends AbstractConfiguration {
      */
     @SuppressWarnings({ "rawtypes" })
     public List<Metadata> getMainMetadataForTemplate(String template) {
+        logger.trace("getMainMetadataForTemplate: {}", template);
         HierarchicalConfiguration usingTemplate = null;
         List templateList = getLocalConfigurationsAt("metadata.mainMetadataList.template");
         if (templateList != null) {
@@ -842,11 +843,12 @@ public final class Configuration extends AbstractConfiguration {
      * @param field
      * @return
      * @should return correct value
+     * @should return -1 if no collection config was found
      */
     public int getCollectionDisplayDepthForSearch(String field) {
         HierarchicalConfiguration collection = getCollectionConfiguration(field);
         if (collection == null) {
-            return 0;
+            return -1;
         }
         return collection.getInt("displayDepthForSearch", -1);
     }
@@ -916,6 +918,20 @@ public final class Configuration extends AbstractConfiguration {
         if (!urlString.endsWith("download/")) {
             urlString = urlString + "download/";
         }
+        return urlString;
+    }
+
+    /**
+     *
+     * @return
+     * @should return correct value
+     */
+    public String getContentRestApiUrl() {
+        String urlString = getLocalString("urls.contentRestApi", "http://localhost:8080/viewer/rest/content/");
+        if (!urlString.endsWith("/")) {
+            urlString += "/";
+        }
+
         return urlString;
     }
 
@@ -1020,6 +1036,33 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isDisplayAdditionalMetadataEnabled() {
+        return getLocalBoolean("search.displayAdditionalMetadata.enabled", true);
+    }
+
+    /**
+     * 
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataIgnoreFields() {
+        return getLocalList("search.displayAdditionalMetadata.ignoreField", Collections.emptyList());
+    }
+
+    /**
+     * 
+     * @return List of configured fields; empty list if none found.
+     * @should return correct values
+     */
+    public List<String> getDisplayAdditionalMetadataTranslateFields() {
+        return getLocalList("search.displayAdditionalMetadata.translateField", Collections.emptyList());
+    }
+
+    /**
+     * 
      * @param field
      * @return
      * @should return correct value
@@ -1083,6 +1126,15 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getNextVersionIdentifierField() {
         return getLocalString("search.versioning.nextVersionIdentifierField");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getVersionLabelField() {
+        return getLocalString("search.versioning.versionLabelField");
     }
 
     /**
@@ -1164,6 +1216,15 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getFulltextFolder() {
         return getLocalString("fulltextFolder");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getTeiFolder() {
+        return getLocalString("teiFolder");
     }
 
     /**
@@ -1376,23 +1437,6 @@ public final class Configuration extends AbstractConfiguration {
         return this.getLocalBoolean("webGuiDisplay.displaySearchResultNavigation", true);
     }
 
-    @Deprecated
-    public List<String> getVisibleWorkNavItems() {
-        List<String> result = new ArrayList<>();
-        List<HierarchicalConfiguration> sidebarConfigs = getLocalConfigurationsAt("sidebar");
-        if (sidebarConfigs != null && !sidebarConfigs.isEmpty()) {
-            HierarchicalConfiguration sidebarConfig = sidebarConfigs.get(0);
-            List<ConfigurationNode> nodes = sidebarConfig.getRootNode().getChildren();
-            for (ConfigurationNode node : nodes) {
-                String key = node.getName();
-                boolean visible = sidebarConfig.getBoolean(key + ".visible", false);
-                if (visible) {
-                    result.add(key);
-                }
-            }
-        }
-        return result;
-    }
 
     public boolean isFoldout(String sidebarElement) {
         return getLocalBoolean("sidebar." + sidebarElement + ".foldout", false);
@@ -1430,6 +1474,15 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public boolean isSidebarCalendarLinkVisible() {
+        return getLocalBoolean("sidebar.calendar.visible", true);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public boolean isSidebarTocLinkVisible() {
         return getLocalBoolean("sidebar.toc.visible", true);
     }
@@ -1441,15 +1494,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isSidebarThumbsLinkVisible() {
         return getLocalBoolean("sidebar.thumbs.visible", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isSidebarPreviewLinkVisible() {
-        return getLocalBoolean("sidebar.preview.visible", false);
     }
 
     /**
@@ -1593,15 +1637,6 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
-     * @should return correct value
-     */
-    public boolean isCollectionDrilldownEnabled() {
-        return getLocalBoolean("search.drillDown.collectionDrilldownEnabled", true);
-    }
-
-    /**
-     * 
-     * @return
      * @should return all values
      */
     public List<String> getDrillDownFields() {
@@ -1624,7 +1659,7 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getInitialDrillDownElementNumber(String field) {
         if (StringUtils.isNotBlank(field)) {
-            field = SearchHelper.defacetifyField(field);
+            field = SearchHelper.facetifyField(field);
             // Regular fields
             List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
             if (drillDownFields != null && !drillDownFields.isEmpty()) {
@@ -1664,6 +1699,8 @@ public final class Configuration extends AbstractConfiguration {
         if (StringUtils.isBlank(field)) {
             return "default";
         }
+
+        field = SearchHelper.facetifyField(field);
 
         // Regular fields
         List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
@@ -1726,24 +1763,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public List<String> getSortFields() {
         return getLocalList("search.sorting.luceneField");
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getIIPImageServer() {
-        return getLocalString("urls.iipimageServer");
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getGoobiWebApiUrl() {
-        return getLocalString("urls.goobiWebApi");
     }
 
     /**
@@ -2073,7 +2092,7 @@ public final class Configuration extends AbstractConfiguration {
                 }
             }
 
-            if (imageType != null) {
+            if (imageType != null && imageType.getFormat() != null) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
                 if (mimeTypes.isEmpty() || mimeTypes.contains(imageType.getFormat().getMimeType())) {
                     //match
@@ -2222,8 +2241,8 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public String getPtifFolder() {
-        return getLocalString("ptifFolder");
+    public int getFulltextPercentageWarningThreshold() {
+        return getLocalInt("viewer.fulltextPercentageWarningThreshold", 30);
     }
 
     /**
@@ -2276,24 +2295,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isFulltextLazyLoading() {
-        return getLocalBoolean("performance.fulltextLazyLoading", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isWordCoordsLazyLoading() {
-        return getLocalBoolean("performance.wordCoordsLazyLoading", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
     public boolean isPreventProxyCaching() {
         return getLocalBoolean(("performance.preventProxyCaching"), false);
     }
@@ -2339,8 +2340,9 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    @Deprecated
     public String getDataRepositoriesHome() {
-        return getLocalString("dataRepositoriesHome");
+        return getLocalString("dataRepositoriesHome", "");
     }
 
     /**
@@ -3022,7 +3024,7 @@ public final class Configuration extends AbstractConfiguration {
             return subConfig.getString("defaultBrowseIcon", "");
         }
 
-        return getLocalString("collection.defaultBrowseIcon", "");
+        return getLocalString("collection.defaultBrowseIcon", getLocalString("collections.defaultBrowseIcon", ""));
     }
 
     /**

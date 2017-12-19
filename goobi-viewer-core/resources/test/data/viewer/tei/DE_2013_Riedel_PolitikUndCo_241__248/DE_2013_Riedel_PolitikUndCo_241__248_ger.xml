@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="GEI-textbooks" version="5.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title level="a" xml:lang="ger">Soll die Türkei in die EU?</title>
+        <author>
+          <persName source="http://middleware.gei.de/wv.experts/Expert_126">
+            <surname>Riedel</surname>
+            <forename>Hartwig</forename>
+          </persName>
+        </author>
+        <author>
+          <persName source="http://middleware.gei.de/wv.experts/Expert_186">
+            <surname>Müller</surname>
+            <forename>Erik</forename>
+          </persName>
+        </author>
+        <author>
+          <persName ref="http://d-nb.info/gnd/1012482251" source="http://middleware.gei.de/wv.experts/Expert_187">
+            <surname>Podes</surname>
+            <forename>Stephan</forename>
+          </persName>
+        </author>
+        <author>
+          <persName source="http://middleware.gei.de/wv.experts/Expert_188">
+            <surname>Tschirner</surname>
+            <forename>Martina</forename>
+          </persName>
+        </author>
+      </titleStmt>
+      <editionStmt>
+        <edition n="1">Version 1</edition>
+      </editionStmt>
+      <extent>
+        <measure unit="pages" quantity="2">241, 248</measure>
+      </extent>
+      <publicationStmt>
+        <authority>
+          <orgName role="hostingInstitution">Georg-Eckert-Institut</orgName>
+          <orgName role="project">WorldViews</orgName>
+        </authority>
+        <date when="2017" type="publication">2017</date>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by-nc-sa/3.0/de/">CC BY-NC-SA 3.0 DE</licence>
+        </availability>
+      </publicationStmt>
+      <sourceDesc>
+        <biblFull>
+          <titleStmt>
+            <title level="m" type="volume" xml:lang="ger">2 : Politik und Co.  : Politik-Wirtschaft für das Gymnasium</title>
+            <title level="m" type="main" xml:lang="ger">Politik und Co.</title>
+            <title level="m" type="sub" xml:lang="ger">Niedersachsen</title>
+            <editor>
+              <persName source="http://middleware.gei.de/wv.experts/Expert_126">
+                <surname>Riedel</surname>
+                <forename>Hartwig</forename>
+              </persName>
+            </editor>
+            <author>
+              <persName source="http://middleware.gei.de/wv.experts/Expert_186">
+                <surname>Müller</surname>
+                <forename>Erik</forename>
+              </persName>
+            </author>
+            <author>
+              <persName ref="http://d-nb.info/gnd/1012482251" source="http://middleware.gei.de/wv.experts/Expert_187">
+                <surname>Podes</surname>
+                <forename>Stephan</forename>
+              </persName>
+            </author>
+            <author>
+              <persName source="http://middleware.gei.de/wv.experts/Expert_188">
+                <surname>Tschirner</surname>
+                <forename>Martina</forename>
+              </persName>
+            </author>
+          </titleStmt>
+          <editionStmt>
+            <edition>1st ed. [1. Aufl.]</edition>
+          </editionStmt>
+          <extent>
+            <measure unit="pages" quantity="256">256</measure>
+          </extent>
+          <publicationStmt>
+            <publisher>
+              <orgName ref="http://d-nb.info/gnd/107297665X" source="http://middleware.gei.de/wv.experts/CorporateBody_135">C.C. Buchner</orgName>
+            </publisher>
+            <pubPlace ref="http://sws.geonames.org/3220843">Kreisfreie Stadt Bamberg</pubPlace>
+            <date when="2013">2013</date>
+            <idno type="ISBN">978-3-7661-6809-2</idno>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="s" type="main">Politik und Co.</title>
+          </seriesStmt>
+        </biblFull>
+        <msDesc>
+          <msIdentifier>
+            <repository>Georg-Eckert-Institut. Leibniz-Institut für internationale Schulbuchforschung, Braunschweig (DE)</repository>
+            <idno>
+              <idno type="shelfmark">SDG-V 52(1,2013)2</idno>
+            </idno>
+          </msIdentifier>
+          <msContents>
+            <textLang mainLang="ger" />
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <projectDesc xml:lang="ger">
+        <p>WorldViews ist eine multilinguale‚ digitale Quellenedition mit Schulbuchauszügen aus aller Welt zu Themen von interregionaler transnationaler und globaler Relevanz. Die ausgewählten Quellen aus Schulbüchern zeigen‚ wie sich das jeweilige Land in der Welt verortet und wie andere Länder und deren Geschichte dargestellt werden. Wissenschaftliche Beiträge dienen weiterhin der vertieften Interpretation der Quellen und bieten Informationen zu nationalen Bildungs- und Schulbuchsystemen sowie bildungshistorischen Hintergründen.</p>
+      </projectDesc>
+      <samplingDecl xml:lang="ger">
+        <p>Quellenauszüge sind im Hinblick auf Repräsentation‚ Deutungsmuster und/oder Perspektive der Darstellung möglichst markant. Es sind Darstellungen‚ die in besonders weit verbreiteten Schulbüchern vermittelt werden oder als Sonderpositionierungen gekennzeichnet werden können. Sie werden von KooperationspartnerInnen und/oder der Redaktion erhoben‚ wissenschaftlich kontextualisiert und nah am Ausgangstext ins Deutsche und Englische übersetzt.</p>
+      </samplingDecl>
+    </encodingDesc>
+    <profileDesc>
+      <langUsage>
+        <language ident="ger">ger</language>
+      </langUsage>
+      <abstract xml:lang="ger" xml:id="ProfileDescAbstractSchoolbook">
+        <p>
+          Das Schulbuch ist für die 9. und 10. Klasse Gymnasium in Niedersachsen vorgesehen. Politik und Co. gehört zu den am häufigsten genutzten Schulbüchern an niedersächsischen Gymnasien.
+          <note>
+            <p>Vgl. Tatje, C.: Die Rolle des Schulbuchs bei der Vermittlung der Europäischen Union. Empirische Untersuchung zu Nutzung und Wirkung im politischen Fachunterricht, Wiesbaden: Springer VS, 2017, 99.</p>
+          </note>
+        </p>
+      </abstract>
+      <abstract xml:lang="ger" xml:id="ProfileDescAbstractShort">
+        <p>
+          Bei den Schulbuchausschnitten handelt es sich um Inhalte aus dem Kapitel
+          <hi rend="italic">Integration und Erweiterung im europäischen Haus</hi>
+          die den Beitritt der Türkei zur EU thematisieren.
+        </p>
+      </abstract>
+      <abstract xml:lang="ger" xml:id="ProfileDescAbstractLong">
+        <p>
+          Bei den Schulbuchausschnitten handelt es sich um Inhalte aus dem Kapitel
+          <hi rend="italic">Integration und Erweiterung im europäischen Haus</hi>
+          die den Beitritt der Türkei zur EU thematisieren. Der erste Ausschnitt soll als Grundlage für eine kontroverse Diskussion über dem Türkei-Beitritt dienen und listet verschiedene Aussagen auf, die für und gegen einen Beitritt sprechen. Das zweite Zitat stammt von der Abschlussseite des Kapitels und fasst die Diskussion um den Türkei-Beitritt grob zusammen.
+        </p>
+      </abstract>
+      <textClass>
+        <keywords scheme="WV.topics" xml:lang="ger">
+          <term>
+            <rs type="topic" key="t_religions">Religionen und Sinndeutungssysteme</rs>
+            -
+            <rs type="keyword" key="k_christianity">Christentum</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_religions">Religionen und Sinndeutungssysteme</rs>
+            -
+            <rs type="keyword" key="k_islam">Islam</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_constructions">Konstrukte von Raum und Zugehörigkeit</rs>
+            -
+            <rs type="keyword" key="k_enlargement_of_the_european_union">EU-Erweiterung</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_constructions">Konstrukte von Raum und Zugehörigkeit</rs>
+            -
+            <rs type="keyword" key="k_european_integration">Europäische Integration</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_constructions">Konstrukte von Raum und Zugehörigkeit</rs>
+            -
+            <rs type="keyword" key="k_european_union">Europäische Union</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_relations">Trans- und internationale Beziehungen und Organisationen</rs>
+            -
+            <rs type="keyword" key="k_enlargement_of_the_european_union">EU-Erweiterung</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_relations">Trans- und internationale Beziehungen und Organisationen</rs>
+            -
+            <rs type="keyword" key="k_european_integration">Europäische Integration</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_relations">Trans- und internationale Beziehungen und Organisationen</rs>
+            -
+            <rs type="keyword" key="k_european_union">Europäische Union</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_country">Länder</rs>
+            -
+            <rs type="keyword" key="k_turkey">Türkei</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_time">Zeitangaben</rs>
+            -
+            <rs type="keyword" key="k_20th_century">20. Jahrhundert</rs>
+          </term>
+        </keywords>
+        <classCode scheme="WV.textType" xml:lang="ger">Schulbuchquelle</classCode>
+        <classCode scheme="WV.sourceType" xml:lang="ger">Autorentext</classCode>
+        <classCode scheme="WV.educationalLevel" xml:lang="ger">Sekundarstufe 1</classCode>
+        <classCode scheme="WV.educationalSubject" xml:lang="ger">Sozialkunde/Politik</classCode>
+        <classCode scheme="WV.placeOfUse" xml:lang="ger">
+          <rs type="place" ref="http://sws.geonames.org/2921044">Deutschland</rs>
+        </classCode>
+        <classCode scheme="WV.placeOfUse" xml:lang="ger">
+          <rs type="place" ref="http://sws.geonames.org/2862926">Niedersachsen</rs>
+        </classCode>
+      </textClass>
+    </profileDesc>
+  </teiHeader>
+  <text xml:lang="ger">
+    <body>
+      <div>
+        <cb type="start"/>
+        <pb n="241"/>
+        <div>
+          <head>
+            <hi rend="bold">Soll die Türkei in die EU?</hi>
+          </head>
+          <p>Die Türkei ist heute etwa so wohlhabend wie Portugal zum Zeitpunkt der EU-Aufnahme.</p>
+          <p>In zehn Jahren hat die Türkei 80 Millionen Einwohner und damit mindestens so viele wie Deutschland. Oder wie derzeit die zehn neuen EU-Staaten zusammen. Die Türkei ist zu groß. Sie wäre mittelfristig das bevölkerungsreichste EU-Land und hätte damit auch die meisten Stimmen.</p>
+          <p>Die Türkei gehört nicht zu Europa. Die Türkei ist ein muslimisches Land, ihre Aufnahme würde die europäische Identität gefährden. Europa endet am Bosporus. Mit einer EU-Mitgliedschaft der Türkei wären der Iran und der Irak unsere direkten Nachbarn.</p>
+          <p>Ein Beitritt der Türkei würde das politische System, die Demokratie und die wirtschaftlichen Reformen in der Türkei stabilisieren.</p>
+          <cb />
+          <p>Die Türkei ist wirtschaftlich zu unterentwickelt. Ihre Mitgliedschaft können wir uns nicht leisten. Mit einem Sechstel der deutschen Wirtschaftskraft</p>
+          <p>ist die Türkei so arm, dass nach Berechnungen der EU-Kommission jedes Jahr zwischen 16,5 und 27,5 Milliarden Euro in die Türkei fließen müssten.</p>
+          <p>Ein rascher Beitritt der Türkei würde eine Brücke zwischen dem christlich geprägten Europa und dem islamischen Nahen Osten schlagen. Eine demokratische und rechtsstaatliche Türkei wird auch als Modell für die islamische Welt eine große Anziehungskraft gewinnen. Wir haben der Türkei den Beitritt seit 1963 versprochen und müssen glaubwürdig bleiben.</p>
+          <p>Mit der Türkei als Regionalmacht im Nahen und Mittleren Osten würde Europa zum „Global Player" und könnte den Vereinigten Staaten in der islamischen Welt eine eigene Sicherheitspolitik entgegensetzen.</p>
+          <p>[...]</p>
+          <pb n="248"/>
+          <p>
+            <hi rend="bold">Die Erweiterung der EU</hi>
+          </p>
+          <p>Die Europäische Einigung strahlte von Beginn an eine große Anziehung auf die Staaten Europas aus, sodass ausgehend von den sechs Gründerstaaten heute schon 27 Staaten im europäischen Haus ihren Platz gefunden haben. Jeder Beitrittskandidat muss die grundlegenden Werte der EU teilen und die Kopenhagener Kriterien erfüllen. Seit über 40 Jahren hoffen die Türken auf einen Beitritt zur Europäischen Union. Im Oktober 2005 hat die EU offiziell damit begonnen, Beitrittsverhandlungen mit der Türkei zu führen. Ein Beitritt der Türkei zur EU wird allerdings kontrovers beurteilt. Die Gegner des Beitritts sehen eine Unvereinbarkeit von islamischer und christlicher Kultur, hohe Kosten für die wirtschaftliche Integration und sicherheitspolitische Risiken. Die Befürworter sehen die Chance, unterschiedliche Kulturen politisch zu integrieren, die Möglichkeit, wirtschaftliche Ungleichgewichte in Europa auszugleichen und die Ausdehnung des Friedensmodells der EU auf ein islamisch geprägtes Land.</p>
+          <p>[...]</p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

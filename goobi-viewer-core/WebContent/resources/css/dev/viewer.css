@@ -30,6 +30,11 @@
 }
 /* BACKGROUND IMAGE */
 /* CSS TRIANGLE */
+/* HIDDEN */
+.mx-hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
 /* ==============================================================
    General styling
    ==============================================================*/
@@ -309,48 +314,6 @@ table,
 .image-switchPages .path8:before {
   content: "\e913";
 }
-.image-switchPages .path9:before {
-  content: "\e914";
-}
-.image-switchPages .path10:before {
-  content: "\e915";
-}
-.image-switchPages .path11:before {
-  content: "\e916";
-}
-.image-switchPages .path12:before {
-  content: "\e917";
-}
-.image-switchPages .path13:before {
-  content: "\e918";
-}
-.image-switchPages .path14:before {
-  content: "\e919";
-}
-.image-switchPages .path15:before {
-  content: "\e91a";
-}
-.image-switchPages .path16:before {
-  content: "\e91b";
-}
-.image-switchPages .path17:before {
-  content: "\e91c";
-}
-.image-switchPages .path18:before {
-  content: "\e91d";
-}
-.image-switchPages .path19:before {
-  content: "\e91e";
-}
-.image-switchPages .path20:before {
-  content: "\e91f";
-}
-.image-switchPages .path21:before {
-  content: "\e920";
-}
-.image-switchPages .path22:before {
-  content: "\e921";
-}
 /* ==============================================================
    Resets for CSS Libs
    ==============================================================*/
@@ -400,6 +363,70 @@ table,
   padding-left: 0.9375rem;
   text-align: left;
 }
+.popover-content {
+  color: #1a1a1a;
+}
+/* BS GRID RESETS */
+.row.no-margin {
+  margin: 0;
+}
+.col-xs-1.no-padding,
+.col-xs-2.no-padding,
+.col-xs-3.no-padding,
+.col-xs-4.no-padding,
+.col-xs-5.no-padding,
+.col-xs-6.no-padding,
+.col-xs-7.no-padding,
+.col-xs-8.no-padding,
+.col-xs-9.no-padding,
+.col-xs-10.no-padding,
+.col-xs-11.no-padding,
+.col-xs-12.no-padding,
+.col-sm-1.no-padding,
+.col-sm-2.no-padding,
+.col-sm-3.no-padding,
+.col-sm-4.no-padding,
+.col-sm-5.no-padding,
+.col-sm-6.no-padding,
+.col-sm-7.no-padding,
+.col-sm-8.no-padding,
+.col-sm-9.no-padding,
+.col-sm-10.no-padding,
+.col-sm-11.no-padding,
+.col-sm-12.no-padding,
+.col-md-1.no-padding,
+.col-md-2.no-padding,
+.col-md-3.no-padding,
+.col-md-4.no-padding,
+.col-md-5.no-padding,
+.col-md-6.no-padding,
+.col-md-7.no-padding,
+.col-md-8.no-padding,
+.col-md-9.no-padding,
+.col-md-10.no-padding,
+.col-md-11.no-padding,
+.col-md-12.no-padding,
+.col-lg-1.no-padding,
+.col-lg-2.no-padding,
+.col-lg-3.no-padding,
+.col-lg-4.no-padding,
+.col-lg-5.no-padding,
+.col-lg-6.no-padding,
+.col-lg-7.no-padding,
+.col-lg-8.no-padding,
+.col-lg-9.no-padding,
+.col-lg-10.no-padding,
+.col-lg-11.no-padding,
+.col-lg-12.no-padding {
+  padding: 0;
+}
+/* CHROME RESETS */
+button {
+  border-radius: 0;
+}
+*:focus {
+  outline: none;
+}
 /* ==============================================================
    CSS Helper Classes
    ==============================================================*/
@@ -423,14 +450,16 @@ table,
 .list li {
   position: relative;
 }
-.list a {
+.list a,
+.list span {
   display: block;
 }
 .list--horizontal li {
   display: inline-block;
   float: left;
 }
-.list--horizontal a {
+.list--horizontal a,
+.list--horizontal span {
   padding: 6px 12px;
 }
 .list--center {
@@ -451,6 +480,17 @@ table,
 .list--divider li:last-child:after {
   display: none;
 }
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .list--horizontal li {
+    display: block;
+    float: none;
+    text-align: center;
+  }
+}
 /* IMAGES */
 .faded {
   position: relative;
@@ -458,9 +498,64 @@ table,
 .faded:before {
   content: "";
   position: absolute;
+  top: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.25);
+}
+.broken {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: auto;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.broken:before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: 100%;
+  height: calc(100% + 10px);
+  background-color: #ccc;
+}
+.broken:after {
+  content: "\f127" " " attr(alt);
+  position: absolute;
+  display: block;
+  top: 5px;
+  left: 0;
+  width: 100%;
+  font-size: 14px;
+  font-style: normal;
+  font-family: FontAwesome;
+  text-align: center;
+  color: #646464;
+}
+/* TYPO */
+.uppercase {
+  text-transform: uppercase;
+}
+/* FIREFOX LAYOUT FIXES */
+.oneUp {
+  position: relative;
+  top: -1px;
+}
+/* ==============================================================
+   IE lower EDGE Styles
+   ==============================================================*/
+/* IS IE */
+.is-IE {
+  /* CUSTOM DROPDOWNS */
+}
+.is-IE .custom-control--select:after {
+  display: none;
+}
+.is-IE .custom-control--select select {
+  padding: 0;
 }
 /* BASIC COMPONENTS */
 /* ==============================================================
@@ -477,7 +572,7 @@ table,
   margin: 0;
   opacity: 0.25;
   cursor: pointer;
-  z-index: 9999;
+  z-index: 998;
 }
 .icon-totop:hover {
   opacity: 1;
@@ -676,23 +771,29 @@ table,
   opacity: 0;
   z-index: -1;
 }
-.custom-control input[type="checkbox"]:checked ~ .custom-control__icon .fa-circle-o,
-.custom-control input[type="radio"]:checked ~ .custom-control__icon .fa-circle-o {
-  display: none;
-}
-.custom-control input[type="checkbox"]:checked ~ .custom-control__icon .fa-check-circle-o,
-.custom-control input[type="radio"]:checked ~ .custom-control__icon .fa-check-circle-o {
-  display: inline-block;
-}
 .custom-control__icon {
   color: #428bca;
 }
-.custom-control .fa-check-circle-o {
+.custom-control .fa-check-circle-o,
+.custom-control .fa-check-square-o {
   display: none;
 }
+.custom-control--checkbox input[type="checkbox"]:checked ~ .custom-control__icon .fa-square-o {
+  display: none;
+}
+.custom-control--checkbox input[type="checkbox"]:checked ~ .custom-control__icon .fa-check-square-o {
+  display: inline-block;
+}
+.custom-control--radio input[type="radio"]:checked ~ .custom-control__icon .fa-circle-o {
+  display: none;
+}
+.custom-control--radio input[type="radio"]:checked ~ .custom-control__icon .fa-check-circle-o {
+  display: inline-block;
+}
 .custom-control--select {
+  width: 100%;
   height: 34px;
-  padding: 6px;
+  padding: 0 6px;
   font-size: 14px;
   line-height: 1.42857143;
   color: #1a1a1a;
@@ -703,6 +804,8 @@ table,
 .custom-control--select:after {
   content: "";
   position: absolute;
+}
+.custom-control--select:after {
   display: inline-block;
   top: 50%;
   right: 10px;
@@ -720,7 +823,7 @@ table,
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 0;
+  padding-right: 26px;
   line-height: 1.5;
   color: #1a1a1a;
   border: 0;
@@ -892,51 +995,7 @@ input.btn .ui-button-text,
 .container-fluid {
   padding: 0;
 }
-#mobileToggleWrapper {
-  display: none;
-  padding: 10px 24px;
-}
-#mobileToggleWrapper .customer-header-logo .img-responsive {
-  max-height: 2rem;
-}
-#mobileToggleWrapper .btn-toggle {
-  position: relative;
-  width: 2rem;
-  height: 2rem;
-  margin: 0 5px;
-  padding: 0;
-  border: 1px solid #eee;
-  background: none;
-  cursor: pointer;
-}
-#mobileToggleWrapper .btn-toggle:hover,
-#mobileToggleWrapper .btn-toggle:focus,
-#mobileToggleWrapper .btn-toggle:active {
-  outline: none;
-}
-#mobileToggleWrapper .sidebar {
-  margin: 0;
-}
-#mobileToggleWrapper .sidebar.pull-left {
-  margin-right: 10px;
-}
-#mobileToggleWrapper .sidebar.pull-right {
-  margin-left: 5px;
-}
-#mobileToggleWrapper .language.in:before,
-#mobileToggleWrapper .search.in:before {
-  content: "";
-  display: block;
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  width: 0;
-  height: 0;
-  margin-left: -10px;
-  border-width: 10px;
-  border-style: solid;
-  border-color: transparent transparent #eee transparent;
-}
+/* AJAX Loaders */
 #AJAXLoader,
 #AJAXLoaderSidebarToc {
   display: none;
@@ -961,23 +1020,14 @@ input.btn .ui-button-text,
   background-repeat: no-repeat;
   background-position: center center;
 }
+/* tinyMCE */
 div.mce-fullscreen {
   z-index: 999;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  #mobileToggleWrapper {
-    display: block;
-  }
-}
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  #mobileToggleWrapper {
-    padding: 10px 18px 10px 15px;
-  }
-}
 /* VIEWER COMPONENTS */
 /* ==============================================================
    Navigation
@@ -1014,17 +1064,23 @@ div.mce-fullscreen {
   position: relative;
   float: left;
 }
-.navigation li.active > a {
+.navigation li.active > a,
+.navigation li.active > button {
   background-color: #eee;
 }
-.navigation a {
+.navigation a,
+.navigation button {
   display: block;
   position: relative;
+  text-align: left;
   padding: 6px 12px;
 }
 .navigation a:hover,
+.navigation button:hover,
 .navigation a:focus,
-.navigation a:active {
+.navigation button:focus,
+.navigation a:active,
+.navigation button:active {
   text-decoration: none;
   background-color: #eee;
   outline: none !important;
@@ -1090,10 +1146,10 @@ div.mce-fullscreen {
   display: block;
 }
 .navigation__megamenu-close {
-  position: absolute;
+  position: absolute !important;
   top: 0;
   right: 0;
-  padding: 10px 15px;
+  padding: 10px 15px !important;
   z-index: 999;
 }
 .navigation__megamenu-close .fa {
@@ -1136,12 +1192,87 @@ div.mce-fullscreen {
 }
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
+   Mobile Toggle Wrapper
+   style declarations for mobileToggles.xhtml
+   ==============================================================*/
+/* MOBILE TOGGLE WRAPPER */
+/* BLOCK */
+#mobileToggleWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  padding: 10px 24px;
+  background-color: #fff;
+  z-index: 999;
+  /* ELEMENT */
+}
+#mobileToggleWrapper .customer-header-logo img {
+  max-height: 32px;
+}
+#mobileToggleWrapper .btn-toggle {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  margin: 0 5px;
+  padding: 0;
+  border: 1px solid #eee;
+  background: none;
+  cursor: pointer;
+}
+#mobileToggleWrapper .btn-toggle:hover,
+#mobileToggleWrapper .btn-toggle:focus,
+#mobileToggleWrapper .btn-toggle:active {
+  outline: none;
+}
+#mobileToggleWrapper .sidebar {
+  margin: 0;
+}
+#mobileToggleWrapper .sidebar.pull-left {
+  margin-right: 10px;
+}
+#mobileToggleWrapper .sidebar.pull-right {
+  margin-left: 5px;
+}
+#mobileToggleWrapper .language.in:before,
+#mobileToggleWrapper .search.in:before {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -10px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent transparent #eee transparent;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  #mobileToggleWrapper {
+    display: block;
+  }
+}
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  #mobileToggleWrapper {
+    padding: 10px 18px 10px 15px;
+  }
+}
+/* ==============================================================
    Mobile Navigation
    style declarations for mobileNavigation.xhtml
    ==============================================================*/
 #mobileNav {
   display: none;
-  position: absolute;
+  position: fixed;
+  top: 52px;
+  left: 0;
+  right: 0;
   width: 100%;
   max-height: 250px;
   padding: 0 15px;
@@ -1260,7 +1391,7 @@ div.mce-fullscreen {
    style declarations for simplePaginator.xhtml
    ==============================================================*/
 #numeric_paginator_nav {
-  margin: 1rem 0;
+  margin: 1rem 0 1.5rem 0;
   overflow: hidden;
 }
 #numeric_paginator_nav ul {
@@ -1330,6 +1461,14 @@ div.mce-fullscreen {
   width: 10%;
   text-align: right;
 }
+#titleWrapper .title-header__page-type {
+  display: none;
+  margin-right: 5px;
+}
+#titleWrapper .title-header__page-type:after {
+  content: "\2014";
+  margin-left: 5px;
+}
 #titleWrapper .title-body form .dl-horizontal {
   margin: 0;
 }
@@ -1358,14 +1497,26 @@ div.mce-fullscreen {
   content: "\203A";
 }
 #downloadWrapper {
-  margin: 0 0 10px 10px;
-  font-size: 1.5rem;
+  font-size: 1rem;
+}
+#downloadWrapper nav .list--horizontal li {
+  display: inline-block;
 }
 #downloadWrapper nav ul li {
-  display: inline-block;
+  float: none;
+  margin-left: 5px;
 }
 #downloadWrapper nav ul li.download-title {
   font-size: 0.8rem;
+}
+#downloadWrapper nav ul li a,
+#downloadWrapper nav ul li button {
+  padding: 0;
+  color: #428bca;
+}
+#downloadWrapper nav ul li a:hover,
+#downloadWrapper nav ul li button:hover {
+  color: #1a1a1a;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -1589,6 +1740,7 @@ div.mce-fullscreen {
   text-align: center;
   color: #6f6f6f;
   border: 1px solid #6f6f6f;
+  cursor: pointer;
 }
 .image-control a:hover,
 .image-control span:hover {
@@ -1609,6 +1761,12 @@ div.mce-fullscreen {
 }
 .image-control__page-browse {
   font-size: 1rem;
+}
+.image-control__select-text span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  border: none;
+  cursor: text;
 }
 .image-control__select .form-control__select {
   max-width: 100px;
@@ -1638,7 +1796,8 @@ div.mce-fullscreen {
   border: none;
   background-color: #6f6f6f;
 }
-.image-control__pdf a {
+.image-control__pdf a,
+.image-control__fulltext a {
   line-height: 26px;
   border: none;
 }
@@ -1656,8 +1815,7 @@ div.mce-fullscreen {
   .image-control__switch-pages,
   .image-control__rotate-left,
   .image-control__rotate-right,
-  .image-control__reset,
-  .image-control__fullscreen {
+  .image-control__reset {
     display: none;
   }
 }
@@ -1780,20 +1938,26 @@ div.mce-fullscreen {
   margin: 0;
   padding: 0;
   list-style: none;
+  border: 1px solid #ccc;
 }
 #ePubWrapper ul li {
-  min-height: 28px;
+  padding: 0 10px;
+  border-bottom: 1px solid #ccc;
+}
+#ePubWrapper ul li:last-child {
+  border-bottom: none;
 }
 #ePubWrapper ul li .dl-horizontal {
+  margin: 0;
+}
+#ePubWrapper ul li .dl-horizontal dt,
+#ePubWrapper ul li .dl-horizontal dd {
   min-height: 28px;
-  margin-bottom: 3px;
+  line-height: 28px;
 }
 #ePubWrapper ul li .dl-horizontal dt {
   font-weight: normal;
   text-align: left;
-}
-#ePubWrapper ul li .dl-horizontal dt a img {
-  height: 21px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -1803,6 +1967,7 @@ div.mce-fullscreen {
    Responsive Column Gallery
    style declarations for responsiveColumnGallery.xhtml
    ==============================================================*/
+/* RCG */
 #responsiveColumnGallery {
   float: left;
   width: 100%;
@@ -1859,7 +2024,7 @@ div.mce-fullscreen {
   margin: 0;
   text-overflow: ellipsis;
   color: #fff;
-  overflow: hiddeen;
+  overflow: hidden;
 }
 #responsiveColumnGallery .rcg-col .rcg-image-container .rcg-image-body img {
   display: block;
@@ -1904,6 +2069,7 @@ div.mce-fullscreen {
   margin: 2% 0;
   text-align: right;
 }
+/* RCG LIGHTBOX */
 .rcg-lightbox-overlay {
   display: none;
   position: fixed;
@@ -1966,6 +2132,11 @@ div.mce-fullscreen {
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: 992px) {
+  #responsiveColumnGallery .rcg-col.col-4 {
+    width: 33.33333333%;
+  }
+}
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   #responsiveColumnGallery .rcg-col.col-4 {
@@ -2358,6 +2529,84 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Search Help text
+   style declarations for searchHelpText.xhtml
+   ==============================================================*/
+/* SEARCH HELP TEXT */
+/* BLOCK */
+#searchHelpAccordion {
+  /* ELEMENT */
+}
+#searchHelpAccordion.panel-group .panel {
+  border-radius: 0;
+}
+#searchHelpAccordion .panel-heading {
+  border-radius: 0;
+  background-color: #eee;
+}
+#searchHelpAccordion .panel-title a {
+  display: block;
+}
+#searchHelpAccordion .panel-title a:hover,
+#searchHelpAccordion .panel-title a:focus,
+#searchHelpAccordion .panel-title a:active {
+  text-decoration: none;
+}
+#searchHelpAccordion .panel-body p:last-child {
+  margin: 0;
+}
+#searchHelpAccordion .panel-body p span {
+  display: block;
+  margin: 5px 0 15px 0;
+  padding: 10px;
+  background-color: #eee;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Download Modal
+   style declarations for external PDF, ePub and Toc download 
+   ==============================================================*/
+/* DOWNLOAD MODAL */
+#reCaptchaWrapper {
+  margin-bottom: 1.3125rem;
+}
+div[id*="-Modal"] p {
+  color: #6f6f6f;
+}
+div[id*="-Modal"] p strong {
+  color: #1a1a1a;
+}
+div[id*="-Modal"] .dl-horizontal dt,
+div[id*="-Modal"] .dl-horizontal dd {
+  padding: 3px 0;
+}
+div[id*="-Modal"] .dl-horizontal dt {
+  text-align: left;
+}
+div[id*="-Modal"] .email-form .form-group {
+  margin: 1.3125rem 0 0 0;
+}
+.dl-modal__overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  background-image: url("../../images/AJAX_preloader_white.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  z-index: 999;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
 /* ==============================================================
    Admin 
@@ -2505,6 +2754,10 @@ input[id*="cmdMoveTo"] {
 #licenses p {
   text-align: right;
 }
+/* EDIT USER */
+#editUserGeneral .btn {
+  margin-left: 5px;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -2596,6 +2849,12 @@ input[id*="cmdMoveTo"] {
   padding: 10px 0;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.collection__description-toggle a,
+.collection__rss a {
+  display: inline-block;
+  padding: 10px;
+  text-align: center;
 }
 .collection__title div.col-xs-12 {
   padding-left: 15px;
@@ -2772,6 +3031,30 @@ input[id*="cmdMoveTo"] {
 }
 #statistics #chart-most-active-users .chart-most-active-users-table-row .chart-most-active-users-table-cell.chart-most-active-users-table-cell-right .rank {
   background-color: #999;
+}
+.jqplot-axis {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+}
+.jqplot-axis.jqplot-xaxis {
+  margin-top: 10px;
+}
+.jqplot-axis.jqplot-yaxis {
+  margin-right: 12px;
+}
+#chartpseudotooltip {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+}
+.jqplot-highlighter-tooltip {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+}
+#chart-most-edited .jqplot-point-label {
+  font-size: 13px;
+  font-family: "TheSansLight", sans-serif;
+  margin-bottom: -15px;
+  margin-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -2982,30 +3265,6 @@ input[id*="cmdMoveTo"] {
   /* ELEMENT */
   /* MODIFICATION */
 }
-.search-help .panel-group .panel {
-  border-radius: 0;
-}
-.search-help .panel-heading {
-  border-radius: 0;
-  background-color: #eee;
-}
-.search-help .panel-title a {
-  display: block;
-}
-.search-help .panel-title a:hover,
-.search-help .panel-title a:focus,
-.search-help .panel-title a:active {
-  text-decoration: none;
-}
-.search-help .panel-body p:last-child {
-  margin: 0;
-}
-.search-help .panel-body p span {
-  display: block;
-  margin: 5px 0 15px 0;
-  padding: 10px;
-  background-color: #eee;
-}
 /* SEARCH TILE */
 /* BLOCK */
 .search-tile {
@@ -3075,13 +3334,19 @@ input[id*="cmdMoveTo"] {
   background-color: rgba(255, 255, 255, 0.75);
   z-index: 10;
 }
-.search-advanced__connector .custom-control--select {
+.search-advanced__connector .custom-control--select,
+.search-advanced__connect-group .custom-control--select {
   display: inline-block;
-  width: 70px;
+  width: 80px;
   border: none;
 }
-.search-advanced__connector .custom-control--select:after {
+.search-advanced__connector .custom-control--select:after,
+.search-advanced__connect-group .custom-control--select:after {
   right: 10px;
+}
+.search-advanced__connector .custom-control--select select,
+.search-advanced__connect-group .custom-control--select select {
+  padding: 0;
 }
 .search-advanced__input-group .form-control__select,
 .search-advanced__input-group input[type="text"] {
@@ -3107,9 +3372,6 @@ input[id*="cmdMoveTo"] {
   text-decoration: none;
   color: #1a1a1a;
 }
-.search-advanced__input-group .custom-control--select {
-  width: 100%;
-}
 .search-advanced__input-group .custom-control--select.disabled {
   display: none;
 }
@@ -3120,10 +3382,6 @@ input[id*="cmdMoveTo"] {
   border-radius: 0;
   background-color: transparent;
   opacity: 0.4;
-}
-.search-advanced__input-group select {
-  padding-right: 1rem;
-  padding-left: 0;
 }
 .search-advanced__input-group button {
   padding: .5rem;
@@ -3334,11 +3592,13 @@ input[id*="cmdMoveTo"] {
   margin: 0;
 }
 .search-list__hit-thumbnail {
+  position: relative;
+  min-height: 120px;
   text-align: right;
 }
 .search-list__hit-thumbnail img {
-  max-width: 100px;
-  max-height: 100px;
+  width: 100%;
+  max-width: 80px;
   border: 2px solid #fff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
@@ -3422,14 +3682,14 @@ input[id*="cmdMoveTo"] {
   margin-top: 10px;
 }
 .search-list__hit-content dl {
-  margin: 0;
+  margin-bottom: 5px;
 }
 .search-list__hit-content dt {
-  width: 30px;
-  text-align: left;
+  width: auto;
+  margin-right: 10px;
 }
 .search-list__hit-content dd {
-  margin-left: 30px;
+  margin-left: auto;
 }
 .search-list__hit-content-set {
   padding: 0 0 5px 0;
@@ -3461,15 +3721,15 @@ input[id*="cmdMoveTo"] {
 .search-list__metadata-info {
   padding-left: 16px;
 }
-.search-list__metadata-info dt {
-  width: 20%;
-  font-weight: normal;
+.search-list__metadata-info td {
+  vertical-align: top;
 }
-.search-list__metadata-info dt .fa {
-  margin-right: 20px;
+.search-list__metadata-info td:first-child {
+  padding-right: 5px;
+  white-space: nowrap;
 }
-.search-list__metadata-info dd {
-  margin-left: 20%;
+.search-list__metadata-info .fa {
+  margin-right: 10px;
 }
 .search-list__struct-child-hits {
   padding-left: 15px;
@@ -3600,6 +3860,7 @@ input[id*="cmdMoveTo"] {
   border-bottom: 1px solid #ccc;
 }
 .search-calendar__month {
+  min-height: 270px;
   margin-bottom: 15px;
 }
 .search-calendar__month-title {
@@ -3627,9 +3888,30 @@ input[id*="cmdMoveTo"] {
   color: #ccc;
 }
 .search-calendar__month-day a,
-.search-calendar__month-day span {
+.search-calendar__month-day span,
+.search-calendar__month-day button {
   display: block;
   padding: 5px 10px;
+}
+.search-calendar__month-day a,
+.search-calendar__month-day button {
+  width: 100%;
+  color: #428bca;
+  text-decoration: none;
+  background-color: #eee;
+}
+.search-calendar__month-day a:hover,
+.search-calendar__month-day button:hover,
+.search-calendar__month-day a:focus,
+.search-calendar__month-day button:focus,
+.search-calendar__month-day a:active,
+.search-calendar__month-day button:active {
+  text-decoration: none;
+  color: #fff;
+  background-color: #428bca;
+}
+.search-calendar__month-day .popover-title {
+  line-height: normal;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
@@ -3651,20 +3933,19 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .search-calendar__input {
-    display: none;
-  }
-}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    SearchTermList
    style declarations for searchTermList.xhtml
    ==============================================================*/
-#search_termlistnav {
+/* BLOCK */
+.search-termlist {
+  /* ELEMENT */
+}
+.search-termlist__list {
   margin-bottom: 1.3125rem;
 }
-#search_termlistnav ul li a {
+.search-termlist__list a {
   display: block;
   padding: 5px 10px;
   text-overflow: ellipsis;
@@ -3851,6 +4132,11 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .user__options {
+    margin-top: 10px;
+  }
+}
 /* ==============================================================
    User Data
    style declarations for user.xhtml
@@ -3878,7 +4164,7 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .userdata__gravatar img {
-    margin: 0 auto;
+    margin: 0 auto 15px auto;
   }
   .userdata__action {
     text-align: center;
@@ -3951,9 +4237,17 @@ input[id*="cmdMoveTo"] {
    style declarations for userBackendEditBookshelf.xhtml
    ==============================================================*/
 #editBookshelf #userEditBookshelfForm {
-  float: left;
-  width: 100%;
   margin-bottom: 1.3125rem;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+#editBookshelf #userEditBookshelfForm:before,
+#editBookshelf #userEditBookshelfForm:after {
+  content: " ";
+  display: table;
+}
+#editBookshelf #userEditBookshelfForm:after {
+  clear: both;
 }
 #editBookshelf #userEditBookshelfForm .btn {
   float: right;
@@ -4466,6 +4760,7 @@ div.olMapViewport {
    View Metadata
    style declarations for viewMetadata.xhtml 
    ==============================================================*/
+/* METADATA */
 #metadataElementWrapper {
   position: relative;
   float: left;
@@ -4484,8 +4779,12 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value {
   display: block;
+  margin-bottom: 0.5rem;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value:last-child {
+  margin-bottom: 0;
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal {
   margin: 0;
@@ -4499,15 +4798,23 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value {
   display: block;
+  margin-bottom: 0.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value:last-child {
+  margin-bottom: 0;
 }
 #metadataElementWrapper .glyphicon {
   margin-right: 5px;
 }
+/* DOWNLOADS */
 #viewMetadataDownloads {
   margin-bottom: 1.3125rem;
 }
 #viewMetadataDownloads ul li {
   display: inline-block;
+  margin-bottom: 4px;
   /* BLOCK */
 }
 #viewMetadataDownloads ul li.dl-links {
@@ -5001,27 +5308,6 @@ div.olMapViewport {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   View Preview
-   style declarations for viewPreview.xhtml 
-   ==============================================================*/
-#view_preview_img_wrapp,
-#view_preview_thumb_wrapp {
-  padding: 0.5rem 0;
-  overflow: hidden;
-}
-#view_preview_img_wrapp img,
-#view_preview_thumb_wrapp img {
-  display: block;
-  margin: 0 auto;
-}
-#view_preview_thumb_wrapp {
-  margin-bottom: 1.3125rem;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
    View Reading Mode
    style declarations for viewReadingMode.xhtml 
    ==============================================================*/
@@ -5174,7 +5460,8 @@ div.olMapViewport {
   max-height: 120px;
   margin: 0 auto;
 }
-#viewThumbsWrapper .thumb-element .thumb-element-number {
+#viewThumbsWrapper .thumb-element .thumb-element-number,
+#viewThumbsWrapper .thumb-element .thumb-element-fulltext {
   padding: 0.4375rem 0;
   text-align: center;
 }
@@ -5200,6 +5487,9 @@ div.olMapViewport {
   border-radius: 0;
   background: #eee;
   cursor: pointer;
+}
+#timeMatrix .timematrix-selection #slider-range .ui-slider-handle:focus {
+  outline: none;
 }
 #timeMatrix .timematrix-selection #slider-range .ui-slider-handle .timematrix-slider-bubble-startDate,
 #timeMatrix .timematrix-selection #slider-range .ui-slider-handle .timematrix-slider-bubble-endDate {
@@ -5474,19 +5764,6 @@ div.olMapViewport {
 .toc__list-full {
   margin-top: 15px;
 }
-/* DOWNLOAD MODAL */
-#reCaptchaWrapper {
-  margin-bottom: 1.3125rem;
-}
-div[id*="Modal"] p {
-  color: #737373;
-}
-div[id*="Modal"] .email-form .form-group {
-  margin: 1.3125rem 0 0 0;
-}
-div[id*="Modal"] .email-form .form-group p {
-  margin-bottom: 0;
-}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -5495,13 +5772,34 @@ div[id*="Modal"] .email-form .form-group p {
    View Download
    style declarations for viewDownload.xhtml
    ==============================================================*/
-#viewDownload .download-license-text {
-  width: 100%;
+/* DOWNLOAD */
+/* BLOCK */
+.download {
+  /* ELEMENT */
+}
+.download__status .panel-title {
+  margin: 0;
+  padding: 0;
+}
+.download__status-loader:before,
+.download__status-loader:after {
+  content: " ";
+  display: table;
+}
+.download__status-loader:after {
+  clear: both;
+}
+.download__status-loader img {
+  float: right;
+  max-height: 16px;
+}
+.download__status-license-text {
   height: 200px;
-  padding: 10px;
-  border: 1px solid #428bca;
   background-color: #fff;
   overflow-y: auto;
+}
+#downloadBtn {
+  margin: 10px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -5676,6 +5974,8 @@ div[id*="Modal"] .email-form .form-group p {
 .widget-search-drilldown .widget li.active .col-xs-11,
 .widget-search-drilldown .widget li.active .col-xs-1 {
   padding: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .widget-search-drilldown .widget li.active .col-xs-1 {
   text-align: right;
@@ -5683,6 +5983,11 @@ div[id*="Modal"] .email-form .form-group p {
 .widget-search-drilldown .widget a {
   display: block;
   padding: 3px 5px;
+}
+.widget-search-drilldown__collection ul,
+.widget-search-drilldown__groups ul {
+  max-height: 400px;
+  overflow-y: auto;
 }
 .widget-search-drilldown__collapse a {
   display: block;
@@ -5733,6 +6038,10 @@ div[id*="Modal"] .email-form .form-group p {
 }
 #widgetSearchInCurrentItem .form-group .input-group {
   width: 100%;
+}
+#widgetSearchInCurrentItem .form-group .input-group input {
+  padding-right: 5px;
+  padding-left: 5px;
 }
 #widgetSearchInCurrentItem .form-group .input-group .input-group-addon {
   padding: 0;
@@ -5838,7 +6147,6 @@ div[id*="Modal"] .email-form .form-group p {
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand {
   float: left;
   width: 16px;
-  min-width: 0.75rem;
   min-height: 1px;
 }
 #widgetToc .widget-toc-elem-wrapp ul li .widget-toc-elem-expand a {
@@ -6229,6 +6537,103 @@ div[id*="Modal"] .email-form .form-group p {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget Work Count
+   style declarations for widget_workCount.xhtml
+   ==============================================================*/
+/* WIDGET WORKCOUNT */
+/* BLOCK */
+#widgetWorkCount p {
+  margin: 0;
+  padding: 5px 10px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget Geo Locations
+   style declarations for widget_geoLocations.xhtml
+   ==============================================================*/
+.widget-geo-locations {
+  position: relative;
+  /* CMS BACKEND WIDGET */
+}
+.widget-geo-locations__map {
+  min-height: 350px;
+}
+.widget-geo-locations__map .mapboxgl-popup-content {
+  padding: 20px 15px 10px 15px;
+}
+.widget-geo-locations h5 {
+  margin-bottom: 5px;
+}
+.widget-geo-locations__input {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.widget-geo-locations__input:before,
+.widget-geo-locations__input:after {
+  content: " ";
+  display: table;
+}
+.widget-geo-locations__input:after {
+  clear: both;
+}
+.widget-geo-locations__input .row {
+  margin: 0;
+}
+.widget-geo-locations__input .col-xs-5,
+.widget-geo-locations__input .col-xs-6,
+.widget-geo-locations__input .col-xs-10 {
+  margin-bottom: 5px;
+  padding-right: 5px;
+  padding-left: 0;
+}
+.widget-geo-locations__input textarea {
+  resize: vertical;
+}
+.widget-geo-locations__input-spacer {
+  margin: 10px 0;
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+}
+.widget-geo-locations__action {
+  position: relative;
+  z-index: 10;
+}
+.widget-geo-locations__action .col-xs-2 {
+  margin: -32px 0 0 -6px;
+  padding: 0 0 21px 0;
+  text-align: right;
+  border-bottom: 1px solid #ccc;
+}
+.widget-geo-locations__action a:hover,
+.widget-geo-locations__action a:focus,
+.widget-geo-locations__action a:active {
+  text-decoration: none;
+}
+.widget-geo-locations__overlay-check {
+  float: left;
+  width: 100%;
+}
+.widget-geo-locations__overlay-check:before,
+.widget-geo-locations__overlay-check:after {
+  content: " ";
+  display: table;
+}
+.widget-geo-locations__overlay-check:after {
+  clear: both;
+}
+.widget-geo-locations__overlay-check .checkbox {
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page
@@ -6253,7 +6658,8 @@ div[id*="Modal"] .email-form .form-group p {
   border-bottom: none;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-solr {
-  padding: 14px 14px 0 14px;
+  margin-bottom: 15px;
+  padding-top: 15px;
   border-top: 1px solid #eee;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-collection {
@@ -6294,7 +6700,6 @@ div[id*="Modal"] .email-form .form-group p {
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image {
   height: 80px;
   border-radius: 4px 4px 0 0;
-  overflow: hidden;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media .edit-content-page-media-gallery-item .edit-content-page-media-gallery-item-image img {
   display: block;
@@ -6381,6 +6786,15 @@ div[id*="Modal"] .email-form .form-group p {
 }
 #cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .sidebar-editor-item-widget-editor-action {
   text-align: right;
+}
+#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td {
+  display: block;
+}
+#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-body .selection_page_links table tr td label {
+  overflow: hidden;
+  max-width: 90%;
+  margin-bottom: -5px;
+  margin-left: 5px;
 }
 #cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .btn {
   margin: 0 0 0 5px;
@@ -6835,8 +7249,7 @@ div[id*="Modal"] .email-form .form-group p {
    style declarations for adminCmsSelectTemplate.xhtml
    ==============================================================*/
 #cmsSelectTemplate #cmsSelectTemplateWrapper {
-  float: left;
-  width: 100%;
+  margin-top: 20px;
 }
 #cmsSelectTemplate #cmsSelectTemplateWrapper .row {
   margin-bottom: 14px;
@@ -6891,5 +7304,67 @@ img.cms-static-pages__page-language--complete {
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "SearchList"
+   style declarations for cms_template_02_searchList.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST */
+/* BLOCK */
+.tpl-search-list {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-search-list:before,
+.tpl-search-list:after {
+  content: " ";
+  display: table;
+}
+.tpl-search-list:after {
+  clear: both;
+}
+.tpl-search-list__right {
+  position: relative;
+  float: left;
+  min-height: 600px;
+  padding-right: 15px;
+  padding-left: 15px;
+  transition: all .3s linear;
+}
+.tpl-search-list__intro {
+  margin-bottom: 30px;
+}
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "searchListAdvanced"
+   style declarations for cms_template_02_searchListAdvanced.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST */
+/* BLOCK */
+.tpl-search-list-advanced {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-search-list-advanced:before,
+.tpl-search-list-advanced:after {
+  content: " ";
+  display: table;
+}
+.tpl-search-list-advanced:after {
+  clear: both;
+}
+.tpl-search-list-advanced__right {
+  position: relative;
+  float: left;
+  min-height: 600px;
+  padding-right: 15px;
+  padding-left: 15px;
+  transition: all .3s linear;
+}
+.tpl-search-list-advanced__intro {
+  margin-bottom: 30px;
+}
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */

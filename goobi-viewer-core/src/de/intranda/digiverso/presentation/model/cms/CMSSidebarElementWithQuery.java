@@ -16,58 +16,39 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class CMSSidebarElementWithQuery extends CMSSidebarElement {
-    
-    @Column(name = "widget_title")
-    private String widgetTitle;
-    
+
     @Column(name = "search_field")
     private String searchField = null;
-    
+
     @Column(name = "result_display_limit")
     private int resultDisplayLimit = 20;
-    
+
     @Column(name = "additional_query")
     private String additionalQuery = "";
 
-    
+    @Column(name = "descending_order")
+    private boolean descendingOrder = false;
+
     /**
      * @return the searchField
      */
     public String getSearchField() {
         return searchField;
     }
-    
+
     /**
      * @param searchField the searchField to set
      */
     public void setSearchField(String searchField) {
         this.searchField = searchField;
     }
-    
-    /**
-     * @return the widgetTitle
-     */
-    public String getWidgetTitle() {
-        return widgetTitle;
-    }
-    
-    /**
-     * @param widgetTitle the widgetTitle to set
-     */
-    public void setWidgetTitle(String widgetTitle) {
-        this.widgetTitle = widgetTitle;
-    }
-    
-    
-    
+
     /**
      * @return the resultDisplayLimit
      */
@@ -79,7 +60,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
      * @param resultDisplayLimit the resultDisplayLimit to set
      */
     public void setResultDisplayLimit(Integer resultDisplayLimit) {
-        if(resultDisplayLimit != null) {            
+        if (resultDisplayLimit != null) {
             this.resultDisplayLimit = resultDisplayLimit;
         } else {
             this.resultDisplayLimit = 0;
@@ -100,27 +81,40 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
         this.additionalQuery = additionalQuery;
     }
 
+    /**
+     * @return the descendingOrder
+     */
+    public boolean isDescendingOrder() {
+        return descendingOrder;
+    }
+
+    /**
+     * @param descendingOrder the descendingOrder to set
+     */
+    public void setDescendingOrder(boolean descendingOrder) {
+        this.descendingOrder = descendingOrder;
+    }
+
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.cms.CMSSidebarElement#hashCode()
      */
     @Override
     public int hashCode() {
         int code = super.hashCode();
-        if(StringUtils.isNotBlank(getWidgetTitle())) {            
+        if (StringUtils.isNotBlank(getWidgetTitle())) {
             code += HASH_MULTIPLIER * getWidgetTitle().hashCode();
         }
-        if(StringUtils.isNotBlank(getSearchField())) {            
+        if (StringUtils.isNotBlank(getSearchField())) {
             code *= HASH_MULTIPLIER * getSearchField().hashCode();
         }
         return code;
     }
-    
+
     @Override
     public boolean equals(Object o) {
-        return o.getClass().equals(CMSSidebarElementWithQuery.class) 
-                && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
-                && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithQuery) o).getWidgetTitle())
-                && bothNullOrEqual(getSearchField(), ((CMSSidebarElementWithQuery) o).getSearchField());
+        return o.getClass().equals(CMSSidebarElementWithQuery.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
+                && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithQuery) o).getWidgetTitle()) && bothNullOrEqual(getSearchField(),
+                        ((CMSSidebarElementWithQuery) o).getSearchField());
     }
 
 }

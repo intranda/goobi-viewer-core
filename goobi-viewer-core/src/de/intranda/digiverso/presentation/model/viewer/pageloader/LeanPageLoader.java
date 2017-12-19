@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.viewer.pageloader;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +26,6 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,17 +138,17 @@ public class LeanPageLoader implements IPageLoader, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String)
+     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean)
      */
     @Override
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot)
-            throws IndexUnreachableException {
+    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+            boolean recordBelowFulltextThreshold) throws IndexUnreachableException {
         logger.debug("Generating drop-down page selector...");
         try {
             String pi = topElement.getPi();
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE)
-                    .append(':').append(DocType.PAGE);
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
+                    ':').append(DocType.PAGE);
             SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), SolrSearchIndex.MAX_HITS, Collections
                     .singletonList(new StringPair(SolrConstants.ORDER, "asc")), Arrays.asList(SELECT_ITEM_FIELDS));
             if (result == null || result.isEmpty()) {
@@ -163,6 +161,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
             for (SolrDocument doc : result) {
                 int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
                 String orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
+                boolean fulltextAvailable = doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(
+                        SolrConstants.FULLTEXTAVAILABLE) : false;
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
@@ -170,10 +170,12 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 si.setLabel(order + ":" + orderLabel);
                 si.setValue(order);
                 dropdownPages.add(si);
-                SelectItem full = new SelectItem();
-                full.setLabel(order + ":" + orderLabel);
-                full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
-                dropdownFulltext.add(full);
+                if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
+                    SelectItem full = new SelectItem();
+                    full.setLabel(order + ":" + orderLabel);
+                    full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
+                    dropdownFulltext.add(full);
+                }
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -188,8 +190,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
     protected final void setFirstAndLastPageOrder() throws IndexUnreachableException {
         try {
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE)
-                    .append(':').append(DocType.PAGE);
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
+                    ':').append(DocType.PAGE);
             SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, Collections.singletonList(
                     new StringPair(SolrConstants.ORDER, "asc")), Collections.singletonList(SolrConstants.ORDER));
             if (!result.isEmpty()) {
@@ -222,21 +224,11 @@ public class LeanPageLoader implements IPageLoader, Serializable {
         if (pageNumber >= 0) {
             logger.trace("Loading page {} for '{}'...", pageNumber, pi);
         }
-
-        boolean lazyFulltext = DataManager.getInstance().getConfiguration().isFulltextLazyLoading();
-        boolean lazyWc = DataManager.getInstance().getConfiguration().isWordCoordsLazyLoading();
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
-        if (!lazyFulltext) {
-            fields.add(SolrConstants.FULLTEXT);
-            fields.add("MD_FULLTEXT");
-        }
-        if (!lazyWc) {
-            fields.add(SolrConstants.ALTO);
-        }
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(
-                ':').append(DocType.PAGE);
+        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
+                .append(DocType.PAGE);
         if (pageNumber >= 0) {
             sbQuery.append(" AND ").append(SolrConstants.ORDER).append(':').append(pageNumber);
         }
@@ -320,21 +312,10 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 }
             }
 
-            // Full text
-            if (doc.getFirstValue("MD_FULLTEXT") != null) {
-                pe.setFullText((String) doc.getFirstValue("MD_FULLTEXT"));
-            } else if (doc.getFieldValue(SolrConstants.FULLTEXT) != null) {
-                pe.setFullText((String) doc.getFieldValue(SolrConstants.FULLTEXT));
-            }
-
-            // ALTO word coordinates
-            if (doc.getFieldValue(SolrConstants.ALTO) != null) {
-                try {
-                    pe.setAlto((String) doc.getFieldValue(SolrConstants.ALTO));
-                } catch (JDOMException | IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
+            // Full-text filename
+            pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));
+            // ALTO filename
+            pe.setAltoFileName((String) doc.getFirstValue(SolrConstants.FILENAME_ALTO));
 
             // Access conditions
             if (doc.getFieldValues(SolrConstants.ACCESSCONDITION) != null) {
@@ -350,7 +331,7 @@ public class LeanPageLoader implements IPageLoader, Serializable {
             String filenameRoot = new StringBuilder(SolrConstants.FILENAME).append('_').toString();
             for (String fieldName : doc.getFieldNames()) {
                 //                logger.trace(fieldName);
-                if (fieldName.startsWith(filenameRoot) && !fieldName.startsWith("FILENAME_TILED")) {
+                if (fieldName.startsWith(filenameRoot)) {
                     String format = fieldName.split("_")[1].toLowerCase();
                     String value = (String) doc.getFieldValue(fieldName);
                     pe.getFileNames().put(format, value);
@@ -361,23 +342,14 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 pe.setFileIdRoot((String) doc.getFieldValue(SolrConstants.FILEIDROOT));
             }
 
-            // Pyramid TIFF file names
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_0) != null) {
-                pe.setFileNameTiled0((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_0));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_90) != null) {
-                pe.setFileNameTiled90((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_90));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_180) != null) {
-                pe.setFileNameTiled180((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_180));
-            }
-            if (doc.getFieldValue(SolrConstants.FILENAME_TILED_270) != null) {
-                pe.setFileNameTiled270((String) doc.getFieldValue(SolrConstants.FILENAME_TILED_270));
-            }
-
             // File size
             if (doc.getFieldValue("MDNUM_FILESIZE") != null) {
                 pe.setFileSize((long) doc.getFieldValue("MDNUM_FILESIZE"));
+            }
+
+            // Full-text available
+            if (doc.containsKey(SolrConstants.FULLTEXTAVAILABLE)) {
+                pe.setFulltextAvailable((boolean) doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
             }
 
             //            // Eager load user generated contents from the DB

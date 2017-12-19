@@ -23,6 +23,14 @@
                 }
             }
         }
+        &__page-type {
+        	display: none;
+        	margin-right: 5px;
+        	&:after {
+        		content:"\2014";
+        		margin-left: 5px;
+        	}
+        }
     }
     .title-body {
         form {
@@ -62,16 +70,27 @@
 }
 
 #downloadWrapper {
-    margin: 0 0 10px 10px;
-    font-size: 1.5rem;
+    font-size: 1rem;
     nav {
+    	.list--horizontal {
+    		li {
+    			display: inline-block;
+    		}
+    	}
         ul {
             li {
-                display: inline-block;
+            	float: none;
+            	margin-left: 5px;
                 &.download-title {
                     font-size: 0.8rem;
                 }
-                a {}
+                a, button {
+                	padding: 0;
+                	color: @blue;
+                	&:hover {
+                		color: @black;
+                	}
+                }
             }
         }
     }

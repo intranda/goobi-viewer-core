@@ -59,36 +59,6 @@ var viewerJS = ( function( viewer ) {
                 return str;
             }
         },
-        
-        /**
-         * Method to switch classnames of an object.
-         * 
-         * @deprecated use jQuery.toggleClass();
-         * @method switchClass
-         * @param {Object} $Obj The object which classname has to be switched.
-         * @param {String} classname1 The classname of the first class.
-         * @param {String} classname2 The classname of the second class.
-         * @returns {String} The new classname.
-         */
-        switchClass: function( $Obj, classname1, classname2 ) {
-            if ( _debug ) {
-                console.log( '---------- viewer.helper.switchClass() ----------' );
-                console.log( 'viewer.helper.switchClass: $Obj = ', $Obj );
-                console.log( 'viewer.helper.switchClass: classname1 = ', classname1 );
-                console.log( 'viewer.helper.switchClass: classname2 = ', classname2 );
-            }
-            
-            $Obj.toggleClass( function() {
-                if ( $Obj.hasClass( classname1 ) ) {
-                    $Obj.removeClass( classname1 );
-                    return classname2;
-                }
-                else {
-                    $Obj.removeClass( classname2 );
-                    return classname1;
-                }
-            } );
-        },
         /**
          * Method which calculates the current position of the active element in sidebar
          * toc and the image container position and saves it to lacal storage.
@@ -267,7 +237,6 @@ var viewerJS = ( function( viewer ) {
             
             return bsAlert;
         },
-        
         /**
          * Method to get the version number of the used MS Internet Explorer.
          * 
@@ -404,6 +373,50 @@ var viewerJS = ( function( viewer ) {
                     }
                 }
             } );
+        },
+        
+        /**
+         * Method to get the current used browser.
+         * 
+         * @method getCurrentBrowser
+         * @returns {String} The name of the current Browser.
+         */
+        getCurrentBrowser: function() {
+            // Opera 8.0+
+            var isOpera = ( !!window.opr && !!opr.addons ) || !!window.opera || navigator.userAgent.indexOf( ' OPR/' ) >= 0;
+            // Firefox 1.0+
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+            // Safari 3.0+ "[object HTMLElementConstructor]"
+            var isSafari = /constructor/i.test( window.HTMLElement ) || ( function( p ) {
+                return p.toString() === "[object SafariRemoteNotification]";
+            } )( !window[ 'safari' ] || ( typeof safari !== 'undefined' && safari.pushNotification ) );
+            // Internet Explorer 6-11
+            var isIE = /* @cc_on!@ */false || !!document.documentMode;
+            // Edge 20+
+            var isEdge = !isIE && !!window.StyleMedia;
+            // Chrome 1+
+            var isChrome = !!window.chrome && !!window.chrome.webstore;
+            // Blink engine detection
+            // var isBlink = ( isChrome || isOpera ) && !!window.CSS;
+            
+            if ( isOpera ) {
+                return 'Opera';
+            }
+            else if ( isFirefox ) {
+                return 'Firefox';
+            }
+            else if ( isSafari ) {
+                return 'Safari';
+            }
+            else if ( isIE ) {
+                return 'IE';
+            }
+            else if ( isEdge ) {
+                return 'Edge';
+            }
+            else if ( isChrome ) {
+                return 'Chrome';
+            }
         },
     };
     

@@ -58,9 +58,9 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
-import de.intranda.digiverso.presentation.model.user.OpenIdProvider;
-import de.intranda.digiverso.presentation.model.user.User;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
+import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
 import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
 
@@ -203,6 +203,10 @@ public class UserBean implements Serializable {
                     SearchHelper.updateFilterQuerySuffix(request);
                     // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
                     if (StringUtils.isNotEmpty(redirectUrl)) {
+                        if("#".equals(redirectUrl)) {
+                            logger.trace("Stay on current page");
+                            return "";
+                        }
                         logger.trace("Redirecting to {}", redirectUrl);
                         String redirectUrl = this.redirectUrl;
                         this.redirectUrl = "";
@@ -301,13 +305,18 @@ public class UserBean implements Serializable {
         request.getSession(false).invalidate();
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
+            if("#".equals(redirectUrl)) {
+                logger.trace("Stay on current page");
+                return "";
+            }
             logger.trace("Redirecting to {}", redirectUrl);
             String redirectUrl = this.redirectUrl;
             this.redirectUrl = "";
             //            Messages.info("logoutSuccessful");
 
             // Do not redirect to user backend pages because LoginFilter won't work here for some reason
-            if (!LoginFilter.isRestrictedUri(redirectUrl.substring(BeanUtils.getServletPathWithHostAsUrlFromJsfContext().length()))) {
+            String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
+            if (redirectUrl.length() < servletPath.length() ||  !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
                 return redirectUrl;
             }
         }

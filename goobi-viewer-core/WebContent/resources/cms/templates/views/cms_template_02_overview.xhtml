@@ -14,19 +14,22 @@
 
 	<ui:define name="metadata">
 		<f:metadata>
-			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle)}" />
-			
+			<f:event type="preRenderView" listener="#{navigationHelper.setCurrentPage(cmsBean.currentPage.menuTitle, false, false, true)}" />
+<!-- 			<f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(cmsBean.currentPage.menuTitle, 1)}" /> -->
+			<f:event type="preRenderView" listener="#{navigationHelper.updateBreadcrumbs(cmsBean.currentPage)}" />
 			<f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
 		</f:metadata>
 	</ui:define>
+	
 	
 	<ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
 	<ui:define name="content">
+	
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateNewsOverview" class="page-wrapp tpl-news-overview">
+			<div id="templateNewsOverview" class="tpl-news-overview">
 				<h1>#{cmsBean.getPage(cmsPage).title}</h1>
                 
                 <!-- PAGE UNPUBLISHED -->
@@ -62,7 +65,9 @@
                                 <!-- IMAGE -->
                                 <div class="col-xs-12 col-sm-4">
                                     <figure class="tpl-news-overview__list-image">
-                                        <img src="#{subPage.getContent('image01')}" class="img-responsive" title="#{subPage.getMediaName('image01')}" />
+                                        <a href="#{cmsBean.getPageUrl(subPage.id)}">
+	                                        <img src="#{subPage.getContent('image01')}" class="img-responsive" title="#{subPage.getMediaName('image01')}" />
+                                        </a>
                                         <figcaption></figcaption>
                                     </figure>
                                 </div>
@@ -80,7 +85,7 @@
                                         
                                         <div class="tpl-news-overview__preview-text">
                                             <ui:include src="#{subPage.getContent('preview01')}" />
-                                            <a href="#{cmsBean.getPageUrl(subPage.id)}" class="tpl-news-overview__preview-continue" target="_blank">[#{msg.more}...]</a>
+                                            <a href="#{cmsBean.getPageUrl(subPage.id)}" class="tpl-news-overview__preview-continue">[#{msg.more}...]</a>
                                         </div>        
                                     </div>
                                 </div>
@@ -102,11 +107,16 @@
     	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
     		<widgetComponent:widget_custom widget="#{element}"/>
     		<widgetComponent:widget_customDrillDown widget="#{element}" />
+    		<widgetComponent:widget_searchDrillDown widget="#{element}" />
             <widgetComponent:widget_searchField widget="#{element}"/>
             <widgetComponent:widget_browsing widget="#{element}"/>            
             <widgetComponent:widget_bookshelves widget="#{element}"/>
             <widgetComponent:widget_mySearches widget="#{element}"/>
             <widgetComponent:widget_user widget="#{element}"/>
+            <widgetComponent:widget_rssFeed widget="#{element}" />
+            <widgetComponent:widget_workCount widget="#{element}" />
+            <widgetComponent:widget_cmsPageLinks widget="#{element}" />
+            <widgetComponent:widget_geoLocations widget="#{element}" />
     	</c:forEach>
     </ui:define>
 </ui:composition>

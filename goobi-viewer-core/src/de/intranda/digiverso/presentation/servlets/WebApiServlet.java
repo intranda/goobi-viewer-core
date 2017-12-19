@@ -54,7 +54,8 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.metadata.CompareYearSolrDocWrapper;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.user.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
+import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
@@ -69,11 +70,6 @@ public class WebApiServlet extends HttpServlet implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(WebApiServlet.class);
 
     public static final int MAX_HITS = 1000000;
-
-    //    private static final String[] FIELDS_TIMELINE = { LuceneConstants.ACCESSCONDITION, LuceneConstants.DATECREATED, LuceneConstants.IDDOC,
-    //            LuceneConstants.PI, LuceneConstants.PI_TOPSTRUCT, LuceneConstants.THUMBNAIL, LuceneConstants.TITLE, LuceneConstants.DC,
-    //            LuceneConstants.PARTNERID, LuceneConstants.DATAREPOSITORY, "YEAR", "MD_DATECREATED", "MD_DATECREATEDSTART", "MD_DATECREATEDEND",
-    //            "MD_PERSON_UNTOKENIZED" };
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -139,8 +135,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         logger.trace("end Date: {}", endDate);
 
                         try {
-                            query = new StringBuilder().append('(').append(SolrConstants.ISWORK).append(":true AND YEAR:[").append(startDate)
-                                    .append(" TO ").append(endDate).append("])").append(SearchHelper.getAllSuffixes(true)).toString();
+                            query = new StringBuilder().append('(').append(SolrConstants.ISWORK).append(":true AND YEAR:[").append(startDate).append(
+                                    " TO ").append(endDate).append("])").append(SearchHelper.getAllSuffixes(true)).toString();
                             logger.debug("query: {}", query);
                         } catch (IndexUnreachableException e) {
                             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -450,7 +446,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = SearchHelper.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
                         SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
                 if (!access) {
                     logger.trace("User may not list {}", pi);
@@ -491,7 +487,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = SearchHelper.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
                         SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
                 if (!access) {
                     logger.debug("User may not list {}", pi);
@@ -547,12 +543,13 @@ public class WebApiServlet extends HttpServlet implements Serializable {
         StringBuilder sbMediumImage = new StringBuilder(250);
         sbMediumImage.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
         if (StringUtils.isNotEmpty(dataRepository)) {
-            sbThumbnailUrl.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
-                    .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                            DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
-            sbMediumImage.append("file:/").append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome().charAt(0) == '/' ? '/' : "")
-                    .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                            DataManager.getInstance().getConfiguration().getMediaFolder()).append('/');
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            sbThumbnailUrl.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                            .getMediaFolder()).append('/');
+            sbMediumImage.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                            .getMediaFolder()).append('/');
         }
         sbThumbnailUrl.append(pi).append('/').append(fileName).append(
                 "&width=100&height=120&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()

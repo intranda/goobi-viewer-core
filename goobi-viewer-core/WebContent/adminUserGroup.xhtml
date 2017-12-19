@@ -16,7 +16,7 @@
     
     <ui:define name="content">
         <f:view contentType="text/html" encoding="utf-8">        
-            <div id="adminUserGroup" class="page-wrapp">
+            <div id="adminUserGroup">
                 <h:panelGroup rendered="#{userBean.admin and adminBean.currentUserGroup != null}">                    
                     <h:panelGroup rendered="#{adminBean.currentUserGroup.id == null}">
                         <h2>#{msg.userGroup_createNewUserGroup}</h2>

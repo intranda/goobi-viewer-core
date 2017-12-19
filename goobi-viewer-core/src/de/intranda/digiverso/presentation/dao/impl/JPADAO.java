@@ -50,14 +50,14 @@ import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
 import de.intranda.digiverso.presentation.model.search.Search;
+import de.intranda.digiverso.presentation.model.security.LicenseType;
+import de.intranda.digiverso.presentation.model.security.Role;
+import de.intranda.digiverso.presentation.model.security.user.IpRange;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.security.user.UserGroup;
+import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob.JobStatus;
-import de.intranda.digiverso.presentation.model.user.IpRange;
-import de.intranda.digiverso.presentation.model.user.LicenseType;
-import de.intranda.digiverso.presentation.model.user.Role;
-import de.intranda.digiverso.presentation.model.user.User;
-import de.intranda.digiverso.presentation.model.user.UserGroup;
-import de.intranda.digiverso.presentation.model.user.UserRole;
 
 public class JPADAO implements IDAO {
 
@@ -109,20 +109,21 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * @throws DAOException 
+     * @throws DAOException
      * 
      */
     private void createDiscriminatorRow() throws DAOException {
         try {
             preQuery();
             em.getTransaction().begin();
-            Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName() + "' WHERE element.widgetType IS NULL");
+            Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName()
+                    + "' WHERE element.widgetType IS NULL");
             q.executeUpdate();
             em.getTransaction().commit();
         } catch (DAOException e) {
             throw new DAOException(e.getMessage());
         }
-        
+
     }
 
     /*
@@ -502,7 +503,7 @@ public class JPADAO implements IDAO {
      *
      * @throws DAOException
      *
-     * @see de.intranda.digiverso.presentation.dao.IDAO#updateUserGroup(de.intranda.digiverso.presentation.model.user.UserGroup)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#updateUserGroup(de.intranda.digiverso.presentation.model.security.user.UserGroup)
      * @should set id on new license
      */
     @Override
@@ -1316,142 +1317,6 @@ public class JPADAO implements IDAO {
         }
     }
 
-    //    /* (non-Javadoc)
-    //     * @see de.intranda.digiverso.presentation.dao.IDAO#getAllAnnotations()
-    //     */
-    //    @SuppressWarnings("unchecked")
-    //    @Override
-    //    public List<AnnotationElement> getAllAnnotations() {
-    //        preQuery();
-    //        Query q = em.createQuery("SELECT anno FROM AnnotationElement anno");
-    //        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-    //        return q.getResultList();
-    //    }
-    //
-    //    /**
-    //     * @see de.intranda.digiverso.presentation.dao.IDAO#getAnnotations(int, int, java.lang.String, boolean, java.util.Map)
-    //     * @should sort results correctly
-    //     * @should filter results correctly
-    //     */
-    //    @SuppressWarnings("unchecked")
-    //    @Override
-    //    public List<AnnotationElement> getAnnotations(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) {
-    //        preQuery();
-    //        StringBuilder sbQuery = new StringBuilder("SELECT o FROM UserGroup o");
-    //        List<String> filterKeys = new ArrayList<>();
-    //        if (filters != null && !filters.isEmpty()) {
-    //            sbQuery.append(" WHERE ");
-    //            filterKeys.addAll(filters.keySet());
-    //            Collections.sort(filterKeys);
-    //            int count = 0;
-    //            for (String key : filterKeys) {
-    //                if (count > 0) {
-    //                    sbQuery.append(" AND ");
-    //                }
-    //                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
-    //                count++;
-    //            }
-    //        }
-    //        if (StringUtils.isNotEmpty(sortField)) {
-    //            sbQuery.append(" ORDER BY o.").append(sortField);
-    //            if (descending) {
-    //                sbQuery.append(" DESC");
-    //            }
-    //        }
-    //        Query q = em.createQuery(sbQuery.toString());
-    //        for (String key : filterKeys) {
-    //            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
-    //        }
-    //        q.setFirstResult(first);
-    //        q.setMaxResults(pageSize);
-    //        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-    //
-    //        return q.getResultList();
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see de.intranda.digiverso.presentation.dao.IDAO#getAnnotationsForPage(java.lang.String, int)
-    //     */
-    //    @SuppressWarnings("unchecked")
-    //    @Override
-    //    public List<AnnotationElement> getAnnotationsForPage(String pi, int page) {
-    //        preQuery();
-    //        Query q = em.createQuery("SELECT anno FROM AnnotationElement anno WHERE anno.pi = :pi AND anno.page = :page");
-    //        q.setParameter("pi", pi);
-    //        q.setParameter("page", page);
-    //        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-    //        return q.getResultList();
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see de.intranda.digiverso.presentation.dao.IDAO#getAnnotation(long)
-    //     */
-    //    @Override
-    //    public AnnotationElement getAnnotation(long id) {
-    //        preQuery();
-    //        try {
-    //            AnnotationElement o = em.getReference(AnnotationElement.class, id);
-    //            if (o != null) {
-    //                em.refresh(o);
-    //            }
-    //            return o;
-    //        } catch (EntityNotFoundException e) {
-    //            return null;
-    //        }
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see de.intranda.digiverso.presentation.dao.IDAO#addAnnotation(de.intranda.digiverso.presentation.model.annotation.AnnotationElement)
-    //     */
-    //    @Override
-    //    public boolean addAnnotation(AnnotationElement annotation) {
-    //        preQuery();
-    //        EntityManager em = factory.createEntityManager();
-    //        try {
-    //            em.getTransaction().begin();
-    //            em.persist(annotation);
-    //            em.getTransaction().commit();
-    //        } finally {
-    //            em.close();
-    //        }
-    //        return true;
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see de.intranda.digiverso.presentation.dao.IDAO#updateAnnotation(de.intranda.digiverso.presentation.model.annotation.AnnotationElement)
-    //     */
-    //    @Override
-    //    public boolean updateAnnotation(AnnotationElement annotation) {
-    //        preQuery();
-    //        EntityManager em = factory.createEntityManager();
-    //        try {
-    //            em.getTransaction().begin();
-    //            em.merge(annotation);
-    //            em.getTransaction().commit();
-    //            return true;
-    //        } finally {
-    //            em.close();
-    //        }
-    //    }
-    //
-    //    /* (non-Javadoc)
-    //     * @see de.intranda.digiverso.presentation.dao.IDAO#deleteAnnotation(de.intranda.digiverso.presentation.model.annotation.AnnotationElement)
-    //     */
-    //    @Override
-    //    public boolean deleteAnnotation(AnnotationElement annotation) {
-    //        preQuery();
-    //        EntityManager em = factory.createEntityManager();
-    //        try {
-    //            em.getTransaction().begin();
-    //            AnnotationElement o = em.getReference(AnnotationElement.class, annotation.getId());
-    //            em.remove(o);
-    //            em.getTransaction().commit();
-    //            return true;
-    //        } finally {
-    //            em.close();
-    //        }
-    //    }
-
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.dao.IDAO#getAllComments()
      */
@@ -2227,7 +2092,7 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
         q.setParameter("pageName", pageName);
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         if (!q.getResultList().isEmpty()) {
             return (CMSPage) q.getSingleResult();
         }
@@ -2551,7 +2416,7 @@ public class JPADAO implements IDAO {
     public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
         preQuery();
         Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
-        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         List<CMSNavigationItem> list = q.getResultList();
         Collections.sort(list);
         return list;

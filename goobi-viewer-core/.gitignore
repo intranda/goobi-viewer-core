@@ -1,6 +1,9 @@
 /bin/
 /build/
 /deploy/
+/doc/
 /node_modules/
 .DS_Store
 **/.DS_Store
+/package-lock.json
+/config_viewer.xml

@@ -1,7 +1,7 @@
 # Goobi viewer - Core
 > A highly flexible digital library framework - made by the Goobi developer team
 
-## Digital library framwork
+## Digital library framework
 The Goobi viewer is a web application that allows digitised material to be displayed in a web browser. It is used as central basis for an online digital library and offers various functionalities as browsing through digital collections, complex full-text searches, displaying images based on the IIIF standard, deliver audio and video material and a lot more. 
 
 ![alt Goobi viewer - image view of a book page](doc/images/goobi_viewer_theme_reference_image_display.png "Goobi viewer - image view of a book page")
@@ -30,7 +30,7 @@ These are some of the main functionalities that are provided:
 - Display images and statistics
 - Reproduce audio and video files
 - Present and manage metadata
-- Flexible and highly configurable searching and browsing mechanims based on an Apache Solr search index
+- Flexible and highly configurable searching and browsing mechanisms based on an Apache Solr search index
 - Handling of embedded Named Entities
 - Offer a range of downloads with no image display (e.g. PDF files, „Viewer without image“)
 - Embedded content management to create individual pages
@@ -44,7 +44,7 @@ Please notice that the Goobi viewer was formerly known as proprietary software u
 
 ## Technical background
 
-The Goobi viewer consisists of multiple packages which all have to be installed and configured properly:
+The Goobi viewer consists of multiple packages which all have to be installed and configured properly:
 
 | Package | Function |
 | ------ | ------ |
@@ -55,11 +55,11 @@ The Goobi viewer consisists of multiple packages which all have to be installed 
 
 
 ## Installation
-The installation can be done on any operating system as the software is based on Java. A detailed explaination how to install the viewer will follow later on. In the mean time please get in touch with us via <info@intranda.com>
+The installation can be done on any operating system as the software is based on Java. A detailed explanation how to install the viewer will follow later on. In the mean time please get in touch with us via <info@intranda.com>
 
 ## Release History
 Detailed release note descriptions can be found using this URL:  
-<http://www.intranda.com/en/digiverso/intranda-viewer/history/>
+<http://www.intranda.com/en/digiverso/goobi-viewer/history/>
 
 ## Developer team
 intranda GmbH  

@@ -15,10 +15,23 @@
  */
 package de.intranda.digiverso.presentation.model.toc;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
+
 public class TOCTest {
+    
+    @Before
+    public void setUp() throws Exception {
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see TOC#getNumPages()
@@ -31,5 +44,25 @@ public class TOCTest {
         Assert.assertEquals(7, toc.getNumPages());
         toc.setTotalTocSize(77);
         Assert.assertEquals(8, toc.getNumPages());
+    }
+
+    /**
+     * @see TOC#getLabel(String)
+     * @verifies return correct label
+     */
+    @Test
+    public void getLabel_shouldReturnCorrectLabel() throws Exception {
+        TOC toc = new TOC();
+        toc.setTocElementMap(new HashMap<>());
+        toc.getTocElementMap().put(TOC.DEFAULT_GROUP, new ArrayList<>(3));
+        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement("one", "0", null, "1", "LOG_0000", 0, "PPN_anchor", null, false, true, null,
+                "periodical", null));
+        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement("two", "1", null, "2", "LOG_0001", 1, "PPN_volume", null, false, true, null,
+                "periodical_volume", null));
+        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement("three", "1", null, "3", "LOG_0002", 2, "PPN_volume", null, false, true,
+                null, "article", null));
+
+        Assert.assertEquals("one", toc.getLabel("PPN_anchor"));
+        Assert.assertEquals("two", toc.getLabel("PPN_volume"));
     }
 }

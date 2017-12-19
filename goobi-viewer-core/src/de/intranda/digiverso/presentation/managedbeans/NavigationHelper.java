@@ -15,16 +15,21 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
@@ -50,7 +55,9 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
+import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
@@ -105,6 +112,8 @@ public class NavigationHelper implements Serializable {
 
     private List<LabeledLink> breadcrumbs = new LinkedList<>();
 
+    private boolean isCmsPage = false;
+
     /** Empty constructor. */
     public NavigationHelper() {
         // the emptiness inside
@@ -144,11 +153,29 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
+     * @return the isCmsPage
+     */
+    public boolean isCmsPage() {
+        return isCmsPage;
+    }
+
+    /**
+     * @param isCmsPage the isCmsPage to set
+     */
+    public void setCmsPage(boolean isCmsPage) {
+        this.isCmsPage = isCmsPage;
+    }
+
+    /**
      * 
      * @param currentPage
      */
     public void setCurrentPage(String currentPage) {
         setCurrentPage(currentPage, false, false);
+    }
+
+    public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
+        setCurrentPage(currentPage, resetBreadcrubs, resetCurrentDocument, false);
     }
 
     /**
@@ -157,7 +184,7 @@ public class NavigationHelper implements Serializable {
      * @param resetBreadcrubs
      * @param resetCurrentDocument
      */
-    public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument) {
+    public void setCurrentPage(String currentPage, boolean resetBreadcrubs, boolean resetCurrentDocument, boolean setCmsPage) {
         logger.trace("setCurrentPage: {}", currentPage);
         if (resetBreadcrubs) {
             resetBreadcrumbs();
@@ -165,6 +192,10 @@ public class NavigationHelper implements Serializable {
         if (resetCurrentDocument) {
             resetCurrentDocument();
         }
+
+        //        this.savePageUrl();
+
+        setCmsPage(setCmsPage);
         this.currentPage = currentPage;
     }
 
@@ -299,7 +330,7 @@ public class NavigationHelper implements Serializable {
     public void setCurrentView(String currentView) {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
         statusMap.put(KEY_CURRENT_VIEW, currentView);
-        this.currentPage = currentView;
+        setCurrentPage(currentView);
     }
 
     public Locale getLocale() {
@@ -308,6 +339,14 @@ public class NavigationHelper implements Serializable {
 
     public String getLocaleString() {
         return locale.getLanguage();
+    }
+
+    public Iterator<Locale> getSupportedLocales() {
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+        }
+
+        return null;
     }
 
     public void setLocaleString(String inLocale) {
@@ -500,21 +539,33 @@ public class NavigationHelper implements Serializable {
             // Automatically set the sub-theme discriminator value to the
             // current record's value, if configured to do so
             ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
-            if (activeDocumentBean != null && activeDocumentBean.getViewManager() != null && getCurrentPagerType().isDocumentPage()) {
-                // If a record is loaded, get the value from the record's value
-                // in discriminatorField
+            if (activeDocumentBean != null) {
+                String subThemeDiscriminatorValue = "";
+                if (activeDocumentBean.getViewManager() != null && getCurrentPagerType().isDocumentPage()) {
+                    // If a record is loaded, get the value from the record's value
+                    // in discriminatorField
 
-                String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
-                String subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
-                if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
-                    logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
-                    statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
+                    String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
+                    if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
+                        logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
+                        statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
+                    }
+                } else if (isCmsPage()) {
+                    CmsBean cmsBean = BeanUtils.getCmsBean();
+                    if (cmsBean != null && cmsBean.getCurrentPage() != null) {
+                        subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
+                        if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
+                            logger.trace("Setting discriminator value from cms page: '{}'", subThemeDiscriminatorValue);
+                            return subThemeDiscriminatorValue;
+                        }
+                    }
                 }
             }
         }
 
         String ret = StringUtils.isNotEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)) ? statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) : "-";
-        // logger.trace("getSubThemeDiscriminatorValue: {}", ret);
+        //         logger.trace("getSubThemeDiscriminatorValue: {}", ret);
         return ret;
     }
 
@@ -592,28 +643,12 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewImage.getName();
     }
 
+    public String getImageActiveUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
+    }
+
     public String getReadingModeUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewReadingMode.getName();
-    }
-
-    public String getImageActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
-        }
-
-        return null;
-    }
-
-    public String getPreviewUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewPreview.getName();
-    }
-
-    public String getPreviewActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarPreviewLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewPreview.getName();
-        }
-
-        return null;
     }
 
     /**
@@ -628,15 +663,6 @@ public class NavigationHelper implements Serializable {
         String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
         logger.trace("Detected display mode: {}", imageDisplayType);
         if (StringUtils.isNotEmpty(imageDisplayType)) {
-            // the actual physical image exists in the tile format
-            if (imageDisplayType.equalsIgnoreCase("openlayersiipi") && BeanUtils.getActiveDocumentBean().getViewManager() != null && BeanUtils
-                    .getActiveDocumentBean().getViewManager().getCurrentPage() != null && BeanUtils.getActiveDocumentBean().getViewManager()
-                            .getCurrentPage().isTilesExist()) {
-                String path = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme()
-                        + "/urlMappings/viewImageFullscreenZoomify.xhtml";
-                logger.debug("Found tiles for the current image. Redirect to the Zoomify Fullscreen view: " + path);
-                return path;
-            }
             // MIX data exists
             if (imageDisplayType.equalsIgnoreCase("openlayersimage") && BeanUtils.getActiveDocumentBean().getViewManager() != null && BeanUtils
                     .getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
@@ -657,72 +683,57 @@ public class NavigationHelper implements Serializable {
         return "/viewImageFullscreen.xhtml";
     }
 
-    public String getTocUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
-        }
+    public String getCalendarUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewCalendar.getName();
+    }
 
-        return null;
+    public String getCalendarActiveUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewCalendar.getName();
+    }
+
+    public String getTocUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewToc.getName();
     }
 
     public String getTocActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewToc.getName();
     }
 
     public String getThumbsUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewThumbs.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewThumbs.getName();
     }
 
     public String getThumbsActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewThumbs.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewThumbs.getName();
     }
 
     public String getMetadataUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewMetadata.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewMetadata.getName();
     }
 
     public String getMetadataActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMetadata.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewMetadata.getName();
     }
 
     public String getFulltextUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFulltext.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewFulltext.getName();
     }
 
     public String getFulltextActiveUrl() {
-        if (DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible()) {
-            return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
-        }
-
-        return null;
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewFulltext.getName();
     }
 
     public String getSearchUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
+    }
+
+    public String getSearchUrl(int activeSearchType) {
+        switch (activeSearchType) {
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+            default:
+                return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
+        }
     }
 
     public String getTermUrl() {
@@ -735,11 +746,6 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getSortUrl() {
-        // logger.debug("currentPage: " + getCurrentPage());
-        // if (browsePage.equals(getCurrentPage())) {
-        // return getBrowseUrl();
-        // }
-
         return getSearchUrl();
     }
 
@@ -763,6 +769,41 @@ public class NavigationHelper implements Serializable {
             }
 
             return null;
+        }
+    }
+
+    public void updateBreadcrumbs(CMSPage cmsPage) {
+        resetBreadcrumbs();
+        Set<CMSPage> linkedPages = new HashSet<>();
+        List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
+        while (cmsPage != null) {
+            if (linkedPages.contains(cmsPage)) {
+                //encountered a breadcrumb loop. Simply break here
+                return;
+            } else {
+                linkedPages.add(cmsPage);
+            }
+            if (PageType.index.matches(cmsPage.getStaticPageName())) {
+                //The current page is the start page. No need to add further breadcrumbs
+                return;
+            }
+            LabeledLink pageLink = new LabeledLink(cmsPage.getMenuTitle(), cmsPage.getPageUrl(), 0);
+            tempBreadcrumbs.add(0, pageLink);
+            if (StringUtils.isNotBlank(cmsPage.getParentPageId())) {
+                try {
+                    Long cmsPageId = Long.parseLong(cmsPage.getParentPageId());
+                    cmsPage = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
+                } catch (NumberFormatException | DAOException e) {
+                    logger.error("CMS breadcrumb creation: Parent page of page " + cmsPage.getId() + " is not a valid page id");
+                    cmsPage = null;
+                }
+            } else {
+                cmsPage = null;
+            }
+        }
+        List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
+        synchronized (breadcrumbs) {
+            tempBreadcrumbs.forEach(bc -> breadcrumbs.add(bc));
         }
     }
 
@@ -962,6 +1003,12 @@ public class NavigationHelper implements Serializable {
         return msg;
     }
 
+    public String getTranslation(String msgKey, String language) {
+        String msg = Helper.getTranslation(msgKey, language != null ? Locale.forLanguageTag(language) : null);
+
+        return msg;
+    }
+
     /**
      * Checks if the current page displays document information, solely based on the String getCurrentPage() The Pages for which this method should
      * return true are set in the PageType class.
@@ -990,6 +1037,25 @@ public class NavigationHelper implements Serializable {
      */
     public PageType getCurrentPagerType() {
         return PageType.getByName(getCurrentPage());
+    }
+
+    public String getPreviousViewUrl() throws IOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedUrl()).orElse("");
+        if (StringUtils.isBlank(previousUrl)) {
+            previousUrl = getApplicationUrl();
+        }
+        return previousUrl;
+    }
+
+    public void redirectToPreviousView() throws IOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedPrettyfiedUrl()).orElse("");
+        if (StringUtils.isBlank(previousUrl)) {
+            previousUrl = homePage();
+        }
+        ViewHistory.redirectToUrl(previousUrl);
+
     }
 
 }
