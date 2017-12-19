@@ -6683,12 +6683,13 @@ var cmsJS = ( function( cms ) {
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
             panelTitleLink = $( '<a />' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
-            if ( _getMetadataValue( member, 'volumes' ) < 1 ) {
-                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
-            }
-            else {
+            // check if subcollections exist
+            if ( _getMetadataValue( member, 'subCollections' ) > 0 ) {
                 panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
                         .attr( 'aria-expanded', 'false' );
+            }
+            else {
+                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
             }
             panelTitle.append( panelTitleLink );
             // create RSS link
