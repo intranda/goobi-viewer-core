@@ -32,7 +32,6 @@ public enum PageType {
     viewImage("image"),
     viewToc("toc"),
     viewThumbs("thumbs"),
-    viewPreview("preview"),
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
     viewOverview("overview"),
@@ -79,7 +78,7 @@ public enum PageType {
     public boolean isHandledWithCms() {
         return this.handling.equals(PageTypeHandling.cms);
     }
-    
+
     public boolean isCmsPage() {
         switch (this) {
             case editContent:
@@ -91,7 +90,6 @@ public enum PageType {
             case viewImage:
             case viewMetadata:
             case viewOverview:
-            case viewPreview:
             case viewReadingMode:
             case viewThumbs:
             case viewToc:
@@ -116,7 +114,6 @@ public enum PageType {
             case viewImage:
             case viewMetadata:
             case viewOverview:
-            case viewPreview:
             case viewReadingMode:
             case viewThumbs:
             case viewToc:
@@ -250,30 +247,26 @@ public enum PageType {
 
     /**
      * @param pagePath
-     * @return true if the given path equals either the intrinsic or configured name of this pageType
-     * Leading and trailing slashes are ignored.
-     * PageType other is never matched
+     * @return true if the given path equals either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
+     *         PageType other is never matched
      */
     public boolean matches(String pagePath) {
-        if(StringUtils.isBlank(pagePath)) {
+        if (StringUtils.isBlank(pagePath)) {
             return false;
-        } else {
-            pagePath = pagePath.replaceAll("^\\/|\\/$", "");
-            return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.name) || pagePath.equalsIgnoreCase(getName());
         }
+        pagePath = pagePath.replaceAll("^\\/|\\/$", "");
+        return pagePath.equalsIgnoreCase(this.name()) || pagePath.equalsIgnoreCase(this.name) || pagePath.equalsIgnoreCase(getName());
     }
-    
+
     /**
      * @param pagePath
-     * @return true if the given path starts with either the intrinsic or configured name of this pageType
-     * Leading and trailing slashes are ignored.
-     * PageType other is never matched
+     * @return true if the given path starts with either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
+     *         PageType other is never matched
      */
     public boolean matches(Path pagePath) {
-        if(pagePath == null || StringUtils.isBlank(pagePath.toString())) {
+        if (pagePath == null || StringUtils.isBlank(pagePath.toString())) {
             return false;
-        } else {
-            return  pagePath.startsWith(this.name()) || pagePath.startsWith(this.name) || pagePath.startsWith(getName());
         }
+        return pagePath.startsWith(this.name()) || pagePath.startsWith(this.name) || pagePath.startsWith(getName());
     }
 }

@@ -1034,12 +1034,6 @@
 			<visible>true</visible>
 		</thumbs>
 
-		<!-- FIXME DEPRECATED-->
-		<!-- image preview: if false, the preview view is hidden -->
-		<preview>
-			<visible>false</visible>
-		</preview>
-
 		<searchInItem>
 			<visible>true</visible>
 		</searchInItem>

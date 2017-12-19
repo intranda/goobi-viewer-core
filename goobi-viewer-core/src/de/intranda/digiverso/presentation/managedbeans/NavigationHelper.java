@@ -193,7 +193,7 @@ public class NavigationHelper implements Serializable {
             resetCurrentDocument();
         }
 
-//        this.savePageUrl();
+        //        this.savePageUrl();
 
         setCmsPage(setCmsPage);
         this.currentPage = currentPage;
@@ -645,14 +645,6 @@ public class NavigationHelper implements Serializable {
 
     public String getImageActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewImage.getName();
-    }
-
-    public String getPreviewUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewPreview.getName();
-    }
-
-    public String getPreviewActiveUrl() {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewPreview.getName();
     }
 
     public String getReadingModeUrl() {

@@ -766,7 +766,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (fullText == null && fulltextFileName != null) {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-                logger.debug("Access denied for ALTO file {}", fulltextFileName);
+                logger.debug("Access denied for full-text file {}", fulltextFileName);
                 throw new AccessDeniedException("fulltextAccessDenied");
             }
             logger.trace("Loading full-text for page {}", fulltextFileName);

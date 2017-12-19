@@ -140,6 +140,8 @@ public class Helper {
     public static DateTimeFormatter formatterENDateTime = DateTimeFormat.forPattern("MM/dd/yyyy h:mm:ss a");
     public static DateTimeFormatter formatterDEDate = DateTimeFormat.forPattern("dd.MM.yyyy");
     public static DateTimeFormatter formatterENDate = DateTimeFormat.forPattern("MM/dd/yyyy");
+    public static DateTimeFormatter formatterCNDate = DateTimeFormat.forPattern("yyyy.MM.dd");
+    public static DateTimeFormatter formatterJPDate = DateTimeFormat.forPattern("yyyy/MM/dd");;
     public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
     public static DecimalFormat dfTwoDecimals = new DecimalFormat("0.00");
@@ -205,15 +207,14 @@ public class Helper {
     public static List<Date> parseMultipleDatesFromString(String dateString) {
         List<Date> ret = new ArrayList<>();
 
-        // logger.debug("Parsing date string : " + dateString);
+        // logger.debug("Parsing date string : {}", dateString);
         if (StringUtils.isNotEmpty(dateString)) {
             String splittingChar = "/";
             String[] dateStringSplit = dateString.split(splittingChar);
             for (String s : dateStringSplit) {
                 s = s.trim();
 
-                // Try finding a complete date in the string (enclosed in
-                // parentheses)
+                // Try finding a complete date in the string (enclosed in parentheses)
                 Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
                 Matcher m = p.matcher(s);
                 if (m.find()) {
@@ -222,6 +223,7 @@ public class Helper {
                     Date date = parseDateFromString(s);
                     if (date != null) {
                         ret.add(date);
+                        continue;
                     }
                 }
 
@@ -248,6 +250,11 @@ public class Helper {
      *
      * @param dateString
      * @return
+     * @should parse iso date formats correctly
+     * @should parse german date formats correctly
+     * @should parse english date formats correctly
+     * @should parse chinese date formats correctly
+     * @should parse japanese date formats correctly
      *
      */
     public static DateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
@@ -279,6 +286,10 @@ public class Helper {
         } catch (IllegalArgumentException e) {
         }
         try {
+            return formatterISO8601YearMonth.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
             return formatterDEDateTime.parseDateTime(dateString);
         } catch (IllegalArgumentException e) {
         }
@@ -292,6 +303,14 @@ public class Helper {
         }
         try {
             return formatterENDate.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            return formatterJPDate.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            return formatterCNDate.parseDateTime(dateString);
         } catch (IllegalArgumentException e) {
         }
 

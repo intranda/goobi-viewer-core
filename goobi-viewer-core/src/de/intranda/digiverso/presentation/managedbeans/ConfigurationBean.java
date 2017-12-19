@@ -447,14 +447,6 @@ public class ConfigurationBean implements Serializable {
      * @return
      * @should return correct value
      */
-    public boolean isSidebarPreviewLinkVisible() {
-        return DataManager.getInstance().getConfiguration().isSidebarPreviewLinkVisible();
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
     public boolean isSidebarTocLinkVisible() {
         return DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible();
     }
@@ -607,10 +599,8 @@ public class ConfigurationBean implements Serializable {
     }
 
     public List<String> getSortFields() {
-        return DataManager.getInstance().getConfiguration().getSortFields()
-                .stream()
-                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
-                .collect(Collectors.toList());
+        return DataManager.getInstance().getConfiguration().getSortFields().stream().filter(field -> !isLanguageVersionOtherThan(field, BeanUtils
+                .getLocale().getLanguage())).collect(Collectors.toList());
     }
 
     /**

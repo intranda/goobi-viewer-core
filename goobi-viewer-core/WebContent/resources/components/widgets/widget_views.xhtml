@@ -48,18 +48,6 @@
 						</li>
 					</h:panelGroup>
 
-					<!-- Preview -->
-					<h:panelGroup
-						rendered="#{configurationBean.sidebarPreviewLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
-						<li
-							class="#{navigationHelper.currentPage == 'preview' ? 'active' : ''}">
-							<h:outputLink
-								value="#{navigationHelper.previewActiveUrl}#{activeDocumentBean.logPart}">
-								<h:outputText value="#{msg.viewPreview}" />
-							</h:outputLink>
-						</li>
-					</h:panelGroup>
-
 					<!-- Calendar -->
 					<h:panelGroup
 						rendered="#{configurationBean.sidebarCalendarLinkVisible and activeDocumentBean.viewManager.calendarView.display}">

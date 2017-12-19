@@ -93,15 +93,6 @@ public class ConfigurationBeanTest {
     }
 
     /**
-     * @see ConfigurationBean#isSidebarPreviewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarPreviewLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(true, bean.isSidebarPreviewLinkVisible());
-    }
-
-    /**
      * @see ConfigurationBean#isSidebarCalendarLinkVisible()
      * @verifies return correct value
      */

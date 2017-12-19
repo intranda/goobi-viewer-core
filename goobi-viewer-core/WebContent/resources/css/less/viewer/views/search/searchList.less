@@ -245,17 +245,12 @@
         dl {
             margin-bottom: 5px;
         }
-        dt, dd {
-        	display: inline-block;
-        }
         dt {
-            width: 30%;
-            padding-right: 5px;
-            text-align: left;
+        	width: auto;
+        	margin-right: 10px;
         }
         dd {
-        	width: 70%;
-            margin-left: 0;
+        	margin-left: auto;
         }
     }
     &__hit-content-set {
@@ -291,13 +286,16 @@
     }
     &__metadata-info {
     	padding-left: 16px;
-    	dt {
-    		font-weight: normal;
-    		.fa {
-    			margin-right: 20px;
+    	td {
+    		vertical-align: top;
+    		&:first-child {
+    			padding-right: 5px;
+	    		white-space: nowrap;
     		}
     	}
-    	dd {}
+    	.fa {
+           	margin-right: 10px;
+        }
     }
     &__struct-child-hits {
         padding-left: 15px;

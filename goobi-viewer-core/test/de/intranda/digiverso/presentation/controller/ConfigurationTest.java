@@ -1441,15 +1441,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#isSidebarPreviewLinkVisible()
-     * @verifies return correct value
-     */
-    @Test
-    public void isSidebarPreviewLinkVisible_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().isSidebarPreviewLinkVisible());
-    }
-
-    /**
      * @see Configuration#getDisplayTitleBreadcrumbs()
      * @verifies return correct value
      */
