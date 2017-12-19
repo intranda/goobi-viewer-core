@@ -57,6 +57,7 @@ public abstract class Collection {
     private static final Logger logger = LoggerFactory.getLogger(Collection.class);
     protected static final String IIIF_PRESENTATION_CONTEXT = "http://iiif.io/api/presentation/2/context.json";
     public final static String NUM_MANIFESTS_LABEL = "volumes";
+    public final static String NUM_SUBCOLLECTIONS_LABEL = "subCollections";
     public final static String RSS_FEED_LABEL = "Rss feed";
     public final static String RSS_FEED_FORMAT = "Rss feed";
     
@@ -83,6 +84,7 @@ public abstract class Collection {
             if(StringUtils.isNotBlank(collectionView.getTopVisibleElement())) {
                 label = Helper.getTranslation(collectionView.getTopVisibleElement(), locale);
                 addMetadata(NUM_MANIFESTS_LABEL, Long.toString(baseElement.getNumberOfVolumes()));
+                addMetadata(NUM_SUBCOLLECTIONS_LABEL, Long.toString(baseElement.getChildren().size()));
                 this.rssLink = createRssLink(baseElement.getRssUrl(), baseUrl);
             } else {
                 label = Helper.getTranslation(collectionField, locale);
