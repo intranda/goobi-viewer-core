@@ -19,8 +19,6 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.MutableDateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -1437,23 +1437,6 @@ public final class Configuration extends AbstractConfiguration {
         return this.getLocalBoolean("webGuiDisplay.displaySearchResultNavigation", true);
     }
 
-    @Deprecated
-    public List<String> getVisibleWorkNavItems() {
-        List<String> result = new ArrayList<>();
-        List<HierarchicalConfiguration> sidebarConfigs = getLocalConfigurationsAt("sidebar");
-        if (sidebarConfigs != null && !sidebarConfigs.isEmpty()) {
-            HierarchicalConfiguration sidebarConfig = sidebarConfigs.get(0);
-            List<ConfigurationNode> nodes = sidebarConfig.getRootNode().getChildren();
-            for (ConfigurationNode node : nodes) {
-                String key = node.getName();
-                boolean visible = sidebarConfig.getBoolean(key + ".visible", false);
-                if (visible) {
-                    result.add(key);
-                }
-            }
-        }
-        return result;
-    }
 
     public boolean isFoldout(String sidebarElement) {
         return getLocalBoolean("sidebar." + sidebarElement + ".foldout", false);
@@ -1511,15 +1494,6 @@ public final class Configuration extends AbstractConfiguration {
      */
     public boolean isSidebarThumbsLinkVisible() {
         return getLocalBoolean("sidebar.thumbs.visible", true);
-    }
-
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public boolean isSidebarPreviewLinkVisible() {
-        return getLocalBoolean("sidebar.preview.visible", false);
     }
 
     /**
