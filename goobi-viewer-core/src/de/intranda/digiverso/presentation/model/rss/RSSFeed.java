@@ -38,6 +38,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -452,24 +453,24 @@ public class RSSFeed {
                 String link = createLink(rootPath, pi, pageType);
                 
                 description.setImage(createImageUrl(rootPath, anchor, ePublication, pi, thumbnail, thumbWidth, thumbHeight));
-                
+                                
                 if(StringUtils.isNotBlank(placeAndTime)) {                    
-                    description.addMetadata(new RssMetadata("Published", placeAndTime));
+                    description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
                 }
                 if(StringUtils.isNotBlank(bookSeries)) {                    
-                    description.addMetadata(new RssMetadata("Book series", bookSeries));
+                    description.addMetadata(new RssMetadata(Helper.getTranslation("rss_bookSeries", locale), bookSeries));
                 }
                 if(StringUtils.isNotBlank(author)) {                    
-                    description.addMetadata(new RssMetadata("Author", author));
+                    description.addMetadata(new RssMetadata(Helper.getTranslation("MD_AUTHOR", locale), author));
                 }
                 if(StringUtils.isNotBlank(publisher)) {                    
-                    description.addMetadata(new RssMetadata("Publisher", publisher));
+                    description.addMetadata(new RssMetadata(Helper.getTranslation("MD_PUBLISHER", locale), publisher));
                 }
                 if(StringUtils.isNotBlank(urn)) {                    
-                    description.addMetadata(new RssMetadata("URL", urn, urnLink));
+                    description.addMetadata(new RssMetadata(Helper.getTranslation("rss_url", locale), urn, urnLink));
                 }
                 if(StringUtils.isNotBlank(shelfmark)) {                    
-                    description.addMetadata(new RssMetadata("Shelfmark", shelfmark));
+                    description.addMetadata(new RssMetadata(Helper.getTranslation("MD_SHELFMARK", locale), shelfmark));
                 }
                 entry.setDescription(description);
                 

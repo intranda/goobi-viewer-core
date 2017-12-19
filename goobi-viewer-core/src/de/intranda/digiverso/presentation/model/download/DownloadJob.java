@@ -79,7 +79,8 @@ public abstract class DownloadJob implements Serializable {
         WAITING,
         READY,
         ERROR,
-        UNDEFINED;
+        UNDEFINED,
+        INITIALIZED;
 
         public static JobStatus getByName(String name) {
             if (name != null) {
@@ -92,6 +93,8 @@ public abstract class DownloadJob implements Serializable {
                         return ERROR;
                     case "UNDEFINED":
                         return JobStatus.UNDEFINED;
+                    case "INITIALIZED":
+                        return JobStatus.INITIALIZED;
                 }
             }
 
@@ -228,8 +231,14 @@ public abstract class DownloadJob implements Serializable {
                 downloadJob.getObservers().add(useEmail);
             }
 
-            /*Create file if neccessary**/
-            if (!downloadJob.status.equals(JobStatus.WAITING) && (downloadJob.getFile() == null || !downloadJob.getFile().toFile().exists())) {
+            
+            if(downloadJob.status.equals(JobStatus.WAITING)) {
+                //keep waiting
+            } else if(downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
+                //not waiting and file exists -> file has been created
+                downloadJob.setStatus(JobStatus.READY);
+            } else {
+                //not waiting but file doesn't exist -> trigger creation
                 logger.debug("Triggering " + downloadJob.getType() + " creation");
                 try {
                     downloadJob.triggerCreation();
@@ -238,8 +247,6 @@ public abstract class DownloadJob implements Serializable {
                     downloadJob.setStatus(JobStatus.ERROR);
                     downloadJob.setMessage(e.getMessage());
                 }
-//            } else {
-//                downloadJob.setStatus(JobStatus.READY);
             }
 
             /*Add or update job in database*/
