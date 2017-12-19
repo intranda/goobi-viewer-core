@@ -71,11 +71,6 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
     public static final int MAX_HITS = 1000000;
 
-    //    private static final String[] FIELDS_TIMELINE = { LuceneConstants.ACCESSCONDITION, LuceneConstants.DATECREATED, LuceneConstants.IDDOC,
-    //            LuceneConstants.PI, LuceneConstants.PI_TOPSTRUCT, LuceneConstants.THUMBNAIL, LuceneConstants.TITLE, LuceneConstants.DC,
-    //            LuceneConstants.PARTNERID, LuceneConstants.DATAREPOSITORY, "YEAR", "MD_DATECREATED", "MD_DATECREATEDSTART", "MD_DATECREATEDEND",
-    //            "MD_PERSON_UNTOKENIZED" };
-
     /**
      * @see HttpServlet#HttpServlet()
      */
