@@ -804,7 +804,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
-                altoText = loadAlto();
+                loadAlto();
             } catch (AccessDeniedException e) {
                 fullText = ViewerResourceBundle.getTranslation(e.getMessage(), null);
             } catch (JDOMException | IOException | IndexUnreachableException | DAOException e) {
@@ -813,7 +813,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         if (altoText != null) {
-            wordCoordsFormat = CoordsFormat.ALTO;
             Document altoDoc;
             try {
                 altoDoc = FileTools.getDocumentFromString(altoText, "UTF-8");
@@ -837,7 +836,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws JDOMException
      * @throws DAOException
      * @throws IndexUnreachableException
-     * @should load alto correctly
+     * @should load and set alto correctly
+     * @should set wordCoordsFormat correctly
      */
     public String loadAlto() throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException {
         logger.trace("loadAlto: {}", altoFileName);
@@ -850,7 +850,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
             logger.trace("URL: {}", url);
             try {
-                return Helper.getWebContentGET(url);
+                altoText = Helper.getWebContentGET(url);
+                if (altoText != null) {
+                    wordCoordsFormat = CoordsFormat.ALTO;
+                }
+                return altoText;
             } catch (HTTPException e) {
                 logger.error("Could not retrieve file from {}", url);
                 logger.error(e.getMessage());

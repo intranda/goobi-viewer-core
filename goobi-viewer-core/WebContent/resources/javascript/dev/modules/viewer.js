@@ -6762,6 +6762,7 @@ var cmsJS = ( function( cms ) {
         var subCollections = $( '<ul />' ).addClass( 'list' );
         var subCollectionItem = null;
         var subCollectionItemLink = null;
+        var subCollectionItemRSSLink = null;
         
         // get subcollection data
         $.ajax( {
@@ -6774,9 +6775,11 @@ var cmsJS = ( function( cms ) {
             if ( !$.isEmptyObject( data.members ) ) {
                 // add subcollection items
                 data.members.forEach( function( member ) {
-                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).text( member.label );
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( member.label );
+                    subCollectionItemRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
+                            .html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
                     // build subcollection item
-                    subCollectionItem.append( subCollectionItemLink );
+                    subCollectionItem.append( subCollectionItemLink ).append( subCollectionItemRSSLink );
                     subCollections.append( subCollectionItem );
                 } );
             }
