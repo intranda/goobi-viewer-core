@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -273,7 +274,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                     }
                                 } catch (MessagingException e) {
                                     logger.error(e.getMessage(), e);
-                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
+//                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
                                 } finally {
                                     if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
                                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

@@ -226,7 +226,7 @@ public abstract class DownloadJob implements Serializable {
             }
 
             /*Create file if neccessary**/
-            if (downloadJob.getFile() == null || !downloadJob.getFile().toFile().exists()) {
+            if (!downloadJob.status.equals(JobStatus.WAITING) && (downloadJob.getFile() == null || !downloadJob.getFile().toFile().exists())) {
                 try {
                     downloadJob.triggerCreation();
                     downloadJob.setStatus(JobStatus.WAITING);
@@ -234,8 +234,8 @@ public abstract class DownloadJob implements Serializable {
                     downloadJob.setStatus(JobStatus.ERROR);
                     downloadJob.setMessage(e.getMessage());
                 }
-            } else {
-                downloadJob.setStatus(JobStatus.READY);
+//            } else {
+//                downloadJob.setStatus(JobStatus.READY);
             }
 
             /*Add or update job in database*/
