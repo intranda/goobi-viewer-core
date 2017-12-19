@@ -29,6 +29,7 @@ import javax.faces.context.Flash;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,8 +97,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            } else if (t instanceof RecordNotFoundException  || isCausedByExceptionType(t, RecordNotFoundException.class.getName()) || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class
-                    .getSimpleName()))) {
+            } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
                 try {
                     String pi = t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ",
                             "");
@@ -111,8 +112,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            } else if (t instanceof RecordDeletedException || isCausedByExceptionType(t, RecordDeletedException.class.getName()) || (t instanceof PrettyException && t.getMessage().contains(RecordDeletedException.class
-                    .getSimpleName()))) {
+            } else if (t instanceof RecordDeletedException || isCausedByExceptionType(t, RecordDeletedException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(RecordDeletedException.class.getSimpleName()))) {
                 try {
                     String pi = t.getMessage().substring(t.getMessage().indexOf("RecordDeletedException: ")).replace("RecordDeletedException: ", "");
                     String msg = Helper.getTranslation("errRecordDeletedMsg", null).replace("{0}", pi);
@@ -147,14 +148,31 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            }  else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName()) || (t instanceof PrettyException && t
-                    .getMessage().contains(SocketException.class.getSimpleName()))) {
+            } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName()) || (t instanceof PrettyException
+                    && t.getMessage().contains(SocketException.class.getSimpleName()))) {
                 logger.error(t.getMessage());
                 try {
                 } finally {
                     i.remove();
                 }
-            }else {
+            } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
+                logger.error(t.getMessage());
+                String msg = t.getMessage();
+                if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
+                    msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1).trim();
+                }
+                try {
+                    flash.put("errorDetails", msg);
+                    requestMap.put("errMsg", msg);
+                    requestMap.put("errorType", "download");
+                    flash.put("errorType", "download");
+                    nav.handleNavigation(fc, null, "pretty:error");
+                    fc.renderResponse();
+                } finally {
+                    i.remove();
+                }
+            } else {
                 // All other exceptions
                 logger.error(t.getMessage(), t);
                 try {
