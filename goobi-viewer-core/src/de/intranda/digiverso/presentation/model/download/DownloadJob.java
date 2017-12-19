@@ -200,6 +200,7 @@ public abstract class DownloadJob implements Serializable {
             boolean newJob = false;
             DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
             if (downloadJob == null) {
+                logger.debug("Create new download job");
                 newJob = true;
                 switch (type) {
                     case PDFDownloadJob.TYPE:
@@ -213,8 +214,10 @@ public abstract class DownloadJob implements Serializable {
                 }
             } else {
                 // Update latest request timestamp of an existing job
+                logger.debug("Retrieve existing job");
                 downloadJob.setLastRequested(new Date());
             }
+            logger.debug("Requested download job " + downloadJob);
 
             /*set observer email*/
             String useEmail = null;
@@ -227,6 +230,7 @@ public abstract class DownloadJob implements Serializable {
 
             /*Create file if neccessary**/
             if (!downloadJob.status.equals(JobStatus.WAITING) && (downloadJob.getFile() == null || !downloadJob.getFile().toFile().exists())) {
+                logger.debug("Triggering " + downloadJob.getType() + " creation");
                 try {
                     downloadJob.triggerCreation();
                     downloadJob.setStatus(JobStatus.WAITING);
@@ -644,5 +648,20 @@ public abstract class DownloadJob implements Serializable {
             setMessage("Unable to parse TaskManager response");
         }
 
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DownloadJob ").append(getIdentifier()).append("; ");
+        sb.append("Type ").append(getType()).append("; ");
+        sb.append("Status ").append(getStatus()).append("; ");
+        sb.append("Expired: ").append(isExpired()).append("; ");
+        sb.append("PI ").append(getPi()).append("; ");
+        sb.append("LOGID ").append(getLogId()).append("; ");
+        return sb.toString();
     }
 }
