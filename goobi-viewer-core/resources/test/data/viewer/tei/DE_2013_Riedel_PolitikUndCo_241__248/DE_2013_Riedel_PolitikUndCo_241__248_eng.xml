@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:id="GEI-textbooks" version="5.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title level="a" xml:lang="ger">Soll die Türkei in die EU?</title>
+        <title level="a" xml:lang="eng" type="translated">Should Turkey be part of the EU?</title>
+        <editor role="translator">
+          <persName>Bischewski, Marret</persName>
+        </editor>
+        <author>
+          <persName source="http://middleware.gei.de/wv.experts/Expert_126">
+            <surname>Riedel</surname>
+            <forename>Hartwig</forename>
+          </persName>
+        </author>
+        <author>
+          <persName source="http://middleware.gei.de/wv.experts/Expert_186">
+            <surname>Müller</surname>
+            <forename>Erik</forename>
+          </persName>
+        </author>
+        <author>
+          <persName ref="http://d-nb.info/gnd/1012482251" source="http://middleware.gei.de/wv.experts/Expert_187">
+            <surname>Podes</surname>
+            <forename>Stephan</forename>
+          </persName>
+        </author>
+        <author>
+          <persName source="http://middleware.gei.de/wv.experts/Expert_188">
+            <surname>Tschirner</surname>
+            <forename>Martina</forename>
+          </persName>
+        </author>
+      </titleStmt>
+      <editionStmt>
+        <edition n="1">Version 1</edition>
+      </editionStmt>
+      <extent>
+        <measure unit="pages" quantity="2">241, 248</measure>
+      </extent>
+      <publicationStmt>
+        <authority>
+          <orgName role="hostingInstitution">Georg-Eckert-Institut</orgName>
+          <orgName role="project">WorldViews</orgName>
+        </authority>
+        <date when="2017" type="publication">2017</date>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by-nc-sa/3.0/de/">CC BY-NC-SA 3.0 DE</licence>
+        </availability>
+      </publicationStmt>
+      <notesStmt>
+        <note type="translationNote">translated from ger</note>
+      </notesStmt>
+      <sourceDesc>
+        <biblFull>
+          <titleStmt>
+            <title level="m" type="volume" xml:lang="ger">2 : Politik und Co.  : Politik-Wirtschaft für das Gymnasium</title>
+            <title level="m" type="main" xml:lang="ger">Politik und Co.</title>
+            <title level="m" type="sub" xml:lang="ger">Niedersachsen</title>
+            <title level="m" xml:lang="eng" type="translated">Politics and Co. Politics and Economy for Grammar School</title>
+            <editor>
+              <persName source="http://middleware.gei.de/wv.experts/Expert_126">
+                <surname>Riedel</surname>
+                <forename>Hartwig</forename>
+              </persName>
+            </editor>
+            <author>
+              <persName source="http://middleware.gei.de/wv.experts/Expert_186">
+                <surname>Müller</surname>
+                <forename>Erik</forename>
+              </persName>
+            </author>
+            <author>
+              <persName ref="http://d-nb.info/gnd/1012482251" source="http://middleware.gei.de/wv.experts/Expert_187">
+                <surname>Podes</surname>
+                <forename>Stephan</forename>
+              </persName>
+            </author>
+            <author>
+              <persName source="http://middleware.gei.de/wv.experts/Expert_188">
+                <surname>Tschirner</surname>
+                <forename>Martina</forename>
+              </persName>
+            </author>
+          </titleStmt>
+          <editionStmt>
+            <edition>1st ed. [1. Aufl.]</edition>
+          </editionStmt>
+          <extent>
+            <measure unit="pages" quantity="256">256</measure>
+          </extent>
+          <publicationStmt>
+            <publisher>
+              <orgName ref="http://d-nb.info/gnd/107297665X" source="http://middleware.gei.de/wv.experts/CorporateBody_135">C.C. Buchner</orgName>
+            </publisher>
+            <pubPlace ref="http://sws.geonames.org/3220843">Kreisfreie Stadt Bamberg</pubPlace>
+            <date when="2013">2013</date>
+            <idno type="ISBN">978-3-7661-6809-2</idno>
+          </publicationStmt>
+          <seriesStmt>
+            <title level="s" type="main">Politik und Co.</title>
+            <title level="s" xml:lang="eng" type="translated">Politics and Co.</title>
+          </seriesStmt>
+        </biblFull>
+        <msDesc>
+          <msIdentifier>
+            <repository>Georg-Eckert-Institut. Leibniz-Institut für internationale Schulbuchforschung, Braunschweig (DE)</repository>
+            <idno>
+              <idno type="shelfmark">SDG-V 52(1,2013)2</idno>
+            </idno>
+          </msIdentifier>
+          <msContents>
+            <textLang mainLang="ger" />
+          </msContents>
+        </msDesc>
+      </sourceDesc>
+    </fileDesc>
+    <encodingDesc>
+      <projectDesc xml:lang="eng">
+        <p>WorldViews is a multilingual‚ digital resource for primary sources containing excerpts from textbooks from around the world on topics that are of global‚ transnational and interregional relevance. The selected source material from textbooks reveals how the individual countries position themselves in the world and how they portray other countries and their histories. Academic contributions provide more in-depth interpretations of the source material as well as information on the national education and textbook systems and background information on the history of education.</p>
+      </projectDesc>
+      <samplingDecl xml:lang="eng">
+        <p>Text excerpts are chosen because they are striking in terms of representation interpretive framework and/or perspective. They are portrayals that are published in widely distributed textbooks or stand out due to their unique standpoint. They are collected by project partners or the editorial team‚ given academic context and translated into German and English paying particular attention to the cultural and historical context of the source text.</p>
+      </samplingDecl>
+    </encodingDesc>
+    <profileDesc>
+      <langUsage>
+        <language ident="eng">eng</language>
+      </langUsage>
+      <abstract xml:lang="eng" xml:id="ProfileDescAbstractSchoolbook">
+        <p>
+          For the use in 9th/10th grade in grammar schools, Lower-Saxony. Politics and Co. is one of the most commonly used books at grammar schools in Lower-Saxony.
+          <note>
+            <p>See Tatje, C.: Die Rolle des Schulbuchs bei der Vermittlung der Europäischen Union. Empirische Untersuchung zu Nutzung und Wirkung im politischen Fachunterricht, Wiesbaden: Springer VS, 2017, 99.</p>
+          </note>
+        </p>
+      </abstract>
+      <abstract xml:lang="eng" xml:id="ProfileDescAbstractShort">
+        <p>
+          Both excerpts are content of the chapter
+          <hi rend="italic">Integration and Enlargement of the European House</hi>
+          on the issue of Turkey´s accession to the EU.
+        </p>
+      </abstract>
+      <abstract xml:lang="eng" xml:id="ProfileDescAbstractLong">
+        <p>
+          Both excerpts are content of the chapter
+          <hi rend="italic">Integration and Enlargement of the European House</hi>
+          on the issue of Turkey’s accession to the EU. In the first part different voices for and against Turkey´s accession are listed as a basis for a controversial discussion. The second quote is taken from the final page of the chapter and roughly summarizes the discussion about Turkey’s accession.
+        </p>
+      </abstract>
+      <textClass>
+        <keywords scheme="WV.topics" xml:lang="eng">
+          <term>
+            <rs type="topic" key="t_religions">Systems of Meaning</rs>
+            -
+            <rs type="keyword" key="k_christianity">Christianity</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_religions">Systems of Meaning</rs>
+            -
+            <rs type="keyword" key="k_islam">Islam</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_constructions">Constructions of Space and Belonging</rs>
+            -
+            <rs type="keyword" key="k_enlargement_of_the_european_union">Enlargement of the European Union</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_constructions">Constructions of Space and Belonging</rs>
+            -
+            <rs type="keyword" key="k_european_integration">European Integration</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_constructions">Constructions of Space and Belonging</rs>
+            -
+            <rs type="keyword" key="k_european_union">European Union</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_relations">Transnational and International Relations and Organisations</rs>
+            -
+            <rs type="keyword" key="k_enlargement_of_the_european_union">Enlargement of the European Union</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_relations">Transnational and International Relations and Organisations</rs>
+            -
+            <rs type="keyword" key="k_european_integration">European Integration</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_relations">Transnational and International Relations and Organisations</rs>
+            -
+            <rs type="keyword" key="k_european_union">European Union</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_country">Countries</rs>
+            -
+            <rs type="keyword" key="k_turkey">Turkey</rs>
+          </term>
+          <term>
+            <rs type="topic" key="t_time">Periods of Time</rs>
+            -
+            <rs type="keyword" key="k_20th_century">20th Century</rs>
+          </term>
+        </keywords>
+        <classCode scheme="WV.textType" xml:lang="eng">textbook source</classCode>
+        <classCode scheme="WV.sourceType" xml:lang="eng">author text</classCode>
+        <classCode scheme="WV.educationalLevel" xml:lang="eng">Secondary level 1</classCode>
+        <classCode scheme="WV.educationalSubject" xml:lang="eng">Social studies</classCode>
+        <classCode scheme="WV.placeOfUse" xml:lang="eng">
+          <rs type="place" ref="http://sws.geonames.org/2921044">Germany</rs>
+        </classCode>
+        <classCode scheme="WV.placeOfUse" xml:lang="eng">
+          <rs type="place" ref="http://sws.geonames.org/2862926">Lower Saxony</rs>
+        </classCode>
+      </textClass>
+    </profileDesc>
+  </teiHeader>
+  <text xml:lang="eng">
+    <body>
+      <div>
+        <cb type="start"/>
+        <pb n="241"/>
+        <div>
+          <head>
+            <hi rend="bold">M 8 Discussed controversially: Should Turkey be part of the EU?</hi>
+          </head>
+          <p>Today, Turkey is as rich as Portugal at the time of its accession to the EU.</p>
+          <p>In ten years Turkey will have 80 million inhabitants and therefore no less than Germany has. Or as many as the ten new EU member states currently have. Turkey is too big. In the medium run it would be the EU’s most populous country and for that reason have the most votes.</p>
+          <p>Turkey does not belong to Europe. Turkey is an Islamic country and its accession could endanger the European identity. Europe ends at the Bosporus. With the EU accession of Turkey, Iran and Iraq would be our direct neighbours.</p>
+          <p>An accession of Turkey would stabilise the political system, democracy and economic reforms in Turkey.</p>
+          <cb />
+          <p>Turkey is underdeveloped economically. We can’t afford its membership. With only a sixth of Germany’s economic power, Turkey is so poor that every year between 16.5 and 27.5 billion Euros would have to flow to Turkey, according to the calculations of the European Commission.</p>
+          <p>A quick accession of Turkey would build a bridge between Christian influenced Europe and the Islamic Middle East. A democratic and constitutional Turkey will also gain great appeal as a model for the Islamic World. We have promised accession to Turkey since 1963 and must stay believable.</p>
+          <p>With Turkey as a regional power in the Middle East and south-western Asia, Europe would become a “global player” and could confront the United States in the Islamic world with its own security politics.</p> <cb type="end"/>
+          <p>[...]</p>
+          <pb n="248"/>
+        </div>
+        <div>
+          <head>
+            <hi rend="bold">The Enlargement of the EU</hi>
+          </head>
+          <p>European unification appealed greatly to the European states from the beginning, leading to 27 additional states having found their place in the European house today, following the six original founding states. Every candidate country has to share the basic ideals of the EU and fulfil the Copenhagen criteria. For more than 40 years, Turkey has hoped for accession to the European Union. In October 2005, the EU officially started accession negotiations with Turkey. However, the accession of Turkey to the EU is assessed controversially. The opponents see an incompatibility of Islamic and Christian culture, high costs of economic integration and a problem for security strategic reasons. The supporters see a chance for the political integration of different cultures, the possibility to counterbalance economic imbalances in Europe and the extension of the EU peace model to an Islamic influenced country.</p>
+          <p>[...]</p>
+        </div>
+      </div>
+    </body>
+  </text>
+</TEI>

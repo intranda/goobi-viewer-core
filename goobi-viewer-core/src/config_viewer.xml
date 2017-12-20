@@ -249,7 +249,7 @@
             <NewspaperVolume>calendar</NewspaperVolume>
         </docstructTargetPageTypes>
         
-        <!-- <fulltextPercentageWarningThreshold>: If a record's percentage of pages having full-Text/ALTO documents
+        <!-- fulltextPercentageWarningThreshold: If a record's percentage of pages having full-Text/ALTO documents
             falls below the configured value, a warning will be displayed for that record.    -->
         <fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
 
@@ -942,7 +942,6 @@
             is missing, a default order is used, including all possible Elements (provided their visibility is set to true). -->
         <workNavItems>
             <item type="page"></item>
-            <item type="preview"></item>
             <item type="toc"></item>
             <item type="thumbs"></item>
             <item type="metadata"></item>
@@ -962,11 +961,6 @@
         <page>
             <visible>true</visible>
         </page>
-        
-        <!-- image preview: if false, the preview view is hidden -->
-        <preview>
-            <visible>true</visible>
-        </preview>
         
         <!-- calendar: if false, the calendar view link is hidden -->
         <calendar>

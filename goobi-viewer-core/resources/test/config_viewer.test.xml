@@ -804,11 +804,6 @@
 			<visible>false</visible>
 		</page>
 		
-        <!-- image preview: if false, the preview view is hidden -->
-        <preview>
-            <visible>true</visible>
-        </preview>
-		
         <!-- calendar: if false, the calendar view link is hidden -->
         <calendar>
             <visible>false</visible>
@@ -824,11 +819,6 @@
 		<thumbs>
 			<visible>false</visible>
 		</thumbs>
-
-		<!-- image preview: if false, the preview view is hidden -->
-		<preview>
-			<visible>true</visible>
-		</preview>
 
 		<searchInItem>
 			<visible>true</visible>

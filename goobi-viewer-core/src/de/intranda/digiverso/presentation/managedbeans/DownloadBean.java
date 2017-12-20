@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.DownloadException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.messages.Messages;
@@ -87,22 +88,28 @@ public class DownloadBean implements Serializable {
         return "pretty:error";
     }
 
-    public String openDownloadAction() throws DAOException {
+    /**
+     * 
+     * @return
+     * @throws DAOException
+     * @throws DownloadException if download job not found
+     */
+    public String openDownloadAction() throws DAOException, DownloadException {
         downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
-//        downloadJob.updateStatus();
+        //        downloadJob.updateStatus();
         if (downloadJob == null) {
-            Messages.error("downloadErrorNotFound");
+            logger.error("Download job with the ID {} not found.", downloadIdentifier);
+            throw new DownloadException("downloadErrorNotFound");
         }
         return "";
     }
 
-    public void downloadFileAction() throws IOException {
+    public void downloadFileAction() throws IOException, DownloadException {
         if (downloadJob != null) {
             Path file = downloadJob.getFile();
             if (file == null) {
                 logger.error("File not found for job ID '{}'.", downloadJob.getIdentifier());
-                Messages.error("downloadError");
-                return;
+                throw new DownloadException("downloadErrorNotFound");
             }
             String fileName;
             switch (downloadJob.getType()) {

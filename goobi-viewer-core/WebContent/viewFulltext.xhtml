@@ -49,9 +49,11 @@
                     
                     <div class="clearfix"></div>
                     
-                    <viewerComponent:simplePaginator itemCount="#{activeDocumentBean.viewManager.imagesCount}"
-                        itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
-                        urlPrefix="#{navigationHelper.fulltextUrl}/#{activeDocumentBean.persistentIdentifier}/" />
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.belowFulltextThreshold}">
+                        <viewerComponent:simplePaginator itemCount="#{activeDocumentBean.viewManager.imagesCount}"
+                            itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
+                            urlPrefix="#{navigationHelper.fulltextUrl}/#{activeDocumentBean.persistentIdentifier}/" />
+                    </ui:fragment>
                 </h:form>
             </div>
 		</f:view>

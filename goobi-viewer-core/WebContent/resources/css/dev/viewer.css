@@ -1705,6 +1705,14 @@ div.mce-fullscreen {
   width: 10%;
   text-align: right;
 }
+#titleWrapper .title-header__page-type {
+  display: none;
+  margin-right: 5px;
+}
+#titleWrapper .title-header__page-type:after {
+  content: "\2014";
+  margin-left: 5px;
+}
 #titleWrapper .title-body form .dl-horizontal {
   margin: 0;
 }
@@ -1997,6 +2005,12 @@ div.mce-fullscreen {
 }
 .image-control__page-browse {
   font-size: 1rem;
+}
+.image-control__select-text span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  border: none;
+  cursor: text;
 }
 .image-control__select .form-control__select {
   max-width: 100px;
@@ -3914,18 +3928,12 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__hit-content dl {
   margin-bottom: 5px;
 }
-.search-list__hit-content dt,
-.search-list__hit-content dd {
-  display: inline-block;
-}
 .search-list__hit-content dt {
-  width: 30%;
-  padding-right: 5px;
-  text-align: left;
+  width: auto;
+  margin-right: 10px;
 }
 .search-list__hit-content dd {
-  width: 70%;
-  margin-left: 0;
+  margin-left: auto;
 }
 .search-list__hit-content-set {
   padding: 0 0 5px 0;
@@ -3957,11 +3965,15 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__metadata-info {
   padding-left: 16px;
 }
-.search-list__metadata-info dt {
-  font-weight: normal;
+.search-list__metadata-info td {
+  vertical-align: top;
 }
-.search-list__metadata-info dt .fa {
-  margin-right: 20px;
+.search-list__metadata-info td:first-child {
+  padding-right: 5px;
+  white-space: nowrap;
+}
+.search-list__metadata-info .fa {
+  margin-right: 10px;
 }
 .search-list__struct-child-hits {
   padding-left: 15px;
@@ -5594,27 +5606,6 @@ div.olMapViewport {
 }
 .overview__history {
   margin-bottom: 15px;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   View Preview
-   style declarations for viewPreview.xhtml 
-   ==============================================================*/
-#view_preview_img_wrapp,
-#view_preview_thumb_wrapp {
-  padding: 0.5rem 0;
-  overflow: hidden;
-}
-#view_preview_img_wrapp img,
-#view_preview_thumb_wrapp img {
-  display: block;
-  margin: 0 auto;
-}
-#view_preview_thumb_wrapp {
-  margin-bottom: 1.3125rem;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -7617,5 +7608,67 @@ img.cms-static-pages__page-language--complete {
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "SearchList"
+   style declarations for cms_template_02_searchList.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST */
+/* BLOCK */
+.tpl-search-list {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-search-list:before,
+.tpl-search-list:after {
+  content: " ";
+  display: table;
+}
+.tpl-search-list:after {
+  clear: both;
+}
+.tpl-search-list__right {
+  position: relative;
+  float: left;
+  min-height: 600px;
+  padding-right: 15px;
+  padding-left: 15px;
+  transition: all .3s linear;
+}
+.tpl-search-list__intro {
+  margin-bottom: 30px;
+}
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "searchListAdvanced"
+   style declarations for cms_template_02_searchListAdvanced.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST */
+/* BLOCK */
+.tpl-search-list-advanced {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-search-list-advanced:before,
+.tpl-search-list-advanced:after {
+  content: " ";
+  display: table;
+}
+.tpl-search-list-advanced:after {
+  clear: both;
+}
+.tpl-search-list-advanced__right {
+  position: relative;
+  float: left;
+  min-height: 600px;
+  padding-right: 15px;
+  padding-left: 15px;
+  transition: all .3s linear;
+}
+.tpl-search-list-advanced__intro {
+  margin-bottom: 30px;
+}
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */

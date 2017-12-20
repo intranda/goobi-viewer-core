@@ -67,13 +67,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(ToolServlet.class);
 
     /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ToolServlet() {
-        super();
-    }
-
-    /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     @Override

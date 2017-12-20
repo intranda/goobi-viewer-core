@@ -138,11 +138,11 @@ public class LeanPageLoader implements IPageLoader, Serializable {
     }
 
     /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String)
+     * @see de.intranda.digiverso.presentation.model.viewer.IPageLoader#generateSelectItems(java.util.List, java.util.List, java.lang.String, java.lang.Boolean)
      */
     @Override
-    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot)
-            throws IndexUnreachableException {
+    public void generateSelectItems(List<SelectItem> dropdownPages, List<SelectItem> dropdownFulltext, String urlRoot,
+            boolean recordBelowFulltextThreshold) throws IndexUnreachableException {
         logger.debug("Generating drop-down page selector...");
         try {
             String pi = topElement.getPi();
@@ -161,6 +161,8 @@ public class LeanPageLoader implements IPageLoader, Serializable {
             for (SolrDocument doc : result) {
                 int order = (Integer) doc.getFieldValue(SolrConstants.ORDER);
                 String orderLabel = (String) doc.getFieldValue(SolrConstants.ORDERLABEL);
+                boolean fulltextAvailable = doc.containsKey(SolrConstants.FULLTEXTAVAILABLE) ? (boolean) doc.getFieldValue(
+                        SolrConstants.FULLTEXTAVAILABLE) : false;
                 StringBuilder sbPurlPart = new StringBuilder();
                 sbPurlPart.append('/').append(pi).append('/').append(order).append('/');
 
@@ -168,10 +170,12 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 si.setLabel(order + ":" + orderLabel);
                 si.setValue(order);
                 dropdownPages.add(si);
-                SelectItem full = new SelectItem();
-                full.setLabel(order + ":" + orderLabel);
-                full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
-                dropdownFulltext.add(full);
+                if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
+                    SelectItem full = new SelectItem();
+                    full.setLabel(order + ":" + orderLabel);
+                    full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
+                    dropdownFulltext.add(full);
+                }
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());

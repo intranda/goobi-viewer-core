@@ -14,6 +14,7 @@
 	                <!-- START -->
 	                <h:panelGroup rendered="#{activeDocumentBean.viewManager.multiPageRecord}">
 	                
+	                    <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
 	                    <li class="image-control image-control__start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
 	                        <h:outputLink 
 	                            value="#{activeDocumentBean.firstPageUrl}" 
@@ -24,6 +25,7 @@
 	                            <f:passThroughAttribute name="data-placement" value="bottom" />
 	                        </h:outputLink>
 	                    </li>
+	                    </ui:fragment>
 	                
 	                <!-- PAGE BROWSE BACK -->
 	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
@@ -66,30 +68,45 @@
 	                </h:panelGroup>
 	                
 	                <!-- BACK -->
-	                <li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
-	                    <h:outputLink 
-	                        value="#{activeDocumentBean.getPreviousPageUrl(1 )}" 
-	                        title="#{msg.prevImage}"
-	                        disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
-	                        <i class="image-back"></i>
-	                        <f:passThroughAttribute name="data-toggle" value="tooltip" />
-	                        <f:passThroughAttribute name="data-placement" value="bottom" />
-	                    </h:outputLink>
-	                </li>
-	                
-	                <!-- SELECT -->
+					<ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
+						<li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+							<h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(1 )}" title="#{msg.prevImage}" disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
+								<i class="image-back"></i>
+								<f:passThroughAttribute name="data-toggle" value="tooltip" />
+								<f:passThroughAttribute name="data-placement" value="bottom" />
+							</h:outputLink>
+						</li>
+					</ui:fragment>
+
+					<ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
+						<li class="image-control image-control__select-text">
+							<span>#{msg.pageSelectDropdown}</span>
+						</li>
+					</ui:fragment>
+
+					<!-- SELECT -->
 	                <li class="image-control image-control__select">
+	                
 	                    <div class="form-control__select">
-	                        <h:selectOneMenu
+	                        <!-- Image view select -->
+	                        <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'image'}"
 	                            onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
 	                            value="#{activeDocumentBean.viewManager.dropdownSelected}"
 	                            styleClass="form-control">
 	                            <f:selectItems value="#{activeDocumentBean.viewManager.dropdownPages}" />
 	                        </h:selectOneMenu>
+	                        <!-- Full-text view select -->
+                            <h:selectOneMenu rendered="#{navigationHelper.currentPage == 'fulltext'}"
+                                onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
+                                value="#{activeDocumentBean.viewManager.dropdownSelected}"
+                                styleClass="form-control">
+                                <f:selectItems value="#{activeDocumentBean.viewManager.dropdownFulltext}" />
+                            </h:selectOneMenu>
 	                    </div>
 	                </li>
 	                
 	                <!-- FORWARD -->
+	                <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
 	                <li class="image-control image-control__forward #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
 	                    <h:outputLink 
 	                        value="#{activeDocumentBean.getNextPageUrl(1 )}" 
@@ -100,6 +117,7 @@
 	                        <f:passThroughAttribute name="data-placement" value="bottom" />
 	                    </h:outputLink>
 	                </li>
+	                </ui:fragment>
 	                
 	                <!-- PAGE BROWSE FORWARD -->
 	                <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
@@ -142,6 +160,7 @@
 	                </h:panelGroup>
 	                
 	                <!-- END -->
+	                <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
 	                <li class="image-control image-control__end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
 	                    <h:outputLink 
 	                        value="#{activeDocumentBean.getLastPageUrl()}" 
@@ -152,6 +171,7 @@
 	                        <f:passThroughAttribute name="data-placement" value="bottom" />
 	                    </h:outputLink>
 	                </li>
+	                </ui:fragment>
 	                
 	                <!-- DOUBLEPAGEVIEW -->
 	                <h:panelGroup rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">

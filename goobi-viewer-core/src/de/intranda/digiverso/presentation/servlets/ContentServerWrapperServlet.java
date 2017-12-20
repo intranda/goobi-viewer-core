@@ -58,16 +58,9 @@ import net.balusc.webapp.ContentDeliveryServlet;
  */
 public class ContentServerWrapperServlet extends HttpServlet implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -4174862970784876821L;
 
     private static final Logger logger = LoggerFactory.getLogger(ContentServerWrapperServlet.class);
-
-    private static int maxImageWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
-    private static int maxImageHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
-    private static int maxImageScale = DataManager.getInstance().getConfiguration().getViewerMaxImageScale();
 
     // private HttpClient httpClient;
 
@@ -258,6 +251,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                 format = imageFileNameSplit[1];
                 try {
                     int width = Integer.parseInt(paramsSplit[1]);
+                    int maxImageWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
                     if (maxImageWidth > 0 && width > maxImageWidth) {
                         width = maxImageWidth;
                     }
@@ -344,6 +338,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                                 // If no image size has been given, add a static size to prevent full size image loading
                                 if (requestMapCopy.get("width") != null) {
                                     int width = Integer.parseInt(requestMapCopy.get("width")[0]);
+                                    int maxImageWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
                                     if (maxImageWidth > 0 && width > maxImageWidth) {
                                         logger.debug("Image width parameter out of range ({}), replacing with {}", width, maxImageWidth);
                                         width = maxImageWidth;
@@ -352,6 +347,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                                 }
                                 if (requestMapCopy.get("height") != null) {
                                     int height = Integer.parseInt(requestMapCopy.get("height")[0]);
+                                    int maxImageHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
                                     if (maxImageHeight > 0 && height > maxImageHeight) {
                                         logger.debug("Image height parameter out of range ({}), replacing with {}", height, maxImageHeight);
                                         height = maxImageHeight;
@@ -360,6 +356,7 @@ public class ContentServerWrapperServlet extends HttpServlet implements Serializ
                                 }
                                 if (requestMapCopy.get("scale") != null) {
                                     int scale = Integer.parseInt(requestMapCopy.get("scale")[0]);
+                                    int maxImageScale = DataManager.getInstance().getConfiguration().getViewerMaxImageScale();
                                     if (maxImageScale > 0 && scale > maxImageScale) {
                                         logger.debug("Image scale parameter out of range ({}), replacing with {}", scale, maxImageScale);
                                         scale = maxImageScale;

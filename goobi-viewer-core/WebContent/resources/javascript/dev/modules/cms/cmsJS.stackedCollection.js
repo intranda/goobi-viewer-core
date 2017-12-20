@@ -105,12 +105,13 @@ var cmsJS = ( function( cms ) {
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
             panelTitleLink = $( '<a />' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
-            if ( _getMetadataValue( member, 'volumes' ) < 1 ) {
-                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
-            }
-            else {
+            // check if subcollections exist
+            if ( _getMetadataValue( member, 'subCollections' ) > 0 ) {
                 panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
                         .attr( 'aria-expanded', 'false' );
+            }
+            else {
+                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
             }
             panelTitle.append( panelTitleLink );
             // create RSS link
@@ -184,6 +185,7 @@ var cmsJS = ( function( cms ) {
         var subCollections = $( '<ul />' ).addClass( 'list' );
         var subCollectionItem = null;
         var subCollectionItemLink = null;
+        var subCollectionItemRSSLink = null;
         
         // get subcollection data
         $.ajax( {
@@ -196,9 +198,11 @@ var cmsJS = ( function( cms ) {
             if ( !$.isEmptyObject( data.members ) ) {
                 // add subcollection items
                 data.members.forEach( function( member ) {
-                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).text( member.label );
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( member.label );
+                    subCollectionItemRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
+                            .html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
                     // build subcollection item
-                    subCollectionItem.append( subCollectionItemLink );
+                    subCollectionItem.append( subCollectionItemLink ).append( subCollectionItemRSSLink );
                     subCollections.append( subCollectionItem );
                 } );
             }

@@ -273,14 +273,13 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                     }
                                 } catch (MessagingException e) {
                                     logger.error(e.getMessage(), e);
-                                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
+                                    // response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
                                 } finally {
                                     if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
                                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                                         return;
-                                    } else {
-                                        logger.trace("Downloadjob " + job + " updated in database with status " + job.getStatus());
                                     }
+                                    logger.trace("Downloadjob {} updated in database with status {}", job, job.getStatus());
                                 }
                             }
                         }

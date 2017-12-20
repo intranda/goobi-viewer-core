@@ -91,56 +91,47 @@ var cmsJS = ( function( cms ) {
             rssItem = $( '<div />' );
             rssItem.addClass( 'tpl-rss__item' );
             
-            // create item title
-            rssItemTitle = $( '<div />' );
-            rssItemTitle.addClass( 'tpl-rss__item-title' );
-            rssItemTitleH3 = $( '<h3 />' );
-            rssItemTitleLink = $( '<a />' );
-            rssItemTitleLink.attr( 'href', item.link );
-            rssItemTitleLink.text( item.title );
-            rssItemTitleH3.append( rssItemTitleLink );
-            rssItemTitle.append( rssItemTitleH3 );
-            
             // create item content
-            rssItemRow = $( '<div />' );
-            rssItemRow.addClass( 'row' );
+            rssItemRow = $( '<div />' ).addClass( 'row' );
+            
             // left
-            rssItemColLeft = $( '<div />' );
-            rssItemColLeft.addClass( 'col-xs-3 col-sm-2' );
-            rssItemImageWrapper = $( '<div />' );
-            rssItemImageWrapper.addClass( 'tpl-rss__item-image' );
-            rssItemImageLink = $( '<a />' );
-            rssItemImageLink.attr( 'href', item.link );
-            rssItemImage = $( '<img />' );
-            rssItemImage.attr( 'src', item.description.image );
-            rssItemImage.addClass( 'img-responsive' );
+            rssItemColLeft = $( '<div />' ).addClass( 'col-xs-3' );
+            rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
+            rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
+            rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-responsive' );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
             rssItemColLeft.append( rssItemImageWrapper );
+            
             // right
-            rssItemColRight = $( '<div />' );
-            rssItemColRight.addClass( 'col-xs-9 col-sm-10' );
+            rssItemColRight = $( '<div />' ).addClass( 'col-xs-9' );
+            
+            // create item title
+            rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
+            rssItemTitleH3 = $( '<h3 />' );
+            rssItemTitleLink = $( '<a />' ).attr( 'href', item.link ).text( item.title );
+            rssItemTitleH3.append( rssItemTitleLink );
+            rssItemTitle.append( rssItemTitleH3 );
+            
             // create date
-            rssItemDate = $( '<div />' );
-            rssItemDate.addClass( 'tpl-rss__item-date' );
+            rssItemDate = $( '<div />' ).addClass( 'tpl-rss__item-date' );
             rssItemTime = new Date( item.pubDate );
             rssItemDate.text( rssItemTime.toLocaleString() );
+            
             // create metadata
-            rssItemMetadata = $( '<dl />' );
-            rssItemMetadata.addClass( 'tpl-rss__item-metadata dl-horizontal' );
+            rssItemMetadata = $( '<dl />' ).addClass( 'tpl-rss__item-metadata dl-horizontal' );
             item.description.metadata.forEach( function( metadata ) {
-                rssItemMetadataKey = $( '<dt />' );
-                rssItemMetadataKey.text( metadata.label + ':' );
-                rssItemMetadataValue = $( '<dd />' );
-                rssItemMetadataValue.text( metadata.value );
+                rssItemMetadataKey = $( '<dt />' ).text( metadata.label + ':' );
+                rssItemMetadataValue = $( '<dd />' ).text( metadata.value );
                 rssItemMetadata.append( rssItemMetadataKey ).append( rssItemMetadataValue );
             } );
-            rssItemColRight.append( rssItemDate ).append( rssItemMetadata );
+            rssItemColRight.append( rssItemTitle ).append( rssItemDate ).append( rssItemMetadata );
+            
             // append to row
             rssItemRow.append( rssItemColLeft ).append( rssItemColRight );
             
             // create item
-            rssItem.append( rssItemTitle ).append( rssItemRow );
+            rssItem.append( rssItemRow );
             
             $( _defaults.rssFeedSelector ).append( rssItem );
         } );

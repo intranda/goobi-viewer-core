@@ -1151,7 +1151,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
-    var _debug = false;
+    var _debug = true;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -1270,7 +1270,7 @@ var viewerJS = ( function( viewer ) {
                     _defaults.dataId = '-';
                 }
                 _defaults.dataPi = $( this ).attr( 'data-pi' );
-                _getWorkInfo( _defaults.dataPi, _defaults.dataId ).done( function( info ) {
+                _getWorkInfo( _defaults.dataPi, _defaults.dataId, _defaults.dataType ).done( function( info ) {
                     _defaults.workInfo = info;
                     
                     _defaults.modal = {
@@ -1398,9 +1398,11 @@ var viewerJS = ( function( viewer ) {
                 modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
-            modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            modalBody += '<dd>~' + infos.size + '</dd>';
-            modalBody += '</dl>';
+            if(infos.size)  {            	
+            	modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+            	modalBody += '<dd>~' + infos.size + '</dd>';
+            	modalBody += '</dl>';
+            }
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
                 modalBody += '<hr />';
@@ -1506,18 +1508,19 @@ var viewerJS = ( function( viewer ) {
      * @param {String} logid The LOG_ID of the work.
      * @returns {Promise} A promise object if the info has been reached.
      */
-    function _getWorkInfo( pi, logid ) {
+    function _getWorkInfo( pi, logid, type ) {
         if ( _debug ) {
             console.log( '---------- _getWorkInfo() ----------' );
             console.log( '_getWorkInfo: pi = ', pi );
             console.log( '_getWorkInfo: logid = ', logid );
+            console.log( '_getWorkInfo: type = ', type );
         }
         
         var restCall = '';
         var workInfo = {};
         
         if ( logid !== '' || logid !== undefined ) {
-            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/' + logid + '/';
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/' + logid + '/';
             
             if ( _debug ) {
                 console.log( 'if' );
@@ -1525,7 +1528,7 @@ var viewerJS = ( function( viewer ) {
             }
         }
         else {
-            restCall = _defaults.iiifPath + 'pdf/mets/' + pi + '/-/';
+            restCall = _defaults.iiifPath + type + '/mets/' + pi + '/-/';
             
             if ( _debug ) {
                 console.log( 'else' );
@@ -1671,36 +1674,6 @@ var viewerJS = ( function( viewer ) {
             else {
                 return str;
             }
-        },
-        
-        /**
-         * Method to switch classnames of an object.
-         * 
-         * @deprecated use jQuery.toggleClass();
-         * @method switchClass
-         * @param {Object} $Obj The object which classname has to be switched.
-         * @param {String} classname1 The classname of the first class.
-         * @param {String} classname2 The classname of the second class.
-         * @returns {String} The new classname.
-         */
-        switchClass: function( $Obj, classname1, classname2 ) {
-            if ( _debug ) {
-                console.log( '---------- viewer.helper.switchClass() ----------' );
-                console.log( 'viewer.helper.switchClass: $Obj = ', $Obj );
-                console.log( 'viewer.helper.switchClass: classname1 = ', classname1 );
-                console.log( 'viewer.helper.switchClass: classname2 = ', classname2 );
-            }
-            
-            $Obj.toggleClass( function() {
-                if ( $Obj.hasClass( classname1 ) ) {
-                    $Obj.removeClass( classname1 );
-                    return classname2;
-                }
-                else {
-                    $Obj.removeClass( classname2 );
-                    return classname1;
-                }
-            } );
         },
         /**
          * Method which calculates the current position of the active element in sidebar
@@ -1880,7 +1853,6 @@ var viewerJS = ( function( viewer ) {
             
             return bsAlert;
         },
-        
         /**
          * Method to get the version number of the used MS Internet Explorer.
          * 
@@ -4425,9 +4397,8 @@ var viewerJS = ( function( viewer ) {
                 
                 trigger.hide();
                 excelLoader.show();
-               
+                
                 var url = _defaults.contextPath + '/rest/download/search/waitFor/';
-                console.log("Calling ", url);
                 var promise = Q( $.ajax( {
                     url: decodeURI( url ),
                     type: "GET",
@@ -4435,22 +4406,21 @@ var viewerJS = ( function( viewer ) {
                     async: true
                 } ) );
                 
-                promise
-                .then(function(data) {
-                	if(_debug) {                		
-                		console.log("Download started");
-                	}
-                	excelLoader.hide();
-                	trigger.show();
-                })
-                .catch(function(error) {
-                	if(_debug) {                		
-                		console.log("Error downloading excel sheet: ", error.responseText);
-                	}
-                	excelLoader.hide();
-                	trigger.show();
-                });
-                
+                promise.then( function( data ) {
+                    if ( _debug ) {
+                        console.log("Download started");
+                    }
+                    
+                    excelLoader.hide();
+                    trigger.show();
+                } ).catch( function( error ) {
+                    if ( _debug ) {
+                        console.log("Error downloading excel sheet: ", error.responseText);
+                    }
+                    
+                    excelLoader.hide();
+                    trigger.show();
+                });                
             } );
             
             // get child hits
@@ -4482,17 +4452,17 @@ var viewerJS = ( function( viewer ) {
                         } );
                     }
                     else {
-                      // remove loader
-                      currBtn.find( _defaults.hitContentLoaderSelector ).hide();
-                      // set event to toggle current hits
-                      currBtn.off().on( 'click', function() {
-                          // render child hits into the DOM
-                          _renderChildHits( data, currBtn );
-                          // check if more children exist and render link
-                          _renderGetMoreChildren( data, currIdDoc, currBtn );
-                          $( this ).toggleClass( 'in' ).next().slideToggle();                         
-                      } );
-                    }                    
+                        // remove loader
+                        currBtn.find( _defaults.hitContentLoaderSelector ).hide();
+                        // set event to toggle current hits
+                        currBtn.off().on( 'click', function() {
+                            // render child hits into the DOM
+                            _renderChildHits( data, currBtn );
+                            // check if more children exist and render link
+                            _renderGetMoreChildren( data, currIdDoc, currBtn );
+                            $( this ).toggleClass( 'in' ).next().slideToggle();
+                        } );
+                    }
                 } ).then( null, function() {
                     currBtn.next().append( viewer.helper.renderAlert( 'alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false ) );
                     console.error( 'ERROR: viewer.searchList.init - ', error );
@@ -4543,7 +4513,7 @@ var viewerJS = ( function( viewer ) {
             
             // build title
             hitSet.append( _renderHitSetTitle( child.browseElement ) );
-
+            
             // append metadata if exist
             hitSet.append( _renderMetdataInfo( child.foundMetadata, child.url ) );
             
@@ -4607,36 +4577,43 @@ var viewerJS = ( function( viewer ) {
         }
         
         var metadataWrapper = null;
-        var metadataList = null;
-        var metadataKey = null;
+        var metadataTable = null;
+        var metadataTableBody = null;
+        var metadataTableRow = null;
+        var metadataTableCellLeft = null;
+        var metadataTableCellRight = null;
         var metadataKeyIcon = null;
         var metadataKeyLink = null;
-        var metadataValue = null;
         var metadataValueLink = null;
         
         if ( !$.isEmptyObject( data ) ) {
             metadataWrapper = $( '<div class="search-list__metadata-info" />' );
-            metadataList = $( '<dl class="dl-horizontal" />' );
-
-            $.each( data, function( metadata, item ) {
-                // build metadata key
-                metadataKey = $( '<dt />' );
-                metadataKeyIcon = $( '<i class="fa fa-bookmark-o" aria-hidden="true" />' );
-                metadataKeyLink = $( '<a />' );
-                metadataKeyLink.attr( 'href', _defaults.contextPath + '/' + url );
-                metadataKeyLink.append( item.one + ':' );
-                metadataKey.append( metadataKeyIcon ).append( metadataKeyLink );
-                // build metadata value
-                metadataValue = $( '<dd />' );
-                metadataValueLink = $( '<a />' );
-                metadataValueLink.attr( 'href', _defaults.contextPath + '/' +  url );
-                metadataValueLink.append( item.two );
-                metadataValue.append( metadataValueLink );
-                // build metadata list
-                metadataList.append( metadataKey ).append( metadataValue );
-                metadataWrapper.append( metadataList );
-            } );            
+            metadataTable = $( '<table />' );
+            metadataTableBody = $( '<tbody />' );
+            
+            data.forEach( function( metadata ) {
+                // left cell
+                metadataTableCellLeft = $( '<td />' );
+                metadataKeyIcon = $( '<i />' ).attr( 'aria-hidden', 'true' ).addClass( 'fa fa-bookmark-o' );
+                metadataKeyLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.one + ':' );
+                metadataTableCellLeft.append( metadataKeyIcon ).append( metadataKeyLink );
                 
+                // right cell
+                metadataTableCellRight = $( '<td />' );
+                metadataValueLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.two );
+                metadataTableCellRight.append( metadataValueLink );
+                
+                // row
+                metadataTableRow = $( '<tr />' );
+                metadataTableRow.append( metadataTableCellLeft ).append( metadataTableCellRight );
+                
+                // body
+                metadataTableBody.append( metadataTableRow );
+            } );
+            
+            metadataTable.append( metadataTableBody );
+            metadataWrapper.append( metadataTable );
+            
             return metadataWrapper;
         }
     }
@@ -4693,16 +4670,15 @@ var viewerJS = ( function( viewer ) {
                 break;
         }
         hitSetChildrenDd = $( '<dd />' );
-        hitSetChildrenLink = $( '<a />' );
-        hitSetChildrenLink.attr( 'href', _defaults.contextPath + '/' + data.url );
+        hitSetChildrenLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url );
         switch ( type ) {
             case 'PAGE':
             case 'ACCESSDENIED':
                 hitSetChildrenLink.append( data.fulltextForHtml );
-            break;
+                break;
             default:
                 hitSetChildrenLink.append( data.labelShort );
-            break;
+                break;
         }
         hitSetChildrenDd.append( hitSetChildrenLink );
         hitSetChildrenDl.append( hitSetChildrenDt ).append( hitSetChildrenDd );
@@ -4767,6 +4743,7 @@ var viewerJS = ( function( viewer ) {
     return viewer;
     
 } )( viewerJS || {}, jQuery );
+
 var viewerJS = ( function( viewer ) {
     'use strict';
     
@@ -7308,56 +7285,47 @@ var cmsJS = ( function( cms ) {
             rssItem = $( '<div />' );
             rssItem.addClass( 'tpl-rss__item' );
             
-            // create item title
-            rssItemTitle = $( '<div />' );
-            rssItemTitle.addClass( 'tpl-rss__item-title' );
-            rssItemTitleH3 = $( '<h3 />' );
-            rssItemTitleLink = $( '<a />' );
-            rssItemTitleLink.attr( 'href', item.link );
-            rssItemTitleLink.text( item.title );
-            rssItemTitleH3.append( rssItemTitleLink );
-            rssItemTitle.append( rssItemTitleH3 );
-            
             // create item content
-            rssItemRow = $( '<div />' );
-            rssItemRow.addClass( 'row' );
+            rssItemRow = $( '<div />' ).addClass( 'row' );
+            
             // left
-            rssItemColLeft = $( '<div />' );
-            rssItemColLeft.addClass( 'col-xs-3 col-sm-2' );
-            rssItemImageWrapper = $( '<div />' );
-            rssItemImageWrapper.addClass( 'tpl-rss__item-image' );
-            rssItemImageLink = $( '<a />' );
-            rssItemImageLink.attr( 'href', item.link );
-            rssItemImage = $( '<img />' );
-            rssItemImage.attr( 'src', item.description.image );
-            rssItemImage.addClass( 'img-responsive' );
+            rssItemColLeft = $( '<div />' ).addClass( 'col-xs-3' );
+            rssItemImageWrapper = $( '<div />' ).addClass( 'tpl-rss__item-image' );
+            rssItemImageLink = $( '<a />' ).attr( 'href', item.link );
+            rssItemImage = $( '<img />' ).attr( 'src', item.description.image ).addClass( 'img-responsive' );
             rssItemImageLink.append( rssItemImage );
             rssItemImageWrapper.append( rssItemImageLink );
             rssItemColLeft.append( rssItemImageWrapper );
+            
             // right
-            rssItemColRight = $( '<div />' );
-            rssItemColRight.addClass( 'col-xs-9 col-sm-10' );
+            rssItemColRight = $( '<div />' ).addClass( 'col-xs-9' );
+            
+            // create item title
+            rssItemTitle = $( '<div />' ).addClass( 'tpl-rss__item-title' );
+            rssItemTitleH3 = $( '<h3 />' );
+            rssItemTitleLink = $( '<a />' ).attr( 'href', item.link ).text( item.title );
+            rssItemTitleH3.append( rssItemTitleLink );
+            rssItemTitle.append( rssItemTitleH3 );
+            
             // create date
-            rssItemDate = $( '<div />' );
-            rssItemDate.addClass( 'tpl-rss__item-date' );
+            rssItemDate = $( '<div />' ).addClass( 'tpl-rss__item-date' );
             rssItemTime = new Date( item.pubDate );
             rssItemDate.text( rssItemTime.toLocaleString() );
+            
             // create metadata
-            rssItemMetadata = $( '<dl />' );
-            rssItemMetadata.addClass( 'tpl-rss__item-metadata dl-horizontal' );
+            rssItemMetadata = $( '<dl />' ).addClass( 'tpl-rss__item-metadata dl-horizontal' );
             item.description.metadata.forEach( function( metadata ) {
-                rssItemMetadataKey = $( '<dt />' );
-                rssItemMetadataKey.text( metadata.label + ':' );
-                rssItemMetadataValue = $( '<dd />' );
-                rssItemMetadataValue.text( metadata.value );
+                rssItemMetadataKey = $( '<dt />' ).text( metadata.label + ':' );
+                rssItemMetadataValue = $( '<dd />' ).text( metadata.value );
                 rssItemMetadata.append( rssItemMetadataKey ).append( rssItemMetadataValue );
             } );
-            rssItemColRight.append( rssItemDate ).append( rssItemMetadata );
+            rssItemColRight.append( rssItemTitle ).append( rssItemDate ).append( rssItemMetadata );
+            
             // append to row
             rssItemRow.append( rssItemColLeft ).append( rssItemColRight );
             
             // create item
-            rssItem.append( rssItemTitle ).append( rssItemRow );
+            rssItem.append( rssItemRow );
             
             $( _defaults.rssFeedSelector ).append( rssItem );
         } );
@@ -7820,12 +7788,13 @@ var cmsJS = ( function( cms ) {
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
             panelTitleLink = $( '<a />' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
-            if ( _getMetadataValue( member, 'volumes' ) < 1 ) {
-                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
-            }
-            else {
+            // check if subcollections exist
+            if ( _getMetadataValue( member, 'subCollections' ) > 0 ) {
                 panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
                         .attr( 'aria-expanded', 'false' );
+            }
+            else {
+                panelTitleLink.attr( 'href', member.rendering[ '@id' ] );
             }
             panelTitle.append( panelTitleLink );
             // create RSS link
@@ -7899,6 +7868,7 @@ var cmsJS = ( function( cms ) {
         var subCollections = $( '<ul />' ).addClass( 'list' );
         var subCollectionItem = null;
         var subCollectionItemLink = null;
+        var subCollectionItemRSSLink = null;
         
         // get subcollection data
         $.ajax( {
@@ -7911,9 +7881,11 @@ var cmsJS = ( function( cms ) {
             if ( !$.isEmptyObject( data.members ) ) {
                 // add subcollection items
                 data.members.forEach( function( member ) {
-                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).text( member.label );
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( member.label );
+                    subCollectionItemRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
+                            .html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
                     // build subcollection item
-                    subCollectionItem.append( subCollectionItemLink );
+                    subCollectionItem.append( subCollectionItemLink ).append( subCollectionItemRSSLink );
                     subCollections.append( subCollectionItem );
                 } );
             }

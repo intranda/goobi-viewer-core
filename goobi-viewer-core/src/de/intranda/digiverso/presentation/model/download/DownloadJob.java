@@ -79,7 +79,8 @@ public abstract class DownloadJob implements Serializable {
         WAITING,
         READY,
         ERROR,
-        UNDEFINED;
+        UNDEFINED,
+        INITIALIZED;
 
         public static JobStatus getByName(String name) {
             if (name != null) {
@@ -92,6 +93,8 @@ public abstract class DownloadJob implements Serializable {
                         return ERROR;
                     case "UNDEFINED":
                         return JobStatus.UNDEFINED;
+                    case "INITIALIZED":
+                        return JobStatus.INITIALIZED;
                 }
             }
 
@@ -200,6 +203,7 @@ public abstract class DownloadJob implements Serializable {
             boolean newJob = false;
             DownloadJob downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
             if (downloadJob == null) {
+                logger.debug("Create new download job");
                 newJob = true;
                 switch (type) {
                     case PDFDownloadJob.TYPE:
@@ -213,8 +217,10 @@ public abstract class DownloadJob implements Serializable {
                 }
             } else {
                 // Update latest request timestamp of an existing job
+                logger.debug("Retrieve existing job");
                 downloadJob.setLastRequested(new Date());
             }
+            logger.debug("Requested download job " + downloadJob);
 
             /*set observer email*/
             String useEmail = null;
@@ -225,8 +231,15 @@ public abstract class DownloadJob implements Serializable {
                 downloadJob.getObservers().add(useEmail);
             }
 
-            /*Create file if neccessary**/
-            if (downloadJob.getFile() == null || !downloadJob.getFile().toFile().exists()) {
+            
+            if(downloadJob.status.equals(JobStatus.WAITING)) {
+                //keep waiting
+            } else if(downloadJob.getFile() != null && downloadJob.getFile().toFile().exists()) {
+                //not waiting and file exists -> file has been created
+                downloadJob.setStatus(JobStatus.READY);
+            } else {
+                //not waiting but file doesn't exist -> trigger creation
+                logger.debug("Triggering " + downloadJob.getType() + " creation");
                 try {
                     downloadJob.triggerCreation();
                     downloadJob.setStatus(JobStatus.WAITING);
@@ -234,8 +247,6 @@ public abstract class DownloadJob implements Serializable {
                     downloadJob.setStatus(JobStatus.ERROR);
                     downloadJob.setMessage(e.getMessage());
                 }
-            } else {
-                downloadJob.setStatus(JobStatus.READY);
             }
 
             /*Add or update job in database*/
@@ -644,5 +655,20 @@ public abstract class DownloadJob implements Serializable {
             setMessage("Unable to parse TaskManager response");
         }
 
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("DownloadJob ").append(getIdentifier()).append("; ");
+        sb.append("Type ").append(getType()).append("; ");
+        sb.append("Status ").append(getStatus()).append("; ");
+        sb.append("Expired: ").append(isExpired()).append("; ");
+        sb.append("PI ").append(getPi()).append("; ");
+        sb.append("LOGID ").append(getLogId()).append("; ");
+        return sb.toString();
     }
 }

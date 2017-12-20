@@ -75,9 +75,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.solr.common.SolrDocument;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -92,7 +89,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 import de.intranda.digiverso.presentation.Version;
-import de.intranda.digiverso.presentation.controller.TeiToHtmlConverter.ConverterMode;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
@@ -144,6 +140,8 @@ public class Helper {
     public static DateTimeFormatter formatterENDateTime = DateTimeFormat.forPattern("MM/dd/yyyy h:mm:ss a");
     public static DateTimeFormatter formatterDEDate = DateTimeFormat.forPattern("dd.MM.yyyy");
     public static DateTimeFormatter formatterENDate = DateTimeFormat.forPattern("MM/dd/yyyy");
+    public static DateTimeFormatter formatterCNDate = DateTimeFormat.forPattern("yyyy.MM.dd");
+    public static DateTimeFormatter formatterJPDate = DateTimeFormat.forPattern("yyyy/MM/dd");;
     public static DateTimeFormatter formatterFilename = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
     public static DecimalFormat dfTwoDecimals = new DecimalFormat("0.00");
@@ -209,15 +207,14 @@ public class Helper {
     public static List<Date> parseMultipleDatesFromString(String dateString) {
         List<Date> ret = new ArrayList<>();
 
-        // logger.debug("Parsing date string : " + dateString);
+        // logger.debug("Parsing date string : {}", dateString);
         if (StringUtils.isNotEmpty(dateString)) {
             String splittingChar = "/";
             String[] dateStringSplit = dateString.split(splittingChar);
             for (String s : dateStringSplit) {
                 s = s.trim();
 
-                // Try finding a complete date in the string (enclosed in
-                // parentheses)
+                // Try finding a complete date in the string (enclosed in parentheses)
                 Pattern p = Pattern.compile(Helper.REGEX_PARENTHESES);
                 Matcher m = p.matcher(s);
                 if (m.find()) {
@@ -226,6 +223,7 @@ public class Helper {
                     Date date = parseDateFromString(s);
                     if (date != null) {
                         ret.add(date);
+                        continue;
                     }
                 }
 
@@ -252,6 +250,11 @@ public class Helper {
      *
      * @param dateString
      * @return
+     * @should parse iso date formats correctly
+     * @should parse german date formats correctly
+     * @should parse english date formats correctly
+     * @should parse chinese date formats correctly
+     * @should parse japanese date formats correctly
      *
      */
     public static DateTime parseDateTimeFromString(String dateString, boolean fromUTC) {
@@ -283,6 +286,10 @@ public class Helper {
         } catch (IllegalArgumentException e) {
         }
         try {
+            return formatterISO8601YearMonth.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
             return formatterDEDateTime.parseDateTime(dateString);
         } catch (IllegalArgumentException e) {
         }
@@ -296,6 +303,14 @@ public class Helper {
         }
         try {
             return formatterENDate.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            return formatterJPDate.parseDateTime(dateString);
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            return formatterCNDate.parseDateTime(dateString);
         } catch (IllegalArgumentException e) {
         }
 
@@ -1072,39 +1087,6 @@ public class Helper {
         sb.append('/').append(pi).append('/').append(fileName);
 
         return sb.toString();
-    }
-
-    /**
-     * Loads TEI full-text from the given file path. The text portion is cut out of the main document and its markup is converted to HTML.
-     * 
-     * @param filePath
-     * @return
-     */
-    public static String loadTeiFulltext(String filePath) {
-        try {
-            Document doc = FileTools.getDocumentFromFile(new File(filePath));
-            if (doc != null && doc.getRootElement() != null) {
-                Element eleText = doc.getRootElement().getChild("text", null);
-                if (eleText != null && eleText.getChild("body", null) != null) {
-                    String language = eleText.getAttributeValue("lang", Namespace.getNamespace("xml", "http://www.w3.org/XML/1998/namespace"));
-                    Element eleBody = eleText.getChild("body", null);
-                    Element eleNewRoot = new Element("tempRoot");
-                    for (Element ele : eleBody.getChildren()) {
-                        eleNewRoot.addContent(ele.clone());
-                    }
-                    String html = FileTools.getStringFromElement(eleNewRoot, null).replace("<tempRoot>", "").replace("</tempRoot>", "").trim();
-                    return new TeiToHtmlConverter(ConverterMode.resource).convert(html, language);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (JDOMException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return null;
     }
 
     /**

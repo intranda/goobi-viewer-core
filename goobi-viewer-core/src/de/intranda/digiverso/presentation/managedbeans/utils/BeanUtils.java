@@ -47,6 +47,7 @@ public class BeanUtils {
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
 
     /**
+     * Gets the current Request from the faces context
      * 
      * @return
      */

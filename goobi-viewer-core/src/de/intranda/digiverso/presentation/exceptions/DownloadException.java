@@ -17,13 +17,14 @@ package de.intranda.digiverso.presentation.exceptions;
 
 public class DownloadException extends PresentationException {
 
+    private static final long serialVersionUID = -5686409226129811010L;
+
     /**
      * @param string
      * @param e
      */
     public DownloadException(String string, Throwable e) {
         super(string, e);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -31,9 +32,6 @@ public class DownloadException extends PresentationException {
      */
     public DownloadException(String string) {
         super(string);
-        // TODO Auto-generated constructor stub
     }
 
-    
-    
 }
