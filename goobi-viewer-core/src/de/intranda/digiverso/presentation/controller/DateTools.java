@@ -209,23 +209,4 @@ public class DateTools {
                 return formatterENDateTime.print(date.getTime());
         }
     }
-
-    /**
-     * @param dateEnd
-     * @param locale
-     * @return
-     */
-    public static String formatDate(Date date, Locale locale) {
-        if (locale != null) {
-            switch (locale.getLanguage()) {
-                case "de":
-                    return formatterDEDate.print(date.getTime());
-                case "en":
-                default:
-                    return formatterENDate.print(date.getTime());
-            }
-        }
-
-        return formatterENDate.print(date.getTime());
-    }
 }
