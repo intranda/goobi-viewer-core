@@ -14,14 +14,12 @@
     <composite:implementation>
     	<div class="bookshelf-navigation">
 			<div class="row no-margin">
-				<div class="#{userBean.loggedIn == 'true' ? 'col-xs-2' : 'col-xs-5'} no-padding bookshelf-navigation__icons">
-					<span class="bookshelf-navigation__icon-heart"></span>
-
+				<div class="col-xs-4 no-padding bookshelf-navigation__icons">
 					<ui:fragment rendered="#{!userBean.loggedIn}">
 						<span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_watchListItems}"></span>
 					</ui:fragment>
 				</div>
-				<div class="#{userBean.loggedIn == 'true' ? 'col-xs-10' : 'col-xs-7'} no-padding bookshelf-navigation__dropdown-wrapper">
+				<div class="col-xs-8 no-padding bookshelf-navigation__dropdown-wrapper">
 					<button type="button" class="btn-clean" data-bookshelf-type="dropdown">
 						#{msg.bookshelf}
 					</button>

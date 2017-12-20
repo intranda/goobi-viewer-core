@@ -701,9 +701,6 @@ var viewerJS = ( function( viewer ) {
             var dropdownListItemAddCounter = null;
             
             if ( elements.length > 0 ) {
-                // activate heart in navigation
-                $( '.bookshelf-navigation__icon-heart' ).addClass( 'added' );
-                
                 elements.forEach( function( item ) {
                     dropdownListItem = $( '<li />' );
                     dropdownListItemLink = $( '<a />' ).attr( 'href', _defaults.root + '/bookshelf/' + item.id + '/' ).attr( 'data-bookshelf-type', 'link' ).text( item.name );
@@ -716,9 +713,6 @@ var viewerJS = ( function( viewer ) {
                 } );
             }
             else {
-                // deactivate heart in navigation
-                $( '.bookshelf-navigation__icon-heart' ).removeClass( 'added' );
-                
                 // add empty list item
                 dropdownListItem = $( '<li />' );
                 dropdownListItemText = $( '<span />' ).addClass( 'empty' ).text( _defaults.msg.noItemsAvailable );

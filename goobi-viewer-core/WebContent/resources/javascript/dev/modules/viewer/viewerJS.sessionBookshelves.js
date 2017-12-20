@@ -105,13 +105,6 @@ var viewerJS = ( function( viewer ) {
         
         _getAllSessionElements( _defaults.root ).then( function( elements ) {
             $( '[data-bookshelf-type="counter"]' ).empty().text( elements.items.length );
-            
-            if ( elements.items.length > 0 ) {
-                $( '.bookshelf-navigation__icon-heart' ).addClass( 'added' );
-            }
-            else {
-                $( '.bookshelf-navigation__icon-heart' ).removeClass( 'added' );
-            }
         } ).fail( function( error ) {
             console.error( 'ERROR - _getAllSessionElements: ', error );
         } );

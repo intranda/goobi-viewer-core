@@ -1043,24 +1043,13 @@ div.mce-fullscreen {
 }
 .bookshelf-navigation__icons span {
   display: inline-block;
-  float: left;
-}
-.bookshelf-navigation__icon-heart {
-  width: 16px;
-  height: 16px;
-  margin-right: 3px;
-  background-image: url("../../images/icons/icon-bs-herz-blau_thin.svg");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-}
-.bookshelf-navigation__icon-heart.added {
-  background-image: url("../../images/icons/icon-bs-herz-blau.svg");
+  float: right;
+  margin-right: 5px;
 }
 .bookshelf-navigation__counter {
   height: 16px;
   line-height: 16px;
-  padding: 0 4px 0 3px;
+  padding: 0 3px;
   font-size: 12px;
   text-align: center;
   color: #fff;
