@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -63,6 +62,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
@@ -82,8 +82,6 @@ import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
-import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
-import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
@@ -1960,7 +1958,7 @@ public class SearchBean implements Serializable {
             facesContext.getExternalContext().responseReset();
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                    + Helper.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
+                    + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage(), e);

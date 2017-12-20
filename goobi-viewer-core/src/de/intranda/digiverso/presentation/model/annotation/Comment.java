@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
@@ -162,7 +163,7 @@ public class Comment implements Comparable<Comment> {
     }
 
     public String getDisplayDate(Date date) {
-        return Helper.formatterDEDateTime.print(date.getTime());
+        return DateTools.formatterDEDateTime.print(date.getTime());
     }
 
     // Property accessors

@@ -50,6 +50,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -917,7 +918,7 @@ public class NavigationHelper implements Serializable {
      * @return
      */
     public String getLocalDate(Date date) {
-        return Helper.getLocalDate(date, locale.getLanguage());
+        return DateTools.getLocalDate(date, locale.getLanguage());
     }
 
     public List<String> getMessageValueList(String keyPrefix) {

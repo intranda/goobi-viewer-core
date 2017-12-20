@@ -59,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.DownloadException;
@@ -396,8 +397,8 @@ public abstract class DownloadJob implements Serializable {
                     body = body.replace("{4}", getType().toUpperCase());
                     MutableDateTime exirationDate = new MutableDateTime(lastRequested);
                     exirationDate.add(ttl);
-                    body = body.replace("{2}", Helper.formatterISO8601Date.print(exirationDate));
-                    body = body.replace("{3}", Helper.formatterISO8601Time.print(exirationDate));
+                    body = body.replace("{2}", DateTools.formatterISO8601Date.print(exirationDate));
+                    body = body.replace("{3}", DateTools.formatterISO8601Time.print(exirationDate));
                 }
                 break;
             case ERROR:
