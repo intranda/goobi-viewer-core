@@ -181,7 +181,7 @@ public class ViewerPath {
      * @return  the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
-        String url = ("/" + getCombinedPrettyfiedPath().toString() + "/").replaceAll("\\/+", "/");
+        String url = ("/" + getCombinedPrettyfiedPath().toString() + "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
         return url;
     }
     
@@ -198,7 +198,7 @@ public class ViewerPath {
      */
     public String getCombinedUrl() {
         
-        String url = ("/" + getCombinedPath().toString() + "/").replace("\\", "/").replaceAll("\\/+", "/");
+        String url = ("/" + getCombinedPath().toString() + "/").replace("\\", "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
         return url;
     }
     

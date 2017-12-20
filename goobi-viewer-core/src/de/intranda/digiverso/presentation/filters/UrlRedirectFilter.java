@@ -75,7 +75,7 @@ public class UrlRedirectFilter implements Filter {
             
                 if (currentPath.isPresent()) {
                     ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
-                    if (!currentPath.get().getPagePath().startsWith("cms/") && currentPath.get().getCmsPage() != null) {
+                    if (!currentPath.get().getPagePath().startsWith("cms") && currentPath.get().getCmsPage() != null) {
                         ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
                         cmsPagePath.setPagePath(Paths.get(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
                         logger.debug("Forwarding " + currentPath.get().toString() + " to " + cmsPagePath.getCombinedUrl());
