@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.utils;
 
-import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +32,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 /**
- * Resource for delivering content documents such as ALTO and plain full-text.
+ * Resource for outputting the current session info.
  */
 @Path("/sessioninfo")
 @ViewerRestServiceBinding
@@ -61,13 +60,11 @@ public class SessionResource {
     /**
      * @return
      * @should return session info correctly
-     * @should throw ContentNotFoundException if file not found
      */
     @GET
     @Path("/")
     @Produces({ MediaType.TEXT_PLAIN })
     public String getSessionInfo() {
-        logger.trace("getSessionInfo");
         if (servletRequest == null) {
             return "Servlet request not found";
         }

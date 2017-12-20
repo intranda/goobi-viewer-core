@@ -418,43 +418,6 @@ public class Helper {
     }
 
     /**
-     * 
-     * @param file
-     * @return
-     * @throws IOException
-     * @deprecated Incompatible with files larger than INT_MAX; use
-     */
-    @Deprecated
-    public static byte[] getBytesFromFile(File file) throws IOException {
-        try (InputStream is = new FileInputStream(file)) {
-            // Get the size of the file
-            long length = file.length();
-
-            if (length > Integer.MAX_VALUE) {
-                // File is too large
-                logger.error("Cannot read file '{}' to bytes because it is too large.", file.getAbsolutePath());
-                return null;
-            }
-
-            // Create the byte array to hold the data
-            byte[] bytes = new byte[(int) length];
-
-            // Read in the bytes
-            int offset = 0;
-            int numRead = 0;
-            while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
-                offset += numRead;
-            }
-
-            // Ensure all the bytes have been read in
-            if (offset < bytes.length) {
-                throw new IOException("Could not completely read file " + file.getName());
-            }
-            return bytes;
-        }
-    }
-
-    /**
      * Re-index in background thread to significantly decrease saving times.
      * 
      * @param pageCompleted
@@ -929,7 +892,6 @@ public class Helper {
     public static String escapeHtmlChars(String str) {
         return StringUtils.replaceEach(str, new String[] { "&", "\"", "<", ">" }, new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
     }
-
 
     /**
      * Removed diacritical marks from each letter in the given String.
