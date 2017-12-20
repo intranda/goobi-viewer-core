@@ -3,12 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 	<display-name>intranda viewer</display-name>
-	<listener>
-		<listener-class>de.intranda.digiverso.presentation.ContextListener</listener-class>
-	</listener>
-	<!-- <listener> -->
-	<!-- <listener-class>de.intranda.digiverso.presentation.SessionListener</listener-class> -->
-	<!-- </listener> -->
+	<!-- Application-internal listeners are registered via @WebListener annotations -->
 	<listener>
 		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
 	</listener>
@@ -103,6 +98,18 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
 	</filter-mapping>
+	
+    <filter>
+        <filter-name>SessionCounterFilter</filter-name>
+        <filter-class>de.intranda.digiverso.presentation.filters.SessionCounterFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SessionCounterFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
 
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
@@ -277,7 +284,7 @@
 
 	<session-config>
 		<tracking-mode>COOKIE</tracking-mode>
-<!-- 		<session-timeout>120</session-timeout> -->
+		<session-timeout>1</session-timeout>
 	</session-config>
 
 	<welcome-file-list>

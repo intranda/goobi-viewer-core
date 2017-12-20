@@ -28,6 +28,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
 import org.apache.logging.log4j.LogManager;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.security.LicenseType;
 import de.intranda.digiverso.presentation.model.security.Role;
 
+@WebListener
 public class ContextListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(ContextListener.class);
