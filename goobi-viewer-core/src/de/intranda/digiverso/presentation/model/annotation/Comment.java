@@ -95,6 +95,15 @@ public class Comment implements Comparable<Comment> {
         // the emptiness inside
     }
 
+    /**
+     * 
+     * @param pi
+     * @param page
+     * @param owner
+     * @param text
+     * @param parent
+     * @should construct object correctly
+     */
     public Comment(String pi, int page, User owner, String text, Comment parent) {
         this.pi = pi;
         this.page = page;
@@ -157,6 +166,9 @@ public class Comment implements Comparable<Comment> {
      *
      * @param userId The id of the querying user.
      * @return true if allowed; false otherwise
+     * @should return true if use id equals owner id
+     * @should return false if owner id is null
+     * @should return false if user is null
      */
     public boolean mayEdit(User user) {
         return owner.getId() != null && user != null && owner.getId() == user.getId();
