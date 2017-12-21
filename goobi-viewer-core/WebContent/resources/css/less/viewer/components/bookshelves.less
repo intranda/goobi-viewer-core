@@ -157,6 +157,19 @@
 		max-height: 280px;
 		overflow-y: auto;
 	}
+	&__body-loader {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-image: url("@{images}/infinity_loader.svg");
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: 25%;
+		background-color: @white;
+		z-index: 100000;
+	}
 	&__body-list {
 		li {
 			padding: 2px 5px;

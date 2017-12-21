@@ -1309,6 +1309,9 @@ var viewerJS = ( function( viewer ) {
             'top': ( posTop + size.height ) + 10 + 'px',
             'left': ( posLeft - 142 ) + ( size.width / 2 ) + 'px'
         } );
+        var bookshelfPopupLoader = $( '<div />' ).addClass( 'bookshelf-popup__body-loader' );
+        bookshelfPopup.append( bookshelfPopupLoader );
+        
         // build popup header
         var bookshelfPopupHeader = $( '<div />' ).addClass( 'bookshelf-popup__header' ).text( _defaults.msg.selectBookshelf );
         
@@ -1396,7 +1399,6 @@ var viewerJS = ( function( viewer ) {
                     // check if item is in bookshelf
                     item.items.forEach( function( object ) {
                         if ( object.pi == pi ) {
-                            console.log( 'found pi' );
                             dropdownListItemIsInBookshelf = '<i class="fa fa-check" aria-hidden="true"></i> ';
                         }
                     } );
@@ -1420,6 +1422,9 @@ var viewerJS = ( function( viewer ) {
             
             // render complete list
             $( '.bookshelf-popup__body' ).empty().append( dropdownList );
+            
+            // remove loader
+            $( '.bookshelf-popup__body-loader' ).remove();
             
             // add item to bookshelf
             $( '.bookshelf-popup__body-list [data-bookshelf-type="add"]' ).on( 'click', function() {
