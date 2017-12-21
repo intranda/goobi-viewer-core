@@ -15,12 +15,20 @@
  */
 package de.intranda.digiverso.presentation.model.bookshelf;
 
+import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.servlets.rest.bookshelves.BookshelfResource;
 
 /**
  * 
@@ -42,7 +50,9 @@ public class SessionStoreBookshelfManager {
      * @throws NullPointerException     if the session is NULL
      */
     public Optional<Bookshelf> getBookshelf(HttpSession session) {
-        
+        if(session == null) {
+            return Optional.empty();
+        }
         try {            
             Object object = session.getAttribute(BOOKSHELF_ATTRIBUTE_NAME);
             if(object != null) {                
@@ -136,6 +146,60 @@ public class SessionStoreBookshelfManager {
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Assigns the curent session bookshelf (if any) to the given user and saves the bookshelf to the database
+     * The bookshelf gets a newly generated name provided by {@link #generateNewBookshelfName(List)}
+     * 
+     * @param user
+     * @param request 
+     * @throws DAOException
+     */
+    public void addSessionBookshelfToUser(User user, HttpServletRequest request) throws DAOException {
+        if(request != null) {
+            Optional<Bookshelf> oBookshelf =getBookshelf(request.getSession());
+            if(oBookshelf.isPresent()) {
+                oBookshelf.get().setOwner(user);
+                oBookshelf.get().setPublic(false);
+                List<Bookshelf> userBookshelves = DataManager.getInstance().getDao().getBookshelves(user);
+                oBookshelf.get().setName(generateNewBookshelfName(userBookshelves));
+                DataManager.getInstance().getDao().addBookshelf(oBookshelf.get());
+            }
+        }
+    }
+    
+    
+    /**
+     * Returns a String of the pattern "List {n}" 
+     * where {n} is the lowest positive integer such that no bookshelf named "List {n}" exists in the given list
+     * 
+     * @param allUserBookshelfs
+     * @return
+     */
+    public static String generateNewBookshelfName(List<Bookshelf> bookshelves) {
+        
+        String bookshelfNameTemplate = "List {num}";
+        String bookshelfNamePlaceholder = "{num}";
+        String bookshelfNameRegex = "List \\d+";
+        String bookshelfNameBase = "List ";
+
+        if(bookshelves == null || bookshelves.isEmpty()) {
+            return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, "1");
+        }
+        
+        
+        Integer counter = bookshelves.stream()
+        .map(bs -> bs.getName())
+        .filter(name -> name != null && name.matches(bookshelfNameRegex))
+        .map(name -> name.replace(bookshelfNameBase, ""))
+        .map(num -> Integer.parseInt(num))
+        .sorted((n1, n2) -> Integer.compare(n2, n1))
+        .findFirst().orElse(0);
+        
+        counter++;
+        
+        return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, counter.toString());
     }
 
 }

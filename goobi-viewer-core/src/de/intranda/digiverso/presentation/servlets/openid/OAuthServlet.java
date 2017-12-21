@@ -214,7 +214,7 @@ public class OAuthServlet extends HttpServlet {
                         logger.error("Could not update user in DB.");
                     }
                 }
-
+                DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
                 UserBean.wipeSession(request);
                 ub.setUser(user);
                 request.getSession().setAttribute("user", user);

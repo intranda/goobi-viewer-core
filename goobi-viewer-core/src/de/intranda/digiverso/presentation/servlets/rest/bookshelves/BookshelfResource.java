@@ -43,6 +43,7 @@ import de.intranda.digiverso.presentation.exceptions.RestApiException;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem;
+import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.servlets.rest.SuccessMessage;
@@ -536,7 +537,7 @@ public class BookshelfResource {
     @Path("/user/add")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelf() throws DAOException, IOException, RestApiException {
-        String name = generateNewBookshelfName(getAllUserBookshelfs());
+        String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
         return addUserBookshelf(name);
     }
     
@@ -553,7 +554,7 @@ public class BookshelfResource {
     @Path("/user/addSessionBookshelf")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelfFromSession() throws DAOException, IOException, RestApiException {
-        String name = generateNewBookshelfName(getAllUserBookshelfs());
+        String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
         return addUserBookshelfFromSession(name);
     }
     
@@ -778,35 +779,7 @@ public class BookshelfResource {
             return false;
         }
     }
-    
-    /**
-     * @param allUserBookshelfs
-     * @return
-     */
-    private String generateNewBookshelfName(List<Bookshelf> bookshelves) {
-        
-        String bookshelfNameTemplate = "List {num}";
-        String bookshelfNamePlaceholder = "{num}";
-        String bookshelfNameRegex = "List \\d+";
-        String bookshelfNameBase = "List ";
 
-        if(bookshelves == null || bookshelves.isEmpty()) {
-            return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, "1");
-        }
-        
-        
-        Integer counter = bookshelves.stream()
-        .map(bs -> bs.getName())
-        .filter(name -> name != null && name.matches(bookshelfNameRegex))
-        .map(name -> name.replace(bookshelfNameBase, ""))
-        .map(num -> Integer.parseInt(num))
-        .sorted((n1, n2) -> Integer.compare(n2, n1))
-        .findFirst().orElse(0);
-        
-        counter++;
-        
-        return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, counter.toString());
-    }
 
     //    @PUT
     //    @Path("/testPost")
