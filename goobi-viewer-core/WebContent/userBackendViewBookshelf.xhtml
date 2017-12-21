@@ -19,9 +19,9 @@
 		</f:metadata>
 	</ui:define>
 	
-	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
-	</ui:define>
+<!-- 	<ui:define name="breadcrumbs"> -->
+<!-- 		<ui:include src="/resources/includes/breadcrumbs.xhtml" /> -->
+<!-- 	</ui:define> -->
 
 	<ui:define name="content">
 		<div id="viewBookshelf" class="view-bookshelf">
@@ -58,18 +58,25 @@
 													<h4>#{item.name}</h4>
 													
 													<!--  DESCRIPTION -->
-													<ui:fragment rendered="#{!item.description}">														
-														<h:inputTextarea name="item-description">
-															<f:passThroughAttribute name="placeholder" value="#{msg.bookshelf_enterItemDescription}" />
-														</h:inputTextarea>
-													</ui:fragment>
+<!-- 													<textarea name="item-description" id="itemDescription-#{status.index}" data-pi="#{item.pi}" placeholder="#{msg.bookshelf_enterItemDescription}"></textarea> -->
 													
-													<ui:fragment rendered="#{item.description}">
-														<p>#{item.description}</p>
-													</ui:fragment>													
+<!-- 													<ui:fragment rendered="#{!item.description}">														 -->
+<!-- 														<h:inputTextarea name="item-description" value="#{bookshelfBean.currentBookshelfDescription}"> -->
+<!-- 															<f:passThroughAttribute name="placeholder" value="#{msg.bookshelf_enterItemDescription}" /> -->
+<!-- 														</h:inputTextarea> -->
+<!-- 													</ui:fragment> -->
+													
+<!-- 													<ui:fragment rendered="#{item.description}"> -->
+<!-- 														<p>#{item.description}</p> -->
+<!-- 													</ui:fragment>													 -->
 												</div>
 												<!--  ACTION -->
 												<div class="view-bookshelf__item-action">
+													
+<!-- 													<button type="button" data-bookshelf-type="save" data-description-id="#{status.index}">Speichern</button> -->
+
+
+
 													<h:commandLink action="#{bookshelfBean.deleteCurrentItemAction(item)}" title="#{msg.bookshelf_itemDelete}" role="button">
 														<f:passThroughAttribute name="data-bookshelf-type" value="delete" />
 														<f:passThroughAttribute name="data-toggle" value="tooltip" />
@@ -152,52 +159,37 @@
 <!-- 							</h:form> -->
 						
 
-					<h:form id="viewBookshelfControlsForm" prependId="false">
-						<h:commandLink rendered="#{bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToMyBookshelves}" action="pretty:userMenuMyBookshelves" styleClass="btn" />
-						<h:commandLink rendered="#{!bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToOtherBookshelves}" action="pretty:userMenuOtherBookshelves" styleClass="btn" />
-					</h:form>
+<!-- 					<h:form id="viewBookshelfControlsForm" prependId="false"> -->
+<!-- 						<h:commandLink rendered="#{bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToMyBookshelves}" action="pretty:userMenuMyBookshelves" styleClass="btn" /> -->
+<!-- 						<h:commandLink rendered="#{!bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToOtherBookshelves}" action="pretty:userMenuOtherBookshelves" styleClass="btn" /> -->
+<!-- 					</h:form> -->
 				</h:panelGroup>
 
 			</h:panelGroup>
 		</div>
-		<script type="text/javascript">
-//         $(document).ready(function() {
-//             var btnCount = 0;
-//             $.each($('.deleteBookshelfItemBtn'), function() {
-//                 $(this).attr('data-target', '#deleteBookshelfItemModal-' + btnCount);
-//                 btnCount++;
-//             });
-            
-//             var modalCount = 0;
-//             $.each($('.deleteBookshelfItemModal'), function() {
-//                 $(this).attr('id', 'deleteBookshelfItemModal-' + modalCount);
-//                 modalCount++;
-//             });
-//         });
-        </script>
 	</ui:define>
 
 	<ui:define name="sidebar">
-		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-			<widgetComponent:widget_browsing />
-		</h:panelGroup>
+<!-- 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}"> -->
+<!-- 			<widgetComponent:widget_browsing /> -->
+<!-- 		</h:panelGroup> -->
 
-		<widgetComponent:widget_bookshelves addToBookshelfDisplay="false" />
+<!-- 		<widgetComponent:widget_bookshelves addToBookshelfDisplay="false" /> -->
 
-		<h:panelGroup rendered="#{userBean.loggedIn}">
-			<widgetComponent:widget_mySearches />
-		</h:panelGroup>
+<!-- 		<h:panelGroup rendered="#{userBean.loggedIn}"> -->
+<!-- 			<widgetComponent:widget_mySearches /> -->
+<!-- 		</h:panelGroup> -->
 
-		<c:forEach var="module" items="#{configurationBean.modules}">
-			<c:forEach var="contribution" items="#{module.sidebarContributions}">
-				<ui:include src="/#{contribution}" />
-			</c:forEach>
-		</c:forEach>
+<!-- 		<c:forEach var="module" items="#{configurationBean.modules}"> -->
+<!-- 			<c:forEach var="contribution" items="#{module.sidebarContributions}"> -->
+<!-- 				<ui:include src="/#{contribution}" /> -->
+<!-- 			</c:forEach> -->
+<!-- 		</c:forEach> -->
 
-		<widgetComponent:widget_user />
+<!-- 		<widgetComponent:widget_user /> -->
 	</ui:define>
 
-	<ui:define name="rssFeed">
-		<ui:include src="resources/includes/rssFeed.xhtml" />
-	</ui:define>
+<!-- 	<ui:define name="rssFeed"> -->
+<!-- 		<ui:include src="resources/includes/rssFeed.xhtml" /> -->
+<!-- 	</ui:define> -->
 </ui:composition>
