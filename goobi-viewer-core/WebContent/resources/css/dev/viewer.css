@@ -3599,7 +3599,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
 }
 .search-advanced__input-group input[type="text"] {
-  border-right-color: transparent;
+  border-right: none;
 }
 .search-advanced__input-group input[type="text"]:focus {
   border-right-color: #428bca;

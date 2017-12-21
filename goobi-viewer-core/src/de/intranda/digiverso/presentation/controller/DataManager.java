@@ -16,7 +16,9 @@
 package de.intranda.digiverso.presentation.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,14 +42,16 @@ public final class DataManager {
 
     private final List<IModule> modules = new ArrayList<>();
 
+    private final Map<String, Map<String, String>> sessionMap = new HashMap<>();
+
     private Configuration configuration;
-    
+
     private LanguageHelper languageHelper;
 
     private SolrSearchIndex searchIndex;
 
     private IDAO dao;
-    
+
     private SessionStoreBookshelfManager bookshelfManager;
 
     public static DataManager getInstance() {
@@ -139,6 +143,21 @@ public final class DataManager {
     }
 
     /**
+     * 
+     * @return
+     */
+    public int getSessionCount() {
+        return sessionMap.size();
+    }
+
+    /**
+     * @return the sessionMap
+     */
+    public Map<String, Map<String, String>> getSessionMap() {
+        return sessionMap;
+    }
+
+    /**
      * @return the searchIndex
      */
     public Configuration getConfiguration() {
@@ -150,8 +169,6 @@ public final class DataManager {
 
         return configuration;
     }
-    
-    
 
     /**
      * @return the languageHelper
@@ -162,7 +179,7 @@ public final class DataManager {
                 languageHelper = new LanguageHelper("languages.xml");
             }
         }
-        
+
         return languageHelper;
     }
 
@@ -223,16 +240,16 @@ public final class DataManager {
     public void injectDao(IDAO dao) {
         this.dao = dao;
     }
-    
+
     public SessionStoreBookshelfManager getBookshelfManager() {
-        if(this.bookshelfManager == null) {
+        if (this.bookshelfManager == null) {
             synchronized (lock) {
                 this.bookshelfManager = new SessionStoreBookshelfManager();
             }
         }
         return this.bookshelfManager;
     }
-    
+
     public void injectBookshelfManager(SessionStoreBookshelfManager bookshelfManager) {
         this.bookshelfManager = bookshelfManager;
     }

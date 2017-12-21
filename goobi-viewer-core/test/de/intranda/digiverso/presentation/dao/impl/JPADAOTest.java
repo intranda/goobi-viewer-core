@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
@@ -1737,20 +1737,20 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     public void getOverviewPageForRecord_shouldFilterByDateRangeCorrectly() throws Exception {
-        Date fromDate = Helper.parseDateFromString("2015-06-21");
-        Date toDate = Helper.parseDateFromString("2015-06-23");
+        Date fromDate = DateTools.parseDateFromString("2015-06-21");
+        Date toDate = DateTools.parseDateFromString("2015-06-23");
         OverviewPage op = DataManager.getInstance().getDao().getOverviewPageForRecord("PI 1", fromDate, toDate);
         Assert.assertNotNull(op);
         Assert.assertEquals(Long.valueOf(1), op.getId());
 
-        fromDate = Helper.parseDateFromString("2015-06-22");
-        toDate = Helper.parseDateFromString("2015-06-22");
+        fromDate = DateTools.parseDateFromString("2015-06-22");
+        toDate = DateTools.parseDateFromString("2015-06-22");
         op = DataManager.getInstance().getDao().getOverviewPageForRecord("PI 1", fromDate, toDate);
         Assert.assertNotNull(op);
         Assert.assertEquals(Long.valueOf(1), op.getId());
 
-        fromDate = Helper.parseDateFromString("2016-01-01");
-        toDate = Helper.parseDateFromString("2016-05-04");
+        fromDate = DateTools.parseDateFromString("2016-01-01");
+        toDate = DateTools.parseDateFromString("2016-05-04");
         op = DataManager.getInstance().getDao().getOverviewPageForRecord("PI 1", fromDate, toDate);
         Assert.assertNull(op);
     }
@@ -1823,16 +1823,16 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
             Assert.assertEquals("PI 1", overviewPages.get(0).getPi());
         }
         {
-            Date fromDate = Helper.parseDateFromString("2015-06-21");
-            Date toDate = Helper.parseDateFromString("2015-06-23");
+            Date fromDate = DateTools.parseDateFromString("2015-06-21");
+            Date toDate = DateTools.parseDateFromString("2015-06-23");
             List<OverviewPage> overviewPages = DataManager.getInstance().getDao().getOverviewPages(0, 10, fromDate, null);
             Assert.assertNotNull(overviewPages);
             Assert.assertEquals(1, overviewPages.size());
             Assert.assertEquals("PI 1", overviewPages.get(0).getPi());
         }
         {
-            Date fromDate = Helper.parseDateFromString("2016-06-21");
-            Date toDate = Helper.parseDateFromString("2016-06-23");
+            Date fromDate = DateTools.parseDateFromString("2016-06-21");
+            Date toDate = DateTools.parseDateFromString("2016-06-23");
             List<OverviewPage> overviewPages = DataManager.getInstance().getDao().getOverviewPages(0, 10, fromDate, null);
             Assert.assertNotNull(overviewPages);
             Assert.assertEquals(0, overviewPages.size());
@@ -1889,12 +1889,12 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
     public void isOverviewPageHasUpdates_shouldReturnStatusCorrectly() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getDao().isOverviewPageHasUpdates("PI 1", null, null));
 
-        Date fromDate = Helper.parseDateFromString("2015-06-21");
-        Date toDate = Helper.parseDateFromString("2015-06-23");
+        Date fromDate = DateTools.parseDateFromString("2015-06-21");
+        Date toDate = DateTools.parseDateFromString("2015-06-23");
         Assert.assertTrue(DataManager.getInstance().getDao().isOverviewPageHasUpdates("PI 1", fromDate, toDate));
 
-        fromDate = Helper.parseDateFromString("2016-05-13");
-        toDate = Helper.parseDateFromString("2016-05-13");
+        fromDate = DateTools.parseDateFromString("2016-05-13");
+        toDate = DateTools.parseDateFromString("2016-05-13");
         Assert.assertFalse(DataManager.getInstance().getDao().isOverviewPageHasUpdates("PI 1", fromDate, toDate));
     }
 

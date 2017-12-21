@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -49,6 +50,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -58,6 +60,7 @@ import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
@@ -728,6 +731,18 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getSearchUrl(int activeSearchType) {
+        
+        //If we are on a cms-page, return the cms page url
+        try {            
+            Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
+            if(oView.isPresent()) {
+                String path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
+                return path;
+            }
+        } catch(Throwable e) {
+            logger.error(e.toString(), e);
+        }
+        
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
@@ -903,7 +918,7 @@ public class NavigationHelper implements Serializable {
      * @return
      */
     public String getLocalDate(Date date) {
-        return Helper.getLocalDate(date, locale.getLanguage());
+        return DateTools.getLocalDate(date, locale.getLanguage());
     }
 
     public List<String> getMessageValueList(String keyPrefix) {

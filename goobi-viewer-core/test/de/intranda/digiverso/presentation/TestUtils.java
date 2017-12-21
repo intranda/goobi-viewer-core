@@ -29,7 +29,6 @@ import javax.servlet.http.HttpSessionContext;
 import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.managedbeans.ContextMocker;
-import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
 
 public class TestUtils {
 
@@ -53,24 +52,24 @@ public class TestUtils {
 
         return facesContext;
     }
-    
+
     public static HttpServletRequest mockHttpRequest() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        
+
         HttpSession session = new MockSession();
         Mockito.when(request.getSession()).thenReturn(session);
-                
+
         return request;
-        
-//        Map<String, Object> sessionMap = new HashMap<>();
-//        Mockito.when(session.getAttribute(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME)).thenReturn(sessionMap.get(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME));
-//        Mockito.when(session.setAttribute(arg0, arg1);)
+
+        //        Map<String, Object> sessionMap = new HashMap<>();
+        //        Mockito.when(session.getAttribute(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME)).thenReturn(sessionMap.get(SessionStoreBookshelfManager.BOOKSHELF_ATTRIBUTE_NAME));
+        //        Mockito.when(session.setAttribute(arg0, arg1);)
     }
-    
+
     public static class MockSession implements HttpSession {
 
-        Map<String, Object> attributes = new HashMap();
-        
+        Map<String, Object> attributes = new HashMap<>();
+
         /* (non-Javadoc)
          * @see javax.servlet.http.HttpSession#getAttribute(java.lang.String)
          */
@@ -78,23 +77,23 @@ public class TestUtils {
         public Object getAttribute(String key) {
             return attributes.get(key);
         }
-        
+
         /* (non-Javadoc)
          * @see javax.servlet.http.HttpSession#setAttribute(java.lang.String, java.lang.Object)
          */
         @Override
         public void setAttribute(String key, Object value) {
-           attributes.put(key, value);
-            
+            attributes.put(key, value);
+
         }
-        
+
         /* (non-Javadoc)
          * @see javax.servlet.http.HttpSession#removeAttribute(java.lang.String)
          */
         @Override
         public void removeAttribute(String key) {
-           attributes.remove(key);
-            
+            attributes.remove(key);
+
         }
 
         /* (non-Javadoc)
@@ -102,7 +101,6 @@ public class TestUtils {
          */
         @Override
         public Enumeration<String> getAttributeNames() {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -111,7 +109,6 @@ public class TestUtils {
          */
         @Override
         public long getCreationTime() {
-            // TODO Auto-generated method stub
             return 0;
         }
 
@@ -120,8 +117,7 @@ public class TestUtils {
          */
         @Override
         public String getId() {
-            // TODO Auto-generated method stub
-            return null;
+            return "TEST-SESSION-ID";
         }
 
         /* (non-Javadoc)
@@ -129,7 +125,6 @@ public class TestUtils {
          */
         @Override
         public long getLastAccessedTime() {
-            // TODO Auto-generated method stub
             return 0;
         }
 
@@ -138,7 +133,6 @@ public class TestUtils {
          */
         @Override
         public int getMaxInactiveInterval() {
-            // TODO Auto-generated method stub
             return 0;
         }
 
@@ -147,7 +141,6 @@ public class TestUtils {
          */
         @Override
         public ServletContext getServletContext() {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -156,7 +149,6 @@ public class TestUtils {
          */
         @Override
         public HttpSessionContext getSessionContext() {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -165,7 +157,6 @@ public class TestUtils {
          */
         @Override
         public Object getValue(String arg0) {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -174,7 +165,6 @@ public class TestUtils {
          */
         @Override
         public String[] getValueNames() {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -183,8 +173,6 @@ public class TestUtils {
          */
         @Override
         public void invalidate() {
-            // TODO Auto-generated method stub
-            
         }
 
         /* (non-Javadoc)
@@ -192,7 +180,6 @@ public class TestUtils {
          */
         @Override
         public boolean isNew() {
-            // TODO Auto-generated method stub
             return false;
         }
 
@@ -201,8 +188,6 @@ public class TestUtils {
          */
         @Override
         public void putValue(String arg0, Object arg1) {
-            // TODO Auto-generated method stub
-            
         }
 
         /* (non-Javadoc)
@@ -210,21 +195,15 @@ public class TestUtils {
          */
         @Override
         public void removeValue(String arg0) {
-            // TODO Auto-generated method stub
-            
         }
-
-
 
         /* (non-Javadoc)
          * @see javax.servlet.http.HttpSession#setMaxInactiveInterval(int)
          */
         @Override
         public void setMaxInactiveInterval(int arg0) {
-            // TODO Auto-generated method stub
-            
         }
-        
+
     }
 
 }

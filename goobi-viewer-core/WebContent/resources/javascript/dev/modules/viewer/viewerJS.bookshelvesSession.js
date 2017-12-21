@@ -39,9 +39,9 @@ var viewerJS = ( function( viewer ) {
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'viewer..bookshelvesSession.init' );
+                console.log( 'viewer.bookshelvesSession.init' );
                 console.log( '##############################' );
-                console.log( 'viewer..bookshelvesSession.init: config - ', config );
+                console.log( 'viewer.bookshelvesSession.init: config - ', config );
             }
             
             $.extend( true, _defaults, config );
@@ -50,7 +50,7 @@ var viewerJS = ( function( viewer ) {
             _renderDropdownList();
             
             // toggle bookshelf dropdown
-            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
+            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
                 
                 _getAllSessionElements( _defaults.root ).then( function( elements ) {
@@ -103,8 +103,14 @@ var viewerJS = ( function( viewer ) {
             } );
             
             // hide menus by clicking on body
-            $( 'body' ).on( 'click', function() {
-                $( '.bookshelf-navigation__dropdown' ).hide();
+            $( 'body' ).on( 'click', function( event ) {
+                var target = $( event.target );
+                var dropdown = $( '.bookshelf-navigation__dropdown' );
+                var dropdownChild = dropdown.find( '*' );
+                
+                if ( !target.is( dropdown ) && !target.is( dropdownChild ) ) {
+                    $( '.bookshelf-navigation__dropdown' ).hide();
+                }
             } );
         }
     };
@@ -305,6 +311,7 @@ var viewerJS = ( function( viewer ) {
                 $( '.bookshelf-navigation__dropdown-list-reset' ).empty().append( dropdownListReset );
             }
             else {
+                $( '.bookshelf-navigation__dropdown' ).hide();
                 $( '.bookshelf-navigation__dropdown-list-reset' ).empty();
             }
             
