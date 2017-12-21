@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
@@ -82,6 +83,8 @@ import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
@@ -1258,8 +1261,19 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeHierarchicalFacetAction(String facetQuery) {
-        return facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+        
+        String ret = facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
                 : "pretty:newSearch5");
+        
+        //redirect to current cms page if this action takes place on a cms page
+        Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if(oPath.isPresent() && oPath.get().isCmsPage()) {
+            oPath.get().getCmsPage().getSearch().redirectToSearchUrl();
+            return "";
+        } else {
+            return ret;
+        }
+        
     }
 
     /**
@@ -1269,8 +1283,17 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeFacetAction(String facetQuery) {
-        return facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+        String ret = facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
                 : "pretty:newSearch5");
+        
+        //redirect to current cms page if this action takes place on a cms page
+        Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if(oPath.isPresent() && oPath.get().isCmsPage()) {
+            oPath.get().getCmsPage().getSearch().redirectToSearchUrl();
+            return "";
+        } else {
+            return ret;
+        }
     }
 
     /*

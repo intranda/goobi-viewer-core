@@ -274,6 +274,10 @@ public class ViewerPath {
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
+    
+    public boolean isCmsPage() {
+        return getCmsPage() != null;
+    }
 
 }
 
