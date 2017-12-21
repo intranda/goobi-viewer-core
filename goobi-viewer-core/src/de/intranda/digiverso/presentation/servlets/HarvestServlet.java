@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.FileTools;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
@@ -104,7 +104,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             message = values[0];
                             break;
                         case "from":
-                            DateTime fromDateTime = Helper.parseDateTimeFromString(values[0], true);
+                            DateTime fromDateTime = DateTools.parseDateTimeFromString(values[0], true);
                             if (fromDateTime == null) {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'from' attribute value: " + values[0]);
                                 return;
@@ -112,7 +112,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             fromDate = fromDateTime.toDate();
                             break;
                         case "until":
-                            DateTime toDateTime = Helper.parseDateTimeFromString(values[0], true);
+                            DateTime toDateTime = DateTools.parseDateTimeFromString(values[0], true);
                             if (toDateTime == null) {
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Illegal 'until' attribute value: " + values[0]);
                                 return;
@@ -199,7 +199,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Overview page not found");
                             return;
                         }
-                        String now = Helper.formatterFilename.print(System.currentTimeMillis());
+                        String now = DateTools.formatterFilename.print(System.currentTimeMillis());
                         String fileNamePrefix = String.valueOf(Thread.currentThread().getId()) + "_"; // Thread ID as prefix so that it doesn't collide with other users' calls
                         String fileName = identifier + "_overviewpage_" + (fromDate != null ? fromDate.getTime() : "-") + "-" + (toDate != null
                                 ? toDate.getTime() : "-") + ".xml";

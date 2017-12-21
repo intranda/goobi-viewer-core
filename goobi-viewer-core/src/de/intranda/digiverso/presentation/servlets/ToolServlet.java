@@ -40,9 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.Sitemap;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -348,10 +349,10 @@ public class ToolServlet extends HttpServlet implements Serializable {
         Date date = null;
         switch (dateString.length()) {
             case 8:
-                date = Helper.formatterISO8601BasicDate.parseDateTime(dateString).toDate();
+                date = DateTools.formatterISO8601BasicDate.parseDateTime(dateString).toDate();
                 break;
             case 4:
-                date = Helper.formatterISO8601BasicDateNoYear.parseDateTime(dateString).toDate();
+                date = DateTools.formatterISO8601BasicDateNoYear.parseDateTime(dateString).toDate();
                 Calendar cal = new GregorianCalendar();
                 int year = cal.get(Calendar.YEAR);
                 cal.setTime(date);

@@ -46,6 +46,7 @@ import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.normdataimporter.model.NormData;
 import de.intranda.digiverso.normdataimporter.model.NormDataValue;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
@@ -510,7 +511,7 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 logger.warn(jsonObject.get("id") + " has no " + SolrConstants.DATECREATED + " value.");
                 continue;
             }
-            String dateString = Helper.formatterISO8601Date.print(dateCreatedTimestamp);
+            String dateString = DateTools.formatterISO8601Date.print(dateCreatedTimestamp);
             if (currentDateJsonObject == null || !dateString.equals(currentDateString)) {
                 currentDateString = dateString;
                 currentDateJsonObject = new JSONObject();

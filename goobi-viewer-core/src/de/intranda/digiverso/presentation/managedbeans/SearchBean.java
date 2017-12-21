@@ -63,6 +63,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
@@ -1260,8 +1261,19 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeHierarchicalFacetAction(String facetQuery) {
-        return facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+        
+        String ret = facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
                 : "pretty:newSearch5");
+        
+        //redirect to current cms page if this action takes place on a cms page
+        Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if(oPath.isPresent() && oPath.get().isCmsPage()) {
+            oPath.get().getCmsPage().getSearch().redirectToSearchUrl();
+            return "";
+        } else {
+            return ret;
+        }
+        
     }
 
     /**
@@ -1271,8 +1283,17 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeFacetAction(String facetQuery) {
-        return facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+        String ret = facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
                 : "pretty:newSearch5");
+        
+        //redirect to current cms page if this action takes place on a cms page
+        Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if(oPath.isPresent() && oPath.get().isCmsPage()) {
+            oPath.get().getCmsPage().getSearch().redirectToSearchUrl();
+            return "";
+        } else {
+            return ret;
+        }
     }
 
     /*
@@ -1960,7 +1981,7 @@ public class SearchBean implements Serializable {
             facesContext.getExternalContext().responseReset();
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                    + Helper.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
+                    + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage(), e);

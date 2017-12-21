@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.urlresolution;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocpsoft.pretty.PrettyContext;
@@ -83,6 +86,10 @@ public class ViewerPathBuilder {
      */
     public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl) throws DAOException {
         serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", ""); 
+        try {
+            serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
+        } catch (UnsupportedEncodingException e) {
+        }
         final Path servicePath = Paths.get(serviceUrl);
         
         ViewerPath currentPath = new ViewerPath();
