@@ -50,7 +50,7 @@ var viewerJS = ( function( viewer ) {
             _renderDropdownList();
             
             // toggle bookshelf dropdown
-            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
+            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
                 
                 _getAllSessionElements( _defaults.root ).then( function( elements ) {

@@ -449,7 +449,7 @@ var viewerJS = ( function( viewer ) {
             _renderDropdownList();
             
             // toggle bookshelf dropdown
-            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
+            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
                 
                 _getAllSessionElements( _defaults.root ).then( function( elements ) {
@@ -817,7 +817,7 @@ var viewerJS = ( function( viewer ) {
             _renderBookshelfNavigationList();
             
             // toggle bookshelf dropdown
-            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
+            $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
                 $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
             } );
@@ -826,7 +826,7 @@ var viewerJS = ( function( viewer ) {
             _setAddedStatus();
             
             // render bookshelf popup
-            $( '[data-bookshelf-type="add"]' ).off().on( 'click', function() {
+            $( '[data-bookshelf-type="add"]' ).off().on( 'click', function(event) {
                 event.stopPropagation();
                 
                 var currBtn = $( this );
