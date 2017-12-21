@@ -61,7 +61,7 @@ var viewerJS = ( function( viewer ) {
                         return false;
                     }
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _getAllSessionElements: ', error );
+                    console.error( 'ERROR - _getAllSessionElements: ', error.responseText );
                 } );
                 
             } );
@@ -98,7 +98,7 @@ var viewerJS = ( function( viewer ) {
                         } );
                     }
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _isElementSet: ', error );
+                    console.error( 'ERROR - _isElementSet: ', error.responseText );
                 } );
             } );
             
@@ -252,7 +252,7 @@ var viewerJS = ( function( viewer ) {
         _getAllSessionElements( _defaults.root ).then( function( elements ) {
             $( '[data-bookshelf-type="counter"]' ).empty().text( elements.items.length );
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllSessionElements: ', error );
+            console.error( 'ERROR - _getAllSessionElements: ', error.responseText );
         } );
     }
     /**
@@ -342,7 +342,7 @@ var viewerJS = ( function( viewer ) {
             } );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllSessionElements: ', error );
+            console.error( 'ERROR - _getAllSessionElements: ', error.responseText );
         } );
     }
     /**
@@ -367,7 +367,7 @@ var viewerJS = ( function( viewer ) {
                     currBtn.removeClass( 'added' );
                 }
             } ).fail( function( error ) {
-                console.error( 'ERROR - _isElementSet: ', error );
+                console.error( 'ERROR - _isElementSet: ', error.responseText );
             } );
         } );
     }

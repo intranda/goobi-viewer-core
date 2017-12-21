@@ -603,7 +603,7 @@ var viewerJS = ( function( viewer ) {
                     _renderBookshelfPopoverList( currPi );
                     _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _addNamedBookshelf: ', error );
+                    console.error( 'ERROR - _addNamedBookshelf: ', error.responseText );
                 } );
             }
             else {
@@ -612,7 +612,7 @@ var viewerJS = ( function( viewer ) {
                     _renderBookshelfPopoverList( currPi );
                     _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _addAutomaticNamedBookshelf: ', error );
+                    console.error( 'ERROR - _addAutomaticNamedBookshelf: ', error.responseText );
                 } );
             }
         } );
@@ -690,12 +690,12 @@ var viewerJS = ( function( viewer ) {
                     _renderBookshelfNavigationList();
                     _setAddedStatus();
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _addBookshelfItemByPi: ', error );
+                    console.error( 'ERROR - _addBookshelfItemByPi: ', error.responseText );
                 } );
             } );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllBookshelfItems: ', error );
+            console.error( 'ERROR - _getAllBookshelfItems: ', error.responseText );
         } );
     }
     /**
@@ -741,7 +741,7 @@ var viewerJS = ( function( viewer ) {
             $( '.bookshelf-navigation__dropdown-list' ).empty().append( dropdownList );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllBookshelfItems: ', error );
+            console.error( 'ERROR - _getAllBookshelfItems: ', error.responseText );
         } );
     }
     
@@ -784,7 +784,7 @@ var viewerJS = ( function( viewer ) {
                 object.addClass( 'added' );
             }
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getContainingBookshelfItemByPi: ', error );
+            console.error( 'ERROR - _getContainingBookshelfItemByPi: ', error.responseText );
         } );
     }
     

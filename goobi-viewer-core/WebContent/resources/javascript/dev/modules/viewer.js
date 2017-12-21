@@ -460,7 +460,7 @@ var viewerJS = ( function( viewer ) {
                         return false;
                     }
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _getAllSessionElements: ', error );
+                    console.error( 'ERROR - _getAllSessionElements: ', error.responseText );
                 } );
                 
             } );
@@ -497,7 +497,7 @@ var viewerJS = ( function( viewer ) {
                         } );
                     }
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _isElementSet: ', error );
+                    console.error( 'ERROR - _isElementSet: ', error.responseText );
                 } );
             } );
             
@@ -651,7 +651,7 @@ var viewerJS = ( function( viewer ) {
         _getAllSessionElements( _defaults.root ).then( function( elements ) {
             $( '[data-bookshelf-type="counter"]' ).empty().text( elements.items.length );
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllSessionElements: ', error );
+            console.error( 'ERROR - _getAllSessionElements: ', error.responseText );
         } );
     }
     /**
@@ -741,7 +741,7 @@ var viewerJS = ( function( viewer ) {
             } );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllSessionElements: ', error );
+            console.error( 'ERROR - _getAllSessionElements: ', error.responseText );
         } );
     }
     /**
@@ -766,7 +766,7 @@ var viewerJS = ( function( viewer ) {
                     currBtn.removeClass( 'added' );
                 }
             } ).fail( function( error ) {
-                console.error( 'ERROR - _isElementSet: ', error );
+                console.error( 'ERROR - _isElementSet: ', error.responseText );
             } );
         } );
     }
@@ -826,7 +826,7 @@ var viewerJS = ( function( viewer ) {
             _setAddedStatus();
             
             // render bookshelf popup
-            $( '[data-bookshelf-type="add"]' ).off().on( 'click', function(event) {
+            $( '[data-bookshelf-type="add"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
                 
                 var currBtn = $( this );
@@ -1368,7 +1368,7 @@ var viewerJS = ( function( viewer ) {
                     _renderBookshelfPopoverList( currPi );
                     _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _addNamedBookshelf: ', error );
+                    console.error( 'ERROR - _addNamedBookshelf: ', error.responseText );
                 } );
             }
             else {
@@ -1377,7 +1377,7 @@ var viewerJS = ( function( viewer ) {
                     _renderBookshelfPopoverList( currPi );
                     _renderBookshelfNavigationList();
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _addAutomaticNamedBookshelf: ', error );
+                    console.error( 'ERROR - _addAutomaticNamedBookshelf: ', error.responseText );
                 } );
             }
         } );
@@ -1455,12 +1455,12 @@ var viewerJS = ( function( viewer ) {
                     _renderBookshelfNavigationList();
                     _setAddedStatus();
                 } ).fail( function( error ) {
-                    console.error( 'ERROR - _addBookshelfItemByPi: ', error );
+                    console.error( 'ERROR - _addBookshelfItemByPi: ', error.responseText );
                 } );
             } );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllBookshelfItems: ', error );
+            console.error( 'ERROR - _getAllBookshelfItems: ', error.responseText );
         } );
     }
     /**
@@ -1506,7 +1506,7 @@ var viewerJS = ( function( viewer ) {
             $( '.bookshelf-navigation__dropdown-list' ).empty().append( dropdownList );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllBookshelfItems: ', error );
+            console.error( 'ERROR - _getAllBookshelfItems: ', error.responseText );
         } );
     }
     
@@ -1549,7 +1549,7 @@ var viewerJS = ( function( viewer ) {
                 object.addClass( 'added' );
             }
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getContainingBookshelfItemByPi: ', error );
+            console.error( 'ERROR - _getContainingBookshelfItemByPi: ', error.responseText );
         } );
     }
     
