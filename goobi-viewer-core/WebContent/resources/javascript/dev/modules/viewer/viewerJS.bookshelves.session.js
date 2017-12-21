@@ -19,7 +19,7 @@
  * Module to manage bookshelves in the current session.
  * 
  * @version 3.2.0
- * @module viewerJS.sessionBookshelves
+ * @module viewerJS.bookshelves.session
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -34,13 +34,13 @@ var viewerJS = ( function( viewer ) {
         }
     };
     
-    viewer.sessionBookshelves = {
+    viewer.bookshelves.session = {
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'viewer.sessionBookshelves.init' );
+                console.log( 'viewer.bookshelves.session.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.sessionBookshelves.init: config - ', config );
+                console.log( 'viewer.bookshelves.session.init: config - ', config );
             }
             
             $.extend( true, _defaults, config );
