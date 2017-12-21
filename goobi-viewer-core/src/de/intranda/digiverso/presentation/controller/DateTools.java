@@ -211,6 +211,9 @@ public class DateTools {
     }
 
     /**
+     * FIXME add some more documentation
+     * This method is used by the crowdsourcing module
+     *
      * @param dateEnd
      * @param locale
      * @return
