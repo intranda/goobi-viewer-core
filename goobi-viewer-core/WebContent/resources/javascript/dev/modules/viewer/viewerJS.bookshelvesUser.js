@@ -19,7 +19,7 @@
  * Module to manage bookshelves if the user is logged in.
  * 
  * @version 3.2.0
- * @module viewerJS.bookshelves.user
+ * @module viewerJS..bookshelvesUser
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -37,13 +37,13 @@ var viewerJS = ( function( viewer ) {
         }
     };
     
-    viewer.bookshelves.user = {
+    viewer.bookshelvesUser = {
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'viewer.bookshelves.user.init' );
+                console.log( 'viewer..bookshelvesUser.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.bookshelves.user.init: config - ', config );
+                console.log( 'viewer..bookshelvesUser.init: config - ', config );
             }
             
             $.extend( true, _defaults, config );

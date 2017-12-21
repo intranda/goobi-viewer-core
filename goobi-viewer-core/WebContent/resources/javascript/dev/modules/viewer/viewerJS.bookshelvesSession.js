@@ -19,7 +19,7 @@
  * Module to manage bookshelves in the current session.
  * 
  * @version 3.2.0
- * @module viewerJS.bookshelves.session
+ * @module viewerJS..bookshelvesSession
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -30,17 +30,18 @@ var viewerJS = ( function( viewer ) {
         root: '',
         msg: {
             resetBookshelves: '',
-            resetBookshelvesConfirm: ''
+            resetBookshelvesConfirm: '',
+            saveItemToSession: ''
         }
     };
     
-    viewer.bookshelves.session = {
+    viewer.bookshelvesSession = {
         init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
-                console.log( 'viewer.bookshelves.session.init' );
+                console.log( 'viewer..bookshelvesSession.init' );
                 console.log( '##############################' );
-                console.log( 'viewer.bookshelves.session.init: config - ', config );
+                console.log( 'viewer..bookshelvesSession.init: config - ', config );
             }
             
             $.extend( true, _defaults, config );
@@ -51,7 +52,18 @@ var viewerJS = ( function( viewer ) {
             // toggle bookshelf dropdown
             $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function() {
                 event.stopPropagation();
-                $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
+                
+                _getAllSessionElements( _defaults.root ).then( function( elements ) {
+                    if ( elements.items.length > 0 ) {
+                        $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
+                    }
+                    else {
+                        return false;
+                    }
+                } ).fail( function( error ) {
+                    console.error( 'ERROR - _getAllSessionElements: ', error );
+                } );
+                
             } );
             
             // set element count of list to counter
@@ -67,11 +79,16 @@ var viewerJS = ( function( viewer ) {
                 
                 _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
                     if ( !isSet ) {
-                        currBtn.addClass( 'added' );
-                        _setSessionElement( _defaults.root, currPi ).then( function() {
-                            _setSessionElementCount();
-                            _renderDropdownList();
-                        } );
+                        if ( confirm( _defaults.msg.saveItemToSession ) ) {
+                            currBtn.addClass( 'added' );
+                            _setSessionElement( _defaults.root, currPi ).then( function() {
+                                _setSessionElementCount();
+                                _renderDropdownList();
+                            } );
+                        }
+                        else {
+                            return false;
+                        }
                     }
                     else {
                         currBtn.removeClass( 'added' );
@@ -91,24 +108,9 @@ var viewerJS = ( function( viewer ) {
             } );
         }
     };
-    /**
-     * Method to set the count of elements in watchlist from current session (user not
-     * logged in).
-     * 
-     * @method _setSessionElementCount
-     * @param {String} root The application root path.
-     */
-    function _setSessionElementCount() {
-        if ( _debug ) {
-            console.log( '---------- _setSessionElementCount() ----------' );
-        }
-        
-        _getAllSessionElements( _defaults.root ).then( function( elements ) {
-            $( '[data-bookshelf-type="counter"]' ).empty().text( elements.items.length );
-        } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllSessionElements: ', error );
-        } );
-    }
+    /* ######## ADD (CREATE) ######## */
+
+    /* ######## GET (READ) ######## */
     /**
      * Method to get all elements in watchlist from current session (user not logged in).
      * 
@@ -132,6 +134,32 @@ var viewerJS = ( function( viewer ) {
         return promise;
     }
     /**
+     * Method to check if element is in list (user not logged in).
+     * 
+     * @method _isElementSet
+     * @param {String} root The application root path.
+     * @param {String} pi The persistent identifier of the saved element.
+     * @returns {Boolean} True if element is set.
+     */
+    function _isElementSet( root, pi ) {
+        if ( _debug ) {
+            console.log( '---------- _isElementSet() ----------' );
+            console.log( '_isElementSet: root - ', root );
+            console.log( '_isElementSet: pi - ', pi );
+        }
+        
+        var promise = Q( $.ajax( {
+            url: root + '/rest/bookshelves/session/contains/' + pi + '/',
+            type: "GET",
+            dataType: "JSON",
+            async: true
+        } ) );
+        
+        return promise
+    }
+    
+    /* ######## SET (UPDATE) ######## */
+    /**
      * Method to add an elements to watchlist in current session (user not logged in).
      * 
      * @method _setSessionElement
@@ -154,6 +182,8 @@ var viewerJS = ( function( viewer ) {
         
         return promise
     }
+    
+    /* ######## DELETE ######## */
     /**
      * Method to delete an element from watchlist in current session (user not logged in).
      * 
@@ -199,29 +229,25 @@ var viewerJS = ( function( viewer ) {
         
         return promise
     }
+    
+    /* ######## BUILD ######## */
     /**
-     * Method to check if element is in list (user not logged in).
+     * Method to set the count of elements in watchlist from current session (user not
+     * logged in).
      * 
-     * @method _isElementSet
+     * @method _setSessionElementCount
      * @param {String} root The application root path.
-     * @param {String} pi The persistent identifier of the saved element.
-     * @returns {Boolean} True if element is set.
      */
-    function _isElementSet( root, pi ) {
+    function _setSessionElementCount() {
         if ( _debug ) {
-            console.log( '---------- _isElementSet() ----------' );
-            console.log( '_isElementSet: root - ', root );
-            console.log( '_isElementSet: pi - ', pi );
+            console.log( '---------- _setSessionElementCount() ----------' );
         }
         
-        var promise = Q( $.ajax( {
-            url: root + '/rest/bookshelves/session/contains/' + pi + '/',
-            type: "GET",
-            dataType: "JSON",
-            async: true
-        } ) );
-        
-        return promise
+        _getAllSessionElements( _defaults.root ).then( function( elements ) {
+            $( '[data-bookshelf-type="counter"]' ).empty().text( elements.items.length );
+        } ).fail( function( error ) {
+            console.error( 'ERROR - _getAllSessionElements: ', error );
+        } );
     }
     /**
      * Method to render the element list in bookshelf dropdown (user not logged in).
