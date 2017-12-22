@@ -146,7 +146,7 @@ public class ViewerPathBuilder {
         return DataManager.getInstance().getDao().getAllCMSPages().stream()
                 .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getPersistentUrl()))
                 .filter(page -> servicePath.startsWith(page.getPersistentUrl().replaceAll("^\\/|\\/$", "")))
-                .sorted((page1, page2) -> Integer.compare(page1.getPersistentUrl().length(), page2.getPersistentUrl().length()))
+                .sorted((page1, page2) -> Integer.compare(page2.getPersistentUrl().length(), page1.getPersistentUrl().length()))
                 .findFirst();
     }
     
