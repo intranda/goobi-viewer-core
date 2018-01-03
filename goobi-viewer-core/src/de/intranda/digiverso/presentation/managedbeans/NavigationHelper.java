@@ -730,19 +730,24 @@ public class NavigationHelper implements Serializable {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.search.getName();
     }
 
+    public String getAdvancedSearchUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();
+    }
+
     public String getSearchUrl(int activeSearchType) {
-        
+
         //If we are on a cms-page, return the cms page url
-        try {            
+        try {
             Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
-            if(oView.isPresent()) {
-                String path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+", "/");
+            if (oView.isPresent()) {
+                String path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+",
+                        "/");
                 return path;
             }
-        } catch(Throwable e) {
+        } catch (Throwable e) {
             logger.error(e.toString(), e);
         }
-        
+
         switch (activeSearchType) {
             case SearchHelper.SEARCH_TYPE_ADVANCED:
                 return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.advancedSearch.getName();

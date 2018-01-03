@@ -184,7 +184,7 @@
                 <viewerComponent:simplePaginator 
                     itemCount="#{searchBean.lastPage}" 
                     itemActive="#{searchBean.currentPage}"
-                    urlPrefix="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/"
+                    urlPrefix="#{searchBean.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/"
                     urlSuffix="#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/" />
                 
                 <div class="clearfix"></div>

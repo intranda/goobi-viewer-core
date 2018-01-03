@@ -25,6 +25,7 @@ import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem;
@@ -336,5 +337,32 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         sb.generateAdvancedSearchString(true);
         Assert.assertEquals("(All fields: foo bar OR Title: bla \"blup\" -nein) OR\n<br />(Full text: \"lorem ipsum dolor sit amet\")", sb
                 .getAdvancedSearchQueryInfo());
+    }
+
+    /**
+     * @see SearchBean#getSearchUrl()
+     * @verifies return correct url
+     */
+    @Test
+    public void getSearchUrl_shouldReturnCorrectUrl() throws Exception {
+        SearchBean sb = new SearchBean();
+        NavigationHelper nh = new NavigationHelper();
+        sb.setNavigationHelper(nh);
+
+        sb.activeSearchType = SearchHelper.SEARCH_TYPE_ADVANCED;
+        Assert.assertEquals(nh.getAdvancedSearchUrl(), sb.getSearchUrl());
+
+        sb.activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+        Assert.assertEquals(nh.getSearchUrl(), sb.getSearchUrl());
+    }
+
+    /**
+     * @see SearchBean#getSearchUrl()
+     * @verifies return null if navigationHelper is null
+     */
+    @Test
+    public void getSearchUrl_shouldReturnNullIfNavigationHelperIsNull() throws Exception {
+        SearchBean sb = new SearchBean();
+        Assert.assertNull(sb.getSearchUrl());
     }
 }
