@@ -106,9 +106,8 @@ public class ContentResource {
 
         java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
         if (file != null && Files.isRegularFile(file)) {
-            Document doc;
             try {
-                doc = FileTools.readXmlFile(file);
+                Document doc = FileTools.readXmlFile(file);
                 return new XMLOutputter().outputString(doc);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
@@ -141,6 +140,7 @@ public class ContentResource {
             IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
@@ -160,9 +160,8 @@ public class ContentResource {
             }
 
             if (Files.isRegularFile(filePath)) {
-                Document doc;
                 try {
-                    doc = FileTools.readXmlFile(filePath);
+                    Document doc = FileTools.readXmlFile(filePath);
                     return new XMLOutputter().outputString(doc);
                 } catch (FileNotFoundException e) {
                     logger.debug(e.getMessage());
@@ -197,6 +196,7 @@ public class ContentResource {
             IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
@@ -211,7 +211,7 @@ public class ContentResource {
         ;
         if (file != null && Files.isRegularFile(file)) {
             try {
-                return FileTools.getStringFromFile(file.toFile(), null);
+                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
@@ -239,12 +239,13 @@ public class ContentResource {
      */
     @GET
     @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
-    @Produces({ MediaType.TEXT_HTML })
+    @Produces({ MediaType.TEXT_XML })
     public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
             @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
             MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
         if ("-".equals(dataRepository)) {
             dataRepository = null;
