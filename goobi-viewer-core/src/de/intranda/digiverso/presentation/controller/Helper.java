@@ -17,7 +17,6 @@ package de.intranda.digiverso.presentation.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,6 +70,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Namespace;
 import org.slf4j.Logger;
@@ -668,12 +668,12 @@ public class Helper {
                 .setConnectionRequestTimeout(HTTP_TIMEOUT).build();
         try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpGet get = new HttpGet(urlString);
-            Charset.forName(DEFAULT_ENCODING);
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
-                    IOUtils.copy(response.getEntity().getContent(), writer);
-                    return writer.toString();
+                    return EntityUtils.toString(response.getEntity(), DEFAULT_ENCODING);
+                    // IOUtils.copy(response.getEntity().getContent(), writer);
+                    // return writer.toString();
                 }
                 logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(), IOUtils.toString(response.getEntity().getContent()));
                 throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
