@@ -278,7 +278,7 @@ public final class SearchHelper {
                     .getSubthemeDiscriminatorField()));
         }
         String filterQuerySuffix = getFilterQuerySuffix(request);
-        logger.debug("filterQuerySuffix: " + filterQuerySuffix);
+        logger.debug("filterQuerySuffix: {}", filterQuerySuffix);
         if (filterQuerySuffix != null) {
             sbSuffix.append(filterQuerySuffix);
         }

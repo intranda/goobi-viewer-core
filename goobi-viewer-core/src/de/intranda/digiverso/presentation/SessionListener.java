@@ -15,24 +15,30 @@
  */
 package de.intranda.digiverso.presentation;
 
+import java.util.HashMap;
+
+import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
+
+@WebListener
 public class SessionListener implements HttpSessionListener {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionListener.class);
-
-    private static int currentSessions = 0;
 
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpSessionListener#sessionCreated(javax.servlet.http.HttpSessionEvent)
      */
     @Override
     public void sessionCreated(HttpSessionEvent event) {
-        currentSessions++;
+//        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
+//            logger.trace("Session created: {}", event.getSession().getId());
+//        }
     }
 
     /* (non-Javadoc)
@@ -40,13 +46,8 @@ public class SessionListener implements HttpSessionListener {
      */
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
-        currentSessions--;
-    }
-
-    /**
-     * @return the currentSessions
-     */
-    public static int getCurrentSessions() {
-        return currentSessions;
+        if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
+            logger.trace("Session destroyed: {}", event.getSession().getId());
+        }
     }
 }

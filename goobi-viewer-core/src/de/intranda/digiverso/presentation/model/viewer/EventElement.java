@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -73,7 +73,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
         }
         dateEndString = (String) doc.getFieldValue(SolrConstants.EVENTDATEEND);
         if (StringUtils.isNotEmpty(dateEndString) && dateEnd == null) {
-            List<Date> dates = Helper.parseMultipleDatesFromString(dateEndString);
+            List<Date> dates = DateTools.parseMultipleDatesFromString(dateEndString);
             if (!dates.isEmpty()) {
                 dateEnd = dates.get(0);
             }
@@ -89,7 +89,7 @@ public class EventElement implements Comparable<EventElement>, Serializable {
                 }
             }
             for (String dateString : dateStringsStart) {
-                List<Date> dates = Helper.parseMultipleDatesFromString(dateString);
+                List<Date> dates = DateTools.parseMultipleDatesFromString(dateString);
                 if (!dates.isEmpty() && dateStart == null) {
                     dateStart = dates.get(0);
                     if (dates.size() > 1 && dateEnd == null) {
@@ -236,17 +236,17 @@ public class EventElement implements Comparable<EventElement>, Serializable {
     public boolean hasMetadata() {
         if(metadata != null) {
             return metadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
-        } else {
-            return false;
         }
+        
+        return false;
     }
     
     public boolean hasSidebarMetadata() {
         if(sidebarMetadata != null) {
             return sidebarMetadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
-        } else {
-            return false;
         }
+        
+        return false;
     }
 
     /**

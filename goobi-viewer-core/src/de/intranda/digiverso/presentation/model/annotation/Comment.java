@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
@@ -94,6 +95,15 @@ public class Comment implements Comparable<Comment> {
         // the emptiness inside
     }
 
+    /**
+     * 
+     * @param pi
+     * @param page
+     * @param owner
+     * @param text
+     * @param parent
+     * @should construct object correctly
+     */
     public Comment(String pi, int page, User owner, String text, Comment parent) {
         this.pi = pi;
         this.page = page;
@@ -156,13 +166,16 @@ public class Comment implements Comparable<Comment> {
      *
      * @param userId The id of the querying user.
      * @return true if allowed; false otherwise
+     * @should return true if use id equals owner id
+     * @should return false if owner id is null
+     * @should return false if user is null
      */
     public boolean mayEdit(User user) {
         return owner.getId() != null && user != null && owner.getId() == user.getId();
     }
 
     public String getDisplayDate(Date date) {
-        return Helper.formatterDEDateTime.print(date.getTime());
+        return DateTools.formatterDEDateTime.print(date.getTime());
     }
 
     // Property accessors

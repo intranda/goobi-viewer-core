@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ocpsoft.pretty.PrettyException;
 
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -177,7 +178,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 logger.error(t.getMessage(), t);
                 try {
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
-                    String msg = new StringBuilder(Helper.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ").append(t
+                    String msg = new StringBuilder(DateTools.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ").append(t
                             .getMessage()).toString();
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);

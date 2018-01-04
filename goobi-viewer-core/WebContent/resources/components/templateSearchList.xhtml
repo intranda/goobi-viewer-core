@@ -101,10 +101,10 @@
 									<option value="#" data-sortField="">#{msg.searchSortingDropdown_plsSelect}</option>
 									<ui:repeat var="sortField" value="#{configurationBean.sortFields}">
 										<!-- 										<option value="#{navigationHelper.searchUrl}/#{searchBean.facets.currentCollection}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{sortField}/#{searchBean.facets.currentFacetString}/" data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}"> -->
-										<option value="#{cc.attrs.search.getSortUrl(sortField, false)}/" data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
+										<option value="#{cc.attrs.search.getSortUrl(sortField, false)}" data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_ascending}">
 											<h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_ascending}
 										</option>
-										<option value="#{cc.attrs.search.getSortUrl(sortField, true)}/" data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
+										<option value="#{cc.attrs.search.getSortUrl(sortField, true)}" data-sortField="#{msg[sortField]} #{msg.searchSortingDropdown_descending}">
 											<h:outputText value="#{msg[sortField]}" /> #{msg.searchSortingDropdown_descending}
 										</option>
 									</ui:repeat>

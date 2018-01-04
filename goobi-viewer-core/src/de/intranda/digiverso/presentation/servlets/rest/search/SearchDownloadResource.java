@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -102,7 +102,7 @@ public class SearchDownloadResource {
         final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment;filename=\"viewer_search_" + Helper.formatterISO8601DateTime.print(System
+        response.setHeader("Content-Disposition", "attachment;filename=\"viewer_search_" + DateTools.formatterISO8601DateTime.print(System
                 .currentTimeMillis()) + ".xlsx\"");
 
         Map<String, String> params = SearchHelper.generateQueryParams();

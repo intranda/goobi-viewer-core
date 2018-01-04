@@ -63,6 +63,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
@@ -112,8 +113,11 @@ public class SearchBean implements Serializable {
 
     /** Max number of search hits to be displayed on one page. */
     private int hitsPerPage = DataManager.getInstance().getConfiguration().getSearchHitsPerPage();
-    /** Currently selected search type (regular, advanced, timeline, ...). */
-    private int activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
+    /**
+     * Currently selected search type (regular, advanced, timeline, ...). This property is not private so it can be altered in unit tests (the setter
+     * checks the config and may prevent setting certain values).
+     */
+    int activeSearchType = SearchHelper.SEARCH_TYPE_REGULAR;
     /** Currently selected filter for the regular search. Possible values can be configured. */
     private SearchFilter currentSearchFilter = SearchHelper.SEARCH_FILTER_ALL;
     /** Solr query generated from the user's input (does not include facet filters or blacklists). */
@@ -238,11 +242,11 @@ public class SearchBean implements Serializable {
     public String searchSimple() {
         return searchSimple(true);
     }
-    
+
     public String searchSimple(boolean resetParameters) {
         logger.trace("searchSimple");
         resetSearchResults();
-        if(resetParameters) {            
+        if (resetParameters) {
             resetSearchParameters();
         }
         return "pretty:newSearch5";
@@ -263,12 +267,11 @@ public class SearchBean implements Serializable {
         return searchAdvanced(true);
     }
 
-    
     public String searchAdvanced(boolean resetParameters) {
         logger.trace("searchAdvanced");
         updateBreadcrumbsForSearchHits();
         resetSearchResults();
-        if(resetParameters) {            
+        if (resetParameters) {
             resetSearchParameters();
         }
         searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
@@ -1260,8 +1263,19 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeHierarchicalFacetAction(String facetQuery) {
-        return facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+
+        String ret = facets.removeHierarchicalFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
                 : "pretty:newSearch5");
+
+        //redirect to current cms page if this action takes place on a cms page
+        Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if (oPath.isPresent() && oPath.get().isCmsPage()) {
+            oPath.get().getCmsPage().getSearch().redirectToSearchUrl();
+            return "";
+        } else {
+            return ret;
+        }
+
     }
 
     /**
@@ -1271,8 +1285,17 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeFacetAction(String facetQuery) {
-        return facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+        String ret = facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
                 : "pretty:newSearch5");
+
+        //redirect to current cms page if this action takes place on a cms page
+        Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+        if (oPath.isPresent() && oPath.get().isCmsPage()) {
+            oPath.get().getCmsPage().getSearch().redirectToSearchUrl();
+            return "";
+        } else {
+            return ret;
+        }
     }
 
     /*
@@ -1960,7 +1983,7 @@ public class SearchBean implements Serializable {
             facesContext.getExternalContext().responseReset();
             facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             facesContext.getExternalContext().setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                    + Helper.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
+                    + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
             return wb;
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage(), e);
@@ -2028,6 +2051,25 @@ public class SearchBean implements Serializable {
     public long getTotalNumberOfVolumes() throws IndexUnreachableException, PresentationException {
         String query = "{!join from=PI_TOPSTRUCT to=PI}DOCTYPE:DOCSTRCT";
         return DataManager.getInstance().getSearchIndex().count(query);
+    }
+
+    /**
+     * Returns the proper search URL part for the current search type.
+     * 
+     * @return
+     * @should return correct url
+     * @should return null if navigationHelper is null
+     */
+    public String getSearchUrl() {
+        if (navigationHelper == null) {
+            return null;
+        }
+        switch (activeSearchType) {
+            case SearchHelper.SEARCH_TYPE_ADVANCED:
+                return navigationHelper.getAdvancedSearchUrl();
+            default:
+                return navigationHelper.getSearchUrl();
+        }
     }
 
 }

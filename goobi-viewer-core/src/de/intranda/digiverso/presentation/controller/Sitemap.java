@@ -202,7 +202,7 @@ public class Sitemap {
     }
 
     private static String getDateString(long timestamp) {
-        return Helper.formatterISO8601Date.print(timestamp);
+        return DateTools.formatterISO8601Date.print(timestamp);
     }
 
     /**
