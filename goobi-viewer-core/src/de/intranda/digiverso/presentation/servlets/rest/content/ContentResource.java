@@ -259,7 +259,7 @@ public class ContentResource {
         java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), contentFolder, pi, fileName);
         if (file != null && Files.isRegularFile(file)) {
             try {
-                return FileTools.getStringFromFile(file.toFile(), null);
+                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
             } catch (FileNotFoundException e) {
                 logger.debug(e.getMessage());
             } catch (IOException e) {
