@@ -25,9 +25,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.annotation.FacesConfig;
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
+import javax.inject.Named;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -54,7 +54,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig
  * This is a wrapper class for the <code>Configuration</code> class for access from HTML.
  */
 @FacesConfig
-@ManagedBean
+@Named
 @ApplicationScoped
 public class ConfigurationBean implements Serializable {
 

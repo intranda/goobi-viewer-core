@@ -34,10 +34,10 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
@@ -69,7 +69,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 /**
  * This bean contains useful navigation parameters.
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class NavigationHelper implements Serializable {
 

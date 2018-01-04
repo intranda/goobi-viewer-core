@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ import de.intranda.digiverso.presentation.model.security.Role;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 
-@ManagedBean
+@Named
 @SessionScoped
 public class UserGroupBean implements Serializable {
 

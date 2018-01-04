@@ -26,10 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +64,7 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
 import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
 
-@ManagedBean
+@Named
 @SessionScoped
 public class UserBean implements Serializable {
 
@@ -72,7 +72,7 @@ public class UserBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(UserBean.class);
 
-    @ManagedProperty("#{navigationHelper}")
+    @Inject
     private NavigationHelper navigationHelper;
 
     private User user;

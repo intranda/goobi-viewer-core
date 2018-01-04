@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +61,7 @@ import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 /**
  * This bean provides the data for collection and term browsing.
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class BrowseBean implements Serializable {
 
@@ -69,9 +69,9 @@ public class BrowseBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(BrowseBean.class);
 
-    @ManagedProperty("#{navigationHelper}")
+    @Inject
     private NavigationHelper navigationHelper;
-    @ManagedProperty("#{searchBean}")
+    @Inject
     private SearchBean searchBean;
 
     /** Hits per page in the browsing menu. */
