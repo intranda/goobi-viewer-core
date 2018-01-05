@@ -63,14 +63,17 @@
         <taskManager>http://localhost:8080/itm/</taskManager>
         
         <!-- solr: URL to the Solr index core -->
-        <solr>http://localhost:8081/solr/collection2</solr> -->
+        <solr>http://localhost:8080/solr/collection1</solr>
+        
+        <!-- testSolr: URL to the Solr test index core -->
+        <testSolr>http://localhost:8080/solr/test-viewer</testSolr>
 
         <!-- contentServer: relative path to contentServer from the intranda viewer context -->
         <contentServer external="false">/</contentServer>
 <!--         <contentServer external="true">http://localhost:8080/ics/</contentServer> -->
         
         <!-- contentServerWrapper: absolute path to the content servlet -->
-        <contentServerWrapper>http://localhost:8080/viewer/content/</contentServerWrapper> -->
+        <contentServerWrapper>http://localhost:8080/viewer/content/</contentServerWrapper>
 
 <!--         <iiif>http://viewertest.fritz.box/reference/</iiif> -->
         <iiif>http://localhost:8080/viewer/iiif/</iiif>

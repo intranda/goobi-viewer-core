@@ -726,6 +726,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getTestSolrUrl()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTestSolrUrl_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("http://localhost:8081/solr/test-viewer", DataManager.getInstance().getConfiguration().getTestSolrUrl());
+    }
+
+    /**
      * @see Configuration#getSplittingCharacter()
      * @verifies return correct value
      */
