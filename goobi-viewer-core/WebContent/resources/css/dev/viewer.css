@@ -4495,9 +4495,6 @@ div[id*="-Modal"] .email-form .form-group {
 .user-bookshelves__panel:after {
   clear: both;
 }
-.user-bookshelves__panel-header {
-  padding-bottom: 15px;
-}
 .user-bookshelves__panel-header:before,
 .user-bookshelves__panel-header:after {
   content: " ";
@@ -4508,6 +4505,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-bookshelves__panel-header h4 {
   margin: 0;
+}
+.user-bookshelves__panel-body {
+  padding-top: 15px;
 }
 .user-bookshelves__panel-body:before,
 .user-bookshelves__panel-body:after {
