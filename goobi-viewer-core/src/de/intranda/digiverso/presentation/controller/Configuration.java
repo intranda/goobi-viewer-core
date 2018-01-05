@@ -873,25 +873,10 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getSolrUrl() {
-        String value = getLocalString("urls.solr");
+        String value = getLocalString("urls.solr", "http://localhost:80889/solr");
         if (value.charAt(value.length() - 1) == '/') {
             value = value.substring(0, value.length() - 1);
         }
-        
-        return value;
-    }
-    
-    /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getTestSolrUrl() {
-        String value = getLocalString("urls.testSolr");
-        if (value.charAt(value.length() - 1) == '/') {
-            value = value.substring(0, value.length() - 1);
-        }
-        
         return value;
     }
 

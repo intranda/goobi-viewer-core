@@ -67,10 +67,7 @@
 
         <!-- solr: URL to the Solr index core -->
 		<solr>solr_value/</solr>
-		
-        <!-- testSolr: URL to the Solr test index core -->
-        <testSolr>http://localhost:8081/solr/test-viewer</testSolr>
-		
+
 		<!-- contentServer: relative path to contentServer from the intranda viewer 
 			context -->
 		<contentServer external="true">contentServer_value
