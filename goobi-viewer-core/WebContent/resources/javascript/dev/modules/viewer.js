@@ -796,9 +796,9 @@ var viewerJS = ( function( viewer ) {
         msg: {
             resetBookshelves: '',
             resetBookshelvesConfirm: '',
-            noItemsAvailable: 'Keine Merklisten vorhanden',
-            selectBookshelf: 'Merkliste auswählen',
-            addNewBookshelf: 'Merkliste hinzufügen'
+            noItemsAvailable: '',
+            selectBookshelf: '',
+            addNewBookshelf: ''
         }
     };
     
@@ -855,6 +855,33 @@ var viewerJS = ( function( viewer ) {
                     if ( !target.is( popup ) && !target.is( popupChild ) ) {
                         $( '.bookshelf-popup' ).remove();
                     }
+                }
+            } );
+            
+            // add new bookshelf in overview
+            $( '#addBookshelfBtn' ).off().on( 'click', function() {
+                var bsName = $( '#addBookshelfInput' ).val();
+                
+                if ( bsName != '' ) {
+                    _addNamedBookshelf( _defaults.root, bsName ).then( function() {
+                        location.reload();
+                    } ).fail( function( error ) {
+                        console.error( 'ERROR - _addNamedBookshelf: ', error.responseText );
+                    } );
+                }
+                else {
+                    _addAutomaticNamedBookshelf( _defaults.root ).then( function() {
+                        location.reload();
+                    } ).fail( function( error ) {
+                        console.error( 'ERROR - _addAutomaticNamedBookshelf: ', error.responseText );
+                    } );
+                }
+            } );
+            
+            // add new bookshelf on enter in overview
+            $( '#addBookshelfInput' ).on( 'keypress', function( event ) {
+                if ( event.which == 13 ) {
+                    $( '#addBookshelfBtn' ).click();
                 }
             } );
             
@@ -1357,7 +1384,7 @@ var viewerJS = ( function( viewer ) {
         // render bookshelf list
         _renderBookshelfPopoverList( pi );
         
-        // add new bookshelf
+        // add new bookshelf in popover
         $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).on( 'click', function() {
             var bsName = $( '.bookshelf-popup__footer input' ).val();
             var currPi = pi;
@@ -1382,7 +1409,7 @@ var viewerJS = ( function( viewer ) {
             }
         } );
         
-        // add new bookshelf on enter
+        // add new bookshelf on enter in popover
         $( '.bookshelf-popup__footer input' ).on( 'keyup', function( event ) {
             if ( event.keyCode == 13 ) {
                 $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).click();
@@ -1477,6 +1504,9 @@ var viewerJS = ( function( viewer ) {
             // DOM-Elements
             var dropdownList = $( '<ul />' ).addClass( 'bookshelf-navigation__dropdown-list list' );
             var dropdownListItem = null;
+            var dropdownListItemRow = null;
+            var dropdownListItemLeft = null;
+            var dropdownListItemRight = null;
             var dropdownListItemText = null;
             var dropdownListItemLink = null;
             var dropdownListItemAddCounter = null;
@@ -1484,12 +1514,17 @@ var viewerJS = ( function( viewer ) {
             if ( elements.length > 0 ) {
                 elements.forEach( function( item ) {
                     dropdownListItem = $( '<li />' );
-                    dropdownListItemLink = $( '<a />' ).attr( 'href', _defaults.root + '/bookshelf/' + item.id + '/' ).attr( 'data-bookshelf-type', 'link' ).text( item.name );
-                    dropdownListItemAddCounter = $( '<span />' ).text( item.items.length );
-                    dropdownListItemLink.append( dropdownListItemAddCounter );
+                    dropdownListItemRow = $( '<div />' ).addClass( 'row no-margin' );
+                    dropdownListItemLeft = $( '<div />' ).addClass( 'col-xs-10 no-padding' );
+                    dropdownListItemRight = $( '<div />' ).addClass( 'col-xs-2 no-padding' );
+                    dropdownListItemLink = $( '<a />' ).attr( 'href', _defaults.root + '/bookshelf/' + item.id + '/' ).text( item.name );
+                    dropdownListItemAddCounter = $( '<span />' ).addClass( 'bookshelf-navigation__dropdown-list-counter' ).text( item.items.length );
                     
                     // build bookshelf item
-                    dropdownListItem.append( dropdownListItemLink );
+                    dropdownListItemLeft.append( dropdownListItemLink );
+                    dropdownListItemRight.append( dropdownListItemAddCounter );
+                    dropdownListItemRow.append( dropdownListItemLeft ).append( dropdownListItemRight )
+                    dropdownListItem.append( dropdownListItemRow );
                     dropdownList.append( dropdownListItem );
                 } );
             }

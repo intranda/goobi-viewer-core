@@ -1086,20 +1086,17 @@ div.mce-fullscreen {
   padding: 5px;
   font-size: 14px;
 }
-.bookshelf-navigation__dropdown-list [data-bookshelf-type="link"] {
+.bookshelf-navigation__dropdown-list a {
   display: block;
   width: 100%;
-  height: 32px;
   padding: 5px;
   text-overflow: ellipsis;
   overflow: hidden;
-  background-size: 5%;
-  background-position: right center;
 }
-.bookshelf-navigation__dropdown-list [data-bookshelf-type="link"] span {
+.bookshelf-navigation__dropdown-list-counter {
   display: inline-block;
   float: right;
-  margin-right: 20px;
+  margin-top: 5px;
   padding: 0 3px;
   font-size: 12px;
   color: #fff;
@@ -1243,6 +1240,7 @@ div.mce-fullscreen {
 [data-bookshelf-type="dropdown"],
 [data-bookshelf-type="get"],
 [data-bookshelf-type="add"],
+[data-bookshelf-type="add-bookshelf"],
 [data-bookshelf-type="delete"],
 [data-bookshelf-type="link"],
 [data-bookshelf-type="reset"] {
@@ -4452,67 +4450,116 @@ div[id*="-Modal"] .email-form .form-group {
    User Bookshelves
    style declarations for userBackendBookshelves.xhtml
    ==============================================================*/
-#myBookshelves #user_bookshelf_data_table thead tr th:nth-child(3) {
-  text-align: center;
+/* USER BOOKSHELVES */
+/* BLOCK */
+.user-bookshelves {
+  /* ELEMENT */
+  /* ADD */
+  /* PANEL */
 }
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) {
-  text-align: center;
+.user-bookshelves__add-bookshelf {
+  height: 32px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
 }
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a {
+.user-bookshelves__add-bookshelf:before,
+.user-bookshelves__add-bookshelf:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__add-bookshelf:after {
+  clear: both;
+}
+.user-bookshelves__add-bookshelf input {
+  width: 100%;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+}
+.user-bookshelves__add-bookshelf button {
+  width: 100%;
+  height: 32px;
+  background-image: url("../../images/icons/icon-bs-add.svg");
+  background-size: 60%;
+}
+.user-bookshelves__panel {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.user-bookshelves__panel:before,
+.user-bookshelves__panel:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel:after {
+  clear: both;
+}
+.user-bookshelves__panel-header {
+  padding-bottom: 15px;
+}
+.user-bookshelves__panel-header:before,
+.user-bookshelves__panel-header:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel-header:after {
+  clear: both;
+}
+.user-bookshelves__panel-header h4 {
+  margin: 0;
+}
+.user-bookshelves__panel-body:before,
+.user-bookshelves__panel-body:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel-body:after {
+  clear: both;
+}
+.user-bookshelves__panel-body p {
+  margin: 0;
+}
+.user-bookshelves__panel-action a {
   display: inline-block;
-  margin: 0 5px 0 0;
-  padding: 5px;
-  color: #1a1a1a;
-}
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a:hover,
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a:focus,
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a:active {
-  text-decoration: none;
-  color: #1a1a1a;
-}
-#myBookshelves .add-new-bookshelf-action .btn {
-  float: right;
-  margin: 0 0 1.3125rem 0;
+  padding: 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   User edit Bookshelf
+   User Bookshelf Edit
    style declarations for userBackendEditBookshelf.xhtml
    ==============================================================*/
-#editBookshelf #userEditBookshelfForm {
-  margin-bottom: 1.3125rem;
-  padding: 10px;
+/* USER BOOKSHELF EDIT */
+/* BLOCK */
+.user-bookshelf-edit {
+  /* ELEMENT */
+}
+.user-bookshelf-edit__form {
+  padding: 30px 15px;
   border: 1px solid #ccc;
 }
-#editBookshelf #userEditBookshelfForm:before,
-#editBookshelf #userEditBookshelfForm:after {
-  content: " ";
-  display: table;
+.user-bookshelf-edit__form form {
+  width: 80%;
+  margin: 0 auto;
 }
-#editBookshelf #userEditBookshelfForm:after {
-  clear: both;
+.user-bookshelf-edit .control-label {
+  font-weight: normal;
 }
-#editBookshelf #userEditBookshelfForm .btn {
-  float: right;
-  margin: 0;
+.user-bookshelf-edit .form-control {
+  height: 48px;
 }
-#editBookshelf #deleteBookshelfWrapp {
+.user-bookshelf-edit textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.user-bookshelf-edit__action {
   text-align: right;
 }
-#editBookshelf #deleteBookshelfWrapp .btn {
-  margin: 0.875rem 0;
-}
-#editBookshelf #deleteBookshelfWrapp .modal-footer .btn {
-  margin: 0 0 0 5px;
-}
-#editBookshelf #editBookshelfItemControlsForm {
-  text-align: right;
-}
-#editBookshelf #editBookshelfItemControlsForm .btn {
-  margin: 0.875rem 0;
+.user-bookshelf-edit__action .btn {
+  margin-left: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -6155,6 +6202,26 @@ div.olMapViewport {
    Widget Bookshelves
    style declarations for widget_bookshelves.xhtml
    ==============================================================*/
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget Bookshelf List
+   style declarations for widget_bookshelfList.xhtml
+   ==============================================================*/
+/* WIDGET BOOKSHELF LIST */
+/* BLOCK */
+.widget-bookshelf-list {
+  /* BACK */
+}
+.widget-bookshelf-list ul {
+  margin-bottom: 15px;
+}
+.widget-bookshelf-list__back {
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
