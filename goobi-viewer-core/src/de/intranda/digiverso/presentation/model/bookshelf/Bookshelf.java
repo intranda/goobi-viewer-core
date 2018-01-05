@@ -267,6 +267,10 @@ public class Bookshelf implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    public boolean hasDescription() {
+        return StringUtils.isBlank(getDescription());
+    }
 
     /**
      * @return the owner
