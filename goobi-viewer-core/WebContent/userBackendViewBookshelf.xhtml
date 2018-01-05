@@ -19,14 +19,16 @@
 		</f:metadata>
 	</ui:define>
 	
-<!-- 	<ui:define name="breadcrumbs"> -->
-<!-- 		<ui:include src="/resources/includes/breadcrumbs.xhtml" /> -->
-<!-- 	</ui:define> -->
+	<ui:define name="breadcrumbs">
+		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
+	</ui:define>
 
 	<ui:define name="content">
 		<div id="viewBookshelf" class="view-bookshelf">
 			<h:panelGroup rendered="#{userBean.loggedIn}">
 				<h2>#{msg.bookshelf_changeBookshelfText}: #{bookshelfBean.currentBookshelf.name}</h2>
+				
+				<p>#{bookshelfBean.currentBookshelf.description}</p>
 
 				<!-- MESSAGE -->
 				<h:panelGroup rendered="#{!configurationBean.bookshelvesEnabled}">
@@ -51,7 +53,7 @@
 											<div class="view-bookshelf__item">
 												<!--  IMAGE -->
 												<div class="view-bookshelf__item-image" style="background-image: url('#{item.getRepresentativeImageUrl(400,400)}');">
-													<a href="#{request.contextPath}#{item.url}"></a>
+													<a href="#{item.url}"></a>
 												</div>
 												<div class="view-bookshelf__item-info">
 													<!--  NAME -->
@@ -90,106 +92,26 @@
 							</div>
 						</h:panelGroup>
 					</h:panelGroup>
-
-
-
-<!-- 							<h:form id="userViewBookshelfForm" styleClass="form" prependId="false"> -->
-<!-- 								<h:dataTable id="single_bookshelf_data_table" styleClass="table table-condensed user-backend-table" value="#{bookshelfBean.currentBookshelf.items}" var="item"> -->
-<!-- 									<h:column> -->
-<!-- 										<f:facet name="header"> -->
-<!-- 											<h:outputText value="#{msg.bookshelf_thumbnail}" /> -->
-<!-- 										</f:facet> -->
-<!-- 										<a href="#{item.url}"> <img src="#{item.representativeImageUrl}" alt="" /> -->
-<!-- 										</a> -->
-<!-- 									</h:column> -->
-<!-- 									<h:column> -->
-<!-- 										<f:facet name="header"> -->
-<!-- 											<h:outputText value="#{msg.title}" /> -->
-<!-- 										</f:facet> -->
-<!-- 										<a href="#{item.url}"> <h:outputText value="#{item.mainTitleUnescaped}" /> -->
-<!-- 										</a> -->
-<!-- 									</h:column> -->
-<!-- 									<h:column> -->
-<!-- 										<f:facet name="header"> -->
-<!-- 											<h:outputText value="#{msg.description}" /> -->
-<!-- 										</f:facet> -->
-<!-- 										<a href="#{item.url}" title="#{item.description}"> <h:outputText value="#{item.description}" /> -->
-<!-- 										</a> -->
-<!-- 									</h:column> -->
-<!-- 									<h:column> -->
-<!-- 										<f:facet name="header"> -->
-<!-- 											<h:outputText value="#{msg.dateAdded}" /> -->
-<!-- 										</f:facet> -->
-<!-- 										<h:outputText value="#{item.dateAdded}"> -->
-<!-- 											<f:convertDateTime type="both" dateStyle="medium" /> -->
-<!-- 										</h:outputText> -->
-<!-- 									</h:column> -->
-<!-- 									<h:column> -->
-<!-- 										<f:facet name="header"> -->
-<!-- 											<h:outputText value="#{msg.action}" /> -->
-<!-- 										</f:facet> -->
-
-<!-- 										delete bookshelf item -->
-<!-- 										<h:panelGroup rendered="#{bookshelfBean.currentBookshelfMine}"> -->
-<!-- 											<button type="button" class="btn deleteBookshelfItemBtn" data-toggle="modal">#{msg.delete}</button> -->
-<!-- 										</h:panelGroup> -->
-
-<!-- 										<div class="modal fade deleteBookshelfItemModal" tabindex="-1" role="dialog"> -->
-<!-- 											<div class="modal-dialog"> -->
-<!-- 												<div class="modal-content"> -->
-<!-- 													<div class="modal-header"> -->
-<!-- 														<button type="button" class="close" data-dismiss="modal"> -->
-<!-- 															<span aria-hidden="true"> <h:outputText value="&amp;times;" escape="false" /> -->
-<!-- 															</span> <span class="sr-only">Close</span> -->
-<!-- 														</button> -->
-<!-- 														<h4 class="modal-title" id="myModalLabel">#{msg.bookshelf_items}: #{bookshelfBean.currentBookshelf.name}</h4> -->
-<!-- 													</div> -->
-<!-- 													<div class="modal-body"> -->
-<!-- 														<p>#{msg.bookshelf_deleteCurrentBookFromBookshelfConfirmationTextLeft}</p> -->
-<!-- 													</div> -->
-<!-- 													<div class="modal-footer"> -->
-<!-- 														<h:commandLink styleClass="btn" data-dismiss="modal">#{msg.cancel}</h:commandLink> -->
-<!-- 														<h:commandLink value="#{msg.delete}" action="#{bookshelfBean.deleteCurrentItemAction(item)}" styleClass="btn" /> -->
-<!-- 													</div> -->
-<!-- 												</div> -->
-<!-- 											</div> -->
-<!-- 										</div> -->
-<!-- 									</h:column> -->
-<!-- 								</h:dataTable> -->
-<!-- 							</h:form> -->
-						
-
-<!-- 					<h:form id="viewBookshelfControlsForm" prependId="false"> -->
-<!-- 						<h:commandLink rendered="#{bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToMyBookshelves}" action="pretty:userMenuMyBookshelves" styleClass="btn" /> -->
-<!-- 						<h:commandLink rendered="#{!bookshelfBean.currentBookshelfMine}" value="#{msg.bookshelf_returnToOtherBookshelves}" action="pretty:userMenuOtherBookshelves" styleClass="btn" /> -->
-<!-- 					</h:form> -->
 				</h:panelGroup>
-
 			</h:panelGroup>
 		</div>
 	</ui:define>
 
 	<ui:define name="sidebar">
-<!-- 		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}"> -->
-<!-- 			<widgetComponent:widget_browsing /> -->
-<!-- 		</h:panelGroup> -->
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<widgetComponent:widget_browsing />
+		</h:panelGroup>
 
-<!-- 		<widgetComponent:widget_bookshelves addToBookshelfDisplay="false" /> -->
+		<widgetComponent:widget_bookshelfList />
 
-<!-- 		<h:panelGroup rendered="#{userBean.loggedIn}"> -->
-<!-- 			<widgetComponent:widget_mySearches /> -->
-<!-- 		</h:panelGroup> -->
+		<h:panelGroup rendered="#{userBean.loggedIn}">
+			<widgetComponent:widget_mySearches />
+		</h:panelGroup>
 
-<!-- 		<c:forEach var="module" items="#{configurationBean.modules}"> -->
-<!-- 			<c:forEach var="contribution" items="#{module.sidebarContributions}"> -->
-<!-- 				<ui:include src="/#{contribution}" /> -->
-<!-- 			</c:forEach> -->
-<!-- 		</c:forEach> -->
-
-<!-- 		<widgetComponent:widget_user /> -->
+		<widgetComponent:widget_user />
 	</ui:define>
 
-<!-- 	<ui:define name="rssFeed"> -->
-<!-- 		<ui:include src="resources/includes/rssFeed.xhtml" /> -->
-<!-- 	</ui:define> -->
+	<ui:define name="rssFeed">
+		<ui:include src="resources/includes/rssFeed.xhtml" />
+	</ui:define>
 </ui:composition>
