@@ -197,7 +197,7 @@ public class BookshelfBean implements Serializable {
     /**
      * Sets currentBookshelf to a new object.
      */
-    public final void resetCurrentBookshelfAction() {
+    public void resetCurrentBookshelfAction() {
         logger.trace("resetCurrentBookshelfAction");
         currentBookshelf = new Bookshelf();
         UserBean userBean = BeanUtils.getUserBean();

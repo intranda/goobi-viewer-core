@@ -69,7 +69,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 /**
  * This bean contains useful navigation parameters.
  */
-@Named
+@Named("navigationHelper")
 @SessionScoped
 public class NavigationHelper implements Serializable {
 

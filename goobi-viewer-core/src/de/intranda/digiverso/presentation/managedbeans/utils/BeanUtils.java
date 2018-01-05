@@ -20,6 +20,7 @@ import java.util.Locale;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -113,13 +114,22 @@ public class BeanUtils {
     }
 
     private static BeanManager getBeanManager() {
+        // Via CDI
+        BeanManager ret = CDI.current().getBeanManager();
+        if (ret != null) {
+            logger.trace("BeanManager retrievent via CDI");
+            return ret;
+        }
+        // Via FacesContext
         if (FacesContext.getCurrentInstance() != null) {
-            BeanManager ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getAttribute(
+            ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getAttribute(
                     "javax.enterprise.inject.spi.BeanManager");
             if (ret != null) {
+                logger.trace("BeanManager retrievent via FacesContext");
                 return ret;
             }
         }
+        // Via JNDI
         try {
             InitialContext initialContext = new InitialContext();
             return (BeanManager) initialContext.lookup("java:comp/BeanManager");
@@ -130,12 +140,13 @@ public class BeanUtils {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Object getBeanByName(String name) {
+    private static Object getBeanByName(String name, Class clazz) {
         BeanManager bm = getBeanManager();
         if (bm != null) {
             Bean bean = bm.getBeans(name).iterator().next();
             CreationalContext ctx = bm.createCreationalContext(bean);
-            return bm.getReference(bean, bean.getClass(), ctx);
+            logger.trace("bean class: {}", bean.getClass().getName());
+            return bm.getReference(bean, clazz, ctx);
         }
 
         return null;
@@ -146,7 +157,7 @@ public class BeanUtils {
      * @return
      */
     public static NavigationHelper getNavigationHelper() {
-        return (NavigationHelper) getBeanByName("navigationHelper");
+        return (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
     }
 
     /**
@@ -154,7 +165,7 @@ public class BeanUtils {
      * @return
      */
     public static ActiveDocumentBean getActiveDocumentBean() {
-        return (ActiveDocumentBean) getBeanByName("activeDocumentBean");
+        return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
     }
 
     /**
@@ -162,7 +173,7 @@ public class BeanUtils {
      * @return
      */
     public static SearchBean getSearchBean() {
-        return (SearchBean) getBeanByName("searchBean");
+        return (SearchBean) getBeanByName("searchBean", SearchBean.class);
     }
 
     /**
@@ -170,7 +181,7 @@ public class BeanUtils {
      * @return
      */
     public static CmsBean getCmsBean() {
-        return (CmsBean) getBeanByName("cmsBean");
+        return (CmsBean) getBeanByName("cmsBean", CmsBean.class);
     }
 
     /**
@@ -178,15 +189,7 @@ public class BeanUtils {
      * @return
      */
     public static CalendarBean getCalendarBean() {
-        return (CalendarBean) getBeanByName("calendarBean");
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public static BookshelfBean getBookshelfBean() {
-        return (BookshelfBean) getBeanByName("bookshelfBean");
+        return (CalendarBean) getBeanByName("calendarBean", CalendarBean.class);
     }
 
     /**
@@ -194,7 +197,7 @@ public class BeanUtils {
      * @return
      */
     public static UserBean getUserBean() {
-        return (UserBean) getBeanByName("userBean");
+        return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
     /**
@@ -202,7 +205,7 @@ public class BeanUtils {
      * @return
      */
     public static BrowseBean getBrowseBean() {
-        return (BrowseBean) getBeanByName("browseBean");
+        return (BrowseBean) getBeanByName("browseBean", BrowseBean.class);
     }
 
     /**
