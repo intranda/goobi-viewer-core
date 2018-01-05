@@ -117,7 +117,6 @@ public class BeanUtils {
         // Via CDI
         BeanManager ret = CDI.current().getBeanManager();
         if (ret != null) {
-            logger.trace("BeanManager retrievent via CDI");
             return ret;
         }
         // Via FacesContext
@@ -125,7 +124,6 @@ public class BeanUtils {
             ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getAttribute(
                     "javax.enterprise.inject.spi.BeanManager");
             if (ret != null) {
-                logger.trace("BeanManager retrievent via FacesContext");
                 return ret;
             }
         }
@@ -145,7 +143,6 @@ public class BeanUtils {
         if (bm != null) {
             Bean bean = bm.getBeans(name).iterator().next();
             CreationalContext ctx = bm.createCreationalContext(bean);
-            logger.trace("bean class: {}", bean.getClass().getName());
             return bm.getReference(bean, clazz, ctx);
         }
 
