@@ -29,6 +29,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
@@ -55,6 +56,9 @@ public class BookshelfBean implements Serializable {
     private static final long serialVersionUID = -2656584301309913161L;
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfBean.class);
+
+    @Inject
+    private UserBean userBean;
 
     /** Currently selected bookshelf. */
     private Bookshelf currentBookshelf = null;
@@ -445,7 +449,6 @@ public class BookshelfBean implements Serializable {
         }
 
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        UserBean userBean = (UserBean) request.getSession().getAttribute("userBean");
 
         // Do not allow duplicate names
         if (isNewBookshelf()) {

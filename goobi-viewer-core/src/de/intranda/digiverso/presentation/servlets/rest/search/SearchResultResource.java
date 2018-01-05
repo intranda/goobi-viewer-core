@@ -34,6 +34,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
@@ -51,14 +52,14 @@ public class SearchResultResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren) throws DAOException,
             PresentationException, IndexUnreachableException, IOException {
-        SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
+        SearchBean searchBean = BeanUtils.getSearchBean();
         if (searchBean == null) {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
                     "No instance of SearchBean found in the user session. Execute a search first.");
             return null;
         }
         Locale locale = null;
-        NavigationHelper nh = (NavigationHelper) servletRequest.getSession().getAttribute("navigationHelper");
+        NavigationHelper nh = BeanUtils.getNavigationHelper();
         if (nh != null) {
             locale = nh.getLocale();
         }

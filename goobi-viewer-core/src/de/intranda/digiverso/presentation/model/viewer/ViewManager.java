@@ -637,7 +637,7 @@ public class ViewManager implements Serializable {
     public User getCurrentUser() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         if (request != null) {
-            UserBean ub = (UserBean) request.getSession().getAttribute("userBean");
+            UserBean ub = BeanUtils.getUserBean();
             if (ub != null && ub.getUser() != null) {
                 return ub.getUser();
             }
