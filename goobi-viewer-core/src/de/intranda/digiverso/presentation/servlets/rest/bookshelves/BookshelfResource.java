@@ -150,7 +150,7 @@ public class BookshelfResource {
     /**
      * Deletes the bookshelf item with the given pi from the session store bookshelf
      * This operation returns an object with the property "success: false" if the operation failed (usually because the
-     * object wasn't in the bookshelf to begin with). Otherwise the return opject contains "success: true"
+     * object wasn't in the bookshelf to begin with). Otherwise the return object contains "success: true"
      * 
      * @param pi
      * @return  an object containing the boolean property 'success', detailing wether the operation was successfull
@@ -168,7 +168,7 @@ public class BookshelfResource {
     /**
      * Deletes the bookshelf item with the given pi, logid and page number from the session store bookshelf
      * This operation returns an object with the property "success: false" if the operation failed (usually because the
-     * object wasn't in the bookshelf to begin with). Otherwise the return opject contains "success: true"
+     * object wasn't in the bookshelf to begin with). Otherwise the return object contains "success: true"
      * 
      * @param pi
      * @param logId
