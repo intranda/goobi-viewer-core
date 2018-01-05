@@ -269,7 +269,7 @@ public class Bookshelf implements Serializable {
     }
     
     public boolean hasDescription() {
-        return StringUtils.isBlank(getDescription());
+        return StringUtils.isNotBlank(getDescription());
     }
 
     /**
