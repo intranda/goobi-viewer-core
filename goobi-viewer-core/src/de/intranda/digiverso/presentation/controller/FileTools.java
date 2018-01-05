@@ -146,9 +146,15 @@ public class FileTools {
      * @should throw FileNotFoundException if file not found
      */
     public static String getStringFromFile(File file, String encoding) throws FileNotFoundException, IOException {
+        if (file == null) {
+            throw new IllegalArgumentException("file may not be null");
+        }
+
         if (encoding == null) {
-            encoding = getCharset(new FileInputStream(file));
-            logger.trace("{} encoding: {}", file.getName(), encoding);
+            try (FileInputStream fis = new FileInputStream(file)) {
+                encoding = getCharset(fis);
+                logger.trace("{} encoding detected: {}", file.getName(), encoding);
+            }
             if (encoding == null) {
                 encoding = Helper.DEFAULT_ENCODING;
             }
