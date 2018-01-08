@@ -140,7 +140,7 @@ public class BeanUtils {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Object getBeanByName(String name, Class clazz) {
         BeanManager bm = getBeanManager();
-        if (bm != null) {
+        if (bm != null && bm.getBeans(name).iterator().hasNext()) {
             Bean bean = bm.getBeans(name).iterator().next();
             CreationalContext ctx = bm.createCreationalContext(bean);
             return bm.getReference(bean, clazz, ctx);
