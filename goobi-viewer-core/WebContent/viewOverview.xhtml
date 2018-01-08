@@ -154,7 +154,7 @@
 		    											         </ui:repeat>
 		    											    </dd>
 		    											</h:panelGroup>
-		    											<h:panelGroup rendered="#{!metadata.group and metadata.valueLink == null}">
+		    											<h:panelGroup rendered="#{!metadata.group}">
                                                             <dd>
                                                                 <ui:repeat value="#{metadata.values}" var="val">
                                                                     <span class="overview__metadata-value">

@@ -39,15 +39,10 @@
                             	<ui:fragment rendered="#{metadataElement.hasMetadata()}">
 	                                <div class="tab-pane fade in active" id="#{msg[type.tabName]}">
 	                                    <c:forEach items="#{metadataElement.metadataList}" var="metadata">
-	                                        <h:panelGroup rendered="#{(metadata.valueLink != null or !metadata.blank) and metadata.type == type.type}">
+	                                        <h:panelGroup rendered="#{!metadata.blank and metadata.type == type.type}">
 	                                            <dl class="dl-horizontal">
 	                                                <dt>#{msg[metadata.label]}:</dt>
-	                                                <h:panelGroup rendered="#{metadata.valueLink != null}">
-	                                                    <dd>
-	                                                        <h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-	                                                    </dd>
-	                                                </h:panelGroup>
-	                                                <h:panelGroup rendered="#{metadata.valueLink == null}">
+	                                                <h:panelGroup>
 	                                                    <dd>
 	                                                        <ui:repeat value="#{metadata.values}" var="val">
 	                                                            <h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
@@ -79,15 +74,10 @@
                     <c:forEach items="#{metadataBean.events}" var="event" varStatus="status">
                         <div class="tab-pane fade" id="event-#{status.count}">
                             <c:forEach items="#{event.metadata}" var="metadata">
-                                <h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
+                                <h:panelGroup rendered="#{!metadata.blank}">
                                     <dl class="dl-horizontal">
                                         <dt>#{msg[metadata.label]}:</dt>
-                                        <h:panelGroup rendered="#{metadata.valueLink != null}">
-                                            <dd>
-                                                <h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-                                            </dd>
-                                        </h:panelGroup>
-                                        <h:panelGroup rendered="#{metadata.valueLink == null}">
+                                        <h:panelGroup>
                                             <dd>
                                                 <ui:repeat value="#{metadata.values}" var="val">
                                                     <h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">

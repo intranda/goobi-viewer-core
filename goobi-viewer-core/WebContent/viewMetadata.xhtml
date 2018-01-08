@@ -39,7 +39,7 @@
 					<ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
 						<div class="metadata-element-box" style="padding-left: #{status.index * 15}px">
 							<ui:repeat value="#{metadataElement.metadataList}" var="metadata">
-								<h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
+								<h:panelGroup rendered="#{!metadata.blank}">
 									<div class="metadata-element">
 										<dl class="dl-horizontal">
 											<dt title="#{msg[metadata.label]}">
@@ -78,12 +78,8 @@
 													</ui:repeat>
 												</dd>
 											</h:panelGroup>
-
-											<h:panelGroup rendered="#{!metadata.group and metadata.valueLink != null}">
-												<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-											</h:panelGroup>
 											
-											<h:panelGroup rendered="#{!metadata.group and metadata.valueLink == null}">
+											<h:panelGroup rendered="#{!metadata.group}">
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="metadata-value">
@@ -113,18 +109,13 @@
 					<c:forEach items="#{metadataBean.events}" var="event">
 						<div class="metadata-event-box">
 							<ui:repeat value="#{event.metadata}" var="metadata">
-								<h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
+								<h:panelGroup rendered="#{!metadata.blank}">
 									<div class="metadata-event">
 										<dl class="dl-horizontal">
 											<dt title="#{msg[metadata.label]}">
 												<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 											</dt>
-											<h:panelGroup rendered="#{metadata.valueLink != null}">
-												<dd>
-													<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-												</dd>
-											</h:panelGroup>
-											<h:panelGroup rendered="#{metadata.valueLink == null}">
+											<h:panelGroup>
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="metadata-value">

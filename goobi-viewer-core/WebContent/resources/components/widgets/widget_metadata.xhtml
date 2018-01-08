@@ -61,15 +61,8 @@
 							</dd>
 						</h:panelGroup>
 
-						<!-- Non-grouped metadata with valueLink -->
-						<h:panelGroup rendered="#{!metadata.group and metadata.valueLink != null}">
-							<dd>
-								<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-							</dd>
-						</h:panelGroup>
-
 						<!-- Non-grouped metadata -->
-						<h:panelGroup rendered="#{!metadata.group and metadata.valueLink == null}">
+						<h:panelGroup rendered="#{!metadata.group}">
 							<dd>
 								<ui:repeat value="#{metadata.values}" var="val">
 									<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
@@ -99,16 +92,11 @@
 								<h:outputText value="#{msg[event.label]}" escape="false" />
 							</dt>
 							<ui:repeat value="#{event.sidebarMetadata}" var="metadata">
-								<h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
+								<h:panelGroup rendered="#{!metadata.blank}">
 									<dd>
 										<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 									</dd>
-									<h:panelGroup rendered="#{metadata.valueLink != null}">
-										<dd>
-											<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-										</dd>
-									</h:panelGroup>
-									<h:panelGroup rendered="#{metadata.valueLink == null}">
+									<h:panelGroup>
 										<dd>
 											<ui:repeat value="#{metadata.values}" var="val">
 												<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">

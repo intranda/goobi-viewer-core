@@ -58,7 +58,6 @@ public class Metadata implements Serializable {
     private final String label;
     /** Value from messages.properties (with placeholders) */
     private final String masterValue;
-    private final String valueLink = null;
     private int type = 0;
     private int number = -1;
     private final List<MetadataValue> values = new ArrayList<>();
@@ -165,13 +164,6 @@ public class Metadata implements Serializable {
         }
 
         return masterValue;
-    }
-
-    /**
-     * @return the valueLink
-     */
-    public String getValueLink() {
-        return valueLink;
     }
 
     /**

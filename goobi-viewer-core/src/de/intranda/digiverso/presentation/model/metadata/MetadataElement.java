@@ -217,7 +217,6 @@ public class MetadataElement {
                                 .getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
                             Metadata newMetadata = new Metadata(metadata.getLabel(), metadata.getMasterValue(), adb.getViewManager().getCurrentPage()
                                     .getUrn());
-                            //                             md.setValueLink(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/resolver?urn=" + md.getMasterValue());
                             sidebarMetadataList.add(newMetadata);
                         }
                     } else {
@@ -338,21 +337,19 @@ public class MetadataElement {
     public List<Metadata> getMetadataList() {
         return Metadata.filterMetadataByLanguage(metadataList, selectedRecordLanguage);
     }
-    
+
     public boolean hasMetadata() {
-        if(metadataList != null) {
-            return metadataList.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
-        } else {
-            return false;
+        if (metadataList != null) {
+            return metadataList.stream().anyMatch(md -> !md.isBlank());
         }
+        return false;
     }
-    
+
     public boolean hasSidebarMetadata() {
-        if(sidebarMetadataList != null) {
-            return sidebarMetadataList.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
-        } else {
-            return false;
+        if (sidebarMetadataList != null) {
+            return sidebarMetadataList.stream().anyMatch(md -> !md.isBlank());
         }
+        return false;
     }
 
     /**
@@ -449,22 +446,20 @@ public class MetadataElement {
         }
         return "";
     }
-    
+
     public Optional<String> getFirstMetadataValueIfExists(String name) {
         String value = getFirstMetadataValue(name);
-        if(StringUtils.isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value)) {
             return Optional.of(value);
-        } else {
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     public String getFirstMetadataValue(String prefix, String name, String suffix) {
         String value = getFirstMetadataValue(name);
         if (StringUtils.isNotBlank(value)) {
             return prefix + value + suffix;
-        } else {
-            return value;
         }
+        return value;
     }
 }
