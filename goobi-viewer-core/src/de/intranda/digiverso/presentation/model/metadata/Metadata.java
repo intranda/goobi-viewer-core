@@ -67,7 +67,7 @@ public class Metadata implements Serializable {
     public Metadata(String label, String masterValue, String paramValue) {
         this.label = label;
         this.masterValue = masterValue;
-        values.add(new MetadataValue());
+        values.add(new MetadataValue(masterValue));
         values.get(0).getParamValues().add(paramValue);
     }
 
@@ -75,7 +75,7 @@ public class Metadata implements Serializable {
         this.label = label;
         this.masterValue = masterValue;
         params.add(param);
-        values.add(new MetadataValue());
+        values.add(new MetadataValue(masterValue));
         values.get(0).getParamValues().add(paramValue);
     }
 
@@ -155,11 +155,12 @@ public class Metadata implements Serializable {
         return label;
     }
 
+    /**
+     *@deprecated Use MetadataValue.getMasterValue()
+     */
+    @Deprecated
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
-            // if (values != null && !values.isEmpty() && values.get(0) != null) {
-            // return values.get(0).getParamValues().get(0);
-            // }
             return "{0}";
         }
 
@@ -249,7 +250,7 @@ public class Metadata implements Serializable {
             }
         }
         while (values.size() - 1 < valueIndex) {
-            values.add(new MetadataValue());
+            values.add(new MetadataValue(masterValue));
         }
         MetadataValue mdValue = values.get(valueIndex);
         int origParamIndex = paramIndex;
@@ -257,14 +258,19 @@ public class Metadata implements Serializable {
             paramIndex--;
         }
         if (paramIndex >= 0) {
+            MetadataParameter origParam = params.get(origParamIndex);
             mdValue.getParamLabels().add(paramIndex, label);
             mdValue.getParamValues().add(paramIndex, Helper.intern(value));
-            mdValue.getParamPrefixes().add(paramIndex, params.get(origParamIndex).getPrefix());
-            mdValue.getParamSuffixes().add(paramIndex, params.get(origParamIndex).getSuffix());
+            mdValue.getParamPrefixes().add(paramIndex, origParam.getPrefix());
+            mdValue.getParamSuffixes().add(paramIndex, origParam.getSuffix());
             mdValue.getParamUrls().add(paramIndex, url);
             if (normDataUrl != null) {
                 mdValue.getNormDataUrls().putAll(normDataUrl);
                 // logger.trace("added norm data url: {}", normDataUrl.toString());
+            }
+            // Replace master value with override value from the parameter
+            if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue())) {
+                mdValue.setMasterValue(origParam.getOverrideMasterValue());
             }
         }
     }

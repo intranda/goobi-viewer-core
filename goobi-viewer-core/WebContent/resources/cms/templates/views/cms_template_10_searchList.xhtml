@@ -62,7 +62,7 @@
                                                 <ui:repeat value="#{hit.browseElement.getMetadataList('MD_CREATOR')}" var="metadata">
                                                     <ui:repeat value="#{metadata.values}" var="val">
                                                         <span class="tpl-search-list__text-person"> 
-                                                            <h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+                                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                                 <f:param value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
                                                                 <f:param value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
                                                                 <f:param value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />

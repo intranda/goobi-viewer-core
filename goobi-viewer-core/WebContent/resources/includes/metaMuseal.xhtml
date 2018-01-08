@@ -45,7 +45,7 @@
 	                                                <h:panelGroup>
 	                                                    <dd>
 	                                                        <ui:repeat value="#{metadata.values}" var="val">
-	                                                            <h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+	                                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
 	                                                                <f:param value="#{val.getComboValueShort(0)}" />
 	                                                                <f:param value="#{val.getComboValueShort(1)}" />
 	                                                                <f:param value="#{val.getComboValueShort(2)}" />
@@ -80,7 +80,7 @@
                                         <h:panelGroup>
                                             <dd>
                                                 <ui:repeat value="#{metadata.values}" var="val">
-                                                    <h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+                                                    <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                         <f:param value="#{val.getComboValueShort(0)}" />
                                                         <f:param value="#{val.getComboValueShort(1)}" />
                                                         <f:param value="#{val.getComboValueShort(2)}" />

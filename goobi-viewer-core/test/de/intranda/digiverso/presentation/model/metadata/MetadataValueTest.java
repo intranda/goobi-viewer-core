@@ -26,7 +26,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldConstructParamCorrectly() throws Exception {
-        MetadataValue value = new MetadataValue();
+        MetadataValue value = new MetadataValue("");
         value.getParamPrefixes().add("pre_");
         value.getParamValues().add("val");
         value.getParamSuffixes().add("_suf");
@@ -42,7 +42,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldReturnEmptyStringIfValueIndexLargerThanNumberOfValues() throws Exception {
-        MetadataValue value = new MetadataValue();
+        MetadataValue value = new MetadataValue("");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add("value");
         value.getParamSuffixes().add("_suffix");
@@ -55,7 +55,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldReturnEmptyStringIfValueIsEmpty() throws Exception {
-        MetadataValue value = new MetadataValue();
+        MetadataValue value = new MetadataValue("");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add("");
         value.getParamSuffixes().add("_suffix");
@@ -68,7 +68,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldNotAddPrefixIfFirstParam() throws Exception {
-        MetadataValue value = new MetadataValue();
+        MetadataValue value = new MetadataValue("");
         value.getParamPrefixes().add("prefix_");
         value.getParamValues().add("value");
         value.getParamSuffixes().add("_suffix");
@@ -81,7 +81,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldNotAddNullPrefix() throws Exception {
-        MetadataValue value = new MetadataValue();
+        MetadataValue value = new MetadataValue("");
         value.getParamPrefixes().add(null);
         value.getParamValues().add("value1");
         value.getParamPrefixes().add(null);
@@ -95,7 +95,7 @@ public class MetadataValueTest {
      */
     @Test
     public void getComboValueShort_shouldNotAddNullSuffix() throws Exception {
-        MetadataValue value = new MetadataValue();
+        MetadataValue value = new MetadataValue("");
         value.getParamSuffixes().add(null);
         value.getParamValues().add("value1");
         value.getParamSuffixes().add(null);
