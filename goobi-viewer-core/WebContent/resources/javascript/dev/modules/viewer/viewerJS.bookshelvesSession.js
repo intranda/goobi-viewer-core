@@ -19,7 +19,7 @@
  * Module to manage bookshelves in the current session.
  * 
  * @version 3.2.0
- * @module viewerJS..bookshelvesSession
+ * @module viewerJS.bookshelvesSession
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -52,6 +52,9 @@ var viewerJS = ( function( viewer ) {
             // toggle bookshelf dropdown
             $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
+                
+                // hide other dropdowns
+                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown' ).hide();
                 
                 _getAllSessionElements( _defaults.root ).then( function( elements ) {
                     if ( elements.items.length > 0 ) {

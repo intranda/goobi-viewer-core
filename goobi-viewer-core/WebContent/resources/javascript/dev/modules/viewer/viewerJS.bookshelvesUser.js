@@ -19,7 +19,7 @@
  * Module to manage bookshelves if the user is logged in.
  * 
  * @version 3.2.0
- * @module viewerJS..bookshelvesUser
+ * @module viewerJS.bookshelvesUser
  * @requires jQuery
  */
 var viewerJS = ( function( viewer ) {
@@ -54,6 +54,11 @@ var viewerJS = ( function( viewer ) {
             // toggle bookshelf dropdown
             $( '[data-bookshelf-type="dropdown"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
+                
+                // hide other dropdowns
+                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown' ).hide();
+                $( '.bookshelf-popup' ).remove();
+                
                 $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
             } );
             
@@ -63,6 +68,9 @@ var viewerJS = ( function( viewer ) {
             // render bookshelf popup
             $( '[data-bookshelf-type="add"]' ).off().on( 'click', function( event ) {
                 event.stopPropagation();
+                
+                // hide other dropdowns
+                $( '.bookshelf-navigation__dropdown, .login-navigation__user-dropdown' ).hide();
                 
                 var currBtn = $( this );
                 var currPi = currBtn.attr( 'data-pi' );
@@ -119,17 +127,6 @@ var viewerJS = ( function( viewer ) {
                     $( '#addBookshelfBtn' ).click();
                 }
             } );
-            
-            // save bookshelf item description
-            // $( '[data-bookshelf-type="save"]' ).off().on( 'click', function() {
-            // var itemDescription = '';
-            // var currId = $( this ).attr( 'data-description-id' );
-            //                
-            // if ( $( '#itemDescription-' + currId ).length > 0 ) {
-            // itemDescription = $( '#itemDescription-' + currId ).val();
-            // console.log( itemDescription );
-            // }
-            // } );
         }
     };
     /* ######## ADD (CREATE) ######## */
