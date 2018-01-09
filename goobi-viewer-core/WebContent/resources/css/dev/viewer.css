@@ -4680,6 +4680,8 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .user-bookshelves__panel-body p {
   margin: 0;
+  font-size: 13px;
+  font-style: italic;
 }
 .user-bookshelves__panel-action a {
   display: inline-block;
@@ -4748,6 +4750,10 @@ div[id*="-Modal"] .email-form .form-group {
 /* BLOCK */
 .view-bookshelf {
   /* ELEMENT */
+}
+.view-bookshelf p {
+  font-size: 13px;
+  font-style: italic;
 }
 .view-bookshelf__item {
   height: 300px;
