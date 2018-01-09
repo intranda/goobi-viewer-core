@@ -26,7 +26,7 @@
 	<ui:define name="content">
 		<div id="viewBookshelf" class="view-bookshelf">
 			<h:panelGroup rendered="#{userBean.loggedIn}">
-				<h2>#{msg.bookshelf_changeBookshelfText}: #{bookshelfBean.currentBookshelf.name}</h2>
+				<h2>#{bookshelfBean.currentBookshelf.name}</h2>
 				
 				<p>#{bookshelfBean.currentBookshelf.description}</p>
 
