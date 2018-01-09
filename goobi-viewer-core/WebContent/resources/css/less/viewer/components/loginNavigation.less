@@ -1,0 +1,171 @@
+/* ==============================================================
+   Login Navigation
+   style declarations for loginNavigation.xhtml
+   ==============================================================*/
+/* LOGIN NAVIGATION */
+/* BLOCK */
+.login-navigation {
+	/* ELEMENT */
+	/* LOGIN DROPDOWN */
+	&__login-dropdown {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		width: 375px;
+		height: 375px;
+		padding: 10px;
+		font-size: 16px;
+		border: 1px solid @middlegray;
+		background-color: @white;
+		overflow: hidden;
+		z-index: 999;
+		li {
+			float: left;
+			max-height: inherit;
+			border-bottom: 1px solid @middlegray;
+			&:last-child {
+				border-bottom: none;
+			}
+			&:hover {
+				background-color: @lightgray;
+			}
+		}
+		a {
+			line-height: 21px;
+			padding: 3px 10px;
+		}
+		.control-label {
+			font-weight: normal;
+		}
+		.form-control {
+			height: 48px;
+		}
+	}
+	&__user-icon {
+		/* MODIFICATION */
+		&--loggedout {
+			.fa {
+				color: @middlegray;
+			}
+		}
+		&--loggedin {
+			.fa {
+				margin-top: 7px;
+				color: @blue;
+			}
+		}
+	}
+	&__login-dropdown-action {
+		margin-top: 45px;
+		.btn {
+			width: 100%;
+		}
+	}
+	&__login-dropdown-options {
+		margin-left: -10px;
+	    margin-right: -10px;
+		li {
+			max-height: inherit !important;
+			border-bottom: 1px solid @middlegray;
+			&:hover {
+				background-color: transparent;
+			}
+			&:last-child {
+				border-bottom: none;
+			}
+		}
+		a, button {
+			width: 100%;
+			padding: 14px;
+			color: @blue;
+		}
+		a {
+			display: block;
+			padding: 14px;
+			text-align: center;
+		}
+	}
+	&__retrieve-account {
+		position: absolute;
+		top: 0;
+		left: 100%;
+		width: 375px;
+		height: 375px;
+		padding: 10px;
+		background-color: @white;
+		overflow: hidden;
+		z-index: 1000;
+		transition: all .3s ease-in;
+		&.in {
+			left: 0;
+		}
+		h4 {
+			margin: 15px 0;
+		}
+		.control-label {
+			font-weight: normal;
+		}
+		.form-control {
+			height: 48px;
+		}
+		.btn,
+		button {
+			width: 100%;
+		}
+		button {
+			padding: 14px;
+			color: @blue;
+		}
+	}
+	/* USER DROPDOWN */
+	&__user-dropdown {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		width: 375px;
+		padding: 10px;
+		font-size: 16px;
+		border: 1px solid @middlegray;
+		background-color: @white;
+		overflow: hidden;
+		z-index: 999;
+		ul {
+			margin-left: -10px;
+    		margin-right: -10px;
+		}
+		li {
+			max-height: inherit !important;
+			border-bottom: 1px solid @middlegray;
+			&:last-child {
+				border-bottom: none;
+			}
+			.fa {
+				color: @blue;
+			}
+			.col-xs-2 {
+				padding: 14px 0;
+				text-align: center;
+			}
+		}
+		a {
+			padding: 14px;
+		}
+		.btn {
+			margin-top: 30px;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {} 

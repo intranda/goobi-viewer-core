@@ -2852,6 +2852,166 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Login Navigation
+   style declarations for loginNavigation.xhtml
+   ==============================================================*/
+/* LOGIN NAVIGATION */
+/* BLOCK */
+.login-navigation {
+  /* ELEMENT */
+  /* LOGIN DROPDOWN */
+  /* USER DROPDOWN */
+}
+.login-navigation__login-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 375px;
+  height: 375px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  overflow: hidden;
+  z-index: 999;
+}
+.login-navigation__login-dropdown li {
+  float: left;
+  max-height: inherit;
+  border-bottom: 1px solid #ccc;
+}
+.login-navigation__login-dropdown li:last-child {
+  border-bottom: none;
+}
+.login-navigation__login-dropdown li:hover {
+  background-color: #eee;
+}
+.login-navigation__login-dropdown a {
+  line-height: 21px;
+  padding: 3px 10px;
+}
+.login-navigation__login-dropdown .control-label {
+  font-weight: normal;
+}
+.login-navigation__login-dropdown .form-control {
+  height: 48px;
+}
+.login-navigation__user-icon {
+  /* MODIFICATION */
+}
+.login-navigation__user-icon--loggedout .fa {
+  color: #ccc;
+}
+.login-navigation__user-icon--loggedin .fa {
+  margin-top: 7px;
+  color: #428bca;
+}
+.login-navigation__login-dropdown-action {
+  margin-top: 45px;
+}
+.login-navigation__login-dropdown-action .btn {
+  width: 100%;
+}
+.login-navigation__login-dropdown-options {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+.login-navigation__login-dropdown-options li {
+  max-height: inherit !important;
+  border-bottom: 1px solid #ccc;
+}
+.login-navigation__login-dropdown-options li:hover {
+  background-color: transparent;
+}
+.login-navigation__login-dropdown-options li:last-child {
+  border-bottom: none;
+}
+.login-navigation__login-dropdown-options a,
+.login-navigation__login-dropdown-options button {
+  width: 100%;
+  padding: 14px;
+  color: #428bca;
+}
+.login-navigation__login-dropdown-options a {
+  display: block;
+  padding: 14px;
+  text-align: center;
+}
+.login-navigation__retrieve-account {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 375px;
+  height: 375px;
+  padding: 10px;
+  background-color: #fff;
+  overflow: hidden;
+  z-index: 1000;
+  transition: all 0.3s ease-in;
+}
+.login-navigation__retrieve-account.in {
+  left: 0;
+}
+.login-navigation__retrieve-account h4 {
+  margin: 15px 0;
+}
+.login-navigation__retrieve-account .control-label {
+  font-weight: normal;
+}
+.login-navigation__retrieve-account .form-control {
+  height: 48px;
+}
+.login-navigation__retrieve-account .btn,
+.login-navigation__retrieve-account button {
+  width: 100%;
+}
+.login-navigation__retrieve-account button {
+  padding: 14px;
+  color: #428bca;
+}
+.login-navigation__user-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 375px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  overflow: hidden;
+  z-index: 999;
+}
+.login-navigation__user-dropdown ul {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+.login-navigation__user-dropdown li {
+  max-height: inherit !important;
+  border-bottom: 1px solid #ccc;
+}
+.login-navigation__user-dropdown li:last-child {
+  border-bottom: none;
+}
+.login-navigation__user-dropdown li .fa {
+  color: #428bca;
+}
+.login-navigation__user-dropdown li .col-xs-2 {
+  padding: 14px 0;
+  text-align: center;
+}
+.login-navigation__user-dropdown a {
+  padding: 14px;
+}
+.login-navigation__user-dropdown .btn {
+  margin-top: 30px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
 /* ==============================================================
    Admin 
