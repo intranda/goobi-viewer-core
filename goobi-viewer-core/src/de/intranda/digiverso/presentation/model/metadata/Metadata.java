@@ -269,7 +269,7 @@ public class Metadata implements Serializable {
                 // logger.trace("added norm data url: {}", normDataUrl.toString());
             }
             // Replace master value with override value from the parameter
-            if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue())) {
+            if (StringUtils.isNotEmpty(origParam.getOverrideMasterValue()) && StringUtils.isNotEmpty(value)) {
                 mdValue.setMasterValue(origParam.getOverrideMasterValue());
             }
         }
