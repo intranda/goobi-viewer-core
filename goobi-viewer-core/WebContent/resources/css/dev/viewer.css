@@ -6220,7 +6220,7 @@ div.olMapViewport {
   margin-bottom: 15px;
 }
 .widget-bookshelf-list__back {
-  padding: 10px 0;
+  padding-top: 10px;
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -6322,6 +6322,9 @@ div.olMapViewport {
 }
 .rss_elem_wrapp .rss-wrapp .rss-elem dl .rss-elem-info {
   margin-bottom: 0.875rem;
+}
+.rss_elem_wrapp .rss-wrapp .rss-elem:last-child dl .rss-elem-info {
+  margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
