@@ -4755,6 +4755,12 @@ div[id*="-Modal"] .email-form .form-group {
   font-size: 13px;
   font-style: italic;
 }
+.view-bookshelf__action a {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 26px;
+}
 .view-bookshelf__item {
   height: 300px;
   margin-bottom: 30px;
