@@ -892,8 +892,22 @@ public class NavigationHelper implements Serializable {
      * @param linkWeight
      */
     public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+        PageType page = PageType.getByName(url);
+        if(page != null && !page.equals(PageType.other)) {
+            url = getUrl(page);
+        } else {            
+        }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         updateBreadcrumbs(newLink);
+    }
+
+
+    /**
+     * @param page
+     * @return
+     */
+    private String getUrl(PageType page) {
+       return getApplicationUrl() + page.getName();
     }
 
     public String getCurrentPartnerUrl() {
