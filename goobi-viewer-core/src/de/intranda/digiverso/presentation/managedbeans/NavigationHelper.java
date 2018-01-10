@@ -1061,7 +1061,7 @@ public class NavigationHelper implements Serializable {
 
     public String getPreviousViewUrl() throws IOException {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedUrl()).orElse("");
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getApplicationName() + path.getCombinedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
         }
