@@ -2869,7 +2869,7 @@ div[id*="-Modal"] .email-form .form-group {
   top: 100%;
   right: 0;
   width: 375px;
-  height: 375px;
+  min-height: 290px;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -2888,15 +2888,15 @@ div[id*="-Modal"] .email-form .form-group {
 .login-navigation__login-dropdown li:hover {
   background-color: #eee;
 }
-.login-navigation__login-dropdown a {
-  line-height: 21px;
-  padding: 3px 10px;
+.login-navigation__login-dropdown a,
+.login-navigation__login-dropdown button {
+  padding: 7px 14px;
 }
 .login-navigation__login-dropdown .control-label {
   font-weight: normal;
 }
 .login-navigation__login-dropdown .form-control {
-  height: 48px;
+  height: 32px;
 }
 .login-navigation__user-icon {
   /* MODIFICATION */
@@ -2909,7 +2909,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #428bca;
 }
 .login-navigation__login-dropdown-action {
-  margin-top: 45px;
+  margin-top: 30px;
 }
 .login-navigation__login-dropdown-action .btn {
   width: 100%;
@@ -2931,12 +2931,11 @@ div[id*="-Modal"] .email-form .form-group {
 .login-navigation__login-dropdown-options a,
 .login-navigation__login-dropdown-options button {
   width: 100%;
-  padding: 14px;
+  padding: 7px 14px;
   color: #428bca;
 }
 .login-navigation__login-dropdown-options a {
   display: block;
-  padding: 14px;
   text-align: center;
 }
 .login-navigation__retrieve-account {
@@ -2944,8 +2943,8 @@ div[id*="-Modal"] .email-form .form-group {
   top: 0;
   left: 100%;
   width: 375px;
-  height: 375px;
-  padding: 10px;
+  min-height: 290px;
+  padding: 0 10px;
   background-color: #fff;
   overflow: hidden;
   z-index: 1000;
@@ -2961,15 +2960,20 @@ div[id*="-Modal"] .email-form .form-group {
   font-weight: normal;
 }
 .login-navigation__retrieve-account .form-control {
-  height: 48px;
+  height: 32px;
 }
 .login-navigation__retrieve-account .btn,
 .login-navigation__retrieve-account button {
   width: 100%;
 }
+.login-navigation__retrieve-account a,
 .login-navigation__retrieve-account button {
-  padding: 14px;
+  padding: 7px 14px;
   color: #428bca;
+}
+.login-navigation__retrieve-account a {
+  display: block;
+  text-align: center;
 }
 .login-navigation__user-dropdown {
   display: none;
@@ -2978,6 +2982,7 @@ div[id*="-Modal"] .email-form .form-group {
   right: 0;
   width: 375px;
   padding: 10px;
+  padding-top: 0;
   font-size: 16px;
   border: 1px solid #ccc;
   background-color: #fff;
@@ -2999,14 +3004,14 @@ div[id*="-Modal"] .email-form .form-group {
   color: #428bca;
 }
 .login-navigation__user-dropdown li .col-xs-2 {
-  padding: 14px 0;
+  padding: 7px 0;
   text-align: center;
 }
 .login-navigation__user-dropdown a {
-  padding: 14px;
+  padding: 7px 14px;
 }
 .login-navigation__user-dropdown .btn {
-  margin-top: 30px;
+  margin-top: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

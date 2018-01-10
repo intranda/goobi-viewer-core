@@ -13,7 +13,7 @@
 		top: 100%;
 		right: 0;
 		width: 375px;
-		height: 375px;
+		min-height: 290px;
 		padding: 10px;
 		font-size: 16px;
 		border: 1px solid @middlegray;
@@ -31,15 +31,14 @@
 				background-color: @lightgray;
 			}
 		}
-		a {
-			line-height: 21px;
-			padding: 3px 10px;
+		a, button {
+			padding: 7px 14px;
 		}
 		.control-label {
 			font-weight: normal;
 		}
 		.form-control {
-			height: 48px;
+			height: 32px;
 		}
 	}
 	&__user-icon {
@@ -57,7 +56,7 @@
 		}
 	}
 	&__login-dropdown-action {
-		margin-top: 45px;
+		margin-top: 30px;
 		.btn {
 			width: 100%;
 		}
@@ -77,12 +76,11 @@
 		}
 		a, button {
 			width: 100%;
-			padding: 14px;
+			padding: 7px 14px;
 			color: @blue;
 		}
 		a {
 			display: block;
-			padding: 14px;
 			text-align: center;
 		}
 	}
@@ -91,8 +89,8 @@
 		top: 0;
 		left: 100%;
 		width: 375px;
-		height: 375px;
-		padding: 10px;
+		min-height: 290px;
+		padding: 0 10px;
 		background-color: @white;
 		overflow: hidden;
 		z-index: 1000;
@@ -107,15 +105,19 @@
 			font-weight: normal;
 		}
 		.form-control {
-			height: 48px;
+			height: 32px;
 		}
 		.btn,
 		button {
 			width: 100%;
 		}
-		button {
-			padding: 14px;
+		a, button {
+			padding: 7px 14px;
 			color: @blue;
+		}
+		a {
+			display: block;
+			text-align: center;
 		}
 	}
 	/* USER DROPDOWN */
@@ -126,6 +128,7 @@
 		right: 0;
 		width: 375px;
 		padding: 10px;
+		padding-top: 0;
 		font-size: 16px;
 		border: 1px solid @middlegray;
 		background-color: @white;
@@ -145,15 +148,15 @@
 				color: @blue;
 			}
 			.col-xs-2 {
-				padding: 14px 0;
+				padding: 7px 0;
 				text-align: center;
 			}
 		}
 		a {
-			padding: 14px;
+			padding: 7px 14px;
 		}
 		.btn {
-			margin-top: 30px;
+			margin-top: 10px;
 		}
 	}
 }
