@@ -159,7 +159,7 @@ public class SessionStoreBookshelfManager {
     public void addSessionBookshelfToUser(User user, HttpServletRequest request) throws DAOException {
         if(request != null) {
             Optional<Bookshelf> oBookshelf =getBookshelf(request.getSession());
-            if(oBookshelf.isPresent()) {
+            if(oBookshelf.isPresent() && !oBookshelf.get().getItems().isEmpty()) {
                 oBookshelf.get().setOwner(user);
                 oBookshelf.get().setPublic(false);
                 List<Bookshelf> userBookshelves = DataManager.getInstance().getDao().getBookshelves(user);

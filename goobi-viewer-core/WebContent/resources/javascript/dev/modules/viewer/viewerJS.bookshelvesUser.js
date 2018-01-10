@@ -122,7 +122,7 @@ var viewerJS = ( function( viewer ) {
             } );
             
             // add new bookshelf on enter in overview
-            $( '#addBookshelfInput' ).on( 'keypress', function( event ) {
+            $( '#addBookshelfInput' ).on( 'keyup', function( event ) {
                 if ( event.which == 13 ) {
                     $( '#addBookshelfBtn' ).click();
                 }
