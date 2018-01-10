@@ -1237,6 +1237,9 @@ div.mce-fullscreen {
   background-image: url("../../images/icons/icon-bs-add.svg");
   background-size: 60%;
 }
+.bookshelf-popup__footer [data-bookshelf-type="add"].added {
+  background-image: url("../../images/icons/icon-bs-add.svg");
+}
 /* ACTION BUTTONS */
 [data-bookshelf-type="dropdown"],
 [data-bookshelf-type="get"],

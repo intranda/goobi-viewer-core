@@ -602,7 +602,7 @@ var viewerJS = ( function( viewer ) {
         var bookshelfPopupFooterInput = $( '<input />' ).attr( 'type', 'text' ).attr( 'placeholder', _defaults.msg.addNewBookshelf );
         bookshelfPopupFooterColLeft.append( bookshelfPopupFooterInput );
         var bookshelfPopupFooterColright = $( '<div />' ).addClass( 'col-xs-1 no-padding' );
-        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' );
+        var bookshelfPopupFooterAddBtn = $( '<button />' ).addClass( 'btn-clean' ).attr( 'type', 'button' ).attr( 'data-bookshelf-type', 'add' ).attr( 'data-pi', pi );
         bookshelfPopupFooterColright.append( bookshelfPopupFooterAddBtn );
         bookshelfPopupFooterRow.append( bookshelfPopupFooterColLeft ).append( bookshelfPopupFooterColright );
         bookshelfPopupFooter.append( bookshelfPopupFooterRow );
@@ -619,7 +619,7 @@ var viewerJS = ( function( viewer ) {
         // add new bookshelf in popover
         $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).on( 'click', function() {
             var bsName = $( '.bookshelf-popup__footer input' ).val();
-            var currPi = pi;
+            var currPi = $( this ).attr( 'data-pi' );
             
             if ( bsName != '' ) {
                 _addNamedBookshelf( _defaults.root, bsName ).then( function() {
@@ -643,7 +643,7 @@ var viewerJS = ( function( viewer ) {
         
         // add new bookshelf on enter in popover
         $( '.bookshelf-popup__footer input' ).on( 'keyup', function( event ) {
-            if ( event.keyCode == 13 ) {
+            if ( event.which == 13 ) {
                 $( '.bookshelf-popup__footer [data-bookshelf-type="add"]' ).click();
             }
         } );
@@ -708,14 +708,27 @@ var viewerJS = ( function( viewer ) {
                 var currBtn = $( this );
                 var currId = currBtn.attr( 'data-id' );
                 var currPi = currBtn.attr( 'data-pi' );
+                var isChecked = currBtn.find( '.fa-check' );
                 
-                _addBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
-                    _renderBookshelfPopoverList( currPi );
-                    _renderBookshelfNavigationList();
-                    _setAddedStatus();
-                } ).fail( function( error ) {
-                    console.error( 'ERROR - _addBookshelfItemByPi: ', error.responseText );
-                } );
+                if ( isChecked.length > 0 ) {
+                    _deleteBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
+                        _renderBookshelfPopoverList( currPi );
+                        _renderBookshelfNavigationList();
+                        _setAddedStatus();
+                    } ).fail( function( error ) {
+                        console.error( 'ERROR - _deleteBookshelfItemByPi: ', error.responseText );
+                    } );
+                }
+                else {
+                    _addBookshelfItemByPi( _defaults.root, currId, currPi ).then( function() {
+                        _renderBookshelfPopoverList( currPi );
+                        _renderBookshelfNavigationList();
+                        _setAddedStatus();
+                    } ).fail( function( error ) {
+                        console.error( 'ERROR - _addBookshelfItemByPi: ', error.responseText );
+                    } );
+                }
+                
             } );
             
         } ).fail( function( error ) {
@@ -810,6 +823,8 @@ var viewerJS = ( function( viewer ) {
         
         _getContainingBookshelfItemByPi( _defaults.root, pi ).then( function( items ) {
             if ( items.length == 0 ) {
+                object.removeClass( 'added' );
+                
                 return false;
             }
             else {
