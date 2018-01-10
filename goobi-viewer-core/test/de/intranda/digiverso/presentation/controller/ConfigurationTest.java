@@ -1761,6 +1761,24 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getTeiFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTeiFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("tei", DataManager.getInstance().getConfiguration().getTeiFolder());
+    }
+
+    /**
+     * @see Configuration#getCmdiFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getCmdiFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("cmdi", DataManager.getInstance().getConfiguration().getCmdiFolder());
+    }
+
+    /**
      * @see Configuration#getEndYearForTimeline()
      * @verifies return correct value
      */

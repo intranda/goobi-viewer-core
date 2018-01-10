@@ -1213,6 +1213,15 @@ public final class Configuration extends AbstractConfiguration {
     public String getTeiFolder() {
         return getLocalString("teiFolder");
     }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getCmdiFolder() {
+        return getLocalString("cmdiFolder");
+    }
 
     /**
      * 

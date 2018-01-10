@@ -28,10 +28,12 @@
     <abbyyFolder>abbyy</abbyyFolder>
     <!-- fulltextFolder: contains plain full-text files -->
     <fulltextFolder>fulltext</fulltextFolder>
-    <!-- teiFolder: contains TEI metadata/fulltext files -->
-    <teiFolder>tei</teiFolder>
     <!-- wcFolder: contains TEI word coordinate files -->
     <wcFolder>wc</wcFolder>
+    <!-- teiFolder: contains TEI metadata/fulltext files -->
+    <teiFolder>tei</teiFolder>
+    <!-- cmdiFolder: contains CMDI metadata/fulltext files -->
+    <cmdiFolder>cmdi</cmdiFolder>
     <!-- hotfolder: defines the hotfolder from the solr Indexer for indexing uploaded born-digital-material (see <content> also) -->
     <hotfolder>/opt/digiverso/viewer/hotfolder/</hotfolder>
     <!-- tempFolder: defines a temp folder for the processing of born-digital-material (see <content> also) -->
