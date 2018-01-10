@@ -4715,11 +4715,15 @@ div[id*="-Modal"] .email-form .form-group {
   height: 48px;
 }
 .user-bookshelf-edit textarea {
-  min-height: 100px;
+  min-height: 125px;
   resize: vertical;
 }
+.user-bookshelf-edit__action-delete,
 .user-bookshelf-edit__action {
   text-align: right;
+}
+.user-bookshelf-edit__action-delete {
+  padding-bottom: 15px;
 }
 .user-bookshelf-edit__action .btn {
   margin-left: 10px;

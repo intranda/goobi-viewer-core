@@ -75,31 +75,14 @@
 												<div class="view-bookshelf__item-info">
 													<!--  NAME -->
 													<h4>#{item.name}</h4>
-													
-													<!--  DESCRIPTION -->
-<!-- 													<textarea name="item-description" id="itemDescription-#{status.index}" data-pi="#{item.pi}" placeholder="#{msg.bookshelf_enterItemDescription}"></textarea> -->
-													
-<!-- 													<ui:fragment rendered="#{!item.description}">														 -->
-<!-- 														<h:inputTextarea name="item-description" value="#{bookshelfBean.currentBookshelfDescription}"> -->
-<!-- 															<f:passThroughAttribute name="placeholder" value="#{msg.bookshelf_enterItemDescription}" /> -->
-<!-- 														</h:inputTextarea> -->
-<!-- 													</ui:fragment> -->
-													
-<!-- 													<ui:fragment rendered="#{item.description}"> -->
-<!-- 														<p>#{item.description}</p> -->
-<!-- 													</ui:fragment>													 -->
 												</div>
 												<!--  ACTION -->
 												<div class="view-bookshelf__item-action">
-													
-<!-- 													<button type="button" data-bookshelf-type="save" data-description-id="#{status.index}">Speichern</button> -->
-
-
-
-													<h:commandLink action="#{bookshelfBean.deleteCurrentItemAction(item)}" title="#{msg.bookshelf_itemDelete}" role="button">
+													<h:commandLink title="#{msg.bookshelf_itemDelete}" action="#{bookshelfBean.deleteCurrentItemAction(item)}" onclick="if (!confirm('#{msg.bookshelves_confirmDeleteBookshelfItem}')) return false" role="button">
 														<f:passThroughAttribute name="data-bookshelf-type" value="delete" />
 														<f:passThroughAttribute name="data-toggle" value="tooltip" />
 														<f:passThroughAttribute name="data-placement" value="top" />
+														<f:setPropertyActionListener value="#{bookshelf}" target="#{bookshelfBean.currentBookshelf}" />
 													</h:commandLink>
 												</div>
 											</div>
