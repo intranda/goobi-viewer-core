@@ -27,7 +27,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -274,10 +274,10 @@ var viewerJS = ( function( viewer ) {
                 modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
-            if(infos.size)  {            	
-            	modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            	modalBody += '<dd>~' + infos.size + '</dd>';
-            	modalBody += '</dl>';
+            if ( infos.size ) {
+                modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+                modalBody += '<dd>~' + infos.size + '</dd>';
+                modalBody += '</dl>';
             }
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
