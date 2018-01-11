@@ -356,6 +356,14 @@ public class NavigationHelper implements Serializable {
         logger.trace("setLocaleString: {}", inLocale);
         locale = new Locale(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+        
+        // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
+        if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null) {
+                adb.setSelectedRecordLanguage(inLocale);
+            }
+        }
     }
 
     public String getDatePattern() {

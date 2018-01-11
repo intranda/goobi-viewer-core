@@ -1213,7 +1213,7 @@ public final class Configuration extends AbstractConfiguration {
     public String getTeiFolder() {
         return getLocalString("teiFolder");
     }
-    
+
     /**
      * 
      * @return
@@ -2238,6 +2238,15 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getFulltextPercentageWarningThreshold() {
         return getLocalInt("viewer.fulltextPercentageWarningThreshold", 30);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isUseViewerLocaleAsRecordLanguage() {
+        return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
 
     /**

@@ -252,8 +252,12 @@
         </docstructTargetPageTypes>
         
         <!-- fulltextPercentageWarningThreshold: If a record's percentage of pages having full-Text/ALTO documents
-            falls below the configured value, a warning will be displayed for that record.    -->
+            falls below the configured value, a warning will be displayed for that record. -->
         <fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
+
+	    <!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will 
+		    also change the preferred language for record metadata. Default is false. -->
+	    <useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
         <!-- theme: defines the theme that shall be used -->
         <theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />

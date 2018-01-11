@@ -770,7 +770,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getFullscreenImageUrl() throws IndexUnreachableException {
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
     }
-    
+
     /**
      *
      * @return
@@ -915,7 +915,7 @@ public class ActiveDocumentBean implements Serializable {
      * Title bar label value escaped for JavaScript.
      * 
      * @return
-     * @throws IndexUnreachableException 
+     * @throws IndexUnreachableException
      */
     public String getLabelForJS() throws IndexUnreachableException {
         String label = getTitleBarLabel();
@@ -1070,6 +1070,7 @@ public class ActiveDocumentBean implements Serializable {
      * @param selectedRecordLanguage the selectedRecordLanguage to set
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
+        logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguage);
         this.selectedRecordLanguage = selectedRecordLanguage;
     }
 
@@ -1081,7 +1082,7 @@ public class ActiveDocumentBean implements Serializable {
                     return false;
                 }
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Error checking pdf resources: " + e.getMessage());
+                logger.error("Error checking PDF resources: {}", e.getMessage());
                 return false;
             }
 
@@ -1150,5 +1151,5 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Error writing toc: " + e.getMessage(), e);
         }
     }
-        
+
 }

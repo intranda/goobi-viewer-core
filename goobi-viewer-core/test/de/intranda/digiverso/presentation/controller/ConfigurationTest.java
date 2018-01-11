@@ -2293,6 +2293,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#isUseViewerLocaleAsRecordLanguage()
+     * @verifies return correct value
+     */
+    @Test
+    public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
+    }
+
+    /**
      * @see Configuration#getSearchExcelExportFields()
      * @verifies return all values
      */
