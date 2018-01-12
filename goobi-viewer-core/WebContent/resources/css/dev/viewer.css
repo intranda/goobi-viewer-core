@@ -1141,7 +1141,7 @@ div.mce-fullscreen {
 .bookshelf-popup {
   position: absolute;
   width: 280px;
-  height: 360px;
+  height: 300px;
   border: 1px solid #ccc;
   background-color: #fff;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
