@@ -20,6 +20,10 @@
         </f:metadata>
     </ui:define>
 
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
+
     <ui:define name="content">    
         <div id="userBookshelves" class="user-bookshelves">
             <h2>#{msg.bookshelf_myBookshelves}</h2>
@@ -108,28 +112,16 @@
 	</ui:define>
 
     <ui:define name="sidebar">
-		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
-            <widgetComponent:widget_browsing />
-        </h:panelGroup>
+		<widgetComponent:widget_bookshelfList />
         
-        <h:panelGroup rendered="#{userBean.loggedIn}">
-        	<widgetComponent:widget_mySearches />
-        </h:panelGroup>
+        <widgetComponent:widget_mySearches />
         
         <c:forEach var="module" items="#{configurationBean.modules}">
             <c:forEach var="contribution" items="#{module.sidebarContributions}">
                 <ui:include src="/#{contribution}" />
             </c:forEach>
         </c:forEach>
-        
-		<widgetComponent:widget_user />		
-	</ui:define>
 
-	<ui:define name="rssFeed">
-		<ui:include src="resources/includes/rssFeed.xhtml" />
+        <widgetComponent:widget_user />
 	</ui:define>
-    
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
-    </ui:define>
 </ui:composition>
