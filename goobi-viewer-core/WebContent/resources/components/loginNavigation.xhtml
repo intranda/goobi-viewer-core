@@ -11,7 +11,7 @@
     <composite:implementation>
 		<ul class="list login-navigation">
 			<!-- USER NOT LOGGED IN -->
-			<h:panelGroup rendered="#{configurationBean.displayUserNavigation and !userBean.loggedIn}">
+			<h:panelGroup rendered="#{!userBean.loggedIn}">
 				<li data-login="false">
 					<button type="button" class="btn-clean login-navigation__user-icon login-navigation__user-icon--loggedout" data-toggle="login-dropdown">
 						#{msg.userNotLoggedIn} <i class="fa fa-user-circle-o" aria-hidden="true"></i>
@@ -74,7 +74,7 @@
 			</h:panelGroup>
 			
 			<!-- USER LOGGED IN -->
-			<h:panelGroup rendered="#{configurationBean.displayUserNavigation and userBean.loggedIn}">
+			<h:panelGroup rendered="#{userBean.loggedIn}">
 				<li data-login="true">
 					<button type="button" class="btn-clean" data-toggle="user-dropdown">
 						<span class="col-xs-9">
@@ -95,27 +95,31 @@
 						<h:form id="userDropdownForm" prependId="false">
 							<ul class="list">
 								<!-- BOKKSHELVES -->
-								<li>
-									<div class="row no-margin">
-										<div class="col-xs-2 no-padding">
-											<i class="fa fa-heart" aria-hidden="true"></i>
+								<ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
+									<li>
+										<div class="row no-margin">
+											<div class="col-xs-2 no-padding">
+												<i class="fa fa-heart" aria-hidden="true"></i>
+											</div>
+											<div class="col-xs-10 no-padding">
+												<a href="#{navigationHelper.applicationUrl}mybookshelves/">#{msg.bookshelf_myBookshelves}</a>
+											</div>
 										</div>
-										<div class="col-xs-10 no-padding">
-											<a href="#{navigationHelper.applicationUrl}mybookshelves/">#{msg.bookshelf_myBookshelves}</a>
-										</div>
-									</div>
-								</li>
+									</li>
+								</ui:fragment>
 								<!-- SAVED SEARCHES -->
-								<li>
-									<div class="row no-margin">
-										<div class="col-xs-2 no-padding">
-											<i class="fa fa-search" aria-hidden="true"></i>
+								<ui:fragment rendered="#{searchBean.searchSavingEnabled}">
+									<li>
+										<div class="row no-margin">
+											<div class="col-xs-2 no-padding">
+												<i class="fa fa-search" aria-hidden="true"></i>
+											</div>
+											<div class="col-xs-10 no-padding">
+												<a href="#{navigationHelper.applicationUrl}mysearches/">#{msg.user_mySearches}</a>
+											</div>
 										</div>
-										<div class="col-xs-10 no-padding">
-											<a href="#{navigationHelper.applicationUrl}mysearches/">#{msg.user_mySearches}</a>
-										</div>
-									</div>
-								</li>
+									</li>
+								</ui:fragment>
 								<!-- USERDATA -->
 								<li>
 									<div class="row no-margin">
