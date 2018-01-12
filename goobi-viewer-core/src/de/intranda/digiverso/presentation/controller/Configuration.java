@@ -37,7 +37,6 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
-import org.apache.commons.configuration.tree.ConfigurationNode;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -337,7 +336,7 @@ public final class Configuration extends AbstractConfiguration {
             for (Iterator it = elements.iterator(); it.hasNext();) {
                 HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
                 String label = sub.getString("[@label]");
-                String value = sub.getString("[@value]");
+                String masterValue = sub.getString("[@value]");
                 boolean group = sub.getBoolean("[@group]", false);
                 int type = sub.getInt("[@type]", 0);
                 List params = sub.configurationsAt("param");
@@ -349,20 +348,17 @@ public final class Configuration extends AbstractConfiguration {
                         String fieldType = sub2.getString("[@type]");
                         String source = sub2.getString("[@source]", null);
                         String key = sub2.getString("[@key]");
+                        String overrideMasterValue = sub2.getString("[@value]");
                         String defaultValue = sub2.getString("[@defaultValue]");
                         String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                         String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                         boolean addUrl = sub2.getBoolean("[@url]", false);
                         boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                        paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, defaultValue, prefix, suffix,
-                                addUrl, dontUseTopstructValue));
-                        //                        if ("wikifield".equals(fieldType) || "wikipersonfield".equals(fieldType)) {
-                        //                            paramList.add(new MetadataParameter(MetadataParameterType.THEME, null, getTheme(), defaultValue, prefix, suffix, addUrl,
-                        //                                    dontUseTopstructValue));
-                        //                        }
+                        paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
+                                defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
                     }
                 }
-                ret.add(new Metadata(label, value, type, paramList, group));
+                ret.add(new Metadata(label, masterValue, type, paramList, group));
             }
         }
         return ret;
@@ -541,7 +537,7 @@ public final class Configuration extends AbstractConfiguration {
                 for (Iterator it2 = elements.iterator(); it2.hasNext();) {
                     HierarchicalConfiguration sub = (HierarchicalConfiguration) it2.next();
                     String label = sub.getString("[@label]");
-                    String value = sub.getString("[@value]");
+                    String masterValue = sub.getString("[@value]");
                     boolean group = sub.getBoolean("[@group]", false);
                     int number = sub.getInt("[@number]", -1);
                     int type = sub.getInt("[@type]", 0);
@@ -554,21 +550,17 @@ public final class Configuration extends AbstractConfiguration {
                             String fieldType = sub2.getString("[@type]");
                             String source = sub2.getString("[@source]", null);
                             String key = sub2.getString("[@key]");
+                            String overrideMasterValue = sub2.getString("[@value]");
                             String defaultValue = sub2.getString("[@defaultValue]");
                             String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
                             String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                             boolean addUrl = sub2.getBoolean("[@url]", false);
                             boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
-                            paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, defaultValue, prefix,
-                                    suffix, addUrl, dontUseTopstructValue));
-                            //                            // Add theme name if this is a
-                            //                            if ("wikifield".equals(fieldType) || "wikipersonfield".equals(fieldType)) {
-                            //                                paramList.add(new MetadataParameter(MetadataParameterType.THEME, null, getTheme(), defaultValue, prefix, suffix,
-                            //                                        addUrl, dontUseTopstructValue));
-                            //                            }
+                            paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
+                                    defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
                         }
                     }
-                    ret.add(new Metadata(label, value, type, paramList, group, number));
+                    ret.add(new Metadata(label, masterValue, type, paramList, group, number));
                 }
             }
         }
@@ -591,7 +583,7 @@ public final class Configuration extends AbstractConfiguration {
                 for (Element eleMetadata : eleListMetadata) {
                     try {
                         String label = eleMetadata.getAttributeValue("label");
-                        String value = eleMetadata.getAttributeValue("value");
+                        String masterValue = eleMetadata.getAttributeValue("value");
                         boolean group = eleMetadata.getAttribute("group") != null ? eleMetadata.getAttribute("group").getBooleanValue() : false;
                         int number = eleMetadata.getAttribute("number") != null ? eleMetadata.getAttribute("number").getIntValue() : -1;
                         int type = eleMetadata.getAttribute("type") != null ? eleMetadata.getAttribute("type").getIntValue() : 0;
@@ -604,6 +596,7 @@ public final class Configuration extends AbstractConfiguration {
                                 // logger.trace("param type: " + fieldType);
                                 String source = eleParam.getAttributeValue("source");
                                 String key = eleParam.getAttributeValue("key");
+                                String overrideMasterValue = eleParam.getAttributeValue("value");
                                 String defaultValue = eleParam.getAttributeValue("defaultValue");
                                 String prefix = eleParam.getAttribute("prefix") != null ? eleParam.getAttributeValue("prefix").replace("_SPACE_", " ")
                                         : "";
@@ -612,17 +605,11 @@ public final class Configuration extends AbstractConfiguration {
                                 boolean addUrl = eleParam.getAttribute("url") != null ? eleParam.getAttribute("url").getBooleanValue() : false;
                                 boolean dontUseTopstructValue = eleParam.getAttribute("dontUseTopstructValue") != null ? eleParam.getAttribute(
                                         "dontUseTopstructValue").getBooleanValue() : false;
-                                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, defaultValue, prefix,
-                                        suffix, addUrl, dontUseTopstructValue));
-                                // Add theme name if this is a wiki field
-                                // TODO this might be obsolete
-                                //                                if ("wikifield".equals(fieldType) || "wikipersonfield".equals(fieldType)) {
-                                //                                    paramList.add(new MetadataParameter(MetadataParameterType.THEME, null, getTheme(), defaultValue, prefix, suffix,
-                                //                                            addUrl, dontUseTopstructValue));
-                                //                                }
+                                paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
+                                        defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
                             }
                         }
-                        ret.add(new Metadata(label, value, type, paramList, group, number));
+                        ret.add(new Metadata(label, masterValue, type, paramList, group, number));
                     } catch (DataConversionException e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -1232,6 +1219,15 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public String getCmdiFolder() {
+        return getLocalString("cmdiFolder");
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
     public String getWcFolder() {
         return getLocalString("wcFolder");
     }
@@ -1436,7 +1432,6 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDisplaySearchResultNavigation() {
         return this.getLocalBoolean("webGuiDisplay.displaySearchResultNavigation", true);
     }
-
 
     public boolean isFoldout(String sidebarElement) {
         return getLocalBoolean("sidebar." + sidebarElement + ".foldout", false);
@@ -2243,6 +2238,15 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getFulltextPercentageWarningThreshold() {
         return getLocalInt("viewer.fulltextPercentageWarningThreshold", 30);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isUseViewerLocaleAsRecordLanguage() {
+        return getLocalBoolean("viewer.useViewerLocaleAsRecordLanguage", false);
     }
 
     /**

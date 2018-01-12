@@ -232,20 +232,20 @@ public class EventElement implements Comparable<EventElement>, Serializable {
 
         return metadata;
     }
-    
+
     public boolean hasMetadata() {
-        if(metadata != null) {
-            return metadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        if (metadata != null) {
+            return metadata.stream().anyMatch(md -> !md.isBlank());
         }
-        
+
         return false;
     }
-    
+
     public boolean hasSidebarMetadata() {
-        if(sidebarMetadata != null) {
-            return sidebarMetadata.stream().anyMatch(md -> md.getValueLink() != null || !md.isBlank());
+        if (sidebarMetadata != null) {
+            return sidebarMetadata.stream().anyMatch(md -> !md.isBlank());
         }
-        
+
         return false;
     }
 

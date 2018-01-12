@@ -75,6 +75,54 @@ public class ContentResource {
     }
 
     /**
+     * API method for retrieving any type of content by its relative path within its data repository.
+     * 
+     * @param pi Record identifier
+     * @param dataRepository Absolute path of the data repository
+     * @param filePath File path relative to the data repository
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
+    @Produces({ MediaType.TEXT_XML })
+    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
+            @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
+            MalformedURLException, ContentNotFoundException {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+        }
+        if ("-".equals(dataRepository)) {
+            dataRepository = null;
+        }
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        if (!access) {
+            throw new ContentNotFoundException("No permission found");
+        }
+
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), contentFolder, pi, fileName);
+        if (file != null && Files.isRegularFile(file)) {
+            try {
+                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        throw new ContentNotFoundException("Resource not found");
+    }
+
+    /**
      * @param pi
      * @param fileName
      * @return
@@ -120,6 +168,51 @@ public class ContentResource {
 
         throw new ContentNotFoundException("Resource not found");
 
+    }
+
+    /**
+     * @param pi Record identifier
+     * @param fileName
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path("/fulltext/{pi}/{fileName}")
+    @Produces({ MediaType.TEXT_HTML })
+    public String getFulltextDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
+            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+        }
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
+
+        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
+        if (!access) {
+            throw new ContentNotFoundException("No permission found");
+        }
+
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+        ;
+        if (file != null && Files.isRegularFile(file)) {
+            try {
+                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
+            } catch (FileNotFoundException e) {
+                logger.debug(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        throw new ContentNotFoundException("Resource not found");
     }
 
     /**
@@ -174,96 +267,56 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
-
     }
 
     /**
-     * @param pi Record identifier
-     * @param fileName
+     * @param pi
+     * @param lang
      * @return
      * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
+     * @throws IndexUnreachableException * @throws DAOException
      * @throws ContentNotFoundException
+     * @throws IOException
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
     @GET
-    @Path("/fulltext/{pi}/{fileName}")
-    @Produces({ MediaType.TEXT_HTML })
-    public String getFulltextDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
-            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
+    @Path("/cmdi/{pi}/{lang}")
+    @Produces({ MediaType.APPLICATION_XML })
+    public String getCmdiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
+            IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
-        String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
-
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        if (!access) {
-            throw new ContentNotFoundException("No permission found");
+        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+        java.nio.file.Path cmdiPath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration()
+                .getCmdiFolder(), pi);
+        java.nio.file.Path filePath = null;
+        if (Files.exists(cmdiPath)) {
+            // This will return the file with the requested language or alternatively the first file in the CMDI folder
+            filePath = Files.list(cmdiPath).filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst()
+                    .orElse(Files.list(cmdiPath).findFirst().orElse(null));
         }
-
-        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
-        ;
-        if (file != null && Files.isRegularFile(file)) {
-            try {
-                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
-            } catch (FileNotFoundException e) {
-                logger.debug(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+        if (filePath != null) {
+            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
+                    servletRequest);
+            if (!access) {
+                throw new ContentNotFoundException("No permission found");
             }
-        }
 
-        throw new ContentNotFoundException("Resource not found");
-    }
-
-    /**
-     * API method for retrieving any type of content by its relative path within its data repository.
-     * 
-     * @param pi Record identifier
-     * @param dataRepository Absolute path of the data repository
-     * @param filePath File path relative to the data repository
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws MalformedURLException
-     * @throws ContentNotFoundException
-     * @should return document correctly
-     * @should throw ContentNotFoundException if file not found
-     */
-    @GET
-    @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
-    @Produces({ MediaType.TEXT_XML })
-    public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
-            @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
-            MalformedURLException, ContentNotFoundException {
-        if (servletResponse != null) {
-            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
-        }
-        if ("-".equals(dataRepository)) {
-            dataRepository = null;
-        }
-        boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(servletRequest, pi, fileName,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-        if (!access) {
-            throw new ContentNotFoundException("No permission found");
-        }
-
-        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), contentFolder, pi, fileName);
-        if (file != null && Files.isRegularFile(file)) {
-            try {
-                return FileTools.getStringFromFile(file.toFile(), Helper.DEFAULT_ENCODING);
-            } catch (FileNotFoundException e) {
-                logger.debug(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+            if (Files.isRegularFile(filePath)) {
+                try {
+                    Document doc = FileTools.readXmlFile(filePath);
+                    return new XMLOutputter().outputString(doc);
+                } catch (FileNotFoundException e) {
+                    logger.debug(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                } catch (JDOMException e) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         }
 
