@@ -2986,7 +2986,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 375px;
   padding: 10px;
   padding-top: 0;
-  font-size: 16px;
+  font-size: 1rem;
   border: 1px solid #ccc;
   background-color: #fff;
   overflow: hidden;
