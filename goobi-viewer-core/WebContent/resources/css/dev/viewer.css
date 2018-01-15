@@ -3912,6 +3912,15 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-calendar__month-day .popover-title {
   line-height: normal;
+  color: #1a1a1a;
+}
+.search-calendar__month-day .popover-content a {
+  background-color: transparent;
+}
+.search-calendar__month-day .popover-content a:hover,
+.search-calendar__month-day .popover-content a:active,
+.search-calendar__month-day .popover-content a:focus {
+  color: #1a1a1a;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
@@ -5573,9 +5582,8 @@ div.olMapViewport {
   width: 18.75rem;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 0.3125rem;
+  border-radius: 0;
   background-color: #eee;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.35);
   z-index: 9999;
 }
 .timematrix-popover .timematrix-popover-close {
@@ -5865,6 +5873,32 @@ div.olMapViewport {
    Widget CMS
    style declarations for widget_cms.xhtml
    ==============================================================*/
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget CMS Page Links
+   style declarations for widget_cmsPageLinks.xhtml
+   ==============================================================*/
+/* CMS PAGE LINKS */
+/* BLOCK */
+[id*="widgetCmsPageLinks"] {
+  position: relative;
+  /* ELEMENT */
+}
+[id*="widgetCmsPageLinks"]:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  bottom: 0;
+  z-index: 100;
+}
+[id*="widgetCmsPageLinks"] ul {
+  max-height: 250px;
+  overflow-y: auto;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
