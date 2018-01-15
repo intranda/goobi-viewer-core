@@ -138,9 +138,11 @@ var cmsJS = ( function( cms ) {
         $.each( infos.locations, function( key, location ) {
             // GAUGS: special condition to get the right collection number for image
             // slider
-            if ( location.link.indexOf( '/sammlung/' ) != -1 ) {
-                var str = location.link;
-                collection = str.replace( '/sammlung/', '' ).replace( '/', '' );
+            if ( location.link != undefined ) {
+                if ( location.link.indexOf( '/sammlung/' ) != -1 ) {
+                    var str = location.link;
+                    collection = str.replace( '/sammlung/', '' ).replace( '/', '' );
+                }
             }
             
             var feature = {
