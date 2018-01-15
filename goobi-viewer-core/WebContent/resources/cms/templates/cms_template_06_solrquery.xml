@@ -5,9 +5,8 @@
   <icon>cms_template_06_solrquery.png</icon>
   <html>cms_template_06_solrquery.xhtml</html>
   <content>
-    <item id="image01" order="1" label="Sammlungsbild" type="MEDIA" mandatory="false"/>
-    <item id="preview01" order="2" label="Textabschnitt (Vorschau)" type="HTML" mandatory="false"/>
-    <item id="text01" label="Inhalt" type="HTML" mandatory="true"/>
-    <item id="queryList01" label="Werke" type="SOLRQUERY"/>
+    <item id="preview01" order="1" label="Textabschnitt (Vorschau)" type="HTML" />
+    <item id="text01" order="2" label="Inhalt" type="HTML" mandatory="true"/>
+    <item id="queryList01" order="3" label="Werke" type="SOLRQUERY"/>
   </content>
 </cms_page_template>
