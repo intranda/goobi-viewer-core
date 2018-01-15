@@ -30,6 +30,7 @@ var cmsJS = ( function( cms ) {
     var _toggleAttr = false;
     var _defaults = {
         collectionsSelector: '.tpl-stacked-collection__collections',
+        collectionDefaultThumb: '',
         msg: {
             noSubCollectionText: ''
         }
@@ -122,6 +123,10 @@ var cmsJS = ( function( cms ) {
             panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
             if ( member.thumbnail ) {
                 panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail ).addClass( 'img-responsive' );
+                panelThumbnail.append( panelThumbnailImage );
+            }
+            else {
+                panelThumbnailImage = $( '<img />' ).attr( 'src', _defaults.collectionDefaultThumb ).addClass( 'img-responsive' );
                 panelThumbnail.append( panelThumbnailImage );
             }
             // build title
