@@ -5354,6 +5354,7 @@ var viewerJS = ( function( viewer ) {
         toolbar: 'formatselect | undo redo | bold italic underline strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code',
         menubar: false,
         statusbar: false,
+        pagebreak_separator: '<span class="pagebreak"></span>',
         relative_urls: false,
         force_br_newlines: false,
         force_p_newlines: false,
