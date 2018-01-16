@@ -3924,6 +3924,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day .popover-content a:active,
 .search-calendar__month-day .popover-content a:focus {
   color: #1a1a1a;
+  background-color: transparent;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
