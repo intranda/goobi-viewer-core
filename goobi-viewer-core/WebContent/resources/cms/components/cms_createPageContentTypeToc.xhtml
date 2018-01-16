@@ -10,13 +10,11 @@
 
 	<composite:implementation>
 		<h:panelGroup rendered="#{contentItem.type == 'TOC'}">
-			<div class="edit-content-page edit-content-page-toc">
-				<div class="form-horizontal">
-					<div class="form-group">
-						<label class="col-sm-3 control-label">#{msg.cms_itemTocPI}#{contentItem.mandatory?'*':''}:</label>
-						<div class="col-sm-9">
-							<h:inputText styleClass="form-control content-input" value="#{contentItem.tocPI}" />
-						</div>
+			<div class="edit-content-page__toc-pi">
+				<div class="form-group">
+					<label class="col-sm-3 control-label">#{msg.cms_itemTocPI}#{contentItem.mandatory?'*':''}:</label>
+					<div class="col-sm-9">
+						<h:inputText styleClass="form-control content-input" value="#{contentItem.tocPI}" />
 					</div>
 				</div>
 			</div>

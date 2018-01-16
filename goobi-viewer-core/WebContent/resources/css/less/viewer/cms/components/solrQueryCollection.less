@@ -1,0 +1,46 @@
+/* ==============================================================
+   CMS Component "SOLR Query Collection"
+   ==============================================================*/
+/* SOLR QUERY COLLECTION */
+/* BLOCK */
+.solr-query-collection {
+    margin-bottom: 15px;
+    /* ELEMENT */
+    &__thumbs {}
+    &__thumb {
+        height: 250px;
+        margin-bottom: 10px;
+        border: 1px solid @lightgray;
+    }
+    &__image,
+    &__title {
+        overflow: hidden;        
+    }
+    &__image {
+        height: 190px;
+        border-bottom: 1px solid @lightgray;
+        img {
+            width: 100%;
+        }
+    }
+    &__title {
+        a {
+            display: block;
+            padding: 10px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }        
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

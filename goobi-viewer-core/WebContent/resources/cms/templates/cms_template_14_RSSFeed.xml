@@ -2,8 +2,8 @@
 <cms_page_template id="templateRSSFeed" version="2017-10-04">
     <name>RSS Feed</name>
     <description>Dieses Template zeigt einen RSS-Feed als Einzelseite.</description>
-    <icon>cms_template_15_RSSFeed.png</icon>
-    <html>cms_template_15_RSSFeed.xhtml</html>
+    <icon>cms_template_14_RSSFeed.png</icon>
+    <html>cms_template_14_RSSFeed.xhtml</html>
     <content>
  	    <item id="text" label="Text" type="HTML" order="1"/>
  	    <item id="rss" label="RSS-Feed" type="RSS" order="2"/>

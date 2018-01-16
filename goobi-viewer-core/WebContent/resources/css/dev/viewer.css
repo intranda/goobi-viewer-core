@@ -3912,6 +3912,15 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-calendar__month-day .popover-title {
   line-height: normal;
+  color: #1a1a1a;
+}
+.search-calendar__month-day .popover-content a {
+  background-color: transparent;
+}
+.search-calendar__month-day .popover-content a:hover,
+.search-calendar__month-day .popover-content a:active,
+.search-calendar__month-day .popover-content a:focus {
+  color: #1a1a1a;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
@@ -5573,9 +5582,8 @@ div.olMapViewport {
   width: 18.75rem;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 0.3125rem;
+  border-radius: 0;
   background-color: #eee;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.35);
   z-index: 9999;
 }
 .timematrix-popover .timematrix-popover-close {
@@ -5865,6 +5873,32 @@ div.olMapViewport {
    Widget CMS
    style declarations for widget_cms.xhtml
    ==============================================================*/
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Widget CMS Page Links
+   style declarations for widget_cmsPageLinks.xhtml
+   ==============================================================*/
+/* CMS PAGE LINKS */
+/* BLOCK */
+[id*="widgetCmsPageLinks"] {
+  position: relative;
+  /* ELEMENT */
+}
+[id*="widgetCmsPageLinks"]:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  bottom: 0;
+  z-index: 100;
+}
+[id*="widgetCmsPageLinks"] ul {
+  max-height: 250px;
+  overflow-y: auto;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -6634,6 +6668,714 @@ div.olMapViewport {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* CMS COMPONENTS */
+/* ==============================================================
+   CMS Component "Collection Tiled"
+   ==============================================================*/
+/* COLLECTION TILED */
+/* BLOCK */
+.collection-tiled {
+  /* ELEMENT */
+}
+.collection-tiled__tile {
+  height: 250px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+  overflow: hidden;
+}
+.collection-tiled__header {
+  height: 57px;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  overflow: hidden;
+}
+.collection-tiled__header a {
+  display: block;
+  max-height: 27px;
+  font-size: 1.1rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.collection-tiled__body img {
+  width: 100%;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Component "SOLR Query Collection"
+   ==============================================================*/
+/* SOLR QUERY COLLECTION */
+/* BLOCK */
+.solr-query-collection {
+  margin-bottom: 15px;
+  /* ELEMENT */
+}
+.solr-query-collection__thumb {
+  height: 250px;
+  margin-bottom: 10px;
+  border: 1px solid #eee;
+}
+.solr-query-collection__image,
+.solr-query-collection__title {
+  overflow: hidden;
+}
+.solr-query-collection__image {
+  height: 190px;
+  border-bottom: 1px solid #eee;
+}
+.solr-query-collection__image img {
+  width: 100%;
+}
+.solr-query-collection__title a {
+  display: block;
+  padding: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* CMS TEMPLATES */
+/* ==============================================================
+   CMS Template "Generic"
+   style declarations for cms_template_01_generic.xhtml
+   ==============================================================*/
+/* GENERIC */
+/* BLOCK */
+.tpl-generic {
+  /* ELEMENT */
+  /* SOLR-QUERY */
+}
+.tpl-generic__content {
+  margin-bottom: 20px;
+}
+.tpl-generic__image {
+  float: left;
+  width: 25%;
+  margin-right: 15px;
+}
+.tpl-generic__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.tpl-generic .solr-query-collection {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-generic__image {
+    width: 100%;
+    margin: 0 0 10px 0;
+  }
+}
+/* ==============================================================
+   CMS Template "News Overview"
+   style declarations for cms_template_02_overview.xhtml
+   ==============================================================*/
+/* NEWS OVERVIEW */
+/* BLOCK */
+.tpl-news-overview {
+  /* ELEMENT */
+}
+.tpl-news-overview__content {
+  margin-bottom: 30px;
+}
+.tpl-news-overview__image {
+  float: left;
+  width: 25%;
+  margin: 0 10px 10px 0;
+  margin-bottom: 15px;
+}
+.tpl-news-overview__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.tpl-news-overview__list-item {
+  margin-bottom: 15px;
+}
+.tpl-news-overview__list-image {
+  max-height: 150px;
+  overflow: hidden;
+}
+.tpl-news-overview__preview-date {
+  margin-bottom: 15px;
+}
+.tpl-news-overview__preview-text {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-news-overview__image {
+    width: 100%;
+    margin: 0 0 10px 0;
+  }
+}
+/* ==============================================================
+   CMS Template "News Detail"
+   style declarations for cms_template_03_newsdetail.xhtml
+   ==============================================================*/
+/* NEWS DETAIL */
+/* BLOCK */
+.tpl-news-detail {
+  /* ELEMENT */
+  /* SOLR-QUERY */
+}
+.tpl-news-detail__date,
+.tpl-news-detail__content {
+  margin-bottom: 20px;
+}
+.tpl-news-detail__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.tpl-news-detail .solr-query-collection {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "News"
+   style declarations for cms_template_04_news.xhtml
+   ==============================================================*/
+/* NEWS */
+/* BLOCK */
+.tpl-news {
+  /* ELEMENT */
+}
+.tpl-news__content {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Simple"
+   style declarations for cms_template_05_simple.xhtml
+   ==============================================================*/
+/* SIMPLE */
+/* BLOCK */
+.tpl-simple {
+  /* ELEMENT */
+}
+.tpl-simple__text,
+.tpl-simple__image {
+  margin-bottom: 15px;
+}
+.tpl-simple__image figcaption {
+  padding: 5px 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "SOLR QUERY"
+   style declarations for cms_template_06_solrquery.xhtml
+   ==============================================================*/
+/* SOLR QUERY */
+/* BLOCK */
+.tpl-solr-query {
+  /* ELEMENT */
+}
+.tpl-solr-query__content {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Collection"
+   style declarations for cms_template_08_collection.xhtml
+   ==============================================================*/
+/* COLLECTION */
+/* BLOCK */
+.tpl-collection {
+  /* ELEMENT */
+}
+.tpl-collection__text,
+.tpl-collection__wrapper {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Collection Tiled"
+   style declarations for cms_template_09_collectionTiled.xhtml
+   ==============================================================*/
+/* COLLECTION TILED */
+/* BLOCK */
+.tpl-collection-tiled {
+  /* ELEMENT */
+}
+.tpl-collection-tiled__text,
+.tpl-collection-tiled__wrapper {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Single Page"
+   style declarations for cms_template_10_singlePage.xhtml
+   ==============================================================*/
+/* SINGLE PAGE */
+/* BLOCK */
+.tpl-single {
+  /* ELEMENT */
+}
+.tpl-single__content {
+  margin-bottom: 15px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Search List Custom"
+   style declarations for cms_template_10_searchListCustom.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST CUSTOM */
+/* BLOCK */
+.tpl-search-list-custom {
+  /* ELEMENT */
+}
+.tpl-search-list-custom__list-element {
+  margin-right: 15px;
+  margin-bottom: 10px;
+  margin-left: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.tpl-search-list-custom__list-image {
+  overflow: hidden;
+}
+.tpl-search-list-custom__list-text .dl-horizontal {
+  margin: 0;
+}
+.tpl-search-list-custom__list-text .dl-horizontal dt,
+.tpl-search-list-custom__list-text .dl-horizontal dd {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.tpl-search-list-custom__list-text .dl-horizontal dt {
+  width: 100px;
+  font-weight: normal;
+  text-align: left;
+}
+.tpl-search-list-custom__list-text .dl-horizontal dd {
+  margin-left: 100px;
+}
+.tpl-search-list-custom__list-text-person:after {
+  content: ";";
+  margin-left: -3px;
+}
+.tpl-search-list-custom__list-text-person:last-child:after {
+  content: "";
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-search-list-custom__list-text .dl-horizontal dt,
+  .tpl-search-list-custom__list-text .dl-horizontal dd {
+    width: 100%;
+    margin: 0;
+  }
+}
+/* ==============================================================
+   CMS Template "Masonry"
+   style declarations for cms_template_12_masonry.xhtml
+   ==============================================================*/
+/* TPL MASONRY */
+/* BLOCK */
+.tpl-masonry {
+  /* ELEMENT */
+}
+.tpl-masonry__text {
+  margin-bottom: 15px;
+}
+.tpl-masonry .grid {
+  margin-bottom: 15px;
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
+.tpl-masonry .grid.ready {
+  opacity: 1;
+}
+.tpl-masonry .grid-sizer,
+.tpl-masonry .grid-item {
+  width: calc(31.33333333% + 12px);
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.tpl-masonry .grid-sizer img,
+.tpl-masonry .grid-item img {
+  position: relative;
+  min-width: 100%;
+  transition: all 0.3s ease-in;
+  z-index: 9;
+}
+.tpl-masonry .grid-sizer:hover .grid-item-title,
+.tpl-masonry .grid-item:hover .grid-item-title {
+  opacity: 0;
+}
+.tpl-masonry .grid-sizer:hover .grid-item-caption,
+.tpl-masonry .grid-item:hover .grid-item-caption {
+  opacity: 1;
+}
+.tpl-masonry .grid-sizer:hover img,
+.tpl-masonry .grid-item:hover img {
+  transform: scale(1.2);
+}
+.tpl-masonry .grid-item-title,
+.tpl-masonry .grid-item-caption {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  padding: 5px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.65);
+  transition: all 0.3s ease-in;
+  z-index: 10;
+}
+.tpl-masonry .grid-item-title {
+  bottom: 0;
+  opacity: 1;
+}
+.tpl-masonry .grid-item-caption {
+  bottom: 0;
+  opacity: 0;
+}
+.tpl-masonry .grid-item-caption h4 {
+  margin: 0 0 10px 0;
+}
+.tpl-masonry .grid-item-caption a {
+  display: block;
+  padding: 0 10px;
+  font-size: 24px;
+  text-align: right;
+  color: #fff;
+}
+.tpl-masonry .grid-item-caption .fa {
+  margin-left: 10px;
+}
+.tpl-masonry .gutter-sizer {
+  width: 6px;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: 1200px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: calc(31.33333333% + 9px);
+  }
+}
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: 992px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: calc(31.33333333% + 5px);
+  }
+}
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: calc(31.33333333% + 9px);
+  }
+}
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .tpl-masonry .grid-sizer,
+  .tpl-masonry .grid-item {
+    width: 100%;
+  }
+}
+/* ==============================================================
+   CMS Template Single Collection
+   style declarations for cms_template_13_singleCollection.xhtml
+   ==============================================================*/
+/* TPL SINGLE COLLECTION */
+/* BLOCK */
+.tpl-single-collection {
+  /* ELEMENT */
+}
+.tpl-single-collection__image {
+  position: relative;
+  max-height: 400px;
+  overflow: hidden;
+}
+.tpl-single-collection__image img {
+  width: 100%;
+}
+.tpl-single-collection__image h2 {
+  position: absolute;
+  right: 0;
+  bottom: 60px;
+  left: 0;
+  margin: 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.75);
+}
+.tpl-single-collection__description {
+  margin-bottom: 20px;
+  padding: 15px;
+  color: #fff;
+  background-color: #6f6f6f;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template Static Grid
+   style declarations for cms_template_14_staticGrid.xhtml
+   ==============================================================*/
+/* TPL STATIC GRID */
+/* BLOCK */
+.tpl-static-grid {
+  /* ELEMENT */
+}
+.tpl-static-grid__text {
+  margin-bottom: 30px;
+}
+.grid-tile {
+  margin-bottom: 30px;
+  padding: 3px;
+  padding-top: 0;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.grid-tile__title {
+  height: 50px;
+  padding: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.grid-tile__title h4 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 21px;
+}
+.grid-tile__image {
+  height: 150px;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.grid-tile__image a {
+  display: block;
+  height: 150px;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template RSS Feed
+   style declarations for cms_template_15_RSSFeed.xhtml
+   ==============================================================*/
+/* TPL RSS FEED */
+/* BLOCK */
+.tpl-rss {
+  /* ELEMENT */
+}
+.tpl-rss__text {
+  margin-bottom: 15px;
+}
+.tpl-rss__item {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+.tpl-rss__item-title {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+.tpl-rss__item-title h3 {
+  margin: 0;
+}
+.tpl-rss__item-date {
+  margin-bottom: 10px;
+}
+.tpl-rss__item-metadata dt {
+  text-align: left;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template Stacked Collection
+   style declarations for cms_template_16_stackedCollection.xhtml
+   ==============================================================*/
+/* TPL STACKED COLLECTION */
+/* BLOCK */
+.tpl-stacked-collection {
+  /* ELEMENT */
+}
+.tpl-stacked-collection__text {
+  margin-bottom: 15px;
+}
+.tpl-stacked-collection__collections {
+  width: 80%;
+  margin: 0 auto;
+}
+.tpl-stacked-collection .panel {
+  border: 1px solid #ccc;
+  border-radius: 0;
+  background-color: #eee;
+  box-shadow: none;
+}
+.tpl-stacked-collection .panel-heading {
+  padding: 0;
+}
+.tpl-stacked-collection .panel-heading:before,
+.tpl-stacked-collection .panel-heading:after {
+  content: " ";
+  display: table;
+}
+.tpl-stacked-collection .panel-heading:after {
+  clear: both;
+}
+.tpl-stacked-collection .panel-thumbnail,
+.tpl-stacked-collection .panel-title,
+.tpl-stacked-collection .panel-rss {
+  float: left;
+  height: 64px;
+  line-height: 64px;
+  overflow: hidden;
+}
+.tpl-stacked-collection .panel-thumbnail {
+  width: 64px;
+}
+.tpl-stacked-collection .panel-title {
+  width: calc(90% - 64px);
+  padding: 0 15px;
+}
+.tpl-stacked-collection .panel-title a {
+  display: block;
+}
+.tpl-stacked-collection .panel-title a:hover,
+.tpl-stacked-collection .panel-title a:active,
+.tpl-stacked-collection .panel-title a:focus {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+.tpl-stacked-collection .panel-rss {
+  width: 10%;
+  text-align: center;
+}
+.tpl-stacked-collection .panel-rss .fa {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background-color: #f08421;
+}
+.tpl-stacked-collection .panel-body {
+  padding-left: 79px;
+  border-top-color: #ccc !important;
+  background-color: #fff;
+}
+.tpl-stacked-collection .panel-body__collection,
+.tpl-stacked-collection .panel-body__rss {
+  display: inline-block;
+  float: left;
+}
+.tpl-stacked-collection .panel-body__collection {
+  width: 90%;
+}
+.tpl-stacked-collection .panel-body__rss {
+  width: 10%;
+}
+.tpl-stacked-collection .panel-body__rss .fa {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background-color: #f08421;
+}
+/* MODIFICATION */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Searchlist"
+   style declarations for cms_template_17_searchList.xhtml
+   ==============================================================*/
+/* SEARCHLIST */
+/* BLOCK */
+.tpl-search-list {
+  /* ELEMENT */
+}
+.tpl-search-list__intro {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Searchlist Advanced"
+   style declarations for cms_template_18_searchListAdvanced.xhtml
+   ==============================================================*/
+/* SEARCHLIST ADVANCED */
+/* BLOCK */
+.tpl-search-list-advanced {
+  /* ELEMENT */
+}
+.tpl-search-list-advanced__intro {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page
@@ -6918,16 +7660,36 @@ div.olMapViewport {
 .edit-content-page {
   /* ELEMENT */
 }
-.edit-content-page__pretty-url {
-  padding: 15px 0;
+.edit-content-page__component,
+.edit-content-page__facetting,
+.edit-content-page__toc,
+.edit-content-page__pretty-url,
+.edit-content-page__subtheme-discriminator,
+.edit-content-page__breadcrumb-parent {
+  padding: 5px 0;
 }
-.edit-content-page__pretty-url label {
+.edit-content-page__component label,
+.edit-content-page__facetting label,
+.edit-content-page__toc label,
+.edit-content-page__pretty-url label,
+.edit-content-page__subtheme-discriminator label,
+.edit-content-page__breadcrumb-parent label {
   padding-right: 0;
 }
-.edit-content-page__pretty-url button {
+.edit-content-page__component button,
+.edit-content-page__facetting button,
+.edit-content-page__toc button,
+.edit-content-page__pretty-url button,
+.edit-content-page__subtheme-discriminator button,
+.edit-content-page__breadcrumb-parent button {
   margin-left: 5px;
 }
-.edit-content-page__pretty-url .form-group {
+.edit-content-page__component .form-group,
+.edit-content-page__facetting .form-group,
+.edit-content-page__toc .form-group,
+.edit-content-page__pretty-url .form-group,
+.edit-content-page__subtheme-discriminator .form-group,
+.edit-content-page__breadcrumb-parent .form-group {
   margin-bottom: 0;
 }
 /* ==============================================================
@@ -7304,67 +8066,5 @@ img.cms-static-pages__page-language--complete {
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "SearchList"
-   style declarations for cms_template_02_searchList.xhtml
-   ==============================================================*/
-/* TPL SEARCH LIST */
-/* BLOCK */
-.tpl-search-list {
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.tpl-search-list:before,
-.tpl-search-list:after {
-  content: " ";
-  display: table;
-}
-.tpl-search-list:after {
-  clear: both;
-}
-.tpl-search-list__right {
-  position: relative;
-  float: left;
-  min-height: 600px;
-  padding-right: 15px;
-  padding-left: 15px;
-  transition: all .3s linear;
-}
-.tpl-search-list__intro {
-  margin-bottom: 30px;
-}
-/* BREAKPOINT FOR TABLETS */
-/* BREAKPOINT FOR SMARTPHONES */
-/* ==============================================================
-   CMS Template "searchListAdvanced"
-   style declarations for cms_template_02_searchListAdvanced.xhtml
-   ==============================================================*/
-/* TPL SEARCH LIST */
-/* BLOCK */
-.tpl-search-list-advanced {
-  /* ELEMENT */
-  /* MODIFICATION */
-}
-.tpl-search-list-advanced:before,
-.tpl-search-list-advanced:after {
-  content: " ";
-  display: table;
-}
-.tpl-search-list-advanced:after {
-  clear: both;
-}
-.tpl-search-list-advanced__right {
-  position: relative;
-  float: left;
-  min-height: 600px;
-  padding-right: 15px;
-  padding-left: 15px;
-  transition: all .3s linear;
-}
-.tpl-search-list-advanced__intro {
-  margin-bottom: 30px;
-}
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */

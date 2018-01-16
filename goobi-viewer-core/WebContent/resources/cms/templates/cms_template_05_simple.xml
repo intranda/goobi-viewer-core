@@ -8,6 +8,5 @@
         <item id="text01" label="Inhalt über Bild" type="HTML" mandatory="true" />
         <item id="image01" label="Zentrales Bild" type="MEDIA" />
         <item id="text02" label="Inhalt unter Bild" type="HTML" />
-        <item id="text03" label="Neuer Text" type="HTML" />
     </content>
 </cms_page_template>
