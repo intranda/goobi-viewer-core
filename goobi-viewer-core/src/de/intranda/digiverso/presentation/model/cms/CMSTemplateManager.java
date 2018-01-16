@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
@@ -28,16 +29,19 @@ import java.nio.file.Paths;
 import java.nio.file.ProviderNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,8 +69,13 @@ public final class CMSTemplateManager {
     //    private String relativeTemplateBasePath;
     //    private String absoluteTemplateBasePath;
 
-    private String templateFolderUrl = null;
-    private Path templateFolderPath = null;
+//    private String templateFolderUrl = null;
+//    private Path templateFolderPath = null;
+    
+    private Optional<String> coreTemplateFolderUrl = Optional.empty();
+    private Optional<String> themeTemplateFolderUrl = Optional.empty();
+    private Optional<Path> coreFolderPath = Optional.empty();
+    private Optional<Path> themeFolderPath = Optional.empty();
 
     public static CMSTemplateManager getInstance() {
         //                instance = null;
@@ -104,31 +113,22 @@ public final class CMSTemplateManager {
             servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
             webContentRoot = servletContext.getContextPath();
         }
-        List<Path> templateFiles = new ArrayList<>();
-        //        if (filesystemPath == null) {
-
+        
         try {
-
-            this.templateFolderUrl = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
-            URL fileUrl;
-            if(servletContext != null) {                
-                fileUrl = servletContext.getResource(this.templateFolderUrl);
-            } else {
-                fileUrl = new URL(filesystemPath + this.templateFolderUrl);
+            String themeFolder = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
+            Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, servletContext, themeFolder); 
+            themeFolderPath = themeFolderUrl.map(url -> toURI(url));
+            
+            //check if the coreFolderPath contains any xml files
+            boolean templatesFound = false;
+            if(themeFolderPath.isPresent()) {
+                templatesFound = Files.list(themeFolderPath.get())
+                .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
+                .peek(file -> logger.trace("Found cms theme template file " + file))
+                .findAny().isPresent();
             }
-            if (fileUrl != null) {
-                try {
-                    Map<String, String> env = new HashMap<>();
-                    env.put("create", "true");
-                    FileSystem zipfs = FileSystems.newFileSystem(fileUrl.toURI(), env);
-                } catch (FileSystemAlreadyExistsException | IllegalArgumentException e) {
-                    //no comment...
-                }
-                if (Files.exists(Paths.get(fileUrl.toURI()))) {
-                    this.templateFolderPath = Paths.get(fileUrl.toURI());
-                    templateFiles = Files.list(templateFolderPath).filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml")).peek(
-                            (file) -> logger.trace("Found cms template file " + file)).collect(Collectors.toList());
-                }
+            if(templatesFound) {
+                this.themeTemplateFolderUrl = Optional.of(webContentRoot + "/" + themeFolderUrl.get().toString());
             }
         } catch (URISyntaxException | IOException e) {
             logger.error(e.toString(), e);
@@ -136,63 +136,133 @@ public final class CMSTemplateManager {
             logger.debug("Unable to scan theme-jar for cms-template files. Probably an older tomcat");
         }
 
-        if (templateFiles.isEmpty()) {
             try {
-                this.templateFolderUrl = "resources/" + TEMPLATE_BASE_PATH;
-                URL fileUrl;
-                if(servletContext != null) {       
-                    String basePath = servletContext.getRealPath("/");
-                    fileUrl = Paths.get(basePath, this.templateFolderUrl).toFile().toURI().toURL();
-//                    fileUrl = servletContext.getResource(this.templateFolderUrl);
-                } else {
-                    fileUrl = new URL(filesystemPath + this.templateFolderUrl);
+                String templateFolderUrl = "resources/" + TEMPLATE_BASE_PATH;
+                Optional<URL> coreFolderUrl = getTemplateFolderUrl(filesystemPath, servletContext, templateFolderUrl);
+                coreFolderPath = coreFolderUrl.map(path -> toURI(path));
+                
+              //check if the themeFolderPath contains any xml files
+                boolean templatesFound = false;
+                if(coreFolderPath.isPresent()) {
+                    templatesFound = Files.list(coreFolderPath.get())
+                    .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
+                    .peek(file -> logger.trace("Found core cms template file " + file))
+                    .findAny().isPresent();
                 }
-                if (fileUrl != null) {
-
-                    if (Files.exists(Paths.get(fileUrl.toURI()))) {
-                        this.templateFolderPath = Paths.get(fileUrl.toURI());
-                        templateFiles = Files.list(templateFolderPath).filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
-                                .peek((file) -> logger.trace("Found cms template file " + file)).collect(Collectors.toList());
-                    }
+                if(templatesFound) {
+                    this.coreTemplateFolderUrl = Optional.of(webContentRoot + "/" + coreFolderUrl.get().toString());
                 }
-            } catch (URISyntaxException | IOException e) {
+            } catch (IOException e) {
                 logger.error(e.toString(), e);
             }
+            
+        updateTemplates(coreFolderPath, themeFolderPath);
+    }
+
+    /**
+     * @param url
+     * @return
+     * @throws URISyntaxException
+     */
+    public Path toURI(URL url){
+        try {
+            return Paths.get(url.toURI());
+        } catch (URISyntaxException e) {
+            return null;
         }
+    }
 
-        this.templateFolderUrl = webContentRoot + "/" + this.templateFolderUrl;
+    /**
+     * @param filesystemPath
+     * @param servletContext
+     * @param templateFolderUrl
+     * @return
+     * @throws MalformedURLException
+     */
+    public Optional<URL> getTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl) throws MalformedURLException {
+        Optional<URL> fileUrl = Optional.empty();
+        if(servletContext != null) {       
+            String basePath = servletContext.getRealPath("/");
+            if(Files.exists(Paths.get(basePath, templateFolderUrl))) {                
+                fileUrl = Optional.of(Paths.get(basePath, templateFolderUrl).toFile().toURI().toURL());
+            }
+//                    fileUrl = servletContext.getResource(this.templateFolderUrl);
+        } else if(Files.exists(Paths.get(filesystemPath + templateFolderUrl))){
+            fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
+        }
+        return fileUrl;
+    }
 
-        updateTemplates();
+    /**
+     * Returns an url pointing to the cms template folder of the viewer theme.
+     * 
+     * @param filesystemPath
+     * @param servletContext
+     * @return
+     * @throws URISyntaxException 
+     * @throws IOException 
+     */
+    public Optional<URL> getThemeFolderUrl(String filesystemPath, ServletContext servletContext, String coreFolder) throws IOException, URISyntaxException {
+        Optional<URL> coreFolderUrl = Optional.empty();
+        if(servletContext != null) {                
+            coreFolderUrl = Optional.ofNullable(servletContext.getResource(coreFolder));
+        } else {
+            Path path = Paths.get(filesystemPath + coreFolder);
+            if(Files.isDirectory(path)) {                
+                coreFolderUrl =  Optional.of(path.toUri().toURL());
+            }
+        }
+        //create new file system if neccessary
+        if(coreFolderUrl.isPresent()) {
+            try {
+                FileSystems.newFileSystem(coreFolderUrl.get().toURI(), Collections.singletonMap("create", "true"));
+            } catch (FileSystemAlreadyExistsException | IllegalArgumentException e) {
+                //no comment...
+            }
+        }
+        return coreFolderUrl;
     }
 
     // TODO fix for external themes
-    private Map<String, CMSPageTemplate> loadTemplates() throws IOException {
+    private Map<String, CMSPageTemplate> loadTemplates(Path path) throws IllegalArgumentException {
         Map<String, CMSPageTemplate> templates = new LinkedHashMap<>();
 
-        List<CMSPageTemplate> templateList = Files.list(this.templateFolderPath).filter(
-                file -> file.getFileName().toString().toLowerCase().endsWith(".xml")).sorted().map(
-                        templatePath -> CMSPageTemplate.loadFromXML(templatePath)).filter(template -> template != null).collect(Collectors.toList());
+        List<CMSPageTemplate> templateList = null;;
+        try {
+            templateList = Files.list(path).filter(
+                    file -> file.getFileName().toString().toLowerCase().endsWith(".xml")).sorted().map(
+                            templatePath -> CMSPageTemplate.loadFromXML(templatePath)).filter(template -> template != null).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Error reading files from " + path, e);
+        }
 
         if (templateList == null) {
-            logger.warn("No cms folder found in " + this.templateFolderPath + ". This theme is probably not configured to use cms");
+            logger.warn("No cms folder found in " + path + ". This theme is probably not configured to use cms");
             return templates;
         }
         // logger.trace(templateFolder.getAbsolutePath());
         for (CMSPageTemplate template : templateList) {
             if(templates.get(template.getId()) != null) {
-                throw new IOException("Found two templates with id " + template.getId());
+                throw new IllegalArgumentException("Found two templates with id " + template.getId());
             }
             templates.put(template.getId(), template);
         }
         return templates;
     }
 
-    public void updateTemplates() {
-        try {
-            templates = loadTemplates();
-        } catch (IOException e) {
-            logger.error("Failed to load templates", e);
-        }
+    public void updateTemplates(Optional<Path>... templatePaths) {
+            templates = new HashMap<>();
+            try {                
+                for (Optional<Path> oPath : templatePaths) {
+                    oPath.map(path -> loadTemplates(path))
+                    .ifPresent(map -> {
+                        map.entrySet().stream()
+                        .forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue()));   
+                    });
+                }
+            } catch(IllegalArgumentException e) {
+                logger.error("Failed to update cms templates: " + e.toString(), e);
+            }
     }
 
     public Collection<CMSPageTemplate> getTemplates() {
@@ -203,19 +273,61 @@ public final class CMSTemplateManager {
         return templates.get(id);
     }
 
-    private String getIconFolderUrl() {
-        return getTemplateFolderUrl() + TEMPLATE_ICONS_PATH;
+    private Optional<String> getCoreIconFolderUrl() {
+        return getCoreTemplateFolderUrl().map(url -> url + TEMPLATE_ICONS_PATH);
+    }
+    
+    private Optional<String> getThemeIconFolderUrl() {
+        return getThemeTemplateFolderUrl().map(url -> url + TEMPLATE_ICONS_PATH);
     }
 
     /**
-     * @return
+     * @return the url path to the core viewer cms template url if it exists and contains files
      */
-    private String getTemplateFolderUrl() {
-        return this.templateFolderUrl;
+    private Optional<String> getCoreTemplateFolderUrl() {
+        return this.coreTemplateFolderUrl;
+    }
+    
+    private Optional<String> getThemeTemplateFolderUrl() {
+        return this.themeTemplateFolderUrl;
     }
 
-    private String getViewFolderUrl() {
-        return getTemplateFolderUrl() + TEMPLATE_VIEWS_PATH;
+    private Optional<String> getCoreViewFolderUrl() {
+        return getCoreTemplateFolderUrl().map(url -> url + TEMPLATE_VIEWS_PATH);
+    }
+    
+    private Optional<String> getThemeViewFolderUrl() {
+        return getThemeTemplateFolderUrl().map(url -> url + TEMPLATE_VIEWS_PATH);
+    }
+    
+    /**
+     * @return the themeFolderPath
+     */
+    public Optional<Path> getThemeFolderPath() {
+        return themeFolderPath;
+    }
+    
+    /**
+     * @return the coreFolderPath
+     */
+    public Optional<Path> getCoreFolderPath() {
+        return coreFolderPath;
+    }
+    
+    public Optional<Path> getCoreViewFolderPath() {
+        return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
+    }
+    
+    public Optional<Path> getThemeViewFolderPath() {
+        return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_VIEWS_PATH));
+    }
+    
+    public Optional<Path> getCoreIconFolderPath() {
+        return getCoreFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
+    }
+    
+    public Optional<Path> getThemeIconFolderPath() {
+        return getThemeFolderPath().map(path -> path.resolve(TEMPLATE_ICONS_PATH));
     }
 
     /**
@@ -224,9 +336,15 @@ public final class CMSTemplateManager {
      */
     public String getTemplateViewUrl(CMSPageTemplate template) {
         if (template != null) {
-            return getViewFolderUrl() + "/" + template.getHtmlFileName();
-            //            Path iconPath = Paths.get(getViewFolderUrl().toString(), template.getHtmlFileName());
-            //            return iconPath.toUri().toString();
+            Optional<String> viewUrl = getThemeViewFolderUrl()
+                    .filter(url -> getThemeViewFolderPath().isPresent() && Files.exists(getThemeViewFolderPath().get().resolve(template.getHtmlFileName())))
+                    .map(url -> url + "/" + template.getHtmlFileName());
+            if(!viewUrl.isPresent()) {
+                viewUrl = getCoreViewFolderUrl()
+                        .filter(url -> getCoreViewFolderPath().isPresent() && Files.exists(getCoreViewFolderPath().get().resolve(template.getHtmlFileName())))
+                        .map(url -> url + "/" + template.getHtmlFileName());
+            }
+            return viewUrl.orElse("");
         }
         return "";
     }
@@ -245,13 +363,29 @@ public final class CMSTemplateManager {
      * @return
      */
     public String getTemplateIconUrl(String templateId) {
-        CMSPageTemplate template = getTemplate(templateId);
+        if(StringUtils.isNotBlank(templateId)) {
+            CMSPageTemplate template = getTemplate(templateId);
+            return getTemplateIconUrl(template);
+        } else {
+            return "";
+        }
+    }
+    
+    /**
+     * @param templateId
+     * @return
+     */
+    public String getTemplateIconUrl(CMSPageTemplate template) {
         if (template != null) {
-            Path iconPath = Paths.get(getIconFolderUrl(), template.getIconFileName());
-            return getIconFolderUrl() + template.getIconFileName();
-            //            StringBuilder urlBuilder = new StringBuilder(getIconsPathJsfContext());
-            //            urlBuilder.append(template.getIconFileName());
-            //            return urlBuilder.toString();
+            Optional<String> viewUrl = getThemeIconFolderUrl()
+                    .filter(url -> getThemeIconFolderPath().isPresent() && Files.exists(getThemeIconFolderPath().get().resolve(template.getIconFileName())))
+                    .map(url -> url + "/" + template.getIconFileName());
+            if(!viewUrl.isPresent()) {
+                viewUrl = getCoreIconFolderUrl()
+                        .filter(url -> getCoreIconFolderPath().isPresent() && Files.exists(getCoreIconFolderPath().get().resolve(template.getIconFileName())))
+                        .map(url -> url + "/" + template.getIconFileName());
+            }
+            return viewUrl.orElse("");
         }
         return "";
     }
