@@ -1,0 +1,63 @@
+/* ==============================================================
+   CMS Template "Search List Custom"
+   style declarations for cms_template_10_searchListCustom.xhtml
+   ==============================================================*/
+/* TPL SEARCH LIST CUSTOM */
+/* BLOCK */
+.tpl-search-list-custom {
+    /* ELEMENT */
+    &__list-element {
+        margin-right: 15px;
+        margin-bottom: 10px;
+        margin-left: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid @middlegray;
+    }
+    &__list-image {
+        overflow: hidden;
+    }
+    &__list-text {
+        .dl-horizontal {
+            margin: 0;
+            dt, dd {
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+            dt {
+                width: 100px;
+                font-weight: normal;
+                text-align: left;
+            }
+            dd {
+                margin-left: 100px;
+            }
+        }
+    }
+    &__list-text-person {
+        &:after {
+            content: ";";
+            margin-left: -3px;
+        }
+        &:last-child:after {
+            content: "";
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .tpl-search-list-custom__list-text .dl-horizontal dt,
+    .tpl-search-list-custom__list-text .dl-horizontal dd {
+        width: 100%;
+        margin: 0;
+    }
+}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<cms_page_template id="template_searchlist" version="2015-01-14">
+<cms_page_template id="templateSearchListCustom" version="2015-01-14">
     <name>Suchtrefferliste</name>
     <description>Dieses Template dient dazu eine Suchanfrage in Listenform darzustellen.</description>
     <icon>cms_template_10_searchListCustom.png</icon>

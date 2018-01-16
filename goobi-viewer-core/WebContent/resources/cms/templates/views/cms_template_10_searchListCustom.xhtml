@@ -29,7 +29,7 @@
 	
 		<f:param name="currentPage" value="#{cmsBean.random}" />
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="templateSearchList">
+			<div id="templateSearchListCustom" class="tpl-search-list-custom">
 				<h1>#{cmsPage.title}</h1>
                 
                 <!-- PAGE UNPUBLISHED -->
@@ -39,17 +39,17 @@
                     </div>
                 </h:panelGroup>
                 
-                <div class="tpl-search-list">
+                <div class="tpl-search-list-custom__list">
                     <ui:repeat var="hit" value="#{cmsBean.getQueryResults(cmsPage.getContentItem('queryList01'))}">
                         <div class="row">
-                            <div class="tpl-search-list__element clearfix">
+                            <div class="tpl-search-list-custom__list-element clearfix">
                                 <div class="col-xs-4 col-sm-2">
-                                    <div class="tpl-search-list__image">
+                                    <div class="tpl-search-list-custom__list-image">
                                         <img src="#{hit.browseElement.getThumbnailUrl(50, 150)}" alt="#{hit.browseElement.label}" />
                                     </div>
                                 </div>
                                 <div class="col-xs-8 col-sm-10">
-                                    <div class="tpl-search-list__text">
+                                    <div class="tpl-search-list-custom__list-text">
                                         <dl class="dl-horizontal">
                                             <dt>#{msg.MD_TITLE}:</dt>
                                             <dd>
@@ -61,7 +61,7 @@
                                             <dd>
                                                 <ui:repeat value="#{hit.browseElement.getMetadataList('MD_CREATOR')}" var="metadata">
                                                     <ui:repeat value="#{metadata.values}" var="val">
-                                                        <span class="tpl-search-list__text-person"> 
+                                                        <span class="tpl-search-list-custom__list-text-person"> 
                                                             <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                                 <f:param value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
                                                                 <f:param value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />

@@ -1,0 +1,34 @@
+/* ==============================================================
+   CMS Template "Simple"
+   style declarations for cms_template_05_simple.xhtml
+   ==============================================================*/
+/* SIMPLE */
+/* BLOCK */
+.tpl-simple {
+    /* ELEMENT */
+    &__text,
+    &__image {
+        margin-bottom: 15px;
+    }
+    &__text {}
+    &__image {
+        figcaption {
+            padding: 5px 0;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: @middlegray;
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

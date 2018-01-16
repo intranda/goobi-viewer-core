@@ -1,0 +1,47 @@
+/* ==============================================================
+   CMS Component "Collection Tiled"
+   ==============================================================*/
+/* COLLECTION TILED */
+/* BLOCK */
+.collection-tiled {
+    /* ELEMENT */
+    &__tiles {}
+    &__tile {
+        height: 250px;
+        margin-bottom: 15px;
+        border: 1px solid @lightgray;
+        overflow: hidden;
+    }
+    &__header,
+    &__body {}
+    &__header {
+        height: 57px;
+        padding: 15px;
+        border-bottom: 1px solid @lightgray;
+        overflow: hidden;
+        a {
+            display: block;
+            max-height: 27px;
+            font-size: 1.1rem;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    }
+    &__body {
+        img {
+            width: 100%;
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}
