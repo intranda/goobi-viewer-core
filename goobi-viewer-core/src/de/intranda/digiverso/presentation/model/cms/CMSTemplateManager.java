@@ -225,7 +225,6 @@ public final class CMSTemplateManager {
         return coreFolderUrl;
     }
 
-    // TODO fix for external themes
     private Map<String, CMSPageTemplate> loadTemplates(Path path) throws IllegalArgumentException {
         Map<String, CMSPageTemplate> templates = new LinkedHashMap<>();
         System.out.println("Loading templates from " + path);
