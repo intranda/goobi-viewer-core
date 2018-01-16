@@ -92,9 +92,9 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testGetAvailableCmsPages() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = bean.getCreatedPages();
-        logger.debug("Loaded a total of " + allPages.size() + " pages");
+        System.out.println("Loaded a total of " + allPages.size() + " pages");
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
-        logger.debug("Loaded " + availablePages.size() + " available pages");
+        System.out.println("Loaded " + availablePages.size() + " available pages");
         Assert.assertEquals(2, allPages.size() - availablePages.size());
     }
 
