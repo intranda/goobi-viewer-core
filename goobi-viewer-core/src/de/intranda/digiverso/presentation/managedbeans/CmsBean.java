@@ -203,11 +203,14 @@ public class CmsBean {
     }
 
     public void loadTemplates() {
-        CMSTemplateManager.getInstance().updateTemplates();
+        CMSTemplateManager.getInstance().updateTemplates( CMSTemplateManager.getInstance().getThemeFolderPath(),  CMSTemplateManager.getInstance().getCoreFolderPath());
     }
 
     public List<CMSPageTemplate> getTemplates() {
-        return new ArrayList<>(CMSTemplateManager.getInstance().getTemplates());
+        List<CMSPageTemplate> list = CMSTemplateManager.getInstance().getTemplates().stream()
+                .sorted((t1,t2) -> t1.getTemplateFileName().compareTo(t2.getTemplateFileName()))
+                .collect(Collectors.toList());
+        return list;
     }
 
     public List<CMSPage> loadCreatedPages() throws DAOException {
