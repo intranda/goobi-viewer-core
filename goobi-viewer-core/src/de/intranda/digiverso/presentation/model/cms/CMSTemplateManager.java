@@ -128,7 +128,7 @@ public final class CMSTemplateManager {
                 .findAny().isPresent();
             }
             if(templatesFound) {
-                this.themeTemplateFolderUrl = Optional.of(webContentRoot + "/" + themeFolderUrl.get().toString());
+                this.themeTemplateFolderUrl = Optional.of(webContentRoot + "/" + themeFolder);
             }
         } catch (URISyntaxException | IOException e) {
             logger.error(e.toString(), e);
@@ -150,13 +150,13 @@ public final class CMSTemplateManager {
                     .findAny().isPresent();
                 }
                 if(templatesFound) {
-                    this.coreTemplateFolderUrl = Optional.of(webContentRoot + "/" + coreFolderUrl.get().toString());
+                    this.coreTemplateFolderUrl = Optional.of(webContentRoot + "/" + templateFolderUrl);
                 }
             } catch (IOException e) {
                 logger.error(e.toString(), e);
             }
             
-        updateTemplates(coreFolderPath, themeFolderPath);
+        updateTemplates(themeFolderPath, coreFolderPath);
     }
 
     /**
