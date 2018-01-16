@@ -43,6 +43,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ddf.EscherColorRef.SysIndexSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,12 +228,17 @@ public final class CMSTemplateManager {
     // TODO fix for external themes
     private Map<String, CMSPageTemplate> loadTemplates(Path path) throws IllegalArgumentException {
         Map<String, CMSPageTemplate> templates = new LinkedHashMap<>();
-
+        System.out.println("Loading templates from " + path);
         List<CMSPageTemplate> templateList = null;;
         try {
             templateList = Files.list(path).filter(
-                    file -> file.getFileName().toString().toLowerCase().endsWith(".xml")).sorted().map(
-                            templatePath -> CMSPageTemplate.loadFromXML(templatePath)).filter(template -> template != null).collect(Collectors.toList());
+                    file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
+                        .sorted()
+                        .peek(templatePath -> System.out.println("Loading template from " + templatePath))
+                        .map(templatePath -> CMSPageTemplate.loadFromXML(templatePath))
+                        .peek(template -> System.out.println("Loaded template " + template.getId()))
+                        .filter(template -> template != null)
+                        .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException("Error reading files from " + path, e);
         }
