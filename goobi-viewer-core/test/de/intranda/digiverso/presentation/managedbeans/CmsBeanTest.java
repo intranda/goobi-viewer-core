@@ -30,6 +30,8 @@ import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageTemplate;
@@ -46,6 +48,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         CMSTemplateManager.getInstance(webContent.toURI().toString());
     }
 
@@ -117,7 +120,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNull(staticPage.getCmsPage());
     }
 
-    @Test
+//    @Test
     @Deprecated
     public void testForwardToCMSPage() throws IOException, DAOException {
 

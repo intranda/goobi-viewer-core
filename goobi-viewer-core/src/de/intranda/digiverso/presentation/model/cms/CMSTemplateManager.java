@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
@@ -187,7 +188,7 @@ public final class CMSTemplateManager {
                 fileUrl = Optional.of(Paths.get(basePath, templateFolderUrl).toFile().toURI().toURL());
             }
 //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
-        } else if(Files.exists(Paths.get(filesystemPath + templateFolderUrl))){
+        } else if(Files.exists(Paths.get(new URL(filesystemPath + templateFolderUrl).getPath()))){
             fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
         }
         return fileUrl;
