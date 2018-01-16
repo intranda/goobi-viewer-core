@@ -3110,6 +3110,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 10px;
   padding: 10px;
 }
+.styles__logo img {
+  max-width: 100%;
+}
 .styles__logo figcaption {
   padding-top: 10px;
   font-style: italic;
