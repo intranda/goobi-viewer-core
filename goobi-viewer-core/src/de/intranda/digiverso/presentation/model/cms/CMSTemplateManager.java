@@ -142,7 +142,7 @@ public final class CMSTemplateManager {
                 String templateFolderUrl = "resources/" + TEMPLATE_BASE_PATH;
                 Optional<URL> coreFolderUrl = getTemplateFolderUrl(filesystemPath, servletContext, templateFolderUrl);
                 coreFolderPath = coreFolderUrl.map(path -> toURI(path));
-                
+                System.out.println("Core folder template path = " + coreFolderPath);
               //check if the themeFolderPath contains any xml files
                 boolean templatesFound = false;
                 if(coreFolderPath.isPresent()) {
