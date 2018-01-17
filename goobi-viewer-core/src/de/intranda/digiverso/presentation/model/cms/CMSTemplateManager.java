@@ -16,10 +16,12 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
@@ -177,12 +179,12 @@ public final class CMSTemplateManager {
      * @param templateFolderUrl
      * @return
      * @throws MalformedURLException
+     * @throws UnsupportedEncodingException 
      */
     public Optional<URL> getTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl)
-            throws MalformedURLException {
+            throws MalformedURLException, UnsupportedEncodingException {
         Optional<URL> fileUrl = Optional.empty();
-        System.out.println("servletContext = " + servletContext);
-        Path path = Paths.get(new URL(filesystemPath + templateFolderUrl).getPath());
+        Path path = Paths.get(URLDecoder.decode(new URL(filesystemPath + templateFolderUrl).getPath(), "utf-8"));
         System.out.println("path = " + path);
         if (servletContext != null) {
             String basePath = servletContext.getRealPath("/");
