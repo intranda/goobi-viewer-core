@@ -188,12 +188,11 @@ public final class CMSTemplateManager {
         System.out.println("path = " + path);
         if (servletContext != null) {
             String basePath = servletContext.getRealPath("/");
-            System.out.println("Base path = " + basePath);
             if (Files.exists(Paths.get(basePath, templateFolderUrl))) {
                 fileUrl = Optional.of(Paths.get(basePath, templateFolderUrl).toFile().toURI().toURL());
             }
             //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
-        } else if (Files.exists(Paths.get(new URL(filesystemPath + templateFolderUrl).getPath()))) {
+        } else if (Files.exists(path)) {
             fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
         }
         return fileUrl;
