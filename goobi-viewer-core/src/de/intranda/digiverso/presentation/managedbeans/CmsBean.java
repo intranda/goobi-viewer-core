@@ -223,10 +223,8 @@ public class CmsBean {
             CMSPageTemplate template = CMSTemplateManager.getInstance().getTemplate(page.getTemplateId());
             if (template == null) {
                 //remove pages with no template files
-                System.out.println("Removing cms page because not template was found with id " + page.getTemplateId());
                 pages.remove();
             } else if (!isPageValid(page, template)) {
-                System.out.println("Removing cms page because page is invalid");
                 pages.remove();
             } else {
                 //check if this pages is used as static page
