@@ -606,7 +606,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
             String suffix = SearchHelper.getAllSuffixes(null, false, true);
             Assert.assertNotNull(suffix);
-            System.out.println(suffix);
             Assert.assertTrue(suffix.contains(" AND " + DataManager.getInstance()
                     .getConfiguration()
                     .getSubthemeDiscriminatorField() + ":dvalue"));
@@ -632,7 +631,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<>(Arrays.asList(new String[] { "seven" })));
         searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
         Assert.assertEquals(
-                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:(six) OR OVERVIEWPAGE_DESCRIPTION:(seven) OR OVERVIEWPAGE_PUBLICATIONTEXT:(eight))",
+                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:six OR OVERVIEWPAGE_DESCRIPTION:seven OR OVERVIEWPAGE_PUBLICATIONTEXT:eight)",
                 SearchHelper.generateExpandQuery(fields, searchTerms));
     }
 
@@ -667,7 +666,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.OVERVIEWPAGE_DESCRIPTION, new HashSet<>(Arrays.asList(new String[] { "seven" })));
         searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
         Assert.assertEquals(
-                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:(six) OR OVERVIEWPAGE_DESCRIPTION:(seven) OR OVERVIEWPAGE_PUBLICATIONTEXT:(eight))",
+                " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:six OR OVERVIEWPAGE_DESCRIPTION:seven OR OVERVIEWPAGE_PUBLICATIONTEXT:eight)",
                 SearchHelper.generateExpandQuery(fields, searchTerms));
     }
 
