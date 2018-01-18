@@ -115,9 +115,10 @@ public class SearchFunctionality implements Functionality {
             logger.error("Cannot search: SearchBean is null");
             return;
         }
+        String facetString = getSearchBean().getFacets().getCurrentFacetString();
         getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
         getSearchBean().search();
-        
+        getSearchBean().getFacets().setCurrentFacetString(facetString);        
     }
 
     /**

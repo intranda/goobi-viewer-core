@@ -207,7 +207,7 @@ public final class CMSTemplateManager {
                         .toURL());
             }
             //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
-        } else if(filesystemPath != null) {
+        } else if (filesystemPath != null) {
             Path path = Paths.get(URLDecoder.decode(new URL(filesystemPath + templateFolderUrl).getPath(), "utf-8"));
             if (Files.exists(path)) {
                 fileUrl = Optional.of(new URL(filesystemPath + templateFolderUrl));
@@ -286,17 +286,17 @@ public final class CMSTemplateManager {
         try {
             //load theme templates
             themePath.map(path -> loadTemplates(path))
-            .ifPresent(map -> map.entrySet()
-                    .stream()
-                    .peek(entry -> entry.getValue().setThemeTemplate(true))
-                    .forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
-            
+                    .ifPresent(map -> map.entrySet()
+                            .stream()
+                            .peek(entry -> entry.getValue()
+                                    .setThemeTemplate(true))
+                            .forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
+
             //load core templates
             corePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet()
                             .stream()
                             .forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
-            
 
         } catch (IllegalArgumentException e) {
             logger.error("Failed to update cms templates: " + e.toString(), e);
@@ -374,15 +374,8 @@ public final class CMSTemplateManager {
      */
     public String getTemplateViewUrl(CMSPageTemplate template) {
         if (template != null) {
-            Optional<String> viewUrl =
-                    getThemeViewFolderUrl().filter(url -> getThemeViewFolderPath().isPresent() && Files.exists(getThemeViewFolderPath().get()
-                            .resolve(template.getHtmlFileName())))
-                            .map(url -> url + "/" + template.getHtmlFileName());
-            if (!viewUrl.isPresent()) {
-                viewUrl = getCoreViewFolderUrl().filter(url -> getCoreViewFolderPath().isPresent() && Files.exists(getCoreViewFolderPath().get()
-                        .resolve(template.getHtmlFileName())))
-                        .map(url -> url + "/" + template.getHtmlFileName());
-            }
+            Optional<String> folderUrl = template.isThemeTemplate() ? getThemeViewFolderUrl() : getCoreViewFolderUrl();
+            Optional<String> viewUrl = folderUrl.map(url -> url + "/" + template.getHtmlFileName());
             return viewUrl.orElse("");
         }
         return "";
@@ -416,15 +409,8 @@ public final class CMSTemplateManager {
      */
     public String getTemplateIconUrl(CMSPageTemplate template) {
         if (template != null) {
-            Optional<String> viewUrl =
-                    getThemeIconFolderUrl().filter(url -> getThemeIconFolderPath().isPresent() && Files.exists(getThemeIconFolderPath().get()
-                            .resolve(template.getIconFileName())))
-                            .map(url -> url + "/" + template.getIconFileName());
-            if (!viewUrl.isPresent()) {
-                viewUrl = getCoreIconFolderUrl().filter(url -> getCoreIconFolderPath().isPresent() && Files.exists(getCoreIconFolderPath().get()
-                        .resolve(template.getIconFileName())))
-                        .map(url -> url + "/" + template.getIconFileName());
-            }
+            Optional<String> folderUrl = template.isThemeTemplate() ? getThemeIconFolderUrl() : getCoreIconFolderUrl();
+            Optional<String> viewUrl = folderUrl.map(url -> url + "/" + template.getIconFileName());
             return viewUrl.orElse("");
         }
         return "";
