@@ -261,6 +261,13 @@
         <action onPostback="false">#{navigationHelper.setPreferredView('overview')}</action>
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
+    <url-mapping id="overview2active">
+        <pattern
+            value="/!overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewOverview.xhtml" />
+        <action onPostback="false">#{navigationHelper.setPreferredView('overview')}</action>
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
     <url-mapping id="overview4">
         <pattern
             value="/overview/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />

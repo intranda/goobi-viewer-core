@@ -46,6 +46,7 @@ public class CMSContentResourceTest extends AbstractDatabaseEnabledTest {
 	public void setUp() throws Exception {
 		super.setUp();
 		File webContent = new File("WebContent/").getAbsoluteFile();
+		Assert.assertTrue(webContent.isDirectory());
         CMSTemplateManager.getInstance(webContent.toURI().toString());
 	}
 

@@ -37,7 +37,7 @@
 
 				<div id="metadataElementWrapper">
 					<ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
-						<div class="metadata-element-box" style="padding-left: #{status.index * 15}px">
+						<div class="metadata-element-box level-#{status.index}">
 							<ui:repeat value="#{metadataElement.metadataList}" var="metadata">
 								<h:panelGroup rendered="#{!metadata.blank}">
 									<div class="metadata-element">

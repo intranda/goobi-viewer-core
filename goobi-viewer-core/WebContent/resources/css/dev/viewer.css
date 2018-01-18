@@ -3110,6 +3110,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 10px;
   padding: 10px;
 }
+.styles__logo img {
+  max-width: 100%;
+}
 .styles__logo figcaption {
   padding-top: 10px;
   font-style: italic;
@@ -3921,6 +3924,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day .popover-content a:active,
 .search-calendar__month-day .popover-content a:focus {
   color: #1a1a1a;
+  background-color: transparent;
 }
 .search-calendar__month-day-empty {
   min-height: 1px;
@@ -4794,6 +4798,33 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value:last-child {
   margin-bottom: 0;
+}
+#metadataElementWrapper .metadata-element-box.level-1 {
+  padding-left: 20px;
+}
+#metadataElementWrapper .metadata-element-box.level-2 {
+  padding-left: 30px;
+}
+#metadataElementWrapper .metadata-element-box.level-3 {
+  padding-left: 40px;
+}
+#metadataElementWrapper .metadata-element-box.level-4 {
+  padding-left: 50px;
+}
+#metadataElementWrapper .metadata-element-box.level-5 {
+  padding-left: 60px;
+}
+#metadataElementWrapper .metadata-element-box.level-6 {
+  padding-left: 70px;
+}
+#metadataElementWrapper .metadata-element-box.level-7 {
+  padding-left: 80px;
+}
+#metadataElementWrapper .metadata-element-box.level-8 {
+  padding-left: 90px;
+}
+#metadataElementWrapper .metadata-element-box.level-9 {
+  padding-left: 100px;
 }
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal {
   margin: 0;
@@ -7014,7 +7045,7 @@ div.olMapViewport {
 }
 /* ==============================================================
    CMS Template "Masonry"
-   style declarations for cms_template_12_masonry.xhtml
+   style declarations for cms_template_11_masonry.xhtml
    ==============================================================*/
 /* TPL MASONRY */
 /* BLOCK */
@@ -7123,7 +7154,7 @@ div.olMapViewport {
 }
 /* ==============================================================
    CMS Template Single Collection
-   style declarations for cms_template_13_singleCollection.xhtml
+   style declarations for cms_template_12_singleCollection.xhtml
    ==============================================================*/
 /* TPL SINGLE COLLECTION */
 /* BLOCK */
@@ -7160,7 +7191,7 @@ div.olMapViewport {
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Template Static Grid
-   style declarations for cms_template_14_staticGrid.xhtml
+   style declarations for cms_template_13_staticGrid.xhtml
    ==============================================================*/
 /* TPL STATIC GRID */
 /* BLOCK */
@@ -7206,7 +7237,7 @@ div.olMapViewport {
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Template RSS Feed
-   style declarations for cms_template_15_RSSFeed.xhtml
+   style declarations for cms_template_14_RSSFeed.xhtml
    ==============================================================*/
 /* TPL RSS FEED */
 /* BLOCK */
@@ -7242,7 +7273,7 @@ div.olMapViewport {
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Template Stacked Collection
-   style declarations for cms_template_16_stackedCollection.xhtml
+   style declarations for cms_template_15_stackedCollection.xhtml
    ==============================================================*/
 /* TPL STACKED COLLECTION */
 /* BLOCK */
@@ -7342,7 +7373,7 @@ div.olMapViewport {
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Template "Searchlist"
-   style declarations for cms_template_17_searchList.xhtml
+   style declarations for cms_template_16_searchList.xhtml
    ==============================================================*/
 /* SEARCHLIST */
 /* BLOCK */
@@ -7360,7 +7391,7 @@ div.olMapViewport {
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    CMS Template "Searchlist Advanced"
-   style declarations for cms_template_18_searchListAdvanced.xhtml
+   style declarations for cms_template_16_searchListAdvanced.xhtml
    ==============================================================*/
 /* SEARCHLIST ADVANCED */
 /* BLOCK */
@@ -8017,12 +8048,23 @@ div.olMapViewport {
   margin-bottom: 14px;
   border-bottom: 1px solid #eee;
 }
+#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description {
+  position: relative;
+}
 #cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description h3 {
   margin: 0 0 21px 0;
 }
 #cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-action {
   padding: 14px 0;
   text-align: right;
+}
+#cmsSelectTemplate #cmsSelectTemplateWrapper .theme-template-marker {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  border: 2px solid #428bca;
+  color: #428bca;
+  padding: 2px 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
