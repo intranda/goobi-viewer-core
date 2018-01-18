@@ -203,7 +203,7 @@ public class CmsBean {
     }
 
     public void loadTemplates() {
-        CMSTemplateManager.getInstance().updateTemplates( CMSTemplateManager.getInstance().getThemeFolderPath(),  CMSTemplateManager.getInstance().getCoreFolderPath());
+        CMSTemplateManager.getInstance().updateTemplates( CMSTemplateManager.getInstance().getCoreFolderPath(), CMSTemplateManager.getInstance().getThemeFolderPath());
     }
 
     public List<CMSPageTemplate> getTemplates() {

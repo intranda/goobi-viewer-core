@@ -8048,12 +8048,23 @@ div.olMapViewport {
   margin-bottom: 14px;
   border-bottom: 1px solid #eee;
 }
+#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description {
+  position: relative;
+}
 #cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description h3 {
   margin: 0 0 21px 0;
 }
 #cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-action {
   padding: 14px 0;
   text-align: right;
+}
+#cmsSelectTemplate #cmsSelectTemplateWrapper .theme-template-marker {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  border: 2px solid #428bca;
+  color: #428bca;
+  padding: 2px 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

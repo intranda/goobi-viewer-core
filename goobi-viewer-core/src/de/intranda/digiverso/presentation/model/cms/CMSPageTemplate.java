@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -61,6 +60,8 @@ public class CMSPageTemplate {
     private boolean displaySortingField = false;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
+    
+    private boolean themeTemplate = false;
 
     /**
      * Loads a page template from the given template file and returns the template object.
@@ -343,6 +344,20 @@ public class CMSPageTemplate {
 
     public void setDisplaySortingField(boolean displaySortingField) {
         this.displaySortingField = displaySortingField;
+    }
+    
+    /**
+     * @return the themeTemplate
+     */
+    public boolean isThemeTemplate() {
+        return themeTemplate;
+    }
+    
+    /**
+     * @param themeTemplate the themeTemplate to set
+     */
+    public void setThemeTemplate(boolean themeTemplate) {
+        this.themeTemplate = themeTemplate;
     }
 
 

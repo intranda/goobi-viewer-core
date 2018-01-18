@@ -38,7 +38,9 @@
 								<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
 									<div class="select-template-description">
 										<h3>#{template.name}</h3>
-										
+                                        <ui:fragment rendered="#{template.themeTemplate}">
+										  <div class="theme-template-marker">#{msg.cms_themeTemplate}</div>
+                                        </ui:fragment>
 										<p>
 											#{template.description}
 										</p>
