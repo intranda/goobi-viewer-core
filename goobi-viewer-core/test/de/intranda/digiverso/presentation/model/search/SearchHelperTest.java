@@ -58,7 +58,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public static void setUpClass() throws Exception {
         AbstractDatabaseAndSolrEnabledTest.setUpClass();
         // Initialize the instance with a custom config file
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+        DataManager.getInstance()
+                .injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
     }
 
     @Override
@@ -186,7 +187,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void getPersonalFilterQuerySuffix_shouldConstructSuffixCorrectlyIfUserHasLicensePrivilege() throws Exception {
-        User user = DataManager.getInstance().getDao().getUser(2);
+        User user = DataManager.getInstance()
+                .getDao()
+                .getUser(2);
         String suffix = SearchHelper.getPersonalFilterQuerySuffix(user, null);
         Assert.assertEquals(" -" + SolrConstants.ACCESSCONDITION + ":\"license type 3 name\"", suffix);
     }
@@ -232,7 +235,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertFalse(truncated.isEmpty());
         System.out.println(truncated.get(0));
         //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
-        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">tempor</span>"));
+        Assert.assertTrue(truncated.get(0)
+                .contains("<span class=\"search-list--highlight\">tempor</span>"));
         //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">labore</span>"));
         // TODO The other two terms aren't highlighted when using random length phrase
     }
@@ -356,8 +360,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void extractSearchTermsFromQuery_shouldHandleMultiplePhrasesInQueryCorrectly() throws Exception {
-        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value2\")", null);
         Assert.assertEquals(4, result.size());
         {
             Set<String> terms = result.get("MD_A");
@@ -391,8 +395,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void extractSearchTermsFromQuery_shouldSkipDiscriminatorValue() throws Exception {
-        Map<String, Set<String>> result = SearchHelper.extractSearchTermsFromQuery(
-                "(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value3\")", "value1");
+        Map<String, Set<String>> result =
+                SearchHelper.extractSearchTermsFromQuery("(MD_A:\"value1\" OR MD_B:\"value1\" OR MD_C:\"value2\" OR MD_D:\"value3\")", "value1");
         Assert.assertEquals(2, result.size());
         {
             Set<String> terms = result.get("MD_C");
@@ -563,7 +567,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getAllSuffixes_shouldAddStaticSuffix() throws Exception {
         String suffix = SearchHelper.getAllSuffixes(null, false, false);
         Assert.assertNotNull(suffix);
-        Assert.assertTrue(suffix.contains(DataManager.getInstance().getConfiguration().getStaticQuerySuffix()));
+        Assert.assertTrue(suffix.contains(DataManager.getInstance()
+                .getConfiguration()
+                .getStaticQuerySuffix()));
     }
 
     /**
@@ -588,8 +594,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         FacesContext facesContext = ContextMocker.mockFacesContext();
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
         Map<String, Object> sessionMap = new HashMap<>();
-        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
-        Mockito.when(externalContext.getSessionMap()).thenReturn(sessionMap);
+        Mockito.when(facesContext.getExternalContext())
+                .thenReturn(externalContext);
+        Mockito.when(externalContext.getSessionMap())
+                .thenReturn(sessionMap);
 
         try {
             NavigationHelper nh = new NavigationHelper();
@@ -599,7 +607,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
             String suffix = SearchHelper.getAllSuffixes(null, false, true);
             Assert.assertNotNull(suffix);
             System.out.println(suffix);
-            Assert.assertTrue(suffix.contains(" AND " + DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField() + ":dvalue"));
+            Assert.assertTrue(suffix.contains(" AND " + DataManager.getInstance()
+                    .getConfiguration()
+                    .getSubthemeDiscriminatorField() + ":dvalue"));
         } finally {
             // Reset the mock because otherwise the discriminator value will persist for other tests
             Mockito.reset(externalContext);
@@ -663,6 +673,18 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHelper#generateExpandQuery(List,Map)
+     * @verifies not escape asterisks
+     */
+    @Test
+    public void generateExpandQuery_shouldNotEscapeAsterisks() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants._CALENDAR_DAY });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
+        Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms));
+    }
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map)
      * @verifies escape reserved characters
      */
     @Test
@@ -683,22 +705,44 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             SearchQueryGroup group = new SearchQueryGroup(null, 2);
             group.setOperator(SearchQueryGroupOperator.AND);
-            group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
-            group.getQueryItems().get(0).setValue("Monograph");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
-            group.getQueryItems().get(1).setField(SolrConstants.TITLE);
-            group.getQueryItems().get(1).setValue("foo bar");
+            group.getQueryItems()
+                    .get(0)
+                    .setOperator(SearchItemOperator.AND);
+            group.getQueryItems()
+                    .get(0)
+                    .setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems()
+                    .get(0)
+                    .setValue("Monograph");
+            group.getQueryItems()
+                    .get(1)
+                    .setOperator(SearchItemOperator.AND);
+            group.getQueryItems()
+                    .get(1)
+                    .setField(SolrConstants.TITLE);
+            group.getQueryItems()
+                    .get(1)
+                    .setValue("foo bar");
             groups.add(group);
         }
         {
             SearchQueryGroup group = new SearchQueryGroup(null, 2);
             group.setOperator(SearchQueryGroupOperator.OR);
-            group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
-            group.getQueryItems().get(0).setValue("Volume");
-            group.getQueryItems().get(1).setOperator(SearchItemOperator.OR);
-            group.getQueryItems().get(1).setField("MD_SHELFMARK");
-            group.getQueryItems().get(1).setValue("bla blup");
+            group.getQueryItems()
+                    .get(0)
+                    .setField(SolrConstants.DOCSTRCT);
+            group.getQueryItems()
+                    .get(0)
+                    .setValue("Volume");
+            group.getQueryItems()
+                    .get(1)
+                    .setOperator(SearchItemOperator.OR);
+            group.getQueryItems()
+                    .get(1)
+                    .setField("MD_SHELFMARK");
+            group.getQueryItems()
+                    .get(1)
+                    .setValue("bla blup");
             groups.add(group);
         }
 
@@ -716,15 +760,33 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
 
         SearchQueryGroup group = new SearchQueryGroup(null, 3);
         group.setOperator(SearchQueryGroupOperator.AND);
-        group.getQueryItems().get(0).setOperator(SearchItemOperator.AND);
-        group.getQueryItems().get(0).setField(SolrConstants.DOCSTRCT);
-        group.getQueryItems().get(0).setValue("Monograph");
-        group.getQueryItems().get(1).setOperator(SearchItemOperator.AND);
-        group.getQueryItems().get(1).setField(SolrConstants.PI_TOPSTRUCT);
-        group.getQueryItems().get(1).setValue("PPN123");
-        group.getQueryItems().get(2).setOperator(SearchItemOperator.AND);
-        group.getQueryItems().get(2).setField(SolrConstants.DC);
-        group.getQueryItems().get(2).setValue("co1");
+        group.getQueryItems()
+                .get(0)
+                .setOperator(SearchItemOperator.AND);
+        group.getQueryItems()
+                .get(0)
+                .setField(SolrConstants.DOCSTRCT);
+        group.getQueryItems()
+                .get(0)
+                .setValue("Monograph");
+        group.getQueryItems()
+                .get(1)
+                .setOperator(SearchItemOperator.AND);
+        group.getQueryItems()
+                .get(1)
+                .setField(SolrConstants.PI_TOPSTRUCT);
+        group.getQueryItems()
+                .get(1)
+                .setValue("PPN123");
+        group.getQueryItems()
+                .get(2)
+                .setOperator(SearchItemOperator.AND);
+        group.getQueryItems()
+                .get(2)
+                .setField(SolrConstants.DC);
+        group.getQueryItems()
+                .get(2)
+                .setValue("co1");
         groups.add(group);
 
         String result = SearchHelper.generateAdvancedExpandQuery(groups, 0);
@@ -738,8 +800,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void exportSearchAsExcel_shouldCreateExcelWorkbookCorrectly() throws Exception {
         String query = "DOCSTRCT:Monograph AND MD_YEARPUBLISH:19*";
-        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query + " AND NOT(DC:forbidden)", query, Collections.singletonList(new StringPair(
-                "SORT_YEARPUBLISH", "asc")), null, null, new HashMap<String, Set<String>>(), Locale.ENGLISH, false, null);
+        SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query + " AND NOT(DC:forbidden)", query,
+                Collections.singletonList(new StringPair("SORT_YEARPUBLISH", "asc")), null, null, new HashMap<String, Set<String>>(), Locale.ENGLISH,
+                false, null);
         String[] cellValues0 = new String[] { "Persistent identifier", "PPN728566745", "b18029048", "AC01054587", "1592397" };
         String[] cellValues1 = new String[] { "Label", "Vaterländische Handels- und Verkehrsgeographie",
                 "papers communicated to the first International Eugenics Congress held at the University of London, July 24th to 30th, 1912",
@@ -751,14 +814,22 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         {
             SXSSFRow row = sheet.getRow(0);
             Assert.assertEquals(2, row.getPhysicalNumberOfCells());
-            Assert.assertEquals("Query:", row.getCell(0).getRichStringCellValue().toString());
-            Assert.assertEquals(query, row.getCell(1).getRichStringCellValue().toString());
+            Assert.assertEquals("Query:", row.getCell(0)
+                    .getRichStringCellValue()
+                    .toString());
+            Assert.assertEquals(query, row.getCell(1)
+                    .getRichStringCellValue()
+                    .toString());
         }
         for (int i = 1; i < 6; ++i) {
             SXSSFRow row = sheet.getRow(i);
             Assert.assertEquals(2, row.getPhysicalNumberOfCells());
-            Assert.assertEquals(cellValues0[i - 1], row.getCell(0).getRichStringCellValue().toString());
-            Assert.assertEquals(cellValues1[i - 1], row.getCell(1).getRichStringCellValue().toString());
+            Assert.assertEquals(cellValues0[i - 1], row.getCell(0)
+                    .getRichStringCellValue()
+                    .toString());
+            Assert.assertEquals(cellValues1[i - 1], row.getCell(1)
+                    .getRichStringCellValue()
+                    .toString());
         }
     }
 
@@ -775,7 +846,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
             BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, false, null);
-            Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
+            Assert.assertEquals(hits.get(i)
+                    .getBrowseElement()
+                    .getIddoc(), bi.getIddoc());
         }
     }
 
@@ -792,7 +865,9 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals(10, hits.size());
         for (int i = 0; i < 10; ++i) {
             BrowseElement bi = SearchHelper.getBrowseElement(rawQuery, i, null, null, null, null, Locale.ENGLISH, true, null);
-            Assert.assertEquals(hits.get(i).getBrowseElement().getIddoc(), bi.getIddoc());
+            Assert.assertEquals(hits.get(i)
+                    .getBrowseElement()
+                    .getIddoc(), bi.getIddoc());
         }
     }
 
@@ -836,9 +911,11 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void applyHighlightingToPhrase_shouldApplyHighlightingToAllOccurrencesOfTerm() throws Exception {
         String phrase = "FOO BAR Foo Bar foo bar";
         String highlightedPhrase1 = SearchHelper.applyHighlightingToPhrase(phrase, "foo");
-        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " BAR "
-                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " Bar "
-                + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " bar", highlightedPhrase1);
+        Assert.assertEquals(
+                SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " BAR "
+                        + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " Bar "
+                        + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " bar",
+                highlightedPhrase1);
         String highlightedPhrase2 = SearchHelper.applyHighlightingToPhrase(highlightedPhrase1, "bar");
         Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "FOO" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
                 + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "BAR" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END + " "
@@ -867,8 +944,8 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void applyHighlightingToTerm_shouldAddSpanCorrectly() throws Exception {
-        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END, SearchHelper
-                .applyHighlightingToTerm("foo"));
+        Assert.assertEquals(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END,
+                SearchHelper.applyHighlightingToTerm("foo"));
     }
 
     /**
@@ -877,27 +954,27 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void replaceHighlightingPlaceholders_shouldReplacePlaceholdersWithHtmlTags() throws Exception {
-        Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper.replaceHighlightingPlaceholders(
-                SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
+        Assert.assertEquals("<span class=\"search-list--highlight\">foo</span>", SearchHelper
+                .replaceHighlightingPlaceholders(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
     }
 
-//    /**
-//     * @see SearchHelper#loadFulltext(String,String,String,String)
-//     * @verifies load fulltext from alto correctly
-//     */
-//    @Test
-//    public void loadFulltext_shouldLoadFulltextFromAltoCorrectly() throws Exception {
-//        String fulltext = SearchHelper.loadFulltext("PPN648829383", null, "alto/PPN648829383/00000001.xml", null);
-//        Assert.assertTrue(StringUtils.isNotEmpty(fulltext));
-//    }
-//
-//    /**
-//     * @see SearchHelper#loadFulltext(String,String,String,String)
-//     * @verifies load fulltext from plain text correctly
-//     */
-//    @Test
-//    public void loadFulltext_shouldLoadFulltextFromPlainTextCorrectly() throws Exception {
-//        String fulltext = SearchHelper.loadFulltext("PPN123", null, null, "fulltext/PPN123/00000001.txt");
-//        Assert.assertEquals("sample text", fulltext);
-//    }
+    //    /**
+    //     * @see SearchHelper#loadFulltext(String,String,String,String)
+    //     * @verifies load fulltext from alto correctly
+    //     */
+    //    @Test
+    //    public void loadFulltext_shouldLoadFulltextFromAltoCorrectly() throws Exception {
+    //        String fulltext = SearchHelper.loadFulltext("PPN648829383", null, "alto/PPN648829383/00000001.xml", null);
+    //        Assert.assertTrue(StringUtils.isNotEmpty(fulltext));
+    //    }
+    //
+    //    /**
+    //     * @see SearchHelper#loadFulltext(String,String,String,String)
+    //     * @verifies load fulltext from plain text correctly
+    //     */
+    //    @Test
+    //    public void loadFulltext_shouldLoadFulltextFromPlainTextCorrectly() throws Exception {
+    //        String fulltext = SearchHelper.loadFulltext("PPN123", null, null, "fulltext/PPN123/00000001.txt");
+    //        Assert.assertEquals("sample text", fulltext);
+    //    }
 }
