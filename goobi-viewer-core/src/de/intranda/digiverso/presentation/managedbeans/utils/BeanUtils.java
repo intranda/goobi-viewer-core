@@ -64,7 +64,8 @@ public class BeanUtils {
 
     public static HttpServletRequest getRequest(FacesContext context) {
         if (context != null && context.getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext()
+                    .getRequest();
             return request;
         }
 
@@ -78,7 +79,9 @@ public class BeanUtils {
      */
     public static String getServletPathWithHostAsUrlFromJsfContext() {
         if (FacesContext.getCurrentInstance() != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getRequest();
             if (request != null) {
                 return ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
             }
@@ -94,7 +97,8 @@ public class BeanUtils {
     public static ServletContext getServletContext() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context != null && context.getExternalContext() != null) {
-            return (ServletContext) context.getExternalContext().getContext();
+            return (ServletContext) context.getExternalContext()
+                    .getContext();
         }
 
         return null;
@@ -114,15 +118,24 @@ public class BeanUtils {
     }
 
     private static BeanManager getBeanManager() {
+        BeanManager ret = null;
+
         // Via CDI
-        BeanManager ret = CDI.current().getBeanManager();
-        if (ret != null) {
-            return ret;
+        try {
+            ret = CDI.current()
+                    .getBeanManager();
+            if (ret != null) {
+                return ret;
+            }
+        } catch (IllegalStateException e) {
         }
         // Via FacesContext
-        if (FacesContext.getCurrentInstance() != null) {
-            ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getAttribute(
-                    "javax.enterprise.inject.spi.BeanManager");
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getContext() != null) {
+            ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getContext()).getAttribute("javax.enterprise.inject.spi.BeanManager");
             if (ret != null) {
                 return ret;
             }
@@ -140,8 +153,12 @@ public class BeanUtils {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Object getBeanByName(String name, Class clazz) {
         BeanManager bm = getBeanManager();
-        if (bm != null && bm.getBeans(name).iterator().hasNext()) {
-            Bean bean = bm.getBeans(name).iterator().next();
+        if (bm != null && bm.getBeans(name)
+                .iterator()
+                .hasNext()) {
+            Bean bean = bm.getBeans(name)
+                    .iterator()
+                    .next();
             CreationalContext ctx = bm.createCreationalContext(bean);
             return bm.getReference(bean, clazz, ctx);
         }
@@ -211,7 +228,8 @@ public class BeanUtils {
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
         if (request != null) {
-            return (UserBean) request.getSession().getAttribute("userBean");
+            return (UserBean) request.getSession()
+                    .getAttribute("userBean");
         }
 
         return null;
@@ -241,7 +259,9 @@ public class BeanUtils {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        return value.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT).replace("?", QUESTION_MARK_REPLACEMENT);
+        return value.replace("/", SLASH_REPLACEMENT)
+                .replace("\\", BACKSLASH_REPLACEMENT)
+                .replace("?", QUESTION_MARK_REPLACEMENT);
     }
 
     /**
@@ -255,6 +275,8 @@ public class BeanUtils {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        return value.replace(SLASH_REPLACEMENT, "/").replace(BACKSLASH_REPLACEMENT, "\\").replace(QUESTION_MARK_REPLACEMENT, "?");
+        return value.replace(SLASH_REPLACEMENT, "/")
+                .replace(BACKSLASH_REPLACEMENT, "\\")
+                .replace(QUESTION_MARK_REPLACEMENT, "?");
     }
 }
