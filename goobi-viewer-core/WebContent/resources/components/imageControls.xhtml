@@ -126,7 +126,6 @@
                                 <div class="form-control__select">
                                     <!-- Image view select -->
                                     <h:selectOneMenu
-                                        rendered="#{navigationHelper.currentPage == 'image'}"
                                         onchange="location.href='#{activeDocumentBean.getPageUrl(navigationHelper.currentView)}' + $(this).val(); + '/';"
                                         value="#{activeDocumentBean.viewManager.dropdownSelected}"
                                         styleClass="form-control">
