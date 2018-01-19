@@ -74,7 +74,7 @@
                                                 </c:forEach>
                                                 <td class="cms-static-pages__page-select">
                                                     <div class="form-control__select">
-                                                        <h:selectOneMenu converter="cmsPageConverter" disabled="#{!page.useCmsPage}" value="#{page.cmsPage}">
+                                                        <h:selectOneMenu converter="cmsPageConverter" value="#{page.cmsPage}">
                                                             <f:selectItem itemValue="" itemLabel="#{msg.select}" itemDisabled="true" />
                                                             <f:selectItem itemValue="" itemLabel="#{msg.none}" />
                                                             <f:selectItems value="#{cmsBean.getAvailableCmsPages(page)}" var="availablePage" itemValue="#{availablePage}" itemLabel="#{availablePage.menuTitle}" />
@@ -95,7 +95,7 @@
                                 </tbody>
                             </table>
                             <div class="cms-static-pages__save">
-                                <h:commandButton styleClass="btn" id="savePages" value="#{msg.save}" action="#{cmsBean.saveCMSPages}" />
+                                <h:commandButton styleClass="btn" id="savePages" value="#{msg.save}" action="#{cmsBean.saveStaticPages}" />
                             </div>
                         </h:form>
                     </div>

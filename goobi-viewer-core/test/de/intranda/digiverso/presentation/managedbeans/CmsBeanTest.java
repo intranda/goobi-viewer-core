@@ -91,11 +91,9 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void testGetAvailableCmsPages() throws DAOException {
         CmsBean bean = new CmsBean();
-        List<CMSPage> allPages = bean.getCreatedPages();
-        System.out.println("Loaded a total of " + allPages.size() + " pages");
+        List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages();
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
-        System.out.println("Loaded " + availablePages.size() + " available pages");
-        Assert.assertEquals(2, allPages.size() - availablePages.size());
+        Assert.assertEquals(1, allPages.size() - availablePages.size());
     }
 
     @Test
@@ -110,54 +108,18 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         //    	Assert.assertNull(staticPage.getCmsPage());
         staticPage.setCmsPage(page);
-        bean.saveCMSPages();
-        List<CMSPage> cmsPages = bean.loadCreatedPages();
+        bean.saveStaticPages();
 
         staticPages = bean.getStaticPages();
         staticPage = staticPages.get(0);
-        Assert.assertEquals(pageId, staticPage.getCmsPage().getId());
+        Assert.assertEquals(pageId, staticPage.getCmsPageOptional().map(p -> p.getId()).orElse(-1l));
 
         staticPage.setCmsPage(null);
-        bean.saveCMSPages();
-        cmsPages = bean.loadCreatedPages();
+        bean.saveStaticPages();
 
         staticPages = bean.getStaticPages();
         staticPage = staticPages.get(0);
-        Assert.assertNull(staticPage.getCmsPage());
+        Assert.assertNull(staticPage.getCmsPageOptional().orElse(null));
     }
 
-//    @Test
-    @Deprecated
-    public void testForwardToCMSPage() throws IOException, DAOException {
-
-        //mock faces
-        FacesContext facesContext = TestUtils.mockFacesContext();
-        NavigationHelper navigationHelper = Mockito.mock(NavigationHelper.class);
-        Mockito.when(navigationHelper.getCurrentPage()).thenReturn("index");
-        facesContext.getExternalContext().getSessionMap().put("navigationHelper", navigationHelper);
-
-        //mock bean
-        CmsBean bean = Mockito.mock(CmsBean.class, Mockito.CALLS_REAL_METHODS);
-        bean.setNavigationHelper(navigationHelper);
-        Mockito.when(bean.getFacesContext()).thenReturn(facesContext);
-
-        //mock pages
-        CMSPageTemplate template = Mockito.mock(CMSPageTemplate.class, Mockito.CALLS_REAL_METHODS);
-        template.setHtmlFileName("test.html");
-        CMSPage cmsPage = Mockito.mock(CMSPage.class);
-        Mockito.when(cmsPage.getTemplate()).thenReturn(template);
-        Mockito.when(cmsPage.getId()).thenReturn(new Long(7));
-        Mockito.when(cmsPage.isPublished()).thenReturn(true);
-        cmsPage.setPublished(true);
-
-        bean.getStaticPage("index").setCmsPage(cmsPage);
-        bean.forwardToCMSPage();
-
-        //check method call arguments
-        ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
-        Mockito.verify(facesContext.getExternalContext()).dispatch(argument.capture());
-        System.out.println("VALUE=" + argument.getValue());
-        Assert.assertTrue(argument.getValue().endsWith("test.html"));
-
-    }
 }

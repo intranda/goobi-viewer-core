@@ -128,9 +128,15 @@ public class CMSPage {
     @Transient
     private String sidebarElementString = null;
 
+    @Transient PageValidityStatus validityStatus;
+
     @Transient
     private int listPage = 1;
-// ALTER TABLE cms_pages ADD CONSTRAINT cms_pages_static_page_unique_constraint UNIQUE (static_page);
+
+    /**
+     *  @deprecated static pages are now stored in a separate table. This only remains for backwards compability
+     */
+    @Deprecated
     @Column(name = "static_page", nullable = true)
     private String staticPageName;
 
@@ -751,6 +757,7 @@ public class CMSPage {
     /**
      * @return the staticPageName
      */
+    @Deprecated
     public String getStaticPageName() {
         return staticPageName;
     }
@@ -758,6 +765,7 @@ public class CMSPage {
     /**
      * @param staticPageName the staticPageName to set
      */
+    @Deprecated
     public void setStaticPageName(String staticPageName) {
         this.staticPageName = staticPageName;
     }
@@ -859,5 +867,19 @@ public class CMSPage {
      */
     public String getParentPageId() {
         return parentPageId;
+    }
+    
+    /**
+     * @return the validityStatus
+     */
+    public PageValidityStatus getValidityStatus() {
+        return validityStatus;
+    }
+    
+    /**
+     * @param validityStatus the validityStatus to set
+     */
+    public void setValidityStatus(PageValidityStatus validityStatus) {
+        this.validityStatus = validityStatus;
     }
 }

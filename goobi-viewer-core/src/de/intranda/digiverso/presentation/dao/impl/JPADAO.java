@@ -46,6 +46,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
+import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -2663,6 +2664,14 @@ public class JPADAO implements IDAO {
     public long getCommentCount(Map<String, String> filters) throws DAOException {
         return getRowCount("Comment", filters);
     }
+    
+    /**
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesCount(java.util.Map)
+     */
+    @Override
+    public long getCMSPagesCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("CMSPage", filters);
+    }
 
     /**
      * Universal method for returning the row count for the given class and filters.
@@ -2729,6 +2738,70 @@ public class JPADAO implements IDAO {
         StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT tag_name FROM cms_media_item_tags");
         Query q = em.createNativeQuery(sbQuery.toString());
         return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getAllStaticPages()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSStaticPage> getAllStaticPages() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT o FROM CMSStaticPage o");
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#addStaticPage(de.intranda.digiverso.presentation.model.cms.StaticPage)
+     */
+    @Override
+    public void addStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(page);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#updateStaticPage(de.intranda.digiverso.presentation.model.cms.StaticPage)
+     */
+    @Override
+    public void updateStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(page);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#deleteStaticPage(de.intranda.digiverso.presentation.model.cms.StaticPage)
+     */
+    @Override
+    public boolean deleteStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            CMSStaticPage o = em.getReference(CMSStaticPage.class, page.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch (RollbackException e) {
+            return false;
+        } finally {
+            em.close();
+        }
     }
 
 }

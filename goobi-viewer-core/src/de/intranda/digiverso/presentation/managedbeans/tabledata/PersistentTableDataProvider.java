@@ -15,15 +15,35 @@
  */
 package de.intranda.digiverso.presentation.managedbeans.tabledata;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
+/**
+ * @author Florian Alpers
+ *
+ */
+public class PersistentTableDataProvider<T> extends TableDataProvider<T> {
+    
+    private Optional<List<T>> currentList = Optional.empty();
+    
+    /**
+     * @param source
+     */
+    public PersistentTableDataProvider(TableDataSource<T> source) {
+        super(source);
+    }
 
-public interface TableDataSource<T> {
 
-    public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) throws TableDataSourceException;
-
-    long getTotalNumberOfRecords(Map<String, String> filters);
-    void resetTotalNumberOfRecords();
+    @Override
+    public List<T> getPaginatorList() throws TableDataSourceException {
+        return this.currentList.orElseGet(() -> {
+            this.currentList = loadList();
+            return this.currentList.orElse(Collections.emptyList());
+        });
+    }
+    
+    protected void resetCurrentList() {
+        this.currentList = Optional.empty();
+    }
 }

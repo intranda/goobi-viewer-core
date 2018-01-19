@@ -26,6 +26,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
+import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -264,6 +265,8 @@ public interface IDAO {
 
     public CMSPage getCMSPage(long id) throws DAOException;
 
+    long getCMSPagesCount(Map<String, String> filters) throws DAOException;
+    
     public boolean addCMSPage(CMSPage page) throws DAOException;
 
     public boolean updateCMSPage(CMSPage page) throws DAOException;
@@ -301,6 +304,14 @@ public interface IDAO {
 	public List<String> getMatchingTags(String inputString) throws DAOException;
 	
 	public List<String> getAllTags() throws DAOException;
+	
+	public List<CMSStaticPage> getAllStaticPages() throws DAOException;
+	
+	public void addStaticPage(CMSStaticPage page) throws DAOException;
+	
+	public void updateStaticPage(CMSStaticPage page) throws DAOException;
+	
+	public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
 
 
 
@@ -319,6 +330,5 @@ public interface IDAO {
     // Misc
 
     public void shutdown();
-
 
 }

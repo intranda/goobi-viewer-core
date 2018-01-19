@@ -16,65 +16,106 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.util.Locale;
+import java.util.Optional;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
+
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+
+@Entity
+@Table(name = "cms_static_pages")
 public class CMSStaticPage {
 
-    private final String pageName;
-    @Deprecated
-    private final boolean useCmsPage = true;
-    private CMSPage cmsPage = null;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "static_page_id")
+    private Long id;
+    
+    @Column(name = "static_page_name", nullable=false)
+    private String pageName;
+    
+    @Column(name = "cms_page_Id")
+    private Long cmsPageId;
+    
 
+    @Transient
+    private Optional<CMSPage> cmsPage = Optional.empty();
+    
+    public CMSStaticPage() {
+        this.id = null;
+        this.pageName = "";
+    }
+    
     /**
-     * @param pageName
+     * 
+     * @param name
+     * 
+     * @throws NullPointerException if the given name is null
      */
-    public CMSStaticPage(String pageName) {
-        this.pageName = pageName;
+    public CMSStaticPage(String name) {
+        if(name == null) {
+            throw new NullPointerException();
+        }
+        this.id = null;
+        this.pageName = name;
+    }
+    
+    /**
+     * Construct a CMSStaticPage from a CMSPage referring to a static page.
+     * Used for Backwards compability
+     * 
+     * @param cmsPage
+     * @throws IllegalArgumentException if the cmsPage does not refer to a static page
+     * @throws NullPointerException if the cmsPage is null
+     */
+    public CMSStaticPage(CMSPage cmsPage) {
+        String staticPageName = cmsPage.getStaticPageName();
+        if(StringUtils.isBlank(staticPageName)) {
+            throw new IllegalArgumentException("Can only create a static page from a CMSPage with a non-empty staticPageName");
+        } else {
+            this.id = null;
+            this.pageName = staticPageName.trim();
+            setCmsPage(cmsPage);
+        }
     }
 
-    @Deprecated
-    public boolean isUseCmsPage() {
-        return useCmsPage;
-    }
-
-    @Deprecated
-    public void setUseCmsPage(boolean useCmsPage) {
-        //		this.useCmsPage = useCmsPage;
-        //		System.out.println("Use cms page in " + pageName + ": " + useCmsPage);
-//        if (this.cmsPage != null) {
-//            if(useCmsPage) {
-//                this.cmsPage.addStaticPageName(pageName);                
-//            } else {
-//                this.cmsPage.removeStaticPageName(pageName);
-//            }
-//            this.cmsPage.setStaticPageName(useCmsPage ? pageName : null);
-//        }
-    }
 
     /**
      * @return the cmsPage
      */
-    public CMSPage getCmsPage() {
+    public Optional<CMSPage> getCmsPageOptional() {
+        if(!cmsPage.isPresent()) {
+            updateCmsPage();
+        }
         return cmsPage;
+    }
+    
+    public CMSPage getCmsPage() {
+        return getCmsPageOptional().orElse(null);
     }
 
     /**
      * @param cmsPage the cmsPage to set
      */
     public void setCmsPage(CMSPage cmsPage) {
-        
-//        if (this.cmsPage != null) {
-//            this.cmsPage.setStaticPageName(null);
-//        }
-
-//        if (cmsPage == null && this.cmsPage != null) {
-//            this.cmsPage.removeStaticPageName(pageName);
-//            setUseCmsPage(false);
-//        }
-
-        this.cmsPage = cmsPage;
-//        if (this.cmsPage != null) {
-//            this.cmsPage.addStaticPageName(pageName);
-//        }
+        this.cmsPage = Optional.ofNullable(cmsPage);
+        this.cmsPage.ifPresent(page -> setCmsPageId(page.getId()));
+    }
+    
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
     }
 
     /**
@@ -85,8 +126,8 @@ public class CMSStaticPage {
     }
 
     public boolean isLanguageComplete(Locale locale) {
-        if (isUseCmsPage() && cmsPage != null) {
-            return cmsPage.isLanguageComplete(locale);
+        if (getCmsPageOptional().isPresent()) {
+            return cmsPage.get().isLanguageComplete(locale);
         }
         return false;
     }
@@ -95,7 +136,57 @@ public class CMSStaticPage {
      * @return true only if isUseCmsPage == true and cmsPage != null
      */
     public boolean isHasCmsPage() {
-        return isUseCmsPage() && cmsPage != null;
+        return getCmsPageId().isPresent();
+    }
+    
+    /**
+     * @return the cmsPageId
+     */
+    public Optional<Long> getCmsPageId() {
+        return Optional.ofNullable(cmsPageId);
+    }
+    
+    /**
+     * @param cmsPageId the cmsPageId to set
+     */
+    public void setCmsPageId(Long cmsPageId) {
+        this.cmsPageId = cmsPageId;
+        if(!getCmsPageOptional().isPresent() || !getCmsPageOptional().get().getId().equals(cmsPageId)) {
+            updateCmsPage();
+        }
     }
 
+    /**
+     * @param cmsPageId2
+     */
+    private void updateCmsPage() {
+        getCmsPageId().ifPresent(id -> {
+            try {
+                this.cmsPage = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(id));
+            } catch (DAOException e) {
+                this.cmsPage = Optional.empty();
+            }
+        });
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return getPageName().hashCode();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj != null && obj.getClass().equals(this.getClass())) {
+            return ((CMSStaticPage)obj).getPageName().equals(this.getPageName());
+        } else {
+            return false;
+        }
+    }
+    
 }

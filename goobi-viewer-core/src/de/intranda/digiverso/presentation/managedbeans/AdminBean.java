@@ -116,13 +116,17 @@ public class AdminBean implements Serializable {
             }
 
             @Override
-            public long getTotalNumberOfRecords() {
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getUserCount(lazyModelUsers.getFiltersAsMap());
+                    return DataManager.getInstance().getDao().getUserCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
                 }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {                
             }
         });
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -145,13 +149,17 @@ public class AdminBean implements Serializable {
             }
 
             @Override
-            public long getTotalNumberOfRecords() {
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getUserGroupCount(lazyModelUserGroups.getFiltersAsMap());
+                    return DataManager.getInstance().getDao().getUserGroupCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
                 }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
             }
         });
         lazyModelUserGroups.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -204,13 +212,17 @@ public class AdminBean implements Serializable {
             }
 
             @Override
-            public long getTotalNumberOfRecords() {
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getLicenseTypeCount(lazyModelLicenseTypes.getFiltersAsMap());
+                    return DataManager.getInstance().getDao().getLicenseTypeCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
                 }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
             }
         });
         lazyModelLicenseTypes.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -233,13 +245,17 @@ public class AdminBean implements Serializable {
             }
 
             @Override
-            public long getTotalNumberOfRecords() {
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getIpRangeCount(lazyModelIpRanges.getFiltersAsMap());
+                    return DataManager.getInstance().getDao().getIpRangeCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
                 }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
             }
         });
         lazyModelIpRanges.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -262,13 +278,17 @@ public class AdminBean implements Serializable {
             }
 
             @Override
-            public long getTotalNumberOfRecords() {
+            public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getCommentCount(lazyModelComments.getFiltersAsMap());
+                    return DataManager.getInstance().getDao().getCommentCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
                 }
+            }
+
+            @Override
+            public void resetTotalNumberOfRecords() {
             }
         });
         lazyModelComments.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -343,7 +363,7 @@ public class AdminBean implements Serializable {
             }
         }
         setCurrentUser(null);
-
+        
         return "adminAllUsers";
     }
 

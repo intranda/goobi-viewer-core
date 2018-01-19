@@ -48,6 +48,7 @@ import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.tabledata.PersistentTableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataSource;
@@ -65,6 +66,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarManager;
 import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
+import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -101,8 +103,6 @@ public class CmsBean {
     private String selectedClassification;
     private CMSSidebarElement selectedSidebarElement;
     private boolean displaySidebarEditor = false;
-    private List<CMSPage> createdPages;
-    private long numCreatedPages = 0;
     private int nestedPagesCount = 0;
     private boolean editMode = false;
     private Map<String, CollectionView> collections = new HashMap<>();
@@ -110,18 +110,27 @@ public class CmsBean {
 
     @PostConstruct
     public void init() {
-        createdPages = null;
         if (lazyModelPages == null) {
-            lazyModelPages = new TableDataProvider<>(new TableDataSource<CMSPage>() {
+            lazyModelPages = new PersistentTableDataProvider<>(new TableDataSource<CMSPage>() {
 
+                private Optional<Long> numCreatedPages = Optional.empty();
+                
                 @Override
                 public List<CMSPage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
-                    List<CMSPage> list;
                     try {
-                        if (sortField == null) {
+                        if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
                         }
-                        return loadCreatedPages(first, first + pageSize);
+                        List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        pages.forEach(page -> {
+                            PageValidityStatus validityStatus = isPageValid(page);
+                            page.setValidityStatus(validityStatus);
+                            if(validityStatus.isValid()) {
+                                page.getSidebarElements()
+                                        .forEach(element -> element.deSerialize());
+                            }
+                        });
+                        return pages;
                     } catch (DAOException e) {
                         logger.error("Could not initialize lazy model: {}", e.getMessage());
                     }
@@ -130,10 +139,19 @@ public class CmsBean {
                 }
 
                 @Override
-                public long getTotalNumberOfRecords() {
-                    //                        return DataManager.getInstance().getDao().getCMSPageCount(lazyModelPages.getFiltersAsMap());
-                    return numCreatedPages;
+                public long getTotalNumberOfRecords(Map<String, String> filters) {
+                    if (!numCreatedPages.isPresent()) {
+                        try {
+                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPageCount(filters));
+                        } catch (DAOException e) {
+                            logger.error("Unable to retrieve total number of cms pages", e);
+                        }
+                    }
+                    return numCreatedPages.orElse(0l);                }
 
+                @Override
+                public void resetTotalNumberOfRecords() {
+                    numCreatedPages = Optional.empty();                    
                 }
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -165,7 +183,9 @@ public class CmsBean {
     public static List<Locale> getAllLocales() {
         List<Locale> list = new LinkedList<>();
         list.add(getDefaultLocaleStatic());
-        Iterator<Locale> iter = FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
+        Iterator<Locale> iter = FacesContext.getCurrentInstance()
+                .getApplication()
+                .getSupportedLocales();
         while (iter.hasNext()) {
             Locale locale = iter.next();
             if (!list.contains(locale)) {
@@ -181,8 +201,11 @@ public class CmsBean {
 
     public static Locale getDefaultLocaleStatic() {
         Locale defaultLocale = null;
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-            defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
+                .getApplication() != null) {
+            defaultLocale = FacesContext.getCurrentInstance()
+                    .getApplication()
+                    .getDefaultLocale();
         }
         if (defaultLocale == null) {
             defaultLocale = Locale.ENGLISH;
@@ -191,8 +214,11 @@ public class CmsBean {
     }
 
     public static Locale getCurrentLocale() {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
-            return FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
+                .getViewRoot() != null) {
+            return FacesContext.getCurrentInstance()
+                    .getViewRoot()
+                    .getLocale();
         }
 
         return Locale.GERMAN;
@@ -203,85 +229,36 @@ public class CmsBean {
     }
 
     public void loadTemplates() {
-        CMSTemplateManager.getInstance().updateTemplates( CMSTemplateManager.getInstance().getCoreFolderPath(), CMSTemplateManager.getInstance().getThemeFolderPath());
+        CMSTemplateManager.getInstance()
+                .updateTemplates(CMSTemplateManager.getInstance()
+                        .getCoreFolderPath(),
+                        CMSTemplateManager.getInstance()
+                                .getThemeFolderPath());
     }
 
     public List<CMSPageTemplate> getTemplates() {
-        List<CMSPageTemplate> list = CMSTemplateManager.getInstance().getTemplates().stream()
-                .sorted((t1,t2) -> t1.getTemplateFileName().compareTo(t2.getTemplateFileName()))
+        List<CMSPageTemplate> list = CMSTemplateManager.getInstance()
+                .getTemplates()
+                .stream()
+                .sorted((t1, t2) -> t1.getTemplateFileName()
+                        .compareTo(t2.getTemplateFileName()))
                 .collect(Collectors.toList());
         return list;
     }
 
-    public List<CMSPage> loadCreatedPages() throws DAOException {
-        logger.debug("Loading created cms-pages from database");
-        createdPages = DataManager.getInstance().getDao().getAllCMSPages();
-        Iterator<CMSPage> pages = createdPages.iterator();
-
-        while (pages.hasNext()) {
-            CMSPage page = pages.next();
-            CMSPageTemplate template = CMSTemplateManager.getInstance().getTemplate(page.getTemplateId());
-            if (template == null) {
-                //remove pages with no template files
-                pages.remove();
-            } else if (!isPageValid(page, template)) {
-                pages.remove();
-            } else {
-                //check if this pages is used as static page
-                for (CMSStaticPage staticPage : getStaticPages()) {
-                    if (staticPage.getCmsPage() != null && staticPage.getCmsPage().getId().equals(page.getId())) {
-                        staticPage.setCmsPage(page);
-                    }
-                }
-                page.getSidebarElements().forEach(element -> element.deSerialize());
-            }
-        }
-        numCreatedPages = createdPages.size();
-        return createdPages;
-    }
-
-    public List<CMSPage> loadCreatedPages(int from, int to) throws DAOException {
-        logger.debug("Loading created cms-pages from database");
-        //        createdPages = DataManager.getInstance().getDao().getCMSPages(from, to - from, null, false, null);
-        createdPages = DataManager.getInstance().getDao().getAllCMSPages();
-        Iterator<CMSPage> pages = createdPages.iterator();
-
-        while (pages.hasNext()) {
-            CMSPage page = pages.next();
-            CMSPageTemplate template = CMSTemplateManager.getInstance().getTemplate(page.getTemplateId());
-
-            if (!isPageValid(page, template)) {
-                pages.remove();
-            } else {
-                //check if this pages is used as static page
-                for (CMSStaticPage staticPage : getStaticPages()) {
-                    if (staticPage.getCmsPage() != null && staticPage.getCmsPage().getId().equals(page.getId())) {
-                        staticPage.setCmsPage(page);
-                    }
-                }
-                page.getSidebarElements().forEach(element -> element.deSerialize());
-            }
-        }
-        numCreatedPages = createdPages.size();
-        if (!createdPages.isEmpty()) {
-            return createdPages.subList(Math.min(from, createdPages.size() - 1), Math.min(to, createdPages.size()));
-        }
-        return createdPages;
-    }
 
     /**
      * @param page
      * @param template
      * @return
      */
-    private boolean isPageValid(CMSPage page, CMSPageTemplate template) {
-        boolean pageValid = true;
-        if (template == null) {
+    private PageValidityStatus isPageValid(CMSPage page) {
+        if (page.getTemplate() == null) {
             //remove pages with no template files
-            pageValid = false;
+            return PageValidityStatus.INVALID_NO_TEMPLATE;
         } else {
             //remove page with content items that don't match the template's content items
-            for (CMSContentItem templateItem : template.getContentItems()) {
+            for (CMSContentItem templateItem : page.getTemplate().getContentItems()) {
                 if (!page.hasContentItem(templateItem.getItemId())) {
                     page.addContentItem(new CMSContentItem(templateItem));
                     //                    logger.warn("Found template item that doesn't exists in page");
@@ -289,25 +266,11 @@ public class CmsBean {
                 }
             }
         }
-        return pageValid;
-    }
-
-    public List<CMSPage> getCreatedPages() throws DAOException {
-        if (createdPages == null) {
-            return loadCreatedPages();
-        }
-        return createdPages;
+        return PageValidityStatus.VALID;
     }
 
     public List<CMSPage> getDisplayedPages() throws DAOException {
         return lazyModelPages.getPaginatorList();
-    }
-
-    public List<CMSPage> getCreatedPages(int from, int to) throws DAOException {
-        if (createdPages == null) {
-            return loadCreatedPages();
-        }
-        return createdPages.subList(from, to);
     }
 
     public TableDataProvider<CMSPage> getLazyModelPages() {
@@ -361,7 +324,8 @@ public class CmsBean {
     public String getPageUrl(Long pageId, boolean pretty) {
         try {
             CMSPage page = getPage(pageId);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(page.getRelativeUrlPath(pretty))
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/")
+                    .append(page.getRelativeUrlPath(pretty))
                     .toString();
         } catch (NullPointerException e) {
             return "pretty:index";
@@ -381,8 +345,10 @@ public class CmsBean {
     public String getPagePreviewUrl(CMSPage page, boolean pretty) {
         if (pretty) {
             try {
-                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/cmspreview/").append(page.getId()).append(
-                        '/').toString();
+                return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/cmspreview/")
+                        .append(page.getId())
+                        .append('/')
+                        .toString();
             } catch (NullPointerException e) {
                 return "pretty:index";
             }
@@ -400,7 +366,9 @@ public class CmsBean {
         if (id != null) {
             try {
                 logger.trace("Get cmsPage from database with pageId = " + id);
-                page = DataManager.getInstance().getDao().getCMSPage(Long.valueOf(id));
+                page = DataManager.getInstance()
+                        .getDao()
+                        .getCMSPage(Long.valueOf(id));
             } catch (NumberFormatException e) {
                 logger.warn("Could not parse page number: {}", e.getMessage());
             }
@@ -418,13 +386,19 @@ public class CmsBean {
      */
     private static String getTemplateUrl(String templateId, boolean redirect) {
         logger.trace("Getting url for template " + templateId);
-        String templateUrl = CMSTemplateManager.getInstance().getTemplateViewUrl(templateId);
+        String templateUrl = CMSTemplateManager.getInstance()
+                .getTemplateViewUrl(templateId);
         logger.trace("Found template url " + templateUrl);
         if (redirect) {
             logger.trace("Redirecting to url " + templateUrl);
-            FacesContext.getCurrentInstance().getExternalContext().getFlash().setRedirect(true);
+            FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getFlash()
+                    .setRedirect(true);
             try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect(templateUrl);
+                FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .redirect(templateUrl);
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
@@ -433,7 +407,8 @@ public class CmsBean {
     }
 
     public String getIconUrlByTemplateId(String templateId) {
-        String iconUrl = CMSTemplateManager.getInstance().getTemplateIconUrl(templateId);
+        String iconUrl = CMSTemplateManager.getInstance()
+                .getTemplateIconUrl(templateId);
         return iconUrl;
     }
 
@@ -443,9 +418,11 @@ public class CmsBean {
         int offset = item.getListOffset();
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
+        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
         if (!StringUtils.isEmpty(classification)) {
-            for (CMSPage cmsPage : getCreatedPages()) {
-                if (cmsPage.isPublished() && cmsPage.getClassifications().contains(classification)) {
+            for (CMSPage cmsPage : cmsPages) {
+                if (cmsPage.isPublished() && cmsPage.getClassifications()
+                        .contains(classification)) {
                     counter++;
                     if (counter > offset && counter <= size + offset) {
                         nestedPages.add(cmsPage);
@@ -472,7 +449,8 @@ public class CmsBean {
      */
     public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
-        if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser().isSuperuser()) {
+        if (getUserBean() == null || getUserBean().getUser() == null || !getUserBean().getUser()
+                .isSuperuser()) {
             // Only superusers may save
             return;
         }
@@ -482,38 +460,29 @@ public class CmsBean {
             selectedPage.saveSidebarElements();
             validatePage(selectedPage, getDefaultLocale().getLanguage());
             selectedPage.resetItemData();
-            // // Delete navbar items for this page
-            // if (!selectedPage.isPublished()) {
-            // for (CMSNavigationItem item : getNavigationMenuItems()) {
-            // if (selectedPage.equals(item.getCmsPage())) {
-            // if
-            // (DataManager.getInstance().getDao().deleteCMSNavigationItem(item))
-            // {
-            // logger.info("Navigation item {} for page {} has been removed.",
-            // item.getId(),
-            // selectedPage.getId());
-            // Messages.info("cms_pageSaveNavItemRemoved");
-            // }
-            // }
-            // }
-            // }
-
             // Save
             boolean success = false;
             selectedPage.setDateUpdated(new Date());
             if (selectedPage.getId() != null) {
-                success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
+                success = DataManager.getInstance()
+                        .getDao()
+                        .updateCMSPage(selectedPage);
             } else {
-                success = DataManager.getInstance().getDao().addCMSPage(selectedPage);
+                success = DataManager.getInstance()
+                        .getDao()
+                        .addCMSPage(selectedPage);
             }
             if (success) {
                 Messages.info("cms_pageSaveSuccess");
-                selectedPage = DataManager.getInstance().getDao().getCMSPage(selectedPage.getId());
-                loadCreatedPages();
+                selectedPage = DataManager.getInstance()
+                        .getDao()
+                        .getCMSPage(selectedPage.getId());
+                lazyModelPages.update();
             } else {
                 Messages.error("cms_pageSaveFailure");
             }
-            resetCollectionsForPage(selectedPage.getId().toString());
+            resetCollectionsForPage(selectedPage.getId()
+                    .toString());
         }
     }
 
@@ -533,7 +502,9 @@ public class CmsBean {
     public static boolean validateSidebarElement(CMSSidebarElement element) {
         if (element != null && !element.isValid()) {
             String msg = Helper.getTranslation("cms_validationWarningHtmlInvalid", null);
-            Messages.error(msg.replace("{0}", element.getType()).replace("{1}", CMSSidebarManager.getInstance().getAllowedHtmlTagsForDisplay()));
+            Messages.error(msg.replace("{0}", element.getType())
+                    .replace("{1}", CMSSidebarManager.getInstance()
+                            .getAllowedHtmlTagsForDisplay()));
             return false;
         }
         return true;
@@ -632,7 +603,8 @@ public class CmsBean {
     }
 
     public boolean isLinkedFromNavBar(CMSPage page) throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
+        IDAO dao = DataManager.getInstance()
+                .getDao();
         if (dao != null && page != null) {
             List<CMSNavigationItem> relatedItems = dao.getRelatedNavItem(page);
             return relatedItems != null && !relatedItems.isEmpty();
@@ -642,19 +614,22 @@ public class CmsBean {
 
     public List<CMSNavigationItem> getNavigationMenuItems() {
         try {
-            return DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
+            return DataManager.getInstance()
+                    .getDao()
+                    .getAllTopCMSNavigationItems();
         } catch (DAOException e) {
             return Collections.emptyList();
         }
     }
 
     public String deleteSelectedPage() throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
+        IDAO dao = DataManager.getInstance()
+                .getDao();
         if (dao != null && selectedPage != null && selectedPage.getId() != null) {
             logger.debug("deleting page " + selectedPage);
             if (dao.deleteCMSPage(selectedPage)) {
                 selectedPage = null;
-                loadCreatedPages();
+                lazyModelPages.update();
                 Messages.info("cms_deletePage_success");
             } else {
                 logger.error("Failed to delete page");
@@ -666,10 +641,11 @@ public class CmsBean {
     }
 
     public void deletePage(CMSPage page) throws DAOException {
-        IDAO dao = DataManager.getInstance().getDao();
+        IDAO dao = DataManager.getInstance()
+                .getDao();
         if (dao != null && page != null && page.getId() != null) {
             if (dao.deleteCMSPage(page)) {
-                loadCreatedPages();
+                lazyModelPages.update();
                 Messages.info("cms_deletePage_success");
             } else {
                 logger.error("Failed to delete page");
@@ -684,12 +660,12 @@ public class CmsBean {
     }
 
     public CMSPage getPage(Long pageId) throws DAOException {
-        for (CMSPage cmsPage : getCreatedPages()) {
-            if (cmsPage.getId().equals(pageId)) {
-                return cmsPage;
-            }
+        
+        if(pageId != null) {
+            return DataManager.getInstance().getDao().getCMSPage(pageId);
+        } else {
+            return null;
         }
-        return null;
     }
 
     public CMSPage getSelectedPage() {
@@ -713,7 +689,8 @@ public class CmsBean {
         this.currentPage = currentPage;
         if (currentPage != null) {
             this.currentPage.setListPage(1);
-            BeanUtils.getNavigationHelper().setCmsPage(true);
+            BeanUtils.getNavigationHelper()
+                    .setCmsPage(true);
             logger.trace("Set current cms page to " + this.currentPage.getMenuTitle());
         }
     }
@@ -760,7 +737,9 @@ public class CmsBean {
     public List<String> getClassifications() {
         List<String> ret = new ArrayList<>();
         ret.add("");
-        ret.addAll(DataManager.getInstance().getConfiguration().getCmsClassifications());
+        ret.addAll(DataManager.getInstance()
+                .getConfiguration()
+                .getCmsClassifications());
 
         return ret;
     }
@@ -832,7 +811,7 @@ public class CmsBean {
                     }
                     return searchAction(item);
                 } else if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
-//                    setSearchType();
+                    //                    setSearchType();
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
                     }
@@ -861,7 +840,8 @@ public class CmsBean {
         if (searchBean != null) {
             Search search = searchBean.getCurrentSearch();
             if (search != null) {
-                return searchBean.getCurrentSearch().getHits();
+                return searchBean.getCurrentSearch()
+                        .getHits();
             }
         }
 
@@ -919,7 +899,8 @@ public class CmsBean {
     }
 
     public boolean hasSearchResults() {
-        return searchBean != null && searchBean.getCurrentSearch() != null && searchBean.getCurrentSearch().getHitsCount() > 0;
+        return searchBean != null && searchBean.getCurrentSearch() != null && searchBean.getCurrentSearch()
+                .getHitsCount() > 0;
     }
 
     /**
@@ -1102,13 +1083,15 @@ public class CmsBean {
     public static List<String> getLuceneFields(boolean includeUntokenized, boolean excludeTokenizedMetadataFields) {
         List<String> constants;
         try {
-            constants = DataManager.getInstance().getSearchIndex().getAllFieldNames();
+            constants = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getAllFieldNames();
             Iterator<String> iterator = constants.iterator();
             while (iterator.hasNext()) {
                 String name = iterator.next();
-                if (name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_") || (!includeUntokenized && name.endsWith(
-                        SolrConstants._UNTOKENIZED)) || (excludeTokenizedMetadataFields && name.startsWith("MD_") && !name.endsWith(
-                                SolrConstants._UNTOKENIZED))) {
+                if (name.startsWith("_") || name.startsWith("FACET_") || name.startsWith("NORM_")
+                        || (!includeUntokenized && name.endsWith(SolrConstants._UNTOKENIZED))
+                        || (excludeTokenizedMetadataFields && name.startsWith("MD_") && !name.endsWith(SolrConstants._UNTOKENIZED))) {
                     iterator.remove();
                 }
             }
@@ -1135,7 +1118,8 @@ public class CmsBean {
     public CMSStaticPage getStaticPage(String pageName) throws DAOException {
         List<CMSStaticPage> pages = getStaticPages();
         for (CMSStaticPage page : pages) {
-            if (page.getPageName().equals(pageName)) {
+            if (page.getPageName()
+                    .equals(pageName)) {
                 return page;
             }
         }
@@ -1147,22 +1131,27 @@ public class CmsBean {
      * @throws DAOException
      */
     private List<CMSStaticPage> createStaticPageList() throws DAOException {
-        List<CMSStaticPage> pages = new ArrayList<>();
-        for (PageType pageType : PageType.getTypesHandledByCms()) {
-            CMSStaticPage page = new CMSStaticPage(pageType.getName());
-            CMSPage cmsPage = getCreatedPages().stream().peek(p -> logger.trace("page {} staticPageName: {}", p.getId(), p.getStaticPageName())).peek(
-                    p -> logger.trace("page {} handles page {}", p.getId(), p.getStaticPageName())).filter(p -> pageType.matches(p
-                            .getStaticPageName()) || pageType.matches(p.getStaticPageName())).findFirst().orElse(null);
-            //            CMSPage cmsPage = DataManager.getInstance().getDao().getCmsPageForStaticPage(pageType.getName());
-            if (cmsPage != null) {
-                page.setCmsPage(cmsPage);
-                page.setUseCmsPage(true);
-            } else {
-                page.setCmsPage(null);
-            }
-            pages.add(page);
+        List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
+        
+        
+        
+        if(staticPages == null || staticPages.isEmpty()) {
+            //resore from old schema
+            staticPages = DataManager.getInstance().getDao().getAllCMSPages().stream()
+            .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
+            .map(cmsPage -> new CMSStaticPage(cmsPage))
+            .distinct()
+            .collect(Collectors.toList());
         }
-        return pages;
+        List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
+        for (PageType pageType : pageTypesForCMS) {
+            CMSStaticPage newPage = new CMSStaticPage(pageType.name());
+            if(!staticPages.contains(newPage)) {
+                staticPages.add(newPage);
+            }
+        }
+        
+        return staticPages;
     }
 
     /**
@@ -1170,10 +1159,14 @@ public class CmsBean {
      * @throws DAOException
      */
     public List<CMSPage> getAvailableParentPages(CMSPage page) throws DAOException {
-        List<CMSPage> allPages = new ArrayList<>();
         Locale currentLocale = BeanUtils.getLocale();
-        return getCreatedPages().stream().filter(p -> !p.equals(page)).sorted((p1, p2) -> p1.getMenuTitle(currentLocale).toLowerCase().compareTo(p2
-                .getMenuTitle(currentLocale).toLowerCase())).collect(Collectors.toList());
+        return DataManager.getInstance().getDao().getAllCMSPages().stream()
+                .filter(p -> !p.equals(page))
+                .sorted((p1, p2) -> p1.getMenuTitle(currentLocale)
+                        .toLowerCase()
+                        .compareTo(p2.getMenuTitle(currentLocale)
+                                .toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -1181,83 +1174,41 @@ public class CmsBean {
      * @throws DAOException
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
-        List<CMSPage> allPages = new ArrayList<>();
-        for (CMSPage cmsPage : getCreatedPages()) {
-            if (cmsPage.isPublished()) {
-                allPages.add(cmsPage);
-            }
-        }
+        List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages().stream()
+        .filter(cmsPage -> cmsPage.isPublished())
+        .collect(Collectors.toList());
+        
         for (CMSStaticPage staticPage : getStaticPages()) {
             if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
-                allPages.remove(staticPage.getCmsPage());
+                allPages.remove(staticPage.getCmsPageOptional());
             }
         }
         return allPages;
     }
 
-    public void saveCMSPages() throws DAOException {
+    /**
+     * Save static page status for all cms pages
+     * 
+     * @throws DAOException
+     */
+    public void saveStaticPages() throws DAOException {
 
-        for (CMSPage cmsPage : getCreatedPages()) {
-            cmsPage.setStaticPageName(null);
-        }
-
-        for (CMSStaticPage staticPage : getStaticPages()) {
-            if (staticPage.isHasCmsPage()) {
-                staticPage.getCmsPage().setStaticPageName(staticPage.getPageName());
-            }
-        }
-
-        for (CMSPage cmsPage : getCreatedPages()) {
-            if (!DataManager.getInstance().getDao().updateCMSPage(cmsPage)) {
+        for (CMSStaticPage page : getStaticPages()) {
+            try {               
+                if(page.getId() != null) {
+                    DataManager.getInstance().getDao().updateStaticPage(page);
+                } else {
+                    DataManager.getInstance().getDao().addStaticPage(page);
+                }
+            } catch(DAOException e) {
                 Messages.error("cms_errorSavingStaticPages");
                 return;
             }
+            Messages.info("cms_staticPagesSaved");
         }
-        Messages.info("cms_staticPagesSaved");
+
     }
 
-    @Deprecated
-    public void forwardToCMSPage() throws IOException, DAOException {
-        String pageName = navigationHelper.getCurrentPage();
-        CMSStaticPage page = getStaticPageForPageType(PageType.getByName(pageName));
-        if (page != null && page.isHasCmsPage() && page.getCmsPage().isPublished()) {
-            try {
-                forwardToCMSPage(page.getCmsPage());
-            } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Unable to initialize cms functionality", e);
-            }
-        }
-    }
-
-    /**
-     * @param page
-     * @throws IOException
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @deprecated CMS page forwarding is now done in a servlet filter, before the page is loaded
-     */
-    @Deprecated
-    public void forwardToCMSPage(CMSPage page) throws IOException, PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("forwardToCMSPage page: " + page);
-        setCurrentPage(page);
-        String path = CMSTemplateManager.getInstance().getTemplateViewUrl(page.getTemplate());
-        logger.trace("forwardToCMSPage path 1: {}", path);
-        if (navigationHelper.getApplicationUrl() != null) {
-            String appUrlSplit[] = navigationHelper.getApplicationUrl().split("/");
-            if (appUrlSplit.length > 0) {
-                path = path.replace(appUrlSplit[appUrlSplit.length - 1], "");
-            }
-        }
-        logger.trace("forwardToCMSPage path 2: {}", path);
-        FacesContext context = getFacesContext();
-        if (StringUtils.isNotBlank(path)) {
-            cmsContextAction(false);
-            logger.warn("Attempting to forward to " + path);
-            context.getExternalContext().dispatch(path);
-            context.responseComplete();
-        }
-    }
 
     /**
      * @return
@@ -1266,22 +1217,11 @@ public class CmsBean {
         return FacesContext.getCurrentInstance();
     }
 
-    /**
-     * @param pageType
-     * @return The CMSStaticPage for the given pageType if it exists, i.e. if the pageType has PageTypeHandling.cms
-     * @throws DAOException
-     */
-    private CMSStaticPage getStaticPageForPageType(PageType pageType) throws DAOException {
-        for (CMSStaticPage staticPage : getStaticPages()) {
-            if (staticPage.getPageName().equals(pageType.getName()) || staticPage.getPageName().equals(pageType.name())) {
-                return staticPage;
-            }
-        }
-        return null;
-    }
 
     public List<String> getSubThemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
-        String subThemeDiscriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+        String subThemeDiscriminatorField = DataManager.getInstance()
+                .getConfiguration()
+                .getSubthemeDiscriminatorField();
         if (StringUtils.isNotBlank(subThemeDiscriminatorField)) {
             subThemeDiscriminatorField = subThemeDiscriminatorField + "_UNTOKENIZED";
             List<String> values = SearchHelper.getFacetValues(subThemeDiscriminatorField + ":*", subThemeDiscriminatorField, 0);
@@ -1291,9 +1231,9 @@ public class CmsBean {
     }
 
     /**
-     * Sets the searchType in SearchBean to the type assciated with the current static view
-     * (e.g. if the current cms page replaces the static page 'advancedSearch' the search type is set to 'advanced')
-     * For the normal search pages this is done in the pretty mapping which isn't used if redirecting to cms page
+     * Sets the searchType in SearchBean to the type assciated with the current static view (e.g. if the current cms page replaces the static page
+     * 'advancedSearch' the search type is set to 'advanced') For the normal search pages this is done in the pretty mapping which isn't used if
+     * redirecting to cms page
      * 
      * @param currentPath
      */
@@ -1302,13 +1242,17 @@ public class CmsBean {
         if (currentPath.isPresent()) {
             SearchBean searchBean = BeanUtils.getSearchBean();
             if (searchBean != null) {
-                if (PageType.advancedSearch.equals(currentPath.get().getPageType())) {
+                if (PageType.advancedSearch.equals(currentPath.get()
+                        .getPageType())) {
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_ADVANCED);
-                } else if (PageType.calendarsearch.equals(currentPath.get().getPageType())) {
+                } else if (PageType.calendarsearch.equals(currentPath.get()
+                        .getPageType())) {
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_CALENDAR);
-                } else if (PageType.timelinesearch.equals(currentPath.get().getPageType())) {
+                } else if (PageType.timelinesearch.equals(currentPath.get()
+                        .getPageType())) {
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_TIMELINE);
-                } else if (PageType.search.equals(currentPath.get().getPageType())) {
+                } else if (PageType.search.equals(currentPath.get()
+                        .getPageType())) {
                     searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
                 }
             }

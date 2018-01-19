@@ -2160,4 +2160,10 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
         Assert.assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
     }
+    
+    @Test
+    public void getCMSPagesCount_shouldReturnCorrectCount() throws Exception{
+        long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.EMPTY_MAP);
+        Assert.assertEquals(3, numPages);
+    }
 }
