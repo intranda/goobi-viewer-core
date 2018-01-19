@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,10 +31,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -77,17 +78,19 @@ import de.intranda.digiverso.presentation.model.viewer.PageType;
 /**
  * CMS functions.
  */
-@ManagedBean
+@Named
 @SessionScoped
-public class CmsBean {
+public class CmsBean implements Serializable {
+
+    private static final long serialVersionUID = -2021732230593473827L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
-    @ManagedProperty("#{navigationHelper}")
+    @Inject
     private NavigationHelper navigationHelper;
-    @ManagedProperty("#{searchBean}")
+    @Inject
     private SearchBean searchBean;
 
     private TableDataProvider<CMSPage> lazyModelPages;
@@ -713,7 +716,7 @@ public class CmsBean {
         this.currentPage = currentPage;
         if (currentPage != null) {
             this.currentPage.setListPage(1);
-            BeanUtils.getNavigationHelper().setCmsPage(true);
+            navigationHelper.setCmsPage(true);
             logger.trace("Set current cms page to " + this.currentPage.getMenuTitle());
         }
     }
@@ -832,7 +835,7 @@ public class CmsBean {
                     }
                     return searchAction(item);
                 } else if (item != null && CMSContentItemType.SEARCH.equals(item.getType())) {
-//                    setSearchType();
+                    //                    setSearchType();
                     if (resetSearch && searchBean != null) {
                         searchBean.resetSearchAction();
                     }
@@ -1291,9 +1294,9 @@ public class CmsBean {
     }
 
     /**
-     * Sets the searchType in SearchBean to the type assciated with the current static view
-     * (e.g. if the current cms page replaces the static page 'advancedSearch' the search type is set to 'advanced')
-     * For the normal search pages this is done in the pretty mapping which isn't used if redirecting to cms page
+     * Sets the searchType in SearchBean to the type assciated with the current static view (e.g. if the current cms page replaces the static page
+     * 'advancedSearch' the search type is set to 'advanced') For the normal search pages this is done in the pretty mapping which isn't used if
+     * redirecting to cms page
      * 
      * @param currentPath
      */

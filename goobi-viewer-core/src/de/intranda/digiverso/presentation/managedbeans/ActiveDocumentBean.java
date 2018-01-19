@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -75,7 +75,7 @@ import de.intranda.digiverso.presentation.modules.IModule;
 /**
  * This bean opens the requested record and provides all data relevant to this record.
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class ActiveDocumentBean implements Serializable {
 
@@ -85,13 +85,13 @@ public class ActiveDocumentBean implements Serializable {
 
     private static int imageContainerWidth = 600;
 
-    @ManagedProperty("#{navigationHelper}")
+    @Inject
     private NavigationHelper navigationHelper;
-    @ManagedProperty("#{cmsBean}")
+    @Inject
     private CmsBean cmsBean;
-    @ManagedProperty("#{searchBean}")
+    @Inject
     private SearchBean searchBean;
-    @ManagedProperty("#{bookshelfBean}")
+    @Inject
     private BookshelfBean bookshelfBean;
 
     /** URL parameter 'action'. */

@@ -23,11 +23,11 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
+import javax.faces.annotation.FacesConfig;
+import javax.inject.Named;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,7 +42,6 @@ import org.xml.sax.SAXException;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.language.Language;
-import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -54,7 +53,8 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig
 /**
  * This is a wrapper class for the <code>Configuration</code> class for access from HTML.
  */
-@ManagedBean
+@FacesConfig
+@Named
 @ApplicationScoped
 public class ConfigurationBean implements Serializable {
 

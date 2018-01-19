@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ import de.intranda.digiverso.presentation.model.viewer.Tag;
 /**
  * Bean for the tag cloud page.
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class TagCloudBean implements Serializable {
 

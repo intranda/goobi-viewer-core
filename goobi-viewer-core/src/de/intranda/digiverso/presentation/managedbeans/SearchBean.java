@@ -42,10 +42,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -95,7 +95,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 /**
  * SearchBean
  */
-@ManagedBean(name = "searchBean")
+@Named
 @SessionScoped
 public class SearchBean implements Serializable {
 
@@ -108,7 +108,7 @@ public class SearchBean implements Serializable {
 
     public static final String URL_ENCODING = "UTF8";
 
-    @ManagedProperty("#{navigationHelper}")
+    @Inject
     private NavigationHelper navigationHelper;
 
     /** Max number of search hits to be displayed on one page. */
@@ -1702,7 +1702,7 @@ public class SearchBean implements Serializable {
      * @throws PresentationException
      */
     public List<StringPair> getAllCollections() {
-        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        //        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
         try {
             if (navigationHelper != null) {
                 return getAdvancedSearchSelectItems(SolrConstants.DC, navigationHelper.getLocale().getLanguage(), true);
