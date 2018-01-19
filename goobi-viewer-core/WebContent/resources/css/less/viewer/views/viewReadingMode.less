@@ -125,6 +125,11 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+	.reading-mode__navigation-logo {
+		span {
+			display: none;
+		}
+	}
     .reading-mode__navigation-controls {
 	    [data-toggle="mobile-image-controls"] {
 	    	display: inline-block;
@@ -200,8 +205,8 @@
 	.reading-mode__navigation-controls {
 		.image-controls {
 			&__actions {
-				left: -116.66666666%;
-				right: -116.66666666%;
+				left: -50%;
+				right: -50%;
 			}
 		}
 	}

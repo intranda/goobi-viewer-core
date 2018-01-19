@@ -5454,6 +5454,9 @@ div.olMapViewport {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
+  .reading-mode__navigation-logo span {
+    display: none;
+  }
   .reading-mode__navigation-controls [data-toggle="mobile-image-controls"] {
     display: inline-block;
   }
@@ -5524,8 +5527,8 @@ div.olMapViewport {
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .reading-mode__navigation-controls .image-controls__actions {
-    left: -116.66666666%;
-    right: -116.66666666%;
+    left: -50%;
+    right: -50%;
   }
   .reading-mode__content-view.in {
     width: 10%;
