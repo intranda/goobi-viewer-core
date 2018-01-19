@@ -328,7 +328,7 @@
                                 </a>
                             </li>
                             <!-- FULLSCREEN -->
-                            <h:panelGroup rendered="#{navigationHelper.currentPage != 'readingmode'}">
+                            <ui:fragment rendered="#{navigationHelper.currentPage != 'readingmode'}">
                                 <li class="image-control image-control__fullscreen">
                                     <h:outputLink
                                         value="#{activeDocumentBean.fullscreenImageUrl}"
@@ -343,7 +343,7 @@
                                             value="bottom" />
                                     </h:outputLink>
                                 </li>
-                            </h:panelGroup>
+                            </ui:fragment>
                             <!-- ZOMMSLIDER -->
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
                             <li class="image-control image-control__zoom-slider">

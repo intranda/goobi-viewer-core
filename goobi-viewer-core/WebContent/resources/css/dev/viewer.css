@@ -1804,68 +1804,36 @@ div.mce-fullscreen {
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: 1024px) {
+  li.image-control__page-browse {
+    display: none;
+  }
+}
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
-  .image-controls__actions {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: -25%;
-    right: -25%;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    z-index: 999;
-  }
-  .image-controls .list {
-    float: none;
-    left: 0;
-    padding: 10px;
-    padding-top: 0;
-  }
-  .image-controls .list li {
-    float: none;
-    right: 0;
-    left: 0;
-    width: 100%;
-    margin: 0;
-  }
-  .image-controls .list li.image-control {
-    /* ELEMENT */
-  }
-  .image-controls .list li.image-control a,
-  .image-controls .list li.image-control span {
-    position: relative;
-    display: block;
-    min-width: inherit;
-    width: 100%;
-    height: auto;
-    padding: 5px;
-    text-align: left;
-    border: none;
-  }
-  .image-controls .list li.image-control .labeltext {
-    display: inline;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 40px;
-    width: calc(100% - 40px);
-    line-height: 40px;
-    padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.9rem;
-  }
-  .image-controls .list li.image-control__page-browse,
-  .image-controls .list li.image-control__select,
-  .image-controls .list li.image-control__zoom-slider {
+  li.image-control__double-page-view,
+  li.image-control__single-page-view,
+  li.image-control__switch-pages,
+  li.image-control__rotate-left,
+  li.image-control__rotate-right,
+  li.image-control__reset {
     display: none;
   }
 }
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
-  .image-controls__actions {
-    left: -116.66666666%;
-    right: -116.66666666%;
+  li.image-control__start,
+  li.image-control__back,
+  li.image-control__select,
+  li.image-control__forward,
+  li.image-control__end,
+  li.image-control__fullscreen {
+    display: inline-block;
+    float: left;
+  }
+  li.image-control__zoom-slider,
+  li.image-control__pdf {
+    display: none;
   }
 }
 /* ==============================================================
@@ -3038,15 +3006,18 @@ div[id*="-Modal"] .email-form .form-group {
   font-size: 1rem;
 }
 #statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell.chart-nearly-completed-table-cell-right .chart-nearly-completed-inner-table-row .chart-nearly-completed-inner-table-cell.chart-nearly-completed-inner-table-cell-right .progress {
+  height: auto;
   color: #1a1a1a;
   border-radius: 0;
   border: 1px solid #1a1a1a;
   background-color: #999;
 }
 #statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell.chart-nearly-completed-table-cell-right .chart-nearly-completed-inner-table-row .chart-nearly-completed-inner-table-cell.chart-nearly-completed-inner-table-cell-right .progress .bar {
-  height: 1.25rem;
-  line-height: 1.125rem;
+  padding: 5px 0;
   background-color: #fffdf6;
+}
+#statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell.chart-nearly-completed-table-cell-right .chart-nearly-completed-inner-table-row .chart-nearly-completed-inner-table-cell.chart-nearly-completed-inner-table-cell-right .progress .bar span {
+  padding-left: 5px;
 }
 #statistics #chart-most-active-users {
   padding: 0.3125rem;
@@ -5408,9 +5379,6 @@ div.olMapViewport {
 .reading-mode__navigation-controls {
   position: relative;
 }
-.reading-mode__navigation-controls .image-controls {
-  padding: 0;
-}
 .reading-mode__navigation-goback {
   padding-top: 12px;
   text-align: right;
@@ -5489,6 +5457,63 @@ div.olMapViewport {
   .reading-mode__navigation-controls [data-toggle="mobile-image-controls"] {
     display: inline-block;
   }
+  .reading-mode__navigation-controls .image-controls {
+    padding: 0;
+  }
+  .reading-mode__navigation-controls .image-controls__actions {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -25%;
+    right: -25%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 999;
+  }
+  .reading-mode__navigation-controls .image-controls .list {
+    float: none;
+    left: 0;
+    padding: 10px;
+    padding-top: 0;
+  }
+  .reading-mode__navigation-controls .image-controls .list li {
+    float: none;
+    right: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control {
+    /* ELEMENT */
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control a,
+  .reading-mode__navigation-controls .image-controls .list li.image-control span {
+    position: relative;
+    display: block;
+    min-width: inherit;
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    text-align: left;
+    border: none;
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control .labeltext {
+    display: inline;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 40px;
+    width: calc(100% - 40px);
+    line-height: 40px;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control__page-browse,
+  .reading-mode__navigation-controls .image-controls .list li.image-control__select,
+  .reading-mode__navigation-controls .image-controls .list li.image-control__zoom-slider {
+    display: none;
+  }
   .reading-mode__content-view.in {
     width: 60%;
   }
@@ -5498,6 +5523,10 @@ div.olMapViewport {
 }
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
+  .reading-mode__navigation-controls .image-controls__actions {
+    left: -116.66666666%;
+    right: -116.66666666%;
+  }
   .reading-mode__content-view.in {
     width: 10%;
   }
@@ -6041,6 +6070,15 @@ div.olMapViewport {
    ==============================================================*/
 .rss_elem_wrapp h3 a {
   float: right;
+}
+.rss_elem_wrapp h3 a .fa {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background-color: #f08421;
 }
 .rss_elem_wrapp .rss-wrapp .rss-elem dl .rss-elem-info {
   margin-bottom: 0.875rem;

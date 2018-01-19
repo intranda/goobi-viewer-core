@@ -36,9 +36,6 @@
     }
     &__navigation-controls {
     	position: relative;
-		.image-controls {
-			padding: 0;
-		}
     }
     &__navigation-goback {
         padding-top: 12px;
@@ -128,8 +125,67 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .reading-mode__navigation-controls [data-toggle="mobile-image-controls"] {
-    	display: inline-block;
+    .reading-mode__navigation-controls {
+	    [data-toggle="mobile-image-controls"] {
+	    	display: inline-block;
+	    }
+    	.image-controls {
+			padding: 0;
+			&__actions {
+				display: none;
+				position: absolute;
+				top: 100%;
+				left: -25%;
+				right: -25%;
+				border: 1px solid @middlegray;
+				background-color: @white;
+				z-index: 999;
+			}
+			.list {
+				float: none;
+				left: 0;
+				padding: 10px;
+				padding-top: 0;
+				li {
+				    float: none;
+				    right: 0;
+				    left: 0;
+				    width: 100%;
+				    margin: 0;
+					&.image-control {
+					    a, span {
+					    	position: relative;
+					        display: block;
+					        min-width: inherit;
+					        width: 100%;
+					        height: auto;
+					        padding: 5px;
+					        text-align: left;
+					        border: none;
+					        &:hover {}
+					    }
+					    .labeltext {
+					    	display: inline;
+					    	position: absolute;
+					    	top: 0;
+					    	bottom: 0;
+					    	left: 40px;
+					    	width: calc(~"100% - 40px");
+					    	line-height: 40px;
+					    	padding: 0;
+					    	font-family: @fontFamily;
+					    	font-size: 0.9rem;
+					    }
+					    /* ELEMENT */
+					    &__page-browse,
+					    &__select,
+					    &__zoom-slider {
+					    	display: none;
+					    }
+					}
+				}
+			}
+		}
     }
     .reading-mode__content-view.in {
         width: 60%;
@@ -141,6 +197,14 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+	.reading-mode__navigation-controls {
+		.image-controls {
+			&__actions {
+				left: -116.66666666%;
+				right: -116.66666666%;
+			}
+		}
+	}
     .reading-mode__content-view.in {
         width: 10%;
     }

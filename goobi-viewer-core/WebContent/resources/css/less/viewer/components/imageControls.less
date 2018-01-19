@@ -134,75 +134,41 @@
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
+
 /* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: 1024px) {
+	li.image-control__page-browse {
+		display: none;
+	}
+}
+
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.image-controls { 
-		&__actions {
-			display: none;
-			position: absolute;
-			top: 100%;
-			left: -25%;
-			right: -25%;
-			border: 1px solid @middlegray;
-			background-color: @white;
-			z-index: 999;
-		}
-		.list {
-			float: none;
-			left: 0;
-			padding: 10px;
-			padding-top: 0;
-			li {
-			    float: none;
-			    right: 0;
-			    left: 0;
-			    width: 100%;
-			    margin: 0;
-				&.image-control {
-				    a, span {
-				    	position: relative;
-				        display: block;
-				        min-width: inherit;
-				        width: 100%;
-				        height: auto;
-				        padding: 5px;
-				        text-align: left;
-				        border: none;
-				        &:hover {}
-				    }
-				    .labeltext {
-				    	display: inline;
-				    	position: absolute;
-				    	top: 0;
-				    	bottom: 0;
-				    	left: 40px;
-				    	width: calc(~"100% - 40px");
-				    	line-height: 40px;
-				    	padding: 0;
-				    	font-family: @fontFamily;
-				    	font-size: 0.9rem;
-				    }
-				    /* ELEMENT */
-				    &__page-browse,
-				    &__select,
-				    &__zoom-slider {
-				    	display: none;
-				    }
-				}
-			}
-		}
-	}
+    li.image-control__double-page-view,
+    li.image-control__single-page-view,
+    li.image-control__switch-pages,
+    li.image-control__rotate-left,
+    li.image-control__rotate-right,
+    li.image-control__reset {
+        display: none;
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.image-controls { 
-		&__actions {
-			left: -116.66666666%;
-			right: -116.66666666%;
-		}
+	li.image-control__start,
+	li.image-control__back,
+	li.image-control__select,
+	li.image-control__forward,
+	li.image-control__end,
+	li.image-control__fullscreen {
+		display: inline-block;
+	    float: left;
 	}
+    li.image-control__zoom-slider,
+    li.image-control__pdf {
+        display: none;
+    }
 }
