@@ -35,10 +35,13 @@
         padding: 16px 0;
     }
     &__navigation-controls {
-        padding-top: 19px;
+    	position: relative;
+		.image-controls {
+			padding: 0;
+		}
     }
     &__navigation-goback {
-        padding-top: 19px;
+        padding-top: 12px;
         text-align: right;
         a {
             color: @gray;
@@ -48,7 +51,7 @@
         }
         
         .fa {
-            font-size: 32px;
+            font-size: 28px;
             cursor: pointer;
         }
     }
@@ -125,6 +128,9 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    .reading-mode__navigation-controls [data-toggle="mobile-image-controls"] {
+    	display: inline-block;
+    }
     .reading-mode__content-view.in {
         width: 60%;
     }
