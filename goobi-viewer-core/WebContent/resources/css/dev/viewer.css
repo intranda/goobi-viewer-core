@@ -8113,30 +8113,56 @@ div.olMapViewport {
    CMS Select Template
    style declarations for adminCmsSelectTemplate.xhtml
    ==============================================================*/
-#cmsSelectTemplate #cmsSelectTemplateWrapper {
-  margin-top: 20px;
+/* CMS SELECT TEMPLATE */
+/* BLOCK */
+.cms-select-template {
+  /* ELEMENT */
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .row {
+.cms-select-template__template {
   margin-bottom: 14px;
   border-bottom: 1px solid #eee;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description {
-  position: relative;
+.cms-select-template__template:before,
+.cms-select-template__template:after {
+  content: " ";
+  display: table;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description h3 {
+.cms-select-template__template:after {
+  clear: both;
+}
+.cms-select-template__image {
+  position: relative;
+  overflow: hidden;
+}
+.cms-select-template__image img {
+  width: 100%;
+}
+.cms-select-template__description h3 {
   margin: 0 0 21px 0;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-action {
-  padding: 14px 0;
+.cms-select-template__theme-template-marker,
+.cms-select-template__action {
+  padding: 5px 0 15px 0;
+}
+.cms-select-template__theme-template-marker {
+  font-size: 12px;
+  text-align: center;
+  color: #428bca;
+}
+.cms-select-template__action {
   text-align: right;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .theme-template-marker {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  border: 2px solid #428bca;
+.cms-select-template__action .btn-theme-template {
+  font-weight: normal;
   color: #428bca;
-  padding: 2px 5px;
+  border: 1px solid #428bca;
+  background-color: #fff;
+}
+.cms-select-template__action .btn-theme-template:hover,
+.cms-select-template__action .btn-theme-template:active,
+.cms-select-template__action .btn-theme-template:focus {
+  color: #fff;
+  background-color: #428bca;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
