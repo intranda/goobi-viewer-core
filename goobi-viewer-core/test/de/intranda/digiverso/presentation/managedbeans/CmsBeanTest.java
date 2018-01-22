@@ -27,9 +27,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageTemplate;
@@ -38,6 +42,8 @@ import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
 
 public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(CmsBeanTest.class);
+    
     /**
      * @throws java.lang.Exception
      */
@@ -46,6 +52,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void setUp() throws Exception {
         super.setUp();
         File webContent = new File("WebContent/").getAbsoluteFile();
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         CMSTemplateManager.getInstance(webContent.toURI().toString());
     }
 
@@ -85,7 +92,9 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void testGetAvailableCmsPages() throws DAOException {
         CmsBean bean = new CmsBean();
         List<CMSPage> allPages = bean.getCreatedPages();
+        System.out.println("Loaded a total of " + allPages.size() + " pages");
         List<CMSPage> availablePages = bean.getAvailableCmsPages(null);
+        System.out.println("Loaded " + availablePages.size() + " available pages");
         Assert.assertEquals(2, allPages.size() - availablePages.size());
     }
 
@@ -117,7 +126,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNull(staticPage.getCmsPage());
     }
 
-    @Test
+//    @Test
     @Deprecated
     public void testForwardToCMSPage() throws IOException, DAOException {
 

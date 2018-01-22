@@ -1761,6 +1761,24 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getTeiFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTeiFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("tei", DataManager.getInstance().getConfiguration().getTeiFolder());
+    }
+
+    /**
+     * @see Configuration#getCmdiFolder()
+     * @verifies return correct value
+     */
+    @Test
+    public void getCmdiFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("cmdi", DataManager.getInstance().getConfiguration().getCmdiFolder());
+    }
+
+    /**
      * @see Configuration#getEndYearForTimeline()
      * @verifies return correct value
      */
@@ -2272,6 +2290,15 @@ public class ConfigurationTest {
     @Test
     public void getFulltextPercentageWarningThreshold_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(99, DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold());
+    }
+
+    /**
+     * @see Configuration#isUseViewerLocaleAsRecordLanguage()
+     * @verifies return correct value
+     */
+    @Test
+    public void isUseViewerLocaleAsRecordLanguage_shouldReturnCorrectValue() throws Exception {
+        Assert.assertTrue(DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage());
     }
 
     /**

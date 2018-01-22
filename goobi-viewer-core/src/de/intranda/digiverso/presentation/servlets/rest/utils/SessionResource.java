@@ -34,7 +34,7 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 /**
  * Resource for outputting the current session info.
  */
-@Path("/sessioninfo")
+@Path("/session")
 @ViewerRestServiceBinding
 public class SessionResource {
 
@@ -62,7 +62,7 @@ public class SessionResource {
      * @should return session info correctly
      */
     @GET
-    @Path("/")
+    @Path("/info")
     @Produces({ MediaType.TEXT_PLAIN })
     public String getSessionInfo() {
         if (servletRequest == null) {

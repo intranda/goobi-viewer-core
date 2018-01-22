@@ -42,6 +42,16 @@ public class MetadataValue implements Serializable {
     private final List<String> paramSuffixes = new ArrayList<>();
     private final List<String> paramUrls = new ArrayList<>();
     private final Map<String, String> normDataUrls = new HashMap<>();
+    private String masterValue;
+
+    /**
+     * Package-private constructor.
+     * 
+     * @param masterValue
+     */
+    MetadataValue(String masterValue) {
+        this.masterValue = masterValue;
+    }
 
     /**
      *
@@ -144,25 +154,41 @@ public class MetadataValue implements Serializable {
     public String getNormDataUrl(String key) {
         return normDataUrls.get(key);
     }
-    
+
     public boolean hasParamValue(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
-        if(index > -1 && index < paramValues.size()) {
+        if (index > -1 && index < paramValues.size()) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public String getParamValue(String paramLabel) {
         int index = paramLabels.indexOf(paramLabel);
-        if(index > -1 && index < paramValues.size()) {
+        if (index > -1 && index < paramValues.size()) {
             return paramValues.get(index);
-        } else {
-            return "";
         }
+        return "";
     }
-    
+
+    /**
+     * @return the masterValue
+     */
+    public String getMasterValue() {
+        if (StringUtils.isEmpty(masterValue)) {
+            return "{0}";
+        }
+        
+        return masterValue;
+    }
+
+    /**
+     * @param masterValue the masterValue to set
+     */
+    public void setMasterValue(String masterValue) {
+        this.masterValue = masterValue;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -1,0 +1,47 @@
+/* ==============================================================
+   CMS Template Single Collection
+   style declarations for cms_template_12_singleCollection.xhtml
+   ==============================================================*/
+/* TPL SINGLE COLLECTION */
+/* BLOCK */
+.tpl-single-collection {
+    h1 {}
+    /* ELEMENT */
+    &__image {
+    	position: relative;
+    	max-height: 400px;
+    	overflow: hidden;
+    	img {
+    		width: 100%;	
+    	}
+    	h2 {
+    		position: absolute;
+    		right: 0;
+    		bottom: 60px;
+    		left: 0;
+    		margin: 0;
+    		padding: 15px;
+    		background-color: rgba(255,255,255,.75);
+    	}
+    }
+    &__description {
+    	margin-bottom: 20px;
+    	padding: 15px;
+    	color: @white;
+    	background-color: @gray;
+    }
+}
+
+/* MODIFICATION */
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

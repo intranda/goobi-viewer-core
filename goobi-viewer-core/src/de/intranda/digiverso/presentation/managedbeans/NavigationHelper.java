@@ -34,10 +34,10 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
@@ -69,7 +69,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 /**
  * This bean contains useful navigation parameters.
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class NavigationHelper implements Serializable {
 
@@ -356,6 +356,14 @@ public class NavigationHelper implements Serializable {
         logger.trace("setLocaleString: {}", inLocale);
         locale = new Locale(inLocale);
         FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+        
+        // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
+        if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
+            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
+            if (adb != null) {
+                adb.setSelectedRecordLanguage(inLocale);
+            }
+        }
     }
 
     public String getDatePattern() {
@@ -800,9 +808,8 @@ public class NavigationHelper implements Serializable {
             if (linkedPages.contains(cmsPage)) {
                 //encountered a breadcrumb loop. Simply break here
                 return;
-            } else {
-                linkedPages.add(cmsPage);
             }
+            linkedPages.add(cmsPage);
             if (PageType.index.matches(cmsPage.getStaticPageName())) {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
@@ -1073,7 +1080,7 @@ public class NavigationHelper implements Serializable {
         return PageType.getByName(getCurrentPage());
     }
 
-    public String getPreviousViewUrl() throws IOException {
+    public String getPreviousViewUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getApplicationName() + path.getCombinedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {

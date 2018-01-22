@@ -215,8 +215,8 @@ public class BrowseElement implements Serializable {
                         String anchorLabel = generateLabel(anchorStructElement, locale);
                         if (StringUtils.isNotEmpty(anchorLabel)) {
                             this.metadataList.add(position, new Metadata(anchorStructElement.getDocStructType(), null, new MetadataParameter(
-                                    MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(), null, null, null, false, false), Helper
-                                            .intern(anchorLabel)));
+                                    MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(), null, null, null, null, false, false),
+                                    Helper.intern(anchorLabel)));
                             position++;
                         }
                     }
@@ -231,8 +231,8 @@ public class BrowseElement implements Serializable {
                         topstructLabel = new StringBuilder(topstructLabel).append(" (").append(topStructElement.getVolumeNo()).append(')').toString();
                     }
                     this.metadataList.add(position, new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter(
-                            MetadataParameterType.FIELD, null, topStructElement.getDocStructType(), null, null, null, false, false), Helper.intern(
-                                    topstructLabel)));
+                            MetadataParameterType.FIELD, null, topStructElement.getDocStructType(), null, null, null, null, false, false), Helper
+                                    .intern(topstructLabel)));
                 }
             }
         }

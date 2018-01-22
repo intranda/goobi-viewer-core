@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -57,7 +57,7 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 /**
  * This bean provides data for the calendar and time based search entries.
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class CalendarBean implements Serializable {
 
@@ -65,7 +65,7 @@ public class CalendarBean implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(CalendarBean.class);
 
-    @ManagedProperty("#{searchBean}")
+    @Inject
     private SearchBean searchBean;
 
     private List<CalendarRow> rowList = new ArrayList<>();

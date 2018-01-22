@@ -1,0 +1,109 @@
+/* ==============================================================
+   CMS Template Stacked Collection
+   style declarations for cms_template_15_stackedCollection.xhtml
+   ==============================================================*/
+/* TPL STACKED COLLECTION */
+/* BLOCK */
+.tpl-stacked-collection {
+    h1 {}
+    /* ELEMENT */
+    &__text {
+    	margin-bottom: 15px;
+    }
+    &__collections {
+    	width: 80%;
+    	margin: 0 auto;
+    }
+    .panel-group {}
+    .panel {
+    	border: 1px solid @middlegray;
+    	border-radius: 0;
+    	background-color: @lightgray;
+    	box-shadow: none;
+    }
+    .panel-heading {
+    	.mx-clearfloats;
+    	padding: 0;
+    }
+    .panel-thumbnail,
+    .panel-title,
+    .panel-rss {
+    	float: left;
+    	height: 64px;
+		line-height: 64px;
+    	overflow: hidden;
+    }
+    .panel-thumbnail {
+    	width: 64px;
+    	img {}
+    }
+    .panel-title {
+    	width: calc(~"90% - 64px");
+    	padding: 0 15px;
+    	a {
+    		display: block;
+    		&:hover,
+    		&:active,
+    		&:focus {
+    			color: @black;
+    			text-decoration: none;
+    		}
+    	}
+    }
+    .panel-rss {
+    	width: 10%;
+    	text-align: center;
+    	.fa {
+    		width: 16px;
+    		height: 16px;
+    		line-height: 16px;
+    		font-size: 14px;
+    		text-align: center;
+    		color: @white;
+    		background-color: @orange;
+    	}
+    }
+    .panel-collapse {}
+    .panel-body {
+    	padding-left: 79px;
+    	border-top-color: @middlegray !important;
+    	background-color: @white;
+    	ul {}
+    	li {}
+    	a {}
+    	&__collection,
+    	&__rss {
+    		display: inline-block;
+    		float: left;
+    	}
+    	&__collection {
+    		width: 90%;
+    	}
+    	&__rss {
+    		width: 10%;
+    		.fa {
+	    		width: 16px;
+	    		height: 16px;
+	    		line-height: 16px;
+	    		font-size: 14px;
+	    		text-align: center;
+	    		color: @white;
+	    		background-color: @orange;
+	    	}
+    	}
+    }
+}
+
+/* MODIFICATION */
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

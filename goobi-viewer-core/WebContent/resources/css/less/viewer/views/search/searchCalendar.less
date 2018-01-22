@@ -96,6 +96,18 @@
         }
         .popover-title {
         	line-height: normal;
+        	color: @black;
+        }
+        .popover-content {
+        	a {
+        		background-color: transparent;
+        		&:hover,
+        		&:active,
+        		&:focus {
+        			color: @black;
+        			background-color: transparent;
+        		}
+        	}
         }
     }
     &__month-day-empty {

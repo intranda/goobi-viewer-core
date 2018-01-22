@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -75,7 +75,7 @@ import de.intranda.digiverso.presentation.modules.IModule;
 /**
  * This bean opens the requested record and provides all data relevant to this record.
  */
-@ManagedBean
+@Named
 @SessionScoped
 public class ActiveDocumentBean implements Serializable {
 
@@ -85,13 +85,13 @@ public class ActiveDocumentBean implements Serializable {
 
     private static int imageContainerWidth = 600;
 
-    @ManagedProperty("#{navigationHelper}")
+    @Inject
     private NavigationHelper navigationHelper;
-    @ManagedProperty("#{cmsBean}")
+    @Inject
     private CmsBean cmsBean;
-    @ManagedProperty("#{searchBean}")
+    @Inject
     private SearchBean searchBean;
-    @ManagedProperty("#{bookshelfBean}")
+    @Inject
     private BookshelfBean bookshelfBean;
 
     /** URL parameter 'action'. */
@@ -770,7 +770,7 @@ public class ActiveDocumentBean implements Serializable {
     public String getFullscreenImageUrl() throws IndexUnreachableException {
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
     }
-    
+
     /**
      *
      * @return
@@ -915,7 +915,7 @@ public class ActiveDocumentBean implements Serializable {
      * Title bar label value escaped for JavaScript.
      * 
      * @return
-     * @throws IndexUnreachableException 
+     * @throws IndexUnreachableException
      */
     public String getLabelForJS() throws IndexUnreachableException {
         String label = getTitleBarLabel();
@@ -1070,6 +1070,7 @@ public class ActiveDocumentBean implements Serializable {
      * @param selectedRecordLanguage the selectedRecordLanguage to set
      */
     public void setSelectedRecordLanguage(String selectedRecordLanguage) {
+        logger.trace("setSelectedRecordLanguage: {}", selectedRecordLanguage);
         this.selectedRecordLanguage = selectedRecordLanguage;
     }
 
@@ -1081,7 +1082,7 @@ public class ActiveDocumentBean implements Serializable {
                     return false;
                 }
             } catch (PresentationException | IndexUnreachableException e) {
-                logger.error("Error checking pdf resources: " + e.getMessage());
+                logger.error("Error checking PDF resources: {}", e.getMessage());
                 return false;
             }
 
@@ -1150,5 +1151,5 @@ public class ActiveDocumentBean implements Serializable {
             logger.error("Error writing toc: " + e.getMessage(), e);
         }
     }
-        
+
 }

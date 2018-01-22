@@ -2,8 +2,8 @@
 <cms_page_template id="templateStckedCollection" version="2017-10-05">
     <name>Accordeon Sammlungsansicht</name>
     <description>Dieses Template zeigt eine Sammlungübersicht im Accordeonstil, inklusive Repräsentanten der Sammlung.</description>
-    <icon>cms_template_16_stackedCollection.png</icon>
-    <html>cms_template_16_stackedCollection.xhtml</html>
+    <icon>cms_template_15_stackedCollection.png</icon>
+    <html>cms_template_15_stackedCollection.xhtml</html>
     <content>
  	    <item id="text" label="Text" type="HTML" order="1"/>
  	    <item id="collection" label="Collection" type="COLLECTION" order="2"/>

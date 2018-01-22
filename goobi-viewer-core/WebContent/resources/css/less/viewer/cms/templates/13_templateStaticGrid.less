@@ -1,0 +1,57 @@
+/* ==============================================================
+   CMS Template Static Grid
+   style declarations for cms_template_13_staticGrid.xhtml
+   ==============================================================*/
+/* TPL STATIC GRID */
+/* BLOCK */
+.tpl-static-grid {
+    h1 {}
+    /* ELEMENT */
+    &__text {
+    	margin-bottom: 30px;
+    }
+    &__grid {}
+}
+.grid-tile {
+	margin-bottom: 30px;
+	padding: 3px;
+	padding-top: 0;
+	border: 1px solid @middlegray;
+	background-color: @white;
+	&__title {
+		height: 50px;
+		padding: 5px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		h4 {
+			margin: 0;
+			font-size: 16px;
+			line-height: 21px;
+		}
+	}
+	&__image {
+		height: 150px;
+		overflow: hidden;
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: cover;
+		a {
+			display: block;
+			height: 150px;
+		}
+	}
+}
+
+/* MODIFICATION */
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

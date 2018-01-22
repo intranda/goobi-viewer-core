@@ -1,0 +1,54 @@
+/* ==============================================================
+   CMS Template RSS Feed
+   style declarations for cms_template_14_RSSFeed.xhtml
+   ==============================================================*/
+/* TPL RSS FEED */
+/* BLOCK */
+.tpl-rss {
+    h1 {}
+    /* ELEMENT */
+    &__text {
+    	margin-bottom: 15px;
+    }
+    &__feed {}
+    &__item {
+    	padding: 10px;
+    	border: 1px solid @middlegray;
+    	margin-bottom: 15px;
+    }
+    &__item-title {
+    	margin-bottom: 10px;
+    	padding-bottom: 10px;
+    	border-bottom: 1px solid @middlegray;
+    	h3 {
+    		margin: 0;
+    	}
+    	a {}
+    }
+    &__item-image {
+    	img {}
+    }
+    &__item-date {
+    	margin-bottom: 10px;
+    }
+    &__item-metadata {
+    	dt {
+    		text-align: left;
+    	}
+    	dd {}
+    }
+}
+
+/* MODIFICATION */
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

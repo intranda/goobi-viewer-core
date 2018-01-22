@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.bean.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -44,7 +44,7 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 /**
  * Bean for the statistics page.
  */
-@ManagedBean
+@Named
 @ApplicationScoped
 public class StatisticsBean implements Serializable {
 

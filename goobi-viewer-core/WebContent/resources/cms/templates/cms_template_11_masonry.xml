@@ -2,8 +2,8 @@
 <cms_page_template id="template_masonry" version="2017-01-10">
     <name>Masonry</name>
     <description>Dieses Template zeigt CMS-Medien in Form eines gekachelten Rasters an.</description>
-    <icon>cms_template_11_tileGrid.png</icon>
-    <html>cms_template_12_masonry.xhtml</html>
+    <icon>cms_template_11_masonry.png</icon>
+    <html>cms_template_11_masonry.xhtml</html>
     <content>
  	    <item id="text" label="Text" type="HTML" order="1"/>
         <item id="grid" label="Masonry" type="TILEGRID" order="2"/>

@@ -22,10 +22,10 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +42,7 @@ import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
 import de.intranda.digiverso.presentation.model.download.PDFDownloadJob;
 
-@ManagedBean
+@Named
 @SessionScoped
 public class DownloadBean implements Serializable {
 

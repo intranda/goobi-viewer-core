@@ -54,7 +54,7 @@ public class SessionCounterFilter implements Filter {
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws IOException, ServletException {
-        logger.trace("doFilter");
+        // logger.trace("doFilter");
         HttpServletRequest req = (HttpServletRequest) request;
         String id = req.getSession().getId();
         Map<String, String> metadataMap = DataManager.getInstance().getSessionMap().get(id);

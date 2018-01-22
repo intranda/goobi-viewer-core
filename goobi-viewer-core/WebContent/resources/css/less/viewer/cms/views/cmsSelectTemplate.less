@@ -2,28 +2,54 @@
    CMS Select Template
    style declarations for adminCmsSelectTemplate.xhtml
    ==============================================================*/
-#cmsSelectTemplate {
-    h2 {}
-    #cmsSelectTemplateWrapper {
-    	margin-top: 20px;
-        .row {
-            margin-bottom: 14px;
-            border-bottom: 1px solid @lightgray;
-        }
-        .select-template-image {
-            img {}
-        }
-        .select-template-description {
-            h3 {
-                margin: 0 0 21px 0;
-            }
-        }
-        .select-template-action {
-            padding: 14px 0;
-            text-align: right;
-            .btn {}
-        }
-    }
+/* CMS SELECT TEMPLATE */
+/* BLOCK */
+.cms-select-template {
+	/* ELEMENT */
+	h2 {}
+	&__wrapper {}
+	&__template {
+		.mx-clearfloats;
+		margin-bottom: 14px;
+		border-bottom: 1px solid @lightgray;
+	}
+	&__image {
+		position: relative;
+		overflow: hidden;
+		img {
+			width: 100%;
+		}
+	}
+	&__description {
+		h3 {
+			margin: 0 0 21px 0;
+		}
+	}
+	&__theme-template-marker,
+	&__action {
+		padding: 5px 0 15px 0;
+	}
+	&__theme-template-marker {
+		font-size: 12px;
+		text-align: center;
+		color: @blue;
+	}
+	&__action {
+		text-align: right;
+		.btn {}
+		.btn-theme-template {
+			font-weight: normal;
+			color: @blue;
+			border: 1px solid @blue;
+			background-color: @white;
+			&:hover,
+			&:active,
+			&:focus {
+				color: @white;
+				background-color: @blue;
+			}
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

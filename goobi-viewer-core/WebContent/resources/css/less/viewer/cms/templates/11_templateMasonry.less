@@ -1,0 +1,113 @@
+/* ==============================================================
+   CMS Template "Masonry"
+   style declarations for cms_template_11_masonry.xhtml
+   ==============================================================*/
+/* TPL MASONRY */
+/* BLOCK */
+.tpl-masonry {
+    h1 {}
+    /* ELEMENT */
+    &__text {
+        margin-bottom: 15px;
+    }
+    .grid {
+        margin-bottom: 15px;
+        opacity: 0;
+        transition: all 0.3s ease-in;
+        &.ready {
+        	opacity: 1;
+        }
+    }
+    .grid-sizer,
+    .grid-item {
+        width: calc(~"31.33333333% + 12px");
+        margin-bottom: 6px;
+        overflow: hidden;
+        img {
+            position: relative;
+            min-width: 100%;
+            transition: all 0.3s ease-in;
+            z-index: 9;
+        }
+        &:hover {
+            .grid-item-title {
+                opacity: 0;
+            }
+            .grid-item-caption {
+                opacity: 1;
+            }
+            img {
+            	transform: scale(1.2);
+            }
+        }
+    }
+    .grid-item-title,
+    .grid-item-caption {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        padding: 5px;
+        color: @white;
+        background-color: rgba(0, 0, 0, 0.65);
+        transition: all 0.3s ease-in;
+        z-index: 10;
+    }
+    .grid-item-title {
+        bottom: 0;
+        opacity: 1;
+    }
+    .grid-item-caption {
+        bottom: 0;
+        opacity: 0;
+        h4 {
+            margin: 0 0 10px 0;
+        }
+        a {
+            display: block;
+            padding: 0 10px;
+            font-size: 24px;
+            text-align: right;
+            color: @white;
+        }
+        .fa {
+        	margin-left: 10px;
+        }
+    }
+    .gutter-sizer {
+        width: 6px;
+    }
+}
+
+/* MODIFICATION */
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+	.tpl-masonry .grid-sizer, 
+	.tpl-masonry .grid-item {
+		width: calc(~"31.33333333% + 9px");
+	}
+}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {
+	.tpl-masonry .grid-sizer, 
+	.tpl-masonry .grid-item {
+		width: calc(~"31.33333333% + 5px");
+	}
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.tpl-masonry .grid-sizer, 
+	.tpl-masonry .grid-item {
+		width: calc(~"31.33333333% + 9px");
+	}
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .tpl-masonry .grid-sizer, 
+	.tpl-masonry .grid-item {
+		width: 100%;
+	}
+}

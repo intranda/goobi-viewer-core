@@ -1,0 +1,42 @@
+/* ==============================================================
+   CMS Template "News Detail"
+   style declarations for cms_template_03_newsdetail.xhtml
+   ==============================================================*/
+/* NEWS DETAIL */
+/* BLOCK */
+.tpl-news-detail {
+    /* ELEMENT */
+    &__date,
+    &__content {
+        margin-bottom: 20px;
+    }
+    &__date {}
+    &__content {}
+    &__image {
+        figcaption {
+            padding: 5px 0;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: @middlegray;
+        }
+    }
+    &__text {}
+    /* SOLR-QUERY */
+    .solr-query-collection {
+    	margin-top: 20px;
+    	padding-top: 20px;
+    	border-top: 1px solid @middlegray;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

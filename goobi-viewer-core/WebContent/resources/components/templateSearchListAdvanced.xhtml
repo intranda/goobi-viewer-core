@@ -204,7 +204,7 @@
                         <div class="search-advanced__action">
                             <h:commandLink styleClass="btn" value="#{msg.reset}" action="#{cc.attrs.search.resetSearch()}" />
                             <h:commandButton styleClass="btn" value="#{msg.search}" action="#{cc.attrs.search.searchAdvanced()}">
-<!--                                 <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" /> -->
+                                <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="1" />
                             </h:commandButton>
                         </div>
                     </h:form>

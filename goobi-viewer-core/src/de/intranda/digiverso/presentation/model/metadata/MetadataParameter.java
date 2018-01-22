@@ -73,13 +73,14 @@ public class MetadataParameter implements Serializable {
     private static final long serialVersionUID = 8010945394600637854L;
 
     private MetadataParameterType type;
-    private String source;
-    private String key;
-    private String defaultValue;
-    private String prefix;
-    private String suffix;
-    private boolean addUrl = false;
-    private boolean dontUseTopstructValue = false;
+    private final String source;
+    private final String key;
+    private final String overrideMasterValue;
+    private final String defaultValue;
+    private final String prefix;
+    private final String suffix;
+    private final boolean addUrl;
+    private final boolean dontUseTopstructValue;
 
     /*
      * (non-Javadoc)
@@ -125,11 +126,24 @@ public class MetadataParameter implements Serializable {
         return true;
     }
 
-    public MetadataParameter(MetadataParameterType type, String source, String key, String defaultValue, String prefix, String suffix, boolean addUrl,
-            boolean dontUseTopstructValue) {
+    /**
+     * 
+     * @param type
+     * @param source
+     * @param key
+     * @param overrideMasterValue
+     * @param defaultValue
+     * @param prefix
+     * @param suffix
+     * @param addUrl
+     * @param dontUseTopstructValue
+     */
+    public MetadataParameter(MetadataParameterType type, String source, String key, String overrideMasterValue, String defaultValue, String prefix,
+            String suffix, boolean addUrl, boolean dontUseTopstructValue) {
         this.type = type;
         this.source = source;
         this.key = key;
+        this.overrideMasterValue = overrideMasterValue;
         this.defaultValue = defaultValue;
         this.prefix = prefix;
         this.suffix = suffix;
@@ -142,13 +156,6 @@ public class MetadataParameter implements Serializable {
      */
     public String getSource() {
         return source;
-    }
-
-    /**
-     * @param source the source to set
-     */
-    public void setSource(String source) {
-        this.source = source;
     }
 
     /**
@@ -173,10 +180,10 @@ public class MetadataParameter implements Serializable {
     }
 
     /**
-     * @param key the key to set
+     * @return the overrideMasterValue
      */
-    public void setKey(String key) {
-        this.key = key;
+    public String getOverrideMasterValue() {
+        return overrideMasterValue;
     }
 
     /**
@@ -205,13 +212,6 @@ public class MetadataParameter implements Serializable {
      */
     public boolean isAddUrl() {
         return addUrl;
-    }
-
-    /**
-     * @param addUrl the addUrl to set
-     */
-    public void setAddUrl(boolean addUrl) {
-        this.addUrl = addUrl;
     }
 
     /**

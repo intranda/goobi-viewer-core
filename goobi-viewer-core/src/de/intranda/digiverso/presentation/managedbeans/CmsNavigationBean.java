@@ -15,13 +15,14 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +32,11 @@ import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationManager;
 
-@ManagedBean
+@Named
 @SessionScoped
-public class CmsNavigationBean {
+public class CmsNavigationBean implements Serializable {
+
+    private static final long serialVersionUID = -8958990090110696045L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsNavigationBean.class);
 
@@ -149,11 +152,11 @@ public class CmsNavigationBean {
         selectedNavigationItem = getItemManager().getAvailableItem(itemId);
         setEditMode(true);
     }
-    
+
     public boolean isEditMode() {
         return this.editMode;
     }
-    
+
     /**
      * @param editMode the editMode to set
      */

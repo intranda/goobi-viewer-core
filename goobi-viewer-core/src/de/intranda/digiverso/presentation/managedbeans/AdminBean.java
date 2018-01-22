@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Attribute;
@@ -60,7 +60,7 @@ import de.unigoettingen.sub.commons.util.CacheUtils;
  * Administration backend functions.
  */
 @SuppressWarnings("deprecation")
-@ManagedBean
+@Named
 @SessionScoped
 public class AdminBean implements Serializable {
 

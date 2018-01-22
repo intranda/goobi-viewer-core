@@ -37,9 +37,9 @@
 
 				<div id="metadataElementWrapper">
 					<ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
-						<div class="metadata-element-box" style="padding-left: #{status.index * 15}px">
+						<div class="metadata-element-box level-#{status.index}">
 							<ui:repeat value="#{metadataElement.metadataList}" var="metadata">
-								<h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
+								<h:panelGroup rendered="#{!metadata.blank}">
 									<div class="metadata-element">
 										<dl class="dl-horizontal">
 											<dt title="#{msg[metadata.label]}">
@@ -48,7 +48,7 @@
 											<h:panelGroup rendered="#{metadata.group}">
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
-														<h:outputFormat value="#{msg[metadata.masterValue]}"
+														<h:outputFormat value="#{msg[val.masterValue]}"
 															escape="false">
 															<f:param value="#{val.getParamLabelWithColon(0)}" />
 															<f:param value="#{val.getComboValueShort(0)}" />
@@ -78,16 +78,12 @@
 													</ui:repeat>
 												</dd>
 											</h:panelGroup>
-
-											<h:panelGroup rendered="#{!metadata.group and metadata.valueLink != null}">
-												<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-											</h:panelGroup>
 											
-											<h:panelGroup rendered="#{!metadata.group and metadata.valueLink == null}">
+											<h:panelGroup rendered="#{!metadata.group}">
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="metadata-value">
-															<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+															<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
 																<f:param value="#{val.getComboValueShort(0)}" />
 																<f:param value="#{val.getComboValueShort(1)}" />
 																<f:param value="#{val.getComboValueShort(2)}" />
@@ -113,22 +109,17 @@
 					<c:forEach items="#{metadataBean.events}" var="event">
 						<div class="metadata-event-box">
 							<ui:repeat value="#{event.metadata}" var="metadata">
-								<h:panelGroup rendered="#{metadata.valueLink != null or !metadata.blank}">
+								<h:panelGroup rendered="#{!metadata.blank}">
 									<div class="metadata-event">
 										<dl class="dl-horizontal">
 											<dt title="#{msg[metadata.label]}">
 												<h:outputText value="#{msg[metadata.label]}:" escape="false" />
 											</dt>
-											<h:panelGroup rendered="#{metadata.valueLink != null}">
-												<dd>
-													<h:outputLink value="#{metadata.valueLink}" target="_blank">#{msg[metadata.masterValue]}</h:outputLink>
-												</dd>
-											</h:panelGroup>
-											<h:panelGroup rendered="#{metadata.valueLink == null}">
+											<h:panelGroup>
 												<dd>
 													<ui:repeat value="#{metadata.values}" var="val">
 														<span class="metadata-value">
-															<h:outputFormat value="#{msg[metadata.masterValue]}" escape="false">
+															<h:outputFormat value="#{msg[val.masterValue]}" escape="false">
 																<f:param value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
 																<f:param value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
 																<f:param value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />

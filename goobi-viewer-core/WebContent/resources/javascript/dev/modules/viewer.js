@@ -107,6 +107,9 @@
             $( '#changeLocal' ).hide();
             $( '#mobileNav' ).slideToggle( 'fast' );
         } );
+        $( '[data-toggle="mobile-image-controls"]' ).on( 'click', function() {
+            $( '.image-controls__actions' ).slideToggle( 'fast' );
+        } );
         
         // toggle language
         $( '[data-toggle="language"]' ).on( 'click', function() {
@@ -292,35 +295,36 @@
             }
         } );
         
-     // make sure only integer values may be entered in input fields of class
+        // make sure only integer values may be entered in input fields of class
         // 'input-integer'
         $( '.input-float' ).on( "keypress", function( event ) {
-        	console.log(event);
-        	switch(event.which) {
-        		case 8:	//delete
-        		case 9:	//tab
-        		case 13: //enter
-        		case 46: //dot
-        		case 44: //comma
-        		case 43: //plus
-        		case 45: //minus
-        			return true;
-        		case 118:
-        			return event.ctrlKey;	//copy
-        		default:
-        			switch(event.keyCode) {
-        			case 8:	//delete
-            		case 9:	//tab
-            		case 13: //enter
-            			return true;
-        			default:
-	        			if ( event.which < 48 || event.which > 57 ) {
-	        				return false;
-	        			} else {
-	        				return true;
-	        			}
-        			}
-        	}
+            console.log( event );
+            switch ( event.which ) {
+                case 8: // delete
+                case 9: // tab
+                case 13: // enter
+                case 46: // dot
+                case 44: // comma
+                case 43: // plus
+                case 45: // minus
+                    return true;
+                case 118:
+                    return event.ctrlKey; // copy
+                default:
+                    switch ( event.keyCode ) {
+                        case 8: // delete
+                        case 9: // tab
+                        case 13: // enter
+                            return true;
+                        default:
+                            if ( event.which < 48 || event.which > 57 ) {
+                                return false;
+                            }
+                            else {
+                                return true;
+                            }
+                    }
+            }
         } );
         
         // set tinymce language
@@ -2337,7 +2341,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // default variables
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
         dataType: null,
         dataTitle: null,
@@ -2584,10 +2588,10 @@ var viewerJS = ( function( viewer ) {
                 modalBody += '<dt>' + _defaults.messages.downloadInfo.part + ':</dt>';
                 modalBody += '<dd>' + infos.div + '</dd>';
             }
-            if(infos.size)  {            	
-            	modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
-            	modalBody += '<dd>~' + infos.size + '</dd>';
-            	modalBody += '</dl>';
+            if ( infos.size ) {
+                modalBody += '<dt>' + _defaults.messages.downloadInfo.fileSize + ':</dt>';
+                modalBody += '<dd>~' + infos.size + '</dd>';
+                modalBody += '</dl>';
             }
             // reCAPTCHA
             if ( _defaults.useReCaptcha ) {
@@ -6540,6 +6544,7 @@ var viewerJS = ( function( viewer ) {
         toolbar: 'formatselect | undo redo | bold italic underline strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | fullscreen code',
         menubar: false,
         statusbar: false,
+        pagebreak_separator: '<span class="pagebreak"></span>',
         relative_urls: false,
         force_br_newlines: false,
         force_p_newlines: false,
@@ -7153,9 +7158,11 @@ var cmsJS = ( function( cms ) {
         $.each( infos.locations, function( key, location ) {
             // GAUGS: special condition to get the right collection number for image
             // slider
-            if ( location.link.indexOf( '/sammlung/' ) != -1 ) {
-                var str = location.link;
-                collection = str.replace( '/sammlung/', '' ).replace( '/', '' );
+            if ( location.link != undefined ) {
+                if ( location.link.indexOf( '/sammlung/' ) != -1 ) {
+                    var str = location.link;
+                    collection = str.replace( '/sammlung/', '' ).replace( '/', '' );
+                }
             }
             
             var feature = {
@@ -7868,6 +7875,7 @@ var cmsJS = ( function( cms ) {
     var _toggleAttr = false;
     var _defaults = {
         collectionsSelector: '.tpl-stacked-collection__collections',
+        collectionDefaultThumb: '',
         msg: {
             noSubCollectionText: ''
         }
@@ -7960,6 +7968,10 @@ var cmsJS = ( function( cms ) {
             panelThumbnail = $( '<div />' ).addClass( 'panel-thumbnail' );
             if ( member.thumbnail ) {
                 panelThumbnailImage = $( '<img />' ).attr( 'src', member.thumbnail ).addClass( 'img-responsive' );
+                panelThumbnail.append( panelThumbnailImage );
+            }
+            else {
+                panelThumbnailImage = $( '<img />' ).attr( 'src', _defaults.collectionDefaultThumb ).addClass( 'img-responsive' );
                 panelThumbnail.append( panelThumbnailImage );
             }
             // build title
