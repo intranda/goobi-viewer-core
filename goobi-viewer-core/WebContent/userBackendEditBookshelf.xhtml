@@ -24,14 +24,6 @@
 
 				<div class="user-bookshelf-edit__form">
 					<h:form id="userBookshelfEditForm" styleClass="form-horizontal" prependId="false">
-						<div class="user-bookshelf-edit__action-delete">
-							<h:commandLink title="#{msg.bookshelf_delete}" action="#{bookshelfBean.deleteCurrentBookshelfAction}" onclick="if (!confirm('#{msg.bookshelves_confirmDeleteBookshelf}')) return false">
-								<i class="fa fa-trash-o" aria-hidden="true"></i>
-								<f:passThroughAttribute name="data-toggle" value="tooltip" />
-								<f:passThroughAttribute name="data-placement" value="top" />
-							</h:commandLink>
-						</div>
-					
 						<!-- NAME -->
 						<div class="form-group">
 							<label for="editBookshelfName" class="col-sm-2 control-label">#{msg.name}:</label>

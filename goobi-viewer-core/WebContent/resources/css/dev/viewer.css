@@ -4738,12 +4738,8 @@ div[id*="-Modal"] .email-form .form-group {
   min-height: 125px;
   resize: vertical;
 }
-.user-bookshelf-edit__action-delete,
 .user-bookshelf-edit__action {
   text-align: right;
-}
-.user-bookshelf-edit__action-delete {
-  padding-bottom: 15px;
 }
 .user-bookshelf-edit__action .btn {
   margin-left: 10px;
