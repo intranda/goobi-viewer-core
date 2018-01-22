@@ -41,6 +41,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.RestApiException;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem;
 import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
@@ -306,8 +307,7 @@ public class BookshelfResource {
     @Path("/user/get/")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Bookshelf> getAllUserBookshelfs() throws DAOException, IOException, RestApiException {
-        HttpSession session = servletRequest.getSession();
-        User user = getUserFromSession(session);
+        User user = getUser();
         if (user != null) {
             return DataManager.getInstance().getDao().getBookshelves(user);
         } else {
@@ -327,8 +327,7 @@ public class BookshelfResource {
     @Path("/shared/get/")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Bookshelf> getAllSharedBookshelfs() throws DAOException, IOException, RestApiException {
-        HttpSession session = servletRequest.getSession();
-        User user = getUserFromSession(session);
+        User user = getUser();
         if (user != null) {
             return DataManager.getInstance().getDao().getAllBookshelves().stream().filter(bs -> !user.equals(bs.getOwner())).filter(bs -> isSharedTo(
                     bs, user)).collect(Collectors.toList());
@@ -371,8 +370,7 @@ public class BookshelfResource {
             logger.trace("Serving public bookshelf " + id);
             return bookshelf;
         } else {
-            HttpSession session = servletRequest.getSession();
-            User user = getUserFromSession(session);
+            User user = getUser();
             if (user != null) {
                 if (user.equals(bookshelf.getOwner())) {
                     logger.trace("Serving bookshelf " + id + " owned by user " + user);
@@ -506,7 +504,7 @@ public class BookshelfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelf(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
 
-        User user = getUserFromSession(servletRequest.getSession());
+        User user = getUser();
 
         if (user != null) {
             if (!userHasBookshelf(user, name)) {
@@ -571,7 +569,7 @@ public class BookshelfResource {
     @Path("/user/addSessionBookshelf/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelfFromSession(@PathParam("name")String bookshelfName) throws DAOException, IOException, RestApiException {
-        User user = getUserFromSession(servletRequest.getSession());
+        User user = getUser();
 
         if (user != null) {            
             
@@ -602,7 +600,7 @@ public class BookshelfResource {
     @Path("/user/delete/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteUserBookshelf(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
-        User user = getUserFromSession(servletRequest.getSession());
+        User user = getUser();
 
         if (user != null) {     
             Optional<Bookshelf> bookshelf = getBookshelf(user, id);
@@ -705,12 +703,9 @@ public class BookshelfResource {
      * @param session
      * @return
      */
-    private User getUserFromSession(HttpSession session) {
-        if (session == null) {
-            logger.debug("Unable to get user: No session available");
-            return null;
-        } else {
-            UserBean userBean = (UserBean) session.getAttribute("userBean");
+    private User getUser() {
+//            UserBean userBean = (UserBean) session.getAttribute("userBean");
+            UserBean userBean = BeanUtils.getUserBean();
             if (userBean == null) {
                 logger.debug("Unable to get user: No UserBean found in session store.");
                 return null;
@@ -724,7 +719,6 @@ public class BookshelfResource {
                     return user;
                 }
             }
-        }
     }
 
     /**
