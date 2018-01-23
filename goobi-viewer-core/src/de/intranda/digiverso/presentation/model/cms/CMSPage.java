@@ -865,6 +865,10 @@ public class CMSPage {
      * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
      */
     public boolean mayContainURLParameters() {
-        return getTemplate().isAppliesToExpandedUrl();
+        if(getTemplate() != null) {            
+            return getTemplate().isAppliesToExpandedUrl();
+        } else {
+            return false;
+        }
     }
 }
