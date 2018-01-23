@@ -675,11 +675,11 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://digi-alt.ub.hu-berlin.de/viewer/" />
+		<property name="server.url" value="http://www.digi-hub.de.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigi-alt.ub.hu-berlin.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.digi-hub.de%2Fviewer%2Foai" />
 		<property name="jdbc.url" value="jdbc:mysql:thin://localhost:3306/viewer" />
-		<property name="theme" value="humboldt" />
+		<property name="theme" value="hub" />
 		<property name="contentserver.color.red" value="0" />
 		<property name="contentserver.color.green" value="51" />
 		<property name="contentserver.color.blue" value="102" />
