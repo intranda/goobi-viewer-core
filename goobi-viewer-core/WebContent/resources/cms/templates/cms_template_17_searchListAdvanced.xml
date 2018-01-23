@@ -4,6 +4,9 @@
     <description>Dieses Template zeigt die Suchtrefferliste mit der erweiterten Suche und zusätzlichen Seitenleisten und Facettierungen.</description>
     <icon>cms_template_17_searchListAdvanced.png</icon>
     <html>cms_template_17_searchListAdvanced.xhtml</html>
+    <options>    
+        <appliesToExpandedUrl>true</appliesToExpandedUrl>
+    </options>
     <content>
 		<!-- INTRO -->
 		<item id="intro" order="1" label="Einleitung" type="HTML" />

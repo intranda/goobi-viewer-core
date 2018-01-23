@@ -28,6 +28,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,12 +77,14 @@ public class UrlRedirectFilter implements Filter {
                 if (currentPath.isPresent()) {
                     ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
                     if (!currentPath.get().getPagePath().startsWith("cms") && currentPath.get().getCmsPage() != null) {
-                        ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
-                        cmsPagePath.setPagePath(Paths.get(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
-                        logger.debug("Forwarding " + currentPath.get().toString() + " to " + cmsPagePath.getCombinedUrl());
-                        RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
-                        d.forward(request, response);
-                        return;
+                        if(currentPath.get().getCmsPage().mayContainURLParameters() || StringUtils.isBlank(currentPath.get().getParameterPath().toString())) {
+                            ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
+                            cmsPagePath.setPagePath(Paths.get(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
+                            logger.debug("Forwarding " + currentPath.get().toString() + " to " + cmsPagePath.getCombinedUrl());
+                            RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
+                            d.forward(request, response);
+                            return;
+                        }
                     }
                 }
         } catch (DAOException e) {
