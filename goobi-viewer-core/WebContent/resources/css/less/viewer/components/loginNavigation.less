@@ -21,12 +21,7 @@
 		overflow: hidden;
 		z-index: 999;
 		li {
-			float: left;
-			max-height: inherit;
 			border-bottom: 1px solid @middlegray;
-			&:last-child {
-				border-bottom: none;
-			}
 			&:hover {
 				background-color: @lightgray;
 			}
@@ -65,13 +60,8 @@
 		margin-left: -10px;
 	    margin-right: -10px;
 		li {
-			max-height: inherit !important;
-			border-bottom: 1px solid @middlegray;
 			&:hover {
 				background-color: transparent;
-			}
-			&:last-child {
-				border-bottom: none;
 			}
 		}
 		a, button {
@@ -84,40 +74,24 @@
 			text-align: center;
 		}
 	}
-	&__retrieve-account {
-		position: absolute;
-		top: 0;
-		left: 100%;
-		width: 375px;
-		min-height: 290px;
-		padding: 0 10px;
-		background-color: @white;
-		overflow: hidden;
-		z-index: 1000;
-		transition: all .3s ease-in;
-		&.in {
-			left: 0;
-		}
-		h4 {
-			margin: 15px 0;
-		}
-		.control-label {
-			font-weight: normal;
-		}
-		.form-control {
-			height: 32px;
-		}
-		.btn,
-		button {
-			width: 100%;
-		}
-		a, button {
-			padding: 7px 14px;
-			color: @blue;
-		}
-		a {
-			display: block;
+	&__open-id {
+		h3 {
+			margin: 0;
+			padding: 7px 0;
+			font-size: 16px;
 			text-align: center;
+		}
+		li {
+			border: none;
+			a {
+				padding: 5px 10px 5px 5px;
+				font-size: 21px;
+			}
+			&:hover,
+			&:active,
+			&:focus {
+				background-color: transparent;
+			}
 		}
 	}
 	/* USER DROPDOWN */

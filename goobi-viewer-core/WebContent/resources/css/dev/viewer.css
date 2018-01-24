@@ -2874,12 +2874,7 @@ div[id*="-Modal"] .email-form .form-group {
   z-index: 999;
 }
 .login-navigation__login-dropdown li {
-  float: left;
-  max-height: inherit;
   border-bottom: 1px solid #ccc;
-}
-.login-navigation__login-dropdown li:last-child {
-  border-bottom: none;
 }
 .login-navigation__login-dropdown li:hover {
   background-color: #eee;
@@ -2914,15 +2909,8 @@ div[id*="-Modal"] .email-form .form-group {
   margin-left: -10px;
   margin-right: -10px;
 }
-.login-navigation__login-dropdown-options li {
-  max-height: inherit !important;
-  border-bottom: 1px solid #ccc;
-}
 .login-navigation__login-dropdown-options li:hover {
   background-color: transparent;
-}
-.login-navigation__login-dropdown-options li:last-child {
-  border-bottom: none;
 }
 .login-navigation__login-dropdown-options a,
 .login-navigation__login-dropdown-options button {
@@ -2934,42 +2922,23 @@ div[id*="-Modal"] .email-form .form-group {
   display: block;
   text-align: center;
 }
-.login-navigation__retrieve-account {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: 375px;
-  min-height: 290px;
-  padding: 0 10px;
-  background-color: #fff;
-  overflow: hidden;
-  z-index: 1000;
-  transition: all 0.3s ease-in;
-}
-.login-navigation__retrieve-account.in {
-  left: 0;
-}
-.login-navigation__retrieve-account h4 {
-  margin: 15px 0;
-}
-.login-navigation__retrieve-account .control-label {
-  font-weight: normal;
-}
-.login-navigation__retrieve-account .form-control {
-  height: 32px;
-}
-.login-navigation__retrieve-account .btn,
-.login-navigation__retrieve-account button {
-  width: 100%;
-}
-.login-navigation__retrieve-account a,
-.login-navigation__retrieve-account button {
-  padding: 7px 14px;
-  color: #428bca;
-}
-.login-navigation__retrieve-account a {
-  display: block;
+.login-navigation__open-id h3 {
+  margin: 0;
+  padding: 7px 0;
+  font-size: 16px;
   text-align: center;
+}
+.login-navigation__open-id li {
+  border: none;
+}
+.login-navigation__open-id li a {
+  padding: 5px 10px 5px 5px;
+  font-size: 21px;
+}
+.login-navigation__open-id li:hover,
+.login-navigation__open-id li:active,
+.login-navigation__open-id li:focus {
+  background-color: transparent;
 }
 .login-navigation__user-dropdown {
   display: none;
@@ -4559,6 +4528,66 @@ div[id*="-Modal"] .email-form .form-group {
     margin-top: 10px;
   }
 }
+/* ==============================================================
+   User Account Create
+   style declarations for userAccountCreate.xhtml
+   ==============================================================*/
+/* USER ACCOUNT CREATE */
+/* BLOCK */
+.user-account-create {
+  /* ELEMENT */
+}
+.user-account-create__form {
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+}
+.user-account-create__form form {
+  width: 80%;
+  margin: 0 auto;
+}
+.user-account-create .control-label {
+  font-weight: normal;
+}
+.user-account-create .form-control {
+  height: 32px;
+}
+.user-account-create__action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User Account Retrieve
+   style declarations for userAccountRetrieve.xhtml
+   ==============================================================*/
+/* USER ACCOUNT RETRIEVE */
+/* BLOCK */
+.user-account-retrieve {
+  /* ELEMENT */
+}
+.user-account-retrieve__form {
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+}
+.user-account-retrieve__form form {
+  width: 80%;
+  margin: 0 auto;
+}
+.user-account-retrieve .control-label {
+  font-weight: normal;
+}
+.user-account-retrieve .form-control {
+  height: 32px;
+}
+.user-account-retrieve__action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    User Data
    style declarations for user.xhtml

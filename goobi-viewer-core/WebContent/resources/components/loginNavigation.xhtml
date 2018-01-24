@@ -63,44 +63,11 @@
                                 </h:commandButton>
                             </div>
                         </h:form>
-                        <!-- RETRIEVE ACCOUNT -->
-                        <div class="login-navigation__retrieve-account">
-                            <h:form
-                                id="userRetrieveAccountForm"
-                                prependId="false">
-                                <h4>#{msg.user_retrieveAccountHeadline}</h4>
-                                <p>#{msg.user_retrieveAccountDescription}</p>
-                                <div class="form-group">
-                                    <label
-                                        for="userEMailToRetrieve"
-                                        class="control-label">#{msg.email}:</label>
-                                    <h:inputText
-                                        id="userEMailToRetrieve"
-                                        styleClass="form-control"
-                                        value="#{userBean.email}"
-                                        required="true"
-                                        requiredMessage="#{msg.loginEnterEmail}">
-                                        <f:validator validatorId="emailValidator" />
-                                    </h:inputText>
-                                </div>
-                                <h:commandButton
-                                    styleClass="btn"
-                                    value="#{msg.submit}"
-                                    action="#{userBean.sendPasswordResetLinkAction}" />
-                                <button
-                                    type="button"
-                                    class="btn-clean"
-                                    data-dismiss="retrieve-account">Zurück zur Anmeldung</button>
-                            </h:form>
-                        </div>
                         <!-- LOGIN OPTIONS -->
                         <nav class="login-navigation__login-dropdown-options">
                             <ul class="list">
                                 <li>
-                                    <button
-                                        type="button"
-                                        class="btn-clean"
-                                        data-toggle="retrieve-account">#{msg.user_forgotPassword}</button>
+                                    <a href="#{request.contextPath}/userAccountRetrieve/">#{msg.user_forgotPassword}</a>
                                 </li>
                                 <h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
                                     <li>
@@ -111,8 +78,8 @@
                         </nav>
                         <!-- OPEN ID -->
                         <ui:fragment rendered="#{userBean.showOpenId}">
-                            <h3>#{msg.user_openIdLogin}</h3>
                             <nav class="login-navigation__open-id">
+                                <h3>#{msg.user_openIdLogin}</h3>
                                 <h:form
                                     id="loginNavigationOpenIdForm"
                                     prependId="false">
