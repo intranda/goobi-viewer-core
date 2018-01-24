@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.RequestScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +41,14 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 /**
  * Provides the metadata for the current structure and event elements.
  */
-@ManagedBean
+@Named
 @RequestScoped
 public class MetadataBean {
 
     /** Logger for this class. */
     private static final Logger logger = LoggerFactory.getLogger(MetadataBean.class);
 
-    @ManagedProperty("#{activeDocumentBean}")
+    @Inject
     private ActiveDocumentBean activeDocumentBean;
 
     private List<MetadataElement> metadataElementList;

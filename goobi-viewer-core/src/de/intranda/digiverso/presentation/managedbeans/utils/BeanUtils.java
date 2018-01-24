@@ -17,7 +17,13 @@ package de.intranda.digiverso.presentation.managedbeans.utils;
 
 import java.util.Locale;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
 import javax.faces.context.FacesContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,7 +64,8 @@ public class BeanUtils {
 
     public static HttpServletRequest getRequest(FacesContext context) {
         if (context != null && context.getExternalContext() != null) {
-            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext()
+                    .getRequest();
             return request;
         }
 
@@ -72,7 +79,9 @@ public class BeanUtils {
      */
     public static String getServletPathWithHostAsUrlFromJsfContext() {
         if (FacesContext.getCurrentInstance() != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getRequest();
             if (request != null) {
                 return ServletUtils.getServletPathWithHostAsUrlFromRequest(request);
             }
@@ -88,7 +97,8 @@ public class BeanUtils {
     public static ServletContext getServletContext() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context != null && context.getExternalContext() != null) {
-            return (ServletContext) context.getExternalContext().getContext();
+            return (ServletContext) context.getExternalContext()
+                    .getContext();
         }
 
         return null;
@@ -107,19 +117,61 @@ public class BeanUtils {
         return Locale.ENGLISH;
     }
 
+    private static BeanManager getBeanManager() {
+        BeanManager ret = null;
+
+        // Via CDI
+        try {
+            ret = CDI.current()
+                    .getBeanManager();
+            if (ret != null) {
+                return ret;
+            }
+        } catch (IllegalStateException e) {
+        }
+        // Via FacesContext
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getContext() != null) {
+            ret = (BeanManager) ((ServletContext) FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getContext()).getAttribute("javax.enterprise.inject.spi.BeanManager");
+            if (ret != null) {
+                return ret;
+            }
+        }
+        // Via JNDI
+        try {
+            InitialContext initialContext = new InitialContext();
+            return (BeanManager) initialContext.lookup("java:comp/BeanManager");
+        } catch (NamingException e) {
+            logger.error("Couldn't get BeanManager through JNDI: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static Object getBeanByName(String name, Class clazz) {
+        BeanManager bm = getBeanManager();
+        if (bm != null && bm.getBeans(name)
+                .iterator()
+                .hasNext()) {
+            Bean bean = bm.getBeans(name)
+                    .iterator()
+                    .next();
+            CreationalContext ctx = bm.createCreationalContext(bean);
+            return bm.getReference(bean, clazz, ctx);
+        }
+
+        return null;
+    }
+
     /**
      * 
      * @return
      */
     public static NavigationHelper getNavigationHelper() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
-            if (o != null) {
-                return (NavigationHelper) o;
-            }
-        }
-
-        return null;
+        return (NavigationHelper) getBeanByName("navigationHelper", NavigationHelper.class);
     }
 
     /**
@@ -127,14 +179,7 @@ public class BeanUtils {
      * @return
      */
     public static ActiveDocumentBean getActiveDocumentBean() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("activeDocumentBean");
-            if (o != null) {
-                return (ActiveDocumentBean) o;
-            }
-        }
-
-        return null;
+        return (ActiveDocumentBean) getBeanByName("activeDocumentBean", ActiveDocumentBean.class);
     }
 
     /**
@@ -142,14 +187,7 @@ public class BeanUtils {
      * @return
      */
     public static SearchBean getSearchBean() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("searchBean");
-            if (o != null) {
-                return (SearchBean) o;
-            }
-        }
-
-        return null;
+        return (SearchBean) getBeanByName("searchBean", SearchBean.class);
     }
 
     /**
@@ -157,14 +195,7 @@ public class BeanUtils {
      * @return
      */
     public static CmsBean getCmsBean() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cmsBean");
-            if (o != null) {
-                return (CmsBean) o;
-            }
-        }
-
-        return null;
+        return (CmsBean) getBeanByName("cmsBean", CmsBean.class);
     }
 
     /**
@@ -172,29 +203,7 @@ public class BeanUtils {
      * @return
      */
     public static CalendarBean getCalendarBean() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("calendarBean");
-            if (o != null) {
-                return (CalendarBean) o;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    public static BookshelfBean getBookshelfBean() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("bookshelfBean");
-            if (o != null) {
-                return (BookshelfBean) o;
-            }
-        }
-
-        return null;
+        return (CalendarBean) getBeanByName("calendarBean", CalendarBean.class);
     }
 
     /**
@@ -202,14 +211,7 @@ public class BeanUtils {
      * @return
      */
     public static UserBean getUserBean() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userBean");
-            if (o != null) {
-                return (UserBean) o;
-            }
-        }
-
-        return null;
+        return (UserBean) getBeanByName("userBean", UserBean.class);
     }
 
     /**
@@ -217,14 +219,7 @@ public class BeanUtils {
      * @return
      */
     public static BrowseBean getBrowseBean() {
-        if (FacesContext.getCurrentInstance() != null) {
-            Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("browseBean");
-            if (o != null) {
-                return (BrowseBean) o;
-            }
-        }
-
-        return null;
+        return (BrowseBean) getBeanByName("browseBean", BrowseBean.class);
     }
 
     /**
@@ -233,7 +228,8 @@ public class BeanUtils {
      */
     public static UserBean getUserBeanFromRequest(HttpServletRequest request) {
         if (request != null) {
-            return (UserBean) request.getSession().getAttribute("userBean");
+            return (UserBean) request.getSession()
+                    .getAttribute("userBean");
         }
 
         return null;
@@ -263,7 +259,9 @@ public class BeanUtils {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        return value.replace("/", SLASH_REPLACEMENT).replace("\\", BACKSLASH_REPLACEMENT).replace("?", QUESTION_MARK_REPLACEMENT);
+        return value.replace("/", SLASH_REPLACEMENT)
+                .replace("\\", BACKSLASH_REPLACEMENT)
+                .replace("?", QUESTION_MARK_REPLACEMENT);
     }
 
     /**
@@ -277,6 +275,8 @@ public class BeanUtils {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        return value.replace(SLASH_REPLACEMENT, "/").replace(BACKSLASH_REPLACEMENT, "\\").replace(QUESTION_MARK_REPLACEMENT, "?");
+        return value.replace(SLASH_REPLACEMENT, "/")
+                .replace(BACKSLASH_REPLACEMENT, "\\")
+                .replace(QUESTION_MARK_REPLACEMENT, "?");
     }
 }

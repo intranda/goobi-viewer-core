@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -27,8 +28,8 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.FilenameUtils;
@@ -48,9 +49,11 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItemMetadata;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 
-@ManagedBean
+@Named
 @SessionScoped
-public class CmsMediaBean {
+public class CmsMediaBean implements Serializable {
+
+    private static final long serialVersionUID = 1156829371382069634L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsMediaBean.class);
 

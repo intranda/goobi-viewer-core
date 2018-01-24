@@ -123,7 +123,9 @@ public class SearchQueryItem implements Serializable {
      * @return
      */
     public boolean isHierarchical() {
-        return DataManager.getInstance().getConfiguration().isAdvancedSearchFieldHierarchical(field);
+        return DataManager.getInstance()
+                .getConfiguration()
+                .isAdvancedSearchFieldHierarchical(field);
     }
 
     /**
@@ -262,9 +264,12 @@ public class SearchQueryItem implements Serializable {
                     if (additionalField) {
                         sbItem.append(" OR ");
                     }
-                    String useField = field.startsWith("MD_") && !field.endsWith(SolrConstants._UNTOKENIZED) ? new StringBuilder(field).append(
-                            SolrConstants._UNTOKENIZED).toString() : field;
-                    sbItem.append(useField).append(':');
+                    // No longer using _UNTOKENIZED fields for phrase searches, otherwise only complete field value matches are possible; contained exact matches within a string won't be found (e.g. "foo bar" in DEFAULT:"bla foo bar blup")
+                    //                    String useField = field.startsWith("MD_") && !field.endsWith(SolrConstants._UNTOKENIZED) ? new StringBuilder(field).append(
+                    //                            SolrConstants._UNTOKENIZED).toString() : field;
+                    String useField = field;
+                    sbItem.append(useField)
+                            .append(':');
                     if (useValue.charAt(0) != '"') {
                         sbItem.append('"');
                     }
@@ -289,8 +294,10 @@ public class SearchQueryItem implements Serializable {
             case OR:
             // AND/OR: e.g. '(FIELD:value1 AND/OR FIELD:"value2" AND/OR -FIELD:value3)' for each query item
             {
-                if (!value.trim().isEmpty()) {
-                    String[] valueSplit = value.trim().split(" ");
+                if (!value.trim()
+                        .isEmpty()) {
+                    String[] valueSplit = value.trim()
+                            .split(" ");
                     boolean moreThanOneField = false;
                     for (String field : fields) {
                         if (moreThanOneField) {
@@ -301,7 +308,8 @@ public class SearchQueryItem implements Serializable {
                         //                            LuceneConstants._UNTOKENIZED)) {
                         //                        useField = new StringBuilder(field).append(LuceneConstants._UNTOKENIZED).toString();
                         //                    }
-                        sbItem.append(useField).append(':');
+                        sbItem.append(useField)
+                                .append(':');
                         if (valueSplit.length > 1) {
                             sbItem.append('(');
                         }
@@ -332,7 +340,9 @@ public class SearchQueryItem implements Serializable {
                                         sbItem.append(" OR ");
                                         break;
                                     default:
-                                        sbItem.append(' ').append(operator.name()).append(' ');
+                                        sbItem.append(' ')
+                                                .append(operator.name())
+                                                .append(' ');
                                         break;
                                 }
                             }
@@ -357,7 +367,9 @@ public class SearchQueryItem implements Serializable {
 
                             if (value.contains("-")) {
                                 // Hack to enable fuzzy searching for terms that contain hyphens
-                                sbItem.append('"').append(ClientUtils.escapeQueryChars(value)).append('"');
+                                sbItem.append('"')
+                                        .append(ClientUtils.escapeQueryChars(value))
+                                        .append('"');
                             } else {
                                 // Preserve truncation before escaping
                                 String prefix = "";
@@ -371,8 +383,10 @@ public class SearchQueryItem implements Serializable {
                                     suffix = "*";
                                     useValue = useValue.substring(0, useValue.length() - 1);
                                 }
-                                
-                                sbItem.append(prefix).append(ClientUtils.escapeQueryChars(useValue)).append(suffix);
+
+                                sbItem.append(prefix)
+                                        .append(ClientUtils.escapeQueryChars(useValue))
+                                        .append(suffix);
                             }
                             if (SolrConstants.FULLTEXT.equals(field) || SolrConstants.SUPERFULLTEXT.equals(field)) {
                                 String val = value.replace("\"", "");

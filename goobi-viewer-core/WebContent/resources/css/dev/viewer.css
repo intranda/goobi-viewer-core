@@ -1693,33 +1693,30 @@ div.mce-fullscreen {
    ==============================================================*/
 /* CONTROLS */
 /* BLOCK */
-#readingMode .image-controls {
-  padding: 0;
-}
 .image-controls {
   padding: 15px 0;
+  /* ELEMENT */
 }
 .image-controls:before,
 .image-controls:after {
-  display: table;
   content: " ";
+  display: table;
 }
 .image-controls:after {
   clear: both;
 }
-.image-controls ul {
-  position: relative;
-  float: left;
-  left: 50%;
-  margin: 0 auto;
+.image-controls [data-toggle="mobile-image-controls"] {
+  display: none;
+  padding: 15px 0;
+  font-size: 21px;
+  text-align: center;
+  width: 100%;
 }
+/* BLOCK */
 .image-control {
-  display: block;
-  position: relative;
-  float: left;
-  right: 50%;
   margin-right: 5px;
   font-size: 1.5rem;
+  /* ELEMENT */
   /* ELEMENT */
 }
 .image-control.inactive a,
@@ -1737,6 +1734,7 @@ div.mce-fullscreen {
   min-width: 32px;
   height: 32px;
   line-height: 32px;
+  padding: 0;
   text-align: center;
   color: #6f6f6f;
   border: 1px solid #6f6f6f;
@@ -1754,6 +1752,9 @@ div.mce-fullscreen {
   padding: 0;
   font-size: 29px;
   cursor: pointer;
+}
+.image-control .labeltext {
+  display: none;
 }
 .image-control__page-browse,
 .image-control__select {
@@ -1804,43 +1805,35 @@ div.mce-fullscreen {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 @media screen and (max-width: 1024px) {
-  .image-control__page-browse {
+  li.image-control__page-browse {
     display: none;
   }
 }
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
-  .image-control__double-page-view,
-  .image-control__single-page-view,
-  .image-control__switch-pages,
-  .image-control__rotate-left,
-  .image-control__rotate-right,
-  .image-control__reset {
+  li.image-control__double-page-view,
+  li.image-control__single-page-view,
+  li.image-control__switch-pages,
+  li.image-control__rotate-left,
+  li.image-control__rotate-right,
+  li.image-control__reset {
     display: none;
   }
 }
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
-  .image-control__zoom-slider,
-  .image-control__pdf {
+  li.image-control__start,
+  li.image-control__back,
+  li.image-control__select,
+  li.image-control__forward,
+  li.image-control__end,
+  li.image-control__fullscreen {
+    display: inline-block;
+    float: left;
+  }
+  li.image-control__zoom-slider,
+  li.image-control__pdf {
     display: none;
-  }
-  .reading-mode__navigation .col-xs-3 {
-    padding-right: 5px;
-  }
-  .reading-mode__navigation .col-xs-8 {
-    padding: 0 5px;
-  }
-  .reading-mode__navigation .col-xs-1 {
-    padding-left: 5px;
-  }
-  .reading-mode__navigation .col-xs-1 .reading-mode__navigation-goback a {
-    margin: 6px 0 0 -15px;
-  }
-  .reading-mode__navigation .col-xs-1 .reading-mode__navigation-goback .fa {
-    width: 32px;
-    height: 32px;
-    font-size: 21px;
   }
 }
 /* ==============================================================
@@ -3013,15 +3006,18 @@ div[id*="-Modal"] .email-form .form-group {
   font-size: 1rem;
 }
 #statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell.chart-nearly-completed-table-cell-right .chart-nearly-completed-inner-table-row .chart-nearly-completed-inner-table-cell.chart-nearly-completed-inner-table-cell-right .progress {
+  height: auto;
   color: #1a1a1a;
   border-radius: 0;
   border: 1px solid #1a1a1a;
   background-color: #999;
 }
 #statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell.chart-nearly-completed-table-cell-right .chart-nearly-completed-inner-table-row .chart-nearly-completed-inner-table-cell.chart-nearly-completed-inner-table-cell-right .progress .bar {
-  height: 1.25rem;
-  line-height: 1.125rem;
+  padding: 5px 0;
   background-color: #fffdf6;
+}
+#statistics #chart-nearly-completed .chart-nearly-completed-table-row .chart-nearly-completed-table-cell.chart-nearly-completed-table-cell-right .chart-nearly-completed-inner-table-row .chart-nearly-completed-inner-table-cell.chart-nearly-completed-inner-table-cell-right .progress .bar span {
+  padding-left: 5px;
 }
 #statistics #chart-most-active-users {
   padding: 0.3125rem;
@@ -5381,10 +5377,10 @@ div.olMapViewport {
   padding: 16px 0;
 }
 .reading-mode__navigation-controls {
-  padding-top: 19px;
+  position: relative;
 }
 .reading-mode__navigation-goback {
-  padding-top: 19px;
+  padding-top: 12px;
   text-align: right;
 }
 .reading-mode__navigation-goback a {
@@ -5394,7 +5390,7 @@ div.olMapViewport {
   text-decoration: none;
 }
 .reading-mode__navigation-goback .fa {
-  font-size: 32px;
+  font-size: 28px;
   cursor: pointer;
 }
 .reading-mode__content-view,
@@ -5458,6 +5454,69 @@ div.olMapViewport {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
+  .reading-mode__navigation-logo span {
+    display: none;
+  }
+  .reading-mode__navigation-controls [data-toggle="mobile-image-controls"] {
+    display: inline-block;
+  }
+  .reading-mode__navigation-controls .image-controls {
+    padding: 0;
+  }
+  .reading-mode__navigation-controls .image-controls__actions {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -25%;
+    right: -25%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 999;
+  }
+  .reading-mode__navigation-controls .image-controls .list {
+    float: none;
+    left: 0;
+    padding: 10px;
+    padding-top: 0;
+  }
+  .reading-mode__navigation-controls .image-controls .list li {
+    float: none;
+    right: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control {
+    /* ELEMENT */
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control a,
+  .reading-mode__navigation-controls .image-controls .list li.image-control span {
+    position: relative;
+    display: block;
+    min-width: inherit;
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    text-align: left;
+    border: none;
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control .labeltext {
+    display: inline;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 40px;
+    width: calc(100% - 40px);
+    line-height: 40px;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+  }
+  .reading-mode__navigation-controls .image-controls .list li.image-control__page-browse,
+  .reading-mode__navigation-controls .image-controls .list li.image-control__select,
+  .reading-mode__navigation-controls .image-controls .list li.image-control__zoom-slider {
+    display: none;
+  }
   .reading-mode__content-view.in {
     width: 60%;
   }
@@ -5467,6 +5526,10 @@ div.olMapViewport {
 }
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
+  .reading-mode__navigation-controls .image-controls__actions {
+    left: -50%;
+    right: -50%;
+  }
   .reading-mode__content-view.in {
     width: 10%;
   }
@@ -6010,6 +6073,15 @@ div.olMapViewport {
    ==============================================================*/
 .rss_elem_wrapp h3 a {
   float: right;
+}
+.rss_elem_wrapp h3 a .fa {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: #fff;
+  background-color: #f08421;
 }
 .rss_elem_wrapp .rss-wrapp .rss-elem dl .rss-elem-info {
   margin-bottom: 0.875rem;
@@ -8041,30 +8113,56 @@ div.olMapViewport {
    CMS Select Template
    style declarations for adminCmsSelectTemplate.xhtml
    ==============================================================*/
-#cmsSelectTemplate #cmsSelectTemplateWrapper {
-  margin-top: 20px;
+/* CMS SELECT TEMPLATE */
+/* BLOCK */
+.cms-select-template {
+  /* ELEMENT */
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .row {
+.cms-select-template__template {
   margin-bottom: 14px;
   border-bottom: 1px solid #eee;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description {
-  position: relative;
+.cms-select-template__template:before,
+.cms-select-template__template:after {
+  content: " ";
+  display: table;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-description h3 {
+.cms-select-template__template:after {
+  clear: both;
+}
+.cms-select-template__image {
+  position: relative;
+  overflow: hidden;
+}
+.cms-select-template__image img {
+  width: 100%;
+}
+.cms-select-template__description h3 {
   margin: 0 0 21px 0;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .select-template-action {
-  padding: 14px 0;
+.cms-select-template__theme-template-marker,
+.cms-select-template__action {
+  padding: 5px 0 15px 0;
+}
+.cms-select-template__theme-template-marker {
+  font-size: 12px;
+  text-align: center;
+  color: #428bca;
+}
+.cms-select-template__action {
   text-align: right;
 }
-#cmsSelectTemplate #cmsSelectTemplateWrapper .theme-template-marker {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  border: 2px solid #428bca;
+.cms-select-template__action .btn-theme-template {
+  font-weight: normal;
   color: #428bca;
-  padding: 2px 5px;
+  border: 1px solid #428bca;
+  background-color: #fff;
+}
+.cms-select-template__action .btn-theme-template:hover,
+.cms-select-template__action .btn-theme-template:active,
+.cms-select-template__action .btn-theme-template:focus {
+  color: #fff;
+  background-color: #428bca;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

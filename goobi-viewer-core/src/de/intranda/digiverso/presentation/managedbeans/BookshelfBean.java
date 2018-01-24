@@ -21,15 +21,16 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,13 +49,16 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
 
-@ManagedBean
+@Named
 @SessionScoped
 public class BookshelfBean implements Serializable {
 
     private static final long serialVersionUID = -2656584301309913161L;
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfBean.class);
+
+    @Inject
+    private UserBean userBean;
 
     /** Currently selected bookshelf. */
     private Bookshelf currentBookshelf = null;
@@ -197,7 +201,7 @@ public class BookshelfBean implements Serializable {
     /**
      * Sets currentBookshelf to a new object.
      */
-    public final void resetCurrentBookshelfAction() {
+    public void resetCurrentBookshelfAction() {
         logger.trace("resetCurrentBookshelfAction");
         currentBookshelf = new Bookshelf();
         UserBean userBean = BeanUtils.getUserBean();
@@ -445,7 +449,6 @@ public class BookshelfBean implements Serializable {
         }
 
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-        UserBean userBean = (UserBean) request.getSession().getAttribute("userBean");
 
         // Do not allow duplicate names
         if (isNewBookshelf()) {

@@ -125,8 +125,8 @@
                                     <h:panelGroup id="collectionSelector">
                                         <h:panelGroup rendered="#{cmsMediaBean.currentMediaItem.isCollection()}">
                                             <div class="form-group">
-												<label class="col-sm-6 control-label">#{msg.cms_media_select_collection_field}:</label>
-												<div class="col-sm-6">
+												<label class="col-sm-4 control-label">#{msg.cms_media_select_collection_field}:</label>
+												<div class="col-sm-8">
 													<div class="form-control__select">
 														<h:selectOneMenu styleClass="form-control content-input" value="#{cmsMediaBean.currentMediaItem.collectionField}">
 															<f:selectItems value="#{cmsBean.getLuceneFields(true, true)}" var="field" itemValue="#{field}" itemLabel="#{field}" />

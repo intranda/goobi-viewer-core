@@ -203,7 +203,7 @@
 											</h:outputLink>
 
 											<!-- MULTIVOLUME -->
-											<h:outputLink value="#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
+											<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.anchor}">
 												<h:graphicImage url="#{hit.browseElement.thumbnailUrl}" title="#{hit.browseElement.label}"
 													styleClass="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME' ? 'stacked-thumbnail' : ''}" />
 												<h:panelGroup rendered="#{configurationBean.anchorThumbnailMode == 'FIRSTVOLUME'}">

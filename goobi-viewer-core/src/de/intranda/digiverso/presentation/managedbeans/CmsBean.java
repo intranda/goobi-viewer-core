@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,10 +31,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -79,17 +80,19 @@ import de.intranda.digiverso.presentation.model.viewer.PageType;
 /**
  * CMS functions.
  */
-@ManagedBean
+@Named
 @SessionScoped
-public class CmsBean {
+public class CmsBean implements Serializable {
+
+    private static final long serialVersionUID = -2021732230593473827L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsBean.class);
 
     private static final int DEFAULT_ROWS_PER_PAGE = 15;
 
-    @ManagedProperty("#{navigationHelper}")
+    @Inject
     private NavigationHelper navigationHelper;
-    @ManagedProperty("#{searchBean}")
+    @Inject
     private SearchBean searchBean;
 
     private TableDataProvider<CMSPage> lazyModelPages;
@@ -237,13 +240,15 @@ public class CmsBean {
     }
 
     public List<CMSPageTemplate> getTemplates() {
-        List<CMSPageTemplate> list = CMSTemplateManager.getInstance()
-                .getTemplates()
-                .stream()
-                .sorted((t1, t2) -> t1.getTemplateFileName()
-                        .compareTo(t2.getTemplateFileName()))
-                .collect(Collectors.toList());
-        return list;
+        try {            
+            List<CMSPageTemplate> list = CMSTemplateManager.getInstance().getTemplates().stream()
+                    .sorted((t1,t2) -> t1.getTemplateFileName().compareTo(t2.getTemplateFileName()))
+                    .collect(Collectors.toList());
+            return list;
+        } catch(IllegalStateException e) {
+            logger.warn("Error loading templates", e);
+            return Collections.EMPTY_LIST;
+        }
     }
 
 
@@ -689,8 +694,7 @@ public class CmsBean {
         this.currentPage = currentPage;
         if (currentPage != null) {
             this.currentPage.setListPage(1);
-            BeanUtils.getNavigationHelper()
-                    .setCmsPage(true);
+            navigationHelper.setCmsPage(true);
             logger.trace("Set current cms page to " + this.currentPage.getMenuTitle());
         }
     }
@@ -1192,7 +1196,6 @@ public class CmsBean {
      * @throws DAOException
      */
     public void saveStaticPages() throws DAOException {
-
         for (CMSStaticPage page : getStaticPages()) {
             try {               
                 if(page.getId() != null) {

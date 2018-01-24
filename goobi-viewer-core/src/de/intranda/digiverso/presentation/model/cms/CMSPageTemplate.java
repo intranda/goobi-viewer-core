@@ -58,6 +58,8 @@ public class CMSPageTemplate {
     private String iconFileName;
 
     private boolean displaySortingField = false;
+    
+    private boolean appliesToExpandedUrl = false;
 
     private List<CMSContentItemTemplate> contentItems = new ArrayList<>();
     
@@ -119,6 +121,7 @@ public class CMSPageTemplate {
                 Element options = root.getChild("options");
                 if (options != null) {
                     template.setDisplaySortingField(Boolean.parseBoolean(options.getChildText("useSorterField")));
+                    template.setAppliesToExpandedUrl(Boolean.parseBoolean(options.getChildText("appliesToExpandedUrl")));
                 }
                 template.validate();
                 return template;
@@ -358,6 +361,20 @@ public class CMSPageTemplate {
      */
     public void setThemeTemplate(boolean themeTemplate) {
         this.themeTemplate = themeTemplate;
+    }
+
+    /**
+     * @param appliesToExpandedUrl the appliesToExpandedUrl to set
+     */
+    public void setAppliesToExpandedUrl(boolean appliesToExpandedUrl) {
+        this.appliesToExpandedUrl = appliesToExpandedUrl;
+    }
+    
+    /**
+     * @return the appliesToExpandedUrl
+     */
+    public boolean isAppliesToExpandedUrl() {
+        return appliesToExpandedUrl;
     }
 
 

@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.cms;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -282,17 +283,17 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         
         if (StringUtils.isNotBlank(getLink())) {
             try {
-                URI uri = new URI(getLink());            
+                URI uri = new URI(URLDecoder.decode(getLink(), "utf-8"));            
                 if(!uri.isAbsolute()) {                    
                     String viewerURL = "/";
                     if(request != null) {
                         viewerURL = request.getContextPath();
                     }
-                    String urlString = (viewerURL + getLink()).replace("//", "/");
+                    String urlString = (viewerURL + URLDecoder.decode(getLink(), "utf-8")).replace("//", "/");
                     uri = new URI(urlString);
                 }
                 return uri;
-            } catch (URISyntaxException e) {
+            } catch (URISyntaxException | UnsupportedEncodingException e) {
                 logger.error("Unable to create uri from " + getLink());
                 return null;
             }

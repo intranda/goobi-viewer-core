@@ -107,6 +107,9 @@
             $( '#changeLocal' ).hide();
             $( '#mobileNav' ).slideToggle( 'fast' );
         } );
+        $( '[data-toggle="mobile-image-controls"]' ).on( 'click', function() {
+            $( '.image-controls__actions' ).slideToggle( 'fast' );
+        } );
         
         // toggle language
         $( '[data-toggle="language"]' ).on( 'click', function() {
@@ -292,35 +295,36 @@
             }
         } );
         
-     // make sure only integer values may be entered in input fields of class
+        // make sure only integer values may be entered in input fields of class
         // 'input-integer'
         $( '.input-float' ).on( "keypress", function( event ) {
-        	console.log(event);
-        	switch(event.which) {
-        		case 8:	//delete
-        		case 9:	//tab
-        		case 13: //enter
-        		case 46: //dot
-        		case 44: //comma
-        		case 43: //plus
-        		case 45: //minus
-        			return true;
-        		case 118:
-        			return event.ctrlKey;	//copy
-        		default:
-        			switch(event.keyCode) {
-        			case 8:	//delete
-            		case 9:	//tab
-            		case 13: //enter
-            			return true;
-        			default:
-	        			if ( event.which < 48 || event.which > 57 ) {
-	        				return false;
-	        			} else {
-	        				return true;
-	        			}
-        			}
-        	}
+            console.log( event );
+            switch ( event.which ) {
+                case 8: // delete
+                case 9: // tab
+                case 13: // enter
+                case 46: // dot
+                case 44: // comma
+                case 43: // plus
+                case 45: // minus
+                    return true;
+                case 118:
+                    return event.ctrlKey; // copy
+                default:
+                    switch ( event.keyCode ) {
+                        case 8: // delete
+                        case 9: // tab
+                        case 13: // enter
+                            return true;
+                        default:
+                            if ( event.which < 48 || event.which > 57 ) {
+                                return false;
+                            }
+                            else {
+                                return true;
+                            }
+                    }
+            }
         } );
         
         // set tinymce language

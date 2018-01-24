@@ -3,35 +3,29 @@
    ==============================================================*/
 /* CONTROLS */
 /* BLOCK */
-#readingMode .image-controls {
-	padding: 0;
-}
-
 .image-controls {
 	padding: 15px 0;
-    &:before,
-    &:after {
-        display: table;
-        content: " ";
+    .mx-clearfloats;
+    /* ELEMENT */
+    [data-toggle="mobile-image-controls"] {
+    	display: none;
+    	padding: 15px 0;
+    	font-size: 21px;
+    	text-align: center;
+    	width: 100%;
     }
-    &:after {
-        clear: both;
-    }
-    ul {
-        position: relative;
-        float: left;
-        left: 50%;
-        margin: 0 auto;
+    &__actions {
+	    ul {}
+	    li {}
+	    a {}
+	    span {}
     }
 }
-
+/* BLOCK */
 .image-control {
-    display: block;
-    position: relative;
-    float: left;
-    right: 50%;
     margin-right: 5px;
     font-size: 1.5rem;
+    /* ELEMENT */
     &.inactive {
         a, span {
             opacity: 0.4;
@@ -47,6 +41,7 @@
         min-width: 32px;
         height: 32px;
         line-height: 32px;
+        padding: 0;
         text-align: center;
         color: @gray;
         border: 1px solid @gray;
@@ -63,6 +58,9 @@
         padding: 0;
         font-size: 29px;
         cursor: pointer;
+    }
+    .labeltext {
+    	display: none;
     }
     /* ELEMENT */
     &__start {}
@@ -139,7 +137,7 @@
 
 /* BREAKPOINT FOR DESKTOP */
 @media screen and (max-width: 1024px) {
-	.image-control__page-browse {
+	li.image-control__page-browse {
 		display: none;
 	}
 }
@@ -148,37 +146,29 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .image-control__double-page-view,
-    .image-control__single-page-view,
-    .image-control__switch-pages,
-    .image-control__rotate-left,
-    .image-control__rotate-right,
-    .image-control__reset {
+    li.image-control__double-page-view,
+    li.image-control__single-page-view,
+    li.image-control__switch-pages,
+    li.image-control__rotate-left,
+    li.image-control__rotate-right,
+    li.image-control__reset {
         display: none;
     }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    .image-control__zoom-slider,
-    .image-control__pdf {
+	li.image-control__start,
+	li.image-control__back,
+	li.image-control__select,
+	li.image-control__forward,
+	li.image-control__end,
+	li.image-control__fullscreen {
+		display: inline-block;
+	    float: left;
+	}
+    li.image-control__zoom-slider,
+    li.image-control__pdf {
         display: none;
-    }
-    .reading-mode__navigation .col-xs-3 {
-        padding-right: 5px;
-    }
-    .reading-mode__navigation .col-xs-8 {
-        padding: 0 5px;
-    }
-    .reading-mode__navigation .col-xs-1 {
-        padding-left: 5px;
-        .reading-mode__navigation-goback a {
-            margin: 6px 0 0 -15px;
-        }
-        .reading-mode__navigation-goback .fa {
-            width: 32px;
-            height: 32px;
-            font-size: 21px;
-        }
     }
 }
