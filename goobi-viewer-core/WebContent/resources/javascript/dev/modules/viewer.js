@@ -429,6 +429,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
+    var _confirmCounter = 0;
     var _defaults = {
         root: '',
         msg: {
@@ -448,6 +449,11 @@ var viewerJS = ( function( viewer ) {
             }
             
             $.extend( true, _defaults, config );
+            
+            // set confirm counter to local storage
+            if ( localStorage.getItem( 'confirmCounter' ) == undefined ) {
+                localStorage.setItem( 'confirmCounter', 0 );
+            }
             
             // render bookshelf dropdown list
             _renderDropdownList();
@@ -484,16 +490,29 @@ var viewerJS = ( function( viewer ) {
                 var currPi = currBtn.attr( 'data-pi' );
                 
                 _isElementSet( _defaults.root, currPi ).then( function( isSet ) {
+                    // set confirm counter
+                    _confirmCounter = parseInt( localStorage.getItem( 'confirmCounter' ) );
+                    
                     if ( !isSet ) {
-                        if ( confirm( _defaults.msg.saveItemToSession ) ) {
+                        if ( _confirmCounter == 0 ) {
+                            if ( confirm( _defaults.msg.saveItemToSession ) ) {
+                                currBtn.addClass( 'added' );
+                                localStorage.setItem( 'confirmCounter', 1 );
+                                _setSessionElement( _defaults.root, currPi ).then( function() {
+                                    _setSessionElementCount();
+                                    _renderDropdownList();
+                                } );
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                        else {
                             currBtn.addClass( 'added' );
                             _setSessionElement( _defaults.root, currPi ).then( function() {
                                 _setSessionElementCount();
                                 _renderDropdownList();
                             } );
-                        }
-                        else {
-                            return false;
                         }
                     }
                     else {
@@ -685,6 +704,11 @@ var viewerJS = ( function( viewer ) {
             var dropdownListItemNameLink = null;
             var dropdownListItemDelete = null;
             
+            // set confirm counter
+            if ( elements.items.length < 1 ) {
+                localStorage.setItem( 'confirmCounter', 0 );
+            }
+            
             elements.items
                     .forEach( function( item ) {
                         dropdownListItem = $( '<li />' );
@@ -737,6 +761,7 @@ var viewerJS = ( function( viewer ) {
             $( '[data-bookshelf-type="reset"]' ).on( 'click', function() {
                 if ( confirm( _defaults.msg.resetBookshelvesConfirm ) ) {
                     _deleteAllSessionElements( _defaults.root ).then( function() {
+                        localStorage.setItem( 'confirmCounter', 0 );
                         _setSessionElementCount();
                         _setAddActiveState();
                         _renderDropdownList();

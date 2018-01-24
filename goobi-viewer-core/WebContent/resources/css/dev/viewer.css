@@ -1064,8 +1064,7 @@ div.mce-fullscreen {
   position: absolute;
   top: 100%;
   right: 0;
-  max-width: 375px;
-  min-width: 225px;
+  width: 300px;
   z-index: 999;
 }
 .bookshelf-navigation__dropdown-list {
