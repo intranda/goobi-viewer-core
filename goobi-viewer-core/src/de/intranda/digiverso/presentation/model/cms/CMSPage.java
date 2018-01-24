@@ -860,4 +860,20 @@ public class CMSPage {
     public String getParentPageId() {
         return parentPageId;
     }
+
+    /**
+     * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
+     */
+    public boolean mayContainURLParameters() {
+        try {            
+            if(getTemplate() != null) {            
+                return getTemplate().isAppliesToExpandedUrl();
+            } else {
+                return false;
+            }
+        } catch(IllegalStateException e) {
+            logger.warn("Unable to acquire template", e);
+            return false;
+        }
+    }
 }

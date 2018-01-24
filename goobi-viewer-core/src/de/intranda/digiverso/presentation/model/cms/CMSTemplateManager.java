@@ -119,6 +119,8 @@ public final class CMSTemplateManager {
                     .getExternalContext()
                     .getContext();
             webContentRoot = servletContext.getContextPath();
+        } else if(filesystemPath == null) {
+            throw new PresentationException("No faces context found");
         }
 
         try {

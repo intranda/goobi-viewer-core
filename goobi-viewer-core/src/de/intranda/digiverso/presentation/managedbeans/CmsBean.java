@@ -210,10 +210,15 @@ public class CmsBean implements Serializable {
     }
 
     public List<CMSPageTemplate> getTemplates() {
-        List<CMSPageTemplate> list = CMSTemplateManager.getInstance().getTemplates().stream()
-                .sorted((t1,t2) -> t1.getTemplateFileName().compareTo(t2.getTemplateFileName()))
-                .collect(Collectors.toList());
-        return list;
+        try {            
+            List<CMSPageTemplate> list = CMSTemplateManager.getInstance().getTemplates().stream()
+                    .sorted((t1,t2) -> t1.getTemplateFileName().compareTo(t2.getTemplateFileName()))
+                    .collect(Collectors.toList());
+            return list;
+        } catch(IllegalStateException e) {
+            logger.warn("Error loading templates", e);
+            return Collections.EMPTY_LIST;
+        }
     }
 
     public List<CMSPage> loadCreatedPages() throws DAOException {
@@ -1200,7 +1205,9 @@ public class CmsBean implements Serializable {
 
     public void saveCMSPages() throws DAOException {
 
-        for (CMSPage cmsPage : getCreatedPages()) {
+        List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages();
+        
+        for (CMSPage cmsPage : allPages) {
             cmsPage.setStaticPageName(null);
         }
 
@@ -1210,7 +1217,7 @@ public class CmsBean implements Serializable {
             }
         }
 
-        for (CMSPage cmsPage : getCreatedPages()) {
+        for (CMSPage cmsPage : allPages) {
             if (!DataManager.getInstance().getDao().updateCMSPage(cmsPage)) {
                 Messages.error("cms_errorSavingStaticPages");
                 return;
