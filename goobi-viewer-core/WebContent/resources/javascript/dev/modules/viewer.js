@@ -1585,6 +1585,9 @@ var viewerJS = ( function( viewer ) {
                 
                 dropdownListItem.append( dropdownListItemText );
                 dropdownList.append( dropdownListItem );
+                
+                // set bookshelf item counter
+                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems );
             }
             
             // render complete list
