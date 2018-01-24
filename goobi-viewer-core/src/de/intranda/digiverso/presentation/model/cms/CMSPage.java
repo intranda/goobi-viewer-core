@@ -51,6 +51,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -791,8 +793,15 @@ public class CMSPage {
     public String getRelativeUrlPath(boolean pretty) {
         if (pretty && StringUtils.isNotBlank(getPersistentUrl())) {
             return getPersistentUrl() + "/";
-        } else if(pretty && StringUtils.isNotBlank(getStaticPageName())){
-            return getStaticPageName() + "/";
+        } else if(pretty){
+            try {
+                Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(this);
+                if(staticPage.isPresent()){
+                    return staticPage.get().getPageName() + "/";
+                }
+            } catch (DAOException e) {
+                logger.error(e.toString(), e);
+            }
         }
         return "cms/" + getId() + "/";
     }

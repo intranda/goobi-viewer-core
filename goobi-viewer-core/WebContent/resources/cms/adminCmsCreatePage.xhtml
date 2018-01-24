@@ -44,7 +44,7 @@
 										<ul class="nav nav-tabs" role="tablist">
 											<c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
 												<li role="presentation" class="#{cmsBean.selectedLocale == locale ? 'active':''}">
-													<h:commandLink value="#{locale}" action="#{cmsBean.setSelectedLocale(locale)}" />
+													<h:commandLink value="#{locale}" action="#{cmsBean.setSelectedLocale(locale)}" immediate="false" />
 												</li>
 											</c:forEach>
 											<li role="presentation" class="#{cmsBean.selectedLocale == null ? 'active':''}"><h:commandLink value="#{msg.cms_pageSidebar}" action="#{cmsBean.setSelectedLocale(null)}" /></li>

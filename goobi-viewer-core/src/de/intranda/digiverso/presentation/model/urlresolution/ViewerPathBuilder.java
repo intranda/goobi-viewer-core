@@ -32,6 +32,7 @@ import com.ocpsoft.pretty.PrettyContext;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
+import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -111,10 +112,8 @@ public class ViewerPathBuilder {
                 currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                 currentPath.setPageType(pageType.get());
                 if(pageType.get().isHandledWithCms()) {
-                    Optional<CMSPage> oCmsPage = DataManager.getInstance().getDao().getAllCMSPages().stream()
-                            .filter(page -> StringUtils.isNotBlank(page.getStaticPageName()))
-                            .filter(page -> pageType.get().matches(page.getStaticPageName()))
-                            .findFirst();
+                    Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForTypeType(pageType.get());
+                    Optional<CMSPage> oCmsPage = staticPage.map(sp -> sp.getCmsPage());
                     if(oCmsPage.isPresent()) {
                         currentPath.setCmsPage(oCmsPage.get());
                     }

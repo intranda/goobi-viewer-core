@@ -800,7 +800,7 @@ public class NavigationHelper implements Serializable {
         }
     }
 
-    public void updateBreadcrumbs(CMSPage cmsPage) {
+    public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
         resetBreadcrumbs();
         Set<CMSPage> linkedPages = new HashSet<>();
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
@@ -810,7 +810,8 @@ public class NavigationHelper implements Serializable {
                 return;
             }
             linkedPages.add(cmsPage);
-            if (PageType.index.matches(cmsPage.getStaticPageName())) {
+            if(DataManager.getInstance().getDao().getStaticPageForCMSPage(cmsPage).map(sp -> sp.getPageName()).filter(name -> PageType.index.name().equals(name)).isPresent()) {
+//            if (PageType.index.matches(cmsPage.getStaticPageName())) {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }

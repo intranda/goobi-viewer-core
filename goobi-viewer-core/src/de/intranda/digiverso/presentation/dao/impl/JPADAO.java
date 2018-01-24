@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -59,6 +60,7 @@ import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob.JobStatus;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 public class JPADAO implements IDAO {
 
@@ -2803,5 +2805,70 @@ public class JPADAO implements IDAO {
             em.close();
         }
     }
+
+    /**
+     * 
+     */
+    @Override
+    public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
+        preQuery();
+        Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
+        q.setParameter("id", page.getId());
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return getSingleResult(q);
+    }
+    
+    /**
+     * Helper method to get the first result of the given query if any results are returned, 
+     * or an empty Optional otherwise
+     * 
+     * @throws ClassCastException   if the first result cannot be cast to the expected type
+     * @param q     the query to perform
+     * @return      an Optional containing the first query result, or an empty Optional if no results are present
+     */
+    @SuppressWarnings("unchecked")
+    private <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
+        List<Object> results =  q.getResultList();
+        if(results == null || results.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable((T)results.get(0));
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getStaticPageForTypeType(de.intranda.digiverso.presentation.dao.PageType)
+     */
+    @Override
+    public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
+        q.setParameter("name", pageType.name());
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return getSingleResult(q);
+    }
+    
+    /**
+     * Helper method to get the only result of a query. 
+     * In contrast to {@link javax.persistence.Query#getSingleResult()} this does  not throw an exception if no results
+     * are found. Instead, it returns an empty Optional
+     * 
+     * @throws ClassCastException   if the first result cannot be cast to the expected type
+     * @throws NonUniqueResultException   if the query matches more than one result
+     * @param q     the query to perform
+     * @return      an Optional containing the query result, or an empty Optional if no results are present
+     */
+    @SuppressWarnings("unchecked")
+    private <T> Optional<T> getSingleResult(Query q) throws ClassCastException, NonUniqueResultException {
+        List<Object> results =  q.getResultList();
+        if(results == null || results.isEmpty()) {
+            return Optional.empty();
+        } else if(results.size() > 1) {
+            throw new NonUniqueResultException("Query found " + results.size() + " results instead of only one");
+        } else {
+            return Optional.ofNullable((T)results.get(0));
+        }
+    }
+
 
 }

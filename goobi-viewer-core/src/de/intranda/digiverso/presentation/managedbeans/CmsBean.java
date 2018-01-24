@@ -117,20 +117,24 @@ public class CmsBean implements Serializable {
             lazyModelPages = new PersistentTableDataProvider<>(new TableDataSource<CMSPage>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
-                
+
                 @Override
                 public List<CMSPage> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) {
                     try {
                         if (StringUtils.isBlank(sortField)) {
                             sortField = "id";
                         }
-                        List<CMSPage> pages = DataManager.getInstance().getDao().getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                        List<CMSPage> pages = DataManager.getInstance()
+                                .getDao()
+                                .getCMSPages(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                         pages.forEach(page -> {
                             PageValidityStatus validityStatus = isPageValid(page);
                             page.setValidityStatus(validityStatus);
-                            if(validityStatus.isValid()) {
+                            if (validityStatus.isValid()) {
                                 page.getSidebarElements()
                                         .forEach(element -> element.deSerialize());
+                            } else {
+                                System.out.println("Invalid page: " + page.getId());
                             }
                         });
                         return pages;
@@ -145,16 +149,19 @@ public class CmsBean implements Serializable {
                 public long getTotalNumberOfRecords(Map<String, String> filters) {
                     if (!numCreatedPages.isPresent()) {
                         try {
-                            numCreatedPages = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPageCount(filters));
+                            numCreatedPages = Optional.ofNullable(DataManager.getInstance()
+                                    .getDao()
+                                    .getCMSPageCount(filters));
                         } catch (DAOException e) {
                             logger.error("Unable to retrieve total number of cms pages", e);
                         }
                     }
-                    return numCreatedPages.orElse(0l);                }
+                    return numCreatedPages.orElse(0l);
+                }
 
                 @Override
                 public void resetTotalNumberOfRecords() {
-                    numCreatedPages = Optional.empty();                    
+                    numCreatedPages = Optional.empty();
                 }
             });
             lazyModelPages.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -196,6 +203,14 @@ public class CmsBean implements Serializable {
             }
         }
         return list;
+    }
+
+    /**
+     * @deprecated This method only remains to avoid pages failing to load which still call this method
+     */
+    @Deprecated
+    public void forwardToCMSPage() {
+        //do nothing
     }
 
     public Locale getDefaultLocale() {
@@ -240,17 +255,19 @@ public class CmsBean implements Serializable {
     }
 
     public List<CMSPageTemplate> getTemplates() {
-        try {            
-            List<CMSPageTemplate> list = CMSTemplateManager.getInstance().getTemplates().stream()
-                    .sorted((t1,t2) -> t1.getTemplateFileName().compareTo(t2.getTemplateFileName()))
+        try {
+            List<CMSPageTemplate> list = CMSTemplateManager.getInstance()
+                    .getTemplates()
+                    .stream()
+                    .sorted((t1, t2) -> t1.getTemplateFileName()
+                            .compareTo(t2.getTemplateFileName()))
                     .collect(Collectors.toList());
             return list;
-        } catch(IllegalStateException e) {
+        } catch (IllegalStateException e) {
             logger.warn("Error loading templates", e);
             return Collections.EMPTY_LIST;
         }
     }
-
 
     /**
      * @param page
@@ -263,7 +280,8 @@ public class CmsBean implements Serializable {
             return PageValidityStatus.INVALID_NO_TEMPLATE;
         } else {
             //remove page with content items that don't match the template's content items
-            for (CMSContentItem templateItem : page.getTemplate().getContentItems()) {
+            for (CMSContentItem templateItem : page.getTemplate()
+                    .getContentItems()) {
                 if (!page.hasContentItem(templateItem.getItemId())) {
                     page.addContentItem(new CMSContentItem(templateItem));
                     //                    logger.warn("Found template item that doesn't exists in page");
@@ -423,7 +441,9 @@ public class CmsBean implements Serializable {
         int offset = item.getListOffset();
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
-        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
+        List<CMSPage> cmsPages = DataManager.getInstance()
+                .getDao()
+                .getAllCMSPages();
         if (!StringUtils.isEmpty(classification)) {
             for (CMSPage cmsPage : cmsPages) {
                 if (cmsPage.isPublished() && cmsPage.getClassifications()
@@ -665,9 +685,11 @@ public class CmsBean implements Serializable {
     }
 
     public CMSPage getPage(Long pageId) throws DAOException {
-        
-        if(pageId != null) {
-            return DataManager.getInstance().getDao().getCMSPage(pageId);
+
+        if (pageId != null) {
+            return DataManager.getInstance()
+                    .getDao()
+                    .getCMSPage(pageId);
         } else {
             return null;
         }
@@ -1134,27 +1156,31 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
+    @SuppressWarnings("deprecation")
     private List<CMSStaticPage> createStaticPageList() throws DAOException {
-        List<CMSStaticPage> staticPages = DataManager.getInstance().getDao().getAllStaticPages();
-        
-        
-        
-        if(staticPages == null || staticPages.isEmpty()) {
+        List<CMSStaticPage> staticPages = DataManager.getInstance()
+                .getDao()
+                .getAllStaticPages();
+
+        if (staticPages == null || staticPages.isEmpty()) {
             //resore from old schema
-            staticPages = DataManager.getInstance().getDao().getAllCMSPages().stream()
-            .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
-            .map(cmsPage -> new CMSStaticPage(cmsPage))
-            .distinct()
-            .collect(Collectors.toList());
+            staticPages = DataManager.getInstance()
+                    .getDao()
+                    .getAllCMSPages()
+                    .stream()
+                    .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
+                    .map(cmsPage -> new CMSStaticPage(cmsPage))
+                    .distinct()
+                    .collect(Collectors.toList());
         }
         List<PageType> pageTypesForCMS = PageType.getTypesHandledByCms();
         for (PageType pageType : pageTypesForCMS) {
             CMSStaticPage newPage = new CMSStaticPage(pageType.name());
-            if(!staticPages.contains(newPage)) {
+            if (!staticPages.contains(newPage)) {
                 staticPages.add(newPage);
             }
         }
-        
+
         return staticPages;
     }
 
@@ -1164,7 +1190,10 @@ public class CmsBean implements Serializable {
      */
     public List<CMSPage> getAvailableParentPages(CMSPage page) throws DAOException {
         Locale currentLocale = BeanUtils.getLocale();
-        return DataManager.getInstance().getDao().getAllCMSPages().stream()
+        return DataManager.getInstance()
+                .getDao()
+                .getAllCMSPages()
+                .stream()
                 .filter(p -> !p.equals(page))
                 .sorted((p1, p2) -> p1.getMenuTitle(currentLocale)
                         .toLowerCase()
@@ -1178,10 +1207,14 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
-        List<CMSPage> allPages = DataManager.getInstance().getDao().getAllCMSPages().stream()
-        .filter(cmsPage -> cmsPage.isPublished())
-        .collect(Collectors.toList());
-        
+        List<CMSPage> allPages = DataManager.getInstance()
+                .getDao()
+                .getAllCMSPages()
+                .stream()
+                .filter(cmsPage -> isPageValid(cmsPage).equals(PageValidityStatus.VALID))
+                .filter(cmsPage -> cmsPage.isPublished())
+                .collect(Collectors.toList());
+
         for (CMSStaticPage staticPage : getStaticPages()) {
             if (!staticPage.equals(page) && staticPage.isHasCmsPage()) {
                 allPages.remove(staticPage.getCmsPageOptional());
@@ -1197,21 +1230,24 @@ public class CmsBean implements Serializable {
      */
     public void saveStaticPages() throws DAOException {
         for (CMSStaticPage page : getStaticPages()) {
-            try {               
-                if(page.getId() != null) {
-                    DataManager.getInstance().getDao().updateStaticPage(page);
+            try {
+                if (page.getId() != null) {
+                    DataManager.getInstance()
+                            .getDao()
+                            .updateStaticPage(page);
                 } else {
-                    DataManager.getInstance().getDao().addStaticPage(page);
+                    DataManager.getInstance()
+                            .getDao()
+                            .addStaticPage(page);
                 }
-            } catch(DAOException e) {
+            } catch (DAOException e) {
                 Messages.error("cms_errorSavingStaticPages");
                 return;
             }
-            Messages.info("cms_staticPagesSaved");
         }
+        Messages.info("cms_staticPagesSaved");
 
     }
-
 
     /**
      * @return
@@ -1219,7 +1255,6 @@ public class CmsBean implements Serializable {
     protected FacesContext getFacesContext() {
         return FacesContext.getCurrentInstance();
     }
-
 
     public List<String> getSubThemeDiscriminatorValues() throws PresentationException, IndexUnreachableException {
         String subThemeDiscriminatorField = DataManager.getInstance()

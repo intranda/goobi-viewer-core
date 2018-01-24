@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -39,6 +40,7 @@ import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob.JobStatus;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 public interface IDAO {
 
@@ -313,8 +315,10 @@ public interface IDAO {
 	
 	public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
 
-
-
+	public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
+	
+	public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
+	
     // Transkribus
 
     public List<TranskribusJob> getAllTranskribusJobs() throws DAOException;

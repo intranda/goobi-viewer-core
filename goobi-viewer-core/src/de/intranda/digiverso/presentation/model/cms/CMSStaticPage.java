@@ -77,6 +77,7 @@ public class CMSStaticPage {
      * @throws IllegalArgumentException if the cmsPage does not refer to a static page
      * @throws NullPointerException if the cmsPage is null
      */
+    @SuppressWarnings("deprecation")
     public CMSStaticPage(CMSPage cmsPage) {
         String staticPageName = cmsPage.getStaticPageName();
         if(StringUtils.isBlank(staticPageName)) {
