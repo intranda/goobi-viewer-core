@@ -280,16 +280,16 @@ var viewerJS = ( function( viewer ) {
     }
     /* ######## GET (READ) ######## */
     /**
-     * Method to get all items from user bookshelves.
+     * Method to get all user bookshelves.
      * 
-     * @method _getAllBookshelfItems
+     * @method _getAllBookshelves
      * @param {String} root The application root path.
      * @returns {Promise} A promise that checks the existing items.
      */
-    function _getAllBookshelfItems( root ) {
+    function _getAllBookshelves( root ) {
         if ( _debug ) {
-            console.log( '---------- _getAllBookshelfItems() ----------' );
-            console.log( '_getAllBookshelfItems: root - ', root );
+            console.log( '---------- _getAllBookshelves() ----------' );
+            console.log( '_getAllBookshelves: root - ', root );
         }
         
         var promise = Q( $.ajax( {
@@ -660,7 +660,7 @@ var viewerJS = ( function( viewer ) {
             console.log( '_renderBookshelfPopoverList: pi - ', pi );
         }
         
-        _getAllBookshelfItems( _defaults.root ).then( function( elements ) {
+        _getAllBookshelves( _defaults.root ).then( function( elements ) {
             // DOM-Elements
             var dropdownList = $( '<ul />' ).addClass( 'bookshelf-popup__body-list list' );
             var dropdownListItem = null;
@@ -732,7 +732,7 @@ var viewerJS = ( function( viewer ) {
             } );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllBookshelfItems: ', error.responseText );
+            console.error( 'ERROR - _getAllBookshelves: ', error.responseText );
         } );
     }
     /**
@@ -745,7 +745,9 @@ var viewerJS = ( function( viewer ) {
             console.log( '---------- _renderBookshelfNavigationList() ----------' );
         }
         
-        _getAllBookshelfItems( _defaults.root ).then( function( elements ) {
+        var allBookshelfItems = 0;
+        
+        _getAllBookshelves( _defaults.root ).then( function( elements ) {
             // DOM-Elements
             var dropdownList = $( '<ul />' ).addClass( 'bookshelf-navigation__dropdown-list list' );
             var dropdownListItem = null;
@@ -771,7 +773,13 @@ var viewerJS = ( function( viewer ) {
                     dropdownListItemRow.append( dropdownListItemLeft ).append( dropdownListItemRight )
                     dropdownListItem.append( dropdownListItemRow );
                     dropdownList.append( dropdownListItem );
+                    
+                    // raise bookshelf item counter
+                    allBookshelfItems += item.items.length;
                 } );
+                
+                // set bookshelf item counter
+                $( '[data-bookshelf-type="counter"]' ).empty().text( allBookshelfItems );
             }
             else {
                 // add empty list item
@@ -786,7 +794,7 @@ var viewerJS = ( function( viewer ) {
             $( '.bookshelf-navigation__dropdown-list' ).empty().append( dropdownList );
             
         } ).fail( function( error ) {
-            console.error( 'ERROR - _getAllBookshelfItems: ', error.responseText );
+            console.error( 'ERROR - _getAllBookshelves: ', error.responseText );
         } );
     }
     

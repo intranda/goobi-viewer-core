@@ -18,6 +18,9 @@
 					<ui:fragment rendered="#{!userBean.loggedIn}">
 						<span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_watchListItems}"></span>
 					</ui:fragment>
+                    <ui:fragment rendered="#{userBean.loggedIn}">
+                        <span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_allWatchListItems}"></span>
+                    </ui:fragment>
 				</div>
 				<div class="col-xs-8 no-padding bookshelf-navigation__dropdown-wrapper">
 					<button type="button" class="btn-clean" data-bookshelf-type="dropdown">

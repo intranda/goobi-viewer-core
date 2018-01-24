@@ -2864,7 +2864,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: absolute;
   top: 100%;
   right: 0;
-  width: 375px;
+  width: 300px;
   min-height: 290px;
   padding: 10px;
   font-size: 1rem;
@@ -2925,7 +2925,7 @@ div[id*="-Modal"] .email-form .form-group {
 .login-navigation__open-id h3 {
   margin: 0;
   padding: 7px 0;
-  font-size: 16px;
+  font-size: 15px;
   text-align: center;
 }
 .login-navigation__open-id li {
@@ -2945,7 +2945,7 @@ div[id*="-Modal"] .email-form .form-group {
   position: absolute;
   top: 100%;
   right: 0;
-  width: 375px;
+  width: 300px;
   padding: 10px;
   padding-top: 0;
   font-size: 1rem;
