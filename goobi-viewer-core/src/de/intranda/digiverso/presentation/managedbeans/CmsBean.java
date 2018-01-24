@@ -344,7 +344,7 @@ public class CmsBean implements Serializable {
         return getPageUrl(pageId, true);
     }
 
-    public String getPageUrl(Long pageId, boolean pretty) {
+    public synchronized String getPageUrl(Long pageId, boolean pretty) {
         try {
             CMSPage page = getPage(pageId);
             return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/")
@@ -508,6 +508,7 @@ public class CmsBean implements Serializable {
             }
             resetCollectionsForPage(selectedPage.getId()
                     .toString());
+            DataManager.getInstance().getDao().detach(this.selectedPage);
         }
     }
 
@@ -699,10 +700,11 @@ public class CmsBean implements Serializable {
         return selectedPage;
     }
 
-    public void setSelectedPage(CMSPage currentPage) {
+    public void setSelectedPage(CMSPage currentPage) throws DAOException {
         this.selectedPage = currentPage;
+        DataManager.getInstance().getDao().detach(this.selectedPage);
         logger.debug("Selected page " + currentPage);
-        // resetImageDisplay();
+        
     }
 
     public CMSPage getCurrentPage() {

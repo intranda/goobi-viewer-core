@@ -66,7 +66,7 @@ public class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     @Test
-    public void testPage() {
+    public void testPage() throws DAOException {
         CMSPage page = new CMSPage();
         CmsBean bean = new CmsBean();
         bean.setSelectedPage(page);

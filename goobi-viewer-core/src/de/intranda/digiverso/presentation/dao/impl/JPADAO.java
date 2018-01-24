@@ -2082,6 +2082,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getAllCMSPages() throws DAOException {
         preQuery();
+        System.out.println("Getting all cms pages");
         Query q = em.createQuery("SELECT o FROM CMSPage o");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -2093,6 +2094,7 @@ public class JPADAO implements IDAO {
     @Override
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException {
         preQuery();
+        System.out.println("Getting cms page for static page");
         Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
         q.setParameter("pageName", pageName);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -2120,6 +2122,7 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
+        System.out.println("Get some cms pages");
         StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o");
         List<String> filterKeys = new ArrayList<>();
         if (filters != null && !filters.isEmpty()) {
@@ -2169,7 +2172,7 @@ public class JPADAO implements IDAO {
         //            }
         //        }
         //        return filteredPages;
-
+        System.out.println("Gett classification cms pages");
         preQuery();
         StringBuilder sbQuery = new StringBuilder(70);
         sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
@@ -2196,6 +2199,8 @@ public class JPADAO implements IDAO {
             return null;
         }
     }
+
+    
 
     @Override
     public CMSSidebarElement getCMSSidebarElement(long id) throws DAOException {
@@ -2868,6 +2873,15 @@ public class JPADAO implements IDAO {
         } else {
             return Optional.ofNullable((T)results.get(0));
         }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#detach(java.lang.Object)
+     */
+    @Override
+    public void detach(Object object) throws DAOException {
+        preQuery();
+        em.detach(object);
     }
 
 
