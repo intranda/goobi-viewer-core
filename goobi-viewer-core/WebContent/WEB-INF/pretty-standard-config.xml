@@ -136,6 +136,16 @@
 		<pattern value="/retrieveAccount/" />
 		<view-id value="/user.xhtml" />
 	</url-mapping>
+	
+	<url-mapping id="userAccountRetrieve">
+        <pattern value="/userAccountRetrieve/" />
+        <view-id value="/userAccountRetrieve.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="userAccountCreate">
+        <pattern value="/userAccountCreate/" />
+        <view-id value="/userAccountCreate.xhtml" />
+    </url-mapping>
 
     <!-- search -->
 	<url-mapping id="browse5">
