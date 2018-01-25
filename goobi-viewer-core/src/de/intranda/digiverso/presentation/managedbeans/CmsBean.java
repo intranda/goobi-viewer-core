@@ -1253,6 +1253,13 @@ public class CmsBean implements Serializable {
         Messages.info("cms_staticPagesSaved");
 
     }
+    
+    public List<CMSPage> getValidCMSPages() throws DAOException {
+        return DataManager.getInstance().getDao().getAllCMSPages().stream()
+                .filter(page -> isPageValid(page).equals(PageValidityStatus.VALID))
+                .filter(page -> page.isPublished())
+                .collect(Collectors.toList());
+    }
 
     /**
      * @return
