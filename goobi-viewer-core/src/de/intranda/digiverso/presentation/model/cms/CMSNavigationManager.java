@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.faces.validators.CMSTitleValidator;
 
 public class CMSNavigationManager {
 
@@ -72,19 +73,23 @@ public class CMSNavigationManager {
         addAvailableItem(user);
 
         addModuleItems();
+        addCMSPageItems();
+        
+        visibleItems = loadVisibleItems();
+        return availableItems;
+    }
 
+    /**
+     * @throws DAOException
+     */
+    public void addCMSPageItems() throws DAOException {
         List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
-            if (cmsPage != null) {
-                //                if (cmsPage.sortGlobalLanguageItems()) {
-                //                    DataManager.getInstance().getDao().updateCMSPage(cmsPage);
-                //                }
+            if (cmsPage != null && cmsPage.getValidityStatus().equals(PageValidityStatus.VALID)) {
                 CMSNavigationItem item = new CMSNavigationItem(cmsPage);
                 addAvailableItem(item);
             }
         }
-        visibleItems = loadVisibleItems();
-        return availableItems;
     }
 
     /**

@@ -93,6 +93,8 @@ public class CmsBean implements Serializable {
     @Inject
     private NavigationHelper navigationHelper;
     @Inject
+    private CmsNavigationBean cmsNavigationBean;
+    @Inject
     private SearchBean searchBean;
 
     private TableDataProvider<CMSPage> lazyModelPages;
@@ -506,6 +508,9 @@ public class CmsBean implements Serializable {
             }
             resetCollectionsForPage(selectedPage.getId()
                     .toString());
+            if(cmsNavigationBean != null) {
+                cmsNavigationBean.getItemManager().addAvailableItem(new CMSNavigationItem(this.selectedPage));
+            }
             DataManager.getInstance().getDao().detach(this.selectedPage);
         }
     }
