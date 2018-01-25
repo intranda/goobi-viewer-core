@@ -6819,6 +6819,7 @@ div.olMapViewport {
   height: 250px;
   margin-bottom: 10px;
   border: 1px solid #eee;
+  overflow: hidden;
 }
 .solr-query-collection__image,
 .solr-query-collection__title {
@@ -6831,11 +6832,9 @@ div.olMapViewport {
 .solr-query-collection__image img {
   width: 100%;
 }
-.solr-query-collection__title a {
-  display: block;
+.solr-query-collection__title {
   padding: 10px;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  height: 60px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
