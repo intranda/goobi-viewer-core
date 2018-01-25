@@ -109,7 +109,7 @@ public class CMSStaticPage {
      */
     public void setCmsPage(CMSPage cmsPage) {
         this.cmsPage = Optional.ofNullable(cmsPage);
-        this.cmsPage.ifPresent(page -> setCmsPageId(page.getId()));
+        setCmsPageId(this.cmsPage.map(page -> page.getId()).orElse(null));
     }
     
     /**

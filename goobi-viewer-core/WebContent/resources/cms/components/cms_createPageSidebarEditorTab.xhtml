@@ -85,6 +85,13 @@
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
+                                                                    <!-- SEARCH -->
+                                                                    <h:panelGroup id="inputSearch" rendered="#{element.category == 'search'}">
+                                                                        <div class="form-group">
+                                                                            <label>#{msg.cms_sidebarElement_additionalQuery}:</label>
+                                                                            <h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
+                                                                        </div>
+                                                                    </h:panelGroup>
 																	<!-- QUERY INPUT -->
 																	<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
 																		<div class="form-group">

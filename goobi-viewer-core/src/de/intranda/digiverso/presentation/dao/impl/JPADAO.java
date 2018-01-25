@@ -2328,7 +2328,7 @@ public class JPADAO implements IDAO {
     public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException {
         preQuery();
         // TODO metadata object cascading does not work
-        EntityManager em = factory.createEntityManager();
+//        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(item);
@@ -2347,7 +2347,7 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+//        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(item);
