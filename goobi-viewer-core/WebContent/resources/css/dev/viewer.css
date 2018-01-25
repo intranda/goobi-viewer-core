@@ -8075,6 +8075,9 @@ div.olMapViewport {
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable thead tr th.column_actions {
   min-width: 100px;
 }
+#cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr.invalid_template {
+  opacity: 0.2;
+}
 #cmsOverview #cmsOverviewWrapper #cmsOverviewTable tbody tr td {
   vertical-align: top;
 }

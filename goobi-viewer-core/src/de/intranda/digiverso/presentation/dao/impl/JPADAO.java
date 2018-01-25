@@ -2082,7 +2082,6 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getAllCMSPages() throws DAOException {
         preQuery();
-        System.out.println("Getting all cms pages");
         Query q = em.createQuery("SELECT o FROM CMSPage o");
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -2094,7 +2093,6 @@ public class JPADAO implements IDAO {
     @Override
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException {
         preQuery();
-        System.out.println("Getting cms page for static page");
         Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
         q.setParameter("pageName", pageName);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
@@ -2122,7 +2120,6 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters) throws DAOException {
         preQuery();
-        System.out.println("Get some cms pages");
         StringBuilder sbQuery = new StringBuilder("SELECT o FROM CMSPage o");
         List<String> filterKeys = new ArrayList<>();
         if (filters != null && !filters.isEmpty()) {
@@ -2164,15 +2161,6 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException {
-        //        List<CMSPage> filteredPages = new ArrayList<>();
-        //        List<CMSPage> allPages = getAllCMSPages();
-        //        for (CMSPage page : allPages) {
-        //            if (page.getClassifications().contains(pageClassification)) {
-        //                filteredPages.add(page);
-        //            }
-        //        }
-        //        return filteredPages;
-        System.out.println("Gett classification cms pages");
         preQuery();
         StringBuilder sbQuery = new StringBuilder(70);
         sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");

@@ -133,9 +133,7 @@ public class CmsBean implements Serializable {
                             if (validityStatus.isValid()) {
                                 page.getSidebarElements()
                                         .forEach(element -> element.deSerialize());
-                            } else {
-                                System.out.println("Invalid page: " + page.getId());
-                            }
+                            } 
                         });
                         return pages;
                     } catch (DAOException e) {
