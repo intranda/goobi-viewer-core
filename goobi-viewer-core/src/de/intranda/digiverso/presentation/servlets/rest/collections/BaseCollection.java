@@ -54,8 +54,8 @@ public class BaseCollection extends Collection {
      * @param facetField
      * @throws MalformedURLException
      */
-    public BaseCollection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement baseElement, String collectionField, String facetField) throws MalformedURLException {
-        super(collectionView, locale, baseUrl, baseElement, collectionField, facetField);
+    public BaseCollection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement baseElement, String collectionField, String facetField, String contextPath) throws MalformedURLException {
+        super(collectionView, locale, baseUrl, baseElement, collectionField, facetField, contextPath);
         
         if(StringUtils.isNotBlank(collectionView.getTopVisibleElement())) {
             viewingHint = ViewingHint.multipart;
@@ -73,7 +73,7 @@ public class BaseCollection extends Collection {
         for (HierarchicalBrowseDcElement element : collectionView.getVisibleDcElements()) {
             if(!element.equals(baseElement)) {                
                 collectionView.setTopVisibleElement(element);
-                subCollections.add(new SubCollection(collectionView, locale, baseUrl, element, collectionField, facetField));
+                subCollections.add(new SubCollection(collectionView, locale, baseUrl, element, collectionField, facetField, contextPath));
             }
         }
 

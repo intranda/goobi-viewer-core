@@ -85,7 +85,7 @@ public class CMSNavigationManager {
     public void addCMSPageItems() throws DAOException {
         List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
         for (CMSPage cmsPage : cmsPages) {
-            if (cmsPage != null && cmsPage.getValidityStatus().equals(PageValidityStatus.VALID)) {
+            if (cmsPage != null && PageValidityStatus.VALID.equals(cmsPage.getValidityStatus())) {
                 CMSNavigationItem item = new CMSNavigationItem(cmsPage);
                 addAvailableItem(item);
             }

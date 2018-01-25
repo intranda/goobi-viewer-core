@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.managedbeans.utils;
 
 import java.util.Locale;
 
+import javax.annotation.Resource;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -26,6 +27,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.WebServiceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +54,7 @@ public class BeanUtils {
     public static final String BACKSLASH_REPLACEMENT = "U005C";
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
 
+    
     /**
      * Gets the current Request from the faces context
      * 

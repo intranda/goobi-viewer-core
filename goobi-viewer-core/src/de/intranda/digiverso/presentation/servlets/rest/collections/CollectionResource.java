@@ -123,6 +123,7 @@ public class CollectionResource {
     public Collection generateCollection(String collectionField, final String topElement, String url, Locale locale, final String facetField)
             throws IndexUnreachableException, MalformedURLException {
 
+        
         CollectionView collectionView = getCollectionView(collectionField, facetField);
 
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
@@ -138,7 +139,7 @@ public class CollectionResource {
                             null);
         }
 
-        Collection collection = new BaseCollection(collectionView, locale, url, baseElement, collectionField, facetField);
+        Collection collection = new BaseCollection(collectionView, locale, url, baseElement, collectionField, facetField, getServletPath());
         return collection;
     }
 
@@ -179,6 +180,10 @@ public class CollectionResource {
             locale = Locale.ENGLISH;
         }
         return locale;
+    }
+    
+    public String getServletPath() {
+        return servletRequest.getContextPath();
     }
 
     /**

@@ -71,24 +71,27 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     }
 
     private static URI createIconURI(String collectionName) {
-        String icon = DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collectionName);
-        if(StringUtils.isBlank(icon)) {
+        String icon = DataManager.getInstance()
+                .getConfiguration()
+                .getDefaultBrowseIcon(collectionName);
+        if (StringUtils.isBlank(icon)) {
             return null;
         }
         try {
-            String iconPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/resources/themes/" + BeanUtils.getNavigationHelper()
-                    .getTheme() + "/" + icon;
-            try {
-                return new URI(iconPath);
-            } catch (URISyntaxException e) {
-                logger.error("Unable to parse " + iconPath + " as URI");
-                return null;
+            URI iconURI = new URI(icon);
+            if (!iconURI.isAbsolute()) {
+                String iconPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() +  "/resources/themes/" + BeanUtils.getNavigationHelper()
+                        .getTheme() + "/" + icon;
+                iconURI = new URI(iconPath);
             }
+            return iconURI;
+        } catch (URISyntaxException e) {
+            logger.error("Unable to parse " + icon + " as URI");
+            return null;
         } catch (NullPointerException e) {
             logger.error("Unable to create icon path. Probably due to missing jsf context");
             return null;
         }
     }
-
 
 }

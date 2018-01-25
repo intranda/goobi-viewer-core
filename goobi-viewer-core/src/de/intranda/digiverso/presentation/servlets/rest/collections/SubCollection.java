@@ -38,8 +38,8 @@ public class SubCollection extends Collection {
      * @param facetField
      * @throws MalformedURLException
      */
-    public SubCollection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement topElement, String collectionField, String facetField) throws MalformedURLException {
-        super(collectionView, locale, baseUrl, topElement, collectionField, facetField);
+    public SubCollection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement topElement, String collectionField, String facetField, String contextPath) throws MalformedURLException {
+        super(collectionView, locale, baseUrl, topElement, collectionField, facetField, contextPath);
     }
 
 }
