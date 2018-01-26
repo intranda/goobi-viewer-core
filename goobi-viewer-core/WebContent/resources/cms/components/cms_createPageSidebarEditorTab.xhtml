@@ -57,7 +57,6 @@
 														<div class="sidebar-editor-widget-item">
 															<div class="sidebar-editor-widget-item-header">
 																<h4>#{msg[element.type]}</h4>
-                                                                #{element.category}
 																<span class="glyphicon glyphicon-edit widget-edit" title="Widget Editor"></span>
 															</div>
 
@@ -90,6 +89,16 @@
                                                                         <div class="form-group">
                                                                             <label>#{msg.cms_sidebarElement_additionalQuery}:</label>
                                                                             <h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>#{msg.cms_sidebarElement_searchPage}:</label>
+                                                                            <div class="form-control__select">
+                                                                                <h:selectOneMenu styleClass="form-control" value="#{element.linkedPages.page}">
+                                                                                    <f:selectItem id="default" itemLabel="#{msg.cms_sidebarElement_defaultSearchPage}" itemValue=""/>
+                                                                                    <f:selectItems value="#{cmsBean.getCMSPagesWithSearch()}" var="page" itemValue="#{page.id}" itemLabel="#{page.title}" />
+                                                                                    <f:ajax render="baseCollectionMenu" />
+                                                                                </h:selectOneMenu>
+                                                                            </div>
                                                                         </div>
                                                                     </h:panelGroup>
 																	<!-- QUERY INPUT -->
@@ -244,6 +253,13 @@
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
+                                                                     <!-- SEARCH -->
+                                                                    <h:panelGroup id="inputSearch" rendered="#{element.category == 'search'}">
+                                                                        <div class="form-group">
+                                                                            <label>#{msg.cms_sidebarElement_additionalQuery}:</label>
+                                                                            <h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
+                                                                        </div>
+                                                                    </h:panelGroup>
 																	<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
 																		<div class="form-group">
 																			<h4>#{msg.cms_sidebarElement_searchField}:</h4>

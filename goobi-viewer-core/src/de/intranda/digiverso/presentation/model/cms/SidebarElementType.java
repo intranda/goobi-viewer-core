@@ -15,8 +15,6 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
-import java.util.ArrayList;
-
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement.WidgetMode;
 import de.intranda.digiverso.presentation.model.misc.GeoLocationInfo;
 
@@ -71,6 +69,10 @@ public enum SidebarElementType {
         switch (this.type) {
             case fieldQuery:
                 element = new CMSSidebarElementWithQuery();
+                break;
+            case search:
+                element = new CMSSidebarElementWithSearch();
+                element.setLinkedPages(new PageList());
                 break;
             case pageLinks:
                 element = new CMSSidebarElement();

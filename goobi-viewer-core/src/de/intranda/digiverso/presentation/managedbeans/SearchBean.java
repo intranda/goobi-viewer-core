@@ -262,6 +262,18 @@ public class SearchBean implements Serializable {
         facets.resetCurrentFacetString();
         return searchSimple();
     }
+    
+    /**
+     * Same as <code>{@link #searchSimple()}</code> but sets the current facets to the given string
+     * 
+     * @return
+     */
+    public String searchSimpleSetFacets(String facetString) {
+        facets.resetCurrentCollection();
+        facets.resetCurrentFacetString();
+        facets.setCurrentFacetString(facetString);
+        return searchSimple();
+    }
 
     public String searchAdvanced() {
         return searchAdvanced(true);

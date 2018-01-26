@@ -76,6 +76,7 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import sun.security.pkcs.ContentInfo;
 
 /**
  * CMS functions.
@@ -1227,7 +1228,22 @@ public class CmsBean implements Serializable {
         }
         return allPages;
     }
-
+    
+    /**
+     * @return  a list of all valid cms pages which contain a "search" item
+     * @throws DAOException
+     */
+    public List<CMSPage> getCMSPagesWithSearch() throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getAllCMSPages()
+                .stream()
+                .filter(cmsPage -> isPageValid(cmsPage).equals(PageValidityStatus.VALID))
+                .filter(cmsPage -> cmsPage.getGlobalContentItems().stream()
+                        .anyMatch(item -> CMSContentItemType.SEARCH.equals(item.getType())))
+                .collect(Collectors.toList());
+    }
+    
     /**
      * Save static page status for all cms pages
      * 

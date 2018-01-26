@@ -362,6 +362,8 @@ public class CMSSidebarElement {
 
         if (this instanceof CMSSidebarElementWithQuery) {
             return SidebarElementType.Category.fieldQuery;
+        } else if (this instanceof CMSSidebarElementWithSearch) {
+            return SidebarElementType.Category.search;
         } else if (this.getLinkedPages() != null) {
             return SidebarElementType.Category.pageLinks;
         } else if (this.getGeoLocations() != null) {
@@ -531,6 +533,10 @@ public class CMSSidebarElement {
     
     public boolean isHasWidgetTitle() {
         return StringUtils.isNotBlank(getWidgetTitle());
+    }
+    
+    public boolean isHasLinkedPages() {
+        return this.linkedPages != null && !this.linkedPages.isEmpty();
     }
 
 }

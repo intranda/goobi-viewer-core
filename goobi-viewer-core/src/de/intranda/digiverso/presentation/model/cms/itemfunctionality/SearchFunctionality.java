@@ -107,6 +107,16 @@ public class SearchFunctionality implements Functionality {
             redirectToSearchUrl();
         }
     }
+    
+    public void searchFacetted() throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("searchSimple");
+        if (getSearchBean() == null) {
+            logger.error("Cannot search: SearchBean is null");
+        } else{            
+            getSearchBean().searchSimple();
+            redirectToSearchUrl();
+        }
+    }
 
     public void search() throws PresentationException, IndexUnreachableException, DAOException {
 
@@ -277,6 +287,16 @@ public class SearchFunctionality implements Functionality {
     public String getSortUrl(String sortString, boolean descending) {
         sortString = (descending ? "!" : "") + sortString;
         return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix(sortString);
+    }
+    
+    public String getFacettedUrl(String facetString) {
+        Path path = Paths.get(getBaseUrl());
+        path = path.resolve(getCollection());
+        path = path.resolve(getQueryString());
+        path = path.resolve(Integer.toString(getPageNo()));
+        path = path.resolve(getSolrSortFields());
+        path = path.resolve(facetString);
+        return path.toString();
     }
     
     public String removeFacet(String facet) throws UnsupportedEncodingException {

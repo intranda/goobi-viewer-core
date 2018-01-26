@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.cms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -98,6 +99,28 @@ public class PageList implements Iterable<String>{
     public void setPages(List<String> pages) {
         this.pages = pages;
     }
+    
+    /**
+     * get the value of the first page
+     * 
+     * @return
+     */
+    public String getPage() {
+        if(!pages.isEmpty()) {            
+            return pages.get(0);
+        } else {
+            return "";
+        }
+    }
+    
+    /**
+     * Sets the pages list to a list containing only the given string
+     * 
+     * @param page
+     */
+    public void setPage(String page) {
+        this.pages = Collections.singletonList(page);
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Iterable#iterator()
@@ -118,6 +141,8 @@ public class PageList implements Iterable<String>{
         throw new IllegalArgumentException("No cms page found with id = " + idString);
     }
     
-    
+    public boolean isEmpty() {
+        return pages == null || pages.isEmpty();
+    }
 
 }
