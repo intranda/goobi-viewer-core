@@ -641,6 +641,7 @@
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
     </url-mapping>
     <url-mapping id="cmsOpenPagePreview">
         <pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
