@@ -299,7 +299,13 @@ public class ViewerPath {
     }
 
     public boolean isCmsPage() {
-        return getCmsPage() != null;
+        if(getCmsPage() != null) {
+            Path parameterPath = this.getParameterPath();
+            if(parameterPath.toString().isEmpty() || getCmsPage().mayContainURLParameters()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
