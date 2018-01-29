@@ -195,7 +195,8 @@ var cmsJS = ( function( cms ) {
             if ( !$.isEmptyObject( data.members ) ) {
                 // add subcollection items
                 data.members.forEach( function( member ) {
-                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( member.label );
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( member.label + ' ('
+                            + _getMetadataValue( member, 'volumes' ) + ')' );
                     subCollectionItemRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
                             .html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
                     // build subcollection item
