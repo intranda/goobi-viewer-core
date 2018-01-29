@@ -20,7 +20,8 @@ public class MetadataTest {
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
-        Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
+        Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0)
+                .getLabel());
     }
 
     /**
@@ -34,6 +35,17 @@ public class MetadataTest {
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
-        Assert.assertEquals("MD_TITLE", filteredList.get(0).getLabel());
+        Assert.assertEquals("MD_TITLE", filteredList.get(0)
+                .getLabel());
+    }
+
+    /**
+     * @see Metadata#buildHierarchicalValue(String,Locale,NavigationHelper)
+     * @verifies build value correctly
+     */
+    @Test
+    public void buildHierarchicalValue_shouldBuildValueCorrectly() throws Exception {
+        String value = Metadata.buildHierarchicalValue("a.b.c.d", null, null);
+        Assert.assertEquals("a > b > c > d", value);
     }
 }

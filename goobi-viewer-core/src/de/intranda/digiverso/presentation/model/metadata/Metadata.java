@@ -253,37 +253,7 @@ public class Metadata implements Serializable {
                         break;
                     case HIERARCHICALFIELD:
                         // create a link for reach hierarchy level
-                        logger.trace("HIERARCHICALFIELD: {}:{}", label, value);
-                        String[] valueSplit = value.split("[.]");
-                        StringBuilder sbFullValue = new StringBuilder();
-                        StringBuilder sbHierarchy = new StringBuilder();
-                        for (String s : valueSplit) {
-                            if (sbFullValue.length() > 0) {
-                                sbFullValue.append(" > ");
-                            }
-                            if (sbHierarchy.length() > 0) {
-                                sbHierarchy.append('.');
-                            }
-                            sbHierarchy.append(s);
-                            String displayValue = Helper.getTranslation(s, locale);
-                            // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-                            displayValue = StringEscapeUtils.escapeHtml(s);
-                            NavigationHelper nh = BeanUtils.getNavigationHelper();
-                            if (nh != null) {
-                                sbFullValue.append("<a href=\"")
-                                        .append(nh.getApplicationUrl())
-                                        .append(PageType.browse.getName())
-                                        .append('/')
-                                        .append(sbHierarchy.toString())
-                                        .append("/-/1/-/-/")
-                                        .append("\">")
-                                        .append(displayValue)
-                                        .append("</a>");
-                            } else {
-                                sbFullValue.append(displayValue);
-                            }
-                        }
-                        value = sbFullValue.toString();
+                        value = buildHierarchicalValue(value, locale, BeanUtils.getNavigationHelper());
                         break;
                     default:
                         // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
@@ -326,6 +296,47 @@ public class Metadata implements Serializable {
                 mdValue.setMasterValue(origParam.getOverrideMasterValue());
             }
         }
+    }
+
+    /**
+     * 
+     * @param value
+     * @param locale
+     * @param navigationHelper
+     * @return
+     * @should build value correctly
+     */
+    static String buildHierarchicalValue(String value, Locale locale, NavigationHelper navigationHelper) {
+        String[] valueSplit = value.split("[.]");
+        StringBuilder sbFullValue = new StringBuilder();
+        StringBuilder sbHierarchy = new StringBuilder();
+        for (String s : valueSplit) {
+            if (sbFullValue.length() > 0) {
+                sbFullValue.append(" > ");
+            }
+            if (sbHierarchy.length() > 0) {
+                sbHierarchy.append('.');
+            }
+            sbHierarchy.append(s);
+            String displayValue = Helper.getTranslation(s, locale);
+            // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
+            displayValue = StringEscapeUtils.escapeHtml(s);
+            if (navigationHelper != null) {
+                sbFullValue.append("<a href=\"")
+                        .append(navigationHelper.getApplicationUrl())
+                        .append(PageType.browse.getName())
+                        .append('/')
+                        .append(sbHierarchy.toString())
+                        .append("/-/1/-/-/")
+                        .append("\">")
+                        .append(displayValue)
+                        .append("</a>");
+            } else {
+                sbFullValue.append(displayValue);
+            }
+        }
+
+        return sbFullValue.toString();
     }
 
     /**
