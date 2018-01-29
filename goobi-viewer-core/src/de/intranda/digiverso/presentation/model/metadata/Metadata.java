@@ -253,7 +253,8 @@ public class Metadata implements Serializable {
                         break;
                     case HIERARCHICALFIELD:
                         // create a link for reach hierarchy level
-                        value = buildHierarchicalValue(value, locale, BeanUtils.getNavigationHelper());
+                        NavigationHelper nh = BeanUtils.getNavigationHelper();
+                        value = buildHierarchicalValue(value, locale, nh != null ? nh.getApplicationUrl() : null);
                         break;
                     default:
                         // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
@@ -302,11 +303,11 @@ public class Metadata implements Serializable {
      * 
      * @param value
      * @param locale
-     * @param navigationHelper
+     * @param applicationUrl
      * @return
      * @should build value correctly
      */
-    static String buildHierarchicalValue(String value, Locale locale, NavigationHelper navigationHelper) {
+    static String buildHierarchicalValue(String value, Locale locale, String applicationUrl) {
         String[] valueSplit = value.split("[.]");
         StringBuilder sbFullValue = new StringBuilder();
         StringBuilder sbHierarchy = new StringBuilder();
@@ -321,9 +322,9 @@ public class Metadata implements Serializable {
             String displayValue = Helper.getTranslation(s, locale);
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
             displayValue = StringEscapeUtils.escapeHtml(s);
-            if (navigationHelper != null) {
+            if (applicationUrl != null) {
                 sbFullValue.append("<a href=\"")
-                        .append(navigationHelper.getApplicationUrl())
+                        .append(applicationUrl)
                         .append(PageType.browse.getName())
                         .append('/')
                         .append(sbHierarchy.toString())
