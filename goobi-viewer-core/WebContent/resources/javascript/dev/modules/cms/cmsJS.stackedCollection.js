@@ -58,14 +58,6 @@ var cmsJS = ( function( cms ) {
             
             // render RSS Feed
             _renderCollections( data );
-            
-            // set first panel visible
-            _toggleAttr = $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded' );
-            
-            if ( typeof _toggleAttr !== typeof undefined && _toggleAttr !== false ) {
-                $( '#stackedCollections .panel:first' ).find( 'h4 a' ).attr( 'aria-expanded', 'true' ).removeClass( 'collapsed' );
-                $( '#stackedCollections .panel:first' ).find( '.panel-collapse' ).attr( 'aria-expanded', 'true' ).addClass( 'in' );
-            }
         }
     };
     
