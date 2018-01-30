@@ -50,12 +50,12 @@ public class MetadataTest {
         {
             String value = Metadata.buildHierarchicalValue("a.b", null, "http://localhost:8080/");
             Assert.assertEquals(
-                    "<a href=\"http://localhost:8080/browse/a/-/1/-/-/\">a</a> > <a href=\"http://localhost:8080/browse/a.b/-/1/-/-/\">b</a>", value);
+                    "<a href=\"http://localhost:8080/browse/a/-/1/-/-/\">a</a> > <a href=\"http://localhost:8080/browse/a.b/-/1/-/-/\">a.b</a>", value);
         }
         {
             // No root URL
             String value = Metadata.buildHierarchicalValue("a.b.c.d", null, null);
-            Assert.assertEquals("a > b > c > d", value);
+            Assert.assertEquals("a > a.b > a.b.c > a.b.c.d", value);
         }
     }
 }

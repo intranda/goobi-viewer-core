@@ -315,9 +315,9 @@ public class Metadata implements Serializable {
                 sbHierarchy.append('.');
             }
             sbHierarchy.append(s);
-            String displayValue = Helper.getTranslation(s, locale);
+            String displayValue = Helper.getTranslation(sbHierarchy.toString(), locale);
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-            displayValue = StringEscapeUtils.escapeHtml(s);
+            displayValue = StringEscapeUtils.escapeHtml(displayValue);
             if (applicationUrl != null) {
                 sbFullValue.append("<a href=\"")
                         .append(applicationUrl)
