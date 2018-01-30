@@ -57,7 +57,8 @@ public class SolrConstants {
         }
 
         public String getLabel(Locale locale) {
-            return Helper.getTranslation(new StringBuilder("doctype_").append(name()).toString(), locale);
+            return Helper.getTranslation(new StringBuilder("doctype_").append(name())
+                    .toString(), locale);
         }
     }
 

@@ -43,12 +43,14 @@ public class SingleWorkCollectionRedirect {
     public Response redirectToWork(@PathParam("luceneField") String field, @PathParam("fieldValue") String value, @Context HttpServletRequest request,
             @Context HttpServletResponse response) {
         try {
-            String url = SearchHelper.getFirstWorkUrlWithFieldValue(field, value, true, true, true, true, DataManager.getInstance().getConfiguration()
+            String url = SearchHelper.getFirstWorkUrlWithFieldValue(field, value, true, true, true, true, DataManager.getInstance()
+                    .getConfiguration()
                     .getSplittingCharacter(), Locale.getDefault());
             URI uri = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest) + url);
             HttpServletResponse httpResponse = response;
             httpResponse.sendRedirect(uri.toString());
-            return Response.ok().build();
+            return Response.ok()
+                    .build();
             //            return Response.temporaryRedirect(uri).build();
             //            return (Response) response;
         } catch (URISyntaxException | IOException e) {

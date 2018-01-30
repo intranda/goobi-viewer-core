@@ -80,11 +80,14 @@ public class ToolServlet extends HttpServlet implements Serializable {
         boolean firstPageOnly = false;
         String outputPath = null;
 
-        if (request.getParameterMap().size() > 0) {
+        if (request.getParameterMap()
+                .size() > 0) {
             // Regular URLs
-            Set<String> keys = request.getParameterMap().keySet();
+            Set<String> keys = request.getParameterMap()
+                    .keySet();
             for (String s : keys) {
-                String[] values = request.getParameterMap().get(s);
+                String[] values = request.getParameterMap()
+                        .get(s);
                 if (values[0] != null) {
                     switch (s) {
                         case "action":
@@ -119,7 +122,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
             switch (action) {
                 case "emptyCache":
                     int deleted = CacheUtils.deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
-                    response.getWriter().write(deleted + " cache elements belonging to '" + identifier + "' deleted.");
+                    response.getWriter()
+                            .write(deleted + " cache elements belonging to '" + identifier + "' deleted.");
                     break;
                 case "updateSitemap":
                     Sitemap sitemap = new Sitemap();
@@ -139,9 +143,11 @@ public class ToolServlet extends HttpServlet implements Serializable {
                         return;
                     }
                     if (sitemapFiles != null) {
-                        response.getWriter().write("Sitemap files created:\n");
+                        response.getWriter()
+                                .write("Sitemap files created:\n");
                         for (File file : sitemapFiles) {
-                            response.getWriter().write("- " + file.getName() + "\n");
+                            response.getWriter()
+                                    .write("- " + file.getName() + "\n");
                         }
                     } else {
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -149,7 +155,9 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     break;
                 case "fillCache":
                     String answer = performCacheFillerAction(request.getParameterMap());
-                    String returnString = answer.trim().replaceAll("\\n", "<br>").replaceAll("\\t", "&#160;&#160;&#160;&#160;");
+                    String returnString = answer.trim()
+                            .replaceAll("\\n", "<br>")
+                            .replaceAll("\\t", "&#160;&#160;&#160;&#160;");
 
                     response.setContentType("text/html"); {
                     ServletOutputStream output = response.getOutputStream();
@@ -161,7 +169,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     int status = Integer.valueOf(result[0]);
                     if (status == 200) {
                         response.setStatus(200);
-                        response.getOutputStream().write("OK".getBytes(Charset.forName("utf-8")));
+                        response.getOutputStream()
+                                .write("OK".getBytes(Charset.forName("utf-8")));
                     } else {
                         response.sendError(status, result[1]);
                     }
@@ -169,7 +178,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
                 case "getVersion":
                     response.setContentType("text/html"); {
                     ServletOutputStream output = response.getOutputStream();
-                    output.write(Helper.getVersion().getBytes(Charset.forName("utf-8")));
+                    output.write(Helper.getVersion()
+                            .getBytes(Charset.forName("utf-8")));
                 }
                     break;
                 case "migrateOverviewPages": {
@@ -179,8 +189,9 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     ServletOutputStream output = response.getOutputStream();
                     try {
                         String[] fields = { SolrConstants.OVERVIEWPAGE, SolrConstants.PI, SolrConstants.SOURCEDOCFORMAT };
-                        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(SolrConstants.ISWORK + ":true", Arrays.asList(
-                                fields));
+                        SolrDocumentList docs = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(SolrConstants.ISWORK + ":true", Arrays.asList(fields));
                         for (SolrDocument doc : docs) {
                             String overviewPageField = (String) doc.getFieldValue(SolrConstants.OVERVIEWPAGE);
                             if (overviewPageField == null) {
@@ -189,7 +200,9 @@ public class ToolServlet extends HttpServlet implements Serializable {
                             String pi = (String) doc.getFieldValue(SolrConstants.PI);
                             String msg = "Found record '" + pi + "' with an overview page in Solr... ";
                             output.write(msg.getBytes(Charset.forName("utf-8")));
-                            OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null);
+                            OverviewPage overviewPage = DataManager.getInstance()
+                                    .getDao()
+                                    .getOverviewPageForRecord(pi, null, null);
                             if (overviewPage == null) {
                                 overviewPage = new OverviewPage();
                                 if (overviewPage.migrateToDB(overviewPageField, pi)) {
@@ -251,7 +264,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
                 return "Failed to stop Cachefiller in time. Last status: " + cacheFiller.getCacheFillerStatus();
             }
         } else if (parameterMap.containsKey("status")) {
-            StringBuilder sbAnswer = new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus()).append("\n\n")
+            StringBuilder sbAnswer = new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus())
+                    .append("\n\n")
                     .append(cacheFiller.getDetailedGeneratorStatus());
             return sbAnswer.toString();
         } else if (parameterMap.containsKey("resetTrace")) {
@@ -349,10 +363,12 @@ public class ToolServlet extends HttpServlet implements Serializable {
         Date date = null;
         switch (dateString.length()) {
             case 8:
-                date = DateTools.formatterISO8601BasicDate.parseDateTime(dateString).toDate();
+                date = DateTools.formatterISO8601BasicDate.parseDateTime(dateString)
+                        .toDate();
                 break;
             case 4:
-                date = DateTools.formatterISO8601BasicDateNoYear.parseDateTime(dateString).toDate();
+                date = DateTools.formatterISO8601BasicDateNoYear.parseDateTime(dateString)
+                        .toDate();
                 Calendar cal = new GregorianCalendar();
                 int year = cal.get(Calendar.YEAR);
                 cal.setTime(date);
@@ -371,7 +387,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
      * @return
      */
     private static boolean getBooleanValue(String[] values) {
-        if (values == null || values.length == 0 || values[0].trim().isEmpty()) {
+        if (values == null || values.length == 0 || values[0].trim()
+                .isEmpty()) {
             return true;
         }
 

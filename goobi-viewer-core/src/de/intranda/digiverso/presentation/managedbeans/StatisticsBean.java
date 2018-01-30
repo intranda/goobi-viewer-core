@@ -71,12 +71,16 @@ public class StatisticsBean implements Serializable {
         List<String> dateList = new ArrayList<>();
         // Facetting
         try {
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(":*").append(
-                    SearchHelper.getAllSuffixes(false)).toString(), 0, 0, null, Collections.singletonList(SolrConstants.DATECREATED), "count",
-                    Collections.singletonList(SolrConstants.DATECREATED), null, null);
+            QueryResponse resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(new StringBuilder(SolrConstants.PI).append(":*")
+                            .append(SearchHelper.getAllSuffixes(false))
+                            .toString(), 0, 0, null, Collections.singletonList(SolrConstants.DATECREATED), "count",
+                            Collections.singletonList(SolrConstants.DATECREATED), null, null);
             if (resp != null && resp.getFacetField(SolrConstants.DATECREATED) != null && resp.getFacetField(SolrConstants.DATECREATED)
                     .getValues() != null) {
-                List<Count> counts = resp.getFacetField(SolrConstants.DATECREATED).getValues();
+                List<Count> counts = resp.getFacetField(SolrConstants.DATECREATED)
+                        .getValues();
                 countList = new ArrayList<>(counts.size() + dataPoints + 1);
                 dateList = new ArrayList<>(counts.size());
                 for (Count count : counts) {
@@ -107,7 +111,8 @@ public class StatisticsBean implements Serializable {
         GregorianCalendar cal = new GregorianCalendar();
         for (int i = 1; i < dataPoints; i++) {
             cal.add(Calendar.DAY_OF_MONTH, -dataPointDiv);
-            dataPointList.add(cal.getTime().getTime());
+            dataPointList.add(cal.getTime()
+                    .getTime());
             countList.add(0);
         }
         Collections.sort(dataPointList);
@@ -127,7 +132,9 @@ public class StatisticsBean implements Serializable {
 
         List<String> ret = new ArrayList<>(countList.size());
         for (int i = 0; i < countList.size(); i++) {
-            ret.add(new StringBuilder(String.valueOf(dataPointList.get(i))).append(SEPARATOR).append(countList.get(i)).toString());
+            ret.add(new StringBuilder(String.valueOf(dataPointList.get(i))).append(SEPARATOR)
+                    .append(countList.get(i))
+                    .toString());
         }
 
         logger.debug("getImportedRecordsTrend end");
@@ -144,16 +151,21 @@ public class StatisticsBean implements Serializable {
         logger.debug("getTopStructTypesByNumber start");
 
         try {
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(":*").append(
-                    SearchHelper.getAllSuffixes(false)).toString(), 0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT), "count",
-                    Collections.singletonList(SolrConstants.DOCSTRCT), null, null);
+            QueryResponse resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(new StringBuilder(SolrConstants.PI).append(":*")
+                            .append(SearchHelper.getAllSuffixes(false))
+                            .toString(), 0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT), "count",
+                            Collections.singletonList(SolrConstants.DOCSTRCT), null, null);
             if (resp != null && resp.getFacetField(SolrConstants.DOCSTRCT) != null && resp.getFacetField(SolrConstants.DOCSTRCT)
                     .getValues() != null) {
                 //                Map<Long, List<String>> resultDocstrcts = new HashMap<>();
-                List<Count> counts = resp.getFacetField(SolrConstants.DOCSTRCT).getValues();
+                List<Count> counts = resp.getFacetField(SolrConstants.DOCSTRCT)
+                        .getValues();
                 List<String> ret = new ArrayList<>(counts.size());
                 for (Count count : counts) {
-                    String name = Helper.getTranslation(count.getName(), null).replaceAll(",", "");
+                    String name = Helper.getTranslation(count.getName(), null)
+                            .replaceAll(",", "");
                     // TODO limit the number of results?
                     //                    ret.add(new String[] { count.getName(), String.valueOf(count.getCount()) });
                     ret.add(name + SEPARATOR + count.getCount() + SEPARATOR + count.getName());
@@ -183,12 +195,14 @@ public class StatisticsBean implements Serializable {
             if (lastUpdateMap.get("getImportedPages") == null || now - lastUpdateMap.get("getImportedPages") >= DAY_MS) {
                 logger.debug("Refreshing number of imported pages...");
                 // TODO filter query might not work for PAGE documents
-                long pages = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper
-                        .getAllSuffixes(false));
+                long pages = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes(false));
                 // Fallback for older indexes that do not have the DOCTYPE field (slower)
                 if (pages == 0) {
-                    pages = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.FILENAME + ":['' TO *]" + SearchHelper
-                            .getAllSuffixes(false));
+                    pages = DataManager.getInstance()
+                            .getSearchIndex()
+                            .getHitCount(SolrConstants.FILENAME + ":['' TO *]" + SearchHelper.getAllSuffixes(false));
                 }
                 valueMap.put("getImportedPages", pages);
                 lastUpdateMap.put("getImportedPages", now);
@@ -216,12 +230,15 @@ public class StatisticsBean implements Serializable {
             if (lastUpdateMap.get("getImportedFullTexts") == null || now - lastUpdateMap.get("getImportedFullTexts") >= DAY_MS) {
                 logger.debug("Refreshing number of imported fulltexts...");
                 // TODO filter query might not work for PAGE documents
-                long pages = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.DOCTYPE + ":" + SolrConstants.DocType.PAGE.name()
-                        + " AND " + SolrConstants.FULLTEXTAVAILABLE + ":true" + SearchHelper.getAllSuffixes(false));
+                long pages = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getHitCount(SolrConstants.DOCTYPE + ":" + SolrConstants.DocType.PAGE.name() + " AND " + SolrConstants.FULLTEXTAVAILABLE
+                                + ":true" + SearchHelper.getAllSuffixes(false));
                 // Fallback for older indexes that do not have the DOCTYPE and/or FULLTEXTAVAILABLE fields (WAY slower)
                 if (pages == 0) {
-                    pages = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.FULLTEXT + ":['' TO *]" + SearchHelper
-                            .getAllSuffixes(false));
+                    pages = DataManager.getInstance()
+                            .getSearchIndex()
+                            .getHitCount(SolrConstants.FULLTEXT + ":['' TO *]" + SearchHelper.getAllSuffixes(false));
                 }
                 valueMap.put("getImportedFullTexts", pages);
                 lastUpdateMap.put("getImportedFullTexts", now);
@@ -244,7 +261,10 @@ public class StatisticsBean implements Serializable {
      */
     public boolean isIndexEmpty() {
         try {
-            return DataManager.getInstance().getSearchIndex().getHitCount(new StringBuilder(SolrConstants.PI).append(":*").toString()) == 0;
+            return DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder(SolrConstants.PI).append(":*")
+                            .toString()) == 0;
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
         } catch (PresentationException e) {

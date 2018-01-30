@@ -121,11 +121,17 @@ public class TagCloudBean implements Serializable {
 
             // int byzero = 1/0;
 
-            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery());
+            String suffix = SearchHelper.getAllSuffixes(DataManager.getInstance()
+                    .getConfiguration()
+                    .isSubthemeAddFilterQuery());
             if (StringUtils.isEmpty(query)) {
-                mytags = DataManager.getInstance().getSearchIndex().generateFilteredTagCloud(luceneField, suffix);
+                mytags = DataManager.getInstance()
+                        .getSearchIndex()
+                        .generateFilteredTagCloud(luceneField, suffix);
             } else {
-                mytags = DataManager.getInstance().getSearchIndex().generateFilteredTagCloud(luceneField, query + suffix);
+                mytags = DataManager.getInstance()
+                        .getSearchIndex()
+                        .generateFilteredTagCloud(luceneField, query + suffix);
             }
 
             if (topCount > 0) {

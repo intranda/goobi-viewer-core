@@ -164,11 +164,13 @@ public class FileTools {
         String ls = System.getProperty("line.separator");
         try (FileInputStream fis = new FileInputStream(file); Scanner scanner = new Scanner(fis, encoding)) {
             while (scanner.hasNextLine()) {
-                text.append(scanner.nextLine()).append(ls);
+                text.append(scanner.nextLine())
+                        .append(ls);
             }
         }
 
-        return text.toString().trim();
+        return text.toString()
+                .trim();
     }
 
     /**
@@ -212,7 +214,8 @@ public class FileTools {
         try {
             scanner = new Scanner(new ByteArrayInputStream(bytes), encoding);
             while (scanner.hasNextLine()) {
-                text.append(scanner.nextLine()).append(NL);
+                text.append(scanner.nextLine())
+                        .append(NL);
             }
         } finally {
             scanner.close();
@@ -347,8 +350,8 @@ public class FileTools {
      * @should throw FileNotFoundException if file not found
      */
     public static void decompressGzipFile(File gzipFile, File newFile) throws FileNotFoundException, IOException {
-        try (FileInputStream fis = new FileInputStream(gzipFile); GZIPInputStream gis = new GZIPInputStream(fis); FileOutputStream fos =
-                new FileOutputStream(newFile)) {
+        try (FileInputStream fis = new FileInputStream(gzipFile); GZIPInputStream gis = new GZIPInputStream(fis);
+                FileOutputStream fos = new FileOutputStream(newFile)) {
             byte[] buffer = new byte[1024];
             int len;
             while ((len = gis.read(buffer)) != -1) {
@@ -366,8 +369,8 @@ public class FileTools {
      * @should throw FileNotFoundException if file not found
      */
     public static void compressGzipFile(File file, File gzipFile) throws FileNotFoundException, IOException {
-        try (FileInputStream fis = new FileInputStream(file); FileOutputStream fos = new FileOutputStream(gzipFile); GZIPOutputStream gzipOS =
-                new GZIPOutputStream(fos)) {
+        try (FileInputStream fis = new FileInputStream(file); FileOutputStream fos = new FileOutputStream(gzipFile);
+                GZIPOutputStream gzipOS = new GZIPOutputStream(fos)) {
             byte[] buffer = new byte[1024];
             int len;
             while ((len = fis.read(buffer)) != -1) {
@@ -427,10 +430,12 @@ public class FileTools {
         }
         if (create) {
             Files.createDirectory(path);
-            logger.info("Created folder: {}", path.toAbsolutePath().toString());
+            logger.info("Created folder: {}", path.toAbsolutePath()
+                    .toString());
             return true;
         }
-        logger.error("Folder not found: {}", path.toAbsolutePath().toString());
+        logger.error("Folder not found: {}", path.toAbsolutePath()
+                .toString());
         return false;
     }
 

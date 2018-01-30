@@ -166,7 +166,8 @@ public class MetadataBean {
     public MetadataElement getBottomMetadataElement() {
         if (metadataElementList != null && !metadataElementList.isEmpty()) {
             int index = metadataElementList.size() - 1;
-            while (!metadataElementList.get(index).isHasSidebarMetadata() && index > 0) {
+            while (!metadataElementList.get(index)
+                    .isHasSidebarMetadata() && index > 0) {
                 index--;
             }
             // logger.debug("index: " + index);
@@ -201,7 +202,9 @@ public class MetadataBean {
     @Deprecated
     public boolean displayBreadCrumbs() throws IndexUnreachableException {
         int cutoff = getBreadcrumbStartLevel();
-        return DataManager.getInstance().getConfiguration().getDisplayBibdataBreadcrumbs() && cutoff > 0 && metadataElementList.size() > cutoff;
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getDisplayBibdataBreadcrumbs() && cutoff > 0 && metadataElementList.size() > cutoff;
     }
 
     public boolean displayChildStructs() {

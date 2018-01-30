@@ -65,11 +65,20 @@ public class TagLib {
      * @throws PresentationException
      */
     public static List<String> getLastImports(Integer number) throws PresentationException, IndexUnreachableException {
-        String query = new StringBuilder("(").append(SolrConstants.ISWORK).append(":true").append(getDiscriminatorQuery()).append(')').append(
-                SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery())).toString();
+        String query = new StringBuilder("(").append(SolrConstants.ISWORK)
+                .append(":true")
+                .append(getDiscriminatorQuery())
+                .append(')')
+                .append(SearchHelper.getAllSuffixes(DataManager.getInstance()
+                        .getConfiguration()
+                        .isSubthemeAddFilterQuery()))
+                .toString();
         logger.debug("getLastImports query: {}", query);
-        SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, 0, number, Collections.singletonList(new StringPair(
-                SolrConstants.DATECREATED, "desc")), null, Arrays.asList(RSSFeed.FIELDS)).getResults();
+        SolrDocumentList docList = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, 0, number, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                        Arrays.asList(RSSFeed.FIELDS))
+                .getResults();
         List<String> ret = new ArrayList<>(docList.size());
         for (SolrDocument doc : docList) {
             Object o = doc.getFirstValue(SolrConstants.TITLE);
@@ -94,18 +103,35 @@ public class TagLib {
     public static List<String> getLastImportImages(Integer number) throws PresentationException, IndexUnreachableException {
         List<String> ret = new ArrayList<>();
 
-        String query = new StringBuilder("(").append(SolrConstants.ISWORK).append(":true").append(getDiscriminatorQuery()).append(')').append(
-                SearchHelper.getAllSuffixes(DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery())).toString();
+        String query = new StringBuilder("(").append(SolrConstants.ISWORK)
+                .append(":true")
+                .append(getDiscriminatorQuery())
+                .append(')')
+                .append(SearchHelper.getAllSuffixes(DataManager.getInstance()
+                        .getConfiguration()
+                        .isSubthemeAddFilterQuery()))
+                .toString();
         logger.trace("getLastImportTitles query: {}", query);
-        SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, 0, number, Collections.singletonList(new StringPair(
-                SolrConstants.DATECREATED, "desc")), null, Arrays.asList(RSSFeed.FIELDS)).getResults();
+        SolrDocumentList docList = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, 0, number, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                        Arrays.asList(RSSFeed.FIELDS))
+                .getResults();
         List<SolrDocument> docs = docList;
         for (SolrDocument doc : docs) {
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
-            ret.add(new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                    .append(pi).append('/').append(thumbnailFile).append("&width=150&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
-                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "").toString());
+            ret.add(new StringBuilder(DataManager.getInstance()
+                    .getConfiguration()
+                    .getContentServerWrapperUrl()).append("?action=image&sourcepath=")
+                            .append(pi)
+                            .append('/')
+                            .append(thumbnailFile)
+                            .append("&width=150&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
+                            .append(DataManager.getInstance()
+                                    .getConfiguration()
+                                    .isForceJpegConversion() ? "&format=jpg" : "")
+                            .toString());
         }
 
         return ret;
@@ -123,10 +149,14 @@ public class TagLib {
     public static String getFeaturedVolumeField(String pi, String field) throws PresentationException, IndexUnreachableException {
         // TODO so geht es nicht
         logger.trace("field: {}", field);
-        String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
+        String query = new StringBuilder(SolrConstants.PI).append(':')
+                .append(pi)
+                .toString();
         String ret = "";
         logger.debug("query: {}", query);
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(field));
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(query, Collections.singletonList(field));
         if (doc != null) {
             // logger.info("field Value: " + doc.getFieldValue(field).toString());
             Object o = doc.getFirstValue(field);
@@ -151,15 +181,28 @@ public class TagLib {
      * @throws PresentationException
      */
     public static String getFeaturedVolumeImage(String pi, Integer width, Integer height) throws PresentationException, IndexUnreachableException {
-        String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.THUMBNAIL));
+        String query = new StringBuilder(SolrConstants.PI).append(':')
+                .append(pi)
+                .toString();
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(query, Collections.singletonList(SolrConstants.THUMBNAIL));
         if (doc != null) {
             Object o = doc.getFieldValue(SolrConstants.THUMBNAIL);
             if (o != null) {
                 String thumbnailFile = (String) o;
-                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                        "?action=image&sourcepath=").append(pi).append('/').append(thumbnailFile).append("&width=").append(width).append("&height=")
-                        .append(height).append("&rotate=0&format=jpg&resolution=72&thumbnail=true&ignoreWatermark=true").toString();
+                return new StringBuilder(DataManager.getInstance()
+                        .getConfiguration()
+                        .getContentServerWrapperUrl()).append("?action=image&sourcepath=")
+                                .append(pi)
+                                .append('/')
+                                .append(thumbnailFile)
+                                .append("&width=")
+                                .append(width)
+                                .append("&height=")
+                                .append(height)
+                                .append("&rotate=0&format=jpg&resolution=72&thumbnail=true&ignoreWatermark=true")
+                                .toString();
             }
             // String thumbnailFile = (String) doc.getFieldValue(LuceneConstants.THUMBNAIL);
         }
@@ -178,18 +221,31 @@ public class TagLib {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public static String getFeaturedImage(String pi, Integer imageNumber, Integer imageWidth, Integer imageHeight) throws PresentationException,
-            IndexUnreachableException {
-        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.ORDER).append(':')
-                .append(imageNumber - 1).append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.PAGE.name()).toString();
+    public static String getFeaturedImage(String pi, Integer imageNumber, Integer imageWidth, Integer imageHeight)
+            throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':')
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.ORDER)
+                .append(':')
+                .append(imageNumber - 1)
+                .append(" AND ")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.PAGE.name())
+                .toString();
         logger.debug("query: {}", query);
         String width = String.valueOf(imageWidth);
         String height = String.valueOf(imageHeight);
 
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.FILENAME));
+        SolrDocument doc = DataManager.getInstance()
+                .getSearchIndex()
+                .getFirstDoc(query, Collections.singletonList(SolrConstants.FILENAME));
         if (doc == null) {
             query = query.replace(" AND DOCTYPE:PAGE", " AND FILENAME:*");
-            doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.FILENAME));
+            doc = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(query, Collections.singletonList(SolrConstants.FILENAME));
         }
         logger.debug("doc: {}", doc);
         if (doc != null) {
@@ -197,9 +253,18 @@ public class TagLib {
             if (o != null) {
                 logger.debug(o.toString());
                 String fileName = (String) o;
-                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                        "?action=image&sourcepath=").append(pi).append('/').append(fileName).append("&width=").append(width).append("&height=")
-                        .append(height).append("&rotate=0&format=jpg&resolution=72&ignoreWatermark=true").toString();
+                return new StringBuilder(DataManager.getInstance()
+                        .getConfiguration()
+                        .getContentServerWrapperUrl()).append("?action=image&sourcepath=")
+                                .append(pi)
+                                .append('/')
+                                .append(fileName)
+                                .append("&width=")
+                                .append(width)
+                                .append("&height=")
+                                .append(height)
+                                .append("&rotate=0&format=jpg&resolution=72&ignoreWatermark=true")
+                                .toString();
             }
         }
 
@@ -232,8 +297,8 @@ public class TagLib {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit) throws PresentationException,
-            IndexUnreachableException {
+    public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit)
+            throws PresentationException, IndexUnreachableException {
         return getDrillDown(field, subQuery, resultLimit, false);
     }
 
@@ -248,48 +313,67 @@ public class TagLib {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder) throws PresentationException,
-            IndexUnreachableException {
+    public static List<FacetItem> getDrillDown(String field, String subQuery, Integer resultLimit, final Boolean reverseOrder)
+            throws PresentationException, IndexUnreachableException {
         StringBuilder sbQuery = new StringBuilder(100);
-        sbQuery.append('(').append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)").append(
-                getDiscriminatorQuery());
+        sbQuery.append('(')
+                .append(SolrConstants.ISWORK)
+                .append(":true OR ")
+                .append(SolrConstants.ISANCHOR)
+                .append(":true)")
+                .append(getDiscriminatorQuery());
 
         if (StringUtils.isNotEmpty(subQuery)) {
             if (subQuery.startsWith(" AND ")) {
                 subQuery = subQuery.substring(5);
             }
-            sbQuery.append(" AND (").append(subQuery).append(')');
+            sbQuery.append(" AND (")
+                    .append(subQuery)
+                    .append(')');
         }
         // logger.debug("getDrillDown query: " + query);
         field = field.replace("MD_", "FACET_");
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, 0, null, Collections.singletonList(field),
-                Collections.singletonList(SolrConstants.IDDOC));
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .search(sbQuery.toString(), 0, 0, null, Collections.singletonList(field), Collections.singletonList(SolrConstants.IDDOC));
         // TODO Filter with the docstruct whitelist?
-        if (resp != null && resp.getFacetField(field) != null && resp.getFacetField(field).getValues() != null) {
-            
-            Map<String, Long> result = resp.getFacetField(field).getValues().stream()
-                .filter(count -> count.getName().charAt(0) != 1)
-                .sorted((count1, count2) -> {
-                    int compValue;
-                    if(count1.getName().matches("\\d+") && count2.getName().matches("\\d+")) {
-                        compValue = Long.compare(Long.parseLong(count1.getName()), Long.parseLong(count2.getName()));
-                    } else {
-                        compValue = count1.getName().compareToIgnoreCase(count2.getName());
-                    }
-                    if(Boolean.TRUE.equals(reverseOrder)) {
-                        compValue *= -1;
-                    }
-                    return compValue;
-                })
-                .limit(resultLimit > 0 ? resultLimit : resp.getFacetField(field).getValues().size())
-                .collect(Collectors.toMap(Count::getName, Count::getCount));
-            List<String> hierarchicalFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
+        if (resp != null && resp.getFacetField(field) != null && resp.getFacetField(field)
+                .getValues() != null) {
+
+            Map<String, Long> result = resp.getFacetField(field)
+                    .getValues()
+                    .stream()
+                    .filter(count -> count.getName()
+                            .charAt(0) != 1)
+                    .sorted((count1, count2) -> {
+                        int compValue;
+                        if (count1.getName()
+                                .matches("\\d+")
+                                && count2.getName()
+                                        .matches("\\d+")) {
+                            compValue = Long.compare(Long.parseLong(count1.getName()), Long.parseLong(count2.getName()));
+                        } else {
+                            compValue = count1.getName()
+                                    .compareToIgnoreCase(count2.getName());
+                        }
+                        if (Boolean.TRUE.equals(reverseOrder)) {
+                            compValue *= -1;
+                        }
+                        return compValue;
+                    })
+                    .limit(resultLimit > 0 ? resultLimit : resp.getFacetField(field)
+                            .getValues()
+                            .size())
+                    .collect(Collectors.toMap(Count::getName, Count::getCount));
+            List<String> hierarchicalFields = DataManager.getInstance()
+                    .getConfiguration()
+                    .getHierarchicalDrillDownFields();
             Locale locale = null;
             NavigationHelper nh = BeanUtils.getNavigationHelper();
             if (nh != null) {
                 locale = nh.getLocale();
             }
-            
+
             return FacetItem.generateFacetItems(field, result, true, reverseOrder, hierarchicalFields.contains(field) ? true : false, locale);
         }
 
@@ -302,7 +386,8 @@ public class TagLib {
     }
 
     private static String getDiscriminatorQuery() throws IndexUnreachableException {
-        return SearchHelper.getDiscriminatorFieldFilterSuffix(BeanUtils.getNavigationHelper(), DataManager.getInstance().getConfiguration()
+        return SearchHelper.getDiscriminatorFieldFilterSuffix(BeanUtils.getNavigationHelper(), DataManager.getInstance()
+                .getConfiguration()
                 .getSubthemeDiscriminatorField());
     }
 }

@@ -87,12 +87,17 @@ public class WebApiServlet extends HttpServlet implements Serializable {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = null;
         String encoding = "utf-8";
-        if (request.getParameterMap().get("action") != null && request.getParameterMap().get("action").length > 0) {
-            action = request.getParameterMap().get("action")[0];
+        if (request.getParameterMap()
+                .get("action") != null
+                && request.getParameterMap()
+                        .get("action").length > 0) {
+            action = request.getParameterMap()
+                    .get("action")[0];
             logger.trace("Web API action: {}", action);
         }
 
-        String[] encodingParam = request.getParameterMap().get("encoding");
+        String[] encodingParam = request.getParameterMap()
+                .get("encoding");
         if (encodingParam != null && StringUtils.isNotEmpty(encodingParam[0])) {
             encoding = String.valueOf(encodingParam[0]);
         }
@@ -103,12 +108,16 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 case "timematrix":
                 case "timeline": {
                     String query = null;
-                    String[] queryParameter = request.getParameterMap().get("q");
+                    String[] queryParameter = request.getParameterMap()
+                            .get("q");
                     if (queryParameter != null && StringUtils.isNotEmpty(queryParameter[0])) {
                         // Query given as parameter
                         try {
                             // Time matrix query automatically filters by the current sub-theme discriminator value
-                            query = new StringBuilder().append('(').append(queryParameter[0]).append(')').append(SearchHelper.getAllSuffixes(true))
+                            query = new StringBuilder().append('(')
+                                    .append(queryParameter[0])
+                                    .append(')')
+                                    .append(SearchHelper.getAllSuffixes(true))
                                     .toString();
                         } catch (IndexUnreachableException e) {
                             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -119,7 +128,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     } else {
                         // Build query from other parameters
                         // Example ?action=timeline&startDate=1900&endDate=1950&count=10
-                        String[] startDateParameter = request.getParameterMap().get("startDate");
+                        String[] startDateParameter = request.getParameterMap()
+                                .get("startDate");
                         if (startDateParameter == null || startDateParameter.length == 0 || StringUtils.isEmpty(startDateParameter[0])) {
                             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "startDate missing.");
                             return;
@@ -127,7 +137,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         String startDate = startDateParameter[0];
                         logger.trace("start Date: {}", startDate);
 
-                        String[] endDateParameter = request.getParameterMap().get("endDate");
+                        String[] endDateParameter = request.getParameterMap()
+                                .get("endDate");
                         if (endDateParameter == null || endDateParameter.length == 0 || StringUtils.isEmpty(endDateParameter[0])) {
                             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "endDate missing.");
                             return;
@@ -136,8 +147,15 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         logger.trace("end Date: {}", endDate);
 
                         try {
-                            query = new StringBuilder().append('(').append(SolrConstants.ISWORK).append(":true AND YEAR:[").append(startDate).append(
-                                    " TO ").append(endDate).append("])").append(SearchHelper.getAllSuffixes(true)).toString();
+                            query = new StringBuilder().append('(')
+                                    .append(SolrConstants.ISWORK)
+                                    .append(":true AND YEAR:[")
+                                    .append(startDate)
+                                    .append(" TO ")
+                                    .append(endDate)
+                                    .append("])")
+                                    .append(SearchHelper.getAllSuffixes(true))
+                                    .toString();
                             logger.debug("query: {}", query);
                         } catch (IndexUnreachableException e) {
                             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -146,7 +164,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         }
                     }
 
-                    String[] countParameter = request.getParameterMap().get("count");
+                    String[] countParameter = request.getParameterMap()
+                            .get("count");
                     int count = 0;
                     if (countParameter == null || StringUtils.isEmpty(countParameter[0])) {
                         count = MAX_HITS;
@@ -159,9 +178,13 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     try {
                         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
                         Random random = new Random();
-                        String sortfield = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
-                        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, count, Collections.singletonList(
-                                new StringPair(sortfield, "asc")), null, null).getResults();
+                        String sortfield = new StringBuilder().append("random_")
+                                .append(random.nextInt(Integer.MAX_VALUE))
+                                .toString();
+                        SolrDocumentList result = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(query, 0, count, Collections.singletonList(new StringPair(sortfield, "asc")), null, null)
+                                .getResults();
                         LinkedList<CompareYearSolrDocWrapper> sortDocResult = new LinkedList<>();
                         if (result != null) {
                             logger.debug("count: {} result.getNumFound: {} size: {}", count, result.getNumFound(), result.size());
@@ -190,7 +213,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     break;
                 case "query": {
                     // Example ?action=query&q=ISWORK:true AND YEAR:[1900 TO *] AND YEAR:[* TO 2000]&random=true
-                    String[] queryParameter = request.getParameterMap().get("q");
+                    String[] queryParameter = request.getParameterMap()
+                            .get("q");
                     if (queryParameter == null || queryParameter.length == 0 || StringUtils.isEmpty(queryParameter[0])) {
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "q missing.");
                         return;
@@ -198,7 +222,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     String query;
                     try {
                         // Custom query does not filter by the sub-theme discriminator value by default, it has to be added to the custom query via #{navigationHelper.subThemeDiscriminatorValueSubQuery}
-                        query = new StringBuilder().append(queryParameter[0]).append(SearchHelper.getAllSuffixes(request, true, false)).toString();
+                        query = new StringBuilder().append(queryParameter[0])
+                                .append(SearchHelper.getAllSuffixes(request, true, false))
+                                .toString();
                     } catch (IndexUnreachableException e) {
                         logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -206,7 +232,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     }
                     logger.debug("q: {}", query);
 
-                    String[] countParameter = request.getParameterMap().get("count");
+                    String[] countParameter = request.getParameterMap()
+                            .get("count");
                     int count = MAX_HITS;
                     if (countParameter != null && StringUtils.isNotEmpty(countParameter[0])) {
                         count = Integer.valueOf(countParameter[0]);
@@ -214,7 +241,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     logger.trace("count: {}", count);
 
                     boolean sortDescending = false;
-                    String[] sortOrder = request.getParameterMap().get("sortOrder");
+                    String[] sortOrder = request.getParameterMap()
+                            .get("sortOrder");
                     if (sortOrder != null && "desc".equals(sortOrder[0])) {
                         sortDescending = true;
                     }
@@ -222,7 +250,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     logger.trace("sortOrder: {}", sortDescending);
 
                     List<StringPair> sortFields = new ArrayList<>();
-                    String[] sortFieldArray = request.getParameterMap().get("sortField");
+                    String[] sortFieldArray = request.getParameterMap()
+                            .get("sortField");
                     if (sortFieldArray != null) {
                         sortFields.clear();
                         for (String sortField : sortFieldArray) {
@@ -234,14 +263,16 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     }
 
                     boolean randomize = false;
-                    String[] randomParameter = request.getParameterMap().get("random");
+                    String[] randomParameter = request.getParameterMap()
+                            .get("random");
                     if (randomParameter != null && StringUtils.isNotEmpty(randomParameter[0])) {
                         randomize = Boolean.valueOf(randomParameter[0]);
                     }
                     logger.trace("randomize: {}", randomize);
 
                     String jsonFormat = "";
-                    String[] jsonFormatParameter = request.getParameterMap().get("jsonFormat");
+                    String[] jsonFormatParameter = request.getParameterMap()
+                            .get("jsonFormat");
                     if (jsonFormatParameter != null && StringUtils.isNotEmpty(jsonFormatParameter[0])) {
                         jsonFormat = String.valueOf(jsonFormatParameter[0]);
                         logger.trace("jsonFormat: {}", jsonFormat);
@@ -256,7 +287,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     }
 
                     try {
-                        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, count, sortFields, null, null)
+                        SolrDocumentList result = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(query, 0, count, sortFields, null, null)
                                 .getResults();
 
                         JSONArray jsonArray = null;
@@ -290,7 +323,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     break;
                 case "count": {
                     // Example ?action=count&q=ISWORK:true AND YEAR:[1900 TO *] AND YEAR:[* TO 2000]
-                    String[] queryParameter = request.getParameterMap().get("q");
+                    String[] queryParameter = request.getParameterMap()
+                            .get("q");
                     if (queryParameter == null || queryParameter.length == 0 || StringUtils.isEmpty(queryParameter[0])) {
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "q missing.");
                         return;
@@ -298,7 +332,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     String query;
                     try {
                         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
-                        query = new StringBuilder().append(queryParameter[0]).append(SearchHelper.getAllSuffixes(request, true, false)).toString();
+                        query = new StringBuilder().append(queryParameter[0])
+                                .append(SearchHelper.getAllSuffixes(request, true, false))
+                                .toString();
                     } catch (IndexUnreachableException e) {
                         logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -306,19 +342,25 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     }
                     logger.debug("q: {}", query);
 
-                    String[] sortOrder = request.getParameterMap().get("sortOrder");
+                    String[] sortOrder = request.getParameterMap()
+                            .get("sortOrder");
                     if (sortOrder != null && "desc".equals(sortOrder[0])) {
                     }
 
                     String jsonFormat = "";
-                    String[] jsonFormatParameter = request.getParameterMap().get("jsonFormat");
+                    String[] jsonFormatParameter = request.getParameterMap()
+                            .get("jsonFormat");
                     if (jsonFormatParameter != null && StringUtils.isNotEmpty(jsonFormatParameter[0])) {
                         jsonFormat = String.valueOf(jsonFormatParameter[0]);
                         logger.trace("jsonFormat: {}", jsonFormat);
                     }
 
                     try {
-                        long count = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, null, null).getResults().getNumFound();
+                        long count = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(query, 0, 0, null, null, null)
+                                .getResults()
+                                .getNumFound();
 
                         //                        JSONArray jsonArray ;
                         //                        if (jsonArray == null) {
@@ -339,7 +381,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 }
                     break;
                 case "normdata": {
-                    String[] urlParameter = request.getParameterMap().get("url");
+                    String[] urlParameter = request.getParameterMap()
+                            .get("url");
                     if (urlParameter == null || urlParameter.length == 0 || StringUtils.isEmpty(urlParameter[0])) {
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "url missing.");
                         return;
@@ -347,7 +390,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     String url = urlParameter[0];
 
                     Locale locale = Locale.getDefault();
-                    String[] langParameter = request.getParameterMap().get("lang");
+                    String[] langParameter = request.getParameterMap()
+                            .get("lang");
                     if (langParameter != null && langParameter.length != 0 && StringUtils.isNotEmpty(langParameter[0])) {
                         String lang = langParameter[0];
                         switch (lang) {
@@ -383,7 +427,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                                     }
                                     Map<String, String> valueMap = new HashMap<>();
                                     if (value.getText() != null) {
-                                        if (value.getText().startsWith("<div ")) {
+                                        if (value.getText()
+                                                .startsWith("<div ")) {
                                             // Hack to discriminate pre-build HTML page
                                             valueMap.put("html", value.getText());
                                         } else {
@@ -417,7 +462,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
             }
 
             response.setCharacterEncoding(encoding);
-            response.getWriter().write(ret.toString());
+            response.getWriter()
+                    .write(ret.toString());
         }
     }
 
@@ -433,8 +479,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
      * @throws DAOException
      */
     @SuppressWarnings("unchecked")
-    private static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request) throws IndexUnreachableException,
-            PresentationException, DAOException {
+    private static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
+            throws IndexUnreachableException, PresentationException, DAOException {
         JSONArray jsonArray = new JSONArray();
 
         for (SolrDocument doc : result) {
@@ -447,8 +493,11 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
-                        SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
+                        new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':')
+                                .append(pi)
+                                .toString(),
+                        request);
                 if (!access) {
                     logger.trace("User may not list {}", pi);
                     continue;
@@ -473,8 +522,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
      * @throws DAOException
      */
     @SuppressWarnings("unchecked")
-    private static JSONArray getDateCentricRecordJsonArray(SolrDocumentList result, HttpServletRequest request) throws IndexUnreachableException,
-            PresentationException, DAOException {
+    private static JSONArray getDateCentricRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
+            throws IndexUnreachableException, PresentationException, DAOException {
         JSONArray jsonArray = new JSONArray();
 
         JSONArray jsonArrayUngrouped = new JSONArray();
@@ -488,8 +537,11 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
-                        SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
+                        new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':')
+                                .append(pi)
+                                .toString(),
+                        request);
                 if (!access) {
                     logger.debug("User may not list {}", pi);
                     continue;
@@ -540,23 +592,52 @@ public class WebApiServlet extends HttpServlet implements Serializable {
         String fileName = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
         String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
         StringBuilder sbThumbnailUrl = new StringBuilder(250);
-        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
+        sbThumbnailUrl.append(DataManager.getInstance()
+                .getConfiguration()
+                .getContentServerWrapperUrl())
+                .append("?action=image&sourcepath=");
         StringBuilder sbMediumImage = new StringBuilder(250);
-        sbMediumImage.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
+        sbMediumImage.append(DataManager.getInstance()
+                .getConfiguration()
+                .getContentServerWrapperUrl())
+                .append("?action=image&sourcepath=");
         if (StringUtils.isNotEmpty(dataRepository)) {
-            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-            sbThumbnailUrl.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
-                            .getMediaFolder()).append('/');
-            sbMediumImage.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
-                            .getMediaFolder()).append('/');
+            String dataRepositoriesHome = DataManager.getInstance()
+                    .getConfiguration()
+                    .getDataRepositoriesHome();
+            sbThumbnailUrl.append("file:/")
+                    .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                    .append(dataRepositoriesHome)
+                    .append(dataRepository)
+                    .append('/')
+                    .append(DataManager.getInstance()
+                            .getConfiguration()
+                            .getMediaFolder())
+                    .append('/');
+            sbMediumImage.append("file:/")
+                    .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                    .append(dataRepositoriesHome)
+                    .append(dataRepository)
+                    .append('/')
+                    .append(DataManager.getInstance()
+                            .getConfiguration()
+                            .getMediaFolder())
+                    .append('/');
         }
-        sbThumbnailUrl.append(pi).append('/').append(fileName).append(
-                "&width=100&height=120&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                        .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-        sbMediumImage.append(pi).append('/').append(fileName).append("&width=600&height=500&rotate=0&resolution=72&ignoreWatermark=true").append(
-                DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
+        sbThumbnailUrl.append(pi)
+                .append('/')
+                .append(fileName)
+                .append("&width=100&height=120&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
+                .append(DataManager.getInstance()
+                        .getConfiguration()
+                        .isForceJpegConversion() ? "&format=jpg" : "");
+        sbMediumImage.append(pi)
+                .append('/')
+                .append(fileName)
+                .append("&width=600&height=500&rotate=0&resolution=72&ignoreWatermark=true")
+                .append(DataManager.getInstance()
+                        .getConfiguration()
+                        .isForceJpegConversion() ? "&format=jpg" : "");
 
         jsonObj.put("id", pi);
         jsonObj.put("title", doc.getFieldValue(SolrConstants.TITLE));
@@ -573,15 +654,24 @@ public class WebApiServlet extends HttpServlet implements Serializable {
         boolean isAnchor = doc.getFieldValue(SolrConstants.ISANCHOR) != null && (Boolean) doc.getFieldValue(SolrConstants.ISANCHOR);
         if (StringUtils.isEmpty(fileName) || "application".equals(doc.getFieldValue(SolrConstants.MIMETYPE))) {
             view = PageType.viewMetadata.getName();
-        } else if (isAnchor || DocType.GROUP.name().equals(docType)) {
+        } else if (isAnchor || DocType.GROUP.name()
+                .equals(docType)) {
             view = PageType.viewToc.getName();
         }
 
-        String url = new StringBuilder().append(rootUrl).append('/').append(view).append('/').append(pi).append("/1/LOG_0000/").toString();
+        String url = new StringBuilder().append(rootUrl)
+                .append('/')
+                .append(view)
+                .append('/')
+                .append(pi)
+                .append("/1/LOG_0000/")
+                .toString();
         jsonObj.put("url", url);
 
         // Load remaining fields from config
-        for (Map<String, String> fieldConfig : DataManager.getInstance().getConfiguration().getWebApiFields()) {
+        for (Map<String, String> fieldConfig : DataManager.getInstance()
+                .getConfiguration()
+                .getWebApiFields()) {
             if (StringUtils.isNotEmpty(fieldConfig.get("jsonField")) && StringUtils.isNotEmpty(fieldConfig.get("luceneField"))) {
                 if ("true".equals(fieldConfig.get("multivalue"))) {
                     Collection<Object> values = doc.getFieldValues(fieldConfig.get("luceneField"));

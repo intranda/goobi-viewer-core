@@ -54,21 +54,33 @@ public class RssResolver extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String query = null;
-        if (request.getParameterMap().get("q") != null) {
-            query = "(" + request.getParameterMap().get("q")[0] + ")";
+        if (request.getParameterMap()
+                .get("q") != null) {
+            query = "(" + request.getParameterMap()
+                    .get("q")[0] + ")";
         }
         String language = "de";
-        if (request.getParameterMap().get("lang") != null && request.getParameterMap().get("lang").length > 0) {
-            language = request.getParameterMap().get("lang")[0];
+        if (request.getParameterMap()
+                .get("lang") != null
+                && request.getParameterMap()
+                        .get("lang").length > 0) {
+            language = request.getParameterMap()
+                    .get("lang")[0];
         }
-        if (request.getParameterMap().get("language") != null && request.getParameterMap().get("language").length > 0) {
-            language = request.getParameterMap().get("language")[0];
+        if (request.getParameterMap()
+                .get("language") != null
+                && request.getParameterMap()
+                        .get("language").length > 0) {
+            language = request.getParameterMap()
+                    .get("language")[0];
         }
         logger.debug("RSS request language: {}", language);
         Long bookshelfId = null;
-        if (request.getParameterMap().get("bookshelfId") != null) {
+        if (request.getParameterMap()
+                .get("bookshelfId") != null) {
             try {
-                bookshelfId = Long.valueOf(request.getParameterMap().get("bookshelfId")[0]);
+                bookshelfId = Long.valueOf(request.getParameterMap()
+                        .get("bookshelfId")[0]);
             } catch (NumberFormatException e) {
                 logger.warn("Received invalid bookshelf ID: {}", bookshelfId);
             }
@@ -79,7 +91,9 @@ public class RssResolver extends HttpServlet {
             if (StringUtils.isEmpty(query)) {
                 if (bookshelfId != null) {
                     // Bookshelf RSS feed
-                    Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(bookshelfId);
+                    Bookshelf bookshelf = DataManager.getInstance()
+                            .getDao()
+                            .getBookshelf(bookshelfId);
                     if (bookshelf == null) {
                         logger.warn("Requested bookshelf not found: {}", bookshelfId);
                         response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -97,11 +111,17 @@ public class RssResolver extends HttpServlet {
                     if (request.getParameter("query") != null) {
                         sbQuery.append(request.getParameter("query"));
                     } else {
-                        sbQuery.append(SolrConstants.ISWORK).append(":true");
+                        sbQuery.append(SolrConstants.ISWORK)
+                                .append(":true");
                     }
                     if (StringUtils.isNotBlank(request.getParameter("partnerId"))) {
-                        sbQuery.append(" AND ").append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField()).append(':')
-                                .append(request.getParameter("partnerId").trim());
+                        sbQuery.append(" AND ")
+                                .append(DataManager.getInstance()
+                                        .getConfiguration()
+                                        .getSubthemeDiscriminatorField())
+                                .append(':')
+                                .append(request.getParameter("partnerId")
+                                        .trim());
                     }
                     query = sbQuery.toString();
                 }
@@ -110,9 +130,11 @@ public class RssResolver extends HttpServlet {
             logger.trace("RSS query: {}", query);
             if (StringUtils.isNotEmpty(query)) {
                 SyndFeedOutput output = new SyndFeedOutput();
-                output.output(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request), query + SearchHelper.getAllSuffixes(
-                        request, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()), language), new OutputStreamWriter(
-                                response.getOutputStream(), "utf-8"));
+                output.output(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
+                        query + SearchHelper.getAllSuffixes(request, true, DataManager.getInstance()
+                                .getConfiguration()
+                                .isSubthemeAddFilterQuery()),
+                        language), new OutputStreamWriter(response.getOutputStream(), "utf-8"));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");
                 return;

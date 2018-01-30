@@ -89,8 +89,9 @@ public class PpnResolver extends HttpServlet implements Serializable {
 
         // 3. evaluate the search
         try {
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper
-                    .getAllSuffixes(request, true, false));
+            SolrDocumentList hits = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(SolrConstants.PI + ":\"" + identifier + "\"" + SearchHelper.getAllSuffixes(request, true, false));
             if (hits.getNumFound() == 0) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, ERRTXT_DOC_NOT_FOUND);
                 return;
@@ -111,12 +112,16 @@ public class PpnResolver extends HttpServlet implements Serializable {
             // 4. extract the target field value of the single found document
             SolrDocument targetDoc = hits.get(0);
 
-            String result = IdentifierResolver.constructUrl(targetDoc, false, DataManager.getInstance().getConfiguration()
+            String result = IdentifierResolver.constructUrl(targetDoc, false, DataManager.getInstance()
+                    .getConfiguration()
                     .isSidebarOverviewLinkVisible());
-            if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .isUrnDoRedirect()) {
                 response.sendRedirect(result);
             } else {
-                getServletContext().getRequestDispatcher(result).forward(request, response);
+                getServletContext().getRequestDispatcher(result)
+                        .forward(request, response);
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());

@@ -115,8 +115,11 @@ public class IdentifierResolver extends HttpServlet {
 
         StringBuilder sbQuery = new StringBuilder(fieldName);
         try {
-            sbQuery.append(':').append('"').append(ClientUtils.escapeQueryChars(fieldValue)).append('"').append(SearchHelper.getAllSuffixes(request,
-                    true, false));
+            sbQuery.append(':')
+                    .append('"')
+                    .append(ClientUtils.escapeQueryChars(fieldValue))
+                    .append('"')
+                    .append(SearchHelper.getAllSuffixes(request, true, false));
         } catch (IndexUnreachableException e) {
             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -124,7 +127,9 @@ public class IdentifierResolver extends HttpServlet {
         }
         try {
             // 3. evaluate the search
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString());
+            SolrDocumentList hits = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(sbQuery.toString());
             if (hits.getNumFound() == 0) {
                 // 3.1 start the alternative page field search
                 if (!customMode) {
@@ -165,8 +170,8 @@ public class IdentifierResolver extends HttpServlet {
             }
 
             // If this is not the top level docstruct, retrieve the correct page number
-            if ((targetDoc.getFieldValue(SolrConstants.ISWORK) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISWORK))) && (targetDoc
-                    .getFieldValue(SolrConstants.ISANCHOR) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR)))) {
+            if ((targetDoc.getFieldValue(SolrConstants.ISWORK) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISWORK)))
+                    && (targetDoc.getFieldValue(SolrConstants.ISANCHOR) == null || !((Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR)))) {
                 if (pi == null && targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT) != null) {
                     pi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                 }
@@ -193,16 +198,21 @@ public class IdentifierResolver extends HttpServlet {
                 return;
             }
 
-            String result = constructUrl(targetDoc, false, DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible());
+            String result = constructUrl(targetDoc, false, DataManager.getInstance()
+                    .getConfiguration()
+                    .isSidebarOverviewLinkVisible());
             logger.trace("URL: {}", result);
 
             // 5. redirect or forward using the target field value
-            if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .isUrnDoRedirect()) {
                 // response.sendRedirect(TARGET_WORK_URL.replaceAll("\\(0\\)", outputPart));
                 response.sendRedirect(result);
             } else {
                 // getServletContext().getRequestDispatcher(TARGET_WORK_URL.replaceAll("\\(0\\)", outputPart)).forward(request, response);
-                getServletContext().getRequestDispatcher(result).forward(request, response);
+                getServletContext().getRequestDispatcher(result)
+                        .forward(request, response);
             }
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
@@ -237,7 +247,9 @@ public class IdentifierResolver extends HttpServlet {
         // A.2 Evaluate the search
         SolrDocumentList hits;
         try {
-            hits = DataManager.getInstance().getSearchIndex().search(query2);
+            hits = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query2);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -300,13 +312,18 @@ public class IdentifierResolver extends HttpServlet {
 
         // A.5 Form a result url by inserting the target field of the document and the in A.4 determined value into the target page url
         try {
-            String result = constructUrl(targetDoc, true, DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible());
+            String result = constructUrl(targetDoc, true, DataManager.getInstance()
+                    .getConfiguration()
+                    .isSidebarOverviewLinkVisible());
             logger.debug("URL: {}", result);
             // A.6 redirect or forward to this newly created url
-            if (DataManager.getInstance().getConfiguration().isUrnDoRedirect()) {
+            if (DataManager.getInstance()
+                    .getConfiguration()
+                    .isUrnDoRedirect()) {
                 response.sendRedirect(result);
             } else {
-                getServletContext().getRequestDispatcher(result).forward(request, response);
+                getServletContext().getRequestDispatcher(result)
+                        .forward(request, response);
             }
         } catch (DAOException e) {
             logger.debug("DAOException thrown here: {}", e.getMessage());
@@ -331,19 +348,23 @@ public class IdentifierResolver extends HttpServlet {
         switch (code) {
             case HttpServletResponse.SC_NOT_FOUND:
                 request.setAttribute("type", "recordNotFound");
-                request.setAttribute("errMsg", Helper.getTranslation("errRecordNotFoundMsg", null).replace("{0}", identifier));
+                request.setAttribute("errMsg", Helper.getTranslation("errRecordNotFoundMsg", null)
+                        .replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_GONE:
                 request.setAttribute("type", "recordDeleted");
-                request.setAttribute("errMsg", Helper.getTranslation("errRecordDeletedMsg", null).replace("{0}", identifier));
+                request.setAttribute("errMsg", Helper.getTranslation("errRecordDeletedMsg", null)
+                        .replace("{0}", identifier));
                 break;
             case HttpServletResponse.SC_CONFLICT:
                 request.setAttribute("type", "general");
-                request.setAttribute("errMsg", Helper.getTranslation("errMultiMatch", null).replace("{0}", identifier));
+                request.setAttribute("errMsg", Helper.getTranslation("errMultiMatch", null)
+                        .replace("{0}", identifier));
                 break;
         }
         request.setAttribute("sourceUrl", NavigationHelper.getFullRequestUrl(request, null));
-        request.getRequestDispatcher(url).forward(request, response);
+        request.getRequestDispatcher(url)
+                .forward(request, response);
         return;
 
         //        response.sendError(code, msg);
@@ -369,27 +390,35 @@ public class IdentifierResolver extends HttpServlet {
         String mimeType = (String) targetDoc.getFieldValue(SolrConstants.MIMETYPE);
         String topstructPi = (String) targetDoc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         boolean anchor = targetDoc.containsKey(SolrConstants.ISANCHOR) && (Boolean) targetDoc.getFieldValue(SolrConstants.ISANCHOR);
-        boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL) && !StringUtils.isEmpty(
-                (String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
+        boolean hasImages = targetDoc.containsKey(SolrConstants.ORDER) || (targetDoc.containsKey(SolrConstants.THUMBNAIL)
+                && !StringUtils.isEmpty((String) targetDoc.getFieldValue(SolrConstants.THUMBNAIL)));
         boolean overviewPageFound = false;
         if (!pageResolverUrl && allowOverviewPage) {
-            OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(topstructPi, null, null);
+            OverviewPage overviewPage = DataManager.getInstance()
+                    .getDao()
+                    .getOverviewPageForRecord(topstructPi, null, null);
             if (overviewPage != null) {
                 overviewPageFound = true;
             }
         }
 
         PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, overviewPageFound, pageResolverUrl);
-        sb.append(pageType.getName()).append('/').append(topstructPi).append('/');
+        sb.append(pageType.getName())
+                .append('/')
+                .append(topstructPi)
+                .append('/');
         if (targetDoc.containsKey(SolrConstants.THUMBPAGENO) && (Integer) targetDoc.getFieldValue(SolrConstants.THUMBPAGENO) > 1) {
-            sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.THUMBPAGENO))).append('/');
+            sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.THUMBPAGENO)))
+                    .append('/');
         } else if (targetDoc.containsKey(SolrConstants.ORDER)) {
-            sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.ORDER))).append('/');
+            sb.append(String.valueOf(targetDoc.getFieldValue(SolrConstants.ORDER)))
+                    .append('/');
         } else {
             sb.append("1/");
         }
         if (targetDoc.containsKey(SolrConstants.LOGID)) {
-            sb.append(targetDoc.getFieldValue(SolrConstants.LOGID)).append('/');
+            sb.append(targetDoc.getFieldValue(SolrConstants.LOGID))
+                    .append('/');
         }
 
         logger.trace("Resolved to: {}", sb.toString());

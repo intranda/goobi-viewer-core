@@ -112,10 +112,15 @@ public class UserBean implements Serializable {
      * @throws DAOException
      */
     public String createNewUserAccount() throws DAOException {
-        if (nickName != null && DataManager.getInstance().getDao().getUserByNickname(nickName) != null) {
+        if (nickName != null && DataManager.getInstance()
+                .getDao()
+                .getUserByNickname(nickName) != null) {
             // Do not allow the same nickname being used for multiple users
-            Messages.error(Helper.getTranslation("user_nicknameTaken", null).replace("{0}", nickName.trim()));
-        } else if (DataManager.getInstance().getDao().getUserByEmail(email) != null) {
+            Messages.error(Helper.getTranslation("user_nicknameTaken", null)
+                    .replace("{0}", nickName.trim()));
+        } else if (DataManager.getInstance()
+                .getDao()
+                .getUserByEmail(email) != null) {
             // Do not allow the same email address being used for multiple users
             Messages.error("newUserExist");
             logger.debug("User account already exists for '" + email + "'.");
@@ -127,7 +132,9 @@ public class UserBean implements Serializable {
             resetPasswordFields();
             if (sendActivationEmail(newUser)) {
                 // Only attempt to persist the new user if the activation email could be sent
-                if (DataManager.getInstance().getDao().addUser(newUser)) {
+                if (DataManager.getInstance()
+                        .getDao()
+                        .addUser(newUser)) {
                     String msg = Helper.getTranslation("user_accountCreated", null);
                     Messages.info(msg.replace("{0}", email));
                     logger.debug("User account created for '" + email + "'.");
@@ -136,8 +143,10 @@ public class UserBean implements Serializable {
                 }
                 return "user?faces-redirect=true";
             }
-            Messages.error(Helper.getTranslation("errSendEmail", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errSendEmail", null)
+                    .replace("{0}", DataManager.getInstance()
+                            .getConfiguration()
+                            .getFeedbackEmailAddress()));
         } else {
             Messages.error("user_passwordMismatch");
         }
@@ -152,13 +161,17 @@ public class UserBean implements Serializable {
      */
     public String activateUserAccountAction() throws DAOException {
         if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(activationKey)) {
-            User user = DataManager.getInstance().getDao().getUserByEmail(email);
+            User user = DataManager.getInstance()
+                    .getDao()
+                    .getUserByEmail(email);
             if (user != null && !user.isActive()) {
                 if (activationKey.equals(user.getActivationKey())) {
                     // Activate user
                     user.setActivationKey(null);
                     user.setActive(true);
-                    if (DataManager.getInstance().getDao().updateUser(user)) {
+                    if (DataManager.getInstance()
+                            .getDao()
+                            .updateUser(user)) {
                         Messages.info(Helper.getTranslation("user_accountActivationSuccess", null));
                         logger.debug("User account successfully activated: " + user.getEmail());
                     } else {
@@ -194,23 +207,28 @@ public class UserBean implements Serializable {
                     wipeSession(BeanUtils.getRequest());
                     // Update last login
                     user.setLastLogin(new Date());
-                    if (!DataManager.getInstance().getDao().updateUser(user)) {
+                    if (!DataManager.getInstance()
+                            .getDao()
+                            .updateUser(user)) {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(user);
                     HttpServletRequest request = BeanUtils.getRequest();
-                    request.getSession(false).setAttribute("user", user);
+                    request.getSession(false)
+                            .setAttribute("user", user);
                     SearchHelper.updateFilterQuerySuffix(request);
                     // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
                     if (StringUtils.isNotEmpty(redirectUrl)) {
-                        if("#".equals(redirectUrl)) {
+                        if ("#".equals(redirectUrl)) {
                             logger.trace("Stay on current page");
                             return "";
                         }
                         logger.trace("Redirecting to {}", redirectUrl);
                         String redirectUrl = this.redirectUrl;
                         this.redirectUrl = "";
-                        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance()
+                                .getExternalContext()
+                                .getResponse();
                         try {
                             response.sendRedirect(redirectUrl);
                             return null;
@@ -237,30 +255,44 @@ public class UserBean implements Serializable {
      * @return
      */
     public String loginOpenIdConnectAction() {
-        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getResponse();
 
         // Apache Oltu
         try {
             oAuthState = new StringBuilder(String.valueOf(System.currentTimeMillis())).append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .toString();
             OAuthClientRequest request = null;
-            switch (openIdProvider.getName().toLowerCase()) {
+            switch (openIdProvider.getName()
+                    .toLowerCase()) {
                 case "google":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE).setResponseType(ResponseType.CODE.name()
-                            .toLowerCase()).setClientId(openIdProvider.getClientId()).setRedirectURI(BeanUtils
-                                    .getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL).setState(oAuthState).setScope(
-                                            "openid email").buildQueryMessage();
+                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
+                            .setResponseType(ResponseType.CODE.name()
+                                    .toLowerCase())
+                            .setClientId(openIdProvider.getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("openid email")
+                            .buildQueryMessage();
                     break;
                 case "facebook":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK).setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL).setState(oAuthState)
-                            .setScope("email").buildQueryMessage();
+                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK)
+                            .setClientId(openIdProvider.getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("email")
+                            .buildQueryMessage();
                     break;
                 default:
                     // Other providers
-                    request = OAuthClientRequest.authorizationLocation(openIdProvider.getUrl()).setResponseType(ResponseType.CODE.name()
-                            .toLowerCase()).setClientId(openIdProvider.getClientId()).setRedirectURI(BeanUtils
-                                    .getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL).setState(oAuthState).setScope("email")
+                    request = OAuthClientRequest.authorizationLocation(openIdProvider.getUrl())
+                            .setResponseType(ResponseType.CODE.name()
+                                    .toLowerCase())
+                            .setClientId(openIdProvider.getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("email")
                             .buildQueryMessage();
                     break;
             }
@@ -302,10 +334,11 @@ public class UserBean implements Serializable {
         } catch (ServletException e) {
             logger.error(e.getMessage(), e);
         }
-        request.getSession(false).invalidate();
+        request.getSession(false)
+                .invalidate();
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
-            if("#".equals(redirectUrl)) {
+            if ("#".equals(redirectUrl)) {
                 logger.trace("Stay on current page");
                 return "";
             }
@@ -316,7 +349,7 @@ public class UserBean implements Serializable {
 
             // Do not redirect to user backend pages because LoginFilter won't work here for some reason
             String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            if (redirectUrl.length() < servletPath.length() ||  !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
+            if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
                 return redirectUrl;
             }
         }
@@ -374,17 +407,23 @@ public class UserBean implements Serializable {
                 User copy = user.clone();
                 // Copy of the copy contains the previous nickname, in case the chosen one is already taken
                 if (user.getCopy() != null) {
-                    copy.setCopy(user.getCopy().clone());
+                    copy.setCopy(user.getCopy()
+                            .clone());
                 } else {
                     logger.warn("No backup user object found, cannot restore data in case of cancellation / error.");
                 }
                 // Do not allow the same nickname being used for multiple users
-                User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(user.getNickName()); // This basically resets all changes
+                User nicknameOwner = DataManager.getInstance()
+                        .getDao()
+                        .getUserByNickname(user.getNickName()); // This basically resets all changes
                 if (nicknameOwner != null && nicknameOwner.getId() != user.getId()) {
-                    Messages.error(Helper.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
+                    Messages.error(Helper.getTranslation("user_nicknameTaken", null)
+                            .replace("{0}", user.getNickName()
+                                    .trim()));
                     user = copy;
                     if (copy.getCopy() != null) {
-                        user.setNickName(copy.getCopy().getNickName());
+                        user.setNickName(copy.getCopy()
+                                .getNickName());
                     }
                     return "pretty:userEdit";
                 }
@@ -402,7 +441,9 @@ public class UserBean implements Serializable {
                     logger.debug("Set new password for user {}", user.getEmail());
                     Messages.info("user_passwordChanged");
                 }
-                if (DataManager.getInstance().getDao().updateUser(user)) {
+                if (DataManager.getInstance()
+                        .getDao()
+                        .updateUser(user)) {
                     user.setCopy(null);
                     logger.debug("User '" + user.getEmail() + "' updated successfully.");
                     Messages.info("user_saveSuccess");
@@ -426,7 +467,9 @@ public class UserBean implements Serializable {
     public List<User> getAllUsers() throws DAOException {
         List<User> ret = new ArrayList<>();
 
-        for (User user : DataManager.getInstance().getDao().getAllUsers(true)) {
+        for (User user : DataManager.getInstance()
+                .getDao()
+                .getAllUsers(true)) {
             if (!user.isSuperuser() && !user.equals(getUser())) {
                 ret.add(user);
             }
@@ -454,15 +497,23 @@ public class UserBean implements Serializable {
                 return false;
             }
             String baseUrl = navigationHelper.getApplicationUrl();
-            String activationUrl = new StringBuilder(baseUrl).append("user/activate/").append(user.getEmail()).append('/').append(user
-                    .getActivationKey()).append("/").toString();
-            sb.append(Helper.getTranslation("user_activationEmailBody", null).replace("{0}", baseUrl).replace("{1}", activationUrl).replace("{2}",
-                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
+            String activationUrl = new StringBuilder(baseUrl).append("user/activate/")
+                    .append(user.getEmail())
+                    .append('/')
+                    .append(user.getActivationKey())
+                    .append("/")
+                    .toString();
+            sb.append(Helper.getTranslation("user_activationEmailBody", null)
+                    .replace("{0}", baseUrl)
+                    .replace("{1}", activationUrl)
+                    .replace("{2}", DataManager.getInstance()
+                            .getConfiguration()
+                            .getFeedbackEmailAddress()));
 
             // Send
             try {
-                if (Helper.postMail(Collections.singletonList(user.getEmail()), Helper.getTranslation("user_activationEmailSubject", null), sb
-                        .toString())) {
+                if (Helper.postMail(Collections.singletonList(user.getEmail()), Helper.getTranslation("user_activationEmailSubject", null),
+                        sb.toString())) {
                     logger.debug("Activation e-mail sent for: {}", user.getEmail());
                     return true;
                 }
@@ -484,23 +535,34 @@ public class UserBean implements Serializable {
      * @throws DAOException
      */
     public String sendPasswordResetLinkAction() throws DAOException {
-        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        User user = DataManager.getInstance()
+                .getDao()
+                .getUserByEmail(email);
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && !user.isOpenIdUser()) {
             if (user.isActive()) {
                 user.setActivationKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
                 String requesterIp = "???";
-                if (FacesContext.getCurrentInstance().getExternalContext() != null && FacesContext.getCurrentInstance().getExternalContext()
-                        .getRequest() != null) {
-                    requesterIp = Helper.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+                if (FacesContext.getCurrentInstance()
+                        .getExternalContext() != null
+                        && FacesContext.getCurrentInstance()
+                                .getExternalContext()
+                                .getRequest() != null) {
+                    requesterIp = Helper.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance()
+                            .getExternalContext()
+                            .getRequest());
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + user.getEmail() + "/" + user.getActivationKey() + "/";
 
-                if (DataManager.getInstance().getDao().updateUser(user)) {
+                if (DataManager.getInstance()
+                        .getDao()
+                        .updateUser(user)) {
                     try {
-                        if (Helper.postMail(Collections.singletonList(email), Helper.getTranslation("user_retrieveAccountConfirmationEmailSubject",
-                                null), Helper.getTranslation("user_retrieveAccountConfirmationEmailBody", null).replace("{0}", requesterIp).replace(
-                                        "{1}", resetUrl))) {
+                        if (Helper.postMail(Collections.singletonList(email),
+                                Helper.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
+                                Helper.getTranslation("user_retrieveAccountConfirmationEmailBody", null)
+                                        .replace("{0}", requesterIp)
+                                        .replace("{1}", resetUrl))) {
                             email = null;
                             Messages.info("user_retrieveAccountConfirmationEmailMessage");
                             return "user?faces-redirect=true";
@@ -512,8 +574,10 @@ public class UserBean implements Serializable {
                         logger.error(e.getMessage(), e);
                     }
                 }
-                Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                        .getFeedbackEmailAddress()));
+                Messages.error(Helper.getTranslation("user_retrieveAccountError", null)
+                        .replace("{0}", DataManager.getInstance()
+                                .getConfiguration()
+                                .getFeedbackEmailAddress()));
                 return "userRetrieveAccount";
             }
 
@@ -537,17 +601,23 @@ public class UserBean implements Serializable {
      * @throws DAOException
      */
     public String resetPasswordAction() throws DAOException {
-        User user = DataManager.getInstance().getDao().getUserByEmail(email);
+        User user = DataManager.getInstance()
+                .getDao()
+                .getUserByEmail(email);
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (user != null && user.isActive() && !user.isOpenIdUser()) {
             if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(user.getActivationKey())) {
-                String newPassword = Helper.generateMD5(String.valueOf(System.currentTimeMillis())).substring(0, 8);
+                String newPassword = Helper.generateMD5(String.valueOf(System.currentTimeMillis()))
+                        .substring(0, 8);
                 user.setNewPassword(newPassword);
                 user.setActivationKey(null);
                 try {
                     if (Helper.postMail(Collections.singletonList(email), Helper.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
-                            Helper.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword)) && DataManager
-                                    .getInstance().getDao().updateUser(user)) {
+                            Helper.getTranslation("user_retrieveAccountNewPasswordEmailBody", null)
+                                    .replace("{0}", newPassword))
+                            && DataManager.getInstance()
+                                    .getDao()
+                                    .updateUser(user)) {
                         email = null;
                         Messages.info("user_retrieveAccountPasswordResetMessage");
                         return "user?faces-redirect=true";
@@ -559,8 +629,10 @@ public class UserBean implements Serializable {
                     logger.error(e.getMessage(), e);
                 }
             }
-            Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("user_retrieveAccountError", null)
+                    .replace("{0}", DataManager.getInstance()
+                            .getConfiguration()
+                            .getFeedbackEmailAddress()));
             return "user?faces-redirect=true";
         }
 
@@ -578,7 +650,9 @@ public class UserBean implements Serializable {
      */
     public List<Search> getSearches() throws DAOException {
         if (user != null) {
-            return DataManager.getInstance().getDao().getSearches(user);
+            return DataManager.getInstance()
+                    .getDao()
+                    .getSearches(user);
         }
 
         return null;
@@ -594,7 +668,9 @@ public class UserBean implements Serializable {
     public String deleteSearchAction(Search search) throws DAOException {
         if (search != null) {
             logger.debug("Deleting search query: " + search.getId());
-            if (DataManager.getInstance().getDao().deleteSearch(search)) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .deleteSearch(search)) {
                 String msg = Helper.getTranslation("savedSearch_deleteSuccess", null);
                 Messages.info(msg.replace("{0}", search.getName()));
             } else {
@@ -617,8 +693,9 @@ public class UserBean implements Serializable {
         }
 
         try {
-            user.setTranskribusSession(TranskribusUtils.login(DataManager.getInstance().getConfiguration().getTranskribusRestApiUrl(),
-                    transkribusUserName, transkribusPassword));
+            user.setTranskribusSession(TranskribusUtils.login(DataManager.getInstance()
+                    .getConfiguration()
+                    .getTranskribusRestApiUrl(), transkribusUserName, transkribusPassword));
         } catch (IOException | JDOMException e) {
             Messages.error("transkribus_loginError");
             return "";
@@ -637,7 +714,10 @@ public class UserBean implements Serializable {
     }
 
     public void createFeedback() {
-        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
+        String url = FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequestHeaderMap()
+                .get("referer");
         feedback = new Feedback();
         if (user != null) {
             feedback.setEmail(user.getEmail());
@@ -650,22 +730,29 @@ public class UserBean implements Serializable {
 
     public String submitFeedbackAction() {
         try {
-            if (Helper.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()), feedback
-                    .getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
+            if (Helper.postMail(Collections.singletonList(DataManager.getInstance()
+                    .getConfiguration()
+                    .getFeedbackEmailAddress()), feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 Messages.info("feedbackSubmitted");
             } else {
                 logger.error("{} could not send feedback.", feedback.getEmail());
-                Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                        .getFeedbackEmailAddress()));
+                Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+                        .replace("{0}", DataManager.getInstance()
+                                .getConfiguration()
+                                .getFeedbackEmailAddress()));
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+                    .replace("{0}", DataManager.getInstance()
+                            .getConfiguration()
+                            .getFeedbackEmailAddress()));
         } catch (MessagingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errFeedbackSubmit", null)
+                    .replace("{0}", DataManager.getInstance()
+                            .getConfiguration()
+                            .getFeedbackEmailAddress()));
         }
         return "";
     }
@@ -739,7 +826,9 @@ public class UserBean implements Serializable {
      * @return
      */
     public boolean isUserRegistrationEnabled() {
-        return DataManager.getInstance().getConfiguration().isUserRegistrationEnabled();
+        return DataManager.getInstance()
+                .getConfiguration()
+                .isUserRegistrationEnabled();
     }
 
     /**
@@ -747,11 +836,15 @@ public class UserBean implements Serializable {
      * @return
      */
     public boolean isShowOpenId() {
-        return DataManager.getInstance().getConfiguration().isShowOpenIdConnect();
+        return DataManager.getInstance()
+                .getConfiguration()
+                .isShowOpenIdConnect();
     }
 
     public List<OpenIdProvider> getOpenIdConnectProviders() {
-        return DataManager.getInstance().getConfiguration().getOpenIdConnectProviders();
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getOpenIdConnectProviders();
     }
 
     public void setOpenIdProvider(OpenIdProvider openIdProvider) {
@@ -890,6 +983,7 @@ public class UserBean implements Serializable {
     }
 
     public boolean userEquals(long id) {
-        return getUser().getId().equals(id);
+        return getUser().getId()
+                .equals(id);
     }
 }

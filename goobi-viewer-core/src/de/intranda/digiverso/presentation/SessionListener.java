@@ -36,9 +36,9 @@ public class SessionListener implements HttpSessionListener {
      */
     @Override
     public void sessionCreated(HttpSessionEvent event) {
-//        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
-//            logger.trace("Session created: {}", event.getSession().getId());
-//        }
+        //        if (DataManager.getInstance().getSessionMap().put(event.getSession().getId(), new HashMap<>()) == null) {
+        //            logger.trace("Session created: {}", event.getSession().getId());
+        //        }
     }
 
     /* (non-Javadoc)
@@ -46,8 +46,12 @@ public class SessionListener implements HttpSessionListener {
      */
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
-        if (DataManager.getInstance().getSessionMap().remove(event.getSession().getId()) != null) {
-            logger.trace("Session destroyed: {}", event.getSession().getId());
+        if (DataManager.getInstance()
+                .getSessionMap()
+                .remove(event.getSession()
+                        .getId()) != null) {
+            logger.trace("Session destroyed: {}", event.getSession()
+                    .getId());
         }
     }
 }

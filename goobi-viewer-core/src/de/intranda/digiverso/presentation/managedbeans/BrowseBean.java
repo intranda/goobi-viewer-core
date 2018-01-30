@@ -75,7 +75,9 @@ public class BrowseBean implements Serializable {
     private SearchBean searchBean;
 
     /** Hits per page in the browsing menu. */
-    private int browsingMenuHitsPerPage = DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage();
+    private int browsingMenuHitsPerPage = DataManager.getInstance()
+            .getConfiguration()
+            .getBrowsingMenuHitsPerPage();
 
     /** Pretty URL variable. */
     private String collectionToExpand = null;
@@ -133,7 +135,8 @@ public class BrowseBean implements Serializable {
 
     public void resetAllLists() {
         for (String field : collections.keySet()) {
-            collections.get(field).resetCollectionList();
+            collections.get(field)
+                    .resetCollectionList();
         }
     }
 
@@ -147,7 +150,8 @@ public class BrowseBean implements Serializable {
             throw new IllegalArgumentException("field may not be null");
         }
         if (collections.get(field) != null) {
-            collections.get(field).resetCollectionList();
+            collections.get(field)
+                    .resetCollectionList();
         }
     }
 
@@ -184,7 +188,8 @@ public class BrowseBean implements Serializable {
      */
     public void populateCollection(String field) throws IndexUnreachableException {
         if (collections.containsKey(field)) {
-            collections.get(field).populateCollectionList();
+            collections.get(field)
+                    .populateCollectionList();
         }
     }
 
@@ -194,7 +199,8 @@ public class BrowseBean implements Serializable {
         if (!collections.containsKey(SolrConstants.DC)) {
             initializeDCCollection();
         }
-        return new ArrayList<>(collections.get(SolrConstants.DC).getVisibleDcElements());
+        return new ArrayList<>(collections.get(SolrConstants.DC)
+                .getVisibleDcElements());
     }
 
     /**
@@ -250,10 +256,14 @@ public class BrowseBean implements Serializable {
     public void expandCollection(String collectionField, String facetField, int levels) throws IndexUnreachableException {
         synchronized (this) {
             initializeCollection(collectionField, facetField);
-            collections.get(collectionField).setBaseLevels(levels);
-            collections.get(collectionField).setBaseElementName(getCollectionToExpand());
-            collections.get(collectionField).setTopVisibleElement(getTopVisibleCollection());
-            collections.get(collectionField).populateCollectionList();
+            collections.get(collectionField)
+                    .setBaseLevels(levels);
+            collections.get(collectionField)
+                    .setBaseElementName(getCollectionToExpand());
+            collections.get(collectionField)
+                    .setTopVisibleElement(getTopVisibleCollection());
+            collections.get(collectionField)
+                    .populateCollectionList();
         }
     }
 
@@ -275,9 +285,12 @@ public class BrowseBean implements Serializable {
 
             List<BrowseTerm> terms = null;
             BrowsingMenuFieldConfig currentBmfc = null;
-            List<BrowsingMenuFieldConfig> bmfcList = DataManager.getInstance().getConfiguration().getBrowsingMenuFields();
+            List<BrowsingMenuFieldConfig> bmfcList = DataManager.getInstance()
+                    .getConfiguration()
+                    .getBrowsingMenuFields();
             for (BrowsingMenuFieldConfig bmfc : bmfcList) {
-                if (bmfc.getField().equals(browsingMenuField)) {
+                if (bmfc.getField()
+                        .equals(browsingMenuField)) {
                     currentBmfc = bmfc;
                     break;
                 }
@@ -285,11 +298,13 @@ public class BrowseBean implements Serializable {
             if (currentBmfc == null) {
                 logger.error("No configuration found for term field '{}'.", browsingMenuField);
                 resetTerms();
-                Messages.error(Helper.getTranslation("browse_errFieldNotConfigured", null).replace("{0}", browsingMenuField));
+                Messages.error(Helper.getTranslation("browse_errFieldNotConfigured", null)
+                        .replace("{0}", browsingMenuField));
                 return "searchTermList";
             }
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(), DataManager.getInstance().getConfiguration()
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(), DataManager.getInstance()
+                        .getConfiguration()
                         .isAggregateHits());
 
                 // Populate the list of available starting characters with ones that actually exist in the complete terms list
@@ -299,21 +314,29 @@ public class BrowseBean implements Serializable {
                     for (BrowseTerm term : terms) {
                         String firstChar;
                         if (StringUtils.isNotEmpty(term.getSortTerm())) {
-                            firstChar = term.getSortTerm().substring(0, 1).toUpperCase();
+                            firstChar = term.getSortTerm()
+                                    .substring(0, 1)
+                                    .toUpperCase();
                         } else {
-                            firstChar = term.getTerm().substring(0, 1).toUpperCase();
+                            firstChar = term.getTerm()
+                                    .substring(0, 1)
+                                    .toUpperCase();
                         }
                         // logger.debug(term.getTerm() + ": " + firstChar);
-                        if (!availableStringFilters.get(browsingMenuField).contains(firstChar) && !"-".equals(firstChar)) {
-                            availableStringFilters.get(browsingMenuField).add(firstChar);
+                        if (!availableStringFilters.get(browsingMenuField)
+                                .contains(firstChar) && !"-".equals(firstChar)) {
+                            availableStringFilters.get(browsingMenuField)
+                                    .add(firstChar);
                         }
                     }
                 }
 
                 // Sort filters
                 Locale locale = null;
-                NavigationHelper navigationHelper = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(
-                        "navigationHelper");
+                NavigationHelper navigationHelper = (NavigationHelper) FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .getSessionMap()
+                        .get("navigationHelper");
                 if (navigationHelper != null) {
                     locale = navigationHelper.getLocale();
                 } else {
@@ -326,7 +349,8 @@ public class BrowseBean implements Serializable {
             // Get the terms again, this time using the requested filter. The search over all terms the first time is necessary to get the list of available filters.
             if (StringUtils.isNotEmpty(currentStringFilter)) {
                 terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, new BrowseTermRawComparator(), DataManager.getInstance()
-                        .getConfiguration().isAggregateHits());
+                        .getConfiguration()
+                        .isAggregateHits());
             }
             hitsCount = terms.size();
             if (hitsCount > 0) {
@@ -343,8 +367,11 @@ public class BrowseBean implements Serializable {
                 browseTermList = new ArrayList<>(end - start);
                 browseTermHitCountList = new ArrayList<>(browseTermList.size());
                 for (int i = start; i < end; ++i) {
-                    browseTermList.add(terms.get(i).getTerm().intern());
-                    browseTermHitCountList.add(terms.get(i).getHitCount());
+                    browseTermList.add(terms.get(i)
+                            .getTerm()
+                            .intern());
+                    browseTermHitCountList.add(terms.get(i)
+                            .getHitCount());
                 }
 
                 browseTermListEscaped = new ArrayList<>(browseTermList.size());
@@ -421,7 +448,12 @@ public class BrowseBean implements Serializable {
         if (currentPage > 1) {
             page = currentPage - 1;
         }
-        return new StringBuilder("/").append(browsingMenuField).append('/').append(getCurrentStringFilter()).append('/').append(page).append('/')
+        return new StringBuilder("/").append(browsingMenuField)
+                .append('/')
+                .append(getCurrentStringFilter())
+                .append('/')
+                .append(page)
+                .append('/')
                 .toString();
     }
 
@@ -430,7 +462,12 @@ public class BrowseBean implements Serializable {
         if (currentPage < page) {
             page = currentPage + 1;
         }
-        return new StringBuilder("/").append(browsingMenuField).append('/').append(getCurrentStringFilter()).append('/').append(page).append('/')
+        return new StringBuilder("/").append(browsingMenuField)
+                .append('/')
+                .append(getCurrentStringFilter())
+                .append('/')
+                .append(page)
+                .append('/')
                 .toString();
     }
 
@@ -511,12 +548,16 @@ public class BrowseBean implements Serializable {
     }
 
     public boolean isBrowsingMenuEnabled() {
-        return DataManager.getInstance().getConfiguration().isBrowsingMenuEnabled();
+        return DataManager.getInstance()
+                .getConfiguration()
+                .isBrowsingMenuEnabled();
     }
 
     public List<String> getBrowsingMenuItems() {
         List<String> ret = new ArrayList<>();
-        for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
+        for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance()
+                .getConfiguration()
+                .getBrowsingMenuFields()) {
             ret.add(bmfc.getField());
         }
         return ret;
@@ -534,8 +575,11 @@ public class BrowseBean implements Serializable {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }
-        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true, true, true, DataManager
-                .getInstance().getConfiguration().getSplittingCharacter(), BeanUtils.getLocale());
+        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true, true, true,
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getSplittingCharacter(),
+                BeanUtils.getLocale());
         url = url.replace("http://localhost:8082/viewer/", "");
         return "pretty:" + url;
     }
@@ -548,8 +592,11 @@ public class BrowseBean implements Serializable {
      */
     private void updateBreadcrumbsWithCurrentUrl(String name, int weight) {
         if (navigationHelper != null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .getRequest();
+            URL url = PrettyContext.getCurrentInstance(request)
+                    .getRequestURL();
             navigationHelper.updateBreadcrumbs(new LabeledLink(name, BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + url.toURL(), weight));
         }
     }

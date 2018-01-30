@@ -108,7 +108,9 @@ public class AdminBean implements Serializable {
                     if (StringUtils.isEmpty(sortField)) {
                         sortField = "id";
                     }
-                    return DataManager.getInstance().getDao().getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getUsers(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -118,7 +120,9 @@ public class AdminBean implements Serializable {
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getUserCount(filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getUserCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
@@ -126,7 +130,7 @@ public class AdminBean implements Serializable {
             }
 
             @Override
-            public void resetTotalNumberOfRecords() {                
+            public void resetTotalNumberOfRecords() {
             }
         });
         lazyModelUsers.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
@@ -140,7 +144,9 @@ public class AdminBean implements Serializable {
                     sortField = "name";
                 }
                 try {
-                    return DataManager.getInstance().getDao().getUserGroups(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getUserGroups(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -151,7 +157,9 @@ public class AdminBean implements Serializable {
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getUserGroupCount(filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getUserGroupCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
@@ -203,7 +211,9 @@ public class AdminBean implements Serializable {
                     sortField = "name";
                 }
                 try {
-                    return DataManager.getInstance().getDao().getLicenseTypes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getLicenseTypes(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -214,7 +224,9 @@ public class AdminBean implements Serializable {
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getLicenseTypeCount(filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getLicenseTypeCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
@@ -236,7 +248,9 @@ public class AdminBean implements Serializable {
                     sortField = "name";
                 }
                 try {
-                    return DataManager.getInstance().getDao().getIpRanges(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getIpRanges(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -247,7 +261,9 @@ public class AdminBean implements Serializable {
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getIpRangeCount(filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getIpRangeCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
@@ -270,7 +286,9 @@ public class AdminBean implements Serializable {
                         sortField = "dateCreated";
                         sortOrder = SortOrder.DESCENDING;
                     }
-                    return DataManager.getInstance().getDao().getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getComments(first, pageSize, sortField, sortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage());
                 }
@@ -280,7 +298,9 @@ public class AdminBean implements Serializable {
             @Override
             public long getTotalNumberOfRecords(Map<String, String> filters) {
                 try {
-                    return DataManager.getInstance().getDao().getCommentCount(filters);
+                    return DataManager.getInstance()
+                            .getDao()
+                            .getCommentCount(filters);
                 } catch (DAOException e) {
                     logger.error(e.getMessage(), e);
                     return 0;
@@ -301,7 +321,9 @@ public class AdminBean implements Serializable {
      * Returns all users in the DB. Needed for getting a list of users (e.g for adding user group members).
      */
     public List<User> getAllUsers() throws DAOException {
-        return DataManager.getInstance().getDao().getAllUsers(true);
+        return DataManager.getInstance()
+                .getDao()
+                .getAllUsers(true);
     }
 
     /**
@@ -312,13 +334,19 @@ public class AdminBean implements Serializable {
         // Retrieving a new user from the DB overrides the current object and resets the field, so save a copy
         User copy = currentUser.clone();
         // Copy of the copy contains the previous nickname, in case the chosen one is already taken
-        copy.setCopy(currentUser.getCopy().clone());
+        copy.setCopy(currentUser.getCopy()
+                .clone());
         // Do not allow the same nickname being used for multiple users
-        User nicknameOwner = DataManager.getInstance().getDao().getUserByNickname(currentUser.getNickName()); // This basically resets all changes
+        User nicknameOwner = DataManager.getInstance()
+                .getDao()
+                .getUserByNickname(currentUser.getNickName()); // This basically resets all changes
         if (nicknameOwner != null && nicknameOwner.getId() != currentUser.getId()) {
-            Messages.error(Helper.getTranslation("user_nicknameTaken", null).replace("{0}", currentUser.getNickName().trim()));
+            Messages.error(Helper.getTranslation("user_nicknameTaken", null)
+                    .replace("{0}", currentUser.getNickName()
+                            .trim()));
             currentUser = copy;
-            currentUser.setNickName(copy.getCopy().getNickName());
+            currentUser.setNickName(copy.getCopy()
+                    .getNickName());
             return "adminUser";
         }
         currentUser = copy;
@@ -331,7 +359,9 @@ public class AdminBean implements Serializable {
                 }
                 currentUser.setNewPassword(passwordOne);
             }
-            if (DataManager.getInstance().getDao().updateUser(getCurrentUser())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateUser(getCurrentUser())) {
                 Messages.info("user_saveSuccess");
             } else {
                 Messages.error("errSave");
@@ -339,7 +369,9 @@ public class AdminBean implements Serializable {
             }
         } else {
             // New user
-            if (DataManager.getInstance().getDao().getUserByEmail(currentUser.getEmail()) != null) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .getUserByEmail(currentUser.getEmail()) != null) {
                 // Do not allow the same email address being used for multiple users
                 Messages.error("newUserExist");
                 logger.debug("User account already exists for '" + currentUser.getEmail() + "'.");
@@ -355,7 +387,9 @@ public class AdminBean implements Serializable {
                 getCurrentUser().setNewPassword(passwordOne);
 
             }
-            if (DataManager.getInstance().getDao().addUser(getCurrentUser())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .addUser(getCurrentUser())) {
                 Messages.info("newUserCreated");
             } else {
                 Messages.info("errSave");
@@ -363,7 +397,7 @@ public class AdminBean implements Serializable {
             }
         }
         setCurrentUser(null);
-        
+
         return "adminAllUsers";
     }
 
@@ -373,7 +407,9 @@ public class AdminBean implements Serializable {
      */
     public void deleteUserAction(User user) throws DAOException {
         logger.debug("Deleting user: " + user.getDisplayName());
-        if (DataManager.getInstance().getDao().deleteUser(user)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .deleteUser(user)) {
             Messages.info("deletedSuccessfully");
         } else {
             Messages.error("deleteFailure");
@@ -392,13 +428,17 @@ public class AdminBean implements Serializable {
     public void saveUserGroupAction() throws DAOException {
         if (currentUserGroup != null) {
             if (getCurrentUserGroup().getId() != null) {
-                if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
+                if (DataManager.getInstance()
+                        .getDao()
+                        .updateUserGroup(getCurrentUserGroup())) {
                     Messages.info("updatedSuccessfully");
                 } else {
                     Messages.info("errSave");
                 }
             } else {
-                if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
+                if (DataManager.getInstance()
+                        .getDao()
+                        .addUserGroup(getCurrentUserGroup())) {
                     Messages.info("addedSuccessfully");
                 } else {
                     Messages.info("errSave");
@@ -413,7 +453,9 @@ public class AdminBean implements Serializable {
      *
      */
     public void deleteUserGroupAction(UserGroup userGroup) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteUserGroup(userGroup)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .deleteUserGroup(userGroup)) {
             Messages.info("deletedSuccessfully");
         } else {
             Messages.error("deleteFailure");
@@ -433,7 +475,9 @@ public class AdminBean implements Serializable {
      * @throws DAOException
      */
     public List<Role> getAllRoles() throws DAOException {
-        return DataManager.getInstance().getDao().getAllRoles();
+        return DataManager.getInstance()
+                .getDao()
+                .getAllRoles();
     }
 
     /**
@@ -443,13 +487,17 @@ public class AdminBean implements Serializable {
     public void saveRoleAction() throws DAOException {
         // String name = getCurrentRole().getName();
         if (getCurrentRole().getId() != null) {
-            if (DataManager.getInstance().getDao().updateRole(getCurrentRole())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateRole(getCurrentRole())) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info("errSave");
             }
         } else {
-            if (DataManager.getInstance().getDao().addRole(getCurrentRole())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .addRole(getCurrentRole())) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info("errSave");
@@ -463,7 +511,9 @@ public class AdminBean implements Serializable {
      *
      */
     public void deleteRoleAction(Role role) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteRole(role)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .deleteRole(role)) {
             Messages.info("deletedSuccessfully");
         } else {
             Messages.error("deleteFailure");
@@ -488,14 +538,18 @@ public class AdminBean implements Serializable {
         logger.debug(getCurrentUserRole().getUserGroup() + ", " + getCurrentUserRole().getUser() + ", " + getCurrentUserRole().getRole());
         if (getCurrentUserRole().getId() != null) {
             // existing
-            if (DataManager.getInstance().getDao().updateUserRole(getCurrentUserRole())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateUserRole(getCurrentUserRole())) {
                 Messages.info("userGroup_membershipUpdateSuccess");
             } else {
                 Messages.error("userGroup_membershipUpdateFailure");
             }
         } else {
             // new
-            if (DataManager.getInstance().getDao().addUserRole(getCurrentUserRole())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .addUserRole(getCurrentUserRole())) {
                 Messages.info("userGroup_memberAddSuccess");
             } else {
                 Messages.error("userGroup_memberAddFailure");
@@ -509,7 +563,9 @@ public class AdminBean implements Serializable {
      *
      */
     public void deleteUserRoleAction(UserRole userRole) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .deleteUserRole(userRole)) {
             Messages.info("deletedSuccessfully");
         } else {
             Messages.error("deleteFailure");
@@ -523,7 +579,9 @@ public class AdminBean implements Serializable {
      * Returns all existing license types. Required for admin tabs.
      */
     public List<LicenseType> getAllLicenseTypes() throws DAOException {
-        return DataManager.getInstance().getDao().getAllLicenseTypes();
+        return DataManager.getInstance()
+                .getDao()
+                .getAllLicenseTypes();
     }
 
     /**
@@ -533,13 +591,17 @@ public class AdminBean implements Serializable {
     public String saveLicenseTypeAction() throws DAOException {
         // String name = getCurrentLicenseType().getName();
         if (getCurrentLicenseType().getId() != null) {
-            if (DataManager.getInstance().getDao().updateLicenseType(getCurrentLicenseType())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateLicenseType(getCurrentLicenseType())) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info("errSave");
             }
         } else {
-            if (DataManager.getInstance().getDao().addLicenseType(getCurrentLicenseType())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .addLicenseType(getCurrentLicenseType())) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info("errSave");
@@ -555,7 +617,9 @@ public class AdminBean implements Serializable {
      *
      */
     public void deleteLicenseTypeAction(LicenseType licenseType) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteLicenseType(licenseType)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .deleteLicenseType(licenseType)) {
             Messages.info("deletedSuccessfully");
         } else {
             Messages.error("deleteFailure");
@@ -576,13 +640,17 @@ public class AdminBean implements Serializable {
     public void saveIpRangeAction() throws DAOException {
         // String name = getCurrentIpRange().getName();
         if (getCurrentIpRange().getId() != null) {
-            if (DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateIpRange(getCurrentIpRange())) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info("errSave");
             }
         } else {
-            if (DataManager.getInstance().getDao().addIpRange(getCurrentIpRange())) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .addIpRange(getCurrentIpRange())) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info("errSave");
@@ -596,7 +664,9 @@ public class AdminBean implements Serializable {
      *
      */
     public void deleteIpRangeAction(IpRange ipRange) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteIpRange(ipRange)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .deleteIpRange(ipRange)) {
             Messages.info("deletedSuccessfully");
         } else {
             Messages.error("deleteFailure");
@@ -650,25 +720,35 @@ public class AdminBean implements Serializable {
         }
         if (license.getUser() != null) {
             // User
-            license.getUser().addLicense(license);
-            if (DataManager.getInstance().getDao().updateUser(license.getUser())) {
+            license.getUser()
+                    .addLicense(license);
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateUser(license.getUser())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
             }
         } else if (license.getUserGroup() != null) {
             // UserGroup
-            license.getUserGroup().addLicense(license);
-            if (DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup())) {
+            license.getUserGroup()
+                    .addLicense(license);
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateUserGroup(license.getUserGroup())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
             }
         } else if (license.getIpRange() != null) {
             // IpRange
-            logger.trace("ip range id:{} ", license.getIpRange().getId());
-            license.getIpRange().addLicense(license);
-            if (DataManager.getInstance().getDao().updateIpRange(license.getIpRange())) {
+            logger.trace("ip range id:{} ", license.getIpRange()
+                    .getId());
+            license.getIpRange()
+                    .addLicense(license);
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateIpRange(license.getIpRange())) {
                 Messages.info("license_licenseSaveSuccess");
             } else {
                 Messages.error("license_licenseSaveFailure");
@@ -687,17 +767,27 @@ public class AdminBean implements Serializable {
         }
         boolean success = false;
         String ret = "adminUser";
-        logger.debug("removing license: " + license.getLicenseType().getName());
+        logger.debug("removing license: " + license.getLicenseType()
+                .getName());
         if (license.getUser() != null) {
-            license.getUser().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateUser(license.getUser());
+            license.getUser()
+                    .removeLicense(license);
+            success = DataManager.getInstance()
+                    .getDao()
+                    .updateUser(license.getUser());
         } else if (license.getUserGroup() != null) {
-            license.getUserGroup().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateUserGroup(license.getUserGroup());
+            license.getUserGroup()
+                    .removeLicense(license);
+            success = DataManager.getInstance()
+                    .getDao()
+                    .updateUserGroup(license.getUserGroup());
             ret = "adminUserGroup";
         } else if (license.getIpRange() != null) {
-            license.getIpRange().removeLicense(license);
-            success = DataManager.getInstance().getDao().updateIpRange(license.getIpRange());
+            license.getIpRange()
+                    .removeLicense(license);
+            success = DataManager.getInstance()
+                    .getDao()
+                    .updateIpRange(license.getIpRange());
             ret = "adminIpRange";
         }
 
@@ -719,13 +809,17 @@ public class AdminBean implements Serializable {
             // Set updated timestamp
             comment.setDateUpdated(new Date());
             logger.trace(comment.getText());
-            if (DataManager.getInstance().getDao().updateComment(comment)) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .updateComment(comment)) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info("errSave");
             }
         } else {
-            if (DataManager.getInstance().getDao().addComment(comment)) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .addComment(comment)) {
                 Messages.info("addedSuccessfully");
             } else {
                 Messages.info("errSave");
@@ -735,7 +829,9 @@ public class AdminBean implements Serializable {
     }
 
     public String deleteCommentAction(Comment comment) throws DAOException {
-        if (DataManager.getInstance().getDao().deleteComment(comment)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .deleteComment(comment)) {
             Messages.info("commentDeleteSuccess");
         } else {
             Messages.error("commentDeleteFailure");
@@ -975,16 +1071,32 @@ public class AdminBean implements Serializable {
             try {
                 StringBuilder sbFilePath = new StringBuilder();
                 if (StringUtils.isNotEmpty(dataRepository)) {
-                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+                    String dataRepositoriesHome = DataManager.getInstance()
+                            .getConfiguration()
+                            .getDataRepositoriesHome();
                     if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                        sbFilePath.append(dataRepositoriesHome).append(File.separator);
+                        sbFilePath.append(dataRepositoriesHome)
+                                .append(File.separator);
                     }
-                    sbFilePath.append(dataRepository).append(File.separator).append(DataManager.getInstance().getConfiguration()
-                            .getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
+                    sbFilePath.append(dataRepository)
+                            .append(File.separator)
+                            .append(DataManager.getInstance()
+                                    .getConfiguration()
+                                    .getIndexedMetsFolder())
+                            .append(File.separator)
+                            .append(pi)
+                            .append(".xml");
                 } else {
                     // Backwards compatibility with old indexes
-                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
-                            .getConfiguration().getIndexedMetsFolder()).append(File.separator).append(pi).append(".xml");
+                    sbFilePath.append(DataManager.getInstance()
+                            .getConfiguration()
+                            .getViewerHome())
+                            .append(DataManager.getInstance()
+                                    .getConfiguration()
+                                    .getIndexedMetsFolder())
+                            .append(File.separator)
+                            .append(pi)
+                            .append(".xml");
                 }
                 Document doc = FileTools.readXmlFile(sbFilePath.toString());
 
@@ -1021,7 +1133,9 @@ public class AdminBean implements Serializable {
                     }
                     // Write altered file into hotfolder
 
-                    FileTools.writeXmlFile(doc, DataManager.getInstance().getConfiguration().getHotfolder() + File.separator + pi + ".xml");
+                    FileTools.writeXmlFile(doc, DataManager.getInstance()
+                            .getConfiguration()
+                            .getHotfolder() + File.separator + pi + ".xml");
 
                     Messages.info("admin_recordReExported");
                 } else {
@@ -1048,7 +1162,9 @@ public class AdminBean implements Serializable {
             throw new IllegalArgumentException("user may not be null");
         }
         user.setSuspended(!user.isSuspended());
-        if (DataManager.getInstance().getDao().updateUser(user)) {
+        if (DataManager.getInstance()
+                .getDao()
+                .updateUser(user)) {
             Messages.info(user.isSuspended() ? "user_accountSuspended" : "user_accountUnsuspended");
         }
 

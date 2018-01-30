@@ -63,7 +63,8 @@ public class XmlTools {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static List<Object> evaluate(String expr, Object parent, Filter filter, List<Namespace> namespaces) {
-        XPathBuilder<Object> builder = new XPathBuilder<>(expr.trim().replace("\n", ""), filter);
+        XPathBuilder<Object> builder = new XPathBuilder<>(expr.trim()
+                .replace("\n", ""), filter);
 
         if (namespaces != null && !namespaces.isEmpty()) {
             builder.setNamespaces(namespaces);

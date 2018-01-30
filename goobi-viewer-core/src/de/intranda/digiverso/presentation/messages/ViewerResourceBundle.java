@@ -56,7 +56,9 @@ public class ViewerResourceBundle extends ResourceBundle {
     protected static volatile Locale defaultLocale;
 
     public ViewerResourceBundle() {
-        registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
+        registerFileChangedService(Paths.get(DataManager.getInstance()
+                .getConfiguration()
+                .getConfigLocalPath()));
     }
 
     /**
@@ -72,13 +74,15 @@ public class ViewerResourceBundle extends ResourceBundle {
 
             @Override
             public void run() {
-                try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
+                try (final WatchService watchService = FileSystems.getDefault()
+                        .newWatchService()) {
                     final WatchKey watchKey = path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                     while (true) {
                         final WatchKey wk = watchService.take();
                         for (WatchEvent<?> event : wk.pollEvents()) {
                             final Path changed = (Path) event.context();
-                            final String fileName = changed.getFileName().toString();
+                            final String fileName = changed.getFileName()
+                                    .toString();
                             logger.trace("File has been modified: {}", fileName);
                             if (fileName.startsWith("messages_")) {
                                 final String language = fileName.substring(9, 11);
@@ -107,8 +111,11 @@ public class ViewerResourceBundle extends ResourceBundle {
     private static void checkAndLoadDefaultResourceBundles() {
         if (defaultLocale == null) {
             synchronized (lock) {
-                if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
-                    defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+                if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
+                        .getApplication() != null) {
+                    defaultLocale = FacesContext.getCurrentInstance()
+                            .getApplication()
+                            .getDefaultLocale();
                 } else {
                     defaultLocale = Locale.ENGLISH;
                 }
@@ -127,8 +134,11 @@ public class ViewerResourceBundle extends ResourceBundle {
         Locale locale;
         if (inLocale != null) {
             locale = inLocale;
-        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
-            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
+                .getViewRoot() != null) {
+            locale = FacesContext.getCurrentInstance()
+                    .getViewRoot()
+                    .getLocale();
         } else {
             locale = Locale.ENGLISH;
         }
@@ -145,8 +155,8 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale.getLanguage()))) {
             synchronized (lock) {
                 // Bundle could have been initialized by a different thread in the meanwhile
-                if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale
-                        .getLanguage()))) {
+                if (!localBundles.containsKey(locale)
+                        || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale.getLanguage()))) {
                     logger.debug("Reloading local resource bundle for '{}'...", locale.getLanguage());
                     try {
                         ResourceBundle localBundle = loadLocalResourceBundle(locale);
@@ -171,10 +181,14 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @return
      */
     private static ResourceBundle loadLocalResourceBundle(final Locale locale) {
-        File file = new File(DataManager.getInstance().getConfiguration().getLocalRessourceBundleFile());
+        File file = new File(DataManager.getInstance()
+                .getConfiguration()
+                .getLocalRessourceBundleFile());
         if (file.exists()) {
             try {
-                URL resourceURL = file.getParentFile().toURI().toURL();
+                URL resourceURL = file.getParentFile()
+                        .toURI()
+                        .toURL();
                 // logger.debug("URL: " + file.getParentFile().toURI().toURL());
                 URLClassLoader urlLoader = new URLClassLoader(new URL[] { resourceURL });
                 return ResourceBundle.getBundle("messages", locale, urlLoader);
@@ -191,7 +205,9 @@ public class ViewerResourceBundle extends ResourceBundle {
      */
     @Override
     protected Object handleGetObject(final String key) {
-        return getTranslation(key, FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        return getTranslation(key, FacesContext.getCurrentInstance()
+                .getViewRoot()
+                .getLocale());
     }
 
     /**
@@ -343,7 +359,8 @@ public class ViewerResourceBundle extends ResourceBundle {
             return null;
         }
         if (value.endsWith("zzz")) {
-            return value.replace(" zzz", "").replace("zzz", "");
+            return value.replace(" zzz", "")
+                    .replace("zzz", "");
         }
         return value;
     }

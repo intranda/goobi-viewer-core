@@ -134,7 +134,8 @@ public class ConvertAbbyyToAlto {
             int height = b - t;
             int width = r - l;
 
-            if (abbyyPageBlock.getAttributeValue("blockType").equals("Text")) {
+            if (abbyyPageBlock.getAttributeValue("blockType")
+                    .equals("Text")) {
                 Element altoTextBlock = new Element("TextBlock", defaultNamespace);
                 printSpace.addContent(altoTextBlock);
                 altoTextBlock.setAttribute("ID", "TextBlock_" + textBlockCount);
@@ -144,7 +145,8 @@ public class ConvertAbbyyToAlto {
                 altoTextBlock.setAttribute("WIDTH", Integer.toString(width));
 
                 addTextBlocks(altoTextBlock, abbyyPageBlock);
-            } else if (abbyyPageBlock.getAttributeValue(("blockType")).equals("Table")) {
+            } else if (abbyyPageBlock.getAttributeValue(("blockType"))
+                    .equals("Table")) {
                 Element altoTextBlock = new Element("TextBlock", defaultNamespace);
                 printSpace.addContent(altoTextBlock);
                 altoTextBlock.setAttribute("ID", "TextBlock_" + textBlockCount);
@@ -357,25 +359,39 @@ public class ConvertAbbyyToAlto {
         for (int c = 0; c < charCount; c++) {
             if (string.isEmpty()) {
                 // if first character of a new string, set hpos and vpos
-                l = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("l"));
-                t = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("t"));
+                l = Integer.valueOf(abbyyCharParams.get(c)
+                        .getAttributeValue("l"));
+                t = Integer.valueOf(abbyyCharParams.get(c)
+                        .getAttributeValue("t"));
             }
-            if (Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("t")) < t || t == 0) {
-                t = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("t"));
+            if (Integer.valueOf(abbyyCharParams.get(c)
+                    .getAttributeValue("t")) < t || t == 0) {
+                t = Integer.valueOf(abbyyCharParams.get(c)
+                        .getAttributeValue("t"));
             }
-            if (Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("b")) > b || b == 0) {
-                b = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("b"));
+            if (Integer.valueOf(abbyyCharParams.get(c)
+                    .getAttributeValue("b")) > b || b == 0) {
+                b = Integer.valueOf(abbyyCharParams.get(c)
+                        .getAttributeValue("b"));
             }
-            string += abbyyCharParams.get(c).getValue();
+            string += abbyyCharParams.get(c)
+                    .getValue();
             characterCount++;
-            if (abbyyCharParams.get(c).getAttributeValue("charConfidence") != null && abbyyCharParams.get(c).getAttributeValue("charConfidence")
-                    .length() > 0) {
-                confidenceTotal += Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("charConfidence"));
+            if (abbyyCharParams.get(c)
+                    .getAttributeValue("charConfidence") != null
+                    && abbyyCharParams.get(c)
+                            .getAttributeValue("charConfidence")
+                            .length() > 0) {
+                confidenceTotal += Integer.valueOf(abbyyCharParams.get(c)
+                        .getAttributeValue("charConfidence"));
             }
             try {
-                if (c + 1 == charCount || abbyyCharParams.get(c + 1).getValue().equals(" ")) {
+                if (c + 1 == charCount || abbyyCharParams.get(c + 1)
+                        .getValue()
+                        .equals(" ")) {
                     stringCount++;
-                    r = Integer.valueOf(abbyyCharParams.get(c).getAttributeValue("r"));
+                    r = Integer.valueOf(abbyyCharParams.get(c)
+                            .getAttributeValue("r"));
 
                     int hpos = l;
                     int vpos = t;
@@ -442,8 +458,8 @@ public class ConvertAbbyyToAlto {
     private Element addAltoHeader() {
 
         Element alto = new Element("alto", defaultNamespace);
-        alto.setAttribute(new Attribute("schemaLocation", "http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto.xsd",
-                xsi));
+        alto.setAttribute(
+                new Attribute("schemaLocation", "http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/alto.xsd", xsi));
 
         Element description = new Element("Description", defaultNamespace);
         alto.addContent(description);

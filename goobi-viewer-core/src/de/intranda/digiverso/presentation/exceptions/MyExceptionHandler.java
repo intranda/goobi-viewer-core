@@ -66,18 +66,26 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             ExceptionQueuedEventContext context = (ExceptionQueuedEventContext) event.getSource();
             Throwable t = context.getException();
             // Handle ViewExpiredExceptions here ... or even others :)
-            if (!t.getClass().equals(ViewExpiredException.class) && !t.getClass().equals(PrettyException.class)) {
-                logger.error("CLASS: {}", t.getClass().getName());
+            if (!t.getClass()
+                    .equals(ViewExpiredException.class)
+                    && !t.getClass()
+                            .equals(PrettyException.class)) {
+                logger.error("CLASS: {}", t.getClass()
+                        .getName());
             } else {
-                logger.trace(t.getClass().getSimpleName());
+                logger.trace(t.getClass()
+                        .getSimpleName());
             }
             FacesContext fc = FacesContext.getCurrentInstance();
             if (fc == null) {
                 return;
             }
-            Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
-            NavigationHandler nav = fc.getApplication().getNavigationHandler();
-            Flash flash = fc.getExternalContext().getFlash();
+            Map<String, Object> requestMap = fc.getExternalContext()
+                    .getRequestMap();
+            NavigationHandler nav = fc.getApplication()
+                    .getNavigationHandler();
+            Flash flash = fc.getExternalContext()
+                    .getFlash();
             NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
             flash.setKeepMessages(true);
             if (navigationHelper != null) {
@@ -99,11 +107,15 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     i.remove();
                 }
             } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
+                    || (t instanceof PrettyException && t.getMessage()
+                            .contains(RecordNotFoundException.class.getSimpleName()))) {
                 try {
-                    String pi = t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ",
-                            "");
-                    String msg = Helper.getTranslation("errRecordNotFoundMsg", null).replace("{0}", pi);
+                    String pi = t.getMessage()
+                            .substring(t.getMessage()
+                                    .indexOf("RecordNotFoundException: "))
+                            .replace("RecordNotFoundException: ", "");
+                    String msg = Helper.getTranslation("errRecordNotFoundMsg", null)
+                            .replace("{0}", pi);
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "recordNotFound");
@@ -114,10 +126,15 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     i.remove();
                 }
             } else if (t instanceof RecordDeletedException || isCausedByExceptionType(t, RecordDeletedException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(RecordDeletedException.class.getSimpleName()))) {
+                    || (t instanceof PrettyException && t.getMessage()
+                            .contains(RecordDeletedException.class.getSimpleName()))) {
                 try {
-                    String pi = t.getMessage().substring(t.getMessage().indexOf("RecordDeletedException: ")).replace("RecordDeletedException: ", "");
-                    String msg = Helper.getTranslation("errRecordDeletedMsg", null).replace("{0}", pi);
+                    String pi = t.getMessage()
+                            .substring(t.getMessage()
+                                    .indexOf("RecordDeletedException: "))
+                            .replace("RecordDeletedException: ", "");
+                    String msg = Helper.getTranslation("errRecordDeletedMsg", null)
+                            .replace("{0}", pi);
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "recordDeleted");
@@ -128,7 +145,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     i.remove();
                 }
             } else if (t instanceof IndexUnreachableException || isCausedByExceptionType(t, IndexUnreachableException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
+                    || (t instanceof PrettyException && t.getMessage()
+                            .contains(IndexUnreachableException.class.getSimpleName()))) {
                 logger.trace("Caused by IndexUnreachableException");
                 try {
                     requestMap.put("errorType", "indexUnreachable");
@@ -138,8 +156,9 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            } else if (t instanceof DAOException || isCausedByExceptionType(t, DAOException.class.getName()) || (t instanceof PrettyException && t
-                    .getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
+            } else if (t instanceof DAOException || isCausedByExceptionType(t, DAOException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage()
+                            .contains(IndexUnreachableException.class.getSimpleName()))) {
                 logger.trace("Caused by DAOException");
                 try {
                     requestMap.put("errorType", "dao");
@@ -149,19 +168,22 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName()) || (t instanceof PrettyException
-                    && t.getMessage().contains(SocketException.class.getSimpleName()))) {
+            } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage()
+                            .contains(SocketException.class.getSimpleName()))) {
                 logger.error(t.getMessage());
                 try {
                 } finally {
                     i.remove();
                 }
             } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
-                    || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
+                    || (t instanceof PrettyException && t.getMessage()
+                            .contains(DownloadException.class.getSimpleName()))) {
                 logger.error(t.getMessage());
                 String msg = t.getMessage();
                 if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
-                    msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1).trim();
+                    msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1)
+                            .trim();
                 }
                 try {
                     flash.put("errorDetails", msg);
@@ -178,8 +200,9 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 logger.error(t.getMessage(), t);
                 try {
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
-                    String msg = new StringBuilder(DateTools.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ").append(t
-                            .getMessage()).toString();
+                    String msg = new StringBuilder(DateTools.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ")
+                            .append(t.getMessage())
+                            .toString();
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "general");
@@ -216,7 +239,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             return false;
         }
         while (cause != null) {
-            if (cause.getClass().equals(clazz)) {
+            if (cause.getClass()
+                    .equals(clazz)) {
                 return true;
             }
             cause = cause.getCause();

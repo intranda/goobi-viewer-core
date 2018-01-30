@@ -76,35 +76,53 @@ public class TranskribusUtils {
             throw new IllegalArgumentException("metsResolverUrl may not be null");
         }
 
-        if (!DataManager.getInstance().getConfiguration().isTranskribusEnabled()) {
+        if (!DataManager.getInstance()
+                .getConfiguration()
+                .isTranskribusEnabled()) {
             return null;
         }
 
         // Check and create the user's collection for this viewer instance
-        String userCollectionId = getCollectionId(restApiUrl, userSession.getSessionId(), DataManager.getInstance().getConfiguration()
+        String userCollectionId = getCollectionId(restApiUrl, userSession.getSessionId(), DataManager.getInstance()
+                .getConfiguration()
                 .getTranskribusDefaultCollection());
         if (userCollectionId == null) {
-            userCollectionId = createCollection(restApiUrl, userSession.getSessionId(), DataManager.getInstance().getConfiguration()
+            userCollectionId = createCollection(restApiUrl, userSession.getSessionId(), DataManager.getInstance()
+                    .getConfiguration()
                     .getTranskribusDefaultCollection());
             if (userCollectionId == null) {
-                logger.error("Could not create add collection '{}' to the user acccount '{}'.", DataManager.getInstance().getConfiguration()
+                logger.error("Could not create add collection '{}' to the user acccount '{}'.", DataManager.getInstance()
+                        .getConfiguration()
                         .getDefaultCollection(), userSession.getUserName());
                 return null;
             }
         }
 
         // Get this viewer's Transkribus session metadata
-        TranskribusSession viewerSession = login(restApiUrl, DataManager.getInstance().getConfiguration().getTranskribusUserName(), DataManager
-                .getInstance().getConfiguration().getTranskribusPassword());
-        logger.trace(DataManager.getInstance().getConfiguration().getTranskribusUserName() + " - " + DataManager.getInstance().getConfiguration().getTranskribusPassword());
+        TranskribusSession viewerSession = login(restApiUrl, DataManager.getInstance()
+                .getConfiguration()
+                .getTranskribusUserName(),
+                DataManager.getInstance()
+                        .getConfiguration()
+                        .getTranskribusPassword());
+        logger.trace(DataManager.getInstance()
+                .getConfiguration()
+                .getTranskribusUserName() + " - "
+                + DataManager.getInstance()
+                        .getConfiguration()
+                        .getTranskribusPassword());
 
         // Check and create the default viewer instance collection
-        String viewerCollectionId = getCollectionId(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration()
+        String viewerCollectionId = getCollectionId(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance()
+                .getConfiguration()
                 .getDefaultCollection());
         if (viewerCollectionId == null) {
-            viewerCollectionId = createCollection(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance().getConfiguration().getDefaultCollection());
+            viewerCollectionId = createCollection(restApiUrl, viewerSession.getSessionId(), DataManager.getInstance()
+                    .getConfiguration()
+                    .getDefaultCollection());
             if (viewerCollectionId == null) {
-                logger.error("Could not create the default collection '{}' for the viewer instance.", DataManager.getInstance().getConfiguration()
+                logger.error("Could not create the default collection '{}' for the viewer instance.", DataManager.getInstance()
+                        .getConfiguration()
                         .getDefaultCollection());
                 return null;
             }
@@ -114,11 +132,13 @@ public class TranskribusUtils {
         grantCollectionPrivsToViewer(restApiUrl, userSession.getSessionId(), userCollectionId, viewerSession.getUserId(), false);
 
         // Create new doc via the METS resolver URL
-        TranskribusJob job = ingestRecordToCollections(restApiUrl, userSession, pi, metsResolverUrlRoot.endsWith(pi) ? metsResolverUrlRoot
-                : metsResolverUrlRoot + pi, userCollectionId, viewerCollectionId);
+        TranskribusJob job = ingestRecordToCollections(restApiUrl, userSession, pi,
+                metsResolverUrlRoot.endsWith(pi) ? metsResolverUrlRoot : metsResolverUrlRoot + pi, userCollectionId, viewerCollectionId);
 
         // Add new job to the DB and schedule periodical checks
-        DataManager.getInstance().getDao().addTranskribusJob(job);
+        DataManager.getInstance()
+                .getDao()
+                .addTranskribusJob(job);
 
         return job;
     }
@@ -134,8 +154,8 @@ public class TranskribusUtils {
      * @throws JDOMException
      * @throws HTTPException
      */
-    public static TranskribusSession login(String baseUrl, String userName, String password) throws ClientProtocolException, IOException,
-            JDOMException, HTTPException {
+    public static TranskribusSession login(String baseUrl, String userName, String password)
+            throws ClientProtocolException, IOException, JDOMException, HTTPException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
         }
@@ -145,8 +165,12 @@ public class TranskribusUtils {
 
         Document doc = auth(baseUrl, userName, password);
         if (doc != null && doc.getRootElement() != null) {
-            return new TranskribusSession(doc.getRootElement().getChildText("userId"), doc.getRootElement().getChildText("userName"), doc
-                    .getRootElement().getChildText("sessionId"));
+            return new TranskribusSession(doc.getRootElement()
+                    .getChildText("userId"),
+                    doc.getRootElement()
+                            .getChildText("userName"),
+                    doc.getRootElement()
+                            .getChildText("sessionId"));
         }
 
         logger.error("Transkribus login failed for account '{}'", userName);
@@ -165,8 +189,8 @@ public class TranskribusUtils {
      * @throws HTTPException
      * @should auth correctly
      */
-    public static Document auth(String baseUrl, String userName, String password) throws ClientProtocolException, IOException, JDOMException,
-            HTTPException {
+    public static Document auth(String baseUrl, String userName, String password)
+            throws ClientProtocolException, IOException, JDOMException, HTTPException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
         }
@@ -205,8 +229,8 @@ public class TranskribusUtils {
      * @throws ParseException
      * @should retrieve correct id
      */
-    public static String getCollectionId(String baseUrl, String sessionId, String collectionName) throws ClientProtocolException, IOException,
-            HTTPException, ParseException {
+    public static String getCollectionId(String baseUrl, String sessionId, String collectionName)
+            throws ClientProtocolException, IOException, HTTPException, ParseException {
         logger.trace("getCollectionId: {}", collectionName);
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
@@ -219,7 +243,10 @@ public class TranskribusUtils {
         }
 
         StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_COLLECTION_LIST);
-        sbUrl.append("?JSESSIONID=").append(sessionId).append("&name=").append(collectionName);
+        sbUrl.append("?JSESSIONID=")
+                .append(sessionId)
+                .append("&name=")
+                .append(collectionName);
         String response = Helper.getWebContentGET(sbUrl.toString());
         if (response != null) {
             JSONArray jsonArray = (JSONArray) new JSONParser().parse(response);
@@ -250,8 +277,8 @@ public class TranskribusUtils {
      * @should create collection and return numeric id
      * 
      */
-    protected static String createCollection(String baseUrl, String sessionId, String collectionName) throws ClientProtocolException, IOException,
-            HTTPException, JDOMException {
+    protected static String createCollection(String baseUrl, String sessionId, String collectionName)
+            throws ClientProtocolException, IOException, HTTPException, JDOMException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
         }
@@ -262,7 +289,9 @@ public class TranskribusUtils {
             throw new IllegalArgumentException("collectionName may not be null");
         }
 
-        StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CREATE_COLLECTION).append("?collName=").append(collectionName);
+        StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CREATE_COLLECTION)
+                .append("?collName=")
+                .append(collectionName);
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", sessionId);
         //        params.put("collName", collectionName);
@@ -301,7 +330,11 @@ public class TranskribusUtils {
         }
 
         StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_GRANT_COLLECTION_PRIVS.replace("{collId}", collectionId));
-        sbUrl.append("?userid=").append(recipientUserId).append("&role=Editor").append("&sendMail=").append(String.valueOf(sendMail));
+        sbUrl.append("?userid=")
+                .append(recipientUserId)
+                .append("&role=Editor")
+                .append("&sendMail=")
+                .append(String.valueOf(sendMail));
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", sessionId);
         //        params.put("userid", recipientUserId);
@@ -346,7 +379,10 @@ public class TranskribusUtils {
         }
 
         StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CREATE_DOC_FROM_METS_URL.replace("{collId}", userCollectionId));
-        sbUrl.append("?fileName=").append(URLEncoder.encode(metsUrl, Helper.DEFAULT_ENCODING)).append("&collId=").append(viewerCollectionId);
+        sbUrl.append("?fileName=")
+                .append(URLEncoder.encode(metsUrl, Helper.DEFAULT_ENCODING))
+                .append("&collId=")
+                .append(viewerCollectionId);
         Map<String, String> params = new HashMap<>(1);
         params.put("JSESSIONID", session.getSessionId());
         String response = Helper.getWebContentPOST(sbUrl.toString(), params, null);
@@ -377,8 +413,8 @@ public class TranskribusUtils {
      * @throws ParseException
      * @should return correct status
      */
-    protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId) throws ClientProtocolException,
-            IOException, HTTPException, ParseException {
+    protected static TranskribusJob.JobStatus checkJobStatus(String baseUrl, String sessionId, String jobId)
+            throws ClientProtocolException, IOException, HTTPException, ParseException {
         if (baseUrl == null) {
             throw new IllegalArgumentException("baseUrl may not be null");
         }
@@ -389,8 +425,10 @@ public class TranskribusUtils {
             throw new IllegalArgumentException("jobId may not be null");
         }
 
-        StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CHECK_JOB_STATUS.replace("{id}", jobId).replace("{docId}", "TODO")).append(
-                "?JSESSIONID=").append(sessionId);
+        StringBuilder sbUrl = new StringBuilder(baseUrl).append(URLPART_CHECK_JOB_STATUS.replace("{id}", jobId)
+                .replace("{docId}", "TODO"))
+                .append("?JSESSIONID=")
+                .append(sessionId);
         String response = Helper.getWebContentGET(sbUrl.toString());
         if (response != null) {
             JSONObject jsonObj = (JSONObject) new JSONParser().parse(response);

@@ -42,13 +42,16 @@ public class TestUtils {
         FacesContext facesContext = ContextMocker.mockFacesContext();
 
         ExternalContext externalContext = Mockito.mock(ExternalContext.class);
-        Mockito.when(facesContext.getExternalContext()).thenReturn(externalContext);
+        Mockito.when(facesContext.getExternalContext())
+                .thenReturn(externalContext);
 
         ServletContext servletContext = Mockito.mock(ServletContext.class);
-        Mockito.when(externalContext.getContext()).thenReturn(servletContext);
+        Mockito.when(externalContext.getContext())
+                .thenReturn(servletContext);
 
         Map<String, Object> sessionMap = new HashMap<>();
-        Mockito.when(externalContext.getSessionMap()).thenReturn(sessionMap);
+        Mockito.when(externalContext.getSessionMap())
+                .thenReturn(sessionMap);
 
         return facesContext;
     }
@@ -57,7 +60,8 @@ public class TestUtils {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
         HttpSession session = new MockSession();
-        Mockito.when(request.getSession()).thenReturn(session);
+        Mockito.when(request.getSession())
+                .thenReturn(session);
 
         return request;
 

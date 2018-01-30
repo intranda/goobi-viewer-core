@@ -73,14 +73,20 @@ public class UserGroupBean implements Serializable {
     public void saveCurrentOwnUserGroupAction(ActionEvent actionEvent) throws DAOException {
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null && ub.getUser() != null && StringUtils.isNotEmpty(currentOwnUserGroup.getName())) {
-            if (ub.getUser().getUserGroupOwnerships().contains(currentOwnUserGroup)) {
-                DataManager.getInstance().getDao().updateUserGroup(currentOwnUserGroup);
+            if (ub.getUser()
+                    .getUserGroupOwnerships()
+                    .contains(currentOwnUserGroup)) {
+                DataManager.getInstance()
+                        .getDao()
+                        .updateUserGroup(currentOwnUserGroup);
                 Messages.info("updatedSuccessfully");
                 logger.debug("Bookshelf '" + currentOwnUserGroup.getName() + "' updated.");
                 return;
             }
             currentOwnUserGroup.setOwner(ub.getUser());
-            if (DataManager.getInstance().getDao().addUserGroup(currentOwnUserGroup)) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .addUserGroup(currentOwnUserGroup)) {
                 resetCurrentUserGroupAction();
                 Messages.info("savedSuccessfully");
                 logger.debug("Bookshelf '" + currentOwnUserGroup.getName() + "' added.");
@@ -100,7 +106,9 @@ public class UserGroupBean implements Serializable {
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null && ub.getUser() != null) {
             logger.debug(currentOwnUserGroup.getName());
-            if (DataManager.getInstance().getDao().deleteUserGroup(currentOwnUserGroup)) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .deleteUserGroup(currentOwnUserGroup)) {
                 Messages.info("deletedSuccessfully");
                 logger.debug("UserGroup '" + currentOwnUserGroup.getName() + "' deleted.");
             }
@@ -117,7 +125,8 @@ public class UserGroupBean implements Serializable {
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null && ub.getUser() != null && currentOtherUserGroup.removeMember(ub.getUser())) {
             Messages.info("userGroup_leftSuccessfully");
-            logger.debug("User '{}' left user group '{}'.", ub.getUser().getEmail(), currentOtherUserGroup.getName());
+            logger.debug("User '{}' left user group '{}'.", ub.getUser()
+                    .getEmail(), currentOtherUserGroup.getName());
         }
         resetCurrentUserGroupAction();
     }
@@ -185,7 +194,9 @@ public class UserGroupBean implements Serializable {
         List<SelectItem> ret = new ArrayList<>();
 
         List<User> allUsers = new ArrayList<>();
-        allUsers.addAll(DataManager.getInstance().getDao().getAllUsers(true));
+        allUsers.addAll(DataManager.getInstance()
+                .getDao()
+                .getAllUsers(true));
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null) {
             allUsers.remove(ub.getUser());
@@ -214,8 +225,11 @@ public class UserGroupBean implements Serializable {
     public List<Role> getAllRoles() throws DAOException {
         List<Role> ret = new ArrayList<>();
 
-        for (Role role : DataManager.getInstance().getDao().getAllRoles()) {
-            if (!role.getName().equals(Role.SUPERUSER_ROLE)) {
+        for (Role role : DataManager.getInstance()
+                .getDao()
+                .getAllRoles()) {
+            if (!role.getName()
+                    .equals(Role.SUPERUSER_ROLE)) {
                 ret.add(role);
             }
         }
@@ -265,7 +279,8 @@ public class UserGroupBean implements Serializable {
      */
     public void setCurrentOwnUserGroup(UserGroup currentOwnUserGroup) {
         UserBean ub = BeanUtils.getUserBean();
-        if (currentOwnUserGroup != null && ub != null && !currentOwnUserGroup.getOwner().equals(ub.getUser())) {
+        if (currentOwnUserGroup != null && ub != null && !currentOwnUserGroup.getOwner()
+                .equals(ub.getUser())) {
             logger.debug("not allowed");
             return;
         }
@@ -277,7 +292,9 @@ public class UserGroupBean implements Serializable {
      *
      */
     public void setCurrentOwnUserGroup() throws DAOException {
-        setCurrentOwnUserGroup(DataManager.getInstance().getDao().getUserGroup(getCurrentOwnUserGroupId()));
+        setCurrentOwnUserGroup(DataManager.getInstance()
+                .getDao()
+                .getUserGroup(getCurrentOwnUserGroupId()));
     }
 
     /**
@@ -324,7 +341,9 @@ public class UserGroupBean implements Serializable {
      */
     public void setCurrentId(Long id) throws DAOException {
         if (id != null) {
-            currentMember = DataManager.getInstance().getDao().getUser(id);
+            currentMember = DataManager.getInstance()
+                    .getDao()
+                    .getUser(id);
         }
     }
 

@@ -256,7 +256,7 @@ public interface IDAO {
     // CMS
 
     public List<CMSPage> getAllCMSPages() throws DAOException;
-        
+
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException;
 
     public long getCMSPageCount(Map<String, String> filters) throws DAOException;
@@ -268,7 +268,7 @@ public interface IDAO {
     public CMSPage getCMSPage(long id) throws DAOException;
 
     long getCMSPagesCount(Map<String, String> filters) throws DAOException;
-    
+
     public boolean addCMSPage(CMSPage page) throws DAOException;
 
     public boolean updateCMSPage(CMSPage page) throws DAOException;
@@ -302,25 +302,25 @@ public interface IDAO {
     public boolean deleteCMSNavigationItem(CMSNavigationItem item) throws DAOException;
 
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException;
-    
-	public List<String> getMatchingTags(String inputString) throws DAOException;
-	
-	public List<String> getAllTags() throws DAOException;
-	
-	public List<CMSStaticPage> getAllStaticPages() throws DAOException;
-	
-	public void addStaticPage(CMSStaticPage page) throws DAOException;
-	
-	public void updateStaticPage(CMSStaticPage page) throws DAOException;
-	
-	public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
 
-	public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
-	
-	public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
+    public List<String> getMatchingTags(String inputString) throws DAOException;
 
-	public void detach(Object object) throws DAOException;
-	
+    public List<String> getAllTags() throws DAOException;
+
+    public List<CMSStaticPage> getAllStaticPages() throws DAOException;
+
+    public void addStaticPage(CMSStaticPage page) throws DAOException;
+
+    public void updateStaticPage(CMSStaticPage page) throws DAOException;
+
+    public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
+
+    public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
+
+    public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
+
+    public void detach(Object object) throws DAOException;
+
     // Transkribus
 
     public List<TranskribusJob> getAllTranskribusJobs() throws DAOException;
