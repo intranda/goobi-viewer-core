@@ -94,7 +94,7 @@ public class SessionStoreBookshelfManager {
      * @return
      * @throws NullPointerException     if the session is NULL
      */
-    public Bookshelf getOrCreateBookshelf(HttpSession session) {
+    public synchronized Bookshelf getOrCreateBookshelf(HttpSession session) {
         return getBookshelf(session).orElseGet(() -> createBookshelf(session));
     }
     
