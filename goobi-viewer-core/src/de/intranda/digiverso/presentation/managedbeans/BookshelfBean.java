@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,7 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,6 +49,7 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem;
+import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.viewer.ViewManager;
@@ -62,6 +65,7 @@ public class BookshelfBean implements Serializable {
     @Inject
     private UserBean userBean;
 
+
     /** Currently selected bookshelf. */
     private Bookshelf currentBookshelf = null;
     private String currentBookshelfName;
@@ -70,6 +74,15 @@ public class BookshelfBean implements Serializable {
 
     private BookshelfItem currentBookshelfItem;
     private UserGroup currentUserGroup;
+    
+    /**
+     * An email-address which a user may enter to receive the session store bookshelf as mail
+     */
+    private String sessionBookshelfEmail = "";
+    private static String KEY_BOOKSHELF_EMAIL_SUBJECT = "bookshelf_email_subject";
+    private static String KEY_BOOKSHELF_EMAIL_BODY = "bookshelf_email_body";
+    private static String KEY_BOOKSHELF_EMAIL_ITEM = "bookshelf_email_item";
+    private static String KEY_BOOKSHELF_EMAIL_ERROR = "bookshelf_email_error";
 
     /** Empty Constructor. */
     public BookshelfBean() {
@@ -620,5 +633,36 @@ public class BookshelfBean implements Serializable {
      */
     public void setCurrentUserGroup(UserGroup currentUserGroup) {
         this.currentUserGroup = currentUserGroup;
+    }
+    
+    /**
+     * @param sessionBookshelfEmail the sessionBookshelfEmail to set
+     */
+    public void setSessionBookshelfEmail(String sessionBookshelfEmail) {
+        this.sessionBookshelfEmail = sessionBookshelfEmail;
+    }
+    
+    /**
+     * @return the sessionBookshelfEmail
+     */
+    public String getSessionBookshelfEmail() {
+        return sessionBookshelfEmail;
+    }
+    
+    public void sendSessionBookshelfAsMail() {
+        if(StringUtils.isNotBlank(getSessionBookshelfEmail())) {
+            DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession(false))
+            .ifPresent(bookshelf -> {
+                String body = SessionStoreBookshelfManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ITEM, null), bookshelf);
+                String subject = Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUBJECT, null);
+                try {
+                    Helper.postMail(Collections.singletonList(getSessionBookshelfEmail()), subject, body);
+                } catch (UnsupportedEncodingException | MessagingException e) {
+                        logger.error(e.getMessage(), e);
+                        Messages.error(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ERROR, null).replace("{0}", DataManager.getInstance().getConfiguration()
+                        .getFeedbackEmailAddress()));
+                }
+            });
+        }
     }
 }
