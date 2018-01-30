@@ -1064,7 +1064,7 @@ div.mce-fullscreen {
   position: absolute;
   top: 100%;
   right: 0;
-  width: 300px;
+  width: 325px;
   z-index: 999;
 }
 .bookshelf-navigation__dropdown-list {
@@ -1103,17 +1103,33 @@ div.mce-fullscreen {
   border-radius: 2px;
   background-color: #428bca;
 }
-.bookshelf-navigation__dropdown-list-reset {
+.bookshelf-navigation__dropdown-list-reset,
+.bookshelf-navigation__dropdown-list-send {
+  font-size: 13px;
   border-top: 1px solid #ccc;
 }
-.bookshelf-navigation__dropdown-list-reset [data-bookshelf-type="reset"] {
+.bookshelf-navigation__dropdown-list-reset [data-bookshelf-type="reset"],
+.bookshelf-navigation__dropdown-list-send [data-bookshelf-type="reset"],
+.bookshelf-navigation__dropdown-list-reset a,
+.bookshelf-navigation__dropdown-list-send a {
   width: 100%;
   padding: 10px;
   text-align: left;
   color: #428bca;
-  background-image: url("../../images/icons/icon-bs-remove.svg");
+  background-repeat: no-repeat;
   background-position: 95% center;
-  background-size: 4%;
+}
+.bookshelf-navigation__dropdown-list-reset {
+  border-right: 1px solid #ccc;
+}
+.bookshelf-navigation__dropdown-list-reset [data-bookshelf-type="reset"] {
+  background-image: url("../../images/icons/icon-bs-remove.svg");
+  background-size: 5%;
+}
+.bookshelf-navigation__dropdown-list-send a {
+  display: block;
+  background-image: url("../../images/icons/icon-bs-link.svg");
+  background-size: 8%;
 }
 .bookshelf-navigation__dropdown-list-image {
   height: 75px;
@@ -4785,6 +4801,36 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #otherBookshelves #other_bookshelf_data_table tbody tr td:nth-child(4) {
   text-align: center;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User Bookshelf Send List
+   style declarations for userBookshelfSendList.xhtml
+   ==============================================================*/
+/* USER BOOKSHELF SEND LIST */
+/* BLOCK */
+.user-bookshelf-send-list {
+  /* ELEMENT */
+}
+.user-bookshelf-send-list__form {
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+}
+.user-bookshelf-send-list__form form {
+  width: 80%;
+  margin: 0 auto;
+}
+.user-bookshelf-send-list .control-label {
+  font-weight: normal;
+}
+.user-bookshelf-send-list .form-control {
+  height: 32px;
+}
+.user-bookshelf-send-list__action {
+  text-align: right;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

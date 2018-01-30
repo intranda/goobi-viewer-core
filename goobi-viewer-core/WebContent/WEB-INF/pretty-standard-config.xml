@@ -595,6 +595,11 @@
         <view-id value="/userBackendEditBookshelf.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="userBookshelfSendList">
+		<pattern value="/userBookshelfSendList/" />
+		<view-id value="/userBookshelfSendList.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
 
 	<url-mapping id="userMenuMySearches">
 		<pattern value="/mysearches/" />

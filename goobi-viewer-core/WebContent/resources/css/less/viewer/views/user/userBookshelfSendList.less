@@ -1,0 +1,38 @@
+/* ==============================================================
+   User Bookshelf Send List
+   style declarations for userBookshelfSendList.xhtml
+   ==============================================================*/
+/* USER BOOKSHELF SEND LIST */
+/* BLOCK */
+.user-bookshelf-send-list {
+    /* ELEMENT */
+    &__form {
+	    padding: 30px 15px;
+    	border: 1px solid @middlegray;
+    	form {
+	    	width: 80%;
+	    	margin: 0 auto;
+    	}
+    }
+    .control-label {
+		font-weight: normal;
+	}
+	.form-control {
+		height: 32px;
+	}
+	&__action {
+		text-align: right;
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {}
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

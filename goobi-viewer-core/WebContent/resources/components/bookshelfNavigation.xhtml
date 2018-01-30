@@ -30,7 +30,14 @@
 						<div class="bookshelf-navigation__dropdown-list"></div>
 						
 						<ui:fragment rendered="#{!userBean.loggedIn}">
-							<div class="bookshelf-navigation__dropdown-list-reset"></div>
+                            <div class="col-xs-6 no-padding">
+    							<div class="bookshelf-navigation__dropdown-list-reset"></div>
+                            </div>
+                            <div class="col-xs-6 no-padding">
+                                <div class="bookshelf-navigation__dropdown-list-send">
+                                    <a href="#{request.contextPath}/userBookshelfSendList/">#{msg.bookshelf_session_mail_sendList}</a>
+                                </div>
+                            </div>
 						</ui:fragment>
 					</div>
 				</div>
