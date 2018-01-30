@@ -213,11 +213,14 @@ public class SessionStoreBookshelfManager {
      * @param itemText
      * @return
      */
-    public static String generateBookshelfInfo(String text, String itemText, Bookshelf bookshelf) {
+    public static String generateBookshelfInfo(String text, String itemText, String emptyListText, Bookshelf bookshelf) {
         StringBuilder itemList = new StringBuilder();
         for (BookshelfItem item : bookshelf.getItems()) {
             String currentItemText = itemText.replace("{0}", item.getUrl()).replace("{1}", item.getName());
             itemList.append(currentItemText);
+        }
+        if(itemList.toString().isEmpty()) {
+            itemList.append(emptyListText);
         }
         return text.replace("{0}", itemList.toString());
         

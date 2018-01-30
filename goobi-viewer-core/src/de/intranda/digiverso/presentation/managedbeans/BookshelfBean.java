@@ -79,10 +79,12 @@ public class BookshelfBean implements Serializable {
      * An email-address which a user may enter to receive the session store bookshelf as mail
      */
     private String sessionBookshelfEmail = "";
-    private static String KEY_BOOKSHELF_EMAIL_SUBJECT = "bookshelf_email_subject";
-    private static String KEY_BOOKSHELF_EMAIL_BODY = "bookshelf_email_body";
-    private static String KEY_BOOKSHELF_EMAIL_ITEM = "bookshelf_email_item";
-    private static String KEY_BOOKSHELF_EMAIL_ERROR = "bookshelf_email_error";
+    private static String KEY_BOOKSHELF_EMAIL_SUBJECT = "bookshelf_session_mail_header";
+    private static String KEY_BOOKSHELF_EMAIL_BODY = "bookshelf_session_mail_body";
+    private static String KEY_BOOKSHELF_EMAIL_ITEM = "bookshelf_session_mail_list";
+    private static String KEY_BOOKSHELF_EMAIL_EMPTY_LIST = "bookshelf_session_mail_emptylist";
+    private static String KEY_BOOKSHELF_EMAIL_ERROR = "bookshelf_session_mail_error";
+    private static String KEY_BOOKSHELF_EMAIL_SUCCESS = "bookshelf_session_mail_success";
 
     /** Empty Constructor. */
     public BookshelfBean() {
@@ -653,10 +655,11 @@ public class BookshelfBean implements Serializable {
         if(StringUtils.isNotBlank(getSessionBookshelfEmail())) {
             DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession(false))
             .ifPresent(bookshelf -> {
-                String body = SessionStoreBookshelfManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ITEM, null), bookshelf);
+                String body = SessionStoreBookshelfManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ITEM, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_EMPTY_LIST, null), bookshelf);
                 String subject = Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUBJECT, null);
                 try {
                     Helper.postMail(Collections.singletonList(getSessionBookshelfEmail()), subject, body);
+                    Messages.info(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUCCESS, null));
                 } catch (UnsupportedEncodingException | MessagingException e) {
                         logger.error(e.getMessage(), e);
                         Messages.error(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ERROR, null).replace("{0}", DataManager.getInstance().getConfiguration()
