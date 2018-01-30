@@ -1176,9 +1176,6 @@
         
         <!-- Piwik site ID -->
         <siteID>1</siteID>
-        
-        <!-- Filename of the piwik script -->
-        <filename>piwik.php</filename>
     </piwik>
 
 	<!-- Web API configuration -->
