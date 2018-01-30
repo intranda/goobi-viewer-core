@@ -457,11 +457,7 @@ public class ConfigurationTest {
         Assert.assertEquals(1, metadataList.size());
         Metadata metadata = metadataList.get(0);
         Assert.assertEquals("", metadata.getLabel());
-        Assert.assertFalse(metadata.getValues()
-                .isEmpty());
-        Assert.assertEquals("{CURRENTNO}{MD_TITLE}", metadata.getValues()
-                .get(0)
-                .getMasterValue());
+        Assert.assertEquals("{CURRENTNO}{MD_TITLE}", metadata.getMasterValue());
         List<MetadataParameter> params = metadata.getParams();
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("CURRENTNO", params.get(0)
@@ -487,11 +483,7 @@ public class ConfigurationTest {
         Assert.assertEquals(1, metadataList.size());
         Metadata metadata = metadataList.get(0);
         Assert.assertEquals("", metadata.getLabel());
-        Assert.assertFalse(metadata.getValues()
-                .isEmpty());
-        Assert.assertEquals("{LABEL}{MD_CREATOR}", metadata.getValues()
-                .get(0)
-                .getMasterValue());
+        Assert.assertEquals("{LABEL}{MD_CREATOR}", metadata.getMasterValue());
         List<MetadataParameter> params = metadata.getParams();
         Assert.assertEquals(2, params.size());
         Assert.assertEquals("LABEL", params.get(0)

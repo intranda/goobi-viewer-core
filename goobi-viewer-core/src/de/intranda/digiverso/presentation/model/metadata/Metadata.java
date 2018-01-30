@@ -162,10 +162,6 @@ public class Metadata implements Serializable {
         return label;
     }
 
-    /**
-     * @deprecated Use MetadataValue.getMasterValue()
-     */
-    @Deprecated
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
             return "{0}";
