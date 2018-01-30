@@ -47,16 +47,16 @@
 	                        </div>
 
 							<div class="row no-margin">
-								<div class="col-xs-10 no-padding">
+								<div class="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable ? 'col-xs-10' : 'col-xs-12'} no-padding">
 									<div class="thumb-element-number">#{image.order}:#{image.orderLabel}</div>
 								</div>
-								<div class="col-xs-2 no-padding">
-									<ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+								<ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+								    <div class="col-xs-2 no-padding">
 										<div class="thumb-element-fulltext">
 											<i class="fa fa-file-text-o" aria-hidden="true"></i>
 										</div>
-									</ui:fragment>
-								</div>
+								    </div>
+								</ui:fragment>
 							</div>
 						</div>	                    
                     </div>

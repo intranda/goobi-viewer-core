@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,6 +40,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
+import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.download.DownloadJob.JobStatus;
 import de.intranda.digiverso.presentation.model.download.EPUBDownloadJob;
@@ -2159,5 +2161,26 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertNotNull(job);
         Assert.assertTrue(DataManager.getInstance().getDao().deleteDownloadJob(job));
         Assert.assertNull(DataManager.getInstance().getDao().getDownloadJob(1));
+    }
+    
+    @Test
+    public void getCMSPagesCount_shouldReturnCorrectCount() throws Exception{
+        long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.EMPTY_MAP);
+        Assert.assertEquals(3, numPages);
+    }
+    
+    @Test
+    public void getStaticPageForCMSPage_shouldReturnCorrectResult() throws Exception {
+        List<CMSPage> cmsPages = DataManager.getInstance().getDao().getAllCMSPages();
+        for (CMSPage page : cmsPages) {
+            Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(page);
+            if(page.getId().equals(1l)) {
+                Assert.assertTrue(staticPage.isPresent());
+                Assert.assertTrue(staticPage.get().getPageName().equals("index"));
+                Assert.assertTrue(staticPage.get().getCmsPage().equals(page));
+            } else {
+                Assert.assertFalse(staticPage.isPresent());
+            }
+        }
     }
 }

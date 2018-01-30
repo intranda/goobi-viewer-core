@@ -57,6 +57,7 @@
 														<div class="sidebar-editor-widget-item">
 															<div class="sidebar-editor-widget-item-header">
 																<h4>#{msg[element.type]}</h4>
+                                                                #{element.category}
 																<span class="glyphicon glyphicon-edit widget-edit" title="Widget Editor"></span>
 															</div>
 
@@ -84,6 +85,13 @@
 																			<h:inputTextarea value="#{element.html}" styleClass="form-control" />
 																		</div>
 																	</h:panelGroup>
+                                                                    <!-- SEARCH -->
+                                                                    <h:panelGroup id="inputSearch" rendered="#{element.category == 'search'}">
+                                                                        <div class="form-group">
+                                                                            <label>#{msg.cms_sidebarElement_additionalQuery}:</label>
+                                                                            <h:inputText value="#{element.additionalQuery}" styleClass="form-control"></h:inputText>
+                                                                        </div>
+                                                                    </h:panelGroup>
 																	<!-- QUERY INPUT -->
 																	<h:panelGroup id="inputQuery" rendered="#{element.category == 'fieldQuery'}">
 																		<div class="form-group">
@@ -116,7 +124,7 @@
 																		<div class="form-group selection_page_links">
 																			<label>#{msg.cms_sidebarElement_pageLinks}:</label>
 																			<h:selectManyCheckbox value="#{element.linkedPages.pages}">
-																				<f:selectItems value="#{cmsBean.createdPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}" />
+																				<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}" />
 																			</h:selectManyCheckbox>
 																		</div>
 																	</h:panelGroup>
@@ -267,7 +275,7 @@
 																		<div class="form-group selection_page_links">
 																			<label>#{msg.cms_sidebarElement_pageLinks}:</label>
 																			<h:selectManyCheckbox value="#{element.linkedPages.pages}">
-																				<f:selectItems value="#{cmsBean.createdPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}"></f:selectItems>
+																				<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}"></f:selectItems>
 																			</h:selectManyCheckbox>
 																		</div>
 																	</h:panelGroup>

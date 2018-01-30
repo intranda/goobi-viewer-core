@@ -1285,15 +1285,18 @@ public class SearchBean implements Serializable {
      * @should remove facet correctly
      */
     public String removeFacetAction(String facetQuery) {
-        String ret = facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
-                : "pretty:newSearch5");
 
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
             oPath.get().getCmsPage().getSearch().redirectToSearchUrl();
             return "";
+        } else if(PageType.browse.equals(oPath.map(path -> path.getPageType()).orElse(PageType.other))) {
+            String ret = facets.removeFacetAction(facetQuery, "pretty:browse5");
+            return ret;
         } else {
+            String ret = facets.removeFacetAction(facetQuery, activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5"
+                    : "pretty:newSearch5");
             return ret;
         }
     }

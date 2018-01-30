@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.dao;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -26,6 +27,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
+import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -38,6 +40,7 @@ import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob.JobStatus;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 public interface IDAO {
 
@@ -264,6 +267,8 @@ public interface IDAO {
 
     public CMSPage getCMSPage(long id) throws DAOException;
 
+    long getCMSPagesCount(Map<String, String> filters) throws DAOException;
+    
     public boolean addCMSPage(CMSPage page) throws DAOException;
 
     public boolean updateCMSPage(CMSPage page) throws DAOException;
@@ -301,9 +306,21 @@ public interface IDAO {
 	public List<String> getMatchingTags(String inputString) throws DAOException;
 	
 	public List<String> getAllTags() throws DAOException;
+	
+	public List<CMSStaticPage> getAllStaticPages() throws DAOException;
+	
+	public void addStaticPage(CMSStaticPage page) throws DAOException;
+	
+	public void updateStaticPage(CMSStaticPage page) throws DAOException;
+	
+	public boolean deleteStaticPage(CMSStaticPage page) throws DAOException;
 
+	public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException;
+	
+	public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException;
 
-
+	public void detach(Object object) throws DAOException;
+	
     // Transkribus
 
     public List<TranskribusJob> getAllTranskribusJobs() throws DAOException;
@@ -319,6 +336,5 @@ public interface IDAO {
     // Misc
 
     public void shutdown();
-
 
 }

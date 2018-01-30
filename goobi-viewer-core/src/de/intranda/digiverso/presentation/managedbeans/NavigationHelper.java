@@ -34,12 +34,14 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
@@ -800,7 +802,7 @@ public class NavigationHelper implements Serializable {
         }
     }
 
-    public void updateBreadcrumbs(CMSPage cmsPage) {
+    public void updateBreadcrumbs(CMSPage cmsPage) throws DAOException {
         resetBreadcrumbs();
         Set<CMSPage> linkedPages = new HashSet<>();
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
@@ -810,7 +812,8 @@ public class NavigationHelper implements Serializable {
                 return;
             }
             linkedPages.add(cmsPage);
-            if (PageType.index.matches(cmsPage.getStaticPageName())) {
+            if(DataManager.getInstance().getDao().getStaticPageForCMSPage(cmsPage).map(sp -> sp.getPageName()).filter(name -> PageType.index.name().equals(name)).isPresent()) {
+//            if (PageType.index.matches(cmsPage.getStaticPageName())) {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }

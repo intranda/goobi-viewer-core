@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -46,6 +47,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
 import de.intranda.digiverso.presentation.model.cms.CMSSidebarElement;
+import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.download.DownloadJob;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPageUpdate;
@@ -58,6 +60,7 @@ import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.model.security.user.UserRole;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob.JobStatus;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 public class JPADAO implements IDAO {
 
@@ -2158,15 +2161,6 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException {
-        //        List<CMSPage> filteredPages = new ArrayList<>();
-        //        List<CMSPage> allPages = getAllCMSPages();
-        //        for (CMSPage page : allPages) {
-        //            if (page.getClassifications().contains(pageClassification)) {
-        //                filteredPages.add(page);
-        //            }
-        //        }
-        //        return filteredPages;
-
         preQuery();
         StringBuilder sbQuery = new StringBuilder(70);
         sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
@@ -2193,6 +2187,8 @@ public class JPADAO implements IDAO {
             return null;
         }
     }
+
+    
 
     @Override
     public CMSSidebarElement getCMSSidebarElement(long id) throws DAOException {
@@ -2332,7 +2328,7 @@ public class JPADAO implements IDAO {
     public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException {
         preQuery();
         // TODO metadata object cascading does not work
-        EntityManager em = factory.createEntityManager();
+//        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(item);
@@ -2351,7 +2347,7 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException {
         preQuery();
-        EntityManager em = factory.createEntityManager();
+//        EntityManager em = factory.createEntityManager();
         try {
             em.getTransaction().begin();
             em.merge(item);
@@ -2663,6 +2659,14 @@ public class JPADAO implements IDAO {
     public long getCommentCount(Map<String, String> filters) throws DAOException {
         return getRowCount("Comment", filters);
     }
+    
+    /**
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPagesCount(java.util.Map)
+     */
+    @Override
+    public long getCMSPagesCount(Map<String, String> filters) throws DAOException {
+        return getRowCount("CMSPage", filters);
+    }
 
     /**
      * Universal method for returning the row count for the given class and filters.
@@ -2730,5 +2734,143 @@ public class JPADAO implements IDAO {
         Query q = em.createNativeQuery(sbQuery.toString());
         return q.getResultList();
     }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getAllStaticPages()
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSStaticPage> getAllStaticPages() throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT o FROM CMSStaticPage o");
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#addStaticPage(de.intranda.digiverso.presentation.model.cms.StaticPage)
+     */
+    @Override
+    public void addStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(page);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#updateStaticPage(de.intranda.digiverso.presentation.model.cms.StaticPage)
+     */
+    @Override
+    public void updateStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(page);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#deleteStaticPage(de.intranda.digiverso.presentation.model.cms.StaticPage)
+     */
+    @Override
+    public boolean deleteStaticPage(CMSStaticPage page) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            CMSStaticPage o = em.getReference(CMSStaticPage.class, page.getId());
+            em.remove(o);
+            em.getTransaction().commit();
+            return true;
+        } catch (RollbackException e) {
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public Optional<CMSStaticPage> getStaticPageForCMSPage(CMSPage page) throws DAOException, NonUniqueResultException {
+        preQuery();
+        Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.cmsPageId = :id");
+        q.setParameter("id", page.getId());
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return getSingleResult(q);
+    }
+    
+    /**
+     * Helper method to get the first result of the given query if any results are returned, 
+     * or an empty Optional otherwise
+     * 
+     * @throws ClassCastException   if the first result cannot be cast to the expected type
+     * @param q     the query to perform
+     * @return      an Optional containing the first query result, or an empty Optional if no results are present
+     */
+    @SuppressWarnings("unchecked")
+    private <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
+        List<Object> results =  q.getResultList();
+        if(results == null || results.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable((T)results.get(0));
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getStaticPageForTypeType(de.intranda.digiverso.presentation.dao.PageType)
+     */
+    @Override
+    public Optional<CMSStaticPage> getStaticPageForTypeType(PageType pageType) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT sp FROM CMSStaticPage sp WHERE sp.pageName = :name");
+        q.setParameter("name", pageType.name());
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        return getSingleResult(q);
+    }
+    
+    /**
+     * Helper method to get the only result of a query. 
+     * In contrast to {@link javax.persistence.Query#getSingleResult()} this does  not throw an exception if no results
+     * are found. Instead, it returns an empty Optional
+     * 
+     * @throws ClassCastException   if the first result cannot be cast to the expected type
+     * @throws NonUniqueResultException   if the query matches more than one result
+     * @param q     the query to perform
+     * @return      an Optional containing the query result, or an empty Optional if no results are present
+     */
+    @SuppressWarnings("unchecked")
+    private <T> Optional<T> getSingleResult(Query q) throws ClassCastException, NonUniqueResultException {
+        List<Object> results =  q.getResultList();
+        if(results == null || results.isEmpty()) {
+            return Optional.empty();
+        } else if(results.size() > 1) {
+            throw new NonUniqueResultException("Query found " + results.size() + " results instead of only one");
+        } else {
+            return Optional.ofNullable((T)results.get(0));
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#detach(java.lang.Object)
+     */
+    @Override
+    public void detach(Object object) throws DAOException {
+        preQuery();
+        em.detach(object);
+    }
+
 
 }

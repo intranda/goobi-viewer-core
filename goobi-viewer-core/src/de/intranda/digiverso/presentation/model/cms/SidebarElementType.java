@@ -22,7 +22,7 @@ import de.intranda.digiverso.presentation.model.misc.GeoLocationInfo;
 
 public enum SidebarElementType {
 
-    searchField("widgetSearchField"),
+    searchField("widgetSearchField", Category.search),
     searchDrillDown("widgetSearchDrillDown"),
     browsing("widgetBrowsing"),
     bookshelves("widgetBookshelves"),
@@ -93,6 +93,6 @@ public enum SidebarElementType {
         custom,
         fieldQuery,
         pageLinks, 
-        geoLocations;
+        geoLocations, search;
     }
 }

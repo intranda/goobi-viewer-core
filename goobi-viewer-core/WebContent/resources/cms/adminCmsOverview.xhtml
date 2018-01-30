@@ -49,16 +49,26 @@
                                 </thead>
                                 <tbody>
                                     <ui:repeat var="page" value="#{cmsBean.displayedPages}">
-                                        <tr>
-                                            <td class="column_type"><img alt="#{page.template.name}"
-                                                src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" /></td>
+                                        <tr class="#{page.validityStatus == 'VALID' ? '' : 'invalid_template'}">
+                                            <td class="column_type">
+                                                
+                                                <ui:fragment rendered="#{page.validityStatus == 'VALID'}">
+                                                    <img alt="#{page.template.name}"
+                                                         src="#{cmsBean.getIconUrlByTemplateId(page.templateId)}" />
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{page.validityStatus != 'VALID'}">
+                                                    <img alt="#{msg.cms_invalid_no_template}"
+                                                         src="#{request.contextPath}/resources/cms/images/img_missing_template.png" />
+                                                </ui:fragment>
+                                                
+                                            </td>
                                             <c:forEach var="locale" items="#{cmsBean.getAllLocales()}">
                                                 <td class="column_language">
-													<img 
-                                                        src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{locale}.gif" 
-                                                        class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
-                                                        title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
-                                                        alt="Flag Icon" />
+                                                        <img 
+                                                            src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{locale}.gif" 
+                                                            class="cms-overview-flag-icon #{page.isLanguageComplete(locale) ? 'lang-complete' : ''}" 
+                                                            title="#{page.isLanguageComplete(locale) ? msg.cms_languageCompleted : msg.cms_languageNotCompleted}" 
+                                                            alt="Flag Icon" />
                                                  </td>
                                             </c:forEach>
                                             <td class="column_title"><h:outputText value="#{page.menuTitle}" /></td>

@@ -141,11 +141,15 @@
     <cms_media_item_metadata owner_media_item_id="1" language="en" name="Image 1" description="Description 1" />
 		
 	<cms_pages cms_page_id="1" template_id="template_simple" date_created="2015-01-13 14:35:00.000000000"
-	    published="true" use_default_sidebar="false" static_page="index" />
+	    published="true" use_default_sidebar="false"/>
 	<cms_pages cms_page_id="2" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000"
         published="false" use_default_sidebar="true"/>
     <cms_pages cms_page_id="3" template_id="template_simple" date_created="2015-01-13 14:40:00.000000000"
         published="true" use_default_sidebar="true"/>
+        
+    <cms_static_pages static_page_id="1" static_page_name="index" cms_page_Id="1"/>
+    <cms_static_pages static_page_id="2" static_page_name="search"/>
+    
         
     <cms_page_language_versions cms_page_language_version_id="1" owner_page_id="1" language="de" status="FINISHED"
         title="Titel 1" menu_title="Menütitel 1" />
@@ -182,3 +186,4 @@
     <download_job_observers download_job_id="1" observer="viewer@intranda.com" />
     
 </dataset>
+

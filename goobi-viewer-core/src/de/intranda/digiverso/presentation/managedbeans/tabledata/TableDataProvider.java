@@ -16,9 +16,11 @@
 package de.intranda.digiverso.presentation.managedbeans.tabledata;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +28,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 
 public class TableDataProvider<T> {
-
-    private static final Logger logger = LoggerFactory.getLogger(TableDataProvider.class);
 
     private int currentPage = 0;
     private int entriesPerPage;
@@ -55,9 +55,16 @@ public class TableDataProvider<T> {
         this.source = source;
     }
 
-    public List<T> getPaginatorList() throws DAOException {
-        List<T> ret = source.getEntries(currentPage * entriesPerPage, entriesPerPage, sortField, sortOrder, getAsMap(filters));
-        return ret;
+    public List<T> getPaginatorList() throws TableDataSourceException {
+        return loadList().orElse(Collections.EMPTY_LIST);
+    }
+
+    /**
+     * 
+     */
+    protected Optional<List<T>> loadList() {
+        return Optional
+                .ofNullable(this.source.getEntries(currentPage * entriesPerPage, entriesPerPage, sortField, sortOrder, getAsMap(filters)));
     }
 
     public Map<String, String> getFiltersAsMap() {
@@ -72,53 +79,63 @@ public class TableDataProvider<T> {
         return map;
     }
 
+    /**
+     * Called ony any changes to the currently listed objects
+     * noop - may be implemented by inheriting classes
+     */
+    protected void resetCurrentList() {
+    }
+
     public void sortBy(String sortField, String sortOrder) {
-        logger.trace("sortBy: {} {}", sortField, sortOrder);
         setSortField(sortField);
         setSortOrder(SortOrder.valueOf(sortOrder));
     }
 
     public void sortBy(String sortField, SortOrder sortOrder) {
-        logger.trace("sortBy: {} {}", sortField, sortOrder);
         setSortField(sortField);
         setSortOrder(sortOrder);
     }
 
-    public String cmdMoveFirst() throws DAOException {
+    public String cmdMoveFirst() throws TableDataSourceException {
         if (this.currentPage != 0) {
             this.currentPage = 0;
+            resetCurrentList();
             getPaginatorList();
         }
         return "";
     }
 
-    public String cmdMovePrevious() throws DAOException {
+    public String cmdMovePrevious() throws TableDataSourceException {
         if (!isFirstPage()) {
             this.currentPage--;
+            resetCurrentList();
             getPaginatorList();
         }
         return "";
     }
 
-    public String cmdMoveNext() throws DAOException {
+    public String cmdMoveNext() throws TableDataSourceException {
         if (!isLastPage()) {
             this.currentPage++;
+            resetCurrentList();
             getPaginatorList();
         }
         return "";
     }
 
-    public String cmdMoveLast() throws DAOException {
+    public String cmdMoveLast() throws TableDataSourceException {
         if (this.currentPage != getLastPageNumber()) {
             this.currentPage = getLastPageNumber();
+            resetCurrentList();
             getPaginatorList();
         }
         return "";
     }
 
-    public void setTxtMoveTo(int neueSeite) throws DAOException {
+    public void setTxtMoveTo(int neueSeite) throws TableDataSourceException {
         if ((this.currentPage != neueSeite - 1) && neueSeite > 0 && neueSeite <= getLastPageNumber() + 1) {
             this.currentPage = neueSeite - 1;
+            resetCurrentList();
             getPaginatorList();
         }
     }
@@ -164,7 +181,7 @@ public class TableDataProvider<T> {
     }
 
     public long getSizeOfDataList() {
-        return source.getTotalNumberOfRecords();
+        return source.getTotalNumberOfRecords(getAsMap(getFilters()));
     }
 
     public String getSortField() {
@@ -172,7 +189,9 @@ public class TableDataProvider<T> {
     }
 
     public void setSortField(String sortField) {
-        this.sortField = sortField;
+        if (!this.sortField.equals(sortField))
+            this.sortField = sortField;
+        resetCurrentList();
     }
 
     public SortOrder getSortOrder() {
@@ -181,10 +200,12 @@ public class TableDataProvider<T> {
 
     public void setSortOrder(SortOrder sortOrder) {
         this.sortOrder = sortOrder;
+        resetCurrentList();
     }
 
     public void setEntriesPerPage(int entriesPerPage) {
         this.entriesPerPage = entriesPerPage;
+        resetCurrentList();
     }
 
     public int getEntriesPerPage() {
@@ -197,10 +218,11 @@ public class TableDataProvider<T> {
 
     public void addFilter(TableDataFilter filter) {
         this.filters.add(filter);
+        resetCurrentList();
     }
 
     public boolean addFilter(String column) {
-        if (getFilter(column) == null) {
+        if (!getFilterAsOptional(column).isPresent()) {
             addFilter(new TableDataFilter(column, ""));
             return true;
         }
@@ -208,24 +230,27 @@ public class TableDataProvider<T> {
         return false;
     }
 
-    public TableDataFilter getFilter(String column) {
+    public Optional<TableDataFilter> getFilterAsOptional(String column) {
         for (TableDataFilter filter : filters) {
-            if (filter.getColumn().equalsIgnoreCase(column)) {
-                return filter;
+            if (filter.getColumn()
+                    .equalsIgnoreCase(column)) {
+                return Optional.of(filter);
             }
         }
-        return null;
+        return Optional.empty();
+    }
+    
+    public TableDataFilter getFilter(String column) {
+        return getFilterAsOptional(column).orElse(null);
     }
 
     public void removeFilter(TableDataFilter filter) {
         this.filters.remove(filter);
+        resetCurrentList();
     }
 
     public void removeFilter(String column) {
-        TableDataFilter toRemove = getFilter(column);
-        if (toRemove != null) {
-            removeFilter(toRemove);
-        }
+        getFilterAsOptional(column).ifPresent(filter -> removeFilter(filter));
     }
 
     public void resetFilters() {
@@ -237,6 +262,28 @@ public class TableDataProvider<T> {
         for (String column : columns) {
             addFilter(column);
         }
+    }
+
+    /**
+     * 
+     */
+    public void resetAll() {
+        currentPage = 0;
+        sortField = "";
+        sortOrder = SortOrder.ASCENDING;
+        filters.forEach(filter -> filter.setValue(""));
+        resetCurrentList();
+        source.resetTotalNumberOfRecords();
+        
+        
+    }
+
+    /**
+     * 
+     */
+    public void update() {
+        resetCurrentList();
+        source.resetTotalNumberOfRecords();
     }
 
 }

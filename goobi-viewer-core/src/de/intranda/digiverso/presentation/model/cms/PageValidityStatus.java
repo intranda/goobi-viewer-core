@@ -13,17 +13,19 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.managedbeans.tabledata;
+package de.intranda.digiverso.presentation.model.cms;
 
-import java.util.List;
-import java.util.Map;
+/**
+ * @author Florian Alpers
+ *
+ */
+public enum PageValidityStatus {
 
-import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
-
-public interface TableDataSource<T> {
-
-    public List<T> getEntries(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, String> filters) throws TableDataSourceException;
-
-    long getTotalNumberOfRecords(Map<String, String> filters);
-    void resetTotalNumberOfRecords();
+    VALID,
+    INVALID_NO_TEMPLATE,
+    INVALID_INVALID_CONTENT;
+    
+    public boolean isValid() {
+        return this.equals(VALID);
+    }
 }

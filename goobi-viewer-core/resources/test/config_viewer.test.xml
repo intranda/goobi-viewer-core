@@ -1037,9 +1037,6 @@
 
 		<!-- Piwik site ID -->
 		<siteID>siteID_value</siteID>
-
-		<!-- Filename of the piwik script -->
-		<filename>filename_value</filename>
 	</piwik>
 
 	<!-- Web API configuration -->

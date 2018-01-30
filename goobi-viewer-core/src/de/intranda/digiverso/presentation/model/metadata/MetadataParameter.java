@@ -33,7 +33,8 @@ public class MetadataParameter implements Serializable {
         LINK_MAPS("linkMaps"),
         TOPSTRUCTFIELD("topstructfield"),
         ANCHORFIELD("anchorfield"),
-        UNESCAPEDFIELD("unescapedfield");
+        UNESCAPEDFIELD("unescapedfield"),
+        HIERARCHICALFIELD("hierarchicalfield");
 
         private static final Logger logger = LoggerFactory.getLogger(MetadataParameterType.class);
 
@@ -45,7 +46,8 @@ public class MetadataParameter implements Serializable {
 
         public static MetadataParameterType getByKey(String key) {
             for (MetadataParameterType o : MetadataParameterType.values()) {
-                if (o.getKey().equals(key)) {
+                if (o.getKey()
+                        .equals(key)) {
                     return o;
                 }
             }
@@ -223,7 +225,13 @@ public class MetadataParameter implements Serializable {
 
     @Override
     public String toString() {
-        return new StringBuilder("Key: ").append(key).append("; Type: ").append(type).append("; prefix: ").append(prefix).append("; suffix: ").append(
-                suffix).toString();
+        return new StringBuilder("Key: ").append(key)
+                .append("; Type: ")
+                .append(type)
+                .append("; prefix: ")
+                .append(prefix)
+                .append("; suffix: ")
+                .append(suffix)
+                .toString();
     }
 }

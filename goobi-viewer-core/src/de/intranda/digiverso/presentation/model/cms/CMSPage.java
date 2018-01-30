@@ -51,6 +51,8 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -128,9 +130,15 @@ public class CMSPage {
     @Transient
     private String sidebarElementString = null;
 
+    @Transient PageValidityStatus validityStatus;
+
     @Transient
     private int listPage = 1;
-// ALTER TABLE cms_pages ADD CONSTRAINT cms_pages_static_page_unique_constraint UNIQUE (static_page);
+
+    /**
+     *  @deprecated static pages are now stored in a separate table. This only remains for backwards compability
+     */
+    @Deprecated
     @Column(name = "static_page", nullable = true)
     private String staticPageName;
 
@@ -751,6 +759,7 @@ public class CMSPage {
     /**
      * @return the staticPageName
      */
+    @Deprecated
     public String getStaticPageName() {
         return staticPageName;
     }
@@ -758,6 +767,7 @@ public class CMSPage {
     /**
      * @param staticPageName the staticPageName to set
      */
+    @Deprecated
     public void setStaticPageName(String staticPageName) {
         this.staticPageName = staticPageName;
     }
@@ -783,8 +793,15 @@ public class CMSPage {
     public String getRelativeUrlPath(boolean pretty) {
         if (pretty && StringUtils.isNotBlank(getPersistentUrl())) {
             return getPersistentUrl() + "/";
-        } else if(pretty && StringUtils.isNotBlank(getStaticPageName())){
-            return getStaticPageName() + "/";
+        } else if(pretty){
+            try {
+                Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(this);
+                if(staticPage.isPresent()){
+                    return staticPage.get().getPageName() + "/";
+                }
+            } catch (DAOException e) {
+                logger.error(e.toString(), e);
+            }
         }
         return "cms/" + getId() + "/";
     }
@@ -860,7 +877,20 @@ public class CMSPage {
     public String getParentPageId() {
         return parentPageId;
     }
-
+    
+    /**
+     * @return the validityStatus
+     */
+    public PageValidityStatus getValidityStatus() {
+        return validityStatus;
+    }
+    
+    /**
+     * @param validityStatus the validityStatus to set
+     */
+    public void setValidityStatus(PageValidityStatus validityStatus) {
+        this.validityStatus = validityStatus;
+    }
     /**
      * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
      */

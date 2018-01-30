@@ -17,15 +17,23 @@ package de.intranda.digiverso.presentation.servlets.rest.collections;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Resource;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -35,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * Part of the IIIF presentation api
@@ -50,6 +59,9 @@ import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcEleme
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({"@id", "@type", "label", "description", "thumbnail", "metadata", "rendering", "related"})
 public abstract class Collection {
+    
+    @Resource
+    WebServiceContext context;
 
     /**
      * 
@@ -74,10 +86,9 @@ public abstract class Collection {
      * @param collectionView
      * @throws MalformedURLException
      */
-    public Collection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement baseElement, String collectionField, String facetField) throws MalformedURLException {
+    public Collection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement baseElement, String collectionField, String facetField, String contextPath) throws MalformedURLException {
         String baseCollectionName = collectionView.getTopVisibleElement();
         this.id = getCollectionUrl(locale, baseUrl, collectionField, baseCollectionName);
-        
         
         if(baseElement != null) {
 
@@ -94,6 +105,13 @@ public abstract class Collection {
             if(baseElement.getInfo() != null) {                
                 this.description = baseElement.getInfo().getDescription();
                 this.thumbnail = baseElement.getInfo().getIconURI();
+                if(this.thumbnail != null && !this.thumbnail.isAbsolute()) {
+                    try {
+                        this.thumbnail = new URI(contextPath + this.thumbnail.toString());
+                    } catch (URISyntaxException e) {
+                       logger.error(e.toString(),e);
+                    }
+                }
             }
             this.link = createLink(collectionView, baseUrl, baseElement, label);
         }
