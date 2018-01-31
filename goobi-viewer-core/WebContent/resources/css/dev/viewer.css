@@ -4022,7 +4022,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list__hit-thumbnail [data-bookshelf-type="add"] {
   position: absolute;
-  bottom: 5px;
+  top: 0;
   right: 5px;
   font-size: 18px;
   color: #fff;
