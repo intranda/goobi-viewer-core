@@ -162,10 +162,6 @@ public class Metadata implements Serializable {
         return label;
     }
 
-    /**
-     * @deprecated Use MetadataValue.getMasterValue()
-     */
-    @Deprecated
     public String getMasterValue() {
         if (StringUtils.isEmpty(masterValue)) {
             return "{0}";
@@ -251,10 +247,14 @@ public class Metadata implements Serializable {
                         // convert line breaks back to HTML
                         value = value.replace("&lt;br /&gt;", "<br />");
                         break;
+                    case URLESCAPEDFIELD:
+                        // escape reserved URL characters
+                        value = BeanUtils.escapeCriticalUrlChracters(value);
+                        break;
                     case HIERARCHICALFIELD:
                         // create a link for reach hierarchy level
                         NavigationHelper nh = BeanUtils.getNavigationHelper();
-                        value = buildHierarchicalValue(value, locale, nh != null ? nh.getApplicationUrl() : null);
+                        value = buildHierarchicalValue(label, value, locale, nh != null ? nh.getApplicationUrl() : null);
                         break;
                     default:
                         // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
@@ -301,13 +301,14 @@ public class Metadata implements Serializable {
 
     /**
      * 
-     * @param value
-     * @param locale
-     * @param applicationUrl
+     * @param field Index field
+     * @param value Field value
+     * @param locale Optional locale for value translation
+     * @param applicationUrl Application root URL for hyperlinks; only the values will be included if url is null
      * @return
      * @should build value correctly
      */
-    static String buildHierarchicalValue(String value, Locale locale, String applicationUrl) {
+    static String buildHierarchicalValue(String field, String value, Locale locale, String applicationUrl) {
         String[] valueSplit = value.split("[.]");
         StringBuilder sbFullValue = new StringBuilder();
         StringBuilder sbHierarchy = new StringBuilder();
@@ -319,15 +320,19 @@ public class Metadata implements Serializable {
                 sbHierarchy.append('.');
             }
             sbHierarchy.append(s);
-            String displayValue = Helper.getTranslation(s, locale);
+            String displayValue = Helper.getTranslation(sbHierarchy.toString(), locale);
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
-            displayValue = StringEscapeUtils.escapeHtml(s);
+            displayValue = StringEscapeUtils.escapeHtml(displayValue);
             if (applicationUrl != null) {
                 sbFullValue.append("<a href=\"")
                         .append(applicationUrl)
                         .append(PageType.browse.getName())
-                        .append('/')
-                        .append(sbHierarchy.toString())
+                        .append('/');
+                if (field != null) {
+                    sbFullValue.append(field)
+                            .append(':');
+                }
+                sbFullValue.append(sbHierarchy.toString())
                         .append("/-/1/-/-/")
                         .append("\">")
                         .append(displayValue)
