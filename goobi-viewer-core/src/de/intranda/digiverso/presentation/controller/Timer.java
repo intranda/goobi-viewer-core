@@ -202,20 +202,16 @@ public class Timer {
     public static void main(String[] args) throws InterruptedException {
 
         for (int i = 0; i < 5; i++) {
-            Timer.getInstance()
-                    .startTiming("test");
+            Timer.getInstance().startTiming("test");
             Thread.sleep(200);
             if (i == 2) {
-                Timer.getInstance()
-                        .ignoreLastMeasurement("test");
+                Timer.getInstance().ignoreLastMeasurement("test");
             } else {
-                Timer.getInstance()
-                        .pauseTiming("test");
+                Timer.getInstance().pauseTiming("test");
             }
             Thread.sleep(300);
         }
-        Timer.getInstance()
-                .debug("time measured ", "test");
+        Timer.getInstance().debug("time measured ", "test");
 
     }
 

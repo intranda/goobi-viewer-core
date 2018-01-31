@@ -61,8 +61,9 @@ public class LoginFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         // Create new personal filter query suffix        
 
-        if (httpRequest.getSession()
-                .getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
+
+        
+        if (httpRequest.getSession().getAttribute(SearchHelper.PARAM_NAME_FILTER_QUERY_SUFFIX) == null) {
             try {
                 SearchHelper.updateFilterQuerySuffix(httpRequest);
             } catch (IndexUnreachableException e) {
@@ -86,20 +87,17 @@ public class LoginFilter implements Filter {
             // Use Pretty URL, if available
             PrettyContext prettyContext = PrettyContext.getCurrentInstance(httpRequest);
             if (prettyContext != null && prettyContext.getRequestURL() != null) {
-                requestURI = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + prettyContext.getRequestURL()
-                        .toURL();
+                requestURI = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + prettyContext.getRequestURL().toURL();
             }
-            User user = (User) httpRequest.getSession()
-                    .getAttribute("user");
+            User user = (User) httpRequest.getSession().getAttribute("user");
             if (user == null) {
                 logger.debug("No user found, redirecting to login...");
-                ((HttpServletResponse) response).sendRedirect(
-                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
-            } else if (httpRequest.getRequestURI()
-                    .contains("/admin") && !user.isSuperuser()) {
+                ((HttpServletResponse) response).sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from="
+                        + URLEncoder.encode(requestURI, "UTF-8"));
+            } else if (httpRequest.getRequestURI().contains("/admin") && !user.isSuperuser()) {
                 logger.debug("User '" + user.getEmail() + "' not superuser, redirecting to login...");
-                ((HttpServletResponse) response).sendRedirect(
-                        ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from=" + URLEncoder.encode(requestURI, "UTF-8"));
+                ((HttpServletResponse) response).sendRedirect(ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest) + "/user/?from="
+                        + URLEncoder.encode(requestURI, "UTF-8"));
             } else {
                 chain.doFilter(request, response); // continue
             }
@@ -107,6 +105,7 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response); // continue
         }
     }
+
 
     /**
      * Checks whether the given URI requires a logged in user.
@@ -133,8 +132,8 @@ public class LoginFilter implements Filter {
                     return true;
                 default:
                     // Regular URLs
-                    if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend")
-                            || uri.contains("/bookshel"))) {
+                    if ((uri.contains("/crowd") && !(uri.contains("about")) || uri.contains("/admin") || uri.contains("/userBackend") || uri.contains(
+                            "/bookshel"))) {
                         return true;
                     }
             }

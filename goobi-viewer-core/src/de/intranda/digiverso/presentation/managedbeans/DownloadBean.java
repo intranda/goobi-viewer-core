@@ -57,8 +57,7 @@ public class DownloadBean implements Serializable {
 
     public void reset() {
         synchronized (this) {
-            logger.debug("reset (thread {})", Thread.currentThread()
-                    .getId());
+            logger.debug("reset (thread {})", Thread.currentThread().getId());
             downloadIdentifier = null;
             downloadJob = null;
         }
@@ -80,8 +79,8 @@ public class DownloadBean implements Serializable {
      * @throws PresentationException
      */
     @Deprecated
-    public String checkDownloadAction(String type, String email, String pi, String logId)
-            throws DAOException, PresentationException, IndexUnreachableException {
+    public String checkDownloadAction(String type, String email, String pi, String logId) throws DAOException, PresentationException,
+            IndexUnreachableException {
         if (DownloadJob.checkDownload(type, email, pi, logId, DownloadJob.generateDownloadJobId(type, pi, logId), ttl)) {
             return "pretty:download1";
         }
@@ -96,9 +95,7 @@ public class DownloadBean implements Serializable {
      * @throws DownloadException if download job not found
      */
     public String openDownloadAction() throws DAOException, DownloadException {
-        downloadJob = DataManager.getInstance()
-                .getDao()
-                .getDownloadJobByIdentifier(downloadIdentifier);
+        downloadJob = DataManager.getInstance().getDao().getDownloadJobByIdentifier(downloadIdentifier);
         //        downloadJob.updateStatus();
         if (downloadJob == null) {
             logger.error("Download job with the ID {} not found.", downloadIdentifier);

@@ -39,7 +39,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
  */
 @WebFilter
 public class SessionCounterFilter implements Filter {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(SessionCounterFilter.class);
 
     /* (non-Javadoc)
@@ -56,16 +56,11 @@ public class SessionCounterFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws IOException, ServletException {
         // logger.trace("doFilter");
         HttpServletRequest req = (HttpServletRequest) request;
-        String id = req.getSession()
-                .getId();
-        Map<String, String> metadataMap = DataManager.getInstance()
-                .getSessionMap()
-                .get(id);
+        String id = req.getSession().getId();
+        Map<String, String> metadataMap = DataManager.getInstance().getSessionMap().get(id);
         if (metadataMap == null) {
             metadataMap = new HashMap<>();
-            DataManager.getInstance()
-                    .getSessionMap()
-                    .put(id, metadataMap);
+            DataManager.getInstance().getSessionMap().put(id, metadataMap);
             metadataMap.put("id", id);
             metadataMap.put("created", new Date().toString());
         }
@@ -73,9 +68,8 @@ public class SessionCounterFilter implements Filter {
         metadataMap.put("x-forwarded-for", req.getHeader("x-forwarded-for"));
         Date now = new Date();
         metadataMap.put("last", now.toString());
-        metadataMap.put("timeout", String.valueOf(req.getSession()
-                .getMaxInactiveInterval()) + " s");
-
+        metadataMap.put("timeout", String.valueOf(req.getSession().getMaxInactiveInterval()) + " s");
+        
         fc.doFilter(request, response); // continue
     }
 

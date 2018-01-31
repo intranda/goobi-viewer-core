@@ -70,9 +70,7 @@ public class MetsResolver extends HttpServlet {
             }
             StringBuilder sbPath = new StringBuilder();
             try {
-                SolrDocumentList hits = DataManager.getInstance()
-                        .getSearchIndex()
-                        .search(SolrConstants.PI + ":" + id);
+                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + id);
                 if (hits != null && !hits.isEmpty()) {
                     // If the user has no listing privilege for this record, act as if it does not exist
                     boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
@@ -82,71 +80,44 @@ public class MetsResolver extends HttpServlet {
                         return;
                     }
 
-                    String format = (String) hits.get(0)
-                            .getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-                    String dataRepository = (String) hits.get(0)
-                            .getFieldValue(SolrConstants.DATAREPOSITORY);
+                    String format = (String) hits.get(0).getFieldValue(SolrConstants.SOURCEDOCFORMAT);
+                    String dataRepository = (String) hits.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
                     if (StringUtils.isNotEmpty(dataRepository)) {
-                        String dataRepositoriesHome = DataManager.getInstance()
-                                .getConfiguration()
-                                .getDataRepositoriesHome();
+                        String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
                         if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                            sbPath.append(dataRepositoriesHome)
-                                    .append('/');
+                            sbPath.append(dataRepositoriesHome).append('/');
                         }
                         if (format != null) {
                             switch (format.toUpperCase()) {
                                 case SolrConstants._METS:
-                                    sbPath.append(dataRepository)
-                                            .append('/')
-                                            .append(DataManager.getInstance()
-                                                    .getConfiguration()
-                                                    .getIndexedMetsFolder());
+                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                            .getIndexedMetsFolder());
                                     break;
                                 case SolrConstants._LIDO:
-                                    sbPath.append(dataRepository)
-                                            .append('/')
-                                            .append(DataManager.getInstance()
-                                                    .getConfiguration()
-                                                    .getIndexedLidoFolder());
+                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
+                                            .getIndexedLidoFolder());
                                     break;
                             }
                         } else {
-                            sbPath.append(dataRepository)
-                                    .append('/')
-                                    .append(DataManager.getInstance()
-                                            .getConfiguration()
-                                            .getIndexedMetsFolder());
+                            sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                         }
                     } else {
                         // Backwards compatibility for old indexes
                         if (format != null) {
                             switch (format.toUpperCase()) {
                                 case SolrConstants._METS:
-                                    sbPath.append(DataManager.getInstance()
-                                            .getConfiguration()
-                                            .getViewerHome())
-                                            .append(DataManager.getInstance()
-                                                    .getConfiguration()
-                                                    .getIndexedMetsFolder());
+                                    sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
+                                            .getConfiguration().getIndexedMetsFolder());
                                     break;
                                 case SolrConstants._LIDO:
-                                    sbPath.append(DataManager.getInstance()
-                                            .getConfiguration()
-                                            .getViewerHome())
-                                            .append(DataManager.getInstance()
-                                                    .getConfiguration()
-                                                    .getIndexedLidoFolder());
+                                    sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
+                                            .getConfiguration().getIndexedLidoFolder());
                                     break;
                                 default: // nothing
                             }
                         } else {
-                            sbPath.append(DataManager.getInstance()
-                                    .getConfiguration()
-                                    .getViewerHome())
-                                    .append(DataManager.getInstance()
-                                            .getConfiguration()
-                                            .getIndexedMetsFolder());
+                            sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
+                                    .getConfiguration().getIndexedMetsFolder());
                         }
                     }
                     if (sbPath.charAt(sbPath.length() - 1) != '/') {
@@ -167,8 +138,7 @@ public class MetsResolver extends HttpServlet {
                 return;
             }
 
-            sbPath.append(id)
-                    .append(".xml");
+            sbPath.append(id).append(".xml");
             response.setContentType("text/xml");
             File file = new File(sbPath.toString());
             response.setHeader("Content-Disposition", "filename=\"" + file.getName() + "\"");

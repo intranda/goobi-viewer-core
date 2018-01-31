@@ -41,8 +41,7 @@ public abstract class AbstractSolrEnabledTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         System.out.println("setUpClass");
-        String os = System.getProperty("os.name")
-                .toLowerCase();
+        String os = System.getProperty("os.name").toLowerCase();
         if (os.indexOf("win") >= 0) {
             solrPath = "C:/digiverso/viewer/apache-solr-test/";
         }
@@ -56,8 +55,7 @@ public abstract class AbstractSolrEnabledTest {
     @Before
     public void setUp() throws Exception {
         EmbeddedSolrServer server = new EmbeddedSolrServer(coreContainer, CORE_NAME);
-        DataManager.getInstance()
-                .injectSearchIndex(new SolrSearchIndex(server));
+        DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(server));
     }
 
     @After

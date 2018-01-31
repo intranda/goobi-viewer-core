@@ -93,8 +93,7 @@ public abstract class AbstractConfiguration {
      * @param defaultList List of default values to return if none found in config
      * @return
      */
-    protected static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath,
-            List<String> defaultList) {
+    protected static List<String> getLocalList(HierarchicalConfiguration config, HierarchicalConfiguration altConfig, String inPath, List<String> defaultList) {
         if (config == null) {
             throw new IllegalArgumentException("config may not be null");
         }

@@ -22,7 +22,7 @@ package de.intranda.digiverso.presentation.exceptions;
 public class RestApiException extends Exception {
 
     private final int statusCode;
-
+    
     /**
      * 
      */
@@ -62,5 +62,5 @@ public class RestApiException extends Exception {
     public int getStatusCode() {
         return statusCode;
     }
-
+    
 }

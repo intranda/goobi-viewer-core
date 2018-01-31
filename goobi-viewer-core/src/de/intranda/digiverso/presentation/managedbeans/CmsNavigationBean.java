@@ -69,8 +69,7 @@ public class CmsNavigationBean implements Serializable {
         int previousLevel = -1;
         CMSNavigationItem previousItem = null;
         for (String id : ids) {
-            if (id == null || id.trim()
-                    .isEmpty()) {
+            if (id == null || id.trim().isEmpty()) {
                 continue;
             }
             int level = Integer.parseInt(id.substring(id.indexOf('?') + 1));
@@ -90,8 +89,7 @@ public class CmsNavigationBean implements Serializable {
 
                     }
                 }
-                item.setOrder(parent.getChildItems()
-                        .size());
+                item.setOrder(parent.getChildItems().size());
                 item.setParentItem(parent);
             }
             previousLevel = level;

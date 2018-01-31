@@ -41,11 +41,10 @@ public abstract class AbstractDatabaseEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        DataManager.getInstance()
-                .injectDao(new JPADAO("intranda_viewer_test"));
+        DataManager.getInstance().injectDao(new JPADAO("intranda_viewer_test"));
         databaseTester = new H2JdbcDatabaseTester();
-        databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true)
-                .build(new FileInputStream("resources/test/test_db_dataset.xml")));
+        databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(new FileInputStream(
+                "resources/test/test_db_dataset.xml")));
         // databaseTester.setDataSet(getDataSet());
     }
 
@@ -58,9 +57,7 @@ public abstract class AbstractDatabaseEnabledTest {
     @After
     public void tearDown() throws Exception {
         databaseTester.onTearDown();
-        ((JPADAO) DataManager.getInstance()
-                .getDao()).getEntityManager()
-                        .clear();
+        ((JPADAO) DataManager.getInstance().getDao()).getEntityManager().clear();
 
         // FlatXmlDataSet
         // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));
@@ -68,11 +65,8 @@ public abstract class AbstractDatabaseEnabledTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        if (DataManager.getInstance()
-                .getDao() != null) {
-            DataManager.getInstance()
-                    .getDao()
-                    .shutdown();
+        if (DataManager.getInstance().getDao() != null) {
+            DataManager.getInstance().getDao().shutdown();
         }
     }
 }

@@ -42,20 +42,19 @@ public class HttpResponseFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpResponseFilter.class);
 
-    private static boolean preventProxyCaching = DataManager.getInstance()
-            .getConfiguration()
-            .isPreventProxyCaching();
+    private static boolean preventProxyCaching = DataManager.getInstance().getConfiguration().isPreventProxyCaching();
     private static String alwaysCacheRegex = "/css|jquery|primefaces|\\.js|\\.gif|\\.png|\\.ico|\\.jpg|\\.jpeg";
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-
+        
         if (preventProxyCaching) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             //            if (httpRequest.getRequestURI().contains("OpenLayers"))
             //            logger.debug(httpRequest.getRequestURI());
+            
 
             // Only disable caching if the URI doesn't match the regex
             Pattern p = Pattern.compile(alwaysCacheRegex);

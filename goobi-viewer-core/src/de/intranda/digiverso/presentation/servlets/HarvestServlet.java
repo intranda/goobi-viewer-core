@@ -84,14 +84,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
         int first = 0;
         int pageSize = 100000;
 
-        if (request.getParameterMap()
-                .size() > 0) {
+        if (request.getParameterMap().size() > 0) {
             // Regular URLs
-            Set<String> keys = request.getParameterMap()
-                    .keySet();
+            Set<String> keys = request.getParameterMap().keySet();
             for (String s : keys) {
-                String[] values = request.getParameterMap()
-                        .get(s);
+                String[] values = request.getParameterMap().get(s);
                 if (values[0] != null) {
                     switch (s) {
                         case "action":
@@ -166,16 +163,11 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     // Get a JSON list of all identifiers  and timestamps of records that have an overview page update in the given time frame
                     try {
                         // EXAMPLE: ?action=getlist_overviewpage&from=2015-06-26&until=2016-01-01&first=0&pageSize=100
-                        long count = DataManager.getInstance()
-                                .getDao()
-                                .getOverviewPageCount(fromDate, toDate);
-                        List<OverviewPage> overviewPages = DataManager.getInstance()
-                                .getDao()
-                                .getOverviewPages(first, pageSize, fromDate, toDate);
+                        long count = DataManager.getInstance().getDao().getOverviewPageCount(fromDate, toDate);
+                        List<OverviewPage> overviewPages = DataManager.getInstance().getDao().getOverviewPages(first, pageSize, fromDate, toDate);
                         JSONArray jsonArray = convertToJSON(count, overviewPages);
                         response.setContentType("application/json");
-                        response.getWriter()
-                                .write(jsonArray.toString());
+                        response.getWriter().write(jsonArray.toString());
                     } catch (DAOException e) {
                         logger.error(e.getMessage(), e);
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -185,9 +177,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     // Checks whether there are overview page updates with in the given time frame (returns 200 or 404, respectively)
                     try {
                         // ?action=snoop_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
-                        if (!DataManager.getInstance()
-                                .getDao()
-                                .isOverviewPageHasUpdates(identifier, fromDate, toDate)) {
+                        if (!DataManager.getInstance().getDao().isOverviewPageHasUpdates(identifier, fromDate, toDate)) {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND);
                         }
                     } catch (DAOException e) {
@@ -196,9 +186,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     }
                     return;
                 case "get_overviewpage": {
-                    Path tempFolder = Paths.get(DataManager.getInstance()
-                            .getConfiguration()
-                            .getTempFolder());
+                    Path tempFolder = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder());
                     if (!FileTools.checkPathExistance(tempFolder, true)) {
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Temp folder could not be created");
                         return;
@@ -206,22 +194,17 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     Path tempFile = null;
                     try {
                         // ?action=get_overviewpage&identifier=PPN62692460X&from=2015-06-26&until=2016-01-01
-                        OverviewPage overviewPage = DataManager.getInstance()
-                                .getDao()
-                                .getOverviewPageForRecord(identifier, fromDate, toDate);
+                        OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(identifier, fromDate, toDate);
                         if (overviewPage == null) {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Overview page not found");
                             return;
                         }
                         String now = DateTools.formatterFilename.print(System.currentTimeMillis());
-                        String fileNamePrefix = String.valueOf(Thread.currentThread()
-                                .getId()) + "_"; // Thread ID as prefix so that it doesn't collide with other users' calls
-                        String fileName = identifier + "_overviewpage_" + (fromDate != null ? fromDate.getTime() : "-") + "-"
-                                + (toDate != null ? toDate.getTime() : "-") + ".xml";
-                        tempFile = FileTools.getFileFromString(overviewPage.getExportFormat(), DataManager.getInstance()
-                                .getConfiguration()
-                                .getTempFolder() + fileNamePrefix + fileName, "UTF-8", false)
-                                .toPath();
+                        String fileNamePrefix = String.valueOf(Thread.currentThread().getId()) + "_"; // Thread ID as prefix so that it doesn't collide with other users' calls
+                        String fileName = identifier + "_overviewpage_" + (fromDate != null ? fromDate.getTime() : "-") + "-" + (toDate != null
+                                ? toDate.getTime() : "-") + ".xml";
+                        tempFile = FileTools.getFileFromString(overviewPage.getExportFormat(), DataManager.getInstance().getConfiguration()
+                                .getTempFolder() + fileNamePrefix + fileName, "UTF-8", false).toPath();
                         if (Files.isRegularFile(tempFile)) {
                             response.setContentType("application/xml");
                             response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(now + "_" + fileName)
@@ -260,9 +243,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                     }
                     try {
                         // Find job in the DB
-                        DownloadJob job = DataManager.getInstance()
-                                .getDao()
-                                .getDownloadJobByIdentifier(identifier);
+                        DownloadJob job = DataManager.getInstance().getDao().getDownloadJobByIdentifier(identifier);
                         if (job == null) {
                             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Job not found");
                             return;
@@ -294,9 +275,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                                     logger.error(e.getMessage(), e);
                                     // response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error contacting observers");
                                 } finally {
-                                    if (!DataManager.getInstance()
-                                            .getDao()
-                                            .updateDownloadJob(job)) {
+                                    if (!DataManager.getInstance().getDao().updateDownloadJob(job)) {
                                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                                         return;
                                     }
@@ -352,8 +331,7 @@ public class HarvestServlet extends HttpServlet implements Serializable {
             JSONObject jsonObj = new JSONObject();
             jsonObj.put("id", o.getPi());
             if (o.getDateUpdated() != null) {
-                long timestamp = o.getDateUpdated()
-                        .getTime();
+                long timestamp = o.getDateUpdated().getTime();
                 if (timestamp < 0) {
                     timestamp = 0;
                 }

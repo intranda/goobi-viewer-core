@@ -51,8 +51,7 @@ public class Messages {
 
     public static void clear() {
         FacesContext fc = FacesContext.getCurrentInstance();
-        fc.getMessageList()
-                .clear();
+        fc.getMessageList().clear();
     }
 
     private static void showMessage(String targetId, String inMessage, Severity inSeverity) {

@@ -125,8 +125,7 @@ public class DateTools {
 
         try {
             if (fromUTC) {
-                return formatterISO8601DateTimeFullWithTimeZone.withZoneUTC()
-                        .parseDateTime(dateString);
+                return formatterISO8601DateTimeFullWithTimeZone.withZoneUTC().parseDateTime(dateString);
             }
             return formatterISO8601DateTimeFullWithTimeZone.parseDateTime(dateString);
         } catch (IllegalArgumentException e) {
@@ -212,7 +211,8 @@ public class DateTools {
     }
 
     /**
-     * FIXME add some more documentation This method is used by the crowdsourcing module
+     * FIXME add some more documentation
+     * This method is used by the crowdsourcing module
      *
      * @param dateEnd
      * @param locale

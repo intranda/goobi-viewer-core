@@ -121,8 +121,7 @@ public class CmsMediaBean implements Serializable {
     }
 
     public List<CMSPage> getMediaOwnerPages(CMSMediaItem item) throws DAOException {
-        IDAO dao = DataManager.getInstance()
-                .getDao();
+        IDAO dao = DataManager.getInstance().getDao();
         List<CMSPage> owners = new ArrayList<>();
         if (dao != null) {
             owners = dao.getMediaOwners(item);
@@ -131,8 +130,7 @@ public class CmsMediaBean implements Serializable {
     }
 
     public void deleteMedia(CMSMediaItem item) throws DAOException {
-        IDAO dao = DataManager.getInstance()
-                .getDao();
+        IDAO dao = DataManager.getInstance().getDao();
         if (dao != null) {
             if (!dao.deleteCMSMediaItem(item)) {
                 logger.error("Failed to delete media item");
@@ -150,9 +148,7 @@ public class CmsMediaBean implements Serializable {
     }
 
     public static List<CMSMediaItem> getAllMedia() throws DAOException {
-        return DataManager.getInstance()
-                .getDao()
-                .getAllCMSMediaItems();
+        return DataManager.getInstance().getDao().getAllCMSMediaItems();
     }
 
     public List<CMSMediaItem> getMediaItems() throws DAOException {
@@ -161,8 +157,7 @@ public class CmsMediaBean implements Serializable {
             ListIterator<CMSMediaItem> iter = items.listIterator();
             while (iter.hasNext()) {
                 CMSMediaItem item = iter.next();
-                if (!item.getTags()
-                        .contains(getSelectedTag())) {
+                if (!item.getTags().contains(getSelectedTag())) {
                     iter.remove();
                 }
             }
@@ -183,25 +178,17 @@ public class CmsMediaBean implements Serializable {
             StringBuilder imageUrlBuilder = new StringBuilder("file:/");
 
             // Add an extra slash if not on Windows
-            String os = System.getProperty("os.name")
-                    .toLowerCase();
+            String os = System.getProperty("os.name").toLowerCase();
             if (os.indexOf("win") == -1) {
                 imageUrlBuilder.append('/');
             }
 
-            imageUrlBuilder.append(DataManager.getInstance()
-                    .getConfiguration()
-                    .getViewerHome());
-            imageUrlBuilder.append(DataManager.getInstance()
-                    .getConfiguration()
-                    .getCmsMediaFolder())
-                    .append('/');
+            imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
+            imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
             imageUrlBuilder.append(item.getFileName());
 
             StringBuilder csUrlBuilder = new StringBuilder();
-            csUrlBuilder.append(DataManager.getInstance()
-                    .getConfiguration()
-                    .getContentServerWrapperUrl());
+            csUrlBuilder.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
             csUrlBuilder.append("?action=image&sourcepath=");
             csUrlBuilder.append(imageUrlBuilder.toString());
             if (width != null && !"0".equals(width)) {
@@ -277,12 +264,8 @@ public class CmsMediaBean implements Serializable {
         // URL(ContentServerDataManager.getInstance().getConfiguration().getRepositoryPathImages());
         // File folder = new File(new File(imageRepositoryUrl.toURI()),
         // DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        File folder = new File(DataManager.getInstance()
-                .getConfiguration()
-                .getViewerHome()
-                + DataManager.getInstance()
-                        .getConfiguration()
-                        .getCmsMediaFolder());
+        File folder = new File(DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration()
+                .getCmsMediaFolder());
         if (!folder.isDirectory() && !folder.mkdir()) {
             throw new IOException("Unable to create directory " + folder);
         }
@@ -291,8 +274,8 @@ public class CmsMediaBean implements Serializable {
         int counter = 1;
         File newFile = file;
         while (renameIfFileExists && newFile.isFile()) {
-            newFile = new File(file.getParent(),
-                    FilenameUtils.getBaseName(file.getName()) + "_" + counter + "." + FilenameUtils.getExtension(file.getName()));
+            newFile = new File(file.getParent(), FilenameUtils.getBaseName(file.getName()) + "_" + counter + "." + FilenameUtils.getExtension(file
+                    .getName()));
             counter++;
         }
         file = newFile;
@@ -306,14 +289,10 @@ public class CmsMediaBean implements Serializable {
     public void saveMedia() throws DAOException {
         if (currentMediaItem != null && currentMediaItem.getId() == null && isUploadComplete()) {
             // currentMediaItem.setFileName(mediaFile.getName());
-            DataManager.getInstance()
-                    .getDao()
-                    .addCMSMediaItem(currentMediaItem);
+            DataManager.getInstance().getDao().addCMSMediaItem(currentMediaItem);
             setCurrentMediaItem(null);
         } else if (currentMediaItem != null && currentMediaItem.getId() != null) {
-            DataManager.getInstance()
-                    .getDao()
-                    .updateCMSMediaItem(currentMediaItem);
+            DataManager.getInstance().getDao().updateCMSMediaItem(currentMediaItem);
             setCurrentMediaItem(null);
         }
     }
@@ -419,11 +398,8 @@ public class CmsMediaBean implements Serializable {
             // return basename;
             String header = filePart.getHeader("content-disposition");
             for (String headerPart : header.split(";")) {
-                if (headerPart.trim()
-                        .startsWith("filename")) {
-                    return headerPart.substring(headerPart.indexOf('=') + 1)
-                            .trim()
-                            .replace("\"", "");
+                if (headerPart.trim().startsWith("filename")) {
+                    return headerPart.substring(headerPart.indexOf('=') + 1).trim().replace("\"", "");
                 }
             }
         }
@@ -435,16 +411,14 @@ public class CmsMediaBean implements Serializable {
         if (browseBean == null) {
             browseBean = new BrowseBean();
         }
-        int displayDepth = DataManager.getInstance()
-                .getConfiguration()
-                .getCollectionDisplayDepthForSearch(SolrConstants.DC);
+        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(SolrConstants.DC);
         List<BrowseDcElement> collections = browseBean.getList(SolrConstants.DC, displayDepth);
         List<String> collectionNames = new ArrayList<>();
         List<String> usedCollections = getUsedCollections();
         for (BrowseDcElement element : collections) {
             String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
+            if (!usedCollections.contains(collectionName) || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem()
+                    .getCollectionName()))) {
                 collectionNames.add(collectionName);
             }
         }
@@ -457,16 +431,14 @@ public class CmsMediaBean implements Serializable {
         if (browseBean == null) {
             browseBean = new BrowseBean();
         }
-        int displayDepth = DataManager.getInstance()
-                .getConfiguration()
-                .getCollectionDisplayDepthForSearch(collectionField);
+        int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(collectionField);
         List<BrowseDcElement> collections = browseBean.getList(collectionField, displayDepth);
         List<String> collectionNames = new ArrayList<>();
         List<String> usedCollections = getUsedCollections();
         for (BrowseDcElement element : collections) {
             String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName)
-                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
+            if (!usedCollections.contains(collectionName) || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem()
+                    .getCollectionName()))) {
                 collectionNames.add(collectionName);
             }
         }
@@ -507,9 +479,7 @@ public class CmsMediaBean implements Serializable {
      * @throws DAOException
      */
     public List<String> getAllMediaTags() throws DAOException {
-        return DataManager.getInstance()
-                .getDao()
-                .getAllTags();
+        return DataManager.getInstance().getDao().getAllTags();
     }
 
     public Collection<CMSMediaItem.DisplaySize> getMediaItemDisplaySizes() {

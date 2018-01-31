@@ -73,14 +73,11 @@ public class FileServlet extends HttpServlet implements Serializable {
         String fileName = null;
         String page = null;
 
-        if (request.getParameterMap()
-                .size() > 0) {
+        if (request.getParameterMap().size() > 0) {
             // Regular URLs
-            Set<String> keys = request.getParameterMap()
-                    .keySet();
+            Set<String> keys = request.getParameterMap().keySet();
             for (String s : keys) {
-                String[] values = request.getParameterMap()
-                        .get(s);
+                String[] values = request.getParameterMap().get(s);
                 if (values[0] != null) {
                     switch (s) {
                         case "pi":
@@ -126,31 +123,19 @@ public class FileServlet extends HttpServlet implements Serializable {
 
         if (access) {
             try {
-                String dataRepository = DataManager.getInstance()
-                        .getSearchIndex()
-                        .findDataRepository(pi);
+                String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
                 StringBuilder sbFilePath = new StringBuilder();
                 if (StringUtils.isNotEmpty(dataRepository)) {
-                    sbFilePath.append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getDataRepositoriesHome())
-                            .append(dataRepository)
-                            .append(File.separator);
+                    sbFilePath.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append(
+                            File.separator);
                 } else {
-                    sbFilePath.append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getViewerHome());
+                    sbFilePath.append(DataManager.getInstance().getConfiguration().getViewerHome());
                 }
-                sbFilePath.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getOrigContentFolder());
-                sbFilePath.append(File.separator)
-                        .append(pi)
-                        .append(File.separator);
+                sbFilePath.append(DataManager.getInstance().getConfiguration().getOrigContentFolder());
+                sbFilePath.append(File.separator).append(pi).append(File.separator);
 
                 if (page != null) {
-                    sbFilePath.append(page)
-                            .append(File.separator);
+                    sbFilePath.append(page).append(File.separator);
                 }
                 sbFilePath.append(fileName);
                 Path path = Paths.get(sbFilePath.toString());
@@ -162,8 +147,7 @@ public class FileServlet extends HttpServlet implements Serializable {
                             contentType = "application/pdf";
                         }
                         response.setContentType(contentType);
-                        response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(fileName)
-                                .toString());
+                        response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(fileName).toString());
                         response.setHeader("Content-Length", String.valueOf(Files.size(path)));
                         response.flushBuffer();
                         OutputStream os = response.getOutputStream();
@@ -181,10 +165,8 @@ public class FileServlet extends HttpServlet implements Serializable {
                         logger.error(e.getMessage(), e);
                     }
                 } else {
-                    logger.error("File not found: {}", path.toAbsolutePath()
-                            .toString());
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, path.getFileName()
-                            .toString());
+                    logger.error("File not found: {}", path.toAbsolutePath().toString());
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, path.getFileName().toString());
                     return;
                 }
             } catch (PresentationException e) {

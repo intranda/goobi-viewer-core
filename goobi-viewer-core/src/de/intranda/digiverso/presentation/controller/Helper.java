@@ -123,10 +123,10 @@ public class Helper {
 
     public static Namespace nsAlto = Namespace.getNamespace("alto", "http://www.loc.gov/standards/alto/ns-v2#");
     // TODO final namespaces
-    public static Namespace nsIntrandaViewerOverviewPage =
-            Namespace.getNamespace("iv_overviewpage", "http://www.intranda.com/digiverso/intrandaviewer/overviewpage");
-    public static Namespace nsIntrandaViewerCrowdsourcing =
-            Namespace.getNamespace("iv_crowdsourcing", "http://www.intranda.com/digiverso/intrandaviewer/crowdsourcing");
+    public static Namespace nsIntrandaViewerOverviewPage = Namespace.getNamespace("iv_overviewpage",
+            "http://www.intranda.com/digiverso/intrandaviewer/overviewpage");
+    public static Namespace nsIntrandaViewerCrowdsourcing = Namespace.getNamespace("iv_crowdsourcing",
+            "http://www.intranda.com/digiverso/intrandaviewer/crowdsourcing");
 
     /**
      * Translation method for Java code. (Re-)loads resource bundles if necessary.
@@ -245,24 +245,10 @@ public class Helper {
      * @throws MessagingException
      */
     public static boolean postMail(List<String> recipients, String subject, String body) throws UnsupportedEncodingException, MessagingException {
-        Helper.postMail(recipients, subject, body, DataManager.getInstance()
-                .getConfiguration()
-                .getSmtpServer(),
-                DataManager.getInstance()
-                        .getConfiguration()
-                        .getSmtpUser(),
-                DataManager.getInstance()
-                        .getConfiguration()
-                        .getSmtpPassword(),
-                DataManager.getInstance()
-                        .getConfiguration()
-                        .getSmtpSenderAddress(),
-                DataManager.getInstance()
-                        .getConfiguration()
-                        .getSmtpSenderName(),
-                DataManager.getInstance()
-                        .getConfiguration()
-                        .getSmtpSecurity());
+        Helper.postMail(recipients, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(), DataManager.getInstance()
+                .getConfiguration().getSmtpUser(), DataManager.getInstance().getConfiguration().getSmtpPassword(), DataManager.getInstance()
+                        .getConfiguration().getSmtpSenderAddress(), DataManager.getInstance().getConfiguration().getSmtpSenderName(), DataManager
+                                .getInstance().getConfiguration().getSmtpSecurity());
         return true;
     }
 
@@ -282,8 +268,8 @@ public class Helper {
      * @throws UnsupportedEncodingException
      */
     private static boolean postMail(List<String> recipients, String subject, String body, String smtpServer, final String smtpUser,
-            final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity)
-            throws MessagingException, UnsupportedEncodingException {
+            final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity) throws MessagingException,
+            UnsupportedEncodingException {
         if (recipients == null) {
             throw new IllegalArgumentException("recipients may not be null");
         }
@@ -315,9 +301,7 @@ public class Helper {
         if (StringUtils.isEmpty(smtpUser)) {
             auth = false;
         }
-        String security = DataManager.getInstance()
-                .getConfiguration()
-                .getSmtpSecurity();
+        String security = DataManager.getInstance().getConfiguration().getSmtpSecurity();
         Properties props = new Properties();
         switch (security.toUpperCase()) {
             case "STARTTLS":
@@ -481,9 +465,7 @@ public class Helper {
 
         String dataRepository = null;
         try {
-            dataRepository = DataManager.getInstance()
-                    .getSearchIndex()
-                    .findDataRepository(pi);
+            dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         } catch (PresentationException e) {
             logger.debug("PresentationException thrown here: {}", e.getMessage());
             return false;
@@ -501,52 +483,40 @@ public class Helper {
         logger.info("Preparing to re-index record: {}", recordXmlFile.getAbsolutePath());
         StringBuilder sbNamingScheme = new StringBuilder(pi);
         // TODO remove crowdsourcing constants
-        File fulltextDir = new File(DataManager.getInstance()
-                .getConfiguration()
-                .getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
-        File altoDir = new File(DataManager.getInstance()
-                .getConfiguration()
-                .getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
+        File fulltextDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString()
+                + SUFFIX_FULLTEXT_CROWDSOURCING);
+        File altoDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
 
         // If the same record is already being indexed, use an alternative naming scheme
-        File recordXmlFileInHotfolder = new File(DataManager.getInstance()
-                .getConfiguration()
-                .getHotfolder(), recordXmlFile.getName());
+        File recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), recordXmlFile.getName());
         if (recordXmlFileInHotfolder.exists() || fulltextDir.exists() || altoDir.exists()) {
             logger.info("'{}' is already being indexed, looking for an alternative naming scheme...", sbNamingScheme.toString());
             int iteration = 0;
             // Just checking for the presence of the record XML file at this
             // point, because this method is synchronized and no two
             // instances should be running at the same time.
-            while ((recordXmlFileInHotfolder = new File(DataManager.getInstance()
-                    .getConfiguration()
-                    .getHotfolder(), pi + "#" + iteration + ".xml")).exists()) {
+            while ((recordXmlFileInHotfolder = new File(DataManager.getInstance().getConfiguration().getHotfolder(), pi + "#" + iteration + ".xml"))
+                    .exists()) {
                 iteration++;
             }
-            sbNamingScheme.append('#')
-                    .append(iteration);
+            sbNamingScheme.append('#').append(iteration);
             logger.info("Alternative naming scheme: {}", sbNamingScheme.toString());
         }
 
         // TODO Export overview page contents
         if (overviewPage == null) {
-            overviewPage = DataManager.getInstance()
-                    .getDao()
-                    .getOverviewPageForRecord(pi, null, null);
+            overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null);
         }
         if (overviewPage != null) {
             try {
-                overviewPage.exportTextData(DataManager.getInstance()
-                        .getConfiguration()
-                        .getHotfolder(), sbNamingScheme.toString());
+                overviewPage.exportTextData(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
         }
 
         // Module augmentations
-        for (IModule module : DataManager.getInstance()
-                .getModules()) {
+        for (IModule module : DataManager.getInstance().getModules()) {
             try {
                 module.augmentReIndexRecord(pi, dataRepository, sbNamingScheme.toString());
             } catch (Exception e) {
@@ -556,9 +526,8 @@ public class Helper {
 
         // Finally, copy the record XML file to the hotfolder
         try {
-            FileUtils.copyFile(recordXmlFile, new File(DataManager.getInstance()
-                    .getConfiguration()
-                    .getHotfolder(), sbNamingScheme.toString() + ".xml"));
+            FileUtils.copyFile(recordXmlFile, new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString()
+                    + ".xml"));
             return true;
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -578,8 +547,8 @@ public class Helper {
      * @throws IndexUnreachableException
      * @throws IOException
      */
-    public static synchronized boolean reIndexPage(String pi, int page, String recordType)
-            throws DAOException, PresentationException, IndexUnreachableException, IOException {
+    public static synchronized boolean reIndexPage(String pi, int page, String recordType) throws DAOException, PresentationException,
+            IndexUnreachableException, IOException {
         logger.trace("reIndexPage: {}/{}", pi, page);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
@@ -588,27 +557,22 @@ public class Helper {
             throw new IllegalArgumentException("Illegal page number: " + page);
         }
 
-        String dataRepository = DataManager.getInstance()
-                .getSearchIndex()
-                .findDataRepository(pi);
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
-        SolrDocument doc = DataManager.getInstance()
-                .getSearchIndex()
-                .getFirstDoc(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND " + SolrConstants.ORDER + ':' + page, Arrays.asList(
-                        new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
+                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO,
+                        SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);
             return false;
         }
         String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
-        StringBuilder sbNamingScheme = new StringBuilder(pi).append('#')
-                .append(iddoc);
+        StringBuilder sbNamingScheme = new StringBuilder(pi).append('#').append(iddoc);
 
         // Module augmentations
         boolean writeTriggerFile = true;
-        for (IModule module : DataManager.getInstance()
-                .getModules()) {
+        for (IModule module : DataManager.getInstance().getModules()) {
             try {
                 if (!module.augmentReIndexPage(pi, page, doc, recordType, dataRepository, sbNamingScheme.toString())) {
                     writeTriggerFile = false;
@@ -620,9 +584,7 @@ public class Helper {
 
         // Create trigger file in hotfolder
         if (writeTriggerFile) {
-            Path triggerFile = Paths.get(DataManager.getInstance()
-                    .getConfiguration()
-                    .getHotfolder(), sbNamingScheme.toString() + ".docupdate");
+            Path triggerFile = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".docupdate");
             Files.createFile(triggerFile);
         }
 
@@ -661,23 +623,16 @@ public class Helper {
     private static int simplePOSTRequest(String url, HttpEntity entity) {
         logger.debug(url);
 
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
-                .build();
-        try (CloseableHttpClient httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(defaultRequestConfig)
-                .build()) {
+        RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT).setConnectTimeout(HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(HTTP_TIMEOUT).build();
+        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpPost post = new HttpPost(url);
             Charset.forName(DEFAULT_ENCODING);
             post.setEntity(entity);
             try (CloseableHttpResponse response = httpClient.execute(post); StringWriter writer = new StringWriter()) {
-                int code = response.getStatusLine()
-                        .getStatusCode();
+                int code = response.getStatusLine().getStatusCode();
                 if (code != HttpStatus.SC_OK) {
-                    logger.error("{}: {}", code, response.getStatusLine()
-                            .getReasonPhrase());
+                    logger.error("{}: {}", code, response.getStatusLine().getReasonPhrase());
                 }
                 return code;
             }
@@ -696,14 +651,8 @@ public class Helper {
      * @should build url correctly
      */
     public static String buildFullTextUrl(String dataRepository, String filePath) {
-        return new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getContentRestApiUrl()).append("document/")
-                        .append(StringUtils.isEmpty(dataRepository) ? '-' : dataRepository)
-                        .append('/')
-                        .append(filePath)
-                        .append('/')
-                        .toString();
+        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(StringUtils.isEmpty(
+                dataRepository) ? '-' : dataRepository).append('/').append(filePath).append('/').toString();
     }
 
     /**
@@ -715,29 +664,19 @@ public class Helper {
      * @throws HTTPException
      */
     public static String getWebContentGET(String urlString) throws ClientProtocolException, IOException, HTTPException {
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
-                .build();
-        try (CloseableHttpClient httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(defaultRequestConfig)
-                .build()) {
+        RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT).setConnectTimeout(HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(HTTP_TIMEOUT).build();
+        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpGet get = new HttpGet(urlString);
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
-                int code = response.getStatusLine()
-                        .getStatusCode();
+                int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
                     return EntityUtils.toString(response.getEntity(), DEFAULT_ENCODING);
                     // IOUtils.copy(response.getEntity().getContent(), writer);
                     // return writer.toString();
                 }
-                logger.trace("{}: {}\n{}", code, response.getStatusLine()
-                        .getReasonPhrase(),
-                        IOUtils.toString(response.getEntity()
-                                .getContent()));
-                throw new HTTPException(code, response.getStatusLine()
-                        .getReasonPhrase());
+                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(), IOUtils.toString(response.getEntity().getContent()));
+                throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }
     }
@@ -752,8 +691,8 @@ public class Helper {
      * @throws IOException
      * @throws HTTPException
      */
-    public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies)
-            throws ClientProtocolException, IOException, HTTPException {
+    public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies) throws ClientProtocolException,
+            IOException, HTTPException {
         if (url == null) {
             throw new IllegalArgumentException("url may not be null");
         }
@@ -783,34 +722,22 @@ public class Helper {
             context.setCookieStore(cookieStore);
         }
 
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
-                .build();
-        try (CloseableHttpClient httpClient = HttpClients.custom()
-                .setDefaultRequestConfig(defaultRequestConfig)
-                .build()) {
+        RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT).setConnectTimeout(HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(HTTP_TIMEOUT).build();
+        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpPost post = new HttpPost(url);
             Charset.forName(DEFAULT_ENCODING);
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             try (CloseableHttpResponse response = (context == null ? httpClient.execute(post) : httpClient.execute(post, context));
                     StringWriter writer = new StringWriter()) {
-                int code = response.getStatusLine()
-                        .getStatusCode();
+                int code = response.getStatusLine().getStatusCode();
                 if (code == HttpStatus.SC_OK) {
-                    logger.trace("{}: {}", code, response.getStatusLine()
-                            .getReasonPhrase());
-                    IOUtils.copy(response.getEntity()
-                            .getContent(), writer);
+                    logger.trace("{}: {}", code, response.getStatusLine().getReasonPhrase());
+                    IOUtils.copy(response.getEntity().getContent(), writer);
                     return writer.toString();
                 }
-                logger.trace("{}: {}\n{}", code, response.getStatusLine()
-                        .getReasonPhrase(),
-                        IOUtils.toString(response.getEntity()
-                                .getContent()));
-                throw new HTTPException(code, response.getStatusLine()
-                        .getReasonPhrase());
+                logger.trace("{}: {}\n{}", code, response.getStatusLine().getReasonPhrase(), IOUtils.toString(response.getEntity().getContent()));
+                throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
             }
         }
     }
@@ -842,52 +769,18 @@ public class Helper {
 
         StringBuilder url = new StringBuilder(200);
         if (StringUtils.isNotEmpty(dataRepository)) {
-            String dataRepositoriesHome = DataManager.getInstance()
-                    .getConfiguration()
-                    .getDataRepositoriesHome();
-            url.append(DataManager.getInstance()
-                    .getConfiguration()
-                    .getContentServerWrapperUrl())
-                    .append("?action=image&sourcepath=file:/")
-                    .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "")
-                    .append(dataRepositoriesHome)
-                    .append(dataRepository)
-                    .append('/')
-                    .append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getMediaFolder())
-                    .append('/')
-                    .append(pi)
-                    .append('/')
-                    .append(fileName)
-                    .append("&width=")
-                    .append(width)
-                    .append("&height=")
-                    .append(height)
-                    .append("&rotate=")
-                    .append(rotation)
-                    .append("&resolution=72")
-                    .append(DataManager.getInstance()
-                            .getConfiguration()
-                            .isForceJpegConversion() ? "&format=jpg" : "");
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            url.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=file:/").append(
+                    (StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "").append(dataRepositoriesHome)
+                    .append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi)
+                    .append('/').append(fileName).append("&width=").append(width).append("&height=").append(height).append("&rotate=").append(
+                            rotation).append("&resolution=72").append(DataManager.getInstance().getConfiguration().isForceJpegConversion()
+                                    ? "&format=jpg" : "");
         } else {
-            url.append(DataManager.getInstance()
-                    .getConfiguration()
-                    .getContentServerWrapperUrl())
-                    .append("?action=image&sourcepath=")
-                    .append(pi)
-                    .append('/')
-                    .append(fileName)
-                    .append("&width=")
-                    .append(width)
-                    .append("&height=")
-                    .append(height)
-                    .append("&rotate=")
-                    .append(rotation)
-                    .append("&resolution=72")
-                    .append(DataManager.getInstance()
-                            .getConfiguration()
-                            .isForceJpegConversion() ? "&format=jpg" : "");
+            url.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=").append(pi)
+                    .append('/').append(fileName).append("&width=").append(width).append("&height=").append(height).append("&rotate=").append(
+                            rotation).append("&resolution=72").append(DataManager.getInstance().getConfiguration().isForceJpegConversion()
+                                    ? "&format=jpg" : "");
         }
         if (thumbnail) {
             url.append("&thumbnail=true");
@@ -908,15 +801,9 @@ public class Helper {
     public static String getRepositoryPath(String dataRepository) {
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotEmpty(dataRepository)) {
-            sb.append(DataManager.getInstance()
-                    .getConfiguration()
-                    .getDataRepositoriesHome())
-                    .append(dataRepository)
-                    .append('/');
+            sb.append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/');
         } else {
-            sb.append(DataManager.getInstance()
-                    .getConfiguration()
-                    .getViewerHome());
+            sb.append(DataManager.getInstance().getConfiguration().getViewerHome());
         }
 
         return sb.toString();
@@ -944,18 +831,13 @@ public class Helper {
         StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants._METS:
-                sb.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getIndexedMetsFolder());
+                sb.append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                 break;
             case SolrConstants._LIDO:
-                sb.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getIndexedLidoFolder());
+                sb.append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
                 break;
         }
-        sb.append('/')
-                .append(fileName);
+        sb.append('/').append(fileName);
 
         return sb.toString();
     }
@@ -977,25 +859,16 @@ public class Helper {
         StringBuilder sb = new StringBuilder(getRepositoryPath(dataRepository));
         switch (format) {
             case SolrConstants.FILENAME_ALTO:
-                sb.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getAltoFolder());
+                sb.append(DataManager.getInstance().getConfiguration().getAltoFolder());
                 break;
             case SolrConstants.FILENAME_FULLTEXT:
-                sb.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getFulltextFolder());
+                sb.append(DataManager.getInstance().getConfiguration().getFulltextFolder());
                 break;
             case SolrConstants.FILENAME_TEI:
-                sb.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getTeiFolder());
+                sb.append(DataManager.getInstance().getConfiguration().getTeiFolder());
                 break;
         }
-        sb.append('/')
-                .append(pi)
-                .append('/')
-                .append(fileName);
+        sb.append('/').append(pi).append('/').append(fileName);
 
         return sb.toString();
     }
@@ -1032,8 +905,7 @@ public class Helper {
             throw new IllegalArgumentException("s may not be null");
         }
 
-        return Normalizer.normalize(s, Normalizer.Form.NFD)
-                .replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
+        return Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
     }
 
     public static void main(String[] args) throws DAOException {

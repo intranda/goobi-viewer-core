@@ -126,18 +126,13 @@ public class NavigationHelper implements Serializable {
 
     @PostConstruct
     public void init() {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
-                .getViewRoot() != null) {
-            locale = FacesContext.getCurrentInstance()
-                    .getViewRoot()
-                    .getLocale();
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getViewRoot() != null) {
+            locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
         } else {
             locale = Locale.GERMAN;
             logger.warn("Could not access FacesContext, locale set to DE.");
         }
-        theme = DataManager.getInstance()
-                .getConfiguration()
-                .getTheme();
+        theme = DataManager.getInstance().getConfiguration().getTheme();
         statusMap.put(KEY_CURRENT_PARTNER_PAGE, "");
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, "");
         statusMap.put(KEY_MENU_PAGE, "user");
@@ -261,8 +256,8 @@ public class NavigationHelper implements Serializable {
 
     public void setCurrentPageSearch() {
         setCurrentPage("search", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("search", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search/", NavigationHelper.WEIGHT_SEARCH));
+        updateBreadcrumbs(new LabeledLink("search", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/search/",
+                NavigationHelper.WEIGHT_SEARCH));
     }
 
     public void setCurrentPageBrowse() {
@@ -273,8 +268,8 @@ public class NavigationHelper implements Serializable {
 
     public void setCurrentPageTags() {
         setCurrentPage("tags", true, true);
-        updateBreadcrumbs(
-                new LabeledLink("tagclouds", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/tags/", NavigationHelper.WEIGHT_TAG_CLOUD));
+        updateBreadcrumbs(new LabeledLink("tagclouds", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/tags/",
+                NavigationHelper.WEIGHT_TAG_CLOUD));
     }
 
     public void setCurrentPageStatistics() {
@@ -290,8 +285,7 @@ public class NavigationHelper implements Serializable {
     public void setCurrentPageAdmin(String pageName) {
         resetBreadcrumbs();
         resetCurrentDocument();
-        if (pageName != null && !pageName.trim()
-                .isEmpty()) {
+        if (pageName != null && !pageName.trim().isEmpty()) {
             this.currentPage = pageName;
         } else {
             this.currentPage = "adminAllUsers";
@@ -353,11 +347,8 @@ public class NavigationHelper implements Serializable {
     }
 
     public Iterator<Locale> getSupportedLocales() {
-        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance()
-                .getApplication() != null) {
-            return FacesContext.getCurrentInstance()
-                    .getApplication()
-                    .getSupportedLocales();
+        if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
+            return FacesContext.getCurrentInstance().getApplication().getSupportedLocales();
         }
 
         return null;
@@ -366,14 +357,10 @@ public class NavigationHelper implements Serializable {
     public void setLocaleString(String inLocale) {
         logger.trace("setLocaleString: {}", inLocale);
         locale = new Locale(inLocale);
-        FacesContext.getCurrentInstance()
-                .getViewRoot()
-                .setLocale(locale);
-
+        FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+        
         // Also set ActiveDocumentBean.selectedRecordLanguage, if it's configured to match the locale
-        if (DataManager.getInstance()
-                .getConfiguration()
-                .isUseViewerLocaleAsRecordLanguage()) {
+        if (DataManager.getInstance().getConfiguration().isUseViewerLocaleAsRecordLanguage()) {
             ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
             if (adb != null) {
                 adb.setSelectedRecordLanguage(inLocale);
@@ -408,8 +395,7 @@ public class NavigationHelper implements Serializable {
      */
     public String getEncodedUrl() {
         try {
-            return URLEncoder.encode(getRequestPath(FacesContext.getCurrentInstance()
-                    .getExternalContext()), "ASCII");
+            return URLEncoder.encode(getRequestPath(FacesContext.getCurrentInstance().getExternalContext()), "ASCII");
         } catch (UnsupportedEncodingException e) {
             logger.warn("Not possible to encode URL", e);
         }
@@ -417,15 +403,11 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getCurrentUrl() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getRequest();
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         if (request != null) {
-            URL url = PrettyContext.getCurrentInstance(request)
-                    .getRequestURL();
+            URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             if (url != null) {
-                return getApplicationUrl() + url.toURL()
-                        .substring(1);
+                return getApplicationUrl() + url.toURL().substring(1);
             }
         }
         return null;
@@ -433,8 +415,7 @@ public class NavigationHelper implements Serializable {
 
     public String getRssUrl() {
         try {
-            return URL_RSS + "/?lang=" + CmsBean.getCurrentLocale()
-                    .getLanguage();
+            return URL_RSS + "/?lang=" + CmsBean.getCurrentLocale().getLanguage();
         } catch (NullPointerException e) {
             return URL_RSS;
         }
@@ -449,8 +430,7 @@ public class NavigationHelper implements Serializable {
         HttpServletRequest request = (HttpServletRequest) exContext.getRequest();
         // Request path for PrettyURL, e.g.
         // http://hostname.com/viewer/image/xyz/
-        String prettyFacesURI = (String) exContext.getRequestMap()
-                .get(RequestDispatcher.FORWARD_REQUEST_URI);
+        String prettyFacesURI = (String) exContext.getRequestMap().get(RequestDispatcher.FORWARD_REQUEST_URI);
         return getRequestPath(request, prettyFacesURI);
     }
 
@@ -493,10 +473,8 @@ public class NavigationHelper implements Serializable {
      */
     public String getCurrentPrettyUrl() {
         FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext()
-                .getRequest();
-        URL url = PrettyContext.getCurrentInstance(request)
-                .getRequestURL();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
         return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + url.toURL();
     }
 
@@ -550,9 +528,7 @@ public class NavigationHelper implements Serializable {
      */
     @Deprecated
     public void resetActivePartnerId() {
-        if (DataManager.getInstance()
-                .getConfiguration()
-                .isSubthemeAutoSwitch()) {
+        if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             logger.trace("resetActivePartnerId");
             statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, "");
         }
@@ -572,9 +548,7 @@ public class NavigationHelper implements Serializable {
      */
     public String getSubThemeDiscriminatorValue() throws IndexUnreachableException {
 
-        if (DataManager.getInstance()
-                .getConfiguration()
-                .isSubthemeAutoSwitch()) {
+        if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             // Automatically set the sub-theme discriminator value to the
             // current record's value, if configured to do so
             ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
@@ -584,12 +558,8 @@ public class NavigationHelper implements Serializable {
                     // If a record is loaded, get the value from the record's value
                     // in discriminatorField
 
-                    String discriminatorField = DataManager.getInstance()
-                            .getConfiguration()
-                            .getSubthemeDiscriminatorField();
-                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager()
-                            .getActiveDocument()
-                            .getMetadataValue(discriminatorField);
+                    String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
+                    subThemeDiscriminatorValue = activeDocumentBean.getViewManager().getActiveDocument().getMetadataValue(discriminatorField);
                     if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                         logger.trace("Setting discriminator value from open record: '{}'", subThemeDiscriminatorValue);
                         statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
@@ -597,8 +567,7 @@ public class NavigationHelper implements Serializable {
                 } else if (isCmsPage()) {
                     CmsBean cmsBean = BeanUtils.getCmsBean();
                     if (cmsBean != null && cmsBean.getCurrentPage() != null) {
-                        subThemeDiscriminatorValue = cmsBean.getCurrentPage()
-                                .getSubThemeDiscriminatorValue();
+                        subThemeDiscriminatorValue = cmsBean.getCurrentPage().getSubThemeDiscriminatorValue();
                         if (StringUtils.isNotEmpty(subThemeDiscriminatorValue)) {
                             logger.trace("Setting discriminator value from cms page: '{}'", subThemeDiscriminatorValue);
                             return subThemeDiscriminatorValue;
@@ -622,8 +591,8 @@ public class NavigationHelper implements Serializable {
         logger.trace("setSubThemeDiscriminatorValue: {}", subThemeDiscriminatorValue);
         // If a new discriminator value has been selected, the visible
         // collection list must be generated anew
-        if ((subThemeDiscriminatorValue == null && statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) != null)
-                || (subThemeDiscriminatorValue != null && !subThemeDiscriminatorValue.equals(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)))) {
+        if ((subThemeDiscriminatorValue == null && statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) != null) || (subThemeDiscriminatorValue != null
+                && !subThemeDiscriminatorValue.equals(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE)))) {
             statusMap.put(KEY_SUBTHEME_DISCRIMINATOR_VALUE, subThemeDiscriminatorValue);
             BrowseBean browseBean = BeanUtils.getBrowseBean();
             if (browseBean != null) {
@@ -645,22 +614,14 @@ public class NavigationHelper implements Serializable {
     }
 
     public void changeTheme() throws IndexUnreachableException {
-        if (DataManager.getInstance()
-                .getConfiguration()
-                .isSubthemesEnabled()) {
-            String discriminatorField = DataManager.getInstance()
-                    .getConfiguration()
-                    .getSubthemeDiscriminatorField();
+        if (DataManager.getInstance().getConfiguration().isSubthemesEnabled()) {
+            String discriminatorField = DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField();
             String discriminatorValue = getSubThemeDiscriminatorValue();
             if (StringUtils.isNotEmpty(discriminatorValue) && !"-".equals(discriminatorValue)) {
                 logger.trace("Using discriminator value: {}", discriminatorValue);
-                theme = DataManager.getInstance()
-                        .getConfiguration()
-                        .getTheme();
+                theme = DataManager.getInstance().getConfiguration().getTheme();
             } else {
-                theme = DataManager.getInstance()
-                        .getConfiguration()
-                        .getTheme();
+                theme = DataManager.getInstance().getConfiguration().getTheme();
                 logger.trace("Using default theme");
             }
         }
@@ -669,12 +630,8 @@ public class NavigationHelper implements Serializable {
 
     public void resetTheme() {
         logger.trace("resetTheme");
-        theme = DataManager.getInstance()
-                .getConfiguration()
-                .getTheme();
-        if (DataManager.getInstance()
-                .getConfiguration()
-                .isSubthemeAutoSwitch()) {
+        theme = DataManager.getInstance().getConfiguration().getTheme();
+        if (DataManager.getInstance().getConfiguration().isSubthemeAutoSwitch()) {
             setSubThemeDiscriminatorValue(null);
         }
     }
@@ -684,9 +641,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public boolean isHtmlHeadDCMetadata() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isHtmlHeadDCMetadata();
+        return DataManager.getInstance().getConfiguration().isHtmlHeadDCMetadata();
     }
 
     public String getOverviewUrl() {
@@ -718,23 +673,16 @@ public class NavigationHelper implements Serializable {
      * @throws ConfigurationException
      */
     public String getViewImagePathFullscreen() throws IndexUnreachableException, DAOException, ConfigurationException {
-        String imageDisplayType = DataManager.getInstance()
-                .getConfiguration()
-                .getZoomFullscreenViewType();
+        String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
         logger.trace("Detected display mode: {}", imageDisplayType);
         if (StringUtils.isNotEmpty(imageDisplayType)) {
             // MIX data exists
-            if (imageDisplayType.equalsIgnoreCase("openlayersimage") && BeanUtils.getActiveDocumentBean()
-                    .getViewManager() != null && BeanUtils.getActiveDocumentBean()
-                            .getViewManager()
-                            .getCurrentPage()
-                            .getPhysicalImageHeight() > 0) {
-                String path = "/resources/themes/" + DataManager.getInstance()
-                        .getConfiguration()
-                        .getTheme() + "/urlMappings/viewImageFullscreen.xhtml";
+            if (imageDisplayType.equalsIgnoreCase("openlayersimage") && BeanUtils.getActiveDocumentBean().getViewManager() != null && BeanUtils
+                    .getActiveDocumentBean().getViewManager().getCurrentPage().getPhysicalImageHeight() > 0) {
+                String path = "/resources/themes/" + DataManager.getInstance().getConfiguration().getTheme()
+                        + "/urlMappings/viewImageFullscreen.xhtml";
                 logger.debug("MIX data detected. Redirect to the Fullscreen view  (viewImageFullscreen.xhtml) of the " + DataManager.getInstance()
-                        .getConfiguration()
-                        .getTheme() + " theme.");
+                        .getConfiguration().getTheme() + " theme.");
                 return path;
             }
             if (imageDisplayType.equalsIgnoreCase("classic")) {
@@ -802,10 +750,8 @@ public class NavigationHelper implements Serializable {
         try {
             Optional<ViewerPath> oView = ViewHistory.getCurrentView(BeanUtils.getRequest());
             if (oView.isPresent()) {
-                String path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get()
-                        .getPagePath()
-                        .toString()
-                        .replaceAll("\\+", "/");
+                String path = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + oView.get().getPagePath().toString().replaceAll("\\+",
+                        "/");
                 return path;
             }
         } catch (Throwable e) {
@@ -866,14 +812,8 @@ public class NavigationHelper implements Serializable {
                 return;
             }
             linkedPages.add(cmsPage);
-            if (DataManager.getInstance()
-                    .getDao()
-                    .getStaticPageForCMSPage(cmsPage)
-                    .map(sp -> sp.getPageName())
-                    .filter(name -> PageType.index.name()
-                            .equals(name))
-                    .isPresent()) {
-                //            if (PageType.index.matches(cmsPage.getStaticPageName())) {
+            if(DataManager.getInstance().getDao().getStaticPageForCMSPage(cmsPage).map(sp -> sp.getPageName()).filter(name -> PageType.index.name().equals(name)).isPresent()) {
+//            if (PageType.index.matches(cmsPage.getStaticPageName())) {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
@@ -882,9 +822,7 @@ public class NavigationHelper implements Serializable {
             if (StringUtils.isNotBlank(cmsPage.getParentPageId())) {
                 try {
                     Long cmsPageId = Long.parseLong(cmsPage.getParentPageId());
-                    cmsPage = DataManager.getInstance()
-                            .getDao()
-                            .getCMSPage(cmsPageId);
+                    cmsPage = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
                 } catch (NumberFormatException | DAOException e) {
                     logger.error("CMS breadcrumb creation: Parent page of page " + cmsPage.getId() + " is not a valid page id");
                     cmsPage = null;
@@ -925,8 +863,7 @@ public class NavigationHelper implements Serializable {
             // Remove any following links
             if (position < breadcrumbs.size()) {
                 try {
-                    breadcrumbs.subList(position + 1, breadcrumbs.size())
-                            .clear();
+                    breadcrumbs.subList(position + 1, breadcrumbs.size()).clear();
                 } catch (NullPointerException e) {
                     // This throws a NPE sometimes
                 }
@@ -975,8 +912,8 @@ public class NavigationHelper implements Serializable {
         if (StringUtils.isEmpty(statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE))) {
             return "/index.xhtml";
         }
-        if (StringUtils.isEmpty(statusMap.get(KEY_CURRENT_PARTNER_PAGE)) || statusMap.get(KEY_CURRENT_PARTNER_PAGE)
-                .equalsIgnoreCase("RES_NOT_FOUND")) {
+        if (StringUtils.isEmpty(statusMap.get(KEY_CURRENT_PARTNER_PAGE)) || statusMap.get(KEY_CURRENT_PARTNER_PAGE).equalsIgnoreCase(
+                "RES_NOT_FOUND")) {
             return "/resources/themes/" + theme + "/" + statusMap.get(KEY_SUBTHEME_DISCRIMINATOR_VALUE) + "/index.xhtml";
         }
         if ("index".equals(statusMap.get(KEY_CURRENT_PARTNER_PAGE))) {
@@ -1033,8 +970,7 @@ public class NavigationHelper implements Serializable {
         }
 
         // Module augmentations
-        for (IModule module : DataManager.getInstance()
-                .getModules()) {
+        for (IModule module : DataManager.getInstance().getModules()) {
             try {
                 module.augmentResetRecord();
             } catch (Exception e) {
@@ -1044,9 +980,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getLastRequestTimestamp() {
-        return (String) BeanUtils.getRequest()
-                .getSession(false)
-                .getAttribute("lastRequest");
+        return (String) BeanUtils.getRequest().getSession(false).getAttribute("lastRequest");
     }
 
     /**
@@ -1092,9 +1026,7 @@ public class NavigationHelper implements Serializable {
         String msg = Helper.getTranslation(msgKey, null);
         if (params != null) {
             for (int i = 0; i < params.length; ++i) {
-                msg = msg.replace(new StringBuilder("{").append(i)
-                        .append("}")
-                        .toString(), params[i]);
+                msg = msg.replace(new StringBuilder("{").append(i).append("}").toString(), params[i]);
             }
         }
 
@@ -1127,9 +1059,7 @@ public class NavigationHelper implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getSubThemeDiscriminatorQuerySuffix() throws IndexUnreachableException {
-        return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance()
-                .getConfiguration()
-                .getSubthemeDiscriminatorField());
+        return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
     }
 
     /**
@@ -1140,12 +1070,8 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getPreviousViewUrl() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getRequest();
-        String previousUrl = ViewHistory.getPreviousView(request)
-                .map(path -> path.getCombinedUrl())
-                .orElse("");
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
         }
@@ -1153,12 +1079,8 @@ public class NavigationHelper implements Serializable {
     }
 
     public void redirectToPreviousView() throws IOException {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getRequest();
-        String previousUrl = ViewHistory.getPreviousView(request)
-                .map(path -> path.getCombinedPrettyfiedUrl())
-                .orElse("");
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedPrettyfiedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = homePage();
         }

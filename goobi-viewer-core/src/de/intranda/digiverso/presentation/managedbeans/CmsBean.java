@@ -135,7 +135,7 @@ public class CmsBean implements Serializable {
                             if (validityStatus.isValid()) {
                                 page.getSidebarElements()
                                         .forEach(element -> element.deSerialize());
-                            }
+                            } 
                         });
                         return pages;
                     } catch (DAOException e) {
@@ -508,13 +508,10 @@ public class CmsBean implements Serializable {
             }
             resetCollectionsForPage(selectedPage.getId()
                     .toString());
-            if (cmsNavigationBean != null) {
-                cmsNavigationBean.getItemManager()
-                        .addAvailableItem(new CMSNavigationItem(this.selectedPage));
+            if(cmsNavigationBean != null) {
+                cmsNavigationBean.getItemManager().addAvailableItem(new CMSNavigationItem(this.selectedPage));
             }
-            DataManager.getInstance()
-                    .getDao()
-                    .detach(this.selectedPage);
+            DataManager.getInstance().getDao().detach(this.selectedPage);
         }
     }
 
@@ -708,11 +705,9 @@ public class CmsBean implements Serializable {
 
     public void setSelectedPage(CMSPage currentPage) throws DAOException {
         this.selectedPage = currentPage;
-        DataManager.getInstance()
-                .getDao()
-                .detach(this.selectedPage);
+        DataManager.getInstance().getDao().detach(this.selectedPage);
         logger.debug("Selected page " + currentPage);
-
+        
     }
 
     public CMSPage getCurrentPage() {
@@ -1258,12 +1253,9 @@ public class CmsBean implements Serializable {
         Messages.info("cms_staticPagesSaved");
 
     }
-
+    
     public List<CMSPage> getValidCMSPages() throws DAOException {
-        return DataManager.getInstance()
-                .getDao()
-                .getAllCMSPages()
-                .stream()
+        return DataManager.getInstance().getDao().getAllCMSPages().stream()
                 .filter(page -> isPageValid(page).equals(PageValidityStatus.VALID))
                 .filter(page -> page.isPublished())
                 .collect(Collectors.toList());

@@ -91,8 +91,7 @@ public final class DataManager {
         }
 
         for (IModule module : modules) {
-            if (module.getId()
-                    .equals(id)) {
+            if (module.getId().equals(id)) {
                 return module;
             }
         }
@@ -111,8 +110,7 @@ public final class DataManager {
         }
 
         for (IModule module : modules) {
-            if (module.getId()
-                    .equals(id)) {
+            if (module.getId().equals(id)) {
                 return true;
             }
         }
@@ -131,8 +129,7 @@ public final class DataManager {
         }
 
         for (IModule m : modules) {
-            if (m.getId()
-                    .equals(module.getId())) {
+            if (m.getId().equals(module.getId())) {
                 logger.warn(
                         "Module rejected because a module with the same ID is already registered.\nRegistered module: {} ({}) v{}\nRejected module: {} ({}) v{}",
                         m.getId(), m.getName(), m.getVersion(), module.getId(), module.getName(), module.getVersion());
