@@ -247,6 +247,10 @@ public class Metadata implements Serializable {
                         // convert line breaks back to HTML
                         value = value.replace("&lt;br /&gt;", "<br />");
                         break;
+                    case URLESCAPEDFIELD:
+                        // escape reserved URL characters
+                        value = BeanUtils.escapeCriticalUrlChracters(value);
+                        break;
                     case HIERARCHICALFIELD:
                         // create a link for reach hierarchy level
                         NavigationHelper nh = BeanUtils.getNavigationHelper();
