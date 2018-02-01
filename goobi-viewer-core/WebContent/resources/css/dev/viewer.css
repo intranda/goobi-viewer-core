@@ -3529,7 +3529,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list__current-search .input-group-addon a,
 .search-list__current-search .input-group-addon button {
-  padding: 9px 12px;
+  padding: 8px 12px;
 }
 .search-list__current-search .input-group-addon input[type="submit"] {
   padding: 9px 20px;
