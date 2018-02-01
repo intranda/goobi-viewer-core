@@ -45,6 +45,7 @@
 		<project>goobi-viewer-theme-mak</project>
 		<project>goobi-viewer-theme-mnha</project>
 		<project>goobi-viewer-theme-oeadw</project>
+		<project>goobi-viewer-theme-sudanmemories</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
