@@ -57,7 +57,6 @@
 														<div class="sidebar-editor-widget-item">
 															<div class="sidebar-editor-widget-item-header">
 																<h4>#{msg[element.type]}</h4>
-                                                                #{element.category}
 																<span class="glyphicon glyphicon-edit widget-edit" title="Widget Editor"></span>
 															</div>
 
@@ -124,7 +123,7 @@
 																		<div class="form-group selection_page_links">
 																			<label>#{msg.cms_sidebarElement_pageLinks}:</label>
 																			<h:selectManyCheckbox value="#{element.linkedPages.pages}">
-																				<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}" />
+																				<f:selectItems value="#{cmsBean.validCMSPages}" var="page" itemLabel="#{page.title}" itemValue="#{page.id}"></f:selectItems>
 																			</h:selectManyCheckbox>
 																		</div>
 																	</h:panelGroup>
@@ -132,7 +131,7 @@
 																	<h:panelGroup id="inputGeoLocations" rendered="#{element.category == 'geoLocations'}">
 																		<div class="widget-geo-locations">																			
 																			<div class="widget-geo-locations__input">
-																		
+																			
 																				<div class="row">
 																					<!-- CENTER VALUE -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_centerValues}</h5>
@@ -144,6 +143,7 @@
 																						<label>#{msg.cms_sidebarElement_geoLocations_latitude}</label>
 																						<h:inputText styleClass="form-control" value="#{element.geoLocations.centerLocation.latitude}"/>
 																					</div>
+
 																					<!-- LOCATIONS -->
 																					<h5>#{msg.cms_sidebarElement_geoLocations_locations}</h5>
 																					<ui:repeat var="location" value="#{element.geoLocations.locationList}">
