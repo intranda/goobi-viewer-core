@@ -83,7 +83,7 @@ public class SessionStoreBookshelfManager {
             session.setAttribute(BOOKSHELF_ATTRIBUTE_NAME, bookshelf);
             return getBookshelf(session).orElseThrow(() -> new IllegalStateException("Attribute stored but not available"));
         } else {
-            throw new IllegalArgumentException("Bookshelf already exists. Cannot create a new one");
+            return getBookshelf(session).orElseThrow(() -> new IllegalArgumentException("Bookshelf can neither be retrieved nor created"));
         }
     }
     
