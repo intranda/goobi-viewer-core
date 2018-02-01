@@ -645,8 +645,8 @@
         <pattern value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
     </url-mapping>
     <url-mapping id="cmsOpenPagePreview">
         <pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
