@@ -56,7 +56,7 @@ var viewerJS = ( function( viewer ) {
                 event.stopPropagation();
                 
                 // hide other dropdowns
-                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown' ).hide();
+                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown, .navigation__collection-panel' ).hide();
                 $( '.bookshelf-popup' ).remove();
                 
                 $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );

@@ -463,7 +463,7 @@ var viewerJS = ( function( viewer ) {
                 event.stopPropagation();
                 
                 // hide other dropdowns
-                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown' ).hide();
+                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown, .navigation__collection-panel' ).hide();
                 
                 _getAllSessionElements( _defaults.root ).then( function( elements ) {
                     if ( elements.items.length > 0 ) {
@@ -853,7 +853,7 @@ var viewerJS = ( function( viewer ) {
                 event.stopPropagation();
                 
                 // hide other dropdowns
-                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown' ).hide();
+                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown, .navigation__collection-panel' ).hide();
                 $( '.bookshelf-popup' ).remove();
                 
                 $( '.bookshelf-navigation__dropdown' ).slideToggle( 'fast' );
@@ -6687,9 +6687,14 @@ var viewerJS = ( function( viewer ) {
                     $( '.bookshelf-navigation__dropdown' ).hide();
                     $( '.bookshelf-popup' ).remove();
                 }
+                // hide collection panel if exist
+                if ( $( '.navigation__collection-panel' ).length > 0 ) {
+                    $( '.navigation__collection-panel' ).hide();
+                }
                 
                 $( '.login-navigation__login-dropdown' ).slideToggle( 'fast' );
             } );
+            // user dropdown
             $( '[data-toggle="user-dropdown"]' ).on( 'click', function( event ) {
                 event.stopPropagation();
                 
@@ -6697,6 +6702,10 @@ var viewerJS = ( function( viewer ) {
                 if ( _bookselfDropdown ) {
                     $( '.bookshelf-navigation__dropdown' ).hide();
                     $( '.bookshelf-popup' ).remove();
+                }
+                // hide collection panel if exist
+                if ( $( '.navigation__collection-panel' ).length > 0 ) {
+                    $( '.navigation__collection-panel' ).hide();
                 }
                 
                 $( '.login-navigation__user-dropdown' ).slideToggle( 'fast' );

@@ -51,9 +51,14 @@ var viewerJS = ( function( viewer ) {
                     $( '.bookshelf-navigation__dropdown' ).hide();
                     $( '.bookshelf-popup' ).remove();
                 }
+                // hide collection panel if exist
+                if ( $( '.navigation__collection-panel' ).length > 0 ) {
+                    $( '.navigation__collection-panel' ).hide();
+                }
                 
                 $( '.login-navigation__login-dropdown' ).slideToggle( 'fast' );
             } );
+            // user dropdown
             $( '[data-toggle="user-dropdown"]' ).on( 'click', function( event ) {
                 event.stopPropagation();
                 
@@ -61,6 +66,10 @@ var viewerJS = ( function( viewer ) {
                 if ( _bookselfDropdown ) {
                     $( '.bookshelf-navigation__dropdown' ).hide();
                     $( '.bookshelf-popup' ).remove();
+                }
+                // hide collection panel if exist
+                if ( $( '.navigation__collection-panel' ).length > 0 ) {
+                    $( '.navigation__collection-panel' ).hide();
                 }
                 
                 $( '.login-navigation__user-dropdown' ).slideToggle( 'fast' );

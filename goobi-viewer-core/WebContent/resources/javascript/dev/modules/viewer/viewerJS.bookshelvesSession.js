@@ -60,7 +60,7 @@ var viewerJS = ( function( viewer ) {
                 event.stopPropagation();
                 
                 // hide other dropdowns
-                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown' ).hide();
+                $( '.login-navigation__login-dropdown, .login-navigation__user-dropdown, .navigation__collection-panel' ).hide();
                 
                 _getAllSessionElements( _defaults.root ).then( function( elements ) {
                     if ( elements.items.length > 0 ) {
