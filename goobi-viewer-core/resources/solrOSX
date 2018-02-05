@@ -4,7 +4,7 @@
 Example:
 
 <?xml version="1.0" encoding="utf-8"?>
-<Context docBase="/Users/AppleCan/Desktop/Intranda/viewer/apache-solr/solr.war" debug="0" crossContext="true">
+<Context docBase="/Users/AppleCan/Desktop/Intranda/viewer/apache-solr/solr.war" crossContext="true">
   <Environment name="solr/home" type="java.lang.String" value="/Users/AppleCan/Desktop/Intranda/viewer/apache-solr" override="true"/>
 </Context>
 

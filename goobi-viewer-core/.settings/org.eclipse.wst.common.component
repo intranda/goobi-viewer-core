@@ -181,6 +181,10 @@
         <dependent-module archiveName="goobi-viewer-theme-oeadw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-oeadw/goobi-viewer-theme-oeadw">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- SUDAN MEMORIES -->
+        <dependent-module archiveName="goobi-viewer-theme-sudanmemories.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sudanmemories/goobi-viewer-theme-sudanmemories">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>
