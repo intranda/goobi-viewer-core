@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
@@ -32,6 +33,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.RestApiException;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.servlets.rest.SuccessMessage;
@@ -64,12 +66,11 @@ public class BookshelfResourceTest extends AbstractDatabaseEnabledTest{
         Assert.assertNotNull(user);
         UserBean userBean = new UserBean();
         userBean.setUser(user);
+                
         
-        HttpServletRequest request = TestUtils.mockHttpRequest();
-        request.getSession().setAttribute("userBean", userBean);
+        HttpServletRequest request = TestUtils.mockHttpRequest();        
         
-        
-        resource = new BookshelfResource(request);
+        resource = new BookshelfResource(userBean, request);
     }
 
     /**

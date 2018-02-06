@@ -60,22 +60,22 @@ public class BookshelfResource {
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfResource.class);
     private final boolean testing;
+    private final UserBean userBean;
     
     @Context
     private HttpServletRequest servletRequest;
 
     public BookshelfResource() {
         this.testing = false;
+        this.userBean = BeanUtils.getUserBean();
     }
-    
-    /**
-     * For testing
-     * @param request
-     */
-    protected BookshelfResource(HttpServletRequest request) {
-        this.servletRequest = request;
+   
+    public BookshelfResource(UserBean userBean, HttpServletRequest request) {
         this.testing = true;
+        this.userBean = userBean;
+        this.servletRequest = request;
     }
+
     
     
     /**
@@ -704,8 +704,6 @@ public class BookshelfResource {
      * @return
      */
     private User getUser() {
-//            UserBean userBean = (UserBean) session.getAttribute("userBean");
-            UserBean userBean = BeanUtils.getUserBean();
             if (userBean == null) {
                 logger.debug("Unable to get user: No UserBean found in session store.");
                 return null;
