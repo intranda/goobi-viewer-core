@@ -27,7 +27,7 @@ import de.intranda.digiverso.presentation.controller.Configuration;
 
 public class LanguageHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
+    private static final Logger logger = LoggerFactory.getLogger(LanguageHelper.class);
 
     private XMLConfiguration config;
 
@@ -53,9 +53,11 @@ public class LanguageHelper {
         SubnodeConfiguration languageConfig = null;
         try {
             if (isoCode.length() == 3) {
-                languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-2=\"" + isoCode + "\"]").get(0);
+                languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-2=\"" + isoCode + "\"]")
+                        .get(0);
             } else if (isoCode.length() == 2) {
-                languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-1=\"" + isoCode + "\"]").get(0);
+                languageConfig = (SubnodeConfiguration) config.configurationsAt("language[iso_639-1=\"" + isoCode + "\"]")
+                        .get(0);
             }
         } catch (IndexOutOfBoundsException e) {
             throw new IllegalArgumentException("No matching language found for " + isoCode);
