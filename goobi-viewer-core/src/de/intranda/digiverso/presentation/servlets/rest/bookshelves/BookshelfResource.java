@@ -631,7 +631,7 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Bookshelf> getContainingUserBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
+    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         List<Bookshelf> bookshelves = getAllUserBookshelfs();
         if(bookshelves  != null) {
             try {
@@ -660,8 +660,8 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Object getContainingUserBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return getContainingUserBookshelf(pi, null, null);
+    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return getContainingUserBookshelves(pi, null, null);
     }
  
     /**

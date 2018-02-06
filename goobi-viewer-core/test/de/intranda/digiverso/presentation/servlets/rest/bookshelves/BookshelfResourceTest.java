@@ -154,8 +154,9 @@ public class BookshelfResourceTest extends AbstractDatabaseEnabledTest{
         Assert.assertEquals(1, resource.countUserBookshelfItems(id1), 0);
         Assert.assertEquals(3, resource.countUserBookshelfItems(id2), 0);
         
-        Assert.assertEquals(bs1, resource.getContainingUserBookshelf(PI_1));
-        Assert.assertEquals(bs2, resource.getContainingUserBookshelf(PI_3, LOGID_1, PAGE_1));
+        Assert.assertTrue(resource.getContainingUserBookshelves(PI_1).contains(bs1));
+        Assert.assertTrue(resource.getContainingUserBookshelves(PI_1).contains(bs2));
+        Assert.assertTrue(resource.getContainingUserBookshelves(PI_3, LOGID_1, PAGE_1).contains(bs2));
         
         
         resource.deleteFromUserBookshelf(id1, PI_1);
