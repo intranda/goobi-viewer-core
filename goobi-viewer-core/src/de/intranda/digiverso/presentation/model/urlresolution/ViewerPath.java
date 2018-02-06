@@ -17,54 +17,40 @@ package de.intranda.digiverso.presentation.model.urlresolution;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
-import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
- * Stores the url path of a http request organized by its logical parts so application url, application name, view type and parameter urls can be
- * retrieved independendly. If applicable, the {@link PageType} of the requested view and an associated {@link CMSPage} are also referenced
+ * Stores the url path of a http request organized by its logical parts so application url, application name, view type and parameter urls
+ * can be retrieved independendly. If applicable, the {@link PageType} of the requested view and an associated {@link CMSPage} are also referenced
  * <p>
- * This information helps calling the correct url in different contexts and is also used to redirect to CMSPages and store a brief view history to
- * allow returning to a previous view The entire url always consists of the properties {@link #applicationUrl} + {@link #pagePath} +
- * {@link parameterPath}
+ * This information helps calling the correct url in different contexts and is also used to redirect to CMSPages and store a brief view history to allow returning to a previous view
+ * The entire url always consists of the properties {@link #applicationUrl} + {@link #pagePath} + {@link parameterPath}
  * </p>
  * <p>
- * The easiest way to create ViewerPath based on a http request is by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)} or
- * {@link ViewerPathBuilder#createPath(String, String, String)}
+ * The easiest way to create ViewerPath based on a http request is by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)}
+ * or {@link ViewerPathBuilder#createPath(String, String, String)}
  * </p>
- * 
  * @author Florian Alpers
  *
  */
 public class ViewerPath {
-
-    private static final Logger logger = LoggerFactory.getLogger(ViewerPath.class);
-
     /**
-     * The absolute url of the web-application, e.g. {@code "http://localhost:8080/viewer"}. The {@link #applicationName} is always the last part of
-     * this url
+     * The absolute url of the web-application, e.g. {@code "http://localhost:8080/viewer"}.
+     * The {@link #applicationName} is always the last part of this url
      */
     private String applicationUrl;
     /**
-     * The name of the web application called by this url, e.g. {@code "/viewer"}. If the application is the root application of the server this
-     * property is {@code "/"}
+     * The name of the web application called by this url, e.g. {@code "/viewer"}. If the application is the root application 
+     * of the server this property is {@code "/"}
      */
     private String applicationName;
     /**
-     * The part of the url referring to the called view (e.g. {@code "/image", "/search" or "/cms/editOcr"}). This usually matches a {@link PageType}
-     * name or an alternative cms page url
+     * The part of the url referring to the called view (e.g. {@code "/image", "/search" or "/cms/editOcr"}).
+     * This usually matches a {@link PageType} name or an alternative cms page url
      */
     private Path pagePath;
     /**
@@ -79,10 +65,11 @@ public class ViewerPath {
      * The {@link CMSPage} referred to by the paths {@link #pagePath}. Is null if no CMSPage is referenced
      */
     private CMSPage cmsPage = null;
-
+    
     /**
-     * Creates an empty {@link ViewerPath}. Usually this does not need to be called directly. Instead a ViewerPath should be created by calling
-     * {@link ViewerPathBuilder#createPath(HttpServletRequest)} or {@link ViewerPathBuilder#createPath(String, String, String)}
+     * Creates an empty {@link ViewerPath}. Usually this does not need to be called directly.
+     * Instead a ViewerPath should be created by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)}
+     * or {@link ViewerPathBuilder#createPath(String, String, String)}
      * 
      */
     public ViewerPath() {
@@ -91,10 +78,13 @@ public class ViewerPath {
         pagePath = Paths.get("");
         parameterPath = Paths.get("");
     }
-
+    
+    
+    
     /**
-     * Creates a {@link ViewerPath} based on the given request properties. This should not be called directly. Instead a ViewerPath should be created
-     * by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)} or {@link ViewerPathBuilder#createPath(String, String, String)}
+     * Creates a {@link ViewerPath} based on the given request properties. This should not be called directly.
+     * Instead a ViewerPath should be created by calling {@link ViewerPathBuilder#createPath(HttpServletRequest)}
+     * or {@link ViewerPathBuilder#createPath(String, String, String)}
      * 
      * @param applicationPath
      * @param applicationName
@@ -109,11 +99,14 @@ public class ViewerPath {
         this.parameterPath = parameterPath;
     }
 
+
+
     /**
-     * Creates an exact copy of the passed {@code blueprint}. This only creates a shallow copy, which is irrelevant to almost all properties which are
-     * immutables, {@link #cmsPage} being the only exception (but that is ok since all paths should indeed point to the same CMSPage)
+     * Creates an exact copy of the passed {@code blueprint}.
+     * This only creates a shallow copy, which is irrelevant to almost all properties which are immutables, 
+     * {@link #cmsPage} being the only exception (but that is ok since all paths should indeed point to the same CMSPage)
      * 
-     * @param blueprint The ViewerPath to be copied
+     * @param blueprint     The ViewerPath to be copied
      */
     public ViewerPath(ViewerPath blueprint) {
         this.applicationUrl = blueprint.applicationUrl;
@@ -124,159 +117,145 @@ public class ViewerPath {
         this.pageType = blueprint.pageType;
     }
 
+
+
     /**
      * @return the {@link #applicationUrl}
      */
     public String getApplicationUrl() {
         return applicationUrl;
     }
-
     /**
-     * @param applicationUrl The {@link #applicationUrl} to set
+     * @param applicationUrl    The {@link #applicationUrl} to set
      */
     public void setApplicationUrl(String applicationUrl) {
         this.applicationUrl = applicationUrl;
     }
-
     /**
      * @return the {@link #pagePath}
      */
     public Path getPagePath() {
         return pagePath;
     }
-
     /**
      * @param pagePath the {@link #pagePath} to set
      */
     public void setPagePath(Path pagePath) {
         this.pagePath = pagePath;
     }
-
     /**
      * @return the {@link #parameterPath}
      */
     public Path getParameterPath() {
         return parameterPath;
     }
-
     /**
      * @param parameterPath the {@link #parameterPath} to set
      */
     public void setParameterPath(Path parameterPath) {
         this.parameterPath = parameterPath;
     }
-
+    
     /**
      * 
-     * @return The alternative url or static page url of a CMSPage if present, otherwise {@link #pagePath}
+     * @return  The alternative url or static page url of a CMSPage if present, otherwise {@link #pagePath}
      */
     public Path getPrettifiedPagePath() {
-        if (getCmsPage() != null && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
-            return Paths.get(getCmsPage().getPersistentUrl()
-                    .replaceAll("^\\/|\\/$", ""));
-        } else if (getCmsPage() != null) {
-            try {
-                Optional<CMSStaticPage> staticPage = DataManager.getInstance()
-                        .getDao()
-                        .getStaticPageForCMSPage(getCmsPage());
-                if (staticPage.isPresent()) {
-                    return Paths.get(staticPage.get()
-                            .getPageName()
-                            .replaceAll("^\\/|\\/$", ""));
-                } else {
-                }
-            } catch (DAOException e) {
-                logger.error("Failed to retrieve static page from dao");
-            }
+        if(getCmsPage() != null && StringUtils.isNotBlank(getCmsPage().getPersistentUrl())) {
+            return Paths.get(getCmsPage().getPersistentUrl().replaceAll("^\\/|\\/$", ""));
+        } else if(getCmsPage() != null && StringUtils.isNotBlank(getCmsPage().getStaticPageName())) {
+            return Paths.get(getCmsPage().getStaticPageName().replaceAll("^\\/|\\/$", ""));
+        } else {            
+            return getPagePath();
         }
-        return getPagePath();
-
     }
-
+    
     /**
-     * @return the entire {@link #getPrettifiedPagePath() prettified} url <b>except</b> the application url
+     * @return  the entire {@link #getPrettifiedPagePath() prettified} url <b>except</b> the application url
      */
     public Path getCombinedPrettyfiedPath() {
         return getPrettifiedPagePath().resolve(getParameterPath());
     }
-
+    
     /**
-     * @return the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
+     * @return  the entire {@link #getPrettifiedPagePath() prettified} url as a path <b>except</b> the application url
      */
     public String getCombinedPrettyfiedUrl() {
-        String url = ("/" + getCombinedPrettyfiedPath().toString() + "/").replaceAll("\\/+", "/")
-                .replaceAll("\\\\+", "/");
+        String url = ("/" + getCombinedPrettyfiedPath().toString() + "/").replaceAll("\\/+", "/").replaceAll("\\\\+", "/");
         return url;
     }
-
+    
     /**
      * @return the entire request url as a path <b>except</b> the application url
      */
     public Path getCombinedPath() {
         return pagePath.resolve(parameterPath);
     }
-
+    
+    
     /**
      * @return the entire request url <b>except</b> the application url
      */
     public String getCombinedUrl() {
-
+        
         String url = ("/" + getCombinedPath().toString() + "/").replace("\\", "/")
                 .replaceAll("\\/+", "/")
                 .replaceAll("\\\\+", "/");
         return url;
     }
-
+    
     /**
-     * @return The {@link #getCombinedUrl() combined url}
+     * @return  The {@link #getCombinedUrl() combined url}
      */
     @Override
     public String toString() {
         return getCombinedUrl();
     }
 
+
+
     /**
      * @return true if this path has been associated with a pageType other than 'other'
      */
     public boolean isPage() {
         return getPageType() != null && !getPageType().equals(PageType.other);
-        //        return !getCombinedPath().getFileName().toString().contains(".");
+//        return !getCombinedPath().getFileName().toString().contains(".");
     }
-
+    
     /**
      * @param pageType the {@link PageType} to set
      */
     public void setPageType(PageType pageType) {
         this.pageType = pageType;
     }
-
+    
     /**
      * @return the {@link #pageType}
      */
     public PageType getPageType() {
         return pageType;
     }
-
+    
     /**
      * @see PageType#matches(Path)
      * @param pageType
-     * @return The matching {@link PageType} or null if no PageType matches
+     * @return          The matching {@link PageType} or null if no PageType matches
      */
     public boolean matches(PageType pageType) {
-        if (getPageType() != null) {
+        if(getPageType() != null) {
             return getPageType().matches(getPagePath());
         } else {
             return false;
         }
     }
-
+    
     /**
      * @return the {@link #cmsPage} if one is associated with this path. Otherwise null
      */
     public CMSPage getCmsPage() {
         return cmsPage;
     }
-
+    
     /**
      * @param cmsPage the {@link #cmsPage} to set
      */
@@ -290,22 +269,17 @@ public class ViewerPath {
     public String getApplicationName() {
         return applicationName;
     }
-
+    
     /**
      * @param applicationName the {@link #applicationName} to set
      */
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
-
+    
     public boolean isCmsPage() {
-        if(getCmsPage() != null) {
-            Path parameterPath = this.getParameterPath();
-            if(parameterPath.toString().isEmpty() || getCmsPage().mayContainURLParameters()) {
-                return true;
-            }
-        }
-        return false;
+        return getCmsPage() != null;
     }
 
 }
+

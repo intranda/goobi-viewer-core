@@ -136,6 +136,16 @@
 		<pattern value="/retrieveAccount/" />
 		<view-id value="/user.xhtml" />
 	</url-mapping>
+	
+	<url-mapping id="userAccountRetrieve">
+        <pattern value="/userAccountRetrieve/" />
+        <view-id value="/userAccountRetrieve.xhtml" />
+    </url-mapping>
+    
+    <url-mapping id="userAccountCreate">
+        <pattern value="/userAccountCreate/" />
+        <view-id value="/userAccountCreate.xhtml" />
+    </url-mapping>
 
     <!-- search -->
 	<url-mapping id="browse5">
@@ -575,6 +585,21 @@
         <view-id value="/userBackendEditBookshelf.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
+    <url-mapping id="userMenuViewBookshelf1">
+		<pattern value="/bookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
+		<view-id value="/userBackendViewBookshelf.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+    <url-mapping id="userMenuEditBookshelf1">
+        <pattern value="/editbookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
+        <view-id value="/userBackendEditBookshelf.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="userBookshelfSendList">
+		<pattern value="/userBookshelfSendList/" />
+		<view-id value="/userBookshelfSendList.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
 
 	<url-mapping id="userMenuMySearches">
 		<pattern value="/mysearches/" />
@@ -620,8 +645,8 @@
         <pattern value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
     </url-mapping>
     <url-mapping id="cmsOpenPagePreview">
         <pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />

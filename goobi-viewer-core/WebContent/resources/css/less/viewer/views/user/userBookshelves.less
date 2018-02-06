@@ -1,0 +1,73 @@
+/* ==============================================================
+   User Bookshelves
+   style declarations for userBackendBookshelves.xhtml
+   ==============================================================*/
+/* USER BOOKSHELVES */
+/* BLOCK */
+.user-bookshelves {
+	/* ELEMENT */
+	h2 {}
+	/* ADD */
+	&__add-bookshelf {
+		.mx-clearfloats;
+		height: 32px;
+		margin-bottom: 15px;
+		border-bottom: 1px solid @middlegray;
+		input {
+			width: 100%;
+			height: 32px;
+			border: none;
+			background-color: transparent;
+		}
+		button {
+			width: 100%;
+			height: 32px;
+			background-image: url("@{images}/icons/icon-bs-add.svg");
+			background-size: 60%;
+		}
+	}
+	/* PANEL */
+	&__panel {
+		.mx-clearfloats;
+		margin-bottom: 10px;
+		padding: 10px;
+		border: 1px solid @middlegray;
+	}
+	&__panel-header {
+		.mx-clearfloats;
+		h4 {
+			margin: 0;
+		}
+		a {}
+		small {
+			color: @middlegray;
+		}
+	}
+	&__panel-body {
+		.mx-clearfloats;
+		padding-top: 15px;
+		p {
+			margin: 0;
+			font-size: 13px;
+			font-style: italic;
+		}
+	}
+	&__panel-action {
+		a {
+			display: inline-block;
+			padding: 0 5px;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {}

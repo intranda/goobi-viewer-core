@@ -1030,6 +1030,271 @@ div.mce-fullscreen {
 /* BREAKPOINT FOR SMARTPHONES */
 /* VIEWER COMPONENTS */
 /* ==============================================================
+   Bookshelves
+   style declarations for all bookshelf actions,
+   ==============================================================*/
+/* BOOKSHELF NAVIGATION */
+/* BLOCK */
+.bookshelf-navigation {
+  /* ELEMENT */
+}
+.bookshelf-navigation__icons.no-padding {
+  padding: 6px 0;
+}
+.bookshelf-navigation__icons span {
+  display: inline-block;
+  float: right;
+  margin-right: 5px;
+}
+.bookshelf-navigation__counter {
+  height: 16px;
+  line-height: 16px;
+  padding: 0 3px;
+  font-size: 12px;
+  text-align: center;
+  color: #fff;
+  border-radius: 2px;
+  background-color: #428bca;
+}
+.bookshelf-navigation__dropdown-wrapper {
+  position: relative;
+}
+.bookshelf-navigation__dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 325px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  z-index: 999;
+}
+.bookshelf-navigation__dropdown-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.bookshelf-navigation__dropdown-list li {
+  padding: 2px 5px;
+  border-bottom: 1px solid #ccc;
+}
+.bookshelf-navigation__dropdown-list li:last-child {
+  border-bottom: none;
+}
+.bookshelf-navigation__dropdown-list li .empty {
+  padding: 5px;
+}
+.bookshelf-navigation__dropdown-list h4 {
+  margin: 0;
+  padding: 5px;
+  font-size: 14px;
+}
+.bookshelf-navigation__dropdown-list a {
+  display: block;
+  width: 100%;
+  padding: 5px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.bookshelf-navigation__dropdown-list-counter {
+  display: inline-block;
+  float: right;
+  margin-top: 5px;
+  padding: 0 3px;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 2px;
+  background-color: #428bca;
+}
+.bookshelf-navigation__dropdown-list-reset,
+.bookshelf-navigation__dropdown-list-send {
+  font-size: 13px;
+  border-top: 1px solid #ccc;
+}
+.bookshelf-navigation__dropdown-list-reset [data-bookshelf-type="reset"],
+.bookshelf-navigation__dropdown-list-send [data-bookshelf-type="reset"],
+.bookshelf-navigation__dropdown-list-reset a,
+.bookshelf-navigation__dropdown-list-send a {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  color: #428bca;
+  background-repeat: no-repeat;
+  background-position: 95% center;
+}
+.bookshelf-navigation__dropdown-list-reset {
+  border-right: 1px solid #ccc;
+}
+.bookshelf-navigation__dropdown-list-reset [data-bookshelf-type="reset"] {
+  background-image: url("../../images/icons/icon-bs-remove.svg");
+  background-size: 5%;
+}
+.bookshelf-navigation__dropdown-list-send a {
+  display: block;
+  background-image: url("../../images/icons/icon-bs-link.svg");
+  background-size: 8%;
+}
+.bookshelf-navigation__dropdown-list-image {
+  height: 75px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.bookshelf-navigation__dropdown-list-remove {
+  text-align: center;
+}
+.bookshelf-navigation__dropdown-list-remove.no-padding {
+  padding: 5px 0;
+}
+.bookshelf-navigation__dropdown-list-remove [data-bookshelf-type="delete"] {
+  width: 16px;
+  height: 16px;
+  background-size: 72%;
+}
+.bookshelf-navigation__dropdown-action {
+  padding: 10px;
+}
+/* POPUPS */
+/* BLOCK */
+.bookshelf-popup {
+  position: absolute;
+  width: 280px;
+  height: 300px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+  z-index: 99999;
+  /* ELEMENT */
+}
+.bookshelf-popup.bottom:before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: -13px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -3px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #ccc transparent;
+}
+.bookshelf-popup__header,
+.bookshelf-popup__body,
+.bookshelf-popup__footer {
+  position: absolute;
+  right: 0;
+  left: 0;
+}
+.bookshelf-popup__header {
+  top: 0;
+  padding: 3px 10px 4px 10px;
+  border-bottom: 1px solid #ccc;
+}
+.bookshelf-popup__body {
+  top: 30px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.bookshelf-popup__body-loader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: url("../../images/infinity_loader.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 25%;
+  background-color: #fff;
+  z-index: 100000;
+}
+.bookshelf-popup__body-list li {
+  padding: 2px 5px;
+  border-bottom: 1px solid #ccc;
+}
+.bookshelf-popup__body-list li .empty {
+  padding: 5px;
+}
+.bookshelf-popup__body-list [data-bookshelf-type="add"] {
+  width: 100%;
+  padding: 5px;
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  background-image: none;
+}
+.bookshelf-popup__body-list [data-bookshelf-type="add"] .fa {
+  color: green;
+}
+.bookshelf-popup__body-list [data-bookshelf-type="add"] span {
+  display: inline-block;
+  float: right;
+  padding: 0 3px;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 2px;
+  background-color: #428bca;
+}
+.bookshelf-popup__footer {
+  bottom: 0;
+  height: 50px;
+  padding: 5px 10px;
+  border-top: 1px solid #ccc;
+}
+.bookshelf-popup__footer input {
+  width: 100%;
+  height: 40px;
+  padding: 10px 0;
+  border: none;
+}
+.bookshelf-popup__footer [data-bookshelf-type="add"] {
+  display: block;
+  width: 100%;
+  height: 40px;
+  background-image: url("../../images/icons/icon-bs-add.svg");
+  background-size: 60%;
+}
+.bookshelf-popup__footer [data-bookshelf-type="add"].added {
+  background-image: url("../../images/icons/icon-bs-add.svg");
+}
+/* ACTION BUTTONS */
+[data-bookshelf-type="dropdown"],
+[data-bookshelf-type="get"],
+[data-bookshelf-type="add"],
+[data-bookshelf-type="add-bookshelf"],
+[data-bookshelf-type="delete"],
+[data-bookshelf-type="link"],
+[data-bookshelf-type="reset"] {
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+[data-bookshelf-type="dropdown"] {
+  padding: 6px 0;
+}
+[data-bookshelf-type="add"] {
+  background-image: url("../../images/icons/icon-bs-herz-blau_thin.svg");
+  background-size: 72%;
+}
+[data-bookshelf-type="add"].white {
+  background-image: url("../../images/icons/icon-bs-herz-weiss_thin.svg");
+}
+[data-bookshelf-type="add"].added {
+  background-image: url("../../images/icons/icon-bs-herz-blau.svg");
+}
+[data-bookshelf-type="add"].added.white {
+  background-image: url("../../images/icons/icon-bs-herz-weiss.svg");
+}
+[data-bookshelf-type="delete"] {
+  background-image: url("../../images/icons/icon-bs-remove.svg");
+}
+[data-bookshelf-type="link"] {
+  background-image: url("../../images/icons/icon-bs-link.svg");
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    Navigation
    style declarations for navigation.xhtml
    ==============================================================*/
@@ -1801,6 +2066,26 @@ div.mce-fullscreen {
 .image-control__fulltext a {
   line-height: 26px;
   border: none;
+}
+.image-control__add-to-bookshelf [data-bookshelf-type="add"] {
+  line-height: 26px;
+  color: #6f6f6f;
+  background-image: none;
+}
+.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-heart-o {
+  display: inline-block;
+}
+.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-heart {
+  display: none;
+  color: #6f6f6f;
+}
+.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-heart-o,
+.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-heart-o {
+  display: none;
+}
+.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-heart,
+.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-heart {
+  display: inline-block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -2600,6 +2885,140 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Login Navigation
+   style declarations for loginNavigation.xhtml
+   ==============================================================*/
+/* LOGIN NAVIGATION */
+/* BLOCK */
+.login-navigation {
+  /* ELEMENT */
+  /* LOGIN DROPDOWN */
+  /* USER DROPDOWN */
+}
+.login-navigation__login-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  min-height: 290px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  overflow: hidden;
+  z-index: 999;
+}
+.login-navigation__login-dropdown li {
+  border-bottom: 1px solid #ccc;
+}
+.login-navigation__login-dropdown li:hover {
+  background-color: #eee;
+}
+.login-navigation__login-dropdown a,
+.login-navigation__login-dropdown button {
+  padding: 7px 14px;
+}
+.login-navigation__login-dropdown .control-label {
+  font-weight: normal;
+}
+.login-navigation__login-dropdown .form-control {
+  height: 32px;
+}
+.login-navigation__user-icon {
+  /* MODIFICATION */
+}
+.login-navigation__user-icon--loggedout .fa {
+  color: #ccc;
+}
+.login-navigation__user-icon--loggedin .fa {
+  margin-top: 7px;
+  color: #428bca;
+}
+.login-navigation__login-dropdown-action {
+  margin-top: 30px;
+}
+.login-navigation__login-dropdown-action .btn {
+  width: 100%;
+}
+.login-navigation__login-dropdown-options {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+.login-navigation__login-dropdown-options li:hover {
+  background-color: transparent;
+}
+.login-navigation__login-dropdown-options a,
+.login-navigation__login-dropdown-options button {
+  width: 100%;
+  padding: 7px 14px;
+  color: #428bca;
+}
+.login-navigation__login-dropdown-options a {
+  display: block;
+  text-align: center;
+}
+.login-navigation__open-id h3 {
+  margin: 0;
+  padding: 7px 0;
+  font-size: 15px;
+  text-align: center;
+}
+.login-navigation__open-id li {
+  border: none;
+}
+.login-navigation__open-id li a {
+  padding: 5px 10px 5px 5px;
+  font-size: 21px;
+}
+.login-navigation__open-id li:hover,
+.login-navigation__open-id li:active,
+.login-navigation__open-id li:focus {
+  background-color: transparent;
+}
+.login-navigation__user-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  padding: 10px;
+  padding-top: 0;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  overflow: hidden;
+  z-index: 999;
+}
+.login-navigation__user-dropdown ul {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+.login-navigation__user-dropdown li {
+  max-height: inherit !important;
+  border-bottom: 1px solid #ccc;
+}
+.login-navigation__user-dropdown li:last-child {
+  border-bottom: none;
+}
+.login-navigation__user-dropdown li .fa {
+  color: #428bca;
+}
+.login-navigation__user-dropdown li .col-xs-2 {
+  padding: 7px 0;
+  text-align: center;
+}
+.login-navigation__user-dropdown a {
+  padding: 7px 14px;
+}
+.login-navigation__user-dropdown .btn {
+  margin-top: 10px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
 /* ==============================================================
    Admin 
@@ -3352,7 +3771,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100%;
 }
 .search-advanced__input-group input[type="text"] {
-  border-right-color: transparent;
+  border-right: none;
 }
 .search-advanced__input-group input[type="text"]:focus {
   border-right-color: #428bca;
@@ -3600,6 +4019,29 @@ div[id*="-Modal"] .email-form .form-group {
   max-width: 80px;
   border: 2px solid #fff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+.search-list__hit-thumbnail [data-bookshelf-type="add"] {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  font-size: 18px;
+  color: #fff;
+  background-image: none;
+}
+.search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-heart-o {
+  display: inline-block;
+}
+.search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-heart {
+  display: none;
+  color: #428bca;
+}
+.search-list__hit-thumbnail [data-bookshelf-type="add"].added .fa-heart-o,
+.search-list__hit-thumbnail [data-bookshelf-type="add"]:hover .fa-heart-o {
+  display: none;
+}
+.search-list__hit-thumbnail [data-bookshelf-type="add"].added .fa-heart,
+.search-list__hit-thumbnail [data-bookshelf-type="add"]:hover .fa-heart {
+  display: inline-block;
 }
 .search-list__hit-docstruct ul {
   display: flex;
@@ -4147,6 +4589,66 @@ div[id*="-Modal"] .email-form .form-group {
   }
 }
 /* ==============================================================
+   User Account Create
+   style declarations for userAccountCreate.xhtml
+   ==============================================================*/
+/* USER ACCOUNT CREATE */
+/* BLOCK */
+.user-account-create {
+  /* ELEMENT */
+}
+.user-account-create__form {
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+}
+.user-account-create__form form {
+  width: 80%;
+  margin: 0 auto;
+}
+.user-account-create .control-label {
+  font-weight: normal;
+}
+.user-account-create .form-control {
+  height: 32px;
+}
+.user-account-create__action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   User Account Retrieve
+   style declarations for userAccountRetrieve.xhtml
+   ==============================================================*/
+/* USER ACCOUNT RETRIEVE */
+/* BLOCK */
+.user-account-retrieve {
+  /* ELEMENT */
+}
+.user-account-retrieve__form {
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+}
+.user-account-retrieve__form form {
+  width: 80%;
+  margin: 0 auto;
+}
+.user-account-retrieve .control-label {
+  font-weight: normal;
+}
+.user-account-retrieve .form-control {
+  height: 32px;
+}
+.user-account-retrieve__action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    User Data
    style declarations for user.xhtml
    ==============================================================*/
@@ -4215,67 +4717,121 @@ div[id*="-Modal"] .email-form .form-group {
    User Bookshelves
    style declarations for userBackendBookshelves.xhtml
    ==============================================================*/
-#myBookshelves #user_bookshelf_data_table thead tr th:nth-child(3) {
-  text-align: center;
+/* USER BOOKSHELVES */
+/* BLOCK */
+.user-bookshelves {
+  /* ELEMENT */
+  /* ADD */
+  /* PANEL */
 }
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) {
-  text-align: center;
+.user-bookshelves__add-bookshelf {
+  height: 32px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
 }
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a {
+.user-bookshelves__add-bookshelf:before,
+.user-bookshelves__add-bookshelf:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__add-bookshelf:after {
+  clear: both;
+}
+.user-bookshelves__add-bookshelf input {
+  width: 100%;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+}
+.user-bookshelves__add-bookshelf button {
+  width: 100%;
+  height: 32px;
+  background-image: url("../../images/icons/icon-bs-add.svg");
+  background-size: 60%;
+}
+.user-bookshelves__panel {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.user-bookshelves__panel:before,
+.user-bookshelves__panel:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel:after {
+  clear: both;
+}
+.user-bookshelves__panel-header:before,
+.user-bookshelves__panel-header:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel-header:after {
+  clear: both;
+}
+.user-bookshelves__panel-header h4 {
+  margin: 0;
+}
+.user-bookshelves__panel-header small {
+  color: #ccc;
+}
+.user-bookshelves__panel-body {
+  padding-top: 15px;
+}
+.user-bookshelves__panel-body:before,
+.user-bookshelves__panel-body:after {
+  content: " ";
+  display: table;
+}
+.user-bookshelves__panel-body:after {
+  clear: both;
+}
+.user-bookshelves__panel-body p {
+  margin: 0;
+  font-size: 13px;
+  font-style: italic;
+}
+.user-bookshelves__panel-action a {
   display: inline-block;
-  margin: 0 5px 0 0;
-  padding: 5px;
-  color: #1a1a1a;
-}
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a:hover,
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a:focus,
-#myBookshelves #user_bookshelf_data_table tbody tr td:nth-child(3) a:active {
-  text-decoration: none;
-  color: #1a1a1a;
-}
-#myBookshelves .add-new-bookshelf-action .btn {
-  float: right;
-  margin: 0 0 1.3125rem 0;
+  padding: 0 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   User edit Bookshelf
+   User Bookshelf Edit
    style declarations for userBackendEditBookshelf.xhtml
    ==============================================================*/
-#editBookshelf #userEditBookshelfForm {
-  margin-bottom: 1.3125rem;
-  padding: 10px;
+/* USER BOOKSHELF EDIT */
+/* BLOCK */
+.user-bookshelf-edit {
+  /* ELEMENT */
+}
+.user-bookshelf-edit__form {
+  padding: 30px 15px;
   border: 1px solid #ccc;
 }
-#editBookshelf #userEditBookshelfForm:before,
-#editBookshelf #userEditBookshelfForm:after {
-  content: " ";
-  display: table;
+.user-bookshelf-edit__form form {
+  width: 80%;
+  margin: 0 auto;
 }
-#editBookshelf #userEditBookshelfForm:after {
-  clear: both;
+.user-bookshelf-edit .control-label {
+  font-weight: normal;
 }
-#editBookshelf #userEditBookshelfForm .btn {
-  float: right;
-  margin: 0;
+.user-bookshelf-edit .form-control {
+  height: 48px;
 }
-#editBookshelf #deleteBookshelfWrapp {
+.user-bookshelf-edit textarea {
+  min-height: 125px;
+  resize: vertical;
+}
+.user-bookshelf-edit__action {
   text-align: right;
 }
-#editBookshelf #deleteBookshelfWrapp .btn {
-  margin: 0.875rem 0;
-}
-#editBookshelf #deleteBookshelfWrapp .modal-footer .btn {
-  margin: 0 0 0 5px;
-}
-#editBookshelf #editBookshelfItemControlsForm {
-  text-align: right;
-}
-#editBookshelf #editBookshelfItemControlsForm .btn {
-  margin: 0.875rem 0;
+.user-bookshelf-edit__action .btn {
+  margin-left: 10px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -4296,9 +4852,109 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
+   User Bookshelf Send List
+   style declarations for userBookshelfSendList.xhtml
+   ==============================================================*/
+/* USER BOOKSHELF SEND LIST */
+/* BLOCK */
+.user-bookshelf-send-list {
+  /* ELEMENT */
+}
+.user-bookshelf-send-list__form {
+  padding: 30px 15px;
+  border: 1px solid #ccc;
+}
+.user-bookshelf-send-list__form form {
+  width: 80%;
+  margin: 0 auto;
+}
+.user-bookshelf-send-list .control-label {
+  font-weight: normal;
+}
+.user-bookshelf-send-list .form-control {
+  height: 32px;
+}
+.user-bookshelf-send-list__action {
+  text-align: right;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    User view Bookshelf
    style declarations for userBackendViewBookshelf.xhtml
    ==============================================================*/
+/* USER VIEW BOOKSHELF */
+/* BLOCK */
+.view-bookshelf {
+  /* ELEMENT */
+}
+.view-bookshelf p {
+  font-size: 13px;
+  font-style: italic;
+}
+.view-bookshelf__action a {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 26px;
+}
+.view-bookshelf__item {
+  height: 300px;
+  margin-bottom: 30px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease-in;
+}
+.view-bookshelf__item:hover {
+  background-color: #eee;
+}
+.view-bookshelf__item-image,
+.view-bookshelf__item-info,
+.view-bookshelf__item-action {
+  float: left;
+  width: 50%;
+}
+.view-bookshelf__item-image {
+  height: 300px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.view-bookshelf__item-image a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.view-bookshelf__item-info {
+  height: 250px;
+  padding: 15px 15px 0 15px;
+  overflow-y: auto;
+}
+.view-bookshelf__item-info h4 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.view-bookshelf__item-info textarea {
+  width: 100%;
+  height: 150px;
+  resize: none;
+  border: none;
+  background-color: transparent;
+}
+.view-bookshelf__item-action {
+  height: 50px;
+  padding: 15px;
+  text-align: right;
+}
+.view-bookshelf__item-action a {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+.view-bookshelf__item-action [data-bookshelf-type="delete"] {
+  background-size: 70%;
+}
 #viewBookshelf #viewBookshelfControlsForm {
   text-align: right;
 }
@@ -5956,6 +6612,26 @@ div.olMapViewport {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
+   Widget Bookshelf List
+   style declarations for widget_bookshelfList.xhtml
+   ==============================================================*/
+/* WIDGET BOOKSHELF LIST */
+/* BLOCK */
+.widget-bookshelf-list {
+  /* BACK */
+}
+.widget-bookshelf-list ul {
+  margin-bottom: 15px;
+}
+.widget-bookshelf-list__back {
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    Widget Browsing
    style declarations for widget_browsing.xhtml
    ==============================================================*/
@@ -6085,6 +6761,9 @@ div.olMapViewport {
 }
 .rss_elem_wrapp .rss-wrapp .rss-elem dl .rss-elem-info {
   margin-bottom: 0.875rem;
+}
+.rss_elem_wrapp .rss-wrapp .rss-elem:last-child dl .rss-elem-info {
+  margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */

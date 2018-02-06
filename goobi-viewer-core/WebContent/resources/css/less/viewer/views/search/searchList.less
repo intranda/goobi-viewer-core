@@ -165,6 +165,30 @@
             border: 2px solid @white;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
         }
+        [data-bookshelf-type="add"] {
+        	position: absolute;
+        	top: 0;
+		    right: 5px;
+        	font-size: 18px;
+		    color: @white;
+		    background-image: none;
+		    .fa-heart-o {
+		    	display: inline-block;
+		    }
+		    .fa-heart {
+		    	display: none;
+		    	color: @blue;
+		    }
+		    &.added,
+		    &:hover {
+		    	.fa-heart-o {
+			    	display: none;
+			    }
+			    .fa-heart {
+			    	display: inline-block;
+			    }
+		    }
+        }
     }
     &__hit-type {}
     &__hit-docstruct {

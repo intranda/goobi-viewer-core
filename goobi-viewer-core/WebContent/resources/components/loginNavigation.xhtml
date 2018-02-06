@@ -1,0 +1,217 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface />
+    <!-- COMPONENT CONTENT -->
+    <composite:implementation>
+        <ul class="list login-navigation">
+            <!-- USER NOT LOGGED IN -->
+            <h:panelGroup rendered="#{!userBean.loggedIn}">
+                <li data-login="false">
+                    <button
+                        type="button"
+                        class="btn-clean login-navigation__user-icon login-navigation__user-icon--loggedout"
+                        data-toggle="login-dropdown">
+                        #{msg.userNotLoggedIn}
+                        <i
+                            class="fa fa-user-circle-o"
+                            aria-hidden="true"></i>
+                    </button>
+                    <!-- LOGIN DROPDOWN -->
+                    <div class="login-navigation__login-dropdown">
+                        <!-- LOGIN -->
+                        <h:form
+                            id="loginDropdownForm"
+                            prependId="false">
+                            <div class="form-group">
+                                <label
+                                    for="userEMail"
+                                    class="control-label">#{msg.email}:</label>
+                                <h:inputText
+                                    id="userEMail"
+                                    styleClass="form-control"
+                                    value="#{userBean.email}"
+                                    required="true"
+                                    requiredMessage="#{msg.loginEnterUserName}">
+                                    <f:validator validatorId="emailValidator" />
+                                </h:inputText>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    for="userPassword"
+                                    class="control-label">#{msg.password}:</label>
+                                <h:inputSecret
+                                    id="userPassword"
+                                    styleClass="form-control"
+                                    type="password"
+                                    value="#{userBean.password}"
+                                    required="true"
+                                    requiredMessage="#{msg.loginEnterPassword}" />
+                            </div>
+                            <div class="login-navigation__login-dropdown-action text-right">
+                                <h:commandButton
+                                    styleClass="btn"
+                                    value="#{msg.login}"
+                                    action="#{userBean.login}">
+                                    <f:setPropertyActionListener
+                                        target="#{userBean.redirectUrl}"
+                                        value="#" />
+                                </h:commandButton>
+                            </div>
+                        </h:form>
+                        <!-- LOGIN OPTIONS -->
+                        <nav class="login-navigation__login-dropdown-options">
+                            <ul class="list">
+                                <li>
+                                    <a href="#{request.contextPath}/userAccountRetrieve/">#{msg.user_forgotPassword}</a>
+                                </li>
+                                <h:panelGroup rendered="#{userBean.userRegistrationEnabled}">
+                                    <li>
+                                        <a href="#{request.contextPath}/userAccountCreate/">#{msg.user_createNewAccount}</a>
+                                    </li>
+                                </h:panelGroup>
+                            </ul>
+                        </nav>
+                        <!-- OPEN ID -->
+                        <ui:fragment rendered="#{userBean.showOpenId}">
+                            <nav class="login-navigation__open-id">
+                                <h3>#{msg.user_openIdLogin}</h3>
+                                <h:form
+                                    id="loginNavigationOpenIdForm"
+                                    prependId="false">
+                                    <ul class="list list--horizontal">
+                                        <ui:repeat
+                                            var="provider"
+                                            value="#{userBean.openIdConnectProviders}">
+                                            <ui:fragment rendered="#{provider.name == 'Google'}">
+                                                <li>
+                                                    <h:commandLink
+                                                        rendered="#{!provider.useTextField}"
+                                                        action="#{userBean.loginOpenIdConnectAction}">
+                                                        <i
+                                                            class="fa fa-google"
+                                                            aria-hidden="true"></i>
+                                                        <f:setPropertyActionListener
+                                                            target="#{userBean.openIdProvider}"
+                                                            value="#{provider}" />
+                                                    </h:commandLink>
+                                                </li>
+                                            </ui:fragment>
+                                            <ui:fragment rendered="#{provider.name == 'Facebook'}">
+                                                <li>
+                                                    <h:commandLink
+                                                        rendered="#{!provider.useTextField}"
+                                                        action="#{userBean.loginOpenIdConnectAction}">
+                                                        <i
+                                                            class="fa fa-facebook-official"
+                                                            aria-hidden="true"></i>
+                                                        <f:setPropertyActionListener
+                                                            target="#{userBean.openIdProvider}"
+                                                            value="#{provider}" />
+                                                    </h:commandLink>
+                                                </li>
+                                            </ui:fragment>
+                                        </ui:repeat>
+                                    </ul>
+                                </h:form>
+                            </nav>
+                        </ui:fragment>
+                    </div>
+                </li>
+            </h:panelGroup>
+            <!-- USER LOGGED IN -->
+            <h:panelGroup rendered="#{userBean.loggedIn}">
+                <li data-login="true">
+                    <button
+                        type="button"
+                        class="btn-clean"
+                        data-toggle="user-dropdown">
+                        <span class="col-xs-9"> #{userBean.user.nickName} </span>
+                        <span class="col-xs-3 login-navigation__user-icon login-navigation__user-icon--loggedin">
+                            <!-- GRAVATAR -->
+                            <ui:fragment rendered="#{user.useGravatar}">
+                                <img
+                                    src="#{user.getGravatarUrl(96)}"
+                                    class="img-responsive img-circle"
+                                    alt="User Gravatar" />
+                            </ui:fragment>
+                            <ui:fragment rendered="#{!user.useGravatar}">
+                                <i
+                                    class="fa fa-user-circle-o"
+                                    aria-hidden="true"></i>
+                            </ui:fragment>
+                        </span>
+                    </button>
+                    <!-- USER DROPDOWN -->
+                    <div class="login-navigation__user-dropdown">
+                        <h:form
+                            id="userDropdownForm"
+                            prependId="false">
+                            <ul class="list">
+                                <!-- BOKKSHELVES -->
+                                <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
+                                    <li>
+                                        <div class="row no-margin">
+                                            <div class="col-xs-2 no-padding">
+                                                <i
+                                                    class="fa fa-heart"
+                                                    aria-hidden="true"></i>
+                                            </div>
+                                            <div class="col-xs-10 no-padding">
+                                                <a href="#{navigationHelper.applicationUrl}mybookshelves/">#{msg.bookshelf_myBookshelves}</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ui:fragment>
+                                <!-- SAVED SEARCHES -->
+                                <ui:fragment rendered="#{searchBean.searchSavingEnabled}">
+                                    <li>
+                                        <div class="row no-margin">
+                                            <div class="col-xs-2 no-padding">
+                                                <i
+                                                    class="fa fa-search"
+                                                    aria-hidden="true"></i>
+                                            </div>
+                                            <div class="col-xs-10 no-padding">
+                                                <a href="#{navigationHelper.applicationUrl}mysearches/">#{msg.user_mySearches}</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ui:fragment>
+                                <!-- USERDATA -->
+                                <li>
+                                    <div class="row no-margin">
+                                        <div class="col-xs-2 no-padding">
+                                            <i
+                                                class="fa fa-user-circle-o"
+                                                aria-hidden="true"></i>
+                                        </div>
+                                        <div class="col-xs-10 no-padding">
+                                            <a href="#{navigationHelper.applicationUrl}user/">#{msg.userCP}</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <!-- LOGOUT -->
+                            <h:commandLink
+                                value="#{msg.logout}"
+                                action="#{userBean.logout}"
+                                styleClass="btn">
+                                <f:setPropertyActionListener
+                                    target="#{userBean.redirectUrl}"
+                                    value="pretty:index" />
+                            </h:commandLink>
+                        </h:form>
+                    </div>
+                </li>
+            </h:panelGroup>
+            <script type="text/javascript">
+			    viewerJS.userDropdown.init();
+			</script>
+        </ul>
+    </composite:implementation>
+</ui:composition>

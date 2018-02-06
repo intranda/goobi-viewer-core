@@ -902,8 +902,22 @@ public class NavigationHelper implements Serializable {
      * @param linkWeight
      */
     public void addStaticLinkToBreadcrumb(String linkName, String url, int linkWeight) {
+        PageType page = PageType.getByName(url);
+        if(page != null && !page.equals(PageType.other)) {
+            url = getUrl(page);
+        } else {            
+        }
         LabeledLink newLink = new LabeledLink(linkName, url, linkWeight);
         updateBreadcrumbs(newLink);
+    }
+
+
+    /**
+     * @param page
+     * @return
+     */
+    private String getUrl(PageType page) {
+       return getApplicationUrl() + page.getName();
     }
 
     public String getCurrentPartnerUrl() {
@@ -1071,7 +1085,7 @@ public class NavigationHelper implements Serializable {
 
     public String getPreviousViewUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getCombinedUrl()).orElse("");
+        String previousUrl = ViewHistory.getPreviousView(request).map(path -> path.getApplicationName() + path.getCombinedUrl()).orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
         }

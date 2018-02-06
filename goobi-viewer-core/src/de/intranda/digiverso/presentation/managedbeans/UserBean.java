@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.enterprise.context.SessionScoped;
@@ -56,6 +57,7 @@ import de.intranda.digiverso.presentation.faces.validators.PasswordValidator;
 import de.intranda.digiverso.presentation.filters.LoginFilter;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
@@ -63,6 +65,7 @@ import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
 import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
+import de.intranda.digiverso.presentation.servlets.rest.bookshelves.BookshelfResource;
 
 @Named
 @SessionScoped
@@ -191,17 +194,20 @@ public class UserBean implements Serializable {
             User user = User.auth(getEmail(), getPassword());
             if (user != null) {
                 if (user.isActive() && !user.isSuspended()) {
-                    wipeSession(BeanUtils.getRequest());
+                    HttpServletRequest request = BeanUtils.getRequest();
+                    DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
+                    wipeSession(request);
                     // Update last login
                     user.setLastLogin(new Date());
                     if (!DataManager.getInstance().getDao().updateUser(user)) {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(user);
-                    HttpServletRequest request = BeanUtils.getRequest();
+                    request = BeanUtils.getRequest();
                     request.getSession(false).setAttribute("user", user);
                     SearchHelper.updateFilterQuerySuffix(request);
                     // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
+                    
                     if (StringUtils.isNotEmpty(redirectUrl)) {
                         if("#".equals(redirectUrl)) {
                             logger.trace("Stay on current page");
