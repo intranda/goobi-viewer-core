@@ -110,6 +110,9 @@
                                     </ui:repeat>
                                 </tbody>
                             </table>
+                            
+                            <!-- paginator -->
+                            <viewerComponent:dataTablePaginator tableValues="#{cmsBean.lazyModelPages}" />
 
                             <!-- delete page modal -->
                             <div id="deletePageModal" class="modal fade" tabindex="-1" role="dialog">

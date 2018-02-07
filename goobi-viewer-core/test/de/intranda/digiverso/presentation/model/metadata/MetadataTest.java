@@ -7,6 +7,8 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
+
 public class MetadataTest {
 
     /**
@@ -20,7 +22,8 @@ public class MetadataTest {
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
-        Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
+        Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0)
+                .getLabel());
     }
 
     /**
@@ -34,6 +37,25 @@ public class MetadataTest {
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
-        Assert.assertEquals("MD_TITLE", filteredList.get(0).getLabel());
+        Assert.assertEquals("MD_TITLE", filteredList.get(0)
+                .getLabel());
+    }
+
+    /**
+     * @see Metadata#buildHierarchicalValue(String,Locale,NavigationHelper)
+     * @verifies build value correctly
+     */
+    @Test
+    public void buildHierarchicalValue_shouldBuildValueCorrectly() throws Exception {
+        {
+            String value = Metadata.buildHierarchicalValue("DC", "a.b", null, "http://localhost:8080/");
+            Assert.assertEquals(
+                    "<a href=\"http://localhost:8080/browse/DC:a/-/1/-/-/\">a</a> > <a href=\"http://localhost:8080/browse/DC:a.b/-/1/-/-/\">a.b</a>", value);
+        }
+        {
+            // No root URL
+            String value = Metadata.buildHierarchicalValue("DC", "a.b.c.d", null, null);
+            Assert.assertEquals("a > a.b > a.b.c > a.b.c.d", value);
+        }
     }
 }

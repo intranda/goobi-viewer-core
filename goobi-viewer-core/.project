@@ -15,7 +15,6 @@
 		<project>goobi-viewer-theme-ikfn2</project>
 		<project>goobi-viewer-theme-khz</project>
 		<project>goobi-viewer-theme-kuni</project>
-		<project>goobi-viewer-theme-lie</project>
 		<project>goobi-viewer-theme-mvp3</project>
 		<project>goobi-viewer-theme-oolbib</project>
 		<project>goobi-viewer-theme-reference</project>
@@ -45,6 +44,8 @@
 		<project>goobi-viewer-theme-mak</project>
 		<project>goobi-viewer-theme-mnha</project>
 		<project>goobi-viewer-theme-oeadw</project>
+		<project>goobi-viewer-theme-sudanmemories</project>
+		<project>goobi-viewer-theme-lie</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

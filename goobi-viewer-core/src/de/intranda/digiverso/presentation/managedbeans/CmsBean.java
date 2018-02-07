@@ -275,7 +275,7 @@ public class CmsBean implements Serializable {
      * @param template
      * @return
      */
-    private PageValidityStatus isPageValid(CMSPage page) {
+    private static PageValidityStatus isPageValid(CMSPage page) {
         if (page.getTemplate() == null) {
             //remove pages with no template files
             return PageValidityStatus.INVALID_NO_TEMPLATE;
@@ -390,9 +390,7 @@ public class CmsBean implements Serializable {
         if (id != null) {
             try {
                 logger.trace("Get cmsPage from database with pageId = " + id);
-                page = DataManager.getInstance()
-                        .getDao()
-                        .getCMSPage(Long.valueOf(id));
+                page = getCMSPage(Long.valueOf(id));
             } catch (NumberFormatException e) {
                 logger.warn("Could not parse page number: {}", e.getMessage());
             }
@@ -442,9 +440,7 @@ public class CmsBean implements Serializable {
         int offset = item.getListOffset();
         List<CMSPage> nestedPages = new ArrayList<>();
         int counter = 0;
-        List<CMSPage> cmsPages = DataManager.getInstance()
-                .getDao()
-                .getAllCMSPages();
+        List<CMSPage> cmsPages = getAllCMSPages();
         if (!StringUtils.isEmpty(classification)) {
             for (CMSPage cmsPage : cmsPages) {
                 if (cmsPage.isPublished() && cmsPage.getClassifications()
@@ -459,6 +455,45 @@ public class CmsBean implements Serializable {
         setNestedPagesCount((int) Math.ceil(counter / (double) size));
         return nestedPages;
     }
+
+    /**
+     * @return
+     * @throws DAOException
+     */
+    public List<CMSPage> getAllCMSPages() throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getAllCMSPages().stream()
+                .peek(page -> {
+                            PageValidityStatus validityStatus = isPageValid(page);
+                            page.setValidityStatus(validityStatus);
+                            if (validityStatus.isValid()) {
+                                page.getSidebarElements()
+                                        .forEach(element -> element.deSerialize());
+                            } 
+                        })
+                .collect(Collectors.toList());
+    }
+    
+
+    /**
+     * @param pageId
+     * @return
+     * @throws DAOException
+     */
+    public static CMSPage getCMSPage(Long pageId) throws DAOException {
+        CMSPage page = DataManager.getInstance()
+                .getDao()
+                .getCMSPage(pageId);
+        PageValidityStatus validityStatus = isPageValid(page);
+        page.setValidityStatus(validityStatus);
+        if (validityStatus.isValid()) {
+            page.getSidebarElements()
+                    .forEach(element -> element.deSerialize());
+        } 
+        return page;
+    }
+
 
     public List<CMSSidebarElement> getSidebarElements(boolean isCMSPage) {
         if (isCMSPage && getCurrentPage() != null && !getCurrentPage().isUseDefaultSidebar()) {
@@ -500,9 +535,7 @@ public class CmsBean implements Serializable {
             }
             if (success) {
                 Messages.info("cms_pageSaveSuccess");
-                selectedPage = DataManager.getInstance()
-                        .getDao()
-                        .getCMSPage(selectedPage.getId());
+                selectedPage = getCMSPage(selectedPage.getId());
                 lazyModelPages.update();
             } else {
                 Messages.error("cms_pageSaveFailure");
@@ -692,9 +725,7 @@ public class CmsBean implements Serializable {
     public CMSPage getPage(Long pageId) throws DAOException {
 
         if (pageId != null) {
-            return DataManager.getInstance()
-                    .getDao()
-                    .getCMSPage(pageId);
+            return getCMSPage(pageId);
         } else {
             return null;
         }
@@ -1170,9 +1201,7 @@ public class CmsBean implements Serializable {
 
         if (staticPages == null || staticPages.isEmpty()) {
             //resore from old schema
-            staticPages = DataManager.getInstance()
-                    .getDao()
-                    .getAllCMSPages()
+            staticPages = getAllCMSPages()
                     .stream()
                     .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getStaticPageName()))
                     .map(cmsPage -> new CMSStaticPage(cmsPage))
@@ -1196,9 +1225,7 @@ public class CmsBean implements Serializable {
      */
     public List<CMSPage> getAvailableParentPages(CMSPage page) throws DAOException {
         Locale currentLocale = BeanUtils.getLocale();
-        return DataManager.getInstance()
-                .getDao()
-                .getAllCMSPages()
+        return getAllCMSPages()
                 .stream()
                 .filter(p -> !p.equals(page))
                 .sorted((p1, p2) -> p1.getMenuTitle(currentLocale)
@@ -1213,9 +1240,7 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
-        List<CMSPage> allPages = DataManager.getInstance()
-                .getDao()
-                .getAllCMSPages()
+        List<CMSPage> allPages = getAllCMSPages()
                 .stream()
                 .filter(cmsPage -> isPageValid(cmsPage).equals(PageValidityStatus.VALID))
                 .filter(cmsPage -> cmsPage.isPublished())
@@ -1271,7 +1296,7 @@ public class CmsBean implements Serializable {
     }
     
     public List<CMSPage> getValidCMSPages() throws DAOException {
-        return DataManager.getInstance().getDao().getAllCMSPages().stream()
+        return getAllCMSPages().stream()
                 .filter(page -> isPageValid(page).equals(PageValidityStatus.VALID))
                 .filter(page -> page.isPublished())
                 .collect(Collectors.toList());

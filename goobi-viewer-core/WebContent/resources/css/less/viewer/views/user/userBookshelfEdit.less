@@ -1,57 +1,38 @@
 /* ==============================================================
-   User edit Bookshelf
+   User Bookshelf Edit
    style declarations for userBackendEditBookshelf.xhtml
    ==============================================================*/
-#editBookshelf {
-    h2 {}
-    #userEditBookshelfForm {
-    	.mx-clearfloats;
-        margin-bottom: 1.3125rem;
-        padding: 10px;
-        border: 1px solid @middlegray;
-        .form-group {
-            label {}
-            input {}
-        }
-        .btn {
-            float: right;
-            margin: 0;
-        }
+/* USER BOOKSHELF EDIT */
+/* BLOCK */
+.user-bookshelf-edit {
+	/* ELEMENT */
+	h2 {}
+	&__form {
+	    padding: 30px 15px;
+    	border: 1px solid @middlegray;
+    	form {
+	    	width: 80%;
+	    	margin: 0 auto;
+    	}
     }
-    h3 {}
-    #single_bookshelf_data_table {
-        thead {
-            tr {
-                th {
-                    &:nth-child(1) {}
-                    &:nth-child(2) {}
-                    &:nth-child(3) {}
-                }
-            }
-        }
-        tbody {
-            tr {
-                td {}
-            }
-        }
-    }
-    #deleteBookshelfWrapp {
-        text-align: right;
-        .btn {
-            margin: 0.875rem 0;
-        }
-        .modal-footer {
-            .btn {
-                margin: 0 0 0 5px;
-            }
-        }
-    }
-    #editBookshelfItemControlsForm {
-        text-align: right;
-        .btn {
-            margin: 0.875rem 0;
-        }
-    }
+    .control-label {
+		font-weight: normal;
+	}
+	.form-control {
+		height: 48px;
+	}
+	textarea {
+		min-height: 125px;
+		resize: vertical;
+	}
+	&__action {
+		text-align: right;
+	}
+	&__action {
+		.btn {
+			margin-left: 10px;
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

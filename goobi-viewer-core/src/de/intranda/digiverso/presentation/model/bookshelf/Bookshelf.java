@@ -56,7 +56,6 @@ public class Bookshelf implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookshelf_id")
-    @JsonIgnore
     private Long id;
 
     @JoinColumn(name = "owner_id", nullable = false)
@@ -66,7 +65,7 @@ public class Bookshelf implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "LONGTEXT")
     private String description;
 
     @Column(name = "public")
@@ -267,6 +266,10 @@ public class Bookshelf implements Serializable {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public boolean hasDescription() {
+        return StringUtils.isNotBlank(getDescription());
     }
 
     /**

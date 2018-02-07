@@ -151,7 +151,7 @@ public class Search implements Serializable {
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
         sbUrl.append('/').append(PageType.search.getName());
         sbUrl.append('/').append((StringUtils.isNotEmpty(collection) ? URLEncoder.encode(collection, SearchBean.URL_ENCODING) : "-"));
-        sbUrl.append('/').append(URLEncoder.encode(query, SearchBean.URL_ENCODING)).append('/').append(page);
+        sbUrl.append('/').append(StringUtils.isNotEmpty(query) ? URLEncoder.encode(query, SearchBean.URL_ENCODING) : "-").append('/').append(page);
         sbUrl.append('/').append((StringUtils.isNotEmpty(sortField) ? sortField : "-"));
         sbUrl.append('/').append((StringUtils.isNotEmpty(filter) ? URLEncoder.encode(filter, SearchBean.URL_ENCODING) : "-")).append('/');
         return sbUrl.toString();

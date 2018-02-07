@@ -248,7 +248,17 @@ public class BookshelfItem implements Serializable {
     public String getRepresentativeImageUrl() throws PresentationException, IndexUnreachableException {
         int width = 90;
         int height = 120;
-
+        return getRepresentativeImageUrl(width, height);
+    }
+        
+    /**
+     * Returns the URL to the representative image thumbnail for the record represented by this item.
+     *
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+        public String getRepresentativeImageUrl(int width, int height) throws PresentationException, IndexUnreachableException {
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 1, null,
                 Arrays.asList(FIELDS));
         if (!docs.isEmpty()) {

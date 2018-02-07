@@ -129,6 +129,29 @@
     	}
     }
     &__fulltext {}
+    &__add-to-bookshelf {
+    	[data-bookshelf-type="add"] {
+		    line-height: 26px;
+		    color: @gray;
+		    background-image: none;
+		    .fa-heart-o {
+		    	display: inline-block;
+		    }
+		    .fa-heart {
+		    	display: none;
+		    	color: @gray;
+		    }
+		    &.added,
+		    &:hover {
+		    	.fa-heart-o {
+			    	display: none;
+			    }
+			    .fa-heart {
+			    	display: inline-block;
+			    }
+		    }
+        }
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

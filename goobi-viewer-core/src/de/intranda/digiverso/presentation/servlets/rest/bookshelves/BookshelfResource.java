@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.servlets.rest.bookshelves;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,8 +41,10 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.RestApiException;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.bookshelf.BookshelfItem;
+import de.intranda.digiverso.presentation.model.bookshelf.SessionStoreBookshelfManager;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.servlets.rest.SuccessMessage;
@@ -57,22 +60,22 @@ public class BookshelfResource {
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfResource.class);
     private final boolean testing;
+    private final UserBean userBean;
     
     @Context
     private HttpServletRequest servletRequest;
 
     public BookshelfResource() {
         this.testing = false;
+        this.userBean = BeanUtils.getUserBean();
     }
-    
-    /**
-     * For testing
-     * @param request
-     */
-    protected BookshelfResource(HttpServletRequest request) {
-        this.servletRequest = request;
+   
+    public BookshelfResource(UserBean userBean, HttpServletRequest request) {
         this.testing = true;
+        this.userBean = userBean;
+        this.servletRequest = request;
     }
+
     
     
     /**
@@ -304,8 +307,7 @@ public class BookshelfResource {
     @Path("/user/get/")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Bookshelf> getAllUserBookshelfs() throws DAOException, IOException, RestApiException {
-        HttpSession session = servletRequest.getSession();
-        User user = getUserFromSession(session);
+        User user = getUser();
         if (user != null) {
             return DataManager.getInstance().getDao().getBookshelves(user);
         } else {
@@ -325,8 +327,7 @@ public class BookshelfResource {
     @Path("/shared/get/")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Bookshelf> getAllSharedBookshelfs() throws DAOException, IOException, RestApiException {
-        HttpSession session = servletRequest.getSession();
-        User user = getUserFromSession(session);
+        User user = getUser();
         if (user != null) {
             return DataManager.getInstance().getDao().getAllBookshelves().stream().filter(bs -> !user.equals(bs.getOwner())).filter(bs -> isSharedTo(
                     bs, user)).collect(Collectors.toList());
@@ -369,8 +370,7 @@ public class BookshelfResource {
             logger.trace("Serving public bookshelf " + id);
             return bookshelf;
         } else {
-            HttpSession session = servletRequest.getSession();
-            User user = getUserFromSession(session);
+            User user = getUser();
             if (user != null) {
                 if (user.equals(bookshelf.getOwner())) {
                     logger.trace("Serving bookshelf " + id + " owned by user " + user);
@@ -504,7 +504,7 @@ public class BookshelfResource {
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelf(@PathParam("name") String name) throws DAOException, IOException, RestApiException {
 
-        User user = getUserFromSession(servletRequest.getSession());
+        User user = getUser();
 
         if (user != null) {
             if (!userHasBookshelf(user, name)) {
@@ -535,7 +535,7 @@ public class BookshelfResource {
     @Path("/user/add")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelf() throws DAOException, IOException, RestApiException {
-        String name = generateNewBookshelfName(getAllUserBookshelfs());
+        String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
         return addUserBookshelf(name);
     }
     
@@ -552,7 +552,7 @@ public class BookshelfResource {
     @Path("/user/addSessionBookshelf")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelfFromSession() throws DAOException, IOException, RestApiException {
-        String name = generateNewBookshelfName(getAllUserBookshelfs());
+        String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
         return addUserBookshelfFromSession(name);
     }
     
@@ -569,7 +569,7 @@ public class BookshelfResource {
     @Path("/user/addSessionBookshelf/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage addUserBookshelfFromSession(@PathParam("name")String bookshelfName) throws DAOException, IOException, RestApiException {
-        User user = getUserFromSession(servletRequest.getSession());
+        User user = getUser();
 
         if (user != null) {            
             
@@ -600,7 +600,7 @@ public class BookshelfResource {
     @Path("/user/delete/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SuccessMessage deleteUserBookshelf(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
-        User user = getUserFromSession(servletRequest.getSession());
+        User user = getUser();
 
         if (user != null) {     
             Optional<Bookshelf> bookshelf = getBookshelf(user, id);
@@ -631,22 +631,18 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Object getContainingUserBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
+    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         List<Bookshelf> bookshelves = getAllUserBookshelfs();
         if(bookshelves  != null) {
             try {
                 BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
-                Optional<Bookshelf> bookshelf = bookshelves.stream().filter(bs -> bs.getItems().contains(item)).findFirst();
-                if(bookshelf.isPresent()) {
-                    return bookshelf.get();
-                } else {
-                    return new SuccessMessage(false, "No bookshelf found for current user countaining item with pi = '" + pi + "' logId = '" + logId + "' and page number = '" + pageString + "'");
-                }
+                List<Bookshelf> containingShelves= bookshelves.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
+                return containingShelves;
             } catch (IndexUnreachableException | PresentationException e) {
-                return new SuccessMessage(false, e.getMessage());
+                throw new RestApiException("Error retrieving bookshelves: " + e.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } else {
-            return new SuccessMessage(false, "No bookshelves found for current user");
+            return new ArrayList<Bookshelf>();
         }
     }
 
@@ -664,8 +660,8 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Object getContainingUserBookshelf(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
-        return getContainingUserBookshelf(pi, null, null);
+    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+        return getContainingUserBookshelves(pi, null, null);
     }
  
     /**
@@ -707,12 +703,7 @@ public class BookshelfResource {
      * @param session
      * @return
      */
-    private User getUserFromSession(HttpSession session) {
-        if (session == null) {
-            logger.debug("Unable to get user: No session available");
-            return null;
-        } else {
-            UserBean userBean = (UserBean) session.getAttribute("userBean");
+    private User getUser() {
             if (userBean == null) {
                 logger.debug("Unable to get user: No UserBean found in session store.");
                 return null;
@@ -726,7 +717,6 @@ public class BookshelfResource {
                     return user;
                 }
             }
-        }
     }
 
     /**
@@ -781,35 +771,7 @@ public class BookshelfResource {
             return false;
         }
     }
-    
-    /**
-     * @param allUserBookshelfs
-     * @return
-     */
-    private String generateNewBookshelfName(List<Bookshelf> bookshelves) {
-        
-        String bookshelfNameTemplate = "List {num}";
-        String bookshelfNamePlaceholder = "{num}";
-        String bookshelfNameRegex = "List \\d+";
-        String bookshelfNameBase = "List ";
 
-        if(bookshelves == null || bookshelves.isEmpty()) {
-            return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, "1");
-        }
-        
-        
-        Integer counter = bookshelves.stream()
-        .map(bs -> bs.getName())
-        .filter(name -> name != null && name.matches(bookshelfNameRegex))
-        .map(name -> name.replace(bookshelfNameBase, ""))
-        .map(num -> Integer.parseInt(num))
-        .sorted((n1, n2) -> Integer.compare(n2, n1))
-        .findFirst().orElse(0);
-        
-        counter++;
-        
-        return bookshelfNameTemplate.replace(bookshelfNamePlaceholder, counter.toString());
-    }
 
     //    @PUT
     //    @Path("/testPost")

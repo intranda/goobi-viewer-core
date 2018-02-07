@@ -1,0 +1,148 @@
+/* ==============================================================
+   Login Navigation
+   style declarations for loginNavigation.xhtml
+   ==============================================================*/
+/* LOGIN NAVIGATION */
+/* BLOCK */
+.login-navigation {
+	/* ELEMENT */
+	/* LOGIN DROPDOWN */
+	&__login-dropdown {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		width: 300px;
+		min-height: 290px;
+		padding: 10px;
+		font-size: 1rem;
+		border: 1px solid @middlegray;
+		background-color: @white;
+		overflow: hidden;
+		z-index: 999;
+		li {
+			border-bottom: 1px solid @middlegray;
+			&:hover {
+				background-color: @lightgray;
+			}
+		}
+		a, button {
+			padding: 7px 14px;
+		}
+		.control-label {
+			font-weight: normal;
+		}
+		.form-control {
+			height: 32px;
+		}
+	}
+	&__user-icon {
+		/* MODIFICATION */
+		&--loggedout {
+			.fa {
+				color: @middlegray;
+			}
+		}
+		&--loggedin {
+			.fa {
+				margin-top: 7px;
+				color: @blue;
+			}
+		}
+	}
+	&__login-dropdown-action {
+		margin-top: 30px;
+		.btn {
+			width: 100%;
+		}
+	}
+	&__login-dropdown-options {
+		margin-left: -10px;
+	    margin-right: -10px;
+		li {
+			&:hover {
+				background-color: transparent;
+			}
+		}
+		a, button {
+			width: 100%;
+			padding: 7px 14px;
+			color: @blue;
+		}
+		a {
+			display: block;
+			text-align: center;
+		}
+	}
+	&__open-id {
+		h3 {
+			margin: 0;
+			padding: 7px 0;
+			font-size: 15px;
+			text-align: center;
+		}
+		li {
+			border: none;
+			a {
+				padding: 5px 10px 5px 5px;
+				font-size: 21px;
+			}
+			&:hover,
+			&:active,
+			&:focus {
+				background-color: transparent;
+			}
+		}
+	}
+	/* USER DROPDOWN */
+	&__user-dropdown {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		width: 300px;
+		padding: 10px;
+		padding-top: 0;
+		font-size: 1rem;
+		border: 1px solid @middlegray;
+		background-color: @white;
+		overflow: hidden;
+		z-index: 999;
+		ul {
+			margin-left: -10px;
+    		margin-right: -10px;
+		}
+		li {
+			max-height: inherit !important;
+			border-bottom: 1px solid @middlegray;
+			&:last-child {
+				border-bottom: none;
+			}
+			.fa {
+				color: @blue;
+			}
+			.col-xs-2 {
+				padding: 7px 0;
+				text-align: center;
+			}
+		}
+		a {
+			padding: 7px 14px;
+		}
+		.btn {
+			margin-top: 10px;
+		}
+	}
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {} 

@@ -62,9 +62,6 @@
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <!-- LIE -->
-        <dependent-module archiveName="viewer-theme-lie.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-lie/goobi-viewer-theme-lie">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <!-- MVP 3 -->
         <dependent-module archiveName="viewer-theme-mvp3.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-mvp3/goobi-viewer-theme-mvp3">
             <dependency-type>uses</dependency-type>
@@ -179,6 +176,14 @@
         </dependent-module>
         <!-- OEADW -->
         <dependent-module archiveName="goobi-viewer-theme-oeadw.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-oeadw/goobi-viewer-theme-oeadw">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- SUDAN MEMORIES -->
+        <dependent-module archiveName="goobi-viewer-theme-sudanmemories.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sudanmemories/goobi-viewer-theme-sudanmemories">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- LIE -->
+        <dependent-module archiveName="goobi-viewer-theme-lie.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-lie/goobi-viewer-theme-lie">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>

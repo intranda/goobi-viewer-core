@@ -222,7 +222,7 @@ public class TableDataProvider<T> {
     }
 
     public boolean addFilter(String column) {
-        if (!getFilter(column).isPresent()) {
+        if (!getFilterAsOptional(column).isPresent()) {
             addFilter(new TableDataFilter(column, ""));
             return true;
         }
@@ -230,7 +230,7 @@ public class TableDataProvider<T> {
         return false;
     }
 
-    public Optional<TableDataFilter> getFilter(String column) {
+    public Optional<TableDataFilter> getFilterAsOptional(String column) {
         for (TableDataFilter filter : filters) {
             if (filter.getColumn()
                     .equalsIgnoreCase(column)) {
@@ -239,6 +239,10 @@ public class TableDataProvider<T> {
         }
         return Optional.empty();
     }
+    
+    public TableDataFilter getFilter(String column) {
+        return getFilterAsOptional(column).orElse(null);
+    }
 
     public void removeFilter(TableDataFilter filter) {
         this.filters.remove(filter);
@@ -246,7 +250,7 @@ public class TableDataProvider<T> {
     }
 
     public void removeFilter(String column) {
-        getFilter(column).ifPresent(filter -> removeFilter(filter));
+        getFilterAsOptional(column).ifPresent(filter -> removeFilter(filter));
     }
 
     public void resetFilters() {

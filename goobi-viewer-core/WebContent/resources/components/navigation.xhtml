@@ -314,7 +314,7 @@
 
                     <!-- USER -->
                     <h:panelGroup rendered="#{configurationBean.displayUserNavigation and !userBean.loggedIn}">
-                        <li class="#{navigationHelper.currentPage == 'user' ? 'active' : ''}">
+                        <li class="navigation__user-login #{navigationHelper.currentPage == 'user' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.applicationUrl}user/">
                                 <h:outputText value="#{msg.userNotLoggedIn}" />
                             </h:outputLink>

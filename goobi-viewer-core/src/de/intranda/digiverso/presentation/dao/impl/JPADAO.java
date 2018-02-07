@@ -38,6 +38,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -2180,7 +2181,11 @@ public class JPADAO implements IDAO {
         try {
             CMSPage o = em.getReference(CMSPage.class, id);
             if (o != null) {
-                em.refresh(o);
+                try {                    
+                    em.refresh(o);
+                } catch(IllegalArgumentException e) {
+                    logger.error("Error refreshing cms page " + o.getId(), e);
+                }
             }
             return o;
         } catch (EntityNotFoundException e) {

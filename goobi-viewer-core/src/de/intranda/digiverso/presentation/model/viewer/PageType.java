@@ -53,6 +53,9 @@ public enum PageType {
     editOcr("crowd/editOcr"),
     editHistory("crowd/editHistory"),
     index("index", PageTypeHandling.cms),
+    bookshelf("bookshelf"),
+    mybookshelves("mybookshelves"),
+    user("user"),
     other(""); //unknown page type name in Navigationhelper. Probably a cms-page
 
     /** Logger for this class. */
