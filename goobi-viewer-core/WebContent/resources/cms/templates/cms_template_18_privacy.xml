@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templatePrivacy" version="2018-02-07">
+    <name>Datenschutz</name>
+    <description>Dieses Template beinhaltet einen Text über Datenschutzbestimmungen und ein Opt-Out-Feld für das PIWIK-Tracking.</description>
+    <icon>cms_template_18_privacy.png</icon>
+    <html>cms_template_18_privacy.xhtml</html>
+    <content>
+        <item id="text01" label="Text" type="HTML" mandatory="true" />
+    </content>
+</cms_page_template>

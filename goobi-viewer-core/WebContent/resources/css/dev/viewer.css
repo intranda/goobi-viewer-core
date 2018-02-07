@@ -8161,6 +8161,25 @@ div.olMapViewport {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Privac"
+   style declarations for cms_template_18_privacy.xhtml
+   ==============================================================*/
+/* SIMPLE */
+/* BLOCK */
+.tpl-privacy {
+  /* ELEMENT */
+}
+.tpl-privacy iframe {
+  width: 100%;
+  height: 165px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page
