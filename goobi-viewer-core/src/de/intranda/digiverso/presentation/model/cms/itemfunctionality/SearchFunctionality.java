@@ -36,6 +36,7 @@ import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
 
 /**
  * @author Florian Alpers
@@ -72,19 +73,25 @@ public class SearchFunctionality implements Functionality {
     }
 
     /**
+     * @throws DAOException 
      * 
      */
     public void redirectToSearchUrl() {
-        ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
-        if(path != null) {            
-            path.setParameterPath(getParameterPath());
-            final FacesContext context = FacesContext.getCurrentInstance();
-            String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
-            try {
-                context.getExternalContext().redirect(redirectUrl);
-            } catch (IOException e) {
-                logger.error("Failed to redirect to url", e);
-            }
+        try {            
+            ViewerPathBuilder.createPath(BeanUtils.getRequest(), this.baseUrl).ifPresent(path -> {            
+                if(path != null) {            
+                    path.setParameterPath(getParameterPath());
+                    final FacesContext context = FacesContext.getCurrentInstance();
+                    String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
+                    try {
+                        context.getExternalContext().redirect(redirectUrl);
+                    } catch (IOException e) {
+                        logger.error("Failed to redirect to url", e);
+                    }
+                }
+            });
+        } catch(DAOException e) {
+            logger.error("Error retrieving search url", e);
         }
     }
 

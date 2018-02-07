@@ -70,6 +70,20 @@ public class ViewerPathBuilder {
         return createPath(serverUrl, serverName, serviceUrl);
 
     }
+
+    public static Optional<ViewerPath> createPath(HttpServletRequest request, String baseUrl) throws DAOException {
+        String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request); // http://localhost:8080/viewer
+        String serverName = request.getContextPath(); // /viewer
+        String serviceUrl = baseUrl.replaceAll("^" + serverUrl, "").replaceAll("^" + serverName, "");
+        PrettyContext context = PrettyContext.getCurrentInstance(request);
+        if (!serviceUrl.contains("/cms/") && context != null && context.getRequestURL() != null) {
+            serviceUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + 
+                    ("/".equals(context.getRequestURL().toURL()) ? "/index" : context.getRequestURL().toURL());
+        }
+        serviceUrl = serviceUrl.replaceAll("\\/index\\.x?html", "/");
+        return createPath(serverUrl, serverName, serviceUrl);
+    }
+
     
 
     /**

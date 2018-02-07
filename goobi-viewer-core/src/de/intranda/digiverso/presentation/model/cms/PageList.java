@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -110,6 +112,17 @@ public class PageList implements Iterable<String>{
             return pages.get(0);
         } else {
             return "";
+        }
+    }
+    
+    public Optional<CMSPage> getCMSPageIfExists() {
+        try {
+            return Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(Long.parseLong(getPage())));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        } catch(DAOException e)  {
+            logger.error("Error querying dao for cms page '" + getPage() + "'", e);
+            return Optional.empty();
         }
     }
     
