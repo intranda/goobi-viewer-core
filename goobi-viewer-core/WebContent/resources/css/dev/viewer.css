@@ -2117,7 +2117,8 @@ div.mce-fullscreen {
     float: left;
   }
   li.image-control__zoom-slider,
-  li.image-control__pdf {
+  li.image-control__pdf,
+  li.image-control__add-to-bookshelf {
     display: none;
   }
 }
@@ -4248,6 +4249,9 @@ div[id*="-Modal"] .email-form .form-group {
   .search-list__hit-thumbnail {
     text-align: center;
     padding-top: 10px;
+  }
+  .search-list__hit-thumbnail [data-bookshelf-type="add"] {
+    display: none;
   }
   .search-list__struct-child-hits,
   .search-list__metadata-info {
