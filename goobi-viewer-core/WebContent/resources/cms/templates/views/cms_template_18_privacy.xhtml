@@ -48,6 +48,7 @@
 		</f:view>
 	</ui:define>
 
+    <!-- SIDEBAR -->
 	<ui:define name="sidebar">
     	<c:forEach var="element" items="#{cmsBean.getSidebarElements(true)}">
     		<widgetComponent:widget_custom widget="#{element}"/>

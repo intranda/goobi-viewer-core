@@ -8162,7 +8162,7 @@ div.olMapViewport {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   CMS Template "Privac"
+   CMS Template "Privacy"
    style declarations for cms_template_18_privacy.xhtml
    ==============================================================*/
 /* SIMPLE */
@@ -8177,6 +8177,30 @@ div.olMapViewport {
   border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Feedback"
+   style declarations for cms_template_19_feedback.xhtml
+   ==============================================================*/
+/* TPL FEEDBACK */
+/* BLOCK */
+.tpl-feedback {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-feedback__text {
+  margin-bottom: 20px;
+}
+.tpl-feedback .form-group .btn {
+  margin: 0;
+}
+.tpl-feedback .form-group textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+/* BREAKPOINT FOR LATGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */

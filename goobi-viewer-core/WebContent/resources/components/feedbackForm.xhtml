@@ -19,7 +19,7 @@
 			<script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
 			<script>
 				function enableBtn() {
-				    document.getElementById( 'submitFeedbackBtn' ).disabled = false;
+				    $( '[id*="submitFeedbackBtn"]' ).attr( 'disabled', false );
 				}
             </script>
 		</h:panelGroup>
@@ -66,8 +66,15 @@
 
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10 text-right">
-						<h:commandButton rendered="#{configurationBean.useReCaptcha}" id="submitFeedbackBtn" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
-						<h:commandButton rendered="#{!configurationBean.useReCaptcha}" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+                        <!-- USE RECAPTCHA -->
+                        <ui:fragment rendered="#{configurationBean.useReCaptcha}">
+    						<h:commandButton id="submitFeedbackBtn" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
+                            <script type="text/javascript">
+                            	$( '[id*="submitFeedbackBtn"]' ).attr( 'disabled', true );
+                            </script>
+                        </ui:fragment>
+						<!-- DON'T USE RECAPTCHA -->
+                        <h:commandButton rendered="#{!configurationBean.useReCaptcha}" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
 					</div>
 				</div>
 			</h:form>

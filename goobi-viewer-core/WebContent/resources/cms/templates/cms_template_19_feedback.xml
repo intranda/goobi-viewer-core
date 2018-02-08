@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateFeedback" version="2018-02-08">
+    <name>Kontaktformular</name>
+    <description>Dieses Template ist für die Anzeige eines Kontaktformulars mit einleitendem Text.</description>
+    <icon>cms_template_19_feedback.png</icon>
+    <html>cms_template_19_feedback.xhtml</html>
+    <content>
+ 	    <item id="text" label="Text" type="HTML" order="1"/>
+    </content>
+</cms_page_template>
