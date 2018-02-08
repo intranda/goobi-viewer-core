@@ -6,12 +6,8 @@
     xmlns:p="http://primefaces.org/ui">
 
     <composite:interface>
-        <composite:attribute name="showFrench" required="false" default="false" />
         <composite:attribute name="showGerman" required="false" default="true" />
         <composite:attribute name="showEnglish" required="false" default="true" />
-        <composite:attribute name="showSpanish" required="false" default="true" />
-        <composite:attribute name="showRussian" required="false" default="false" />
-        <composite:attribute name="showPortuguese" required="false" default="false" />
         <composite:attribute name="showFlags" required="false" default="true" />
         <composite:attribute name="showLabels" required="false" default="true" />
         <composite:attribute name="displayAll" required="false" default="true" />
@@ -25,72 +21,18 @@
             <h:panelGroup rendered="#{cc.attrs.displayAll == true and cc.attrs.toggleLanguage == false}">
                 <h:form id="changeLocalForm1" prependId="false">
                     <ul>
-                    	<h:panelGroup rendered="#{cc.attrs.showFrench == true}">
+                        <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
                             <li>
-                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == 'fr'?'activeLang':''}">
+                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
                                     <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_fr.gif" alt="Flag Icon" />
-                                	</h:panelGroup>
-                                    <h:outputText value="#{msg.changeLocal_fr}" rendered="#{cc.attrs.showLabels == true}" />
-                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="fr" />
+                                        <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{lang}.gif" alt="Flag Icon" />
+                                    </h:panelGroup>
+                                    <h:outputText value="#{msg['changeLocal_' += lang]}"
+                                        rendered="#{cc.attrs.showLabels == true}" />
+                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="#{lang}" />
                                 </h:commandLink>
                             </li>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{cc.attrs.showGerman == true}">
-                            <li>
-                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == 'de'?'activeLang':''}">
-                                	<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_de.gif" alt="Flag Icon" />
-                                	</h:panelGroup> 
-                                    <h:outputText value="#{msg.changeLocal_de}" rendered="#{cc.attrs.showLabels == true}" />
-                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="de" />
-                                </h:commandLink>
-                            </li>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{cc.attrs.showEnglish == true}">
-                            <li>
-                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == 'en'?'activeLang':''}">
-                                	<h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_en.gif" alt="Flag Icon" />
-                                	</h:panelGroup>
-                                    <h:outputText value="#{msg.changeLocal_en}" rendered="#{cc.attrs.showLabels == true}" />
-                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="en" />
-                                </h:commandLink>
-                            </li>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{cc.attrs.showSpanish == true}">
-                            <li>
-                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == 'es'?'activeLang':''}">
-                                    <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_es.gif" alt="Flag Icon" />
-                                	</h:panelGroup>
-                                    <h:outputText value="#{msg.changeLocal_es}" rendered="#{cc.attrs.showLabels == true}" />
-                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="es" />
-                                </h:commandLink>
-                            </li>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{cc.attrs.showPortuguese == true}">
-                            <li>
-                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == 'pt'?'activeLang':''}">
-                                    <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_pt.gif" alt="Flag Icon" />
-                                	</h:panelGroup>
-                                    <h:outputText value="#{msg.changeLocal_pt}" rendered="#{cc.attrs.showLabels == true}" />
-                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="pt" />
-                                </h:commandLink>
-                            </li>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{cc.attrs.showRussian == true}">
-                            <li>
-                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == 'ru'?'activeLang':''}">
-                                    <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
-	                                	<img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_ru.gif" alt="Flag Icon" />
-                                	</h:panelGroup>
-                                    <h:outputText value="#{msg.changeLocal_ru}" rendered="#{cc.attrs.showLabels == true}" />
-                                    <f:setPropertyActionListener target="#{navigationHelper.localeString}" value="ru" />
-                                </h:commandLink>
-                            </li>
-                        </h:panelGroup>
+                        </ui:repeat>
                     </ul>
                 </h:form>
             </h:panelGroup>
