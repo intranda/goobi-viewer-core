@@ -58,6 +58,19 @@
 							<f:facet name="header">
 								<h:outputText value="#{msg.action}" />
 							</f:facet>
+							
+							<ui:fragment rendered="#{search.newHitsNotification}">
+							    <button type="button" class="btn-clean toggleNotificationButton" title="#{msg.user_mySearches_disableNotifications}">
+                                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                                    <!-- TODO #{search.toggleNotifications} -->
+                                </button>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{!search.newHitsNotification}">
+                                <button type="button" class="btn-clean toggleNotificationButton" title="#{msg.user_mySearches_enableNotifications}">
+                                    <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                                    <!-- TODO #{search.toggleNotifications} -->
+                                </button>
+                            </ui:fragment>
 
 							<!-- delete search -->
 							<button type="button" class="btn-clean deleteSearchBtn" data-toggle="modal" title="#{msg.delete}">

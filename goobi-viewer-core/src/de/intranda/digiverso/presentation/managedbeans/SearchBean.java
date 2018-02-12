@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.params.ExpandParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -628,11 +630,24 @@ public class SearchBean implements Serializable {
             logger.trace("Using default sorting: {}", sortString);
         }
 
+        // Init search object
         currentSearch = new Search(activeSearchType, currentSearchFilter);
         currentSearch.setUserInput(guiSearchString);
         currentSearch.setQuery(searchString);
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(sortString);
+        currentSearch.setFacetString(facets.getCurrentFacetString());
+        currentSearch.setHierarchicalFacetString(facets.getCurrentHierarchicalFacetString());
+
+        // Add search hit aggregation parameters, if enabled
+        if (DataManager.getInstance()
+                .getConfiguration()
+                .isAggregateHits() && !searchTerms.isEmpty()) {
+            String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator)
+                    : SearchHelper.generateExpandQuery(
+                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms);
+            currentSearch.setExpandQuery(expandQuery);
+        }
 
         currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, advancedQueryGroups);
     }
@@ -1851,27 +1866,34 @@ public class SearchBean implements Serializable {
      *
      * @return
      * @throws DAOException
+     * @should add all values correctly
      */
     public String saveSearchAction() throws DAOException {
         if (StringUtils.isBlank(currentSearch.getName())) {
             Messages.error("nameRequired");
             return "";
         }
-        currentSearch.setUserInput(guiSearchString);
-        currentSearch.setQuery(searchString);
-        currentSearch.setPage(currentPage);
-        for (FacetItem facetItem : facets.getCurrentFacets()) {
-            if (SolrConstants.DOCSTRCT.equals(facetItem.getField())) {
-                currentSearch.setFacetString(facetItem.getValue());
-            }
-        }
-        if (!facets.getCurrentHierarchicalFacets()
-                .isEmpty()) {
-            currentSearch.setHierarchicalFacetString(facets.getCurrentCollection());
-        }
-        if (StringUtils.isNotEmpty(sortString)) {
-            currentSearch.setSortString(sortString);
-        }
+
+        //        currentSearch.setUserInput(guiSearchString);
+        //        currentSearch.setQuery(searchString);
+        //        currentSearch.setPage(currentPage);
+        //        currentSearch.setSearchType(activeSearchType);
+        //        currentSearch.setSearchFilter(currentSearchFilter);
+        //        // regular facets
+        //        if (!facets.getCurrentFacets()
+        //                .isEmpty()) {
+        //            currentSearch.setFacetString(facets.getCurrentFacetString());
+        //        }
+        //        // hierarchical facets
+        //        if (!facets.getCurrentHierarchicalFacets()
+        //                .isEmpty()) {
+        //            currentSearch.setHierarchicalFacetString(facets.getCurrentHierarchicalFacetString());
+        //        }
+        //        // sorting
+        //        if (StringUtils.isNotEmpty(sortString)) {
+        //            currentSearch.setSortString(sortString);
+        //        }
+
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null) {
             currentSearch.setOwner(ub.getUser());

@@ -220,6 +220,7 @@ public final class SearchHelper {
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -239,7 +240,7 @@ public final class SearchHelper {
         List<SearchHit> ret = new ArrayList<>(resp.getResults()
                 .size());
         for (SolrDocument doc : resp.getResults()) {
-            // logger.trace("result iddoc: {}", doc.getFieldValue(LuceneConstants.IDDOC));
+            // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
@@ -1828,7 +1829,6 @@ public final class SearchHelper {
                         sbInner.append(" OR ");
                         multipleTerms = true;
                     }
-                    logger.trace("term: " + term);
                     if (!"*".equals(term)) {
                         term = ClientUtils.escapeQueryChars(term);
                     }

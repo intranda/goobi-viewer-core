@@ -15,8 +15,6 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.search;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,23 +23,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.model.search.Search;
-import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 @Path("/search")
 @ViewerRestServiceBinding
 public class SearchHitsNotificationResource {
+
+    private static final Logger logger = LoggerFactory.getLogger(SearchHitsNotificationResource.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -49,45 +50,33 @@ public class SearchHitsNotificationResource {
     private HttpServletResponse servletResponse;
 
     @GET
-    @Path("/cronjob/update/")
+    @Path("/cronjob/sendnotifications/")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SearchHitChildList sendNewHitsNotifications(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren)
-            throws DAOException, PresentationException, IndexUnreachableException, IOException {
+    public void sendNewHitsNotifications() throws DAOException, PresentationException, IndexUnreachableException {
+        logger.trace("sendNewHitsNotifications");
         Map<String, String> filters = new HashMap<>();
-        filters.put("newHitsNotification", "true");
+        filters.put("newHitsNotification", "1");
         long searchCount = DataManager.getInstance()
                 .getDao()
                 .getSearchCount(null, filters);
+        logger.info("Found {} saved searches with notifications enabled.", searchCount);
         int pageSize = 100;
-        SearchBean searchBean = new SearchBean();
 
-        for (int i = 0; i < searchCount - 1; i += pageSize) {
+        for (int i = 0; i < searchCount; i += pageSize) {
+            logger.debug("Getting searches {}-{}", i, i + pageSize);
             List<Search> searches = DataManager.getInstance()
                     .getDao()
                     .getSearches(null, i, pageSize, null, false, filters);
             for (Search search : searches) {
-//                search.execute(facets, null, 100, 0, null);
-            }
-        }
-
-        List<SearchHit> searchHits = searchBean.getCurrentSearch()
-                .getHits();
-        if (searchHits != null) {
-            for (SearchHit searchHit : searchHits) {
-                if (hitId.equals(Long.toString(searchHit.getBrowseElement()
-                        .getIddoc()))) {
-                    if (searchHit.getHitsPopulated() < numChildren) {
-                        searchHit.populateChildren(numChildren - searchHit.getHitsPopulated(), null, servletRequest);
-                    }
-                    Collections.sort(searchHit.getChildren());
-                    SearchHitChildList searchHitChildren =
-                            new SearchHitChildList(searchHit.getChildren(), searchHit.getHitsPopulated(), searchHit.isHasMoreChildren());
-                    return searchHitChildren;
+                // TODO filters for each user
+                SearchFacets facets = new SearchFacets();
+                facets.setCurrentFacetString(search.getFacetString());
+                facets.setCurrentHierarchicalFacetString(search.getHierarchicalFacetString());
+                search.execute(facets, null, 100, 0, null);
+                if (search.getHitsCount() > search.getLastHitsCount()) {
+                    // Send notification
                 }
             }
         }
-
-        servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "IDDOC " + hitId + " is not in the current search result set.");
-        return null;
     }
 }

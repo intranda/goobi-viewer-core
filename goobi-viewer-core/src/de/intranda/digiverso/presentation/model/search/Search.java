@@ -42,6 +42,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.ExpandParams;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +138,7 @@ public class Search implements Serializable {
     /** BrowseElement list for the current search result page. */
     @Transient
     private final List<SearchHit> hits = new ArrayList<>();
-    
+
     /**
      * Empty constructor for JPA.
      */
@@ -199,13 +200,21 @@ public class Search implements Serializable {
     }
 
     /**
-     * 
+     * @param facets
+     * @param searchTerms
+     * @param hitsPerPage
+     * @param advancedSearchGroupOperator
+     * @param advancedQueryGroups
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator,
             List<SearchQueryGroup> advancedQueryGroups) throws PresentationException, IndexUnreachableException, DAOException {
+        if (facets == null) {
+            throw new IllegalArgumentException("facets may not be null");
+        }
+
         String currentQuery = SearchHelper.prepareQuery(query, SearchHelper.getDocstrctWhitelistFilterSuffix());
 
         // Collect regular and hierarchical facet field names and combine them into one list
@@ -224,30 +233,29 @@ public class Search implements Serializable {
         for (String fq : facetFilterQueries) {
             logger.trace("Facet query: {}", fq);
         }
-        if (getHitsCount() == 0) {
+        if (hitsCount == 0) {
             logger.trace("Final main query: {}", query);
             resp = DataManager.getInstance()
                     .getSearchIndex()
                     .search(query, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), facetFilterQueries, params);
             if (resp != null && resp.getResults() != null) {
-                setHitsCount(resp.getResults()
-                        .getNumFound());
-                logger.trace("Pre-grouping search hits: {}", getHitsCount());
+                hitsCount = resp.getResults()
+                        .getNumFound();
+                logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                 for (FacetField facetField : resp.getFacetFields()) {
                     if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
                         for (Count count : facetField.getValues()) {
                             if (count.getCount() > 1) {
-                                setHitsCount(getHitsCount() - (count.getCount() - 1));
+                                setHitsCount(hitsCount - (count.getCount() - 1));
                             }
                         }
                     }
                 }
-                logger.debug("Total search hits: {}", getHitsCount());
+                logger.debug("Total search hits: {}", hitsCount);
             }
         }
-        // logger.debug("Hits count query END");
-        if (getHitsCount() > 0 && resp != null) {
+        if (hitsCount > 0 && resp != null) {
             // Facets
             for (FacetField facetField : resp.getFacetFields()) {
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
@@ -280,23 +288,17 @@ public class Search implements Serializable {
 
             // Hits for the current page
             int from = (page - 1) * hitsPerPage;
-            if (DataManager.getInstance()
-                    .getConfiguration()
-                    .isAggregateHits() && !searchTerms.isEmpty()) {
-                // Add search hit aggregation parameters, if enabled
-                String expandQuery = searchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator)
-                        : SearchHelper.generateExpandQuery(SearchHelper.getExpandQueryFieldList(searchType, searchFilter, advancedQueryGroups),
-                                searchTerms);
+
+            if (StringUtils.isNotEmpty(expandQuery)) {
                 logger.trace("Expand query: {}", expandQuery);
-                if (StringUtils.isNotEmpty(expandQuery)) {
-                    params.put(ExpandParams.EXPAND, "true");
-                    params.put(ExpandParams.EXPAND_Q, expandQuery);
-                    params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
-                    params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
-                    params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
-                    params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
-                }
+                params.put(ExpandParams.EXPAND, "true");
+                params.put(ExpandParams.EXPAND_Q, expandQuery);
+                params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
+                params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
+                params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
+                params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
             }
+
             List<SearchHit> hits = DataManager.getInstance()
                     .getConfiguration()
                     .isAggregateHits()
@@ -304,11 +306,8 @@ public class Search implements Serializable {
                                     null, BeanUtils.getLocale())
                             : SearchHelper.searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms,
                                     null, BeanUtils.getLocale(), BeanUtils.getRequest());
-            getHits().addAll(hits);
-            // logger.debug("seList: " + seList );
-            // logger.debug("Current page query END");
+            this.hits.addAll(hits);
         }
-        // logger.debug("Filling elementList END");
     }
 
     /**
@@ -391,6 +390,34 @@ public class Search implements Serializable {
      */
     public void setUserInput(String userInput) {
         this.userInput = userInput;
+    }
+
+    /**
+     * @return the searchType
+     */
+    public int getSearchType() {
+        return searchType;
+    }
+
+    /**
+     * @param searchType the searchType to set
+     */
+    public void setSearchType(int searchType) {
+        this.searchType = searchType;
+    }
+
+    /**
+     * @return the searchFilter
+     */
+    public SearchFilter getSearchFilter() {
+        return searchFilter;
+    }
+
+    /**
+     * @param searchFilter the searchFilter to set
+     */
+    public void setSearchFilter(SearchFilter searchFilter) {
+        this.searchFilter = searchFilter;
     }
 
     /**
@@ -559,6 +586,7 @@ public class Search implements Serializable {
      * @return the hits
      */
     public List<SearchHit> getHits() {
+        logger.trace("hits: {}", hits.size());
         return hits;
     }
 
@@ -578,4 +606,7 @@ public class Search implements Serializable {
         return answer;
     }
 
+    public void toggleNotifications() {
+        this.newHitsNotification = !this.newHitsNotification;
+    }
 }
