@@ -137,6 +137,22 @@ public class Search implements Serializable {
     /** BrowseElement list for the current search result page. */
     @Transient
     private final List<SearchHit> hits = new ArrayList<>();
+    
+    /**
+     * Empty constructor for JPA.
+     */
+    public Search() {
+    }
+
+    /**
+     * 
+     * @param searchType
+     * @param searchFilter
+     */
+    public Search(int searchType, SearchFilter searchFilter) {
+        this.searchType = searchType;
+        this.searchFilter = searchFilter;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -180,11 +196,6 @@ public class Search implements Serializable {
             return false;
         }
         return true;
-    }
-
-    public Search(int searchType, SearchFilter searchFilter) {
-        this.searchType = searchType;
-        this.searchFilter = searchFilter;
     }
 
     /**
