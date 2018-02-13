@@ -2183,7 +2183,7 @@ public class JPADAO implements IDAO {
             if (o != null) {
                 try {                    
                     em.refresh(o);
-                } catch(IllegalArgumentException e) {
+                } catch(Throwable e) {
                     logger.error("Error refreshing cms page " + o.getId(), e);
                 }
             }
