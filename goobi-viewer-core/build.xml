@@ -1216,7 +1216,7 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war-internal" />
 	</target>
-	<target name="GOOBITOGO-sudanmemories">
+	<target name="GOOBITOGO-sudanmemory">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/G2GFOLDER/config/" />
 		<property name="server.folder" value="/G2GFOLDER/" />
