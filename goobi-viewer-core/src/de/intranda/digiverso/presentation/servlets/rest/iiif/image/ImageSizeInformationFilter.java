@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -34,7 +35,13 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.AbsoluteScale;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageProfile;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageTile;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 
@@ -66,10 +73,28 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
 				List<ImageTile> tileSizes;
 				tileSizes = getTileSizesFromConfig();
 				setTileSizes((ImageInformation) responseObject, tileSizes);
+				setMaxImageSizes((ImageInformation) responseObject);
 			} catch (ConfigurationException e) {
 				logger.error(e.toString(), e);
 			}
         }
+    }
+    
+    private static void setMaxImageSizes(ImageInformation info){
+        Optional<ImageProfile> profile = info.getProfiles().stream()
+                .filter(p -> p instanceof ImageProfile)
+                .map(p -> (ImageProfile)p)
+                .findFirst();
+        profile.ifPresent(p -> {            
+            int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
+            int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
+            if(maxWidth > 0) {
+                p.setMaxWidth(maxWidth);
+            }
+            if(maxHeight > 0) {
+                p.setMaxHeight(maxHeight);
+            }
+        });
     }
 
     /**

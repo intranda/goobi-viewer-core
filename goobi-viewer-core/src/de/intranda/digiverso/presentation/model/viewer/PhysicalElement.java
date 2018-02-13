@@ -1404,22 +1404,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
     }
 
-    public boolean useTiles(String pageType) throws ConfigurationException {
-        return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType());
-    }
-
-    public int getFooterHeight(String pageType) throws ConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType());
-    }
-
-    public List<String> getImageSizes(String pageType) throws ConfigurationException {
-        return DataManager.getInstance().getConfiguration().getImageViewZoomScales(PageType.getByName(pageType), getImageType());
-    }
-
-    public Map<Integer, List<Integer>> getTileSizes(String pageType) throws ConfigurationException {
-        return DataManager.getInstance().getConfiguration().getTileSizes(PageType.getByName(pageType), getImageType());
-    }
-
     /**
      * @return
      */

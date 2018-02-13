@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -48,6 +49,8 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.modules.IModule;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 
 /**
@@ -312,11 +315,22 @@ public class ConfigurationBean implements Serializable {
                 .getConfiguration()
                 .useOpenSeadragon();
     }
+    
+    public boolean useTiles(String pageType, String mimeType) throws ConfigurationException {
+        return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
+    }
 
-    public boolean useOpenLayersFullscreen() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useOpenLayersFullscreen();
+
+    public int getFooterHeight(String pageType, String mimeType) throws ConfigurationException {
+        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType(mimeType));
+    }
+
+    public List<String> getImageSizes(String pageType, String mimeType) throws ConfigurationException {
+        return DataManager.getInstance().getConfiguration().getImageViewZoomScales(PageType.getByName(pageType), getImageType(mimeType));
+    }
+
+    public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ConfigurationException {
+        return DataManager.getInstance().getConfiguration().getTileSizes(PageType.getByName(pageType), getImageType(mimeType));
     }
 
     public boolean useTiles() throws ConfigurationException {
@@ -935,5 +949,12 @@ public class ConfigurationBean implements Serializable {
             default:
                 return lang.getEnglishName();
         }
+    }
+    
+
+    private ImageType getImageType(String mimeType) {
+        ImageType imageType = new ImageType(false);
+        imageType.setFormat(ImageFileFormat.getImageFileFormatFromMimeType(mimetype));
+        return imageType;
     }
 }

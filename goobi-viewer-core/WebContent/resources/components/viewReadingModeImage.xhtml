@@ -26,7 +26,7 @@
                         divId: 'readingModeImage',
                         zoomSlider: '.zoom-slider',
                         zoomSliderHandle: '.zoom-slider-handle',
-                        useTiles: #{activeDocumentBean.viewManager.currentPage.useTiles('viewReadingMode')},
+                        useTiles: #{configurationBean.useTiles('viewReadingMode')},
 				        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewReadingMode')},
 				        imageSizes: "#{activeDocumentBean.viewManager.currentPage.getImageSizes('viewReadingMode')}",
 				        tileSizes: "#{activeDocumentBean.viewManager.currentPage.getTileSizes('viewReadingMode')}",
