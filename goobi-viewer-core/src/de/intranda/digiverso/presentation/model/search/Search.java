@@ -94,7 +94,7 @@ public class Search implements Serializable {
 
     /** Currently selected filter for the regular search. Possible values can be configured. */
     @Column(name = "search_filter")
-    private SearchFilter searchFilter = SearchHelper.SEARCH_FILTER_ALL;
+    private String searchFilter = SearchHelper.SEARCH_FILTER_ALL.getField();
 
     @Column(name = "query", nullable = false, columnDefinition = "LONGTEXT")
     private String query;
@@ -152,7 +152,9 @@ public class Search implements Serializable {
      */
     public Search(int searchType, SearchFilter searchFilter) {
         this.searchType = searchType;
-        this.searchFilter = searchFilter;
+        if (searchFilter != null) {
+        this.searchFilter = searchFilter.getField();
+        }
     }
 
     /* (non-Javadoc)
@@ -410,14 +412,14 @@ public class Search implements Serializable {
     /**
      * @return the searchFilter
      */
-    public SearchFilter getSearchFilter() {
+    public String getSearchFilter() {
         return searchFilter;
     }
 
     /**
      * @param searchFilter the searchFilter to set
      */
-    public void setSearchFilter(SearchFilter searchFilter) {
+    public void setSearchFilter(String searchFilter) {
         this.searchFilter = searchFilter;
     }
 
