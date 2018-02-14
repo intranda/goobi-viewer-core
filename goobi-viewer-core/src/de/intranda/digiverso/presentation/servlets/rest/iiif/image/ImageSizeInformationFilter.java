@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -87,7 +89,7 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
                     
             }
 
-            imageType = getMimeType((ImageInformation) responseObject);
+            imageType = getImageType((ImageInformation) responseObject);
 
 			try {
 				List<Integer> imageSizes = getImageSizesFromConfig();
@@ -106,7 +108,7 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
      * @param responseObject
      * @return
      */
-    private ImageType getMimeType(ImageInformation info) {
+    private ImageType getImageType(ImageInformation info) {
         String id = info.getId();
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
         if(iff != null) {
@@ -193,5 +195,6 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
     private static void setTileSizes(ImageInformation imageInfo, List<ImageTile> tileSizes) {
         imageInfo.setTiles(tileSizes);
     }
+
 
 }

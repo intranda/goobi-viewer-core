@@ -453,7 +453,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return path != null && (path.startsWith("http://") || path.startsWith("https://"));
     }
 
-    public String getWatermarkText() throws IndexUnreachableException {
+    public String getWatermarkText() {
         if (watermarkTextConfiguration != null && !watermarkTextConfiguration.isEmpty()) {
             StringBuilder urlBuilder = new StringBuilder();
             for (String text : watermarkTextConfiguration) {
@@ -464,23 +464,26 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                                 .append(pi).toString(), SolrSearchIndex.MAX_HITS, null, Collections.singletonList(field));
                         if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                             // logger.debug(field + ":" + res.get(0).getFirstValue(field));
-                            urlBuilder.append("&watermarkText=").append((String) res.get(0).getFirstValue(field));
+                            urlBuilder.append((String) res.get(0).getFirstValue(field));
                             break;
                         }
                     } catch (PresentationException e) {
                         logger.debug("PresentationException thrown here: " + e.getMessage());
+                    } catch (IndexUnreachableException e) {
+                        logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
+
                     }
                 } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
                     if (StringUtils.isNotEmpty(urn)) {
-                        urlBuilder.append("&watermarkText=").append(urn);
+                        urlBuilder.append(urn);
                         break;
                     }
                 } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
-                    urlBuilder.append("&watermarkText=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(
+                    urlBuilder.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(
                             PageType.viewImage.getName()).append("/").append(pi).append("/").append(order).append("/");
                     break;
                 } else {
-                    urlBuilder.append("&watermarkText=").append(text);
+                    urlBuilder.append(text);
                     break;
                 }
             }

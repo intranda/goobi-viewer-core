@@ -47,6 +47,8 @@ public final class DataManager {
     private Configuration configuration;
 
     private LanguageHelper languageHelper;
+    
+    
 
     private SolrSearchIndex searchIndex;
 
