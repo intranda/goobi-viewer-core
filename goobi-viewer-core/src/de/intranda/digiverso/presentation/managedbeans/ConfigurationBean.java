@@ -954,7 +954,7 @@ public class ConfigurationBean implements Serializable {
 
     private ImageType getImageType(String mimeType) {
         ImageType imageType = new ImageType(false);
-        imageType.setFormat(ImageFileFormat.getImageFileFormatFromMimeType(mimetype));
+        imageType.setFormat(ImageFileFormat.getImageFileFormatFromMimeType(mimeType));
         return imageType;
     }
 }

@@ -38,7 +38,6 @@
             zoomSpeed: 1.25,
             maxZoomLevel: 20,
             minZoomLevel: 1,
-            useTiles: true,
             imageControlsActive: true,
             visibilityRatio: 0.4,
             loadImageTimeout: 10 * 60 * 1000,
@@ -435,7 +434,7 @@
 		                viewImage.setImageSizes(imageInfo, _defaults.global.imageSizes);       
 		                viewImage.setTileSizes(imageInfo, _defaults.global.tileSizes);                
 		                var tileSource;
-		                if(_defaults.global.useTiles) {
+		                if(imageInfo.tiles) {
 		                    tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
 		                } else {                
 		                    tileSource  = osViewer.createPyramid(imageInfo);                    

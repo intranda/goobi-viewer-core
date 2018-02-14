@@ -17,7 +17,10 @@ package de.intranda.digiverso.presentation.servlets.rest.iiif.image;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +40,8 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.AbsoluteScale;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
@@ -54,18 +59,35 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
     @Context
     private HttpServletRequest servletRequest;
 
-    private boolean fullscreen = false;
-    private boolean crowdsourcing = false;
+    private PageType pageType = PageType.viewImage;
+    private ImageType imageType = null;
 
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
         Object responseObject = response.getEntity();
         if (responseObject instanceof ImageInformation) {
 
-            String uri = request.getUriInfo().getPath();
+            Path requestPath = Paths.get(request.getUriInfo().getPath());
 
-            fullscreen = uri.startsWith("fullscreen");
-            crowdsourcing = uri.startsWith("crowdsourcing");
+            switch(requestPath.getName(0).toString().toLowerCase()) {
+                case "fullscreen":
+                    pageType = PageType.viewFullscreen;
+                    break;
+                case "readingmode":
+                    pageType = PageType.viewReadingMode;
+                    break;
+                case "image":
+                    pageType = PageType.viewImage;
+                    break;
+                case "crowdsourcing":
+                    pageType = PageType.editContent;
+                    break;
+                default:
+                        pageType = PageType.getByName(requestPath.getName(0).toString());
+                    
+            }
+
+            imageType = getMimeType((ImageInformation) responseObject);
 
 			try {
 				List<Integer> imageSizes = getImageSizesFromConfig();
@@ -80,6 +102,20 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
         }
     }
     
+    /**
+     * @param responseObject
+     * @return
+     */
+    private ImageType getMimeType(ImageInformation info) {
+        String id = info.getId();
+        ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
+        if(iff != null) {
+            return new ImageType(iff);
+        } else {
+            return null;
+        }
+    }
+
     private static void setMaxImageSizes(ImageInformation info){
         Optional<ImageProfile> profile = info.getProfiles().stream()
                 .filter(p -> p instanceof ImageProfile)
@@ -119,13 +155,8 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
      * @throws ConfigurationException 
      */
     private List<Integer> getImageSizesFromConfig() throws ConfigurationException {
-    	PageType pageType = PageType.viewImage;
-        if (fullscreen) {
-        	pageType = PageType.viewFullscreen;
-        } else if (crowdsourcing) {
-        	pageType = PageType.editContent;
-        }
-        List<String> sizeStrings = DataManager.getInstance().getConfiguration().getImageViewZoomScales(pageType, null);
+
+        List<String> sizeStrings = DataManager.getInstance().getConfiguration().getImageViewZoomScales(pageType, imageType);
         List<Integer> sizes = new ArrayList<>();
         for (String string : sizeStrings) {
             try {
@@ -143,13 +174,10 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
      * @throws ConfigurationException 
      */
     private List<ImageTile> getTileSizesFromConfig() throws ConfigurationException {
-        PageType pageType = PageType.viewImage;
-        if (fullscreen) {
-        	pageType = PageType.viewFullscreen;
-        } else if (crowdsourcing) {
-        	pageType = PageType.editContent;
+        Map<Integer, List<Integer>> configSizes = Collections.EMPTY_MAP;
+        if(DataManager.getInstance().getConfiguration().useTiles(pageType, imageType)) {            
+            configSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, imageType);
         }
-        Map<Integer, List<Integer>> configSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, null);
         List<ImageTile> tiles = new ArrayList<>();
         for (Integer size : configSizes.keySet()) {
             ImageTile tile = new ImageTile(size, size, configSizes.get(size));
