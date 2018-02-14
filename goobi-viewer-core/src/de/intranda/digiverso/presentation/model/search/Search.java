@@ -211,6 +211,7 @@ public class Search implements Serializable {
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator,
             List<SearchQueryGroup> advancedQueryGroups) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("execute");
         if (facets == null) {
             throw new IllegalArgumentException("facets may not be null");
         }

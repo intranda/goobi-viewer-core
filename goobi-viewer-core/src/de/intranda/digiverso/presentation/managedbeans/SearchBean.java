@@ -49,7 +49,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.solr.common.params.ExpandParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,6 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -1893,6 +1891,8 @@ public class SearchBean implements Serializable {
         //        if (StringUtils.isNotEmpty(sortString)) {
         //            currentSearch.setSortString(sortString);
         //        }
+        
+        currentSearch.setLastHitsCount(currentSearch.getHitsCount());
 
         UserBean ub = BeanUtils.getUserBean();
         if (ub != null) {
