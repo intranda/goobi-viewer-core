@@ -58,7 +58,7 @@ public class SearchHitsNotificationResource {
     private HttpServletResponse servletResponse;
 
     @GET
-    @Path("/cronjob/sendnotifications/")
+    @Path("/sendnotifications/")
     @Produces({ MediaType.TEXT_HTML })
     public String sendNewHitsNotifications() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("sendNewHitsNotifications");
@@ -122,6 +122,7 @@ public class SearchHitsNotificationResource {
 
                     // Update last count in DB
                     search.setLastHitsCount(search.getHitsCount());
+                    search.setSortString(oldSortString);
                     DataManager.getInstance()
                             .getDao()
                             .updateSearch(search);
