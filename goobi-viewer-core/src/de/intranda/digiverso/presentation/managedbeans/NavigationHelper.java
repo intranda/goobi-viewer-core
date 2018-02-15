@@ -1181,7 +1181,7 @@ public class NavigationHelper implements Serializable {
                 .getExternalContext()
                 .getRequest();
         String previousUrl = ViewHistory.getPreviousView(request)
-                .map(path -> (path.getApplicationName() + path.getCombinedUrl()).replaceAll(path.getApplicationName() + "/" + path.getApplicationName(), path.getApplicationName()))
+                .map(path -> (path.getCombinedUrl()))
                 .orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
