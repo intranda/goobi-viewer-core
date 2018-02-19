@@ -558,6 +558,9 @@ public final class SolrSearchIndex {
      * @return
      */
     public static Object getSingleFieldValue(SolrDocument doc, String field) {
+//        if(field.equals("MD_TITLE")) {            
+//            field = field + "_LANG_DE";
+//        }
         Collection<Object> valueList = doc.getFieldValues(field);
         if (valueList != null && !valueList.isEmpty()) {
             return valueList.iterator().next();

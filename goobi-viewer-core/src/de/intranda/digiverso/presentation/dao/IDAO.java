@@ -337,4 +337,11 @@ public interface IDAO {
 
     public void shutdown();
 
+    /**
+     * @param id
+     * @return
+     * @throws DAOException
+     */
+    CMSPage getCMSPageForEditing(long id) throws DAOException;
+
 }

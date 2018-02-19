@@ -2192,6 +2192,36 @@ public class JPADAO implements IDAO {
             return null;
         }
     }
+    
+    /**
+     * @throws DAOException
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSPage(long)
+     * @should return correct page
+     */
+    @Override
+    public CMSPage getCMSPageForEditing(long id) throws DAOException {
+        logger.trace("getCMSPageForEditing: {}", id);
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            CMSPage o = em.getReference(CMSPage.class, id);
+            if (o != null) {
+                try {                    
+                    em.refresh(o);
+                } catch(IllegalArgumentException e) {
+                    logger.error("Error refreshing cms page " + o.getId(), e);
+                }
+            }
+            return o;
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            if(em != null) {
+                em.close();
+            }
+        }
+    }
+
 
     
 

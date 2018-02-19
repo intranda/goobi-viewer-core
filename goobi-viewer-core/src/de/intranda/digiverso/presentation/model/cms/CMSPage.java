@@ -108,7 +108,6 @@ public class CMSPage {
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
     @PrivateOwned
-    @CascadeOnDelete
     private List<CMSSidebarElement> sidebarElements = new ArrayList<>();
 
     @Transient
@@ -463,7 +462,12 @@ public class CMSPage {
     }
 
     public String getMenuTitle(Locale locale) {
-        return getLanguageVersion(locale.getLanguage()).getMenuTitle();
+        CMSPageLanguageVersion lang = getLanguageVersion(locale.getLanguage());
+        if(lang != null) {            
+            return lang.getMenuTitle();
+        } else {
+            return "";
+        }
     }
 
     public Long getPageSorting() {
