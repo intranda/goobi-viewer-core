@@ -3310,7 +3310,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* ==============================================================
    Error
-   style declarations for errorGeneral.xhtml
+   style declarations for error.xhtml
    ==============================================================*/
 #error p.bg-danger {
   padding: 15px;
@@ -3617,41 +3617,6 @@ div[id*="-Modal"] .email-form .form-group {
   justify-content: space-between;
   padding-top: 7px;
   padding-bottom: 15px;
-}
-.search-standard__filter-radio {
-  /*         td { */
-  /*             position: relative; */
-  /*             padding-right: 15px; */
-  /*             text-align: left; */
-  /*             vertical-align: middle; */
-  /*         } */
-  /*         label { */
-  /*             margin: 0; */
-  /*             cursor: pointer; */
-  /*         } */
-  /*         .fa { */
-  /*             margin-right: 5px; */
-  /*             color: @blue; */
-  /*         } */
-  /*         .fa-check-circle-o { */
-  /*             display: none; */
-  /*         } */
-  /*         input[type="radio"] { */
-  /*             position: absolute; */
-  /*             width: 1px; */
-  /*             height: 1px; */
-  /*             margin: 0; */
-  /*             padding: 0; */
-  /*             border: 0; */
-  /*             clip: rect(1px 1px 1px 1px); */
-  /*             overflow: hidden; */
-  /*             &:checked ~ .fa-check-circle-o { */
-  /*                 display: inline-block; */
-  /*             } */
-  /*             &:checked ~ .fa-circle-o { */
-  /*                 display: none; */
-  /*             } */
-  /*         } */
 }
 .search-standard__filter-link {
   text-align: right;
@@ -5413,13 +5378,6 @@ div.olMapViewport {
   color: #fff;
   background-color: rgba(80, 126, 191, 0.8);
   z-index: 99999;
-  /* 	opacity: 0.4; */
-  /*     border-radius: 6px; */
-  /*     background-color: rgba(256,256,256,0.7); */
-  /* 	border: 2px solid #507ebf; */
-  /* 	background-color: #cccccc; */
-  /* 	border-radius: 3px; */
-  /* 	position: absolute; */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -8233,16 +8191,13 @@ div.olMapViewport {
   border-top: 1px solid #eee;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-collection {
+  margin-bottom: 14px;
   padding: 14px 0px 0px 0px;
   border-top: 1px solid #eee;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-collection .group-label {
   font-size: 1.2rem;
   margin-bottom: 0px;
-}
-#cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-collection .control-label {
-  padding-right: 0px;
-  padding-left: 28px;
 }
 #cmsCreatePage #cmsCreatePageWrapper .edit-content-page.edit-content-page-media {
   padding: 14px 0 0 0;
