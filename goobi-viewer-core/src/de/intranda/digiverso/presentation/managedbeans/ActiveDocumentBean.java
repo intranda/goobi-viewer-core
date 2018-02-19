@@ -950,13 +950,13 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel() throws IndexUnreachableException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
-        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
-            String label = viewManager.getTopDocument()
-                    .getLabel(selectedRecordLanguage);
-            if (StringUtils.isNotEmpty(label)) {
-                return label;
-            }
-        }
+//        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
+//            String label = viewManager.getTopDocument()
+//                    .getLabel(selectedRecordLanguage);
+//            if (StringUtils.isNotEmpty(label)) {
+//                return label;
+//            }
+//        }
         if (pageType != null && pageType.isDocumentPage() && viewManager != null) {
             // Prefer the label of the current TOC element
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements()
