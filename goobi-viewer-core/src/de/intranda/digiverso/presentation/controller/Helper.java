@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -757,7 +759,9 @@ public class Helper {
      * @should build URL correctly with repository
      * @should throw IllegalArgumentException when pi is null
      * @should throw IllegalArgumentException when fileName is null
+     * @deprecated  use {@link de.intranda.digiverso.presentation.ImageDeliveryManager.
      */
+    @Deprecated
     public static String getImageUrl(String pi, String fileName, String dataRepository, int width, int height, int rotation, boolean thumbnail,
             boolean ignoreWatermark) {
         if (StringUtils.isEmpty(pi)) {
@@ -988,5 +992,23 @@ public class Helper {
         }
 
         return ret;
+    }
+
+    public static String encodeUrl(String string) {
+        try {            
+            return URLEncoder.encode(string, "utf-8");
+        } catch(UnsupportedEncodingException e) {
+            logger.error("Unable to encode '" + string + "' with utf-8");
+            return string;
+        }
+    }
+    
+    public static String decodeUrl(String string) {
+        try {            
+            return URLDecoder.decode(string, "utf-8");
+        } catch(UnsupportedEncodingException e) {
+            logger.error("Unable to decode '" + string + "' with utf-8");
+            return string;
+        }
     }
 }

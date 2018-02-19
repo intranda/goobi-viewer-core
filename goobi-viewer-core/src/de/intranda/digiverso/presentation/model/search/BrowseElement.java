@@ -47,6 +47,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
+import de.intranda.digiverso.presentation.controller.imaging.ImageDeliveryManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -64,6 +65,10 @@ import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElementStub;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 
 /**
  * Representation of a search hit. TODO integrate into SearchHit
@@ -398,7 +403,7 @@ public class BrowseElement implements Serializable {
         int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
         if (isAbsoluteUrl(filename) && structElement.mayShowThumbnail()) {
             // Use absolute thumbnail URL directly (replace requested image size if this is an IFFF URL); no access permission check
-            thumbnailUrl = PhysicalElement.getModifiedIIIFFUrl(filename, thumbWidth, thumbHeight);
+            thumbnailUrl = DataManager.getInstance().getImageDeliveryManager().getModifiedIIIFFUrl(filename, RegionRequest.FULL, new Scale.ScaleToBox(thumbWidth, thumbHeight), Rotation.NONE, Colortype.DEFAULT, ImageFileFormat.JPG);
             hasImages = true;
         } else if (structElement.mayShowThumbnail()) {
             // Construct URL

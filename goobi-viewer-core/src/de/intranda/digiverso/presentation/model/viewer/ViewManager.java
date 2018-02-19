@@ -255,23 +255,7 @@ public class ViewManager implements Serializable {
      * @return
      */
     private String getImageInfo(PhysicalElement page) {
-        StringBuilder urlBuilder = new StringBuilder();
-        if (page != null) {
-            if (page.isExternalUrl()) {
-                String url = page.getFilepath();
-                urlBuilder.append(url);
-            } else {
-                urlBuilder.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getIiifUrl());
-                urlBuilder.append("image/")
-                        .append(pi)
-                        .append('/')
-                        .append(page.getFileName())
-                        .append("/info.json");
-            }
-        }
-        return urlBuilder.toString();
+        return DataManager.getInstance().getImageDeliveryManager().getImageUrl(page);
     }
 
     public String getCurrentImageInfoFullscreen() throws IndexUnreachableException, DAOException {
@@ -279,18 +263,11 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return "";
         }
-        if (currentPage.isExternalUrl()) {
-            return getCurrentImageInfo();
+        String url = DataManager.getInstance().getImageDeliveryManager().getImageUrl(currentPage);
+        if(url.startsWith(DataManager.getInstance().getConfiguration().getIiifUrl())) {            
+            url = url.replace("/image/", "/fullscreen/image/");
         }
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl());
-        urlBuilder.append("fullscreen/image/")
-                .append(pi)
-                .append('/')
-                .append(currentPage.getFileName())
-                .append("/info.json");
-        return urlBuilder.toString();
+        return url;
     }
 
     public String getCurrentImageInfoCrowd() throws IndexUnreachableException, DAOException {
@@ -298,18 +275,11 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return "";
         }
-        if (currentPage.isExternalUrl()) {
-            return getCurrentImageInfo();
+        String url = DataManager.getInstance().getImageDeliveryManager().getImageUrl(currentPage);
+        if(url.startsWith(DataManager.getInstance().getConfiguration().getIiifUrl())) {            
+            url = url.replace("/image/", "/crowdsourcing/image/");
         }
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl());
-        urlBuilder.append("crowdsourcing/image/")
-                .append(pi)
-                .append('/')
-                .append(currentPage.getFileName())
-                .append("/info.json");
-        return urlBuilder.toString();
+        return url;
     }
 
     public String getCurrentImageUrl(int width, int height, float rotation) throws IndexUnreachableException, DAOException {
@@ -671,13 +641,6 @@ public class ViewManager implements Serializable {
             return url;
         }
         return "";
-    }
-
-    @Deprecated
-    public String getRepresentativeImageUrlForOpenLayers()
-            throws IndexUnreachableException, PresentationException, DAOException, ConfigurationException {
-        return getRepresentativeImageUrl();
-
     }
 
     public String getRepresentativeImageUrl() throws IndexUnreachableException, PresentationException, DAOException, ConfigurationException {
@@ -1927,7 +1890,6 @@ public class ViewManager implements Serializable {
         if (topDocument == null || topDocument.getLuceneId() != topDocumentIddoc) {
             topDocument = new StructElement(topDocumentIddoc, null);
         }
-
         return topDocument;
     }
 

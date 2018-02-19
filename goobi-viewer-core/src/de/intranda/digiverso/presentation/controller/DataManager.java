@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.imaging.ImageDeliveryManager;
 import de.intranda.digiverso.presentation.controller.language.LanguageHelper;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
@@ -48,6 +49,7 @@ public final class DataManager {
 
     private LanguageHelper languageHelper;
     
+    private ImageDeliveryManager imageDeliveryManager;
     
 
     private SolrSearchIndex searchIndex;
@@ -254,5 +256,15 @@ public final class DataManager {
 
     public void injectBookshelfManager(SessionStoreBookshelfManager bookshelfManager) {
         this.bookshelfManager = bookshelfManager;
+    }
+    
+    public ImageDeliveryManager getImageDeliveryManager() {
+        if (this.imageDeliveryManager == null) {
+            synchronized (lock) {
+                this.imageDeliveryManager = new ImageDeliveryManager();
+            }
+        }
+        
+        return this.imageDeliveryManager;
     }
 }

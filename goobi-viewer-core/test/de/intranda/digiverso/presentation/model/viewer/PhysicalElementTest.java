@@ -169,42 +169,42 @@ public class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("http://www.example.com/image.jpg", PhysicalElement.determineFileName("http://www.example.com/image.jpg"));
     }
 
-    /**
-     * @see PhysicalElement#getModifiedIIIFFUrl(String,int,int)
-     * @verifies replace dimensions correctly
-     */
-    @Test
-    public void getModifiedIIIFFUrl_shouldReplaceDimensionsCorrectly() throws Exception {
-        Assert.assertEquals("http://rosdok.uni-rostock.de/iiif/image-api/rosdok/ppn750542047/phys_0001/full/!200,220/0/native.jpg", PhysicalElement
-                .getModifiedIIIFFUrl("http://rosdok.uni-rostock.de/iiif/image-api/rosdok/ppn750542047/phys_0001/full/full/0/native.jpg", 200, 220));
-    }
-
-    /**
-     * @see PhysicalElement#getModifiedIIIFFUrl(String,int,int)
-     * @verifies do nothing if not iiif url
-     */
-    @Test
-    public void getModifiedIIIFFUrl_shouldDoNothingIfNotIiifUrl() throws Exception {
-        Assert.assertEquals("http://rosdok.uni-rostock.de/random/url/image.jpg", PhysicalElement.getModifiedIIIFFUrl(
-                "http://rosdok.uni-rostock.de/random/url/image.jpg", 200, 220));
-    }
-
-    /**
-     * @see PhysicalElement#isExternalURI(String)
-     * @verifies return true for external urls
-     */
-    @Test
-    public void isExternalURI_shouldReturnTrueForExternalUrls() throws Exception {
-        Assert.assertTrue(PhysicalElement.isExternalUrl("http://www.example.com/image.jpg"));
-        Assert.assertTrue(PhysicalElement.isExternalUrl("https://www.example.com/image.jpg"));
-    }
-
-    /**
-     * @see PhysicalElement#isExternalURI(String)
-     * @verifies return false for local paths
-     */
-    @Test
-    public void isExternalURI_shouldReturnFalseForLocalPaths() throws Exception {
-        Assert.assertFalse(PhysicalElement.isExternalUrl("/opt/digiverso/viewer/media/123/image.jpg"));
-    }
+//    /**
+//     * @see PhysicalElement#getModifiedIIIFFUrl(String,int,int)
+//     * @verifies replace dimensions correctly
+//     */
+//    @Test
+//    public void getModifiedIIIFFUrl_shouldReplaceDimensionsCorrectly() throws Exception {
+//        Assert.assertEquals("http://rosdok.uni-rostock.de/iiif/image-api/rosdok/ppn750542047/phys_0001/full/!200,220/0/native.jpg", PhysicalElement
+//                .getModifiedIIIFFUrl("http://rosdok.uni-rostock.de/iiif/image-api/rosdok/ppn750542047/phys_0001/full/full/0/native.jpg", 200, 220));
+//    }
+//
+//    /**
+//     * @see PhysicalElement#getModifiedIIIFFUrl(String,int,int)
+//     * @verifies do nothing if not iiif url
+//     */
+//    @Test
+//    public void getModifiedIIIFFUrl_shouldDoNothingIfNotIiifUrl() throws Exception {
+//        Assert.assertEquals("http://rosdok.uni-rostock.de/random/url/image.jpg", PhysicalElement.getModifiedIIIFFUrl(
+//                "http://rosdok.uni-rostock.de/random/url/image.jpg", 200, 220));
+//    }
+//
+//    /**
+//     * @see PhysicalElement#isExternalURI(String)
+//     * @verifies return true for external urls
+//     */
+//    @Test
+//    public void isExternalURI_shouldReturnTrueForExternalUrls() throws Exception {
+//        Assert.assertTrue(PhysicalElement.isExternalUrl("http://www.example.com/image.jpg"));
+//        Assert.assertTrue(PhysicalElement.isExternalUrl("https://www.example.com/image.jpg"));
+//    }
+//
+//    /**
+//     * @see PhysicalElement#isExternalURI(String)
+//     * @verifies return false for local paths
+//     */
+//    @Test
+//    public void isExternalURI_shouldReturnFalseForLocalPaths() throws Exception {
+//        Assert.assertFalse(PhysicalElement.isExternalUrl("/opt/digiverso/viewer/media/123/image.jpg"));
+//    }
 }

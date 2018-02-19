@@ -63,6 +63,10 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetImageDimensionAction;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 
@@ -181,31 +185,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Replaces the image dimensions in an IIIF URL with the given width and height.
-     * 
-     * @param url
-     * @param width
-     * @param height
-     * @return
-     * @should replace dimensions correctly
-     * @should do nothing if not iiif url
-     */
-    public static String getModifiedIIIFFUrl(String url, int width, int height) {
-        if (url.startsWith("http://") || url.startsWith("https://")) {
-            if (url.contains("/iiif")) {
-                String[] tokens = url.split("/");
-                int length = tokens.length;
-                if (length > 6) {
-                    tokens[length - 3] = "!" + width + "," + height;
-                    return StringUtils.join(tokens, "/");
-                }
-            }
-        }
-
-        return url;
-    }
-
-    /**
      * 
      * @param filePath
      * @return
@@ -214,12 +193,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     protected static String determineFileName(String filePath) {
         String ret = filePath;
-        if (StringUtils.isNotBlank(ret) && !isExternalUrl(ret)) {
+        if (StringUtils.isNotBlank(ret) && !(ret.startsWith("http://") || ret.startsWith("https://"))) {
             File file = new File(ret);
             ret = file.getName();
-            //                String[] filePathSplit = ret.split("[/]");
-            //                logger.trace(filePathSplit.toString());
-            //                ret = filePathSplit[filePathSplit.length - 1];
         }
 
         return ret;
@@ -336,8 +312,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     public String getUrl(int width, int height, int rotate, boolean showWatermark, boolean fullscreen, List<String> highlightCoords,
             String watermarkId) throws IndexUnreachableException {
-        String iiifUrl = getModifiedIIIFFUrl(filePath, width, height);
-        if (!iiifUrl.equals(filePath)) {
+        if (DataManager.getInstance().getImageDeliveryManager().isIIIFImageUrl(filePath)) {
+            String iiifUrl = DataManager.getInstance().getImageDeliveryManager().getModifiedIIIFFUrl(
+                    filePath,
+                    RegionRequest.FULL,
+                    new Scale.ScaleToBox(width, height),
+                    Rotation.NONE,
+                    Colortype.DEFAULT,
+                    ImageFileFormat.JPG);
             return iiifUrl;
         }
 
@@ -361,9 +343,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 urlBuilder.append(url).append(actionString);
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    urlBuilder.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/'
-                            : "").append(dataRepositoriesHome).append(dataRepository).append("/").append(DataManager.getInstance().getConfiguration()
-                                    .getMediaFolder()).append("/");
+                    urlBuilder.append("file:/")
+                            .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                            .append(dataRepositoriesHome)
+                            .append(dataRepository)
+                            .append("/")
+                            .append(DataManager.getInstance().getConfiguration().getMediaFolder())
+                            .append("/");
                 }
                 urlBuilder.append(pi).append('/').append(localFilename);
 
@@ -375,8 +361,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     urlBuilder.append("&height=").append(height);
                 }
 
-                urlBuilder.append("&rotate=").append(rotate).append("&resolution=72").append(DataManager.getInstance().getConfiguration()
-                        .isForceJpegConversion() ? "&format=jpg" : "");
+                urlBuilder.append("&rotate=").append(rotate).append("&resolution=72").append(
+                        DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
 
                 if (watermarkTextConfiguration != null && watermarkTextConfiguration.size() > 0 && showWatermark) {
                     // Add watermark text as configured
@@ -444,15 +430,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return "";
     }
 
-    public boolean isExternalUrl() {
-        String path = getFilepath();
-        return isExternalUrl(path);
-    }
-
-    public static boolean isExternalUrl(String path) {
-        return path != null && (path.startsWith("http://") || path.startsWith("https://"));
-    }
-
     public String getWatermarkText() {
         if (watermarkTextConfiguration != null && !watermarkTextConfiguration.isEmpty()) {
             StringBuilder urlBuilder = new StringBuilder();
@@ -460,8 +437,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
                     String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                     try {
-                        SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(":")
-                                .append(pi).toString(), SolrSearchIndex.MAX_HITS, null, Collections.singletonList(field));
+                        SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
+                                new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(),
+                                SolrSearchIndex.MAX_HITS,
+                                null,
+                                Collections.singletonList(field));
                         if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                             // logger.debug(field + ":" + res.get(0).getFirstValue(field));
                             urlBuilder.append((String) res.get(0).getFirstValue(field));
@@ -479,8 +459,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                         break;
                     }
                 } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
-                    urlBuilder.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").append(
-                            PageType.viewImage.getName()).append("/").append(pi).append("/").append(order).append("/");
+                    urlBuilder.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                            .append("/")
+                            .append(PageType.viewImage.getName())
+                            .append("/")
+                            .append(pi)
+                            .append("/")
+                            .append(order)
+                            .append("/");
                     break;
                 } else {
                     urlBuilder.append(text);
@@ -505,8 +491,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getThumbnailUrl(int width, int height) {
-        String iiifUrl = getModifiedIIIFFUrl(filePath, width, height);
-        if (!iiifUrl.equals(filePath)) {
+        if (DataManager.getInstance().getImageDeliveryManager().isIIIFImageUrl(filePath)) {
+            String iiifUrl = DataManager.getInstance().getImageDeliveryManager().getModifiedIIIFFUrl(
+                    filePath,
+                    RegionRequest.FULL,
+                    new Scale.ScaleToBox(width, height),
+                    Rotation.NONE,
+                    Colortype.DEFAULT,
+                    ImageFileFormat.JPG);
             return iiifUrl;
         }
 
@@ -514,24 +506,47 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             fileName = determineFileName(filePath);
         }
         StringBuilder sbUrl = new StringBuilder();
-        if (isExternalUrl(filePath)) {
-            sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=").append(
-                    filePath).append("&width=").append(width).append("&height=").append(height).append(
-                            "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
-                                    .isForceJpegConversion() ? "&format=jpg" : "");
+        if (filePath.startsWith("http")) {
+            sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl())
+                    .append("?action=image&sourcepath=")
+                    .append(filePath)
+                    .append("&width=")
+                    .append(width)
+                    .append("&height=")
+                    .append(height)
+                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
+                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
         } else if (StringUtils.isNotEmpty(dataRepository)) {
             String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-            sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=file:/").append(
-                    (StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "").append(dataRepositoriesHome)
-                    .append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi)
-                    .append("/").append(fileName).append("&width=").append(width).append("&height=").append(height).append(
-                            "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
-                                    .isForceJpegConversion() ? "&format=jpg" : "");
+            sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl())
+                    .append("?action=image&sourcepath=file:/")
+                    .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                    .append(dataRepositoriesHome)
+                    .append(dataRepository)
+                    .append('/')
+                    .append(DataManager.getInstance().getConfiguration().getMediaFolder())
+                    .append('/')
+                    .append(pi)
+                    .append("/")
+                    .append(fileName)
+                    .append("&width=")
+                    .append(width)
+                    .append("&height=")
+                    .append(height)
+                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
+                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
         } else {
-            sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=").append(pi)
-                    .append("/").append(fileName).append("&width=").append(width).append("&height=").append(height).append(
-                            "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
-                                    .isForceJpegConversion() ? "&format=jpg" : "");
+            sbUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl())
+                    .append("?action=image&sourcepath=")
+                    .append(pi)
+                    .append("/")
+                    .append(fileName)
+                    .append("&width=")
+                    .append(width)
+                    .append("&height=")
+                    .append(height)
+                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
+                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
         }
 
         sbUrl.append("&compression=").append(DataManager.getInstance().getConfiguration().getThumbnailsCompression());
@@ -644,6 +659,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getFileName() {
+        if (StringUtils.isEmpty(fileName)) {
+            determineFileName(filePath);
+        }
         return fileName;
     }
 
@@ -767,7 +785,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     String loadFullText() throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
         if (fullText == null && fulltextFileName != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(
+                    BeanUtils.getRequest(),
+                    fulltextFileName,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for full-text file {}", fulltextFileName);
                 throw new AccessDeniedException("fulltextAccessDenied");
@@ -845,7 +865,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public String loadAlto() throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(
+                    BeanUtils.getRequest(),
+                    altoFileName,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFileName);
                 throw new AccessDeniedException("fulltextAccessDenied");
@@ -892,8 +914,19 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     public String getImageToPdfUrl() {
         StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-        sb.append("?action=pdf").append("&images=").append(pi).append("/").append(fileName).append("&metsFile=").append(pi).append(".xml").append(
-                "&targetFileName=").append(pi).append("_").append(order).append(".pdf");
+        sb.append("?action=pdf")
+                .append("&images=")
+                .append(pi)
+                .append("/")
+                .append(fileName)
+                .append("&metsFile=")
+                .append(pi)
+                .append(".xml")
+                .append("&targetFileName=")
+                .append(pi)
+                .append("_")
+                .append(order)
+                .append(".pdf");
         return sb.toString();
         //        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
         //                + "&targetFileName=" + pi + "_" + order + ".pdf";
@@ -1151,7 +1184,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     public boolean isAccessForJs() throws IndexUnreachableException, DAOException {
         logger.trace("isAccessForJs");
-        if (isExternalUrl()) {
+        if (getFilepath().startsWith("http")) {
             //External urls are always free to use
             return true;
         } else if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext() != null) {
@@ -1343,8 +1376,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         StringBuilder sbUrl = new StringBuilder();
         if (StringUtils.isNotEmpty(dataRepository)) {
             String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-            sbUrl.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "").append(
-                    dataRepositoriesHome).append(dataRepository).append("/").append(DataManager.getInstance().getConfiguration().getMediaFolder())
+            sbUrl.append("file:/")
+                    .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? "/" : "")
+                    .append(dataRepositoriesHome)
+                    .append(dataRepository)
+                    .append("/")
+                    .append(DataManager.getInstance().getConfiguration().getMediaFolder())
                     .append("/");
         }
         sbUrl.append(pi).append("/").append(fileName);
