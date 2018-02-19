@@ -56,6 +56,8 @@ public enum PageType {
     bookshelf("bookshelf"),
     mybookshelves("mybookshelves"),
     user("user"),
+    privacy("privacy", PageTypeHandling.cms),
+    feedback("feedback", PageTypeHandling.cms),
     other(""); //unknown page type name in Navigationhelper. Probably a cms-page
 
     /** Logger for this class. */
