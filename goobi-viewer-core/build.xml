@@ -1308,7 +1308,7 @@
 	</target>
 	<target name="lie">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.url" value="http://www.eliechtensteinensia.li/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
