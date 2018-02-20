@@ -228,12 +228,12 @@ class WatermarkHandler {
         return Optional.empty();
     }
     
-    public String getFooterIdIfExists(StructElement topDocument) {
+    public Optional<String> getFooterIdIfExists(StructElement topDocument) {
         String footerId = null;
         if (watermarkIdField != null && topDocument != null) {
             footerId = topDocument.getMetadataValue(watermarkIdField);
         }
-        return footerId;
+        return Optional.ofNullable(footerId);
     }
 
 }

@@ -18,7 +18,10 @@ package de.intranda.digiverso.presentation.controller.imaging;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * @author Florian Alpers
@@ -40,10 +43,10 @@ class PdfHandler {
      * @param page
      * @return
      */
-    public String getPdfUrl(PhysicalElement page) {
+    public String getPdfUrl(PhysicalElement page, StructElement doc) {
 
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
-
+        
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("image")
                 .append("/")
@@ -58,7 +61,7 @@ class PdfHandler {
                 .append(".pdf");
 
         this.watermarkHandler.getWatermarkTextIfExists(page).ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
-        this.watermarkHandler.getFooterIdIfExists().ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
+        this.watermarkHandler.getFooterIdIfExists(doc).ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
 
         return sb.toString();
     }
@@ -71,9 +74,14 @@ class PdfHandler {
      *            generated
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
      * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
      */
-    public String getPdfUrl(String pi, String divId, String label) {
+    public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
 
+        String pi = doc.getTopStruct().getPi();
+        String divId = doc.getLogid();
+        
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
 
         if (StringUtils.isBlank(label)) {
@@ -91,8 +99,8 @@ class PdfHandler {
         if (StringUtils.isNotBlank(divId)) {
             sb.append(divId).append("/");
         }
-        this.watermarkHandler.getWatermarkTextIfExists(pi).ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
-        this.watermarkHandler.getFooterIdIfExists().ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
+        this.watermarkHandler.getWatermarkTextIfExists(doc).ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
+        this.watermarkHandler.getFooterIdIfExists(doc).ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
 
         return sb.toString();
     }
