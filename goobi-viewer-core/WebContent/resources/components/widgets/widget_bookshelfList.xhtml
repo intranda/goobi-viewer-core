@@ -12,10 +12,6 @@
 				<h:form id="widgetBookshelfListForm">
 					<h3>#{msg.bookshelf_bookshelf}</h3>
 
-					<h:panelGroup rendered="#{bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
-						<div class="alert alert-warning" role="alert">#{msg.bookshelves_noBookshelvesWarning}</div>
-					</h:panelGroup>
-
 					<h:panelGroup rendered="#{!bookshelfBean.getBookshelvesForUser(userBean.user).isEmpty()}">
 						<ul>
 							<ui:repeat value="#{bookshelfBean.getBookshelvesForUser(userBean.user)}" var="bookshelf" varStatus="status">
