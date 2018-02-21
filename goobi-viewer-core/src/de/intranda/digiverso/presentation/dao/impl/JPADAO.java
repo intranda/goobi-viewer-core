@@ -2184,7 +2184,8 @@ public class JPADAO implements IDAO {
                 try {                    
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
-                    logger.error("Error refreshing cms page " + o.getId(), e);
+                    logger.warn("Error refreshing cms page " + o.getId());
+                    em.merge(o);
                 }
             }
             return o;
@@ -2209,7 +2210,7 @@ public class JPADAO implements IDAO {
                 try {                    
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
-                    logger.error("Error refreshing cms page " + o.getId(), e);
+                    logger.warn("Error refreshing cms page " + o.getId());
                 }
             }
             return o;
@@ -2231,7 +2232,12 @@ public class JPADAO implements IDAO {
         try {
             CMSSidebarElement o = em.getReference(CMSSidebarElement.class, id);
             if (o != null) {
-                em.refresh(o);
+                try  {                    
+                    em.refresh(o);
+                } catch(IllegalArgumentException e) {
+                    logger.warn(e.toString());
+                    em.merge(o);
+                }
             }
             return o;
         } catch (EntityNotFoundException e) {
@@ -2896,15 +2902,6 @@ public class JPADAO implements IDAO {
         } else {
             return Optional.ofNullable((T)results.get(0));
         }
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#detach(java.lang.Object)
-     */
-    @Override
-    public void detach(Object object) throws DAOException {
-        preQuery();
-        em.detach(object);
     }
 
 
