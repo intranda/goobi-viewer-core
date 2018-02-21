@@ -2184,7 +2184,8 @@ public class JPADAO implements IDAO {
                 try {                    
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
-                    logger.error("Error refreshing cms page " + o.getId(), e);
+                    logger.warn("Error refreshing cms page " + o.getId());
+                    em.merge(o);
                 }
             }
             return o;
@@ -2209,7 +2210,7 @@ public class JPADAO implements IDAO {
                 try {                    
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
-                    logger.error("Error refreshing cms page " + o.getId(), e);
+                    logger.warn("Error refreshing cms page " + o.getId());
                 }
             }
             return o;
