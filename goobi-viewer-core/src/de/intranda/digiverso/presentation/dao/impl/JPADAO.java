@@ -2898,14 +2898,5 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.IDAO#detach(java.lang.Object)
-     */
-    @Override
-    public void detach(Object object) throws DAOException {
-        preQuery();
-        em.detach(object);
-    }
-
 
 }
