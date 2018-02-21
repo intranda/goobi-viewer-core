@@ -27,7 +27,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
  * @author Florian Alpers
  *
  */
-class PdfHandler {
+public class PdfHandler {
 
     private final WatermarkHandler watermarkHandler;
     private final String iiifUrl;

@@ -3101,4 +3101,8 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDoublePageModeEnabled() {
         return getLocalBoolean("viewer.doublePageMode.enabled", false);
     }
+    
+    public List<String> getRestrictedImageUrls() {
+        return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.EMPTY_LIST);
+    }
 }

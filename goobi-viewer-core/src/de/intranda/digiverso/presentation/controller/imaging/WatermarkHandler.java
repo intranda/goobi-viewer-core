@@ -43,7 +43,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
  * @author Florian Alpers
  *
  */
-class WatermarkHandler {
+public class WatermarkHandler {
     
     private static final Logger logger = LoggerFactory.getLogger(WatermarkHandler.class);
     
@@ -76,7 +76,7 @@ class WatermarkHandler {
     public Optional<String> getWatermarkUrl(ImageInformation info, Optional<PageType> pageType, Optional<String> watermarkId, Optional<String> watermarkText)
             throws IndexUnreachableException, DAOException, ConfigurationException {
 
-        int footerHeight = DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), ImageDeliveryManager.getImageType(info));
+        int footerHeight = DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), ImageHandler.getImageType(info));
         if (footerHeight > 0) {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 
@@ -92,7 +92,7 @@ class WatermarkHandler {
             urlBuilder.append("footer/full/!")
                     .append(width)
                     .append(",") //width
-                    .append(DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), ImageDeliveryManager.getImageType(info)))
+                    .append(DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), ImageHandler.getImageType(info)))
                     .append("/0/default.")
                     .append(format)
                     .append("?");

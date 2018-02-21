@@ -15,40 +15,20 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocumentList;
+import org.apache.tomcat.util.file.Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
-import de.intranda.digiverso.presentation.exceptions.DAOException;
-import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
-import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
-import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
@@ -57,40 +37,15 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
  * @author Florian Alpers
  *
  */
-public class ImageDeliveryManager {
+public class ImageHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageDeliveryManager.class);
-
-
-
-//    @Inject
-//    private ActiveDocumentBean activeDocumentBean;
-
-//    private Optional<PhysicalElement> getCurrentPageIfExists() {
-//        return Optional.ofNullable(activeDocumentBean).map(adb -> adb.getViewManager()).map(vm -> {
-//            try {
-//                return vm.getCurrentPage();
-//            } catch (IndexUnreachableException | DAOException e) {
-//                logger.error(e.toString());
-//                return null;
-//            }
-//        });
-//    }
-//
-//    private Optional<ActiveDocumentBean> getActiveDocumentBeanIfExists() {
-//        return Optional.ofNullable(activeDocumentBean);
-//    }
-//
-//    private Optional<String> getFooterIdIfExists() {
-//        return getActiveDocumentBeanIfExists().map(adb -> adb.getTopDocument()).map(doc -> getFooterId(doc));
-//    }
-
-
-
-
-
-
-
+    private static final Logger logger = LoggerFactory.getLogger(ImageHandler.class);
+    
+    private final List<String> restrictedUrls;
+    
+    public ImageHandler(Configuration config) {
+        this.restrictedUrls = DataManager.getInstance().getConfiguration().getRestrictedImageUrls();
+    }
 
     /**
      * Returns the image link for the given page and pageType. For external images, this links to the IIIF image information json+ls For external
@@ -154,7 +109,7 @@ public class ImageDeliveryManager {
      * @param path
      * @return  true exactly if the given path starts with {@code http://} or {@code https://}
      */
-    public static boolean isExternalUrl(String path) {
+    protected static boolean isExternalUrl(String path) {
         return path != null && (path.startsWith("http://") || path.startsWith("https://"));
     }
 
@@ -184,12 +139,11 @@ public class ImageDeliveryManager {
     }
 
     /**
-     * TODO: implement
-     * 
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
      */
-    protected static boolean isRestrictedUrl(String path) {
-        return false;
+    protected boolean isRestrictedUrl(String path) {
+        return this.restrictedUrls.stream()
+                .anyMatch(regex -> Matcher.match(regex, path, true));
     }
     
     protected static ImageType getImageType(ImageInformation info) {
@@ -206,7 +160,7 @@ public class ImageDeliveryManager {
      * @param fileUrl
      * @return
      */
-    public static boolean isInternalUrl(String fileUrl) {
+    protected static boolean isInternalUrl(String fileUrl) {
         return fileUrl.startsWith("file:/") || fileUrl.startsWith("/");
     }
 

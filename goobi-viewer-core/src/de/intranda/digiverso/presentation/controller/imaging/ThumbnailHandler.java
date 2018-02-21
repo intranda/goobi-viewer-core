@@ -36,7 +36,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
  * @author Florian Alpers
  *
  */
-class ThumbnailHandler {
+public class ThumbnailHandler {
     
     private static final String ANCHOR_THUMB = "multivolume_thumbnail.jpg";
     private static final String BORN_DIGITAL_THUMB = "thumbnail_epub.jpg";
@@ -201,7 +201,8 @@ class ThumbnailHandler {
 
     /**
      * @param doc
-     * @return
+     * @return  The representative thumbnail url for the given doc, or a replacement image url if no
+     * representative thumbnail url is applicable (born digital material and - depending on configuration - anchors)
      */
     private String getImagePath(StructElement doc) {
         String thumbnailUrl;
@@ -212,7 +213,7 @@ class ThumbnailHandler {
         } else {            
             String field = SolrConstants.THUMBNAIL;
             thumbnailUrl = getFieldValue(doc, field);
-            if(StringUtils.isBlank(thumbnailUrl) || ImageDeliveryManager.isImageUrl(thumbnailUrl, false)) {
+            if(StringUtils.isBlank(thumbnailUrl) || !ImageHandler.isImageUrl(thumbnailUrl, false)) {
                 thumbnailUrl = bornDigitalThumnailReplacement.toString();
             }
         }

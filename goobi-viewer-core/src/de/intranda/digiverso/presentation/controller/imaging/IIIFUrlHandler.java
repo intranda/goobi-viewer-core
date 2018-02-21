@@ -64,10 +64,10 @@ public class IIIFUrlHandler {
      * @return
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
-        if (ImageDeliveryManager.isExternalUrl(fileUrl)) {
+        if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {
                 return getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
-            } else if (ImageDeliveryManager.isImageUrl(fileUrl, false)) {
+            } else if (ImageHandler.isImageUrl(fileUrl, false)) {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
                 sb.append("image/-/").append(Helper.encodeUrl(fileUrl)).append("/");
                 sb.append(region).append("/");
@@ -85,7 +85,7 @@ public class IIIFUrlHandler {
                 sb.append("default.").append(format);
                 return sb.toString();
             }
-        } else if(ImageDeliveryManager.isInternalUrl(fileUrl)) {
+        } else if(ImageHandler.isInternalUrl(fileUrl)) {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
             sb.append("image/-/").append(Helper.encodeUrl(fileUrl)).append("/");
             return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
