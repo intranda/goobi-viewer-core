@@ -5,3 +5,4 @@ jdk:
 
 script:
   - cd goobi-viewer-core; ant war-internal
+
