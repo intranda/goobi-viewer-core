@@ -16,7 +16,6 @@
 	<property name="dir.tests.classes" value="${dir.build}/test-classes" />
 	<property name="dir.tests.report" value="${dir.build}/test-reports" />
 	<property name="dir.javadoc" value="doc" />
-	<property name="dir.pmd" value="/opt/pmd" />
 
 	<!-- Compiler options -->
 	<property name="javac.source" value="1.8" />
@@ -36,15 +35,6 @@
 		<pathelement location="${dir.tests.classes}" />
 	</path>
 
-	<!-- PMD classpath -->
-	<path id="pmd.classpath">
-		<fileset dir="${dir.pmd}">
-			<include name="*.jar" />
-		</fileset>
-	</path>
-	
-	<taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath">
-	</taskdef>
 
 
 
@@ -209,19 +199,6 @@
 		</javadoc>
 	</target>
 
-	<!-- PMD code analysis-->
-	<target name="pmd">
-		<pmd>
-			<sourceLanguage name="java" version="1.7" />
-			<!-- <ruleset>/var/lib/jenkins/workspace/viewertest master CI/Viewer/ruleset.xml</ruleset> -->
-			<ruleset>/opt/pmd/conf/intranda_pmd_2.0-web.xml</ruleset>
-			<formatter type="xml" toFile="pmd.xml" />
-			<fileset dir="${dir.src}">
-				<include name="**/*.java" />
-			</fileset>
-		</pmd>
-	</target>
-	
     <!-- Build of war file for viewertest deploy-->
     <target name="jar" depends="compile,compile-tests" description="Builds JAR file as a build dependency for modules">    	
         <jar destfile="${dir.build}/viewer.jar" basedir="${dir.build.classes}">
@@ -277,7 +254,7 @@
 	</target>
 
 	<!-- Build of war file for customer distribution. -->
-	<target name="war" depends="compile, junit-withcoverage, javadoc, pmd, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
+	<target name="war" depends="compile, junit-withcoverage, javadoc, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
 		<!-- replace custom faces and pretty config path in web.xml -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/faces-config.xml" replace="/resources/themes/${theme}/faces-config.xml" byline="true" /> -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/theme-url-mappings.xml" replace="/resources/themes/${theme}/theme-url-mappings.xml" byline="true" /> -->
@@ -313,7 +290,7 @@
 	</target>
 
 	<!-- Build of war file for customer distribution. -->
-	<target name="war-root" depends="compile, junit-withcoverage, javadoc, pmd, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
+	<target name="war-root" depends="compile, junit-withcoverage, javadoc, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
 		<!-- replace custom faces and pretty config path in web.xml -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/faces-config.xml" replace="/resources/themes/${theme}/faces-config.xml" byline="true" /> -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/theme-url-mappings.xml" replace="/resources/themes/${theme}/theme-url-mappings.xml" byline="true" /> -->
