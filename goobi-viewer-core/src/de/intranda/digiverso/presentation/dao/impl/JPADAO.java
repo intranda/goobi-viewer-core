@@ -2232,7 +2232,12 @@ public class JPADAO implements IDAO {
         try {
             CMSSidebarElement o = em.getReference(CMSSidebarElement.class, id);
             if (o != null) {
-                em.refresh(o);
+                try  {                    
+                    em.refresh(o);
+                } catch(IllegalArgumentException e) {
+                    logger.warn(e.toString());
+                    em.merge(o);
+                }
             }
             return o;
         } catch (EntityNotFoundException e) {
