@@ -420,6 +420,14 @@ table,
 .col-lg-12.no-padding {
   padding: 0;
 }
+.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+}
+.no-gutters > [class*="col-"] {
+  padding-right: 0;
+  padding-left: 0;
+}
 /* CHROME RESETS */
 button {
   border-radius: 0;
