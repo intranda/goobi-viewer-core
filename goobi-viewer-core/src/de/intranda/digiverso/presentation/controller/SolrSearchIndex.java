@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +57,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.Tag;
 
@@ -268,8 +271,8 @@ public final class SolrSearchIndex {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public SolrDocumentList search(String query, int rows, List<StringPair> sortFields, List<String> fieldList) throws PresentationException,
-            IndexUnreachableException {
+    public SolrDocumentList search(String query, int rows, List<StringPair> sortFields, List<String> fieldList)
+            throws PresentationException, IndexUnreachableException {
         //        logger.trace("search: {}", query);
         return search(query, 0, rows, sortFields, null, fieldList).getResults();
     }
@@ -339,8 +342,8 @@ public final class SolrSearchIndex {
     public SolrDocument getDocumentByIddoc(String iddoc) throws IndexUnreachableException, PresentationException {
         // logger.trace("getDocumentByIddoc: {}", iddoc);
         SolrDocument ret = null;
-        SolrDocumentList hits = search(new StringBuilder(SolrConstants.IDDOC).append(':').append(iddoc).toString(), 0, 1, null, null, null)
-                .getResults();
+        SolrDocumentList hits =
+                search(new StringBuilder(SolrConstants.IDDOC).append(':').append(iddoc).toString(), 0, 1, null, null, null).getResults();
         if (hits != null && hits.size() > 0) {
             ret = hits.get(0);
         }
@@ -451,8 +454,11 @@ public final class SolrSearchIndex {
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
         // logger.trace("getIddocFromIdentifier: {}", identifier);
-        SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(identifier).toString(), 1, null, Collections
-                .singletonList(SolrConstants.IDDOC));
+        SolrDocumentList docs = search(
+                new StringBuilder(SolrConstants.PI).append(':').append(identifier).toString(),
+                1,
+                null,
+                Collections.singletonList(SolrConstants.IDDOC));
         if (!docs.isEmpty()) {
             return Long.valueOf((String) docs.get(0).getFieldValue(SolrConstants.IDDOC));
         }
@@ -510,8 +516,17 @@ public final class SolrSearchIndex {
      */
     public long getImageOwnerIddoc(String pi, int pageNo) throws IndexUnreachableException, PresentationException {
         logger.trace("getImageOwnerIddoc: {}:{}", pi, pageNo);
-        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":").append(pi).append(" AND ").append(SolrConstants.ORDER).append(":")
-                .append(pageNo).append(" AND ").append(SolrConstants.DOCTYPE).append(":").append(DocType.PAGE.name()).toString();
+        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.ORDER)
+                .append(":")
+                .append(pageNo)
+                .append(" AND ")
+                .append(SolrConstants.DOCTYPE)
+                .append(":")
+                .append(DocType.PAGE.name())
+                .toString();
         logger.trace("query: {}", query);
         String luceneOwner = SolrConstants.IDDOC_OWNER;
         SolrDocument pageDoc = getFirstDoc(query, Collections.singletonList(luceneOwner));
@@ -540,8 +555,13 @@ public final class SolrSearchIndex {
      */
     public long getIddocByLogid(String pi, String logId) throws IndexUnreachableException, PresentationException {
         logger.trace("getIddocByLogid: {}:{}", pi, logId);
-        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":").append(pi).append(" AND ").append(SolrConstants.LOGID).append(":")
-                .append(logId).toString();
+        String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":")
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.LOGID)
+                .append(":")
+                .append(logId)
+                .toString();
         SolrDocument doc = getFirstDoc(query, Collections.singletonList(SolrConstants.IDDOC));
         if (doc != null) {
             String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
@@ -558,9 +578,9 @@ public final class SolrSearchIndex {
      * @return
      */
     public static Object getSingleFieldValue(SolrDocument doc, String field) {
-//        if(field.equals("MD_TITLE")) {            
-//            field = field + "_LANG_DE";
-//        }
+        //        if(field.equals("MD_TITLE")) {            
+        //            field = field + "_LANG_DE";
+        //        }
         Collection<Object> valueList = doc.getFieldValues(field);
         if (valueList != null && !valueList.isEmpty()) {
             return valueList.iterator().next();
@@ -693,10 +713,10 @@ public final class SolrSearchIndex {
     private static Document getSolrSchemaDocument() {
         StringReader sr = null;
         try {
-            Helper.getWebContentGET(DataManager.getInstance().getConfiguration().getSolrUrl()
-                    + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
-            String responseBody = Helper.getWebContentGET(DataManager.getInstance().getConfiguration().getSolrUrl()
-                    + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
+            Helper.getWebContentGET(
+                    DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
+            String responseBody = Helper.getWebContentGET(
+                    DataManager.getInstance().getConfiguration().getSolrUrl() + "/admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml");
             sr = new StringReader(responseBody);
             return new SAXBuilder().build(sr);
         } catch (ClientProtocolException e) {
@@ -725,8 +745,8 @@ public final class SolrSearchIndex {
                 String schemaName = eleRoot.getAttributeValue("name");
                 if (StringUtils.isNotEmpty(schemaName)) {
                     try {
-                        if (schemaName.length() > SCHEMA_VERSION_PREFIX.length() && Integer.parseInt(schemaName.substring(SCHEMA_VERSION_PREFIX
-                                .length())) >= MIN_SCHEMA_VERSION) {
+                        if (schemaName.length() > SCHEMA_VERSION_PREFIX.length()
+                                && Integer.parseInt(schemaName.substring(SCHEMA_VERSION_PREFIX.length())) >= MIN_SCHEMA_VERSION) {
                             String msg = "Solr schema is up to date: " + SCHEMA_VERSION_PREFIX + MIN_SCHEMA_VERSION;
                             logger.info(msg);
                             ret[0] = "200";
@@ -923,8 +943,8 @@ public final class SolrSearchIndex {
      * @return
      */
     private static boolean isQuerySyntaxError(Exception e) {
-        return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError") || e.getMessage().startsWith(
-                "Invalid Number") || e.getMessage().startsWith("undefined field"));
+        return e.getMessage() != null && (e.getMessage().startsWith("org.apache.solr.search.SyntaxError")
+                || e.getMessage().startsWith("Invalid Number") || e.getMessage().startsWith("undefined field"));
     }
 
     /**
@@ -941,12 +961,39 @@ public final class SolrSearchIndex {
         List<String> list = new ArrayList<>();
         for (String name : fieldInfoMap.keySet()) {
             FieldInfo info = fieldInfoMap.get(name);
-            if (info != null && info.getType() != null && info.getType().toLowerCase().contains("string") || info.getType().toLowerCase().contains(
-                    "text") || info.getType().toLowerCase().contains("tlong")) {
+            if (info != null && info.getType() != null && info.getType().toLowerCase().contains("string")
+                    || info.getType().toLowerCase().contains("text") || info.getType().toLowerCase().contains("tlong")) {
                 list.add(name);
             }
         }
 
         return list;
+    }
+
+    /**
+     * @param doc The document containing the metadata
+     * @param key the metadata key without the '_LANG_...' suffix
+     * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match 
+     * the given key but have no language information are listed as language {@code _DEFAULT}
+     */
+    public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
+        Map<String, List<String>> map = new HashMap<>();
+        if (doc != null) {
+            List<String> fieldNames = doc.getFieldNames().stream().filter(field -> field.startsWith(key)).collect(Collectors.toList());
+            for (String languageField : fieldNames) {
+                String locale = null;
+                if (languageField.startsWith(key + "_LANG_")) {
+                    locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
+                } else {
+                    locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
+                }
+                Collection<Object> languageValues = doc.getFieldValues(languageField);
+                if (languageValues != null) {
+                    List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                    map.put(locale, values);
+                }
+            }
+        }
+        return map;
     }
 }

@@ -368,7 +368,7 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    private static CMSPage findPage(String id) throws DAOException {
+    private CMSPage findPage(String id) throws DAOException {
         CMSPage page = null;
         if (id != null) {
             try {
@@ -450,14 +450,19 @@ public class CmsBean implements Serializable {
      * @return
      * @throws DAOException
      */
-    public static CMSPage getCMSPage(Long pageId) throws DAOException {
-        CMSPage page = DataManager.getInstance().getDao().getCMSPage(pageId);
-        PageValidityStatus validityStatus = isPageValid(page);
-        page.setValidityStatus(validityStatus);
-        if (validityStatus.isValid()) {
-            page.getSidebarElements().forEach(element -> element.deSerialize());
+    public CMSPage getCMSPage(Long pageId) throws DAOException {
+//        Optional<CMSPage> page = DataManager.getInstance().getDao().getCMSPage(pageId);
+        Optional<CMSPage> page = getAllCMSPages().stream().filter(p -> p.getId().equals(pageId)).findFirst();
+        if(page.isPresent()) {            
+            PageValidityStatus validityStatus = isPageValid(page.get());
+            page.get().setValidityStatus(validityStatus);
+            if (validityStatus.isValid()) {
+                page.get().getSidebarElements().forEach(element -> element.deSerialize());
+            }
+            return page.get();
+        } else {
+            return null;
         }
-        return page;
     }
 
     public List<CMSSidebarElement> getSidebarElements(boolean isCMSPage) {
@@ -504,7 +509,6 @@ public class CmsBean implements Serializable {
             if (cmsNavigationBean != null) {
                 cmsNavigationBean.getItemManager().addAvailableItem(new CMSNavigationItem(this.selectedPage));
             }
-            DataManager.getInstance().getDao().detach(this.selectedPage);
         }
     }
 

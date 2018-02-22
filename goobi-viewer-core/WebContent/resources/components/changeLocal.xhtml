@@ -23,7 +23,7 @@
                     <ul>
                         <ui:repeat var="lang" value="#{navigationHelper.supportedLanguages}">
                             <li>
-                                <h:commandLink actionListener="index" styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
+                                <h:commandLink action="#{navigationHelper.redirectToCurrentView()}" actionListener="index" styleClass="#{navigationHelper.localeString == lang ?'activeLang':''}">
                                     <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
                                         <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{lang}.gif" alt="Flag Icon" />
                                     </h:panelGroup>

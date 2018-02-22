@@ -32,13 +32,13 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -2184,8 +2184,8 @@ public class JPADAO implements IDAO {
                 try {                    
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
-                    logger.warn("Error refreshing cms page " + o.getId());
-                    em.merge(o);
+                    logger.error("Error refreshing cms page " + o.getId());
+
                 }
             }
             return o;
@@ -2205,12 +2205,12 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            CMSPage o = em.getReference(CMSPage.class, id);
+            CMSPage o = em.find(CMSPage.class, id);
             if (o != null) {
                 try {                    
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
-                    logger.warn("Error refreshing cms page " + o.getId());
+                    logger.error("Error refreshing cms page " + o.getId());
                 }
             }
             return o;
@@ -2235,8 +2235,7 @@ public class JPADAO implements IDAO {
                 try  {                    
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
-                    logger.warn(e.toString());
-                    em.merge(o);
+                    logger.error(e.toString());
                 }
             }
             return o;

@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.model.toc.metadata.SimpleMetadataValue;
 
 public class TOCTest {
     
@@ -55,11 +56,11 @@ public class TOCTest {
         TOC toc = new TOC();
         toc.setTocElementMap(new HashMap<>());
         toc.getTocElementMap().put(TOC.DEFAULT_GROUP, new ArrayList<>(3));
-        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement("one", "0", null, "1", "LOG_0000", 0, "PPN_anchor", null, false, true, null,
+        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement(new SimpleMetadataValue("one"), "0", null, "1", "LOG_0000", 0, "PPN_anchor", null, false, true, null,
                 "periodical", null));
-        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement("two", "1", null, "2", "LOG_0001", 1, "PPN_volume", null, false, true, null,
+        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement(new SimpleMetadataValue("two"), "1", null, "2", "LOG_0001", 1, "PPN_volume", null, false, true, null,
                 "periodical_volume", null));
-        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement("three", "1", null, "3", "LOG_0002", 2, "PPN_volume", null, false, true,
+        toc.getTocElementMap().get(TOC.DEFAULT_GROUP).add(new TOCElement(new SimpleMetadataValue("three"), "1", null, "3", "LOG_0002", 2, "PPN_volume", null, false, true,
                 null, "article", null));
 
         Assert.assertEquals("one", toc.getLabel("PPN_anchor"));
