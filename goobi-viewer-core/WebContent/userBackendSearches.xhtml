@@ -58,25 +58,23 @@
 							<f:facet name="header">
 								<h:outputText value="#{msg.action}" />
 							</f:facet>
-							
+                            
+							<!-- NEW HITS NOTIFICATION -->
 							<ui:fragment rendered="#{search.newHitsNotification}">
-							    <button type="button" class="btn-clean toggleNotificationButton" title="#{msg.user_mySearches_disableNotifications}">
+                                <h:commandLink action="#{search.toggleNotifications}" title="#{msg.user_mySearches_disableNotifications}">
                                     <i class="fa fa-envelope" aria-hidden="true"></i>
-                                    <!-- TODO #{search.toggleNotifications} -->
-                                </button>
+                                </h:commandLink>
                             </ui:fragment>
                             <ui:fragment rendered="#{!search.newHitsNotification}">
-                                <button type="button" class="btn-clean toggleNotificationButton" title="#{msg.user_mySearches_enableNotifications}">
+                                <h:commandLink action="#{search.toggleNotifications}" title="#{msg.user_mySearches_enableNotifications}">
                                     <i class="fa fa-envelope-o" aria-hidden="true"></i>
-                                    <!-- TODO #{search.toggleNotifications} -->
-                                </button>
+                                </h:commandLink>
                             </ui:fragment>
-
-							<!-- delete search -->
+                            
+							<!-- DELETE SEARCH -->
 							<button type="button" class="btn-clean deleteSearchBtn" data-toggle="modal" title="#{msg.delete}">
 								<i class="fa fa-trash-o" aria-hidden="true"></i>
 							</button>
-
 							<div class="modal fade deleteSearchModal" tabindex="-1" role="dialog">
 								<div class="modal-dialog">
 									<div class="modal-content">
