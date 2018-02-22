@@ -1046,7 +1046,7 @@ div.mce-fullscreen {
 .bookshelf-navigation {
   /* ELEMENT */
 }
-.bookshelf-navigation__icons.no-padding {
+.bookshelf-navigation__icons {
   padding: 6px 0;
 }
 .bookshelf-navigation__icons span {
