@@ -82,7 +82,7 @@
 
                 <!-- paginator -->
                 <viewerComponent:simplePaginator itemCount="#{cmsBean.getQueryResultCount(cmsPage.getContentItem('queryList01'))}"
-                    itemActive="#{cmsPage.listPage}" urlPrefix="#{cmsBean.getPageUrl(cmsPage.id)}" />
+                    itemActive="#{cmsPage.listPage}" urlPrefix="#{cmsBean.getUrl(cmsPage)}" />
             </div>
 		</f:view>
 	</ui:define>
@@ -94,7 +94,7 @@
     		<widgetComponent:widget_searchDrillDown widget="#{element}" />
             <widgetComponent:widget_searchField widget="#{element}"/>
             <widgetComponent:widget_browsing widget="#{element}"/>            
-            <widgetComponent:widget_bookshelves widget="#{element}"/>
+            <widgetComponent:widget_bookshelfList widget="#{element}"/>
             <widgetComponent:widget_mySearches widget="#{element}"/>
             <widgetComponent:widget_user widget="#{element}"/>
             <widgetComponent:widget_rssFeed widget="#{element}" />

@@ -420,6 +420,14 @@ table,
 .col-lg-12.no-padding {
   padding: 0;
 }
+.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+}
+.no-gutters > [class*="col-"] {
+  padding-right: 0;
+  padding-left: 0;
+}
 /* CHROME RESETS */
 button {
   border-radius: 0;
@@ -1038,7 +1046,7 @@ div.mce-fullscreen {
 .bookshelf-navigation {
   /* ELEMENT */
 }
-.bookshelf-navigation__icons.no-padding {
+.bookshelf-navigation__icons {
   padding: 6px 0;
 }
 .bookshelf-navigation__icons span {
@@ -3612,9 +3620,12 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #fff;
 }
 .search-standard__filter {
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
   padding-top: 7px;
   padding-bottom: 15px;
 }
@@ -4010,9 +4021,12 @@ div[id*="-Modal"] .email-form .form-group {
   display: inline-block;
 }
 .search-list__hit-docstruct ul {
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
 }
 .search-list__hit-docstruct li + li:before {
   content: "\003e";
@@ -4166,8 +4180,6 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .stacked-thumbnail {
   border: 2px solid #fff;
-  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
   background: #fff;
   z-index: 10;
@@ -4175,22 +4187,12 @@ div[id*="-Modal"] .email-form .form-group {
 .stacked-thumbnail-before,
 .stacked-thumbnail-after {
   border: 2px solid #fff;
-  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  -webkit-transform: rotate(-5deg);
-  -moz-transform: rotate(-5deg);
-  -o-transform: rotate(-5deg);
-  -ms-transform: rotate(-5deg);
   transform: rotate(-5deg);
   background: #eff4de;
   z-index: 9;
 }
 .stacked-thumbnail-after {
-  -webkit-transform: rotate(4deg);
-  -moz-transform: rotate(4deg);
-  -o-transform: rotate(4deg);
-  -ms-transform: rotate(4deg);
   transform: rotate(4deg);
   background: #768590;
 }
@@ -5713,8 +5715,6 @@ div.olMapViewport {
   font-size: 1rem;
   text-align: center;
   color: #ccc;
-  -ms-transform: rotate(-90deg);
-  -webkit-transform: rotate(-90deg);
   transform: rotate(-90deg);
 }
 #nerFacetting #sliderScale .scale-stripes {
@@ -7192,8 +7192,6 @@ div.olMapViewport {
   font-size: 12px;
   text-align: center;
   color: #ccc;
-  -ms-transform: rotate(-90deg);
-  -webkit-transform: rotate(-90deg);
   transform: rotate(-90deg);
 }
 #sliderScale .scale-stripes {

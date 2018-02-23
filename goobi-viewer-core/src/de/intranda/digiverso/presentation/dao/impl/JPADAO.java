@@ -2185,7 +2185,6 @@ public class JPADAO implements IDAO {
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
                     logger.error("Error refreshing cms page " + o.getId());
-
                 }
             }
             return o;
@@ -2236,6 +2235,7 @@ public class JPADAO implements IDAO {
                     em.refresh(o);
                 } catch(IllegalArgumentException e) {
                     logger.error(e.toString());
+
                 }
             }
             return o;
