@@ -70,7 +70,7 @@ public class SimpleMetadataValue implements IMetadataValue{
      */
     @Override
     public void setValue(String value) {
-        this.value = value;
+        this.value = value == null ? "" : value;
     }
 
     /* (non-Javadoc)
@@ -155,7 +155,7 @@ public class SimpleMetadataValue implements IMetadataValue{
      */
     @Override
     public boolean isEmpty() {
-        return StringUtils.isNotBlank(value);
+        return StringUtils.isBlank(value);
     }
 
     /* (non-Javadoc)

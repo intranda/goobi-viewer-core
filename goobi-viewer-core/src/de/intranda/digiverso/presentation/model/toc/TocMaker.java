@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -95,7 +97,8 @@ public class TocMaker {
         if (ancestorFields != null) {
             ret.addAll(ancestorFields);
         }
-
+        //        ret.add("MD_TITLE_LANG_EN");
+        //        ret.add("MD_TITLE_LANG_DE");
         return new ArrayList<>(ret);
     }
 
@@ -314,8 +317,8 @@ public class TocMaker {
                     thumbnailUrl = Helper.getImageUrl(topStructPi, thumbnailFile, dataRepository, thumbWidth, thumbHeight, 0, true, true);
                 }
                 label.mapEach(value -> StringEscapeUtils.unescapeHtml(value));
-                ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl,
-                        sourceFormatPdfAllowed, false, mimeType, docStructType, footerId));
+                ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, sourceFormatPdfAllowed, false, mimeType,
+                        docStructType, footerId));
 
             }
         }
@@ -437,8 +440,8 @@ public class TocMaker {
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
                 String docStructType = (String) volumeDoc.getFieldValue(SolrConstants.DOCSTRCT);
                 volumeLabel.mapEach(l -> StringEscapeUtils.unescapeHtml(l));
-                TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1,
-                        topStructPi, thumbnailUrl, sourceFormatPdfAllowed, false, volumeMimeType, docStructType, footerId);
+                TOCElement tocElement = new TOCElement(volumeLabel, "1", null, volumeIddoc, volumeLogId, 1, topStructPi, thumbnailUrl,
+                        sourceFormatPdfAllowed, false, volumeMimeType, docStructType, footerId);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
                 tocElement.getMetadata().put(SolrConstants.TITLE, (String) volumeDoc.getFirstValue(SolrConstants.TITLE));
@@ -699,22 +702,32 @@ public class TocMaker {
                 // Translate parameter value, if so configured
                 if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
                     value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
+                }else if(MetadataParameterType.MESSAGES_KEY.equals(param.getType())) {
+                    value.setValue(Helper.getTranslation(param.getKey(), BeanUtils.getLocale()));
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
-                // logger.trace("placeholder: {}", placeholder);
+                    // logger.trace("placeholder: {}", placeholder);
                     // logger.trace("param value: {}", param.getKey());
-                    if (StringUtils.isNotEmpty(param.getPrefix())) {
+                    if (!value.isEmpty() && StringUtils.isNotEmpty(param.getPrefix())) {
                         String prefix = Helper.getTranslation(param.getPrefix(), null);
                         value.addPrefix(prefix);
                     }
-                    if (StringUtils.isNotEmpty(param.getSuffix())) {
+                    if (!value.isEmpty() && StringUtils.isNotEmpty(param.getSuffix())) {
                         String suffix = Helper.getTranslation(param.getSuffix(), null);
                         value.addSuffix(suffix);
                     }
-                    for (String language : value.getLanguages()) {
-                        String langValue = label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder,
-                                value.getValue(language).orElse(value.getValue().orElse("")));
-                        label.setValue(langValue, language);
+                    if (MetadataParameterType.MULTILANGUAGEFIELD.equals(param.getType())) {
+                        for (String language : value.getLanguages()) {
+                            String langValue = label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder,
+                                    value.getValue(language).orElse(value.getValue().orElse("")));
+                            label.setValue(langValue, language);
+                        }
+                    } else {
+                        for (String language : label.getLanguages()) {
+                            String langValue =
+                                    label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
+                            label.setValue(langValue, language);
+                        }
                     }
             }
         } else {
@@ -725,8 +738,9 @@ public class TocMaker {
                 if (StringUtils.isEmpty(label.toString())) {
                     label.setValue(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT));
                 } else if (DataManager.getInstance().getConfiguration().isTocAlwaysDisplayDocstruct()) {
-                    label.setValue(new StringBuilder(Helper.getTranslation(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT), null))
-                            .append(": ").append(label.getValue()).toString());
+                    label.setValue(
+                            new StringBuilder(Helper.getTranslation(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT), null))
+                                    .append(": ").append(label.getValue()).toString());
                 }
             } else if (DataManager.getInstance().getConfiguration().isTocAlwaysDisplayDocstruct()) {
                 label.setValue(new StringBuilder(Helper.getTranslation(SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT), null))

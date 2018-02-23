@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +30,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
@@ -479,6 +481,17 @@ public class TOC implements Serializable {
      * @should return correct label
      */
     public String getLabel(String pi) {
+        return getLabel(pi, MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+    }
+    
+    /**
+     * Returns the label in the given language of the first found TOCElement that has the given PI as its topStructPi.
+     * 
+     * @param pi
+     * @return
+     * @should return correct label
+     */
+    public String getLabel(String pi, String language) {
         if (StringUtils.isEmpty(pi)) {
             return null;
         }
@@ -487,11 +500,22 @@ public class TOC implements Serializable {
         if (tocElements != null) {
             for (TOCElement element : tocElements) {
                 if (pi.equals(element.getTopStructPi())) {
-                    return element.getLabel();
+                    return element.getLabel(language);
                 }
             }
         }
 
         return null;
+    }
+    
+    /**
+     * Returns the label in the given locale of the first found TOCElement that has the given PI as its topStructPi.
+     * 
+     * @param pi
+     * @return
+     * @should return correct label
+     */
+    public String getLabel(String pi, Locale locale) {
+        return getLabel(pi, locale.getLanguage());
     }
 }

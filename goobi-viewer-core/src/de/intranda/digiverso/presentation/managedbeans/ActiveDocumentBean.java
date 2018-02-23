@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -64,6 +65,7 @@ import de.intranda.digiverso.presentation.model.toc.TOC;
 import de.intranda.digiverso.presentation.model.toc.TOCElement;
 import de.intranda.digiverso.presentation.model.toc.export.pdf.TocWriter;
 import de.intranda.digiverso.presentation.model.toc.export.pdf.WriteTocException;
+import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageOrientation;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -948,7 +950,24 @@ public class ActiveDocumentBean implements Serializable {
      * @return
      * @throws IndexUnreachableException
      */
-    public String getTitleBarLabel() throws IndexUnreachableException {
+    public String getTitleBarLabel(Locale locale) throws IndexUnreachableException {
+        return getTitleBarLabel(locale.getLanguage());
+    }
+        /**
+         * 
+         * @return
+         * @throws IndexUnreachableException
+         */
+        public String getTitleBarLabel() throws IndexUnreachableException {
+            return getTitleBarLabel(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws IndexUnreachableException
+     */
+    public String getTitleBarLabel(String language) throws IndexUnreachableException {
         PageType pageType = PageType.getByName(navigationHelper.getCurrentPage());
 //        if (pageType != null && pageType.isDocumentPage() && viewManager != null && viewManager.getTopDocument() != null) {
 //            String label = viewManager.getTopDocument()
@@ -961,7 +980,7 @@ public class ActiveDocumentBean implements Serializable {
             // Prefer the label of the current TOC element
             if (toc != null && toc.getTocElements() != null && !toc.getTocElements()
                     .isEmpty()) {
-                String label = toc.getLabel(viewManager.getPi());
+                String label = toc.getLabel(viewManager.getPi(), language);
                 if (label != null) {
                     return label;
                 }

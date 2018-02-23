@@ -99,7 +99,13 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
      */
     @Override
     public void setValue(String value, String locale) {
+        if(value == null) {
+            value = "";
+        }
         this.values.put(locale, value);
+        if(this.values.get(DEFAULT_LANGUAGE) == null) {
+            setValue(value);
+        }
     }
 
     /* (non-Javadoc)
