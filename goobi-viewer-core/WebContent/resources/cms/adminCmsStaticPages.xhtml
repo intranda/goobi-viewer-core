@@ -84,7 +84,7 @@
                                                 </td>
                                                 <td class="cms-static-pages__page-action admin-table__action">
                                                     <h:panelGroup rendered="#{page.hasCmsPage}">
-                                                        <h:outputLink value="#{cmsBean.getPageUrl(page.cmsPage.id)}" title="#{msg.cms_pageView}" target="_blank">
+                                                        <h:outputLink value="#{cmsBean.getUrl(page.cmsPage, true)}" title="#{msg.cms_pageView}" target="_blank">
                                                             <i class="fa fa-eye" aria-hidden="true"></i>
                                                         </h:outputLink>
                                                     </h:panelGroup>

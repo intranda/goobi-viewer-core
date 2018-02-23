@@ -92,8 +92,7 @@
                                                     <f:setPropertyActionListener value="#{true}" target="#{cmsBean.editMode}" />
                                                 </h:commandLink>
                                                 <h:panelGroup rendered="#{page.published}">
-                                                    <h:outputLink value="#{cmsBean.getPageUrl(page.id)}" title="#{msg.cms_pageView}"
-                                                        target="_blank">
+                                                    <h:outputLink value="#{cmsBean.getUrl(page, true)}" title="#{msg.cms_pageView}" target="_blank">
                                                         <i class="fa fa-eye" aria-hidden="true"></i>
                                                     </h:outputLink>
                                                 </h:panelGroup> 
