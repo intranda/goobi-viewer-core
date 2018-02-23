@@ -571,7 +571,7 @@ public class CMSPage {
      * @return the pretty url to this page (using alternative url if set)
      */
     public String getPageUrl() {
-        return BeanUtils.getCmsBean().getPageUrl(this.id);
+        return BeanUtils.getCmsBean().getUrl(this);
     }
 
     @Deprecated

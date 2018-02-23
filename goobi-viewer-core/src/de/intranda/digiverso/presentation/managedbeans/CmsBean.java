@@ -317,7 +317,21 @@ public class CmsBean implements Serializable {
     public String getPageUrl(Long pageId) {
         return getPageUrl(pageId, true);
     }
+    
+    public String getPageUrl(Long pageId, boolean pretty) {
+        try {
+            CMSPage page = getPage(pageId);
+            return getUrl(page, pretty);
+        } catch (DAOException e) {
+            logger.error(e.toString(), e);
+            return "pretty:index";
+        }
+    }
 
+    public String getUrl(CMSPage page) {
+        return getUrl(page, true);
+    }
+    
     public String getUrl(CMSPage page, boolean pretty) {
         try {
             return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/")
@@ -328,19 +342,6 @@ public class CmsBean implements Serializable {
         }
     }
 
-    public synchronized String getPageUrl(Long pageId, boolean pretty) {
-        try {
-            CMSPage page = getPage(pageId);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/")
-                    .append(page.getRelativeUrlPath(pretty))
-                    .toString();
-        } catch (NullPointerException e) {
-            return "pretty:index";
-        } catch (DAOException e) {
-            logger.error(e.toString(), e);
-            return "pretty:index";
-        }
-    }
 
     /**
      * Returns the preview URL to the CMS template of the given page. This URL call will save the current page before opening it.
