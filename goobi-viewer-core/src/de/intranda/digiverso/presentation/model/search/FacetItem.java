@@ -68,7 +68,9 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public FacetItem(String link, boolean hierarchical) {
         int colonIndex = link.indexOf(':');
         if (colonIndex == -1) {
-            throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
+            throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ")
+                    .append(link)
+                    .toString());
         }
         this.link = link;
         this.hierarchial = hierarchical;
@@ -159,24 +161,31 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      */
     public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical) {
         List<FacetItem> retList = new ArrayList<>();
-        NavigationHelper nh = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
+        NavigationHelper nh = BeanUtils.getNavigationHelper();
         for (String value : values.keySet()) {
             // Skip reversed values
             if (value.charAt(0) != 1) {
                 String label = value;
                 if (StringUtils.isEmpty(field)) {
-                    label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
+                    label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX)
+                            .toString();
                 }
                 String linkValue = value;
                 if (field.endsWith(SolrConstants._UNTOKENIZED)) {
-                    linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
+                    linkValue = new StringBuilder("\"").append(linkValue)
+                            .append('"')
+                            .toString();
                 }
-                String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
-                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null), values
-                        .get(value), hierarchical));
+                String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':')
+                        .append(linkValue)
+                        .toString() : linkValue;
+                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null),
+                        values.get(value), hierarchical));
             }
         }
-        switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
+        switch (DataManager.getInstance()
+                .getConfiguration()
+                .getSortOrder(SearchHelper.defacetifyField(field))) {
             case "numerical":
             case "numerical_asc":
                 Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
@@ -223,7 +232,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             throw new IllegalArgumentException("values may not be null");
         }
 
-        List<FacetItem> retList = new ArrayList<>(values.keySet().size());
+        List<FacetItem> retList = new ArrayList<>(values.keySet()
+                .size());
 
         boolean numeric = true;
         for (String s : values.keySet()) {
@@ -265,7 +275,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             String link = StringUtils.isNotEmpty(field) ? field + ":" + ClientUtils.escapeQueryChars(String.valueOf(value)) : String.valueOf(value);
             retList.add(new FacetItem(field, link, label, Helper.getTranslation(label, locale), values.get(String.valueOf(value)), hierarchical));
         }
-        
+
         // logger.debug("filters: " + retList.size());
         return retList;
     }
@@ -281,22 +291,31 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public String getQueryEscapedLink() {
         String escapedValue = getEscapedValue();
         if (hierarchial) {
-            return new StringBuilder("(").append(field).append(':').append(escapedValue).append(" OR ").append(field).append(':').append(escapedValue)
-                    .append(".*)").toString();
+            return new StringBuilder("(").append(field)
+                    .append(':')
+                    .append(escapedValue)
+                    .append(" OR ")
+                    .append(field)
+                    .append(':')
+                    .append(escapedValue)
+                    .append(".*)")
+                    .toString();
         }
-        return new StringBuilder(field).append(':').append(escapedValue).toString();
+        return new StringBuilder(field).append(':')
+                .append(escapedValue)
+                .toString();
     }
-    
+
     /**
      * 
      * @return
      */
     public String getEscapedValue() {
-        String escapedValue = ClientUtils.escapeQueryChars(value); 
+        String escapedValue = ClientUtils.escapeQueryChars(value);
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
             escapedValue = '"' + escapedValue + '"';
         }
-        
+
         return escapedValue;
     }
 
@@ -418,7 +437,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
 
         @Override
         public int compare(FacetItem o1, FacetItem o2) {
-            int ret = o1.getLabel().compareTo(o2.getLabel());
+            int ret = o1.getLabel()
+                    .compareTo(o2.getLabel());
             return ret;
         }
 
@@ -433,7 +453,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 int i2 = Integer.parseInt(o2.getLabel());
                 return Integer.compare(i1, i2);
             } catch (NumberFormatException e) {
-                return o1.getLabel().compareTo(o2.getLabel());
+                return o1.getLabel()
+                        .compareTo(o2.getLabel());
             }
         }
 

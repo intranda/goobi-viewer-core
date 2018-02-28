@@ -4937,9 +4937,37 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   User Searches
+   My Searches
    style declarations for userBackendSearches.xhtml
    ==============================================================*/
+/* MY SEARCHES */
+/* BLOCK */
+.my-searches {
+  /* ELEMENT */
+}
+.my-searches__table thead tr th:nth-child(3) {
+  text-align: center;
+}
+.my-searches__table tbody tr td:nth-child(3) {
+  text-align: center;
+}
+.my-searches__action,
+.my-searches__delete-button {
+  display: inline-block;
+  padding: 0 5px;
+  text-decoration: none;
+  color: #1a1a1a;
+}
+.my-searches__action:hover,
+.my-searches__delete-button:hover,
+.my-searches__action:active,
+.my-searches__delete-button:active,
+.my-searches__action:focus,
+.my-searches__delete-button:focus {
+  text-decoration: none;
+  color: #1a1a1a;
+}
+/* DEPRECATED SINCE 3.4 */
 #mySearches #my_saved_searches_data_table thead tr th:nth-child(3) {
   text-align: center;
 }

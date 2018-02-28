@@ -32,7 +32,6 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
-import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -1558,6 +1557,61 @@ public class JPADAO implements IDAO {
     }
 
     /**
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getSearchCount(de.intranda.digiverso.presentation.model.security.user.User, java.util.Map)
+     * @should filter results correctly
+     */
+    @Override
+    public long getSearchCount(User owner, Map<String, String> filters) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder(50);
+        sbQuery.append("SELECT COUNT(o) FROM Search o");
+        if (owner != null) {
+            sbQuery.append(" WHERE o.owner = :owner");
+        }
+        List<String> filterKeys = new ArrayList<>();
+        if (filters != null && !filters.isEmpty()) {
+            if (owner == null) {
+                sbQuery.append(" WHERE ");
+            } else {
+                sbQuery.append(" AND ");
+            }
+            filterKeys.addAll(filters.keySet());
+            Collections.sort(filterKeys);
+            int count = 0;
+            for (String key : filterKeys) {
+                if (count > 0) {
+                    sbQuery.append(" AND ");
+                }
+                sbQuery.append("UPPER(o.")
+                        .append(key)
+                        .append(") LIKE :")
+                        .append(key);
+                count++;
+            }
+        }
+        Query q = em.createQuery(sbQuery.toString());
+        if (owner != null) {
+            q.setParameter("owner", owner);
+        }
+        for (String key : filterKeys) {
+            q.setParameter(key, "%" + filters.get(key)
+                    .toUpperCase() + "%");
+        }
+        // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+
+        Object o = q.getResultList()
+                .get(0);
+        // MySQL
+        if (o instanceof BigInteger) {
+            return ((BigInteger) q.getResultList()
+                    .get(0)).longValue();
+        }
+        // H2
+        return (long) q.getResultList()
+                .get(0);
+    }
+
+    /**
      * @throws DAOException
      * @see de.intranda.digiverso.presentation.dao.IDAO#getSearches(int, int, java.lang.String, boolean, java.util.Map)
      * @should sort results correctly
@@ -3014,13 +3068,12 @@ public class JPADAO implements IDAO {
      * @return an Optional containing the first query result, or an empty Optional if no results are present
      */
     @SuppressWarnings("unchecked")
-    private <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
+    private static <T> Optional<T> getFirstResult(Query q) throws ClassCastException {
         List<Object> results = q.getResultList();
         if (results == null || results.isEmpty()) {
             return Optional.empty();
-        } else {
-            return Optional.ofNullable((T) results.get(0));
         }
+        return Optional.ofNullable((T) results.get(0));
     }
 
     /* (non-Javadoc)
@@ -3045,7 +3098,7 @@ public class JPADAO implements IDAO {
      * @return an Optional containing the query result, or an empty Optional if no results are present
      */
     @SuppressWarnings("unchecked")
-    private <T> Optional<T> getSingleResult(Query q) throws ClassCastException, NonUniqueResultException {
+    private static <T> Optional<T> getSingleResult(Query q) throws ClassCastException, NonUniqueResultException {
         List<Object> results = q.getResultList();
         if (results == null || results.isEmpty()) {
             return Optional.empty();
@@ -3056,4 +3109,12 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#detach(java.lang.Object)
+     */
+    @Override
+    public void detach(Object object) throws DAOException {
+        preQuery();
+        em.detach(object);
+    }
 }

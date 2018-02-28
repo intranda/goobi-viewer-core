@@ -76,7 +76,6 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import sun.security.pkcs.ContentInfo;
 
 /**
  * CMS functions.
@@ -266,7 +265,7 @@ public class CmsBean implements Serializable {
             return list;
         } catch (IllegalStateException e) {
             logger.warn("Error loading templates", e);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -279,21 +278,20 @@ public class CmsBean implements Serializable {
         if (page.getTemplate() == null) {
             //remove pages with no template files
             return PageValidityStatus.INVALID_NO_TEMPLATE;
-        } else {
-            //remove page with content items that don't match the template's content items
-            for (CMSContentItem templateItem : page.getTemplate()
-                    .getContentItems()) {
-                if (!page.hasContentItem(templateItem.getItemId())) {
-                    page.addContentItem(new CMSContentItem(templateItem));
-                    //                    logger.warn("Found template item that doesn't exists in page");
-                    //                    pageValid = false;
-                }
+        }
+        //remove page with content items that don't match the template's content items
+        for (CMSContentItem templateItem : page.getTemplate()
+                .getContentItems()) {
+            if (!page.hasContentItem(templateItem.getItemId())) {
+                page.addContentItem(new CMSContentItem(templateItem));
+                //                    logger.warn("Found template item that doesn't exists in page");
+                //                    pageValid = false;
             }
         }
         return PageValidityStatus.VALID;
     }
 
-    public List<CMSPage> getDisplayedPages() throws DAOException {
+    public List<CMSPage> getDisplayedPages() {
         return lazyModelPages.getPaginatorList();
     }
 
@@ -497,9 +495,8 @@ public class CmsBean implements Serializable {
                         .forEach(element -> element.deSerialize());
             }
             return page.get();
-        } else {
-            return null;
         }
+        return null;
     }
 
     public List<CMSSidebarElement> getSidebarElements(boolean isCMSPage) {
@@ -553,6 +550,9 @@ public class CmsBean implements Serializable {
                 cmsNavigationBean.getItemManager()
                         .addAvailableItem(new CMSNavigationItem(this.selectedPage));
             }
+            DataManager.getInstance()
+                    .getDao()
+                    .detach(this.selectedPage);
         }
     }
 
@@ -733,9 +733,8 @@ public class CmsBean implements Serializable {
 
         if (pageId != null) {
             return getCMSPage(pageId);
-        } else {
-            return null;
         }
+        return null;
     }
 
     public CMSPage getSelectedPage() {
@@ -750,9 +749,10 @@ public class CmsBean implements Serializable {
         } else {
             this.selectedPage = currentPage;
         }
-        //        this.selectedPage = currentPage;
-        //        DataManager.getInstance().getDao().detach(this.selectedPage);
-        logger.debug("Selected page " + this.selectedPage);
+        DataManager.getInstance()
+                .getDao()
+                .detach(this.selectedPage);
+        logger.debug("Selected page " + currentPage);
 
     }
 
@@ -1041,8 +1041,9 @@ public class CmsBean implements Serializable {
             return 0;
         }
         //		String query = item.getSolrQuery();
-        if (searchBean != null) {
-            return searchBean.getLastPage();
+        if (searchBean != null && searchBean.getCurrentSearch() != null) {
+            return searchBean.getCurrentSearch()
+                    .getLastPage(searchBean.getHitsPerPage());
             //			QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, getFacetFields(), null);
             //			if (resp != null) {
             //				long hitsCount = resp.getResults().getNumFound();

@@ -19,8 +19,12 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,11 +38,26 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.ExpandParams;
+import org.jboss.weld.exceptions.IllegalArgumentException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Persistable search query.
@@ -48,6 +67,9 @@ import de.intranda.digiverso.presentation.model.viewer.PageType;
 public class Search implements Serializable {
 
     private static final long serialVersionUID = -8968560376731964763L;
+
+    /** Logger for this class. */
+    private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,6 +85,17 @@ public class Search implements Serializable {
     @Column(name = "user_input")
     private String userInput;
 
+    /**
+     * Currently selected search type (regular, advanced, timeline, ...). This property is not private so it can be altered in unit tests (the setter
+     * checks the config and may prevent setting certain values).
+     */
+    @Column(name = "search_type")
+    private int searchType = SearchHelper.SEARCH_TYPE_REGULAR;
+
+    /** Currently selected filter for the regular search. Possible values can be configured. */
+    @Column(name = "search_filter")
+    private String searchFilter = SearchHelper.SEARCH_FILTER_ALL.getField();
+
     @Column(name = "query", nullable = false, columnDefinition = "LONGTEXT")
     private String query;
 
@@ -73,17 +106,27 @@ public class Search implements Serializable {
     private int page;
 
     @Column(name = "collection")
-    private String collection;
-
-    @Column(name = "sort_field")
-    private String sortField;
+    private String hierarchicalFacetString;
 
     @Column(name = "filter")
-    private String filter;
+    private String facetString;
+
+    @Column(name = "sort_field")
+    private String sortString;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated", nullable = false)
     private Date dateUpdated;
+
+    @Column(name = "last_hits_count")
+    private long lastHitsCount;
+
+    @Column(name = "new_hits_notification")
+    private boolean newHitsNotification = false;
+
+    /** Solr fields for search result sorting (usually the field from sortString and some backup fields such as ORDER and FILENAME). */
+    @Transient
+    private List<StringPair> sortFields = new ArrayList<>();
 
     @Transient
     private boolean saved = false;
@@ -95,6 +138,24 @@ public class Search implements Serializable {
     /** BrowseElement list for the current search result page. */
     @Transient
     private final List<SearchHit> hits = new ArrayList<>();
+
+    /**
+     * Empty constructor for JPA.
+     */
+    public Search() {
+    }
+
+    /**
+     * 
+     * @param searchType
+     * @param searchFilter
+     */
+    public Search(int searchType, SearchFilter searchFilter) {
+        this.searchType = searchType;
+        if (searchFilter != null) {
+        this.searchFilter = searchFilter.getField();
+        }
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -141,19 +202,140 @@ public class Search implements Serializable {
     }
 
     /**
+     * @param facets
+     * @param searchTerms
+     * @param hitsPerPage
+     * @param advancedSearchGroupOperator
+     * @param advancedQueryGroups
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator,
+            List<SearchQueryGroup> advancedQueryGroups) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("execute");
+        if (facets == null) {
+            throw new IllegalArgumentException("facets may not be null");
+        }
+
+        String currentQuery = SearchHelper.prepareQuery(query, SearchHelper.getDocstrctWhitelistFilterSuffix());
+
+        // Collect regular and hierarchical facet field names and combine them into one list
+        List<String> hierarchicalFacetFields = DataManager.getInstance()
+                .getConfiguration()
+                .getHierarchicalDrillDownFields();
+        List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
+
+        Map<String, String> params = SearchHelper.generateQueryParams();
+        List<StructElement> luceneElements = new ArrayList<>();
+        QueryResponse resp = null;
+        String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance()
+                .getConfiguration()
+                .isAggregateHits());
+        List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
+        for (String fq : facetFilterQueries) {
+            logger.trace("Facet query: {}", fq);
+        }
+        if (hitsCount == 0) {
+            logger.trace("Final main query: {}", query);
+            resp = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(query, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), facetFilterQueries, params);
+            if (resp != null && resp.getResults() != null) {
+                hitsCount = resp.getResults()
+                        .getNumFound();
+                logger.trace("Pre-grouping search hits: {}", hitsCount);
+                // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
+                for (FacetField facetField : resp.getFacetFields()) {
+                    if (SolrConstants.GROUPFIELD.equals(facetField.getName())) {
+                        for (Count count : facetField.getValues()) {
+                            if (count.getCount() > 1) {
+                                setHitsCount(hitsCount - (count.getCount() - 1));
+                            }
+                        }
+                    }
+                }
+                logger.debug("Total search hits: {}", hitsCount);
+            }
+        }
+        if (hitsCount > 0 && resp != null) {
+            // Facets
+            for (FacetField facetField : resp.getFacetFields()) {
+                if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
+                    continue;
+                }
+                Map<String, Long> facetResult = new TreeMap<>();
+                for (Count count : facetField.getValues()) {
+                    if (StringUtils.isEmpty(count.getName())) {
+                        logger.warn("Facet for {} has no name, skipping...", facetField.getName());
+                        continue;
+                    }
+                    facetResult.put(count.getName(), count.getCount());
+                }
+                // Use non-FACET_ field names outside of the actual faceting query
+                String fieldName = SearchHelper.defacetifyField(facetField.getName());
+                if (hierarchicalFacetFields.contains(fieldName)) {
+                    facets.getAvailableHierarchicalFacets()
+                            .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
+                } else {
+                    facets.getAvailableFacets()
+                            .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
+                }
+            }
+
+            int lastPage = getLastPage(hitsPerPage);
+            if (page > lastPage) {
+                page = lastPage;
+                logger.trace(" page = getLastPage()");
+            }
+
+            // Hits for the current page
+            int from = (page - 1) * hitsPerPage;
+
+            if (StringUtils.isNotEmpty(expandQuery)) {
+                logger.trace("Expand query: {}", expandQuery);
+                params.put(ExpandParams.EXPAND, "true");
+                params.put(ExpandParams.EXPAND_Q, expandQuery);
+                params.put(ExpandParams.EXPAND_FIELD, SolrConstants.PI_TOPSTRUCT);
+                params.put(ExpandParams.EXPAND_ROWS, String.valueOf(SolrSearchIndex.MAX_HITS));
+                params.put(ExpandParams.EXPAND_SORT, SolrConstants.ORDER + " asc");
+                params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
+            }
+
+            List<SearchHit> hits = DataManager.getInstance()
+                    .getConfiguration()
+                    .isAggregateHits()
+                            ? SearchHelper.searchWithAggregation(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms,
+                                    null, BeanUtils.getLocale())
+                            : SearchHelper.searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms,
+                                    null, BeanUtils.getLocale(), BeanUtils.getRequest());
+            this.hits.addAll(hits);
+        }
+    }
+
+    /**
      * Constructs a search URL using the query parameters contained in this object.
      *
      * @return
-     * @throws UnsupportedEncodingException 
+     * @throws UnsupportedEncodingException
      */
     public String getUrl() throws UnsupportedEncodingException {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-        sbUrl.append('/').append(PageType.search.getName());
-        sbUrl.append('/').append((StringUtils.isNotEmpty(collection) ? URLEncoder.encode(collection, SearchBean.URL_ENCODING) : "-"));
-        sbUrl.append('/').append(StringUtils.isNotEmpty(query) ? URLEncoder.encode(query, SearchBean.URL_ENCODING) : "-").append('/').append(page);
-        sbUrl.append('/').append((StringUtils.isNotEmpty(sortField) ? sortField : "-"));
-        sbUrl.append('/').append((StringUtils.isNotEmpty(filter) ? URLEncoder.encode(filter, SearchBean.URL_ENCODING) : "-")).append('/');
+        sbUrl.append('/')
+                .append(PageType.search.getName());
+        sbUrl.append('/')
+                .append((StringUtils.isNotEmpty(hierarchicalFacetString) ? URLEncoder.encode(hierarchicalFacetString, SearchBean.URL_ENCODING)
+                        : "-"));
+        sbUrl.append('/')
+                .append(StringUtils.isNotEmpty(query) ? URLEncoder.encode(query, SearchBean.URL_ENCODING) : "-")
+                .append('/')
+                .append(page);
+        sbUrl.append('/')
+                .append((StringUtils.isNotEmpty(sortString) ? sortString : "-"));
+        sbUrl.append('/')
+                .append((StringUtils.isNotEmpty(facetString) ? URLEncoder.encode(facetString, SearchBean.URL_ENCODING) : "-"))
+                .append('/');
         return sbUrl.toString();
     }
 
@@ -214,6 +396,34 @@ public class Search implements Serializable {
     }
 
     /**
+     * @return the searchType
+     */
+    public int getSearchType() {
+        return searchType;
+    }
+
+    /**
+     * @param searchType the searchType to set
+     */
+    public void setSearchType(int searchType) {
+        this.searchType = searchType;
+    }
+
+    /**
+     * @return the searchFilter
+     */
+    public String getSearchFilter() {
+        return searchFilter;
+    }
+
+    /**
+     * @param searchFilter the searchFilter to set
+     */
+    public void setSearchFilter(String searchFilter) {
+        this.searchFilter = searchFilter;
+    }
+
+    /**
      * @return the query
      */
     public String getQuery() {
@@ -256,45 +466,53 @@ public class Search implements Serializable {
     }
 
     /**
-     * @return the collection
+     * @return the hierarchicalFacetString
      */
-    public String getCollection() {
-        return collection;
+    public String getHierarchicalFacetString() {
+        return hierarchicalFacetString;
     }
 
     /**
-     * @param collection the collection to set
+     * @param hierarchicalFacetString the hierarchicalFacetString to set
      */
-    public void setCollection(String collection) {
-        this.collection = collection;
+    public void setHierarchicalFacetString(String hierarchicalFacetString) {
+        this.hierarchicalFacetString = hierarchicalFacetString;
     }
 
     /**
-     * @return the sortField
+     * @return the facetString
      */
-    public String getSortField() {
-        return sortField;
+    public String getFacetString() {
+        return facetString;
     }
 
     /**
-     * @param sortField the sortField to set
+     * @param facetString the facetString to set
      */
-    public void setSortField(String sortField) {
-        this.sortField = sortField;
+    public void setFacetString(String facetString) {
+        this.facetString = facetString;
     }
 
     /**
-     * @return the filter
+     * @return the sortString
      */
-    public String getFilter() {
-        return filter;
+    public String getSortString() {
+        return sortString;
     }
 
     /**
-     * @param filter the filter to set
+     * @param sortString the sortString to set
      */
-    public void setFilter(String filter) {
-        this.filter = filter;
+    public void setSortString(String sortString) {
+        this.sortString = sortString;
+        sortFields = SearchHelper.parseSortString(this.sortString, null);
+    }
+
+    /**
+     * @return the sortFields
+     */
+    public List<StringPair> getSortFields() {
+        return sortFields;
     }
 
     /**
@@ -309,6 +527,34 @@ public class Search implements Serializable {
      */
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    /**
+     * @return the lastHitsCount
+     */
+    public long getLastHitsCount() {
+        return lastHitsCount;
+    }
+
+    /**
+     * @param lastHitsCount the lastHitsCount to set
+     */
+    public void setLastHitsCount(long lastHitsCount) {
+        this.lastHitsCount = lastHitsCount;
+    }
+
+    /**
+     * @return the newHitsNotification
+     */
+    public boolean isNewHitsNotification() {
+        return newHitsNotification;
+    }
+
+    /**
+     * @param newHitsNotification the newHitsNotification to set
+     */
+    public void setNewHitsNotification(boolean newHitsNotification) {
+        this.newHitsNotification = newHitsNotification;
     }
 
     /**
@@ -343,6 +589,27 @@ public class Search implements Serializable {
      * @return the hits
      */
     public List<SearchHit> getHits() {
+        logger.trace("hits: {}", hits.size());
         return hits;
+    }
+
+    /**
+     * 
+     * @param hitsPerPage
+     * @return
+     */
+    public int getLastPage(int hitsPerPage) {
+        int answer = 0;
+        int hitsPerPageLocal = hitsPerPage;
+        answer = new Double(Math.floor(hitsCount / hitsPerPageLocal)).intValue();
+        if (hitsCount % hitsPerPageLocal != 0 || answer == 0) {
+            answer++;
+        }
+
+        return answer;
+    }
+
+    public void toggleNotifications() {
+        this.newHitsNotification = !this.newHitsNotification;
     }
 }
