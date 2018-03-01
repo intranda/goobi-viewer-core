@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -60,6 +61,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.language.LocaleComparator;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -218,6 +220,7 @@ public final class SearchHelper {
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -237,7 +240,7 @@ public final class SearchHelper {
         List<SearchHit> ret = new ArrayList<>(resp.getResults()
                 .size());
         for (SolrDocument doc : resp.getResults()) {
-            // logger.trace("result iddoc: {}", doc.getFieldValue(LuceneConstants.IDDOC));
+            // logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             Map<String, SolrDocumentList> childDocs = resp.getExpandedResults();
 
             // Create main hit
@@ -363,7 +366,8 @@ public final class SearchHelper {
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
             throws PresentationException, IndexUnreachableException, DAOException {
-        String finalQuery = buildFinalQuery(query, aggregateHits);
+        String finalQuery = prepareQuery(query, getDocstrctWhitelistFilterSuffix());
+        finalQuery = buildFinalQuery(finalQuery, aggregateHits);
         logger.debug("getBrowseElement final query: {}", finalQuery);
         List<SearchHit> hits = aggregateHits
                 ? SearchHelper.searchWithAggregation(finalQuery, index, 1, sortFields, null, filterQueries, params, searchTerms, null, locale)
@@ -1825,7 +1829,6 @@ public final class SearchHelper {
                         sbInner.append(" OR ");
                         multipleTerms = true;
                     }
-                    logger.trace("term: " + term);
                     if (!"*".equals(term)) {
                         term = ClientUtils.escapeQueryChars(term);
                     }
@@ -1863,7 +1866,7 @@ public final class SearchHelper {
         logger.trace("generateAdvancedExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
 
-        if (!groups.isEmpty()) {
+        if (groups != null && !groups.isEmpty()) {
             for (SearchQueryGroup group : groups) {
                 StringBuilder sbGroup = new StringBuilder();
 
@@ -2023,6 +2026,37 @@ public final class SearchHelper {
     }
 
     /**
+     * Puts non-empty queries into parentheses and replaces empty queries with a top level record-only query (for collection listing).
+     * 
+     * @param query
+     * @query
+     * @return
+     * @should prepare non-empty queries correctly
+     * @should prepare empty queries correctly
+     */
+    public static String prepareQuery(String query, String docstructWhitelistFilterSuffix) {
+        StringBuilder sbQuery = new StringBuilder();
+        if (StringUtils.isNotEmpty(query)) {
+            sbQuery.append('(')
+                    .append(query)
+                    .append(')');
+        } else {
+            // Collection browsing (no search query)
+            sbQuery.append('(')
+                    .append(SolrConstants.ISWORK)
+                    .append(":true OR ")
+                    .append(SolrConstants.ISANCHOR)
+                    .append(":true)");
+            if (docstructWhitelistFilterSuffix != null) {
+                sbQuery.append(docstructWhitelistFilterSuffix);
+            }
+
+        }
+
+        return sbQuery.toString();
+    }
+
+    /**
      * Constructs the complete query using the raw query and adding all available suffixes.
      * 
      * @param rawQuery
@@ -2153,5 +2187,52 @@ public final class SearchHelper {
         }
 
         return wb;
+    }
+
+    /**
+     * @param hierarchicalFacetFields
+     * @return
+     */
+    public static List<String> getAllFacetFields(List<String> hierarchicalFacetFields) {
+        List<String> facetFields = DataManager.getInstance()
+                .getConfiguration()
+                .getDrillDownFields();
+        List<String> allFacetFields = new ArrayList<>(hierarchicalFacetFields.size() + facetFields.size());
+        allFacetFields.addAll(hierarchicalFacetFields);
+        allFacetFields.addAll(facetFields);
+        allFacetFields = SearchHelper.facetifyList(allFacetFields);
+        return allFacetFields;
+    }
+
+    /**
+     * 
+     * @param sortString
+     * @param navigationHelper
+     * @return
+     * @should parse string correctly
+     */
+    public static List<StringPair> parseSortString(String sortString, NavigationHelper navigationHelper) {
+        List<StringPair> ret = new ArrayList<>();
+        if (StringUtils.isNotEmpty(sortString)) {
+            String[] sortStringSplit = sortString.split(";");
+            if (sortStringSplit.length > 0) {
+                for (String field : sortStringSplit) {
+                    ret.add(new StringPair(field.replace("!", ""), field.charAt(0) == '!' ? "desc" : "asc"));
+                    logger.trace("Added sort field: {}", field);
+                    // add translated sort fields
+                    if (navigationHelper != null && field.startsWith("SORT_")) {
+                        Iterable<Locale> locales = () -> navigationHelper.getSupportedLocales();
+                        StreamSupport.stream(locales.spliterator(), false)
+                                .sorted(new LocaleComparator(BeanUtils.getLocale()))
+                                .map(locale -> field + SolrConstants._LANG_ + locale.getLanguage()
+                                        .toUpperCase())
+                                .peek(language -> logger.trace("Adding sort field: {}", language))
+                                .forEach(language -> ret.add(new StringPair(language.replace("!", ""), language.charAt(0) == '!' ? "desc" : "asc")));
+                    }
+                }
+            }
+        }
+
+        return ret;
     }
 }

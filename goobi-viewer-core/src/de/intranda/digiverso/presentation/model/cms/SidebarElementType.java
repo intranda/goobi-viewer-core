@@ -23,7 +23,7 @@ public enum SidebarElementType {
     searchField("widgetSearchField", Category.search),
     searchDrillDown("widgetSearchDrillDown"),
     browsing("widgetBrowsing"),
-    bookshelves("widgetBookshelves"),
+    bookshelves("widgetBookshelfList"),
     crowdsourcing("widgetCrowdsourcing"),
     mySearches("widgetMySearches"),
     fieldDrillDown("widgetFieldDrillDown", Category.fieldQuery),

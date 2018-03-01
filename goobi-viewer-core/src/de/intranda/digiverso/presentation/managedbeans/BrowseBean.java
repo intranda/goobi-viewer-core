@@ -312,8 +312,7 @@ public class BrowseBean implements Serializable {
 
                 // Sort filters
                 Locale locale = null;
-                NavigationHelper navigationHelper = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(
-                        "navigationHelper");
+                NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
                 if (navigationHelper != null) {
                     locale = navigationHelper.getLocale();
                 } else {

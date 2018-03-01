@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
+import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 
 public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
@@ -284,4 +285,27 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(1387459019066L, DataManager.getInstance().getSearchIndex().getIddocByLogid("PPN517154005", "LOG_0001"));
     }
 
+    @Test
+    public void testGetMetadataValuesForLanguage() {
+        SolrDocument doc = new SolrDocument();
+        doc.addField("field_A", "value_A");
+        doc.addField("field_B_LANG_EN", "field_B_en");
+        doc.addField("field_B_LANG_DE", "field_B_de");
+        doc.addField("field_B_LANG_EN", "field_B_en_2");
+        
+        Map<String, List<String>> mapA = SolrSearchIndex.getMetadataValuesForLanguage(doc, "field_A");
+        Assert.assertEquals(1, mapA.size());
+        Assert.assertEquals(1, mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).size());
+        Assert.assertEquals("value_A", mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).get(0));
+        
+        Map<String, List<String>> mapB = SolrSearchIndex.getMetadataValuesForLanguage(doc, "field_B");
+        Assert.assertEquals(2, mapB.size());
+        Assert.assertEquals(mapB.get("en").size(), 2);
+        Assert.assertEquals(mapB.get("de").size(), 1);
+        Assert.assertEquals("field_B_de", mapB.get("de").get(0));
+        Assert.assertEquals("field_B_en", mapB.get("en").get(0));
+        Assert.assertEquals("field_B_en_2", mapB.get("en").get(1));
+
+    }
+    
 }
