@@ -93,7 +93,7 @@
 	Path to alto files repository for fulltext inclusion in pdfs and alto coordinate rotation 
 	usage switches fulltext generation in pdfs from alto on or off
 	-->
-	<defaultRepositoryPathAlto value="file:///opt/digiverso/viewer/alto/" usage="false"/>
+	<defaultRepositoryPathAlto value="file:///opt/digiverso/viewer/alto/" usage="true"/>
 
 
 	<!--
