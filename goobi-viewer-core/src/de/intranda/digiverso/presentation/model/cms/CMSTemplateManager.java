@@ -280,6 +280,9 @@ public final class CMSTemplateManager {
         //        logger.trace("themePath: {}", themePath.orElse(Paths.get("none")).toAbsolutePath().toString());
         try {
             //load theme templates
+            if (themePath.isPresent()) {
+                logger.debug("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
+            }
             themePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet().stream().peek(entry -> entry.getValue().setThemeTemplate(true)).forEach(
                             entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
@@ -287,6 +290,9 @@ public final class CMSTemplateManager {
             logger.debug("Loaded {} THEME CMS templates", size);
 
             //load core templates
+            if (corePath.isPresent()) {
+                logger.debug("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath().toString());
+            }
             corePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet().stream().forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
             logger.debug("Loaded {} CORE CMS templates", templates.size() - size);
