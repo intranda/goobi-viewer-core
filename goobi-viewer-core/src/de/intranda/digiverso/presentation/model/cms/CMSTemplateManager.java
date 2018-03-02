@@ -283,11 +283,13 @@ public final class CMSTemplateManager {
             themePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet().stream().peek(entry -> entry.getValue().setThemeTemplate(true)).forEach(
                             entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
+            int size = templates.size();
+            logger.debug("Loaded {} THEME CMS templates", size);
 
             //load core templates
             corePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet().stream().forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
-
+            logger.debug("Loaded {} CORE CMS templates", templates.size() - size);
         } catch (IllegalArgumentException e) {
             logger.error("Failed to update cms templates: " + e.toString(), e);
         }
