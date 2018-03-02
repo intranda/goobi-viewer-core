@@ -247,6 +247,7 @@ public class CmsBean implements Serializable {
     }
 
     public void loadTemplates() {
+        logger.trace("loadTemplates");
         CMSTemplateManager.getInstance()
                 .updateTemplates(CMSTemplateManager.getInstance()
                         .getCoreFolderPath(),

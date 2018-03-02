@@ -260,7 +260,8 @@
 	    <useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
         <!-- theme: defines the theme that shall be used -->
-        <theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true" />
+        <theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true">
+        </theme>
     </viewer>
 
     <search>

@@ -308,7 +308,10 @@
         <useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false" />
+		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false">
+		    <!-- rootPath: If the theme is located in an external Git repo, the CMS template loading mechanism needs the root path of the theme -->
+            <!-- <rootPath>/opt/digiverso/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/src/META-INF/resources/</rootPath> -->
+		</theme>
 	</viewer>
 
 
