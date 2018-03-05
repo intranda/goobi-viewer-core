@@ -120,15 +120,14 @@ public final class CMSTemplateManager {
             throw new PresentationException("No faces context found");
         }
 
+        //check if the themeFolderPath contains any xml files
         try {
             String themeFolder = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
             Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, themeRootPath, servletContext, themeFolder);
             themeFolderPath = themeFolderUrl.map(url -> toURI(url));
-
-            //check if the coreFolderPath contains any xml files
             boolean templatesFound = false;
             if (themeFolderPath.isPresent()) {
-                logger.trace("themeFolderPath: {}", themeFolderPath.get());
+               
                 templatesFound = Files.list(themeFolderPath.get())
                         .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
                         .findAny()
@@ -143,18 +142,21 @@ public final class CMSTemplateManager {
             logger.debug("Unable to scan theme-jar for cms-template files. Probably an older tomcat");
         }
 
+        //check if the coreFolderPath contains any xml files
         try {
             String templateFolderUrl = "resources/" + TEMPLATE_BASE_PATH;
             Optional<URL> coreFolderUrl = getTemplateFolderUrl(filesystemPath, servletContext, templateFolderUrl);
             coreFolderPath = coreFolderUrl.map(path -> toURI(path));
-            //check if the themeFolderPath contains any xml files
             boolean templatesFound = false;
             if (coreFolderPath.isPresent()) {
+                logger.trace("coreFolderPath: {}", coreFolderPath.get());
                 templatesFound = Files.list(coreFolderPath.get())
                         .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
                         .peek(file -> logger.trace("Found core cms template file " + file))
                         .findAny()
                         .isPresent();
+            } else {
+                logger.warn("coreFolderPath not found at {}, {}", filesystemPath, templateFolderUrl);
             }
             if (templatesFound) {
                 this.coreTemplateFolderUrl = Optional.of(webContentRoot + "/" + templateFolderUrl);
@@ -281,7 +283,9 @@ public final class CMSTemplateManager {
         try {
             //load theme templates
             if (themePath.isPresent()) {
-                logger.debug("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
+                logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
+            } else {
+                logger.warn("THEME CMS path missing");
             }
             themePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet().stream().peek(entry -> entry.getValue().setThemeTemplate(true)).forEach(
@@ -291,7 +295,7 @@ public final class CMSTemplateManager {
 
             //load core templates
             if (corePath.isPresent()) {
-                logger.debug("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath().toString());
+                logger.trace("Loading CORE CMS templates from {}", corePath.get().toAbsolutePath().toString());
             }
             corePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet().stream().forEach(entry -> templates.putIfAbsent(entry.getKey(), entry.getValue())));
