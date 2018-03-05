@@ -15,6 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -698,7 +701,7 @@ public class CMSPage {
     public void setPersistentUrl(String persistentUrl) {
         persistentUrl = StringUtils.removeStart(persistentUrl, "/");
         persistentUrl = StringUtils.removeEnd(persistentUrl, "/");
-        this.persistentUrl = persistentUrl;
+        this.persistentUrl = persistentUrl.trim();
     }
 
     /**

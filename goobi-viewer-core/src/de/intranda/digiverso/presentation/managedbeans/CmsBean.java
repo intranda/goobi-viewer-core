@@ -550,9 +550,6 @@ public class CmsBean implements Serializable {
                 cmsNavigationBean.getItemManager()
                         .addAvailableItem(new CMSNavigationItem(this.selectedPage));
             }
-            DataManager.getInstance()
-                    .getDao()
-                    .detach(this.selectedPage);
         }
     }
 
@@ -749,9 +746,6 @@ public class CmsBean implements Serializable {
         } else {
             this.selectedPage = currentPage;
         }
-        DataManager.getInstance()
-                .getDao()
-                .detach(this.selectedPage);
         logger.debug("Selected page " + currentPage);
 
     }

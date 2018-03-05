@@ -22,10 +22,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Persistence;
@@ -68,6 +71,9 @@ public class JPADAO implements IDAO {
     private static final Logger logger = LoggerFactory.getLogger(JPADAO.class);
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     private static final String MULTIKEY_SEPARATOR = "_";
+    
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(); 
+
 
     private final EntityManagerFactory factory;
     private EntityManager em;
@@ -2356,13 +2362,6 @@ public class JPADAO implements IDAO {
         preQuery();
         try {
             CMSPage o = em.getReference(CMSPage.class, id);
-            if (o != null) {
-                try {
-                    em.refresh(o);
-                } catch (IllegalArgumentException e) {
-                    logger.error("Error refreshing cms page " + o.getId());
-                }
-            }
             return o;
         } catch (EntityNotFoundException e) {
             return null;
@@ -2380,14 +2379,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            CMSPage o = em.find(CMSPage.class, id);
-            if (o != null) {
-                try {
-                    em.refresh(o);
-                } catch (IllegalArgumentException e) {
-                    logger.error("Error refreshing cms page " + o.getId());
-                }
-            }
+            CMSPage o = em.getReference(CMSPage.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
@@ -2442,7 +2434,7 @@ public class JPADAO implements IDAO {
             em.persist(page);
             em.getTransaction()
                     .commit();
-            return true;
+            return updateCMSPageFromDatabase(page.getId());
         } finally {
             em.close();
         }
@@ -2463,9 +2455,30 @@ public class JPADAO implements IDAO {
             em.merge(page);
             em.getTransaction()
                     .commit();
-            return true;
+            return updateCMSPageFromDatabase(page.getId());
         } finally {
             em.close();
+        }
+    }
+
+    /**
+     * Refresh the CMSPage with the given id from the database. If the page is not found or if the refresh fails, false is returned
+     * 
+     * @param id
+     * @return
+     */
+    private boolean updateCMSPageFromDatabase(Long id) {
+        
+        try {
+            Object o = this.em.getReference(CMSPage.class, id);
+            this.em.refresh(o);
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.error("CMSPage with id " + id + " has an ivalid type, or is not persisted");
+            return false;
+        } catch(EntityNotFoundException e) {
+            logger.error("CMSPage with id " + id + " not found in database");
+            return false;
         }
     }
 
