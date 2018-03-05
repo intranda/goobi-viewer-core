@@ -127,7 +127,7 @@ public final class CMSTemplateManager {
             themeFolderPath = themeFolderUrl.map(url -> toURI(url));
             boolean templatesFound = false;
             if (themeFolderPath.isPresent()) {
-               
+
                 templatesFound = Files.list(themeFolderPath.get())
                         .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
                         .findAny()
@@ -144,7 +144,7 @@ public final class CMSTemplateManager {
 
         //check if the coreFolderPath contains any xml files
         try {
-            String templateFolderUrl = "resources/" + TEMPLATE_BASE_PATH;
+            String templateFolderUrl = "resources" + TEMPLATE_BASE_PATH;
             Optional<URL> coreFolderUrl = getTemplateFolderUrl(filesystemPath, servletContext, templateFolderUrl);
             coreFolderPath = coreFolderUrl.map(path -> toURI(path));
             boolean templatesFound = false;
@@ -156,7 +156,7 @@ public final class CMSTemplateManager {
                         .findAny()
                         .isPresent();
             } else {
-                logger.warn("coreFolderPath not found at {}, {}", filesystemPath, templateFolderUrl);
+                logger.warn("coreFolderPath not found at {}, {} servletContent null ? {}", filesystemPath, templateFolderUrl, servletContext == null);
             }
             if (templatesFound) {
                 this.coreTemplateFolderUrl = Optional.of(webContentRoot + "/" + templateFolderUrl);
