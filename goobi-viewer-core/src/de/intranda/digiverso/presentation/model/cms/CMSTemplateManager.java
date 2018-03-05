@@ -122,12 +122,19 @@ public final class CMSTemplateManager {
 
         //check if the themeFolderPath contains any xml files
         try {
+            boolean absolutetemplateFolderUrl = false;
             String templateFolderUrl = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
-            Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, themeRootPath, servletContext, templateFolderUrl);
+            if (StringUtils.isNotEmpty(themeRootPath)) {
+                if (!themeRootPath.endsWith("/")) {
+                    themeRootPath += '/';
+                }
+                templateFolderUrl = themeRootPath + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
+                absolutetemplateFolderUrl = true;
+            }
+            Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, servletContext, templateFolderUrl, absolutetemplateFolderUrl);
             themeFolderPath = themeFolderUrl.map(url -> toURI(url));
             boolean templatesFound = false;
             if (themeFolderPath.isPresent()) {
-
                 templatesFound = Files.list(themeFolderPath.get())
                         .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
                         .findAny()
@@ -217,18 +224,18 @@ public final class CMSTemplateManager {
      * Returns an url pointing to the cms template folder of the viewer theme.
      * 
      * @param filesystemPath
-     * @param themeRootPath If the theme contents are in an external folder, its root path must be provided here
      * @param servletContext
      * @param templateFolderUrl
+     * @param absolutetemplateFolderUrl
      * @return
      * @throws URISyntaxException
      * @throws IOException
      */
-    private static Optional<URL> getThemeFolderUrl(String filesystemPath, String themeRootPath, ServletContext servletContext,
-            String templateFolderUrl) throws IOException, URISyntaxException {
+    private static Optional<URL> getThemeFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl,
+            boolean absolutetemplateFolderUrl) throws IOException, URISyntaxException {
         Optional<URL> coreFolderUrl = Optional.empty();
-        if (themeRootPath != null) {
-            Path path = Paths.get(themeRootPath + templateFolderUrl);
+        if (absolutetemplateFolderUrl) {
+            Path path = Paths.get(templateFolderUrl);
             logger.debug("Looking for external theme template folder in {}", path.toAbsolutePath().toString());
             if (Files.isDirectory(path)) {
                 coreFolderUrl = Optional.of(path.toUri().toURL());
@@ -288,8 +295,6 @@ public final class CMSTemplateManager {
             //load theme templates
             if (themePath.isPresent()) {
                 logger.trace("Loading THEME CMS templates from {}", themePath.get().toAbsolutePath().toString());
-            } else {
-                logger.warn("THEME CMS path missing");
             }
             themePath.map(path -> loadTemplates(path))
                     .ifPresent(map -> map.entrySet().stream().peek(entry -> entry.getValue().setThemeTemplate(true)).forEach(

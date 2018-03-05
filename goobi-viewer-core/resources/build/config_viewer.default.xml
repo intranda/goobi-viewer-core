@@ -309,8 +309,10 @@
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false">
-		    <!-- rootPath: If the theme is located in an external Git repo, the CMS template loading mechanism needs the root path of the theme -->
-            <!-- <rootPath>/opt/digiverso/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/src/META-INF/resources/</rootPath> -->
+        <!-- rootPath: If the theme is localed externally, the CMS template loading 
+            mechanism needs the root path of the theme. The path must be defined down 
+            to the /themes folder, just above the folder named like the theme. -->
+            <!-- <rootPath>/opt/digiverso/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/src/META-INF/resources/resources/themes/</rootPath> -->
 		</theme>
 	</viewer>
 
