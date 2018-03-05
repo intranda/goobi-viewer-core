@@ -194,8 +194,11 @@ public final class CMSTemplateManager {
         Optional<URL> fileUrl = Optional.empty();
         if (servletContext != null) {
             String basePath = servletContext.getRealPath("/");
-            if (Files.exists(Paths.get(basePath, templateFolderUrl))) {
-                fileUrl = Optional.of(Paths.get(basePath, templateFolderUrl).toFile().toURI().toURL());
+            Path path = Paths.get(basePath, templateFolderUrl);
+            if (Files.exists(path)) {
+                fileUrl = Optional.of(path.toFile().toURI().toURL());
+            } else {
+                logger.warn("Path not found: {}", path.toAbsolutePath().toString());
             }
             //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
         } else if (filesystemPath != null) {
