@@ -122,8 +122,8 @@ public final class CMSTemplateManager {
 
         //check if the themeFolderPath contains any xml files
         try {
-            String themeFolder = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
-            Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, themeRootPath, servletContext, themeFolder);
+            String templateFolderUrl = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
+            Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, themeRootPath, servletContext, templateFolderUrl);
             themeFolderPath = themeFolderUrl.map(url -> toURI(url));
             boolean templatesFound = false;
             if (themeFolderPath.isPresent()) {
@@ -134,7 +134,7 @@ public final class CMSTemplateManager {
                         .isPresent();
             }
             if (templatesFound) {
-                this.themeTemplateFolderUrl = Optional.of(webContentRoot + "/" + themeFolder);
+                this.themeTemplateFolderUrl = Optional.of(webContentRoot + "/" + templateFolderUrl);
             }
         } catch (URISyntaxException | IOException e) {
             logger.error(e.toString(), e);
@@ -145,7 +145,7 @@ public final class CMSTemplateManager {
         //check if the coreFolderPath contains any xml files
         try {
             String templateFolderUrl = "resources" + TEMPLATE_BASE_PATH;
-            Optional<URL> coreFolderUrl = getTemplateFolderUrl(filesystemPath, servletContext, templateFolderUrl);
+            Optional<URL> coreFolderUrl = getCoreTemplateFolderUrl(filesystemPath, servletContext, templateFolderUrl);
             coreFolderPath = coreFolderUrl.map(path -> toURI(path));
             boolean templatesFound = false;
             if (coreFolderPath.isPresent()) {
@@ -189,16 +189,17 @@ public final class CMSTemplateManager {
      * @throws MalformedURLException
      * @throws UnsupportedEncodingException
      */
-    public static Optional<URL> getTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl)
+    public static Optional<URL> getCoreTemplateFolderUrl(String filesystemPath, ServletContext servletContext, String templateFolderUrl)
             throws MalformedURLException, UnsupportedEncodingException {
         Optional<URL> fileUrl = Optional.empty();
         if (servletContext != null) {
             String basePath = servletContext.getRealPath("/");
+            logger.trace("basePath: {}", basePath);
             Path path = Paths.get(basePath, templateFolderUrl);
             if (Files.exists(path)) {
                 fileUrl = Optional.of(path.toFile().toURI().toURL());
             } else {
-                logger.warn("Path not found: {}", path.toAbsolutePath().toString());
+                logger.warn("Template folder path not found: {}", path.toAbsolutePath().toString());
             }
             //                    fileUrl = servletContext.getResource(this.templateFolderUrl);
         } else if (filesystemPath != null) {
@@ -218,24 +219,24 @@ public final class CMSTemplateManager {
      * @param filesystemPath
      * @param themeRootPath If the theme contents are in an external folder, its root path must be provided here
      * @param servletContext
-     * @param coreFolder
+     * @param templateFolderUrl
      * @return
      * @throws URISyntaxException
      * @throws IOException
      */
-    public static Optional<URL> getThemeFolderUrl(String filesystemPath, String themeRootPath, ServletContext servletContext, String coreFolder)
-            throws IOException, URISyntaxException {
+    private static Optional<URL> getThemeFolderUrl(String filesystemPath, String themeRootPath, ServletContext servletContext,
+            String templateFolderUrl) throws IOException, URISyntaxException {
         Optional<URL> coreFolderUrl = Optional.empty();
         if (themeRootPath != null) {
-            Path path = Paths.get(themeRootPath + coreFolder);
+            Path path = Paths.get(themeRootPath + templateFolderUrl);
             logger.debug("Looking for external theme template folder in {}", path.toAbsolutePath().toString());
             if (Files.isDirectory(path)) {
                 coreFolderUrl = Optional.of(path.toUri().toURL());
             }
         } else if (servletContext != null) {
-            coreFolderUrl = Optional.ofNullable(servletContext.getResource(coreFolder));
+            coreFolderUrl = Optional.ofNullable(servletContext.getResource(templateFolderUrl));
         } else {
-            Path path = Paths.get(filesystemPath + coreFolder);
+            Path path = Paths.get(filesystemPath + templateFolderUrl);
             if (Files.isDirectory(path)) {
                 coreFolderUrl = Optional.of(path.toUri().toURL());
             }
