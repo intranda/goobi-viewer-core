@@ -2468,16 +2468,20 @@ public class JPADAO implements IDAO {
      * @return
      */
     private boolean updateCMSPageFromDatabase(Long id) {
-        
+        Object o = null;
         try {
-            Object o = this.em.getReference(CMSPage.class, id);
+            o = this.em.getReference(CMSPage.class, id);
             this.em.refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with id " + id + " has an ivalid type, or is not persisted");
             return false;
         } catch(EntityNotFoundException e) {
-            logger.error("CMSPage with id " + id + " not found in database");
+            logger.debug("CMSPage with id " + id + " not found in database");
+            //remove from em as well
+            if(o != null) {                
+                em.remove(o);
+            }
             return false;
         }
     }
@@ -2498,7 +2502,7 @@ public class JPADAO implements IDAO {
             em.remove(o);
             em.getTransaction()
                     .commit();
-            return true;
+            return !updateCMSPageFromDatabase(o.getId());
         } catch (RollbackException e) {
             return false;
         } finally {
