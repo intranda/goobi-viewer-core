@@ -181,6 +181,11 @@ public class WebAnnotationResource {
             json.put("@content", CONTEXT_URI);
             json.put("id", idUrl);
             json.put("type", "Annotation");
+            json.put("creator", comment.getOwner().getDisplayNameObfuscated());
+            json.put("created", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateCreated().getTime()));
+            if (comment.getDateUpdated() != null) {
+                json.put("modified", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateUpdated().getTime()));
+            }
             {
                 JSONObject body = new JSONObject();
                 body.put("type", "TextualBody");
