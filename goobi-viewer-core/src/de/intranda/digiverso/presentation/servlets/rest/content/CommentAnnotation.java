@@ -15,15 +15,23 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
+import java.io.IOException;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 public class CommentAnnotation {
+    
+    private static final String CONTEXT_URI = "http://www.w3.org/ns/anno.jsonld";
+    private static final String GENERATOR_URI = "https://www.intranda.com/en/digiverso/goobi-viewer/goobi-viewer-overview/";
 
     private Comment comment;
 
@@ -31,7 +39,7 @@ public class CommentAnnotation {
         this.comment = comment;
     }
 
-    @JsonSerialize(using = CommentSerializer.class)
+    @JsonSerialize(using = BodySerializer.class)
     public Comment getBody() {
         return comment;
     }
@@ -44,5 +52,32 @@ public class CommentAnnotation {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
     public Date getCreated() {
         return comment.getDateCreated();
+    }
+
+    private class BodySerializer extends JsonSerializer<Comment> {
+
+        /* (non-Javadoc)
+         * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
+         */
+        @Override
+        public void serialize(Comment comment, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+            generator.writeStartObject();
+            generator.writeStringField("format", "test/plain");
+            generator.writeStringField("type", "TextualBody");
+            generator.writeStringField("value", comment.getText());
+            generator.writeEndObject();
+        }
+    }
+
+    private class UserSerializerObfuscated extends JsonSerializer<User> {
+
+        /* (non-Javadoc)
+         * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
+         */
+        @Override
+        public void serialize(User user, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+            //            generator.writeStartObject();
+            generator.writeString(user.getDisplayNameObfuscated());
+        }
     }
 }

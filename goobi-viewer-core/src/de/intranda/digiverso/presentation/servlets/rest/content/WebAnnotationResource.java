@@ -90,7 +90,6 @@ public class WebAnnotationResource {
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
-    @SuppressWarnings("unchecked")
     @GET
     @Path("/comments/{pi}/{page}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
