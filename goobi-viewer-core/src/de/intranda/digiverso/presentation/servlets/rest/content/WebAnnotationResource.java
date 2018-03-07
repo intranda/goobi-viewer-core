@@ -57,6 +57,7 @@ public class WebAnnotationResource {
     private static final Logger logger = LoggerFactory.getLogger(WebAnnotationResource.class);
 
     private static final String CONTEXT_URI = "http://www.w3.org/ns/anno.jsonld";
+    private static final String GENERATOR_URI = "https://www.intranda.com/en/digiverso/goobi-viewer/goobi-viewer-overview/";
 
     @Context
     private HttpServletRequest servletRequest;
@@ -93,7 +94,7 @@ public class WebAnnotationResource {
     @GET
     @Path("/comments/{pi}/{page}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getAnnotation(@PathParam("id") Long id)
+    public CommentAnnotation getAnnotation(@PathParam("id") Long id)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
@@ -104,35 +105,11 @@ public class WebAnnotationResource {
         if (comment == null) {
             throw new ContentNotFoundException("Resource not found");
         }
-        String idUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
-                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
-                .toString();
-        String targetUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)).append('/')
-                .append(PageType.viewImage.getName())
-                .append('/')
-                .append(comment.getPi())
-                .append('/')
-                .append(comment.getPage())
-                .append('/')
-                .toString();
-        JSONObject json = new JSONObject();
-        json.put("@content", CONTEXT_URI);
-        json.put("id", idUrl);
-        json.put("creator", comment.getOwner().getDisplayNameObfuscated());
-        json.put("created", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateCreated().getTime()));
-        if (comment.getDateUpdated() != null) {
-            json.put("modified", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateUpdated().getTime()));
-        }
-        {
-            JSONObject body = new JSONObject();
-            body.put("type", "TextualBody");
-            body.put("format", "text/plain");
-            body.put("value", comment.getText());
-            json.put("body", body);
-        }
-        json.put("target", targetUrl);
 
-        return json.toJSONString();
+        //        JSONObject json = generateCommentAnnotation(comment, servletRequest);
+        //        return json.toJSONString();
+
+        return new CommentAnnotation(comment);
     }
 
     /**
@@ -166,38 +143,58 @@ public class WebAnnotationResource {
         }
         JSONArray jsonArray = new JSONArray();
         for (Comment comment : comments) {
-            String idUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
-                    .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
-                    .toString();
-            String targetUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)).append('/')
-                    .append(PageType.viewImage.getName())
-                    .append('/')
-                    .append(comment.getPi())
-                    .append('/')
-                    .append(comment.getPage())
-                    .append('/')
-                    .toString();
-            JSONObject json = new JSONObject();
-            json.put("@content", CONTEXT_URI);
-            json.put("id", idUrl);
-            json.put("type", "Annotation");
-            json.put("creator", comment.getOwner().getDisplayNameObfuscated());
-            json.put("created", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateCreated().getTime()));
-            if (comment.getDateUpdated() != null) {
-                json.put("modified", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateUpdated().getTime()));
-            }
-            {
-                JSONObject body = new JSONObject();
-                body.put("type", "TextualBody");
-                body.put("format", "text/plain");
-                body.put("value", comment.getText());
-                json.put("body", body);
-            }
-            json.put("target", targetUrl);
-
+            JSONObject json = generateCommentAnnotation(comment, servletRequest);
             jsonArray.add(json);
         }
 
         return jsonArray.toJSONString();
+    }
+
+    /**
+     * 
+     * @param comment
+     * @param servletRequest
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    static JSONObject generateCommentAnnotation(Comment comment, HttpServletRequest servletRequest) {
+        if (comment == null) {
+            throw new IllegalArgumentException("comment may not be null");
+        }
+        if (servletRequest == null) {
+            throw new IllegalArgumentException("servletRequest may not be null");
+        }
+
+        String idUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
+                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
+                .toString();
+        String targetUrl = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)).append('/')
+                .append(PageType.viewImage.getName())
+                .append('/')
+                .append(comment.getPi())
+                .append('/')
+                .append(comment.getPage())
+                .append('/')
+                .toString();
+
+        JSONObject json = new JSONObject();
+        json.put("@content", CONTEXT_URI);
+        json.put("id", idUrl);
+        json.put("creator", comment.getOwner().getDisplayNameObfuscated());
+        json.put("created", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateCreated().getTime()));
+        if (comment.getDateUpdated() != null) {
+            json.put("modified", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateUpdated().getTime()));
+        }
+        json.put("generator", GENERATOR_URI);
+        {
+            JSONObject body = new JSONObject();
+            body.put("type", "TextualBody");
+            body.put("format", "text/plain");
+            body.put("value", comment.getText());
+            json.put("body", body);
+        }
+        json.put("target", targetUrl);
+
+        return json;
     }
 }
