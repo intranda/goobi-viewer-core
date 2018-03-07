@@ -44,6 +44,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -58,7 +59,7 @@ public class BookshelfItem implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfItem.class);
 
-    private static final String[] FIELDS = { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY };
+    private static final String[] FIELDS = { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC };
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -262,16 +263,14 @@ public class BookshelfItem implements Serializable {
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 1, null,
                 Arrays.asList(FIELDS));
         if (!docs.isEmpty()) {
-            String fileName = (String) docs.get(0).getFieldValue(SolrConstants.THUMBNAIL);
-            String dataRepository = (String) docs.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
-            if(StringUtils.isNotBlank(fileName)) {
-                String url = Helper.getImageUrl(pi, fileName, dataRepository, width, height, 0, true, true);
-                logger.trace("Bookshelf item thumbnail URL: {}", url);
-                return url;                
-            }
+            String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
+            
+            ThumbnailHandler thumbs = ThumbnailHandler.create();
+            StructElement doc = new StructElement(Integer.parseInt(luceneId), docs.get(0));
+            return thumbs.getThumbnailUrl(doc, width, height);
+        } else {
+            return "";
         }
-
-        return null;
     }
     
     /**

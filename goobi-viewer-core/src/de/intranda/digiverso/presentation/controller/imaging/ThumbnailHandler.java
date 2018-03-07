@@ -18,14 +18,18 @@ package de.intranda.digiverso.presentation.controller.imaging;
 import java.net.URI;
 import java.nio.file.Paths;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
@@ -130,7 +134,7 @@ public class ThumbnailHandler {
      * Returns a link to an image representating the given document of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      * 
-     * @param page
+     * @param doc   Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
      * @return
      */
     public String getThumbnailUrl(StructElement doc, int width, int height) {
@@ -155,7 +159,7 @@ public class ThumbnailHandler {
      * returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual image
      * as is possible to fit into a square - the delivered square is always centered within the full image
      * 
-     * @param page
+     * @param doc   Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
      * @param size
      * @return
      */
@@ -200,7 +204,7 @@ public class ThumbnailHandler {
     
 
     /**
-     * @param doc
+     * @param doc   Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
      * @return  The representative thumbnail url for the given doc, or a replacement image url if no
      * representative thumbnail url is applicable (born digital material and - depending on configuration - anchors)
      */
@@ -211,12 +215,29 @@ public class ThumbnailHandler {
         } else if(doc.isAnchor() && ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
             thumbnailUrl = anchorThumnailReplacement.toString();
         } else {            
-            String field = SolrConstants.THUMBNAIL;
-            thumbnailUrl = getFieldValue(doc, field);
+            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
             if(StringUtils.isBlank(thumbnailUrl) || !ImageHandler.isImageUrl(thumbnailUrl, false)) {
                 thumbnailUrl = bornDigitalThumnailReplacement.toString();
             }
         }
         return thumbnailUrl;
+    }
+    
+    /**
+     * Returns a newly created thumbnail handler. The handler creation requires an existing jsf context 
+     */
+    public static ThumbnailHandler create() {
+        String theme = DataManager.getInstance().getConfiguration().getTheme();
+        ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), BeanUtils.getServletImagesPathFromJsfContext(theme));
+        return thumbs;    
+    }
+    
+    /**
+     * Returns a newly created thumbnail handler, using the given request to determine static image paths
+     */
+    public static ThumbnailHandler create(HttpServletRequest request) {
+        String theme = DataManager.getInstance().getConfiguration().getTheme();
+        ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), BeanUtils.getServletImagesPathFromRequest(request, theme));
+        return thumbs;    
     }
 }

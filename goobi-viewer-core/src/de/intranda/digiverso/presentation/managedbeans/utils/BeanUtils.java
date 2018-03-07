@@ -29,6 +29,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,6 +92,40 @@ public class BeanUtils {
         }
 
         return "";
+    }
+    
+    public static boolean hasJsfContext() {
+        return FacesContext.getCurrentInstance() != null;
+    }
+    
+    /**
+     * @param theme     The name of the theme housing the images. If this is null or empty, the images are taken from the viewer core
+     * @return          The url to the images folder in resources (possibly in the given theme)
+     */
+    public static String getServletImagesPathFromJsfContext(String theme) {
+        StringBuilder sb = new StringBuilder(getServletPathWithHostAsUrlFromJsfContext());
+        if(!sb.toString().endsWith("/")) {
+            sb.append("/");
+        }
+        sb.append("resources").append("/");
+        if(StringUtils.isNotBlank(theme)) {
+            sb.append("themes").append("/").append("theme").append("/");
+        }
+        sb.append("images").append("/");
+        return sb.toString();
+    }
+    
+    public static String getServletImagesPathFromRequest(HttpServletRequest request, String theme) {
+        StringBuilder sb = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+        if(!sb.toString().endsWith("/")) {
+            sb.append("/");
+        }
+        sb.append("resources").append("/");
+        if(StringUtils.isNotBlank(theme)) {
+            sb.append("themes").append("/").append("theme").append("/");
+        }
+        sb.append("images").append("/");
+        return sb.toString();
     }
 
     /**

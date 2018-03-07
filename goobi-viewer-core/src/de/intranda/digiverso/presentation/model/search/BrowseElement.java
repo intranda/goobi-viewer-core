@@ -47,7 +47,9 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -173,7 +175,7 @@ public class BrowseElement implements Serializable {
      * @throws DAOException
      */
     BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
-            Map<String, Set<String>> searchTerms) throws PresentationException, IndexUnreachableException, DAOException {
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException {
         this.metadataList = metadataList;
         this.locale = locale;
         this.fulltext = fulltext;
@@ -402,8 +404,10 @@ public class BrowseElement implements Serializable {
         int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
         int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
         if (isAbsoluteUrl(filename) && structElement.mayShowThumbnail()) {
+            
+            thumbnailUrl = thumbs.getThumbnailUrl(structElement);
+            
             // Use absolute thumbnail URL directly (replace requested image size if this is an IFFF URL); no access permission check
-            thumbnailUrl = DataManager.getInstance().getImageDeliveryManager().getModifiedIIIFFUrl(filename, RegionRequest.FULL, new Scale.ScaleToBox(thumbWidth, thumbHeight), Rotation.NONE, Colortype.DEFAULT, ImageFileFormat.JPG);
             hasImages = true;
         } else if (structElement.mayShowThumbnail()) {
             // Construct URL

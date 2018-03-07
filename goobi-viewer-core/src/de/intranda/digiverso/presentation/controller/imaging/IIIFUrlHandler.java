@@ -189,7 +189,7 @@ public class IIIFUrlHandler {
      * @param url
      * @return true if the given url conforms to a IIIF image request pattern (that is, an actual image is requested, not just image information)
      */
-    protected static boolean isIIIFImageUrl(String url) {
+    public static boolean isIIIFImageUrl(String url) {
         return url.matches(IIIF_IMAGE_REGEX);
     }
 
