@@ -18,7 +18,12 @@ package de.intranda.digiverso.presentation.servlets.rest.content;
 import java.io.IOException;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -27,16 +32,50 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 public class CommentAnnotation {
-    
+
     private static final String CONTEXT_URI = "http://www.w3.org/ns/anno.jsonld";
     private static final String GENERATOR_URI = "https://www.intranda.com/en/digiverso/goobi-viewer/goobi-viewer-overview/";
 
     private Comment comment;
+    private HttpServletRequest servletRequest;
 
-    public CommentAnnotation(Comment comment) {
+    public CommentAnnotation(Comment comment, HttpServletRequest servletRequest) {
         this.comment = comment;
+        this.servletRequest = servletRequest;
+    }
+
+    @JsonSerialize()
+    @JsonProperty("@context")
+    public String getContext() {
+        return CONTEXT_URI;
+    }
+
+    @JsonSerialize()
+    public String getId() {
+        return new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
+                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
+                .toString();
+    }
+
+    @JsonSerialize()
+    public String getGenerator() {
+        return GENERATOR_URI;
+    }
+
+    @JsonSerialize()
+    public String getTarget() {
+        return new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)).append('/')
+                .append(PageType.viewImage.getName())
+                .append('/')
+                .append(comment.getPi())
+                .append('/')
+                .append(comment.getPage())
+                .append('/')
+                .toString();
     }
 
     @JsonSerialize(using = BodySerializer.class)
@@ -54,7 +93,14 @@ public class CommentAnnotation {
         return comment.getDateCreated();
     }
 
-    private class BodySerializer extends JsonSerializer<Comment> {
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+    @JsonInclude(Include.NON_NULL)
+    public Date getModified() {
+        return comment.getDateUpdated();
+
+    }
+
+    public static class BodySerializer extends JsonSerializer<Comment> {
 
         /* (non-Javadoc)
          * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
@@ -69,7 +115,7 @@ public class CommentAnnotation {
         }
     }
 
-    private class UserSerializerObfuscated extends JsonSerializer<User> {
+    public static class UserSerializerObfuscated extends JsonSerializer<User> {
 
         /* (non-Javadoc)
          * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)

@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +28,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.joda.time.DateTime;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +38,6 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
@@ -108,7 +105,7 @@ public class WebAnnotationResource {
         //        JSONObject json = generateCommentAnnotation(comment, servletRequest);
         //        return json.toJSONString();
 
-        return new CommentAnnotation(comment);
+        return new CommentAnnotation(comment, servletRequest);
     }
 
     /**
@@ -125,11 +122,10 @@ public class WebAnnotationResource {
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
-    @SuppressWarnings("unchecked")
     @GET
     @Path("/comments/{pi}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getAnnotationsForRecord(@PathParam("pi") String pi, @PathParam("page") Integer page)
+    public List<CommentAnnotation> getAnnotationsForRecord(@PathParam("pi") String pi, @PathParam("page") Integer page)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
@@ -140,13 +136,16 @@ public class WebAnnotationResource {
         if (comments.isEmpty()) {
             throw new ContentNotFoundException("Resource not found");
         }
-        JSONArray jsonArray = new JSONArray();
+        //        JSONArray jsonArray = new JSONArray();
+        List<CommentAnnotation> ret = new ArrayList<>(comments.size());
         for (Comment comment : comments) {
-            JSONObject json = generateCommentAnnotation(comment, servletRequest);
-            jsonArray.add(json);
+            //            JSONObject json = generateCommentAnnotation(comment, servletRequest);
+            //            jsonArray.add(json);
+            ret.add(new CommentAnnotation(comment, servletRequest));
         }
 
-        return jsonArray.toJSONString();
+        //        return jsonArray.toJSONString();
+        return ret;
     }
 
     /**
@@ -156,6 +155,7 @@ public class WebAnnotationResource {
      * @return
      */
     @SuppressWarnings("unchecked")
+    @Deprecated
     static JSONObject generateCommentAnnotation(Comment comment, HttpServletRequest servletRequest) {
         if (comment == null) {
             throw new IllegalArgumentException("comment may not be null");
@@ -177,7 +177,7 @@ public class WebAnnotationResource {
                 .toString();
 
         JSONObject json = new JSONObject();
-        json.put("@content", CONTEXT_URI);
+        json.put("@context", CONTEXT_URI);
         json.put("id", idUrl);
         json.put("creator", comment.getOwner().getDisplayNameObfuscated());
         json.put("created", DateTools.formatterISO8601DateTimeFullWithTimeZone.print(comment.getDateCreated().getTime()));
