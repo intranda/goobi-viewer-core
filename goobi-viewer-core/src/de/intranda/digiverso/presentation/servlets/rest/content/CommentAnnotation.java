@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -35,35 +34,42 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
-public class CommentAnnotation {
+public class CommentAnnotation extends AbstractAnnotation {
 
-    private static final String CONTEXT_URI = "http://www.w3.org/ns/anno.jsonld";
-    private static final String GENERATOR_URI = "https://www.intranda.com/en/digiverso/goobi-viewer/goobi-viewer-overview/";
+    public static final String PATH = "/comments";
 
-    private Comment comment;
-    private HttpServletRequest servletRequest;
+    private final Comment comment;
 
-    public CommentAnnotation(Comment comment, HttpServletRequest servletRequest) {
-        this.comment = comment;
-        this.servletRequest = servletRequest;
-    }
-
-    @JsonSerialize()
-    @JsonProperty("@context")
-    public String getContext() {
-        return CONTEXT_URI;
-    }
-
+    @Override
     @JsonSerialize()
     public String getId() {
         return new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
-                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
+                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length(),
+                        servletRequest.getRequestURI().indexOf(PATH) + PATH.length()))
+                .append('/')
+                .append(comment.getPi())
+                .append('/')
+                .append(comment.getPage())
+                .append('/')
+                .append(comment.getId())
+                .append('/')
                 .toString();
     }
 
-    @JsonSerialize()
-    public String getGenerator() {
-        return GENERATOR_URI;
+    /**
+     * 
+     * @param comment
+     * @param servletRequest
+     * @param addContext If true, an @context field will be added to the JSON document
+     */
+    public CommentAnnotation(Comment comment, HttpServletRequest servletRequest, boolean addContext) {
+        if (comment == null) {
+            throw new IllegalArgumentException("comment may not be null");
+        }
+
+        this.comment = comment;
+        this.servletRequest = servletRequest;
+        this.addContext = addContext;
     }
 
     @JsonSerialize()
@@ -88,12 +94,12 @@ public class CommentAnnotation {
         return comment.getOwner();
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+    @JsonFormat(pattern = DATETIME_FORMAT)
     public Date getCreated() {
         return comment.getDateCreated();
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZ")
+    @JsonFormat(pattern = DATETIME_FORMAT)
     @JsonInclude(Include.NON_NULL)
     public Date getModified() {
         return comment.getDateUpdated();

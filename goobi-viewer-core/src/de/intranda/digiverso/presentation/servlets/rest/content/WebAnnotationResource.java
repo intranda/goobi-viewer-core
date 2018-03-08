@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.servlets.rest.content;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -74,7 +78,7 @@ public class WebAnnotationResource {
     }
 
     /**
-     * API method for retrieving any type of content by its relative path within its data repository.
+     * Returns an annotation for the comment with the given database ID.
      * 
      * @param pi Record identifier
      * @param page Record page number
@@ -88,7 +92,7 @@ public class WebAnnotationResource {
      * @should throw ContentNotFoundException if file not found
      */
     @GET
-    @Path("/comments/{pi}/{page}/{id}")
+    @Path(CommentAnnotation.PATH + "/{pi}/{page}/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
     public CommentAnnotation getAnnotation(@PathParam("id") Long id)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
@@ -102,14 +106,42 @@ public class WebAnnotationResource {
             throw new ContentNotFoundException("Resource not found");
         }
 
-        //        JSONObject json = generateCommentAnnotation(comment, servletRequest);
-        //        return json.toJSONString();
-
-        return new CommentAnnotation(comment, servletRequest);
+        return new CommentAnnotation(comment, servletRequest, true);
     }
 
     /**
-     * API method for retrieving any type of content by its relative path within its data repository.
+     * Returns an annotation collection containing comment annotations for the given record page.
+     * 
+     * @param pi Record identifier
+     * @param page Record page number
+     * @return
+     * @throws PresentationException
+     * @throws DAOException
+     * @throws MalformedURLException
+     * @throws ContentNotFoundException
+     * @should return document correctly
+     * @should throw ContentNotFoundException if file not found
+     */
+    @GET
+    @Path(CommentAnnotation.PATH + "/{pi}/{page}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public CommentAnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
+            throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException {
+        if (servletResponse != null) {
+            servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+            servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
+        }
+
+        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
+        if (comments.isEmpty()) {
+            throw new ContentNotFoundException("Resource not found");
+        }
+
+        return new CommentAnnotationCollection(pi + ", page " + page, comments, servletRequest, true);
+    }
+
+    /**
+     * Returns an annotation collection containing comment annotations for the given record.
      * 
      * @param pi Record identifier
      * @param page Record page number
@@ -123,29 +155,37 @@ public class WebAnnotationResource {
      * @should throw ContentNotFoundException if file not found
      */
     @GET
-    @Path("/comments/{pi}/{page}")
+    @Path(CommentAnnotation.PATH + "/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<CommentAnnotation> getAnnotationsForRecord(@PathParam("pi") String pi, @PathParam("page") Integer page)
+    public CommentAnnotationCollection getAnnotationsForRecord(@PathParam("pi") String pi)
             throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
 
-        List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, page, false);
-        if (comments.isEmpty()) {
-            throw new ContentNotFoundException("Resource not found");
+        // Get all page numbers
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(
+                SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.DOCTYPE + ":PAGE", Collections.singletonList(SolrConstants.ORDER));
+        if (docs.isEmpty()) {
+            throw new ContentNotFoundException("Record not found in index");
         }
-        //        JSONArray jsonArray = new JSONArray();
-        List<CommentAnnotation> ret = new ArrayList<>(comments.size());
-        for (Comment comment : comments) {
-            //            JSONObject json = generateCommentAnnotation(comment, servletRequest);
-            //            jsonArray.add(json);
-            ret.add(new CommentAnnotation(comment, servletRequest));
+        logger.trace("{} pages found", docs.size());
+
+        List<Comment> ret = new ArrayList<>();
+        for (SolrDocument doc : docs) {
+            int order = (int) doc.getFieldValue(SolrConstants.ORDER);
+            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
+            if (comments.size() > 0) {
+                ret.addAll(comments);
+                logger.trace("{} comments found for page {}", comments.size(), order);
+            }
+        }
+        if (ret.isEmpty()) {
+            throw new ContentNotFoundException("No comments found for this record");
         }
 
-        //        return jsonArray.toJSONString();
-        return ret;
+        return new CommentAnnotationCollection(pi, ret, servletRequest, true);
     }
 
     /**
