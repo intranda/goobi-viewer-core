@@ -114,7 +114,7 @@ public class CommentAnnotation extends AbstractAnnotation {
         @Override
         public void serialize(Comment comment, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
             generator.writeStartObject();
-            generator.writeStringField("format", "test/plain");
+            generator.writeStringField("format", "text/plain");
             generator.writeStringField("type", "TextualBody");
             generator.writeStringField("value", comment.getText());
             generator.writeEndObject();
