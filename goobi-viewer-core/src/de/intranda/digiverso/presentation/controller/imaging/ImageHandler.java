@@ -40,12 +40,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
 public class ImageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageHandler.class);
-    
-    private final List<String> restrictedUrls;
-    
-    public ImageHandler(Configuration config) {
-        this.restrictedUrls = DataManager.getInstance().getConfiguration().getRestrictedImageUrls();
-    }
+
 
     /**
      * Returns the image link for the given page and pageType. For external images, this links to the IIIF image information json+ls For external
@@ -148,11 +143,11 @@ public class ImageHandler {
     /**
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
      */
-    protected boolean isRestrictedUrl(String path) {
-        return this.restrictedUrls.stream()
+    public static boolean isRestrictedUrl(String path) {
+        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream()
                 .anyMatch(regex -> Matcher.match(regex, path, true));
     }
-    
+        
     protected static ImageType getImageType(ImageInformation info) {
         String id = info.getId();
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);

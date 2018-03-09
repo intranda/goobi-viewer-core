@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.enterprise.context.SessionScoped;
@@ -33,6 +35,7 @@ import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
+import de.intranda.digiverso.presentation.controller.imaging.MediaHandler;
 import de.intranda.digiverso.presentation.controller.imaging.PdfHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
@@ -62,11 +65,14 @@ public class ImageDeliveryBean implements Serializable {
     private HttpServletRequest servletRequest;
 
     private String servletPath;
+    private String staticImagesURI;
+    private String cmsMediaPath;
     private ImageHandler image;
     private ThumbnailHandler thumb;
     private PdfHandler pdf;
     private WatermarkHandler footer;
     private IIIFUrlHandler iiif;
+    private MediaHandler media;
 
 
     public void init() {
@@ -80,11 +86,14 @@ public class ImageDeliveryBean implements Serializable {
                 logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
                 servletPath = "";
             }
+            this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
+            this.cmsMediaPath = DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
             iiif = new IIIFUrlHandler();
+            image = new ImageHandler();
             footer = new WatermarkHandler(config, servletPath);
-            thumb = new ThumbnailHandler(iiif, config, getStaticImagesPath(servletPath, config.getTheme()));
+            thumb = new ThumbnailHandler(iiif, config, this.staticImagesURI);
             pdf = new PdfHandler(footer, config);
-            image = new ImageHandler(config);
+            media = new MediaHandler(config);
         } catch(NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
@@ -234,9 +243,63 @@ public class ImageDeliveryBean implements Serializable {
         }
         sb.append("resources").append("/");
         if(StringUtils.isNotBlank(theme)) {
-            sb.append("themes").append("/").append("theme").append("/");
+            sb.append("themes").append("/").append(theme).append("/");
         }
         sb.append("images").append("/");
         return sb.toString();
+    }
+
+    /**
+     * @param decode
+     * @return
+     */
+    public boolean isCmsUrl(String url) {
+        URI uri;
+        try {
+            uri = new URI(url);
+            Path path = Paths.get(uri.getPath());
+            if(path.isAbsolute()) {            
+                path = path.normalize();
+                return path.startsWith(getCmsMediaPath());
+            }
+        } catch (URISyntaxException e) {
+            logger.trace(e.toString());
+        }
+        return false;
+    }
+
+    /**
+     * @param decode
+     * @return
+     */
+    public boolean isStaticImageUrl(String url) {
+        return url.startsWith(getStaticImagesURI());
+    }
+    
+    /**
+     * @return the staticImagesURI
+     */
+    public String getStaticImagesURI() {
+        if(staticImagesURI == null) {
+            init();
+        }
+        return staticImagesURI;
+    }
+    
+    /**
+     * @return the cmsMediaPath
+     */
+    public String getCmsMediaPath() {
+        if(cmsMediaPath == null) {
+            init();
+        }
+        return cmsMediaPath;
+    }
+    
+    /**
+     * @return the media
+     */
+    public MediaHandler getMedia() {
+        return media;
     }
 }

@@ -274,44 +274,43 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * 
      * @return the url to the media content of the page, for example the
      * @throws IndexUnreachableException
+     * @throws ConfigurationException 
      */
-    public String getUrl() throws IndexUnreachableException {
+    public String getUrl() throws IndexUnreachableException, ConfigurationException {
 
         switch (mimeType) {
             case MIME_TYPE_IMAGE:
                 return getImageUrl();
             case MIME_TYPE_VIDEO:
             case MIME_TYPE_AUDIO: {
-                StringBuilder url = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-                if (url.charAt(url.length() - 1) != '/') {
-                    url.append("/");
-                }
-                url.append(pi).append("/").append(mimeType).append("/$/");
-                return url.toString();
+                
+                String format = getFileNames().keySet().stream().findFirst().orElse("");
+                return getMediaUrl(format);
             }
             case MIME_TYPE_APPLICATION:
-                //                return getFileServletUrl(localFilename, "media");
-
                 if (StringUtils.isEmpty(fileName)) {
                     fileName = determineFileName(filePath);
                 }
-
                 String localFilename = fileName;
 
                 PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
                 return pdfHandler.getPdfUrl(pi, localFilename);
 
             case MIME_TYPE_SANDBOXED_HTML:
-                logger.trace(fileNames.toString());
-                if (fileNames.get("html-sandboxed") != null) {
-                    return fileNames.get("html-sandboxed");
-                }
-                return filePath;
+                return getSandboxedUrl();
             default:
                 logger.error("Page {} of record '{}' has unknown mime-type: {}", orderLabel, pi, mimeType);
         }
 
         return "";
+    }
+    
+    public String getSandboxedUrl() {
+        logger.trace(fileNames.toString());
+        if (fileNames.get("html-sandboxed") != null) {
+            return fileNames.get("html-sandboxed");
+        }
+        return filePath;
     }
 
     public String getWatermarkText() {
@@ -759,11 +758,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws IndexUnreachableException
      */
     public String getMediaUrl(String format) throws IndexUnreachableException, ConfigurationException {
-        String url = getUrl();
-        url = url.replace("$", format);
-        url = new StringBuilder(url).append(getFileNameForFormat(format)).toString();
-        logger.trace("currentMediaUrl: {}", url);
-        return url;
+        
+        String url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(mimeType + "/" + format, pi, getFileNameForFormat(format));
+
+        logger.trace("currentMediaUrl: {}", url.toString());
+        return url.toString();
     }
 
     public int getVideoWidth() {

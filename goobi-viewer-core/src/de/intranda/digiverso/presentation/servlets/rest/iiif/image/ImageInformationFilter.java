@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +34,25 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
+import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -54,9 +67,9 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 
 @Provider
 @ContentServerImageInfoBinding
-public class ImageSizeInformationFilter implements ContainerResponseFilter {
+public class ImageInformationFilter implements ContainerResponseFilter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ImageSizeInformationFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImageInformationFilter.class);
 
     @Context
     private HttpServletRequest servletRequest;
@@ -98,12 +111,71 @@ public class ImageSizeInformationFilter implements ContainerResponseFilter {
 				tileSizes = getTileSizesFromConfig();
 				setTileSizes((ImageInformation) responseObject, tileSizes);
 				setMaxImageSizes((ImageInformation) responseObject);
+				//This adds 200 or more ms to the request time. So we ignore this unless it is actually requested
+//				setWatermark((ImageInformation) responseObject);
 			} catch (ConfigurationException e) {
 				logger.error(e.toString(), e);
 			}
         }
     }
     
+    /**
+     * @param responseObject
+     */
+    private void setWatermark(ImageInformation info) {
+        Path path = Paths.get(info.getId());
+        String filename = path.getName(path.getNameCount()-1).toString();
+        String pi = path.getName(path.getNameCount()-2).toString();
+        
+        if(StringUtils.isNoneBlank(filename, pi) && !pi.equals("-")) {
+            try {                
+                Optional<StructElement> element = getStructElement(pi);
+                Optional<PhysicalElement> page = element.map(ele -> getPage(filename, ele).orElse(null));
+                Optional<String> watermarkUrl = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(page, element, Optional.ofNullable(pageType));
+                watermarkUrl.ifPresent(url -> info.setLogo(url));
+            } catch(DAOException | ConfigurationException | IndexUnreachableException | PresentationException e) {
+                logger.error("Unable to add watermark to image information: " + e.toString(), e);
+            }
+        }
+    }
+
+    /**
+     * @param filename
+     * @param element
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws DAOException 
+     * @throws PresentationException 
+     */
+    private Optional<PhysicalElement> getPage(String filename, StructElement element) {
+        try {
+            LeanPageLoader pageLoader = new LeanPageLoader(element, 1);
+            return Optional.ofNullable(pageLoader.getPageForFileName(filename));
+        } catch (PresentationException | IndexUnreachableException | DAOException e) {
+            logger.error("Unbale to get page for file " + filename + " in " + element);
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public Optional<StructElement> getStructElement(String pi) throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
+        List<String> fieldList = new ArrayList<>(Arrays.asList(WatermarkHandler.REQUIRED_SOLR_FIELDS));
+        fieldList.add(DataManager.getInstance().getConfiguration().getWatermarkIdField());
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, fieldList);
+        if(doc != null) {            
+            Long iddoc = Long.parseLong((String)doc.getFieldValue(SolrConstants.IDDOC));
+            StructElement element = new StructElement(iddoc, doc);
+            return Optional.ofNullable(element);
+        }
+        return Optional.empty();
+    }
+
     /**
      * @param responseObject
      * @return

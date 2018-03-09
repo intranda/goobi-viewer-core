@@ -46,28 +46,32 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
  *
  */
 public class WatermarkHandler {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(WatermarkHandler.class);
-    
+
     public static final String WATERMARK_TEXT_TYPE_URN = "URN";
     public static final String WATERMARK_TEXT_TYPE_PURL = "PURL";
     public static final String WATERMARK_TEXT_TYPE_SOLR = "SOLR:";
-    
+
+    public static final String[] REQUIRED_SOLR_FIELDS = new String[] { SolrConstants.PI, SolrConstants.IDDOC, SolrConstants.LOGID,
+            SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY };
+
     private final List<String> watermarkTextConfiguration;
     private final String watermarkIdField;
     private final String servletPath;
-    
+
     public WatermarkHandler(Configuration configuration, String servletPath) {
         this.watermarkTextConfiguration = configuration.getWatermarkTextConfiguration();
         this.watermarkIdField = configuration.getWatermarkIdField();
         this.servletPath = servletPath;
     }
 
-    public Optional<String> getWatermarkUrl(PhysicalElement page, StructElement doc, Optional<PageType> pageType) throws ConfigurationException, IndexUnreachableException, DAOException {
-        return getWatermarkUrl(Scale.MAX, pageType, Optional.ofNullable(page.getImageType()), getFooterIdIfExists(doc), getWatermarkTextIfExists(page));
-}
+    public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
+            throws ConfigurationException, IndexUnreachableException, DAOException {
+        return getWatermarkUrl(Scale.MAX, pageType, page.map(p -> p.getImageType()), doc.map(d -> getFooterIdIfExists(d).orElse(null)),
+                page.map(p -> getWatermarkTextIfExists(p).orElse(null)));
+    }
 
-    
     /**
      * Creates the watermark url for the given pageType, adding watermarkId for the current {@link ActiveDocumentBean#getTopDocument()} and
      * watermarkText for the current {@link PhysicalElement page} If the watermark height of the given pageType and image is 0, an empty optional is
@@ -80,8 +84,8 @@ public class WatermarkHandler {
      * @throws DAOException
      * @throws ConfigurationException
      */
-    public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId, Optional<String> watermarkText)
-            throws IndexUnreachableException, DAOException, ConfigurationException {
+    public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId,
+            Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ConfigurationException {
 
         int footerHeight = DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), imageType.orElse(null));
         if (footerHeight > 0) {
@@ -89,11 +93,7 @@ public class WatermarkHandler {
 
             StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
 
-            urlBuilder.append("footer/full/")
-                    .append(scale.toString())
-                    .append("/0/default.")
-                    .append(format)
-                    .append("?");
+            urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format).append("?");
 
             watermarkId.ifPresent(footerId -> urlBuilder.append("watermarkId=").append(footerId).append("&"));
             watermarkText.ifPresent(text -> urlBuilder.append("watermarkText=").append(text));
@@ -103,7 +103,7 @@ public class WatermarkHandler {
             return Optional.empty();
         }
     }
-    
+
     /**
      * Optionally returns the watermark text for the given page. If the text is empty or none is configures, an empty optional is returned
      * 
@@ -118,9 +118,7 @@ public class WatermarkHandler {
                     String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                     try {
                         SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
-                                new StringBuilder(SolrConstants.PI).append(":").append(page.getPi()).toString(),
-                                SolrSearchIndex.MAX_HITS,
-                                null,
+                                new StringBuilder(SolrConstants.PI).append(":").append(page.getPi()).toString(), SolrSearchIndex.MAX_HITS, null,
                                 Collections.singletonList(field));
                         if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                             // logger.debug(field + ":" + res.get(0).getFirstValue(field));
@@ -160,7 +158,7 @@ public class WatermarkHandler {
 
         return Optional.empty();
     }
-    
+
     /**
      * Optionally returns the watermark text for the given pi. If the text is empty or none is configures, an empty optional is returned
      * 
@@ -175,9 +173,7 @@ public class WatermarkHandler {
                     String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                     try {
                         SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
-                                new StringBuilder(SolrConstants.PI).append(":").append(doc.getPi()).toString(),
-                                SolrSearchIndex.MAX_HITS,
-                                null,
+                                new StringBuilder(SolrConstants.PI).append(":").append(doc.getPi()).toString(), SolrSearchIndex.MAX_HITS, null,
                                 Collections.singletonList(field));
                         if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                             // logger.debug(field + ":" + res.get(0).getFirstValue(field));
@@ -192,7 +188,7 @@ public class WatermarkHandler {
                     }
                 } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
                     String urn = doc.getMetadataValue(SolrConstants.URN);
-                    if(StringUtils.isBlank(urn)) {
+                    if (StringUtils.isBlank(urn)) {
                         try {
                             urn = doc.getTopStruct().getMetadataValue(SolrConstants.URN);
                         } catch (PresentationException | IndexUnreachableException e) {
@@ -225,7 +221,7 @@ public class WatermarkHandler {
 
         return Optional.empty();
     }
-    
+
     public Optional<String> getFooterIdIfExists(StructElement topDocument) {
         String footerId = null;
         if (watermarkIdField != null && topDocument != null) {

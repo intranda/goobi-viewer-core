@@ -31,10 +31,12 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 
 /**
  * Delivers Thumbnail urls for pages and StructElements
@@ -140,7 +142,11 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(PhysicalElement page, int size) {
         String path = getImagePath(page);
-        return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg", thumbCompression);
+        if(path.contains(staticImagesPath)) {
+            return path;
+        } else {                  
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg", thumbCompression);
+        }
     }
 
     /**
@@ -192,8 +198,12 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(StructElement doc, int size) {
         String thumbnailUrl = getImagePath(doc);
-        return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg",
-                thumbCompression);
+        if(thumbnailUrl.contains(staticImagesPath)) {
+            return thumbnailUrl;
+        } else {   
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg",            
+                    thumbCompression);
+        }
     }
 
     /**
@@ -355,5 +365,39 @@ public class ThumbnailHandler {
             mimeType = getFilename(structElement).map(filename -> ImageFileFormat.getImageFileFormatFromFileExtension(filename).getMimeType());
         }
         return mimeType;
+    }
+
+    /**
+     * @param item
+     * @param width
+     * @param height
+     * @return 
+     */
+    public String getThumbnailUrl(CMSMediaItem item, String width, String height) {
+        String imagePath = item.getImageURI();
+        String size = getSize(width, height);
+        String format = "jpg";
+        if(imagePath.toLowerCase().endsWith(".png")) {
+            format = "png";
+        }
+        return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format,
+                thumbCompression);
+    }
+
+    /**
+     * @param width
+     * @param height
+     * @return
+     */
+    public String getSize(String width, String height) {
+        String size = "max";
+        if((StringUtils.isBlank(height) || "0".equals(height)) && StringUtils.isNotBlank(width) && !"0".equals(width)) {
+            size = width + ",";
+        } else if((StringUtils.isBlank(width) || "0".equals(width)) && StringUtils.isNotBlank(height) && !"0".equals(height)) {
+            size = "," + height;
+        } else if(StringUtils.isNoneBlank(width, height) && !"0".equals(width) && !"0".equals(height)) {
+            size = "!" + width + "," + height;
+        }
+        return size;
     }
 }

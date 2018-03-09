@@ -64,7 +64,11 @@ public class IIIFUrlHandler {
      * @return
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
-        if (ImageHandler.isExternalUrl(fileUrl)) {
+        if(ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
+            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
+            sb.append("image/-/").append(Helper.encodeUrl(fileUrl)).append("/");
+            return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
+        } else if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {
                 return getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
             } else if (ImageHandler.isImageUrl(fileUrl, false)) {
@@ -85,10 +89,6 @@ public class IIIFUrlHandler {
                 sb.append("default.").append(format);
                 return sb.toString();
             }
-        } else if(ImageHandler.isInternalUrl(fileUrl)) {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append("image/-/").append(Helper.encodeUrl(fileUrl)).append("/");
-            return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
         } else {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
             sb.append("image/").append(docStructIdentifier).append("/").append(fileUrl).append("/");
@@ -111,8 +111,14 @@ public class IIIFUrlHandler {
         if (StringUtils.isNotBlank(baseUrl) && !baseUrl.endsWith("/")) {
             baseUrl += "/";
         }
-        String url = baseUrl + IIIF_IMAGE_REQUEST_TEMPLATE;
-        return getModifiedIIIFFUrl(url, region, size, rotation, quality, format);
+        StringBuilder url = new StringBuilder(baseUrl);
+        url.append(region).append("/");
+        url.append(size).append("/");
+        url.append(rotation).append("/");
+        url.append(quality).append(".");
+        url.append(format).append("/");
+        
+        return url.toString();
     }
 
     /**
@@ -125,8 +131,14 @@ public class IIIFUrlHandler {
         if (StringUtils.isNotBlank(baseUrl) && !baseUrl.endsWith("/")) {
             baseUrl += "/";
         }
-        String url = baseUrl + IIIF_IMAGE_REQUEST_TEMPLATE;
-        return getModifiedIIIFFUrl(url, region, size, rotation, quality, format);
+        StringBuilder url = new StringBuilder(baseUrl);
+        url.append(region).append("/");
+        url.append(size).append("/");
+        url.append(rotation.getRotation()).append("/");
+        url.append(quality.getLabel()).append(".");
+        url.append(format.getFileExtension()).append("/");
+        
+        return url.toString();
     }
 
     /**

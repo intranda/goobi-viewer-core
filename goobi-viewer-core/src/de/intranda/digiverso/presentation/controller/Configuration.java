@@ -67,14 +67,11 @@ public final class Configuration extends AbstractConfiguration {
         try {
             config = new XMLConfiguration(configFilePath);
             config.setReloadingStrategy(new FileChangedReloadingStrategy());
-            if (!config.getFile()
-                    .exists()) {
-                logger.error("Default configuration file not found: {}", config.getFile()
-                        .getAbsolutePath());
+            if (!config.getFile().exists()) {
+                logger.error("Default configuration file not found: {}", config.getFile().getAbsolutePath());
                 throw new ConfigurationException();
             }
-            logger.info("Default configuration file '{}' loaded.", config.getFile()
-                    .getAbsolutePath());
+            logger.info("Default configuration file '{}' loaded.", config.getFile().getAbsolutePath());
         } catch (ConfigurationException e) {
             logger.error("ConfigurationException", e);
             config = new XMLConfiguration();
@@ -135,8 +132,7 @@ public final class Configuration extends AbstractConfiguration {
                         if (line.charAt(0) != '#') {
                             int pipeIndex = line.indexOf('|');
                             if (pipeIndex != -1) {
-                                line = line.substring(0, pipeIndex)
-                                        .trim();
+                                line = line.substring(0, pipeIndex).trim();
                             }
                             if (!line.isEmpty() && Character.getNumericValue(line.charAt(0)) != -1) {
                                 ret.add(line);
@@ -165,13 +161,9 @@ public final class Configuration extends AbstractConfiguration {
     public boolean reloadingRequired() {
         boolean ret = false;
         if (configLocal != null) {
-            ret = configLocal.getReloadingStrategy()
-                    .reloadingRequired()
-                    || config.getReloadingStrategy()
-                            .reloadingRequired();
+            ret = configLocal.getReloadingStrategy().reloadingRequired() || config.getReloadingStrategy().reloadingRequired();
         }
-        ret = config.getReloadingStrategy()
-                .reloadingRequired();
+        ret = config.getReloadingStrategy().reloadingRequired();
         return ret;
     }
 
@@ -185,8 +177,7 @@ public final class Configuration extends AbstractConfiguration {
         if (!configLocalPath.endsWith("/")) {
             configLocalPath += "/";
         }
-        String os = System.getProperty("os.name")
-                .toLowerCase();
+        String os = System.getProperty("os.name").toLowerCase();
         if (os.indexOf("win") >= 0 && configLocalPath.startsWith("/opt/")) {
             configLocalPath = configLocalPath.replace("/opt", "C:");
         }
@@ -359,10 +350,8 @@ public final class Configuration extends AbstractConfiguration {
                         String key = sub2.getString("[@key]");
                         String overrideMasterValue = sub2.getString("[@value]");
                         String defaultValue = sub2.getString("[@defaultValue]");
-                        String prefix = sub2.getString("[@prefix]", "")
-                                .replace("_SPACE_", " ");
-                        String suffix = sub2.getString("[@suffix]", "")
-                                .replace("_SPACE_", " ");
+                        String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
+                        String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                         boolean addUrl = sub2.getBoolean("[@url]", false);
                         boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
                         paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
@@ -393,8 +382,7 @@ public final class Configuration extends AbstractConfiguration {
 
             for (Iterator it = templateList.iterator(); it.hasNext();) {
                 HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]")
-                        .equals(template)) {
+                if (subElement.getString("[@name]").equals(template)) {
                     usingTemplate = subElement;
                     break;
                 } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
@@ -431,8 +419,7 @@ public final class Configuration extends AbstractConfiguration {
 
             for (Iterator it = templateList.iterator(); it.hasNext();) {
                 HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]")
-                        .equals(template)) {
+                if (subElement.getString("[@name]").equals(template)) {
                     usingTemplate = subElement;
                     break;
                 } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
@@ -466,8 +453,7 @@ public final class Configuration extends AbstractConfiguration {
         if (templateList != null) {
             for (Iterator it = templateList.iterator(); it.hasNext();) {
                 HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]")
-                        .equals(template)) {
+                if (subElement.getString("[@name]").equals(template)) {
                     usingTemplate = subElement;
                     break;
                 } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
@@ -504,8 +490,7 @@ public final class Configuration extends AbstractConfiguration {
 
             for (Iterator it = templateList.iterator(); it.hasNext();) {
                 HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@name]")
-                        .equals(template)) {
+                if (subElement.getString("[@name]").equals(template)) {
                     usingTemplate = subElement;
                     break;
                 } else if ("_DEFAULT".equals(subElement.getString("[@name]"))) {
@@ -567,10 +552,8 @@ public final class Configuration extends AbstractConfiguration {
                             String key = sub2.getString("[@key]");
                             String overrideMasterValue = sub2.getString("[@value]");
                             String defaultValue = sub2.getString("[@defaultValue]");
-                            String prefix = sub2.getString("[@prefix]", "")
-                                    .replace("_SPACE_", " ");
-                            String suffix = sub2.getString("[@suffix]", "")
-                                    .replace("_SPACE_", " ");
+                            String prefix = sub2.getString("[@prefix]", "").replace("_SPACE_", " ");
+                            String suffix = sub2.getString("[@suffix]", "").replace("_SPACE_", " ");
                             boolean addUrl = sub2.getBoolean("[@url]", false);
                             boolean dontUseTopstructValue = sub2.getBoolean("[@dontUseTopstructValue]", false);
                             paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
@@ -601,12 +584,9 @@ public final class Configuration extends AbstractConfiguration {
                     try {
                         String label = eleMetadata.getAttributeValue("label");
                         String masterValue = eleMetadata.getAttributeValue("value");
-                        boolean group = eleMetadata.getAttribute("group") != null ? eleMetadata.getAttribute("group")
-                                .getBooleanValue() : false;
-                        int number = eleMetadata.getAttribute("number") != null ? eleMetadata.getAttribute("number")
-                                .getIntValue() : -1;
-                        int type = eleMetadata.getAttribute("type") != null ? eleMetadata.getAttribute("type")
-                                .getIntValue() : 0;
+                        boolean group = eleMetadata.getAttribute("group") != null ? eleMetadata.getAttribute("group").getBooleanValue() : false;
+                        int number = eleMetadata.getAttribute("number") != null ? eleMetadata.getAttribute("number").getIntValue() : -1;
+                        int type = eleMetadata.getAttribute("type") != null ? eleMetadata.getAttribute("type").getIntValue() : 0;
                         List<Element> eleListParam = eleMetadata.getChildren("param", null);
                         List<MetadataParameter> paramList = null;
                         if (eleListParam != null) {
@@ -618,15 +598,13 @@ public final class Configuration extends AbstractConfiguration {
                                 String key = eleParam.getAttributeValue("key");
                                 String overrideMasterValue = eleParam.getAttributeValue("value");
                                 String defaultValue = eleParam.getAttributeValue("defaultValue");
-                                String prefix = eleParam.getAttribute("prefix") != null ? eleParam.getAttributeValue("prefix")
-                                        .replace("_SPACE_", " ") : "";
-                                String suffix = eleParam.getAttribute("suffix") != null ? eleParam.getAttributeValue("suffix")
-                                        .replace("_SPACE_", " ") : "";
-                                boolean addUrl = eleParam.getAttribute("url") != null ? eleParam.getAttribute("url")
-                                        .getBooleanValue() : false;
-                                boolean dontUseTopstructValue =
-                                        eleParam.getAttribute("dontUseTopstructValue") != null ? eleParam.getAttribute("dontUseTopstructValue")
-                                                .getBooleanValue() : false;
+                                String prefix =
+                                        eleParam.getAttribute("prefix") != null ? eleParam.getAttributeValue("prefix").replace("_SPACE_", " ") : "";
+                                String suffix =
+                                        eleParam.getAttribute("suffix") != null ? eleParam.getAttributeValue("suffix").replace("_SPACE_", " ") : "";
+                                boolean addUrl = eleParam.getAttribute("url") != null ? eleParam.getAttribute("url").getBooleanValue() : false;
+                                boolean dontUseTopstructValue = eleParam.getAttribute("dontUseTopstructValue") != null
+                                        ? eleParam.getAttribute("dontUseTopstructValue").getBooleanValue() : false;
                                 paramList.add(new MetadataParameter(MetadataParameterType.getByString(fieldType), source, key, overrideMasterValue,
                                         defaultValue, prefix, suffix, addUrl, dontUseTopstructValue));
                             }
@@ -729,8 +707,7 @@ public final class Configuration extends AbstractConfiguration {
         if (collectionList != null) {
             for (Iterator it = collectionList.iterator(); it.hasNext();) {
                 HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString("[@field]")
-                        .equals(field)) {
+                if (subElement.getString("[@field]").equals(field)) {
                     return subElement;
 
                 }
@@ -900,22 +877,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getIiifUrl() {
-        String urlString = getLocalString("urls.iiif", "http://localhost:8080/viewer/iiif/");
-        if (!urlString.endsWith("/")) {
-            urlString = urlString + "/";
-        }
-        if (!urlString.endsWith("iiif/")) {
-            urlString = urlString + "iiif/";
-        }
-        return urlString;
-    }
-
-    /**
      *
      * @return
      * @should return correct value
@@ -937,7 +898,26 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getContentRestApiUrl() {
-        String urlString = getLocalString("urls.contentRestApi", "http://localhost:8080/viewer/rest/content/");
+        return getRestApiUrl() + "content/";
+
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getIiifUrl() {
+        return getRestApiUrl() + "iiif/";
+    }
+
+    /**
+     * @return
+     */
+    public String getRestApiUrl() {
+        String urlString = getLocalString("urls.rest",
+                getLocalString("urls.contentRestApi", getLocalString("urls.iiif", "http://localhost:8080/viewer/rest/").replace("/iiif", ""))
+                        .replace("/content", ""));
         if (!urlString.endsWith("/")) {
             urlString += "/";
         }
@@ -1084,8 +1064,7 @@ public final class Configuration extends AbstractConfiguration {
 
             for (Iterator it = fieldList.iterator(); it.hasNext();) {
                 HierarchicalConfiguration subElement = (HierarchicalConfiguration) it.next();
-                if (subElement.getString(".")
-                        .equals(field)) {
+                if (subElement.getString(".").equals(field)) {
                     return subElement.getBoolean("[@hierarchical]", false);
                 }
             }
@@ -1683,12 +1662,8 @@ public final class Configuration extends AbstractConfiguration {
             List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
             if (drillDownFields != null && !drillDownFields.isEmpty()) {
                 for (HierarchicalConfiguration fieldConfig : drillDownFields) {
-                    if (fieldConfig.getRootNode()
-                            .getValue()
-                            .equals(field)
-                            || fieldConfig.getRootNode()
-                                    .getValue()
-                                    .equals(field + SolrConstants._UNTOKENIZED)) {
+                    if (fieldConfig.getRootNode().getValue().equals(field)
+                            || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
                         try {
                             return fieldConfig.getInt("[@initialElementNumber]");
                         } catch (ConversionException | NoSuchElementException e) {
@@ -1700,12 +1675,8 @@ public final class Configuration extends AbstractConfiguration {
             drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
             if (drillDownFields != null && !drillDownFields.isEmpty()) {
                 for (HierarchicalConfiguration fieldConfig : drillDownFields) {
-                    if (fieldConfig.getRootNode()
-                            .getValue()
-                            .equals(field)
-                            || fieldConfig.getRootNode()
-                                    .getValue()
-                                    .equals(field + SolrConstants._UNTOKENIZED)) {
+                    if (fieldConfig.getRootNode().getValue().equals(field)
+                            || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
                         try {
                             return fieldConfig.getInt("[@initialElementNumber]");
                         } catch (ConversionException | NoSuchElementException e) {
@@ -1733,12 +1704,8 @@ public final class Configuration extends AbstractConfiguration {
         List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
         if (drillDownFields != null && !drillDownFields.isEmpty()) {
             for (HierarchicalConfiguration fieldConfig : drillDownFields) {
-                if (fieldConfig.getRootNode()
-                        .getValue()
-                        .equals(field)
-                        || fieldConfig.getRootNode()
-                                .getValue()
-                                .equals(field + SolrConstants._UNTOKENIZED)) {
+                if (fieldConfig.getRootNode().getValue().equals(field)
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
                     try {
                         String sortOrder = fieldConfig.getString("[@sortOrder]");
                         if (sortOrder != null) {
@@ -1753,12 +1720,8 @@ public final class Configuration extends AbstractConfiguration {
         drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
         if (drillDownFields != null && !drillDownFields.isEmpty()) {
             for (HierarchicalConfiguration fieldConfig : drillDownFields) {
-                if (fieldConfig.getRootNode()
-                        .getValue()
-                        .equals(field)
-                        || fieldConfig.getRootNode()
-                                .getValue()
-                                .equals(field + SolrConstants._UNTOKENIZED)) {
+                if (fieldConfig.getRootNode().getValue().equals(field)
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
                     try {
                         String sortOrder = fieldConfig.getString("[@sortOrder]");
                         if (sortOrder != null) {
@@ -1806,8 +1769,8 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getUrnResolverUrl() {
-        return getLocalString("urls.urnResolver", new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resolver?urn=")
-                .toString());
+        return getLocalString("urls.urnResolver",
+                new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resolver?urn=").toString());
     }
 
     /**
@@ -2129,8 +2092,7 @@ public final class Configuration extends AbstractConfiguration {
 
             if (imageType != null && imageType.getFormat() != null) {
                 List<Object> mimeTypes = subConfig.getList("useFor.mimeType");
-                if (mimeTypes.isEmpty() || mimeTypes.contains(imageType.getFormat()
-                        .getMimeType())) {
+                if (mimeTypes.isEmpty() || mimeTypes.contains(imageType.getFormat().getMimeType())) {
                     //match
                 } else {
                     continue;
@@ -3101,8 +3063,9 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDoublePageModeEnabled() {
         return getLocalBoolean("viewer.doublePageMode.enabled", false);
     }
-    
+
     public List<String> getRestrictedImageUrls() {
         return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.EMPTY_LIST);
     }
+
 }
