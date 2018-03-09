@@ -56,6 +56,13 @@ public class ImageHandler {
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
 
+        if(page == null) {
+            throw new NullPointerException("Cannot get image url: PhysicalElement is null");
+        }
+        if(pageType == null) {
+            throw new NullPointerException("Cannot get image url: PageType is null");
+        }
+        
         String pageName;
         switch (pageType) {
             case viewFullscreen:
@@ -79,7 +86,7 @@ public class ImageHandler {
             return page.getFilepath();
         } else {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append(pageName).append("/-/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
+            sb.append(pageName).append("/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
             return sb.toString();
         }
     }

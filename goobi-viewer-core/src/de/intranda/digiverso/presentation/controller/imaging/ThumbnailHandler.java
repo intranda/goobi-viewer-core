@@ -16,22 +16,24 @@
 package de.intranda.digiverso.presentation.controller.imaging;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 
 /**
@@ -41,32 +43,51 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
  *
  */
 public class ThumbnailHandler {
-    
+
     private static final String ANCHOR_THUMB = "multivolume_thumbnail.jpg";
     private static final String BORN_DIGITAL_THUMB = "thumbnail_epub.jpg";
-    
+    private static final String PERSON_THUMB = "thumbnail_person.jpg";
+    private static final String EVENT_THUMB = "thumbnail_event.jpg";
+    private static final String VIDEO_THUMB = "thumbnail_video.jpg";
+    private static final String AUDIO_THUMB = "thumbnail_audio.jpg";
+    private static final String GROUP_THUMB = "thumbnail_group.jpg";
+
     private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
     private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
+
+    public static final String[] REQUIRED_SOLR_FIELDS = new String[] { SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
+            SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
 
     private final int thumbWidth;
     private final int thumbHeight;
     private final int thumbCompression;
     private final String anchorThumbnailMode;
-    private final URI anchorThumnailReplacement;
-    private final URI bornDigitalThumnailReplacement;
-    
+    private final String staticImagesPath;
+
     private static final Logger logger = LoggerFactory.getLogger(ThumbnailHandler.class);
-    
+
     private final IIIFUrlHandler iiifUrlHandler;
-    
+
     public ThumbnailHandler(IIIFUrlHandler iiifUrlHandler, Configuration configuration, String staticImagesPath) {
         this.iiifUrlHandler = iiifUrlHandler;
         thumbWidth = configuration.getThumbnailsWidth();
         thumbHeight = configuration.getThumbnailsHeight();
         thumbCompression = configuration.getThumbnailsCompression();
         anchorThumbnailMode = configuration.getAnchorThumbnailMode();
-        anchorThumnailReplacement = Paths.get(staticImagesPath, ANCHOR_THUMB).toUri();
-        bornDigitalThumnailReplacement = Paths.get(staticImagesPath, BORN_DIGITAL_THUMB).toUri();
+        this.staticImagesPath = staticImagesPath;
+    }
+
+    private URI getThumbnailPath(String filename) {
+        URI uri;
+        try {
+            uri = new URI(staticImagesPath);
+            uri = uri.resolve(filename);
+            return uri;
+        } catch (URISyntaxException e) {
+           logger.error(e.toString(), e);
+        }
+        return null;
+//        return Paths.get(staticImagesPath, filename).toUri();
     }
 
     /**
@@ -79,7 +100,7 @@ public class ThumbnailHandler {
         return getThumbnailUrl(page, thumbWidth, thumbHeight);
 
     }
-    
+
     /**
      * Returns a link to an image representating the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
@@ -89,12 +110,17 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         String path = getImagePath(page);
-        return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg", thumbCompression);
+        if(path.contains(staticImagesPath)) {
+            return path;
+        } else {            
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
+                    thumbCompression);
+        }
     }
-    
+
     /**
-     * returns a link the an image representing the given page. Its size depends on configuration. The image is always square and contains as much of the actual image
-     * as is possible to fit into a square - the delivered square is always centered within the full image
+     * returns a link the an image representing the given page. Its size depends on configuration. The image is always square and contains as much of
+     * the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param page
      * @param size
@@ -103,7 +129,7 @@ public class ThumbnailHandler {
     public String getSquareThumbnailUrl(PhysicalElement page) {
         return getSquareThumbnailUrl(page, thumbWidth);
     }
-    
+
     /**
      * returns a link the an image representing the given page of the given size. The image is always square and contains as much of the actual image
      * as is possible to fit into a square - the delivered square is always centered within the full image
@@ -117,9 +143,6 @@ public class ThumbnailHandler {
         return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg", thumbCompression);
     }
 
-
-    
-    
     /**
      * Returns a link to a small image representating the given document. The size depends on viewer configuration
      * 
@@ -134,18 +157,22 @@ public class ThumbnailHandler {
      * Returns a link to an image representating the given document of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
      * 
-     * @param doc   Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
+     * @param doc Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
      * @return
      */
     public String getThumbnailUrl(StructElement doc, int width, int height) {
         String thumbnailUrl = getImagePath(doc);
-        return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg", thumbCompression);
+        if(thumbnailUrl.contains(staticImagesPath)) {
+            return thumbnailUrl;
+        } else {       
+        return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
+                thumbCompression);
+        }
     }
 
-    
     /**
-     * returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much of the actual image
-     * as is possible to fit into a square - the delivered square is always centered within the full image
+     * returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
+     * of the actual image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param page
      * @param size
@@ -156,16 +183,17 @@ public class ThumbnailHandler {
     }
 
     /**
-     * returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual image
-     * as is possible to fit into a square - the delivered square is always centered within the full image
+     * returns a link the an image representing the given document of the given size. The image is always square and contains as much of the actual
+     * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
-     * @param doc   Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
+     * @param doc Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
      * @param size
      * @return
      */
     public String getSquareThumbnailUrl(StructElement doc, int size) {
-         String thumbnailUrl = getImagePath(doc);
-        return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg", thumbCompression);
+        String thumbnailUrl = getImagePath(doc);
+        return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg",
+                thumbCompression);
     }
 
     /**
@@ -176,68 +204,156 @@ public class ThumbnailHandler {
      */
     private String getFieldValue(StructElement doc, String field) {
         String imagePath = doc.getMetadataValue(field);
-        try {            
-            if(StringUtils.isBlank(imagePath) && !doc.isWork()) {
-                if(doc.isAnchor()) {
+        try {
+            if (StringUtils.isBlank(imagePath) && !doc.isWork()) {
+                if (doc.isAnchor()) {
                     imagePath = doc.getFirstVolumeFieldValue(field);
                 } else {
                     imagePath = doc.getTopStruct().getMetadataValue(field);
                 }
             }
-        } catch(IndexUnreachableException | PresentationException e) {
+        } catch (IndexUnreachableException | PresentationException e) {
             logger.warn(e.toString());
         }
         return imagePath;
     }
-    
+
     /**
      * @param page
      * @return
      */
     private String getImagePath(PhysicalElement page) {
-        String path = page.getFilepath();
-        if(PhysicalElement.MIME_TYPE_APPLICATION.equals(page.getMimeType())) {
-            path = bornDigitalThumnailReplacement.toString();
+
+        String thumbnailUrl = null;
+
+        String mimeType = page.getMimeType();
+        switch (mimeType) {
+            case "image":
+            case "image/png":
+            case "image/jpg":
+            case "image/tiff":
+            case "image/jp2":
+                thumbnailUrl = page.getFilepath();
+                break;
+            case PhysicalElement.MIME_TYPE_VIDEO:
+            case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
+                thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                break;
+            case PhysicalElement.MIME_TYPE_AUDIO:
+                thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                break;
+            case PhysicalElement.MIME_TYPE_APPLICATION:
+            case "application/pdf":
+                thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
         }
-        return path;
+        return thumbnailUrl;
     }
-    
 
     /**
-     * @param doc   Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
-     * @return  The representative thumbnail url for the given doc, or a replacement image url if no
-     * representative thumbnail url is applicable (born digital material and - depending on configuration - anchors)
+     * @param doc Needs to have the fields {@link SolrConstants.MIMETYPE} and {@link SolrConstants.THUMBNAIL}
+     * @return The representative thumbnail url for the given doc, or a replacement image url if no representative thumbnail url is applicable (born
+     *         digital material and - depending on configuration - anchors)
      */
     private String getImagePath(StructElement doc) {
-        String thumbnailUrl;
-        if(PhysicalElement.MIME_TYPE_APPLICATION.equals(getFieldValue(doc, SolrConstants.MIMETYPE))) {
-            thumbnailUrl = bornDigitalThumnailReplacement.toString();
-        } else if(doc.isAnchor() && ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
-            thumbnailUrl = anchorThumnailReplacement.toString();
-        } else {            
-            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
-            if(StringUtils.isBlank(thumbnailUrl) || !ImageHandler.isImageUrl(thumbnailUrl, false)) {
-                thumbnailUrl = bornDigitalThumnailReplacement.toString();
+
+        String thumbnailUrl = null;
+
+        if (doc.isAnchor()) {
+            if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
+                thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
+            } else if(ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(this.anchorThumbnailMode)) {
+                try {
+                    thumbnailUrl = getImagePath(doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS)));
+                } catch (PresentationException | IndexUnreachableException e) {
+                    logger.error("Unable to retrieve first volume of " + doc + "from index", e);
+                }
+            }
+        } else {
+            DocType docType = getDocType(doc).orElse(DocType.DOCSTRCT);
+            switch (docType) {
+                case EVENT:
+                    thumbnailUrl = getThumbnailPath(EVENT_THUMB).toString();
+                    break;
+                case GROUP:
+                    thumbnailUrl = getThumbnailPath(GROUP_THUMB).toString();
+                    break;
+                case METADATA:
+                    MetadataGroupType metadataGroupType = getMetadataGroupType(doc).orElse(MetadataGroupType.SUBJECT);
+                    switch (metadataGroupType) {
+                        case PERSON:
+                            thumbnailUrl = getThumbnailPath(PERSON_THUMB).toString();
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case DOCSTRCT:
+                case PAGE:
+                default:
+                    String mimeType = getMimeType(doc).orElse("unknown");
+                    switch (mimeType) {
+                        case "image":
+                        case "image/png":
+                        case "image/jpg":
+                        case "image/tiff":
+                        case "image/jp2":
+                            thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
+                            break;
+                        case PhysicalElement.MIME_TYPE_VIDEO:
+                        case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
+                            thumbnailUrl = getThumbnailPath(VIDEO_THUMB).toString();
+                            break;
+                        case PhysicalElement.MIME_TYPE_AUDIO:
+                            thumbnailUrl = getThumbnailPath(AUDIO_THUMB).toString();
+                            break;
+                        case PhysicalElement.MIME_TYPE_APPLICATION:
+                        case "application/pdf":
+                            thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                    }
             }
         }
         return thumbnailUrl;
     }
-    
-    /**
-     * Returns a newly created thumbnail handler. The handler creation requires an existing jsf context 
-     */
-    public static ThumbnailHandler create() {
-        String theme = DataManager.getInstance().getConfiguration().getTheme();
-        ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), BeanUtils.getServletImagesPathFromJsfContext(theme));
-        return thumbs;    
+
+    private Optional<DocType> getDocType(StructElement structElement) {
+        DocType docType = DocType.getByName(structElement.getMetadataValue(SolrConstants.DOCTYPE));
+        return Optional.ofNullable(docType);
     }
-    
-    /**
-     * Returns a newly created thumbnail handler, using the given request to determine static image paths
-     */
-    public static ThumbnailHandler create(HttpServletRequest request) {
-        String theme = DataManager.getInstance().getConfiguration().getTheme();
-        ThumbnailHandler thumbs = new ThumbnailHandler(new IIIFUrlHandler(), DataManager.getInstance().getConfiguration(), BeanUtils.getServletImagesPathFromRequest(request, theme));
-        return thumbs;    
+
+    private Optional<MetadataGroupType> getMetadataGroupType(StructElement structElement) {
+        MetadataGroupType type = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
+        return Optional.ofNullable(type);
+    }
+
+    private Optional<String> getFilename(StructElement structElement) {
+        String filename = structElement.getMetadataValue(SolrConstants.FILENAME);
+        if (StringUtils.isEmpty(filename)) {
+            filename = structElement.getMetadataValue(SolrConstants.THUMBNAIL);
+        }
+        if (StringUtils.isEmpty(filename)) {
+            try {
+                filename = structElement.getFirstPageFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.warn("Unable to retrieve first page of structElement from index");
+            }
+        }
+        return Optional.ofNullable(filename).filter(name -> StringUtils.isNotBlank(name));
+    }
+
+    private Optional<String> getMimeType(StructElement structElement) {
+        Optional<String> mimeType = Optional.empty();
+        if (structElement.isAnchor()) {
+            try {
+                mimeType = Optional.ofNullable(structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE));
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.warn("Unable to retrieve first page of structElement from index");
+            }
+        } else {
+            mimeType = Optional.ofNullable(structElement.getMetadataValue(SolrConstants.MIMETYPE));
+        }
+        if (!mimeType.isPresent()) {
+            mimeType = getFilename(structElement).map(filename -> ImageFileFormat.getImageFileFormatFromFileExtension(filename).getMimeType());
+        }
+        return mimeType;
     }
 }

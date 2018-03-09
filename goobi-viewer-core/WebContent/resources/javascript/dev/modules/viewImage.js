@@ -225,6 +225,7 @@
             if ( _defaults.image.baseFooterUrl && _defaults.global.footerHeight > 0 ) {                
                 _footerImage = new Image();
                 _footerImage.src = _defaults.image.baseFooterUrl.replace( "{width}", Math.round( _container.width() ) ).replace( "{height}", Math.round( _defaults.global.footerHeight ) );                
+                _footerImage.src = _defaults.image.baseFooterUrl.replace( "/full/max/", "/full/!" + Math.round( _container.width() ) + "," +  Math.round( _defaults.global.footerHeight ) + "/");                
                 _footerImage.onload = function() {
                     if ( _debug ) {
                         console.log( "loading footer image ", _footerImage );

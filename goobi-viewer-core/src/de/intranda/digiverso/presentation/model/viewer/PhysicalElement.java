@@ -49,6 +49,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
+import de.intranda.digiverso.presentation.controller.imaging.PdfHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -271,15 +272,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * 
-     * @return  the url to the media content of the page, for example the 
+     * @return the url to the media content of the page, for example the
      * @throws IndexUnreachableException
      */
     public String getUrl() throws IndexUnreachableException {
 
-
         switch (mimeType) {
-            case MIME_TYPE_IMAGE: 
-                return new ImageHandler(DataManager.getInstance().getConfiguration()).getImageUrl(this);
+            case MIME_TYPE_IMAGE:
+                return getImageUrl();
             case MIME_TYPE_VIDEO:
             case MIME_TYPE_AUDIO: {
                 StringBuilder url = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
@@ -290,24 +290,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 return url.toString();
             }
             case MIME_TYPE_APPLICATION:
-            //                return getFileServletUrl(localFilename, "media");
-            {
-                String url = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-                if (StringUtils.isEmpty(url)) {
-                    url = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/").toString();
-                }
-                if (url.endsWith("/")) {
-                    url = url.substring(0, url.length() - 1);
-                }
-                StringBuilder urlBuilder = new StringBuilder();
-                urlBuilder.append(url).append("?action=application&sourcepath=").append(pi).append("/").append(localFilename);
-                if (StringUtils.isNotEmpty(dataRepository)) {
-                    urlBuilder.append("&dataRepository=").append(dataRepository);
-                }
-                urlBuilder.append("&format=pdf");
+                //                return getFileServletUrl(localFilename, "media");
 
-                return urlBuilder.toString();
-            }
+                if (StringUtils.isEmpty(fileName)) {
+                    fileName = determineFileName(filePath);
+                }
+
+                String localFilename = fileName;
+
+                PdfHandler pdfHandler = BeanUtils.getImageDeliveryBean().getPdf();
+                return pdfHandler.getPdfUrl(pi, localFilename);
+
             case MIME_TYPE_SANDBOXED_HTML:
                 logger.trace(fileNames.toString());
                 if (fileNames.get("html-sandboxed") != null) {
@@ -329,9 +322,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                     String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
                     try {
                         SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
-                                new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(),
-                                SolrSearchIndex.MAX_HITS,
-                                null,
+                                new StringBuilder(SolrConstants.PI).append(":").append(pi).toString(), SolrSearchIndex.MAX_HITS, null,
                                 Collections.singletonList(field));
                         if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
                             // logger.debug(field + ":" + res.get(0).getFirstValue(field));
@@ -382,8 +373,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getThumbnailUrl(int width, int height) {
-            ThumbnailHandler thumbHandler = ThumbnailHandler.create();
-            return thumbHandler.getThumbnailUrl(this, width, height);
+        ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumb();
+        return thumbHandler.getThumbnailUrl(this, width, height);
     }
 
     public String getId() {
@@ -617,9 +608,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     String loadFullText() throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
         if (fullText == null && fulltextFileName != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(
-                    BeanUtils.getRequest(),
-                    fulltextFileName,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for full-text file {}", fulltextFileName);
                 throw new AccessDeniedException("fulltextAccessDenied");
@@ -697,9 +686,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public String loadAlto() throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(
-                    BeanUtils.getRequest(),
-                    altoFileName,
+            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
                     IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
                 logger.debug("Access denied for ALTO file {}", altoFileName);
                 throw new AccessDeniedException("fulltextAccessDenied");
@@ -803,7 +790,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public int getImageWidth() {
         return width;
     }
-
 
     /**
      * Returns the actual image height, if available. Otherwise the default height.
@@ -923,10 +909,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl(), RegionRequest.FULL,
-                Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
+        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl(), RegionRequest.FULL, Scale.MAX,
+                Rotation.NONE, Colortype.DEFAULT, format);
     }
-    
+
     public String getImageUrl(int size) {
         ImageFileFormat format = ImageFileFormat.JPG;
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
@@ -935,7 +921,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl(), RegionRequest.FULL,
                 new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
-    
+
     /**
      * Return the bare width as read from the index (0 if none available).
      *
@@ -1010,6 +996,14 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
 
         return false;
+    }
+    
+    public int getFooterHeight() throws ConfigurationException {
+        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType());
+    }
+    
+    public int getFooterHeight(String pageType) throws ConfigurationException {
+        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType());
     }
 
     public int getImageFooterHeight() {
@@ -1143,7 +1137,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public boolean hasIndividualSize() {
         return (width > 0 && height > 0);
     }
-
 
     /**
      * @return the altoText

@@ -37,6 +37,8 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
@@ -61,6 +63,11 @@ public class WatermarkHandler {
         this.servletPath = servletPath;
     }
 
+    public Optional<String> getWatermarkUrl(PhysicalElement page, StructElement doc, Optional<PageType> pageType) throws ConfigurationException, IndexUnreachableException, DAOException {
+        return getWatermarkUrl(Scale.MAX, pageType, Optional.ofNullable(page.getImageType()), getFooterIdIfExists(doc), getWatermarkTextIfExists(page));
+}
+
+    
     /**
      * Creates the watermark url for the given pageType, adding watermarkId for the current {@link ActiveDocumentBean#getTopDocument()} and
      * watermarkText for the current {@link PhysicalElement page} If the watermark height of the given pageType and image is 0, an empty optional is
@@ -73,26 +80,17 @@ public class WatermarkHandler {
      * @throws DAOException
      * @throws ConfigurationException
      */
-    public Optional<String> getWatermarkUrl(ImageInformation info, Optional<PageType> pageType, Optional<String> watermarkId, Optional<String> watermarkText)
+    public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId, Optional<String> watermarkText)
             throws IndexUnreachableException, DAOException, ConfigurationException {
 
-        int footerHeight = DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), ImageHandler.getImageType(info));
+        int footerHeight = DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), imageType.orElse(null));
         if (footerHeight > 0) {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 
-            Integer width = info.getSizes()
-                    .stream()
-                    .sorted((size1, size2) -> Integer.compare(size2.getWidth(), size2.getWidth()))
-                    .map(size -> size.getWidth())
-                    .findFirst()
-                    .orElse(info.getWidth());
-
             StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
 
-            urlBuilder.append("footer/full/!")
-                    .append(width)
-                    .append(",") //width
-                    .append(DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), ImageHandler.getImageType(info)))
+            urlBuilder.append("footer/full/")
+                    .append(scale.toString())
                     .append("/0/default.")
                     .append(format)
                     .append("?");

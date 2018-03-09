@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
@@ -31,22 +33,16 @@ public class PdfHandler {
 
     private final WatermarkHandler watermarkHandler;
     private final String iiifUrl;
-    
+
     public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
         this.watermarkHandler = watermarkHandler;
         this.iiifUrl = configuration.getIiifUrl();
     }
-    
-    /**
-     * Gets the url to the pdf of the given page
-     * 
-     * @param page
-     * @return
-     */
+
     public String getPdfUrl(PhysicalElement page, StructElement doc) {
 
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
-        
+
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("image")
                 .append("/")
@@ -60,12 +56,37 @@ public class PdfHandler {
                 .append(page.getOrder())
                 .append(".pdf");
 
-        this.watermarkHandler.getWatermarkTextIfExists(page).ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
-        this.watermarkHandler.getFooterIdIfExists(doc).ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
+        if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
+            sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
+        }
+
+        if (this.watermarkHandler != null) {
+            this.watermarkHandler.getWatermarkTextIfExists(page)
+                    .ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
+            this.watermarkHandler.getFooterIdIfExists(doc)
+                    .ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
+        }
 
         return sb.toString();
     }
-    
+
+    /**
+     * Returns an existing pdf file from the media folder
+     * 
+     * @param pi
+     * @param filename
+     * @return
+     */
+    public String getPdfUrl(String pi, String filename) {
+
+        final UrlParameterSeparator paramSep = new UrlParameterSeparator();
+
+        StringBuilder sb = new StringBuilder(this.iiifUrl);
+        sb.append("image").append("/").append(pi).append("/").append(filename).append("/").append("full/max/0/").append(filename);
+
+        return sb.toString();
+    }
+
     /**
      * Gets the url to the pdf for the given pi and divId
      * 
@@ -74,33 +95,48 @@ public class PdfHandler {
      *            generated
      * @param label The name for the output file (.pdf-extension excluded). If this is null or empty, the label will be generated from pi and divId
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     public String getPdfUrl(StructElement doc, String label) throws PresentationException, IndexUnreachableException {
 
         String pi = doc.getTopStruct().getPi();
-        String divId = doc.getLogid();
-        
+        String divId = doc.isWork() ? null : doc.getLogid();
+
+        return getPdfUrl(pi, Optional.ofNullable(divId), this.watermarkHandler.getFooterIdIfExists(doc),
+                this.watermarkHandler.getWatermarkTextIfExists(doc), Optional.ofNullable(label));
+    }
+
+    /**
+     * Returns the url to a PDF build from the mets file for the given {@code pi}
+     * 
+     * @param pi
+     * @param divId
+     * @param watermarkId
+     * @param watermarkText
+     * @param label
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getPdfUrl(String pi, Optional<String> divId, Optional<String> watermarkId, Optional<String> watermarkText, Optional<String> label) {
+
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
 
-        if (StringUtils.isBlank(label)) {
-            label = pi;
-            if (StringUtils.isNotBlank(divId)) {
-                label += "_" + divId;
-            }
-        }
-        label = label.replaceAll("[\\s]", "_");
-        label = label.replaceAll("[\\W]", "");
+        divId = divId.filter(id -> StringUtils.isNotBlank(id));
+        String filename = label.map(l -> l.replaceAll("[\\s]", "_"))
+                .map(l -> l.replaceAll("[\\W]", ""))
+                .map(l -> l.toLowerCase().endsWith(".pdf") ? l : (l + ".pdf"))
+                .orElse(pi + divId.map(id -> "_" + id).orElse("") + ".pdf");
+
 
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("pdf/mets/").append(pi).append(".xml").append("/");
+        divId.ifPresent(id -> sb.append(id).append("/"));
+        sb.append(filename);
 
-        if (StringUtils.isNotBlank(divId)) {
-            sb.append(divId).append("/");
-        }
-        this.watermarkHandler.getWatermarkTextIfExists(doc).ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
-        this.watermarkHandler.getFooterIdIfExists(doc).ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
+            watermarkText.ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
+            watermarkId.ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
 
         return sb.toString();
     }

@@ -9,7 +9,6 @@ describe("viewImage tests", function() {
 		config = {
 				    global: {
 				    	divId: "map",
-				        useTiles: true,
 				        footerHeight: 0,
 				        adaptContainerHeight: true,
 				        persistZoom: false,

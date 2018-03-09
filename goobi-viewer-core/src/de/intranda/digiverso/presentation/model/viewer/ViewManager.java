@@ -28,10 +28,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -51,10 +53,13 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
+import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -83,6 +88,8 @@ public class ViewManager implements Serializable {
     private static final long serialVersionUID = -7776362205876306849L;
 
     private static final Logger logger = LoggerFactory.getLogger(ViewManager.class);
+    
+    private ImageDeliveryBean imageDelivery;
 
     /** IDDOC of the top level document. */
     private long topDocumentIddoc;
@@ -127,7 +134,7 @@ public class ViewManager implements Serializable {
     private int lastPdfPage;
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
-
+    
     /**
      * 
      * @param topDocument
@@ -138,8 +145,9 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
+    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType, ImageDeliveryBean imageDelivery) 
             throws IndexUnreachableException, PresentationException {
+        this.imageDelivery = imageDelivery;
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -253,13 +261,11 @@ public class ViewManager implements Serializable {
      * @return
      */
     private String getImageInfo(PhysicalElement page) {
-        ImageHandler images = new ImageHandler(DataManager.getInstance().getConfiguration());
-        return images.getImageUrl(page);
+        return imageDelivery.getImage().getImageUrl(page);
     }
 
     private String getImageInfo(PhysicalElement page, PageType pageType) {
-        ImageHandler images = new ImageHandler(DataManager.getInstance().getConfiguration());
-        return images.getImageUrl(page, pageType);
+        return imageDelivery.getImage().getImageUrl(page, pageType);
     }
 
     public String getCurrentImageInfoFullscreen() throws IndexUnreachableException, DAOException {
@@ -280,16 +286,10 @@ public class ViewManager implements Serializable {
         return url;
     }
 
-    public String getWatermarkUrl() throws IndexUnreachableException, DAOException {
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-        String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
-        if (getCurrentPage() != null) {
-            return urlBuilder.append(
-                    "footer/full/!{width},{height}/0/default." + format + "?watermarkId=" + getFooterId() + getCurrentPage().getWatermarkText())
-                    .toString();
-        }
+    public String getWatermarkUrl() throws IndexUnreachableException, DAOException, ConfigurationException {
+        
+        return imageDelivery.getFooter().getWatermarkUrl(getCurrentPage(), getTopDocument(), Optional.empty()).orElse("");
 
-        return urlBuilder.append("footer/full/!{width},{height}/0/default." + format + "?watermarkId=" + getFooterId()).toString();
     }
 
 
@@ -420,15 +420,7 @@ public class ViewManager implements Serializable {
 
         if (getRepresentativePage() != null) {
             Dimension imageSize = new Dimension(representativePage.getImageWidth(), representativePage.getImageHeight());
-            ThumbnailManager 
-            
-            
-            int width = representativePage.getImageDefaultWidth(0);
-            if (representativePage.getMixWidth() > 0 && width > representativePage.getMixWidth()) {
-                width = representativePage.getMixWidth();
-            }
-            imageSize = scaleToWidth(imageSize, width);
-            return representativePage.getUrl(imageSize.width, imageSize.height, 0, true, false, null);
+            return imageDelivery.getThumb().getThumbnailUrl(representativePage);
         }
         return null;
 
@@ -994,16 +986,12 @@ public class ViewManager implements Serializable {
      * 
      * @return {@link String}
      * @throws IndexUnreachableException
+     * @throws PresentationException 
      */
-    public String getPdfDownloadLink() throws IndexUnreachableException {
-        // TODO
-        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl())
-                .append("?action=pdf&metsFile=").append(getPi()).append(".xml").append("&targetFileName=").append(getPi()).append(".pdf");
-        String footerId = getFooterId();
-        if (StringUtils.isNotBlank(footerId)) {
-            sb.append("&watermarkId=").append(footerId);
-        }
-        return sb.toString();
+    public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException {
+        
+        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), null);
+
     }
 
     /**
@@ -1014,16 +1002,8 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
-        StringBuilder sb = new StringBuilder();
-        PhysicalElement page = getCurrentPage();
-        if (page != null) {
-            sb.append(page.getImageToPdfUrl());
-        }
-        String footerId = getFooterId();
-        if (StringUtils.isNotBlank(footerId)) {
-            sb.append("&watermarkId=").append(footerId);
-        }
-        return sb.toString();
+        
+        return imageDelivery.getPdf().getPdfUrl(getCurrentPage(), getTopDocument());
     }
 
     /**

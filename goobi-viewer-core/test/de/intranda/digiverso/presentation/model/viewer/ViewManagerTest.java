@@ -33,7 +33,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPage_shouldReturnCorrectPage() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(3);
         Assert.assertNotNull(pe);
         Assert.assertEquals(3, pe.getOrder());
@@ -47,7 +47,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPage_shouldReturnNullIfOrderLessThanZero() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(-1);
         Assert.assertNull(pe);
     }
@@ -60,7 +60,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPage_shouldReturnNullIfOrderLargerThanNumberOfPages() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(17);
         Assert.assertNull(pe);
     }
@@ -73,7 +73,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPage_shouldReturnNullIfPageLoaderIsNull() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, null, se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, null, se.getLuceneId(), null, null, null);
         PhysicalElement pe = viewManager.getPage(0);
         Assert.assertNull(pe);
     }
@@ -88,7 +88,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         Assert.assertEquals(16, viewManager.getImagesCount());
 
         viewManager.setCurrentThumbnailPage(1);
@@ -114,7 +114,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void resetImage_shouldResetRotation() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         Assert.assertEquals(0, viewManager.getCurrentRotate());
         viewManager.rotateRight();
         Assert.assertEquals(90, viewManager.getCurrentRotate());
@@ -130,7 +130,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void rotateLeft_shouldRotateCorrectly() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         Assert.assertEquals(0, viewManager.getCurrentRotate());
         viewManager.rotateLeft();
         Assert.assertEquals(270, viewManager.getCurrentRotate());
@@ -150,7 +150,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void rotateRight_shouldRotateCorrectly() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         Assert.assertEquals(0, viewManager.getCurrentRotate());
         viewManager.rotateRight();
         Assert.assertEquals(90, viewManager.getCurrentRotate());
@@ -170,7 +170,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPdfPartDownloadLink_shouldConstructUrlCorrectly() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
         Assert.assertEquals(16, viewManager.getImagesCount());
 
         // The test index has a 0-based page count

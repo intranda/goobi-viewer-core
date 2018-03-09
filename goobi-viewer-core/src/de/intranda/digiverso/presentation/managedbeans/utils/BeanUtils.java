@@ -38,6 +38,7 @@ import de.intranda.digiverso.presentation.managedbeans.BookshelfBean;
 import de.intranda.digiverso.presentation.managedbeans.BrowseBean;
 import de.intranda.digiverso.presentation.managedbeans.CalendarBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
@@ -97,23 +98,7 @@ public class BeanUtils {
     public static boolean hasJsfContext() {
         return FacesContext.getCurrentInstance() != null;
     }
-    
-    /**
-     * @param theme     The name of the theme housing the images. If this is null or empty, the images are taken from the viewer core
-     * @return          The url to the images folder in resources (possibly in the given theme)
-     */
-    public static String getServletImagesPathFromJsfContext(String theme) {
-        StringBuilder sb = new StringBuilder(getServletPathWithHostAsUrlFromJsfContext());
-        if(!sb.toString().endsWith("/")) {
-            sb.append("/");
-        }
-        sb.append("resources").append("/");
-        if(StringUtils.isNotBlank(theme)) {
-            sb.append("themes").append("/").append("theme").append("/");
-        }
-        sb.append("images").append("/");
-        return sb.toString();
-    }
+
     
     public static String getServletImagesPathFromRequest(HttpServletRequest request, String theme) {
         StringBuilder sb = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
@@ -122,7 +107,7 @@ public class BeanUtils {
         }
         sb.append("resources").append("/");
         if(StringUtils.isNotBlank(theme)) {
-            sb.append("themes").append("/").append("theme").append("/");
+            sb.append("themes").append("/").append(theme).append("/");
         }
         sb.append("images").append("/");
         return sb.toString();
@@ -250,6 +235,10 @@ public class BeanUtils {
      */
     public static UserBean getUserBean() {
         return (UserBean) getBeanByName("userBean", UserBean.class);
+    }
+    
+    public static ImageDeliveryBean getImageDeliveryBean() {
+        return (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
     }
 
     /**

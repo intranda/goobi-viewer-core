@@ -58,10 +58,7 @@
 								    var imageMap = $('#map');
 									var configViewer = {
 									    global: {
-									        useTiles: #{activeDocumentBean.viewManager.currentPage.useTiles('viewImage')},
 									        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewImage')},
-									        imageSizes: "#{activeDocumentBean.viewManager.currentPage.getImageSizes('viewImage')}",
-									        tileSizes: "#{activeDocumentBean.viewManager.currentPage.getTileSizes('viewImage')}",
 									        adaptContainerHeight: true,
 									        persistZoom: #{configurationBean.rememberImageZoom},
 								            persistRotation: #{configurationBean.rememberImageRotation},

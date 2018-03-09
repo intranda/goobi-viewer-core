@@ -122,8 +122,6 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private List<Metadata> metadataList = null;
     @JsonIgnore
-    private String fileExtension = "";
-    @JsonIgnore
     private String mimeType = "";
     @JsonIgnore
     private String contextObject;
@@ -355,9 +353,6 @@ public class BrowseElement implements Serializable {
         if (StringUtils.isEmpty(filename)) {
             filename = structElement.getFirstPageFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
         }
-        if (filename != null) {
-            fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
-        }
         try {
             if (anchor) {
                 mimeType = structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
@@ -401,141 +396,13 @@ public class BrowseElement implements Serializable {
         }
 
         // Thumbnail
-        int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
-        int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-        if (isAbsoluteUrl(filename) && structElement.mayShowThumbnail()) {
-            
-            thumbnailUrl = thumbs.getThumbnailUrl(structElement);
-            
-            // Use absolute thumbnail URL directly (replace requested image size if this is an IFFF URL); no access permission check
-            hasImages = true;
-        } else if (structElement.mayShowThumbnail()) {
-            // Construct URL
-            String filepath = filename;
-            if (StringUtils.isNotEmpty(filepath)) {
-                // Determine whether the file is in a data repository
-                if (StringUtils.isNotEmpty(dataRepository)) {
-                    StringBuilder sb = new StringBuilder();
-                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    sb.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                            .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                                    DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append('/').append(
-                                            filepath);
-                    filepath = sb.toString();
-                } else {
-                    filepath = new StringBuilder(pi).append('/').append(filepath).toString();
-                }
-            }
-            // logger.trace("filepath: {}", filepath);
-
-            StringBuilder sbThumbnailUrl = new StringBuilder(140);
-            if (anchor) {
-                // Anchor
-                //                logger.trace("anchor");
-                switch (DataManager.getInstance().getConfiguration().getAnchorThumbnailMode()) {
-                    case "FIRSTVOLUME":
-                        // Use first volume's representative image
-                        filepath = getFirstVolumeThumbnailPath(pi);
-                        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                "?action=image&sourcepath=").append(filepath).append("&width=").append(thumbWidth).append("&height=").append(
-                                        thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager
-                                                .getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-                        break;
-                    default:
-                        // Default anchor thumbnail
-                        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                        "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                "/images/multivolume_thumbnail.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                        break;
-                }
-            } else if (DocType.DOCSTRCT.equals(docType) || DocType.PAGE.equals(docType) || docType == null) {
-                // Docstruct or page
-                //                logger.trace("normal");
-                if (StringUtils.isNotEmpty(filepath) && !isAbsoluteUrl(filename)) {
-                    switch (fileExtension) {
-                        case "pdf":
-                            // E-Publication page
-                            sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                    "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                            "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                    "/images/thumbnail_epub.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                            break;
-                        default:
-                            // Regular page or docstruct
-                            if (useThumbnail) {
-                                boolean access = FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext()
-                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail(
-                                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), pi,
-                                                filename) : false;
-                                // Flag the thumbnail for this element as access denied, so that further visualization can be triggered in HTML.
-                                // The display of the "access denied" thumbnail is done in the ContentServerWrapperServlet.
-                                if (!access) {
-                                    thumbnailAccessDenied = true;
-                                }
-                                sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                        "?action=image&sourcepath=").append(filepath).append("&width=").append(thumbWidth).append("&height=").append(
-                                                thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager
-                                                        .getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-                            }
-                            hasImages = true;
-                            break;
-                    }
-                } else if (mimeType != null) {
-                    switch (mimeType) {
-                        // Default thumbnail for video with no thumbnail file
-                        case "image/png":
-                        case "image/jpg":
-                            sbThumbnailUrl.append(filename);
-                            hasImages = true;
-                            break;
-                        case PhysicalElement.MIME_TYPE_VIDEO:
-                        case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
-                            sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                    "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                            "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                    "/images/thumbnail_video.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                            logger.trace("Thumbnail: {}", sbThumbnailUrl.toString());
-                        case PhysicalElement.MIME_TYPE_AUDIO:
-                            hasImages = true;
-                            break;
-                    }
-                }
-            } else if (DocType.EVENT.equals(docType)) {
-                // LIDO event
-                sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                        .append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resources/themes/").append(DataManager.getInstance()
-                                .getConfiguration().getTheme()).append("/images/thumbnail_event.jpg&width=").append(thumbWidth).append("&height=")
-                        .append(thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                                .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-            } else if (DocType.GROUP.equals(docType)) {
-                // Group (convolute / series)
-                sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                        .append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resources/themes/").append(DataManager.getInstance()
-                                .getConfiguration().getTheme()).append("/images/thumbnail_group.jpg&width=").append(thumbWidth).append("&height=")
-                        .append(thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                                .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-            } else if (metadataGroupType != null) {
-                // Grouped metadata
-                switch (metadataGroupType) {
-                    case PERSON:
-                        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                        "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                "/images/thumbnail_person.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
             if (sbThumbnailUrl.length() > 0) {
                 thumbnailUrl = Helper.intern(sbThumbnailUrl.toString());
             }
-        }
+            
+            //check if we have images
+            hasImages = !isAnchor() && this.mimeType.startsWith("image/");
 
         // Only topstructs should be openened with their overview page view (if they have one)
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {

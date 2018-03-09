@@ -73,7 +73,7 @@ public class IIIFUrlHandler {
                 sb.append(region).append("/");
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");
-                sb.append("default.").append(thumbCompression);
+                sb.append("default.").append(format);
                 sb.append("?compression=").append(thumbCompression);
                 return sb.toString();
             } else {

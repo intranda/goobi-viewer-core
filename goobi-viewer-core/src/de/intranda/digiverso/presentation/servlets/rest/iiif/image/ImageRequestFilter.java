@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.servlets.rest.iiif.image;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.configuration.beanutils.BeanHelper;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
@@ -56,7 +59,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext request) throws IOException {
         try {
-            String requestPath = request.getUriInfo().getPath();
+            String requestPath = servletRequest.getRequestURI();
             requestPath = requestPath.substring(requestPath.indexOf("image/") + 6);
             logger.trace("Filtering request " + requestPath);
             StrTokenizer tokenizer = new StrTokenizer(requestPath, "/");
@@ -71,9 +74,10 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             } else {
                 size = "full";
             }
-
-            filterForAccessConditions(request, pi, imageName, size);
-            filterForImageSize(requestPath, size);
+            if(!BeanUtils.getImageDeliveryBean().isExternalUrl(URLDecoder.decode(imageName, "utf-8"))) {                
+                filterForAccessConditions(request, pi, imageName, size);
+                filterForImageSize(requestPath, size);
+            }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.TEXT_XML;
             if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {

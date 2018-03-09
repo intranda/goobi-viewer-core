@@ -42,6 +42,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -404,24 +405,10 @@ public class TocMaker {
 
                 int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
                 int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
-                if (PhysicalElement.MIME_TYPE_APPLICATION.equals(volumeMimeType)) {
-                    // Static thumbnail for e-pub
-                    thumbnailUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                            "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resources/themes/")
-                            .append(DataManager.getInstance().getConfiguration().getTheme()).append("/images/thumbnail_epub.jpg").append("&width=")
-                            .append(thumbWidth).append("&height=").append(thumbHeight).append(
-                                    "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").toString();
-                    // Change view type for e-pub
-                } else if (thumbnailUrl != null) {
-                    String iiifUrl = PhysicalElement.getModifiedIIIFFUrl(thumbnailUrl, thumbWidth, thumbHeight);
-                    if (!iiifUrl.equals(thumbnailUrl)) {
-                        // If the IIIF URL modifier has changed the URL, do not do anything else with it
-                        thumbnailUrl = iiifUrl;
-                    } else {
-                        thumbnailUrl = Helper.getImageUrl(topStructPi, thumbnailUrl, dataRepository, thumbWidth, thumbHeight, 0, true, true);
-                    }
-                }
-
+                
+                ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
+                StructElement struct = new StructElement(Integer.valueOf(volumeIddoc), volumeDoc);
+                thumbnailUrl = thumbs.getThumbnailUrl(struct , thumbWidth, thumbHeight);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());
                 String docStructType = (String) volumeDoc.getFieldValue(SolrConstants.DOCSTRCT);

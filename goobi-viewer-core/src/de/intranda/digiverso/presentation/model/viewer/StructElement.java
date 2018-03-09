@@ -611,6 +611,32 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         return null;
     }
+    
+    /**
+    *
+    * @return
+    * @throws PresentationException
+    * @throws IndexUnreachableException
+    * @should return correct value
+    * @should return null if StructElement not anchor
+    * @should throw IllegalArgumentException if field is null
+    */
+   public StructElement getFirstVolume(List<String> fields) throws PresentationException, IndexUnreachableException {
+
+       if (anchor) {
+           SolrDocument docVolume = DataManager.getInstance().getSearchIndex().getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':')
+                   .append(luceneId).toString(), fields);
+           if (docVolume == null) {
+               logger.warn("Anchor has no child element: Cannot determine appropriate value");
+           } else {
+               String iddoc = SolrSearchIndex.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
+               StructElement volume = new StructElement(Integer.parseInt(iddoc), docVolume);
+               return volume;
+           }
+       }
+
+       return null;
+   }
 
     public String getFirstPageFieldValue(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
