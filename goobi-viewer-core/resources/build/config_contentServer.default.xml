@@ -152,6 +152,16 @@
 		      templateFolder="file:///opt/digiverso/viewer/config/PDFTitlePage/"
 		      defaultTemplate="default" />
 
+	<pdfChapterTitlePages use="false"
+		      fontFile="font.ttf"
+		      templateFolder="file:///opt/digiverso/viewer/config/PdfTitlePage/"
+		      defaultTemplate="default-section" />
+
+	<singlePdfTitlePage use="true"
+		      fontFile="font.ttf"
+		      templateFolder="file:///opt/digiverso/viewer/config/PdfTitlePage/"
+		      defaultTemplate="default-simple" />
+
 
 	<!-- TODO Documentation--> 
 	<restapi use="true"></restapi>
