@@ -147,7 +147,7 @@
 	All templates need to reside in the path given by @templateFolder. If no explicit template is 
 	given in the request, the file given in @defaultTemplate is used (with added extension ".fo")
 	-->
-	<pdfTitlePage use="true" 
+	<pdfTitlePage use="false" 
 		      fontFile="font.ttf"
 		      templateFolder="file:///opt/digiverso/viewer/config/PDFTitlePage/"
 		      defaultTemplate="default" />
@@ -157,7 +157,7 @@
 		      templateFolder="file:///opt/digiverso/viewer/config/PdfTitlePage/"
 		      defaultTemplate="default-section" />
 
-	<singlePdfTitlePage use="true"
+	<singlePdfTitlePage use="false"
 		      fontFile="font.ttf"
 		      templateFolder="file:///opt/digiverso/viewer/config/PdfTitlePage/"
 		      defaultTemplate="default-simple" />
