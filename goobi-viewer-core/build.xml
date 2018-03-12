@@ -508,9 +508,9 @@
 	</target>
 	<target name="bsz">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/digishelf_viewer/config2/" />
+		<property name="server.config" value="/opt/digiverso/digishelf_viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/digishelf_viewer/" />
-		<property name="server.url" value="http://www.digishelf.de/viewer2/" />
+		<property name="server.url" value="http://www.digishelf.de/" />
 		<property name="solr.url" value="http://localhost:8083/solr/collection2" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.digishelf.de%2Fviewer%2Foai" />
 		<property name="theme" value="bsz" />
