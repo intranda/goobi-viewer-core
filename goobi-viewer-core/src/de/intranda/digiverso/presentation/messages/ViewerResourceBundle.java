@@ -83,8 +83,8 @@ public class ViewerResourceBundle extends ResourceBundle {
                             if (fileName.startsWith("messages_")) {
                                 final String language = fileName.substring(9, 11);
                                 reloadNeededMap.put(language, true);
-                                logger.debug("File '{}' (language: {}) has been modified, triggering bundle reload...", changed.getFileName()
-                                        .toString(), language);
+                                logger.debug("File '{}' (language: {}) has been modified, triggering bundle reload...",
+                                        changed.getFileName().toString(), language);
                             }
                         }
                         if (!wk.reset()) {
@@ -109,6 +109,10 @@ public class ViewerResourceBundle extends ResourceBundle {
             synchronized (lock) {
                 if (FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getApplication() != null) {
                     defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
+                    if (defaultLocale == null) {
+                        logger.error("Default locale not found. Is faces-config.xml missing in the theme?");
+                    }
+                    logger.trace(defaultLocale.getLanguage());
                 } else {
                     defaultLocale = Locale.ENGLISH;
                 }
@@ -145,8 +149,8 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale.getLanguage()))) {
             synchronized (lock) {
                 // Bundle could have been initialized by a different thread in the meanwhile
-                if (!localBundles.containsKey(locale) || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale
-                        .getLanguage()))) {
+                if (!localBundles.containsKey(locale)
+                        || (reloadNeededMap.containsKey(locale.getLanguage()) && reloadNeededMap.get(locale.getLanguage()))) {
                     logger.debug("Reloading local resource bundle for '{}'...", locale.getLanguage());
                     try {
                         ResourceBundle localBundle = loadLocalResourceBundle(locale);
@@ -205,7 +209,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         checkAndLoadDefaultResourceBundles();
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
-        if (StringUtils.isEmpty(value) && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
+        if (StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
             value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale));
         }
         if (value == null) {

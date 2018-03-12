@@ -543,6 +543,10 @@ button {
   text-align: center;
   color: #646464;
 }
+.coords-highlighting {
+  background-color: yellow;
+  opacity: 0.5;
+}
 /* TYPO */
 .uppercase {
   text-transform: uppercase;
@@ -5033,10 +5037,6 @@ div[id*="-Modal"] .email-form .form-group {
   height: 2.25rem;
   background-color: #6f6f6f;
 }
-#fullscreenZoomSliderWrapper .searchHighlight {
-  background-color: yellow;
-  opacity: 0.5;
-}
 #fullscreenExitWrapper {
   right: 15px;
 }
@@ -5096,10 +5096,6 @@ div[id*="-Modal"] .email-form .form-group {
 #fullscreenImageContainer #fullscreenMap .file-not-found {
   position: absolute;
   top: 40%;
-}
-#fullscreenImageContainer #fullscreenMap .searchHighlight {
-  background-color: yellow;
-  opacity: 0.5;
 }
 #fullscreenImageContainer #fullscreenMap .ugcBox.focus {
   border: 2px solid red;
@@ -5315,10 +5311,6 @@ div[id*="-Modal"] .email-form .form-group {
 }
 #map img {
   max-width: none;
-}
-#map .searchHighlight {
-  background-color: yellow;
-  opacity: 0.5;
 }
 #map .ugcBox.focus {
   border: 2px solid red;

@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.comparators.ReverseComparator;
@@ -57,6 +56,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue;
 import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.Tag;
@@ -67,6 +67,9 @@ public final class SolrSearchIndex {
 
     private static final int MIN_SCHEMA_VERSION = 20170710;
     private static final String SCHEMA_VERSION_PREFIX = "goobi_viewer-";
+    private static final String MULTILANGUAGE_FIELD_REGEX = "(\\w+)_LANG_(\\w{2,3})";
+    private static final int MULTILANGUAGE_FIELD_NAME_GROUP = 1;
+    private static final int MULTILANGUAGE_FIELD_LANGUAGE_GROUP = 2;
     public static final int MAX_HITS = 1000000;
     private static final int TIMEOUT_SO = 30000;
     private static final int TIMEOUT_CONNECTION = 30000;
@@ -454,10 +457,7 @@ public final class SolrSearchIndex {
      */
     public long getIddocFromIdentifier(String identifier) throws PresentationException, IndexUnreachableException {
         // logger.trace("getIddocFromIdentifier: {}", identifier);
-        SolrDocumentList docs = search(
-                new StringBuilder(SolrConstants.PI).append(':').append(identifier).toString(),
-                1,
-                null,
+        SolrDocumentList docs = search(new StringBuilder(SolrConstants.PI).append(':').append(identifier).toString(), 1, null,
                 Collections.singletonList(SolrConstants.IDDOC));
         if (!docs.isEmpty()) {
             return Long.valueOf((String) docs.get(0).getFieldValue(SolrConstants.IDDOC));
@@ -653,6 +653,91 @@ public final class SolrSearchIndex {
         }
 
         return ret;
+    }
+
+    /**
+     * Converts the given SolrDocument to a value map. IMAGEURN_OAI and PAGEURNS are not returned because they have no relevance in this application
+     * and can get quite large.
+     *
+     * @param doc
+     * @return
+     * @should return all fields in the given doc except page urns
+     */
+    public static Map<String, List<IMetadataValue>> getMultiLanguageFieldValueMap(SolrDocument doc) {
+        Map<String, List<IMetadataValue>> ret = new HashMap<>();
+
+        for (String fieldName : doc.getFieldNames()) {
+            switch (fieldName) {
+                case SolrConstants.IMAGEURN_OAI:
+                    // case SolrConstants.ALTO:
+                case "WORDCOORDS":
+                case "PAGEURNS":
+                case "ABBYYXML":
+                    break;
+                default:
+                    if (isLanguageCodedField(fieldName)) {
+                        break;
+                    } else {
+                        Map<String, List<String>> mdValues = getMetadataValuesForLanguage(doc, fieldName);
+                        List<IMetadataValue> values = getMultiLanguageMetadata(mdValues);
+                        ret.put(fieldName, values);
+                    }
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * @param mdValues
+     * @return
+     */
+    public static List<IMetadataValue> getMultiLanguageMetadata(Map<String, List<String>> mdValues) {
+        List<IMetadataValue> values = new ArrayList<>();
+        int numValues = mdValues.values().stream().mapToInt(list -> list.size()).max().orElse(0);
+        for (int i = 0; i < numValues; i++) {
+            MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
+            for (String language : mdValues.keySet()) {
+                List<String> stringValues = mdValues.get(language);
+                if (i < stringValues.size()) {
+                    value.setValue(stringValues.get(i), language);
+                }
+            }
+            values.add(value);
+        }
+        return values;
+    }
+
+    /**
+     * @param fieldName
+     * @return
+     */
+    private static String getLanguage(String fieldName) {
+        if (isLanguageCodedField(fieldName)) {
+            return Pattern.compile(MULTILANGUAGE_FIELD_REGEX).matcher(fieldName).group(MULTILANGUAGE_FIELD_LANGUAGE_GROUP);
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * @param fieldName
+     * @return
+     */
+    private static String getBaseFieldName(String fieldName) {
+        if (isLanguageCodedField(fieldName)) {
+            return Pattern.compile(MULTILANGUAGE_FIELD_REGEX).matcher(fieldName).group(MULTILANGUAGE_FIELD_NAME_GROUP);
+        } else {
+            return fieldName;
+        }
+    }
+
+    /**
+     * @param fieldName
+     * @return
+     */
+    private static boolean isLanguageCodedField(String fieldName) {
+        return StringUtils.isNotBlank(fieldName) && fieldName.matches(MULTILANGUAGE_FIELD_REGEX);
     }
 
     /**
@@ -973,8 +1058,8 @@ public final class SolrSearchIndex {
     /**
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix
-     * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match 
-     * the given key but have no language information are listed as language {@code _DEFAULT}
+     * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match the given key but have
+     *         no language information are listed as language {@code _DEFAULT}
      */
     public static Map<String, List<String>> getMetadataValuesForLanguage(SolrDocument doc, String key) {
         Map<String, List<String>> map = new HashMap<>();
