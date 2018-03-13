@@ -6328,6 +6328,12 @@ var viewerJS = ( function( viewer ) {
             $( '#slider-range .ui-slider-range' ).next().append( _renderSliderBubble( 'startDate', _defaults.startDate ) );
             $( '#slider-range .ui-slider-range' ).next().next().append( _renderSliderBubble( 'endDate', _defaults.endDate ) );
             
+            // set active slider handle to top
+            $( '.ui-slider-handle' ).on( 'mousedown', function() {
+                $( '.ui-slider-handle' ).removeClass( 'top' );
+                $( this ).addClass( 'top' );
+            } );
+            
             // listen to submit event of locate timematrix form
             $( '#locateTimematrix' ).on( 'submit', function( e ) {
                 e.preventDefault();
