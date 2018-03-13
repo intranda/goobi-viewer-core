@@ -48,7 +48,7 @@ public class ContextListener implements ServletContextListener {
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
     public static volatile String prettyConfigFiles =
-            "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
+            "theme-url-mappings.xml, resources/themes/theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml";
 
     //    static {
     // ImageIO.scanForPlugins();
@@ -60,9 +60,13 @@ public class ContextListener implements ServletContextListener {
         DataManager.getInstance();
         // Add a "member" role, if not yet in the database
         try {
-            if (DataManager.getInstance().getDao().getRole("member") == null) {
+            if (DataManager.getInstance()
+                    .getDao()
+                    .getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");
-                if (!DataManager.getInstance().getDao().addRole(new Role("member"))) {
+                if (!DataManager.getInstance()
+                        .getDao()
+                        .addRole(new Role("member"))) {
                     logger.error("Could not add static role 'member'.");
                 }
             }
@@ -74,19 +78,22 @@ public class ContextListener implements ServletContextListener {
 
         // Scan for all Pretty config files in module JARs
         try {
-            String libPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
+            String libPath = sce.getServletContext()
+                    .getRealPath("/WEB-INF/lib");
             if (libPath != null) {
                 logger.debug("Lib path: {}", libPath);
                 try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(libPath), "*viewer-module-*.jar")) {
                     for (Path path : stream) {
-                        logger.debug("Found module JAR: {}", path.getFileName().toString());
+                        logger.debug("Found module JAR: {}", path.getFileName()
+                                .toString());
                         try (FileInputStream fis = new FileInputStream(path.toFile()); ZipInputStream zip = new ZipInputStream(fis)) {
                             while (true) {
                                 ZipEntry e = zip.getNextEntry();
                                 if (e == null) {
                                     break;
                                 }
-                                String[] nameSplit = e.getName().split("/");
+                                String[] nameSplit = e.getName()
+                                        .split("/");
                                 if (nameSplit.length > 0) {
                                     String name = nameSplit[nameSplit.length - 1];
                                     if (name.startsWith("pretty-config-")) {
@@ -112,14 +119,17 @@ public class ContextListener implements ServletContextListener {
         }
 
         // Set Pretty config files parameter
-        sce.getServletContext().setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
+        sce.getServletContext()
+                .setInitParameter(PRETTY_FACES_CONFIG_PARAM_NAME, prettyConfigFiles);
         logger.debug("Pretty config files: {}", prettyConfigFiles);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            DataManager.getInstance().getDao().shutdown();
+            DataManager.getInstance()
+                    .getDao()
+                    .shutdown();
         } catch (DAOException e) {
             logger.error(e.getMessage());
         }
