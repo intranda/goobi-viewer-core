@@ -2084,19 +2084,19 @@ div.mce-fullscreen {
   color: #6f6f6f;
   background-image: none;
 }
-.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-heart-o {
+.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark-o {
   display: inline-block;
 }
-.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-heart {
+.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark {
   display: none;
   color: #6f6f6f;
 }
-.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-heart-o,
-.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-heart-o {
+.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark-o,
+.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark-o {
   display: none;
 }
-.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-heart,
-.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-heart {
+.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark,
+.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark {
   display: inline-block;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -4009,19 +4009,19 @@ div[id*="-Modal"] .email-form .form-group {
   color: #fff;
   background-image: none;
 }
-.search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-heart-o {
+.search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-bookmark-o {
   display: inline-block;
 }
-.search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-heart {
+.search-list__hit-thumbnail [data-bookshelf-type="add"] .fa-bookmark {
   display: none;
   color: #428bca;
 }
-.search-list__hit-thumbnail [data-bookshelf-type="add"].added .fa-heart-o,
-.search-list__hit-thumbnail [data-bookshelf-type="add"]:hover .fa-heart-o {
+.search-list__hit-thumbnail [data-bookshelf-type="add"].added .fa-bookmark-o,
+.search-list__hit-thumbnail [data-bookshelf-type="add"]:hover .fa-bookmark-o {
   display: none;
 }
-.search-list__hit-thumbnail [data-bookshelf-type="add"].added .fa-heart,
-.search-list__hit-thumbnail [data-bookshelf-type="add"]:hover .fa-heart {
+.search-list__hit-thumbnail [data-bookshelf-type="add"].added .fa-bookmark,
+.search-list__hit-thumbnail [data-bookshelf-type="add"]:hover .fa-bookmark {
   display: inline-block;
 }
 .search-list__hit-docstruct ul {
