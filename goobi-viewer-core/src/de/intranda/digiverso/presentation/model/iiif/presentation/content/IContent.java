@@ -13,23 +13,53 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.collections;
+package de.intranda.digiverso.presentation.model.iiif.presentation.content;
+
+import java.net.URI;
+
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 
 /**
- * Part of the IIIF presentation api
- * 
- * Values for the viewing hint property of collections or sequences
- * 
- * @author Florian Alpers
+ * @author florian
  *
  */
-public enum ViewingHint {
+public interface IContent {
 
-    individuals,
-    paged,
-    continuous,
-    multipart,
-    nonpaged,
-    top,
-    facingpages;
+	String getType();
+
+	/**
+	 * @return the width
+	 */
+	int getWidth();
+
+	/**
+	 * @param width the width to set
+	 */
+	void setWidth(int width);
+
+	/**
+	 * @return the height
+	 */
+	int getHeight();
+
+	/**
+	 * @param height the height to set
+	 */
+	void setHeight(int height);
+
+	/**
+	 * @return the format
+	 */
+	Format getFormat();
+
+	/**
+	 * @param format the format to set
+	 */
+	void setFormat(Format format);
+
+	/**
+	 * @return the id
+	 */
+	URI getId();
+
 }

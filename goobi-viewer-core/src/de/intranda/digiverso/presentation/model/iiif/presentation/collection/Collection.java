@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.collections;
+package de.intranda.digiverso.presentation.model.iiif.presentation.collection;
 
 import java.net.MalformedURLException;
 import java.net.URI;

@@ -13,36 +13,53 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.collections;
+package de.intranda.digiverso.presentation.model.iiif.presentation.collection;
+
+import java.net.URL;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Part of the IIIF presentation api
  * 
- * Represents a simple single-language metadata within ny presentation api object
+ * Represents a link to another resource, for example in the "related" property 
  * 
  * @author Florian Alpers
  *
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({"label", "value"})
-public class Metadata {
+@JsonPropertyOrder({"@id", "label", "format"})
+public class CollectionLink {
+
+    private URL link;
+    private String label;
+    private String format = "text/html";
     
-    private final String label;
-    private final String value;
     /**
-     * @param label
-     * @param value
+     * 
      */
-    public Metadata(String label, String value) {
-        super();
+    public CollectionLink(URL link, String label) {
+        this.link = link;
         this.label = label;
-        this.value = value;
+    }
+    
+    public CollectionLink(URL link, String label, String format) {
+        this.link = link;
+        this.label = label;
+        this.format = format;
+    }
+    
+    /**
+     * @return the link
+     */
+    @JsonProperty("@id")
+    public URL getLink() {
+        return link;
     }
     
     /**
@@ -53,11 +70,11 @@ public class Metadata {
     }
     
     /**
-     * @return the value
+     * @return the format
      */
-    public String getValue() {
-        return value;
+    public String getFormat() {
+        return format;
     }
     
-
+    
 }
