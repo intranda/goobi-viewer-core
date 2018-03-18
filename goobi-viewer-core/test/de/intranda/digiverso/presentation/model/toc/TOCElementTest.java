@@ -18,7 +18,7 @@ package de.intranda.digiverso.presentation.model.toc;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.intranda.digiverso.presentation.model.toc.metadata.SimpleMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 public class TOCElementTest {

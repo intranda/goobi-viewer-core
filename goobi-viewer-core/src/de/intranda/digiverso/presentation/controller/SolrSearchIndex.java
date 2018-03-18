@@ -56,8 +56,8 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue;
-import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.Tag;
 

@@ -37,8 +37,8 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.toc.TOCElement;
-import de.intranda.digiverso.presentation.model.toc.metadata.SimpleMetadataValue;
 
 public class TocWriter {
 

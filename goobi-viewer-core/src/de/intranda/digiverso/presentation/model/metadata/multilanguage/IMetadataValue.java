@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.toc.metadata;
+package de.intranda.digiverso.presentation.model.metadata.multilanguage;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -21,6 +21,12 @@ import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 /**
+ * Interface to access both single and multi language metadata.
+ * Both implementations of this interface contain simple Strings representing the metadata value. In the case of
+ * SimpleMetadataValue there is only a single String, MultiLanguageMetadataValue on the other hand can include a number of different 
+ * value Strings for different languages, additionall to a default value which is either a String not assciated with a language
+ * or the first language bound value to be set
+ * 
  * @author Florian Alpers
  *
  */

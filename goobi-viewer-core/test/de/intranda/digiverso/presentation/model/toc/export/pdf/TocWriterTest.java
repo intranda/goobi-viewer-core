@@ -27,8 +27,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.toc.TOCElement;
-import de.intranda.digiverso.presentation.model.toc.metadata.SimpleMetadataValue;
 
 public class TocWriterTest {
 
