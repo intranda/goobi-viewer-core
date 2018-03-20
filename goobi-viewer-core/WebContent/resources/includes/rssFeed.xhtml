@@ -14,7 +14,12 @@
         <div class="compName_rssFeed rss_wrapp men_wrapp rss_elem_wrapp sidebar-widget widget">
             <h3>
                 #{msg.lastImports}
-                <a href="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}" class="icon-rss16x16" title="#{msg.rssSubscribe}" target="_blank"></a>
+                <a
+                    href="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}"
+                    title="#{msg.rssSubscribe}"
+                    target="_blank">
+                    <i class="fa fa-rss" aria-hidden="true"></i>
+                </a>
             </h3>
             <div class="rss-wrapp" rssnum="5" rss_url="#{navigationHelper.applicationUrl}#{navigationHelper.rssUrl}"
                 lastImportsMsg="#{msg.importdate}:" weekDayNames="#{msg.weekDayNames}" monthNames="#{msg.monthNames}">

@@ -125,10 +125,18 @@ public class BrowseBean implements Serializable {
      * Resets all lists for term browsing.
      */
     public void resetTerms() {
-        browseTermList.clear();
-        browseTermListEscaped.clear();
-        browseTermHitCountList.clear();
-        availableStringFilters.clear();
+        if (browseTermList != null) {
+            browseTermList.clear();
+        }
+        if (browseTermListEscaped != null) {
+            browseTermListEscaped.clear();
+        }
+        if (browseTermHitCountList != null) {
+            browseTermHitCountList.clear();
+        }
+        if (availableStringFilters != null) {
+            availableStringFilters.clear();
+        }
     }
 
     public void resetAllLists() {
@@ -289,8 +297,8 @@ public class BrowseBean implements Serializable {
                 return "searchTermList";
             }
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(), DataManager.getInstance().getConfiguration()
-                        .isAggregateHits());
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(),
+                        DataManager.getInstance().getConfiguration().isAggregateHits());
 
                 // Populate the list of available starting characters with ones that actually exist in the complete terms list
                 if (availableStringFilters.get(browsingMenuField) == null) {
@@ -312,8 +320,7 @@ public class BrowseBean implements Serializable {
 
                 // Sort filters
                 Locale locale = null;
-                NavigationHelper navigationHelper = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(
-                        "navigationHelper");
+                NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
                 if (navigationHelper != null) {
                     locale = navigationHelper.getLocale();
                 } else {
@@ -325,8 +332,8 @@ public class BrowseBean implements Serializable {
 
             // Get the terms again, this time using the requested filter. The search over all terms the first time is necessary to get the list of available filters.
             if (StringUtils.isNotEmpty(currentStringFilter)) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, new BrowseTermRawComparator(), DataManager.getInstance()
-                        .getConfiguration().isAggregateHits());
+                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, new BrowseTermRawComparator(),
+                        DataManager.getInstance().getConfiguration().isAggregateHits());
             }
             hitsCount = terms.size();
             if (hitsCount > 0) {
@@ -421,7 +428,12 @@ public class BrowseBean implements Serializable {
         if (currentPage > 1) {
             page = currentPage - 1;
         }
-        return new StringBuilder("/").append(browsingMenuField).append('/').append(getCurrentStringFilter()).append('/').append(page).append('/')
+        return new StringBuilder("/").append(browsingMenuField)
+                .append('/')
+                .append(getCurrentStringFilter())
+                .append('/')
+                .append(page)
+                .append('/')
                 .toString();
     }
 
@@ -430,7 +442,12 @@ public class BrowseBean implements Serializable {
         if (currentPage < page) {
             page = currentPage + 1;
         }
-        return new StringBuilder("/").append(browsingMenuField).append('/').append(getCurrentStringFilter()).append('/').append(page).append('/')
+        return new StringBuilder("/").append(browsingMenuField)
+                .append('/')
+                .append(getCurrentStringFilter())
+                .append('/')
+                .append(page)
+                .append('/')
                 .toString();
     }
 
@@ -534,8 +551,8 @@ public class BrowseBean implements Serializable {
         if (StringUtils.isBlank(getTargetCollection())) {
             return null;
         }
-        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true, true, true, DataManager
-                .getInstance().getConfiguration().getSplittingCharacter(), BeanUtils.getLocale());
+        String url = SearchHelper.getFirstWorkUrlWithFieldValue(SolrConstants.DC, getTargetCollection(), true, true, true, true,
+                DataManager.getInstance().getConfiguration().getSplittingCharacter(), BeanUtils.getLocale());
         url = url.replace("http://localhost:8082/viewer/", "");
         return "pretty:" + url;
     }

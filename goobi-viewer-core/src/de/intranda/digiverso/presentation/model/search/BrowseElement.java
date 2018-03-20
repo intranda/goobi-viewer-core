@@ -310,7 +310,7 @@ public class BrowseElement implements Serializable {
 
         if (navigationHelper == null) {
             try {
-                navigationHelper = (NavigationHelper) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
+                navigationHelper = BeanUtils.getNavigationHelper();
             } catch (NullPointerException e) {
                 // logger.trace("No navigationHelper available");
             }

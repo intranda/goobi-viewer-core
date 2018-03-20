@@ -12,36 +12,38 @@
 
     <!-- component content -->
     <composite:implementation>
-    	<div class="bookshelf-navigation">
-			<div class="row no-margin">
-				<div class="col-xs-4 no-padding bookshelf-navigation__icons">
-					<ui:fragment rendered="#{!userBean.loggedIn}">
-						<span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_watchListItems}"></span>
-					</ui:fragment>
-                    <ui:fragment rendered="#{userBean.loggedIn}">
-                        <span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_allWatchListItems}"></span>
-                    </ui:fragment>
-				</div>
-				<div class="col-xs-8 no-padding bookshelf-navigation__dropdown-wrapper">
-					<button type="button" class="btn-clean" data-bookshelf-type="dropdown">
-						#{msg.bookshelf}
-					</button>
-					<div class="bookshelf-navigation__dropdown">
-						<div class="bookshelf-navigation__dropdown-list"></div>
-						
-						<ui:fragment rendered="#{!userBean.loggedIn}">
-                            <div class="col-xs-6 no-padding">
-    							<div class="bookshelf-navigation__dropdown-list-reset"></div>
-                            </div>
-                            <div class="col-xs-6 no-padding">
-                                <div class="bookshelf-navigation__dropdown-list-send">
-                                    <a href="#{request.contextPath}/userBookshelfSendList/">#{msg.bookshelf_session_mail_sendList}</a>
+        <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
+        	<div class="bookshelf-navigation">
+    			<div class="row no-gutters">
+    				<div class="col-xs-4 bookshelf-navigation__icons">
+    					<ui:fragment rendered="#{!userBean.loggedIn}">
+    						<span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_watchListItems}"></span>
+    					</ui:fragment>
+                        <ui:fragment rendered="#{userBean.loggedIn}">
+                            <span class="bookshelf-navigation__counter" data-bookshelf-type="counter" data-toggle="tooltip" data-placement="bottom" title="#{msg.wl_allWatchListItems}"></span>
+                        </ui:fragment>
+    				</div>
+    				<div class="col-xs-8 bookshelf-navigation__dropdown-wrapper">
+    					<button type="button" class="btn-clean" data-bookshelf-type="dropdown">
+    						#{msg.bookshelf}
+    					</button>
+    					<div class="bookshelf-navigation__dropdown">
+    						<div class="bookshelf-navigation__dropdown-list"></div>
+    						
+    						<ui:fragment rendered="#{!userBean.loggedIn}">
+                                <div class="col-xs-6">
+        							<div class="bookshelf-navigation__dropdown-list-reset"></div>
                                 </div>
-                            </div>
-						</ui:fragment>
-					</div>
-				</div>
-			</div>
-    	</div>
+                                <div class="col-xs-6">
+                                    <div class="bookshelf-navigation__dropdown-list-send">
+                                        <a href="#{request.contextPath}/userBookshelfSendList/">#{msg.bookshelf_session_mail_sendList}</a>
+                                    </div>
+                                </div>
+    						</ui:fragment>
+    					</div>
+    				</div>
+    			</div>
+        	</div>
+        </ui:fragment>
     </composite:implementation>
 </ui:composition>

@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.urlresolution;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,10 +96,10 @@ public class ViewerPathBuilder {
      */
     public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, String serviceUrl) throws DAOException {
         serviceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", ""); 
-        try {
-            serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
-        } catch (UnsupportedEncodingException e) {
-        }
+//        try {
+//            serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
+//        } catch (UnsupportedEncodingException e) {
+//        }
         final Path servicePath = Paths.get(serviceUrl);
         
         ViewerPath currentPath = new ViewerPath();
@@ -152,7 +153,8 @@ public class ViewerPathBuilder {
     public static Optional<CMSPage> getCmsPage(Path servicePath) throws DAOException {
         return DataManager.getInstance().getDao().getAllCMSPages().stream()
                 .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getPersistentUrl()))
-                .filter(page -> servicePath.startsWith(page.getPersistentUrl().replaceAll("^\\/|\\/$", "")))
+//                .peek(page -> System.out.println("Found page " + page.getPersistentUrl().replaceAll("^\\/|\\/$", "").trim()))
+                .filter(page -> servicePath.startsWith(page.getPersistentUrl().replaceAll("^\\/|\\/$", "").trim()))
                 .sorted((page1, page2) -> Integer.compare(page2.getPersistentUrl().length(), page1.getPersistentUrl().length()))
                 .findFirst();
     }

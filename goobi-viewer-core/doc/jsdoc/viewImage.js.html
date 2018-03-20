@@ -4,14 +4,14 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Goobi viewer JavaScript Documentation Source: viewImage.js</title>
+	<title>DocStrap Source: viewImage.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
 
-	<link type="text/css" rel="stylesheet" href="styles/site.yeti.css">
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
 
 </head>
 
@@ -20,7 +20,7 @@
 <div class="navbar navbar-default navbar-fixed-top navbar-inverse">
 <div class="container">
 	<div class="navbar-header">
-		<a class="navbar-brand" href="index.html">Goobi viewer JavaScript Documentation</a>
+		<a class="navbar-brand" href="index.html">DocStrap</a>
 		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
@@ -106,7 +106,7 @@
             zoomSliderHandle: '.zoom-slider-handle',
             overlayGroups: [ {
                 name: "searchHighlighting",
-                styleClass: "searchHighlight",
+                styleClass: "coords-highlighting",
                 interactive: false
             }, {
                 name: "ugc",
@@ -117,7 +117,6 @@
             zoomSpeed: 1.25,
             maxZoomLevel: 20,
             minZoomLevel: 1,
-            useTiles: true,
             imageControlsActive: true,
             visibilityRatio: 0.4,
             loadImageTimeout: 10 * 60 * 1000,
@@ -305,6 +304,7 @@
             if ( _defaults.image.baseFooterUrl &amp;&amp; _defaults.global.footerHeight > 0 ) {                
                 _footerImage = new Image();
                 _footerImage.src = _defaults.image.baseFooterUrl.replace( "{width}", Math.round( _container.width() ) ).replace( "{height}", Math.round( _defaults.global.footerHeight ) );                
+                _footerImage.src = _defaults.image.baseFooterUrl.replace( "/full/max/", "/full/!" + Math.round( _container.width() ) + "," +  Math.round( _defaults.global.footerHeight ) + "/");                
                 _footerImage.onload = function() {
                     if ( _debug ) {
                         console.log( "loading footer image ", _footerImage );
@@ -410,37 +410,37 @@
         },
         getScaleToOriginalSize: function(imageNo) {
         	return 1.0;
-//        	if(!imageNo) {
-//        		imageNo = 0;
-//        	}
-//            var displaySize = osViewer.viewer.viewport._contentSize.x;
-//            return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
+// if(!imageNo) {
+// imageNo = 0;
+// }
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
         },
         scaleToOriginalSize: function( value, imageNo ) {
         	return value;
-//            if ( _debug ) {
-//                console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
-//            }
+// if ( _debug ) {
+// console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
+// }
 //            
-//            if(!imageNo) {
-//        		imageNo = 0;
-//        	}
+// if(!imageNo) {
+// imageNo = 0;
+// }
 //            
-//            var displaySize = osViewer.viewer.viewport._contentSize.x;
-//            return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         scaleToImageSize: function( value, imageNo ) {
         	return value;
-//            if ( _debug ) {
-//                console.log( 'Overlays _scaleToImageSize: value - ' + value );
-//            }
+// if ( _debug ) {
+// console.log( 'Overlays _scaleToImageSize: value - ' + value );
+// }
 //            
-//            if(!imageNo) {
-//        		imageNo = 0;
-//        	}
+// if(!imageNo) {
+// imageNo = 0;
+// }
 //            
-//            var displaySize = osViewer.viewer.viewport._contentSize.x;
-//            return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
+// var displaySize = osViewer.viewer.viewport._contentSize.x;
+// return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         close: function() {
             if ( _debug ) {
@@ -514,7 +514,7 @@
 		                viewImage.setImageSizes(imageInfo, _defaults.global.imageSizes);       
 		                viewImage.setTileSizes(imageInfo, _defaults.global.tileSizes);                
 		                var tileSource;
-		                if(_defaults.global.useTiles) {
+		                if(imageInfo.tiles) {
 		                    tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
 		                } else {                
 		                    tileSource  = osViewer.createPyramid(imageInfo);                    
@@ -3314,13 +3314,13 @@ var viewImage = ( function( osViewer ) {
 
 
 	<span class="copyright">
-	Copyright © 2017 intranda GmbH
+	DocStrap Copyright © 2012-2015 The contributors to the JSDoc3 and DocStrap projects.
 	</span>
 
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on Mon Feb 5th 2018
+		on Tue Mar 20th 2018
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

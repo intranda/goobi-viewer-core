@@ -64,7 +64,7 @@ public class SearchDownloadResource {
     @Path("/waitFor")
     @Produces({ MediaType.TEXT_PLAIN })
     public boolean waitForDownloadStatus(@Context HttpServletResponse response) {
-        SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
+        SearchBean searchBean = BeanUtils.getSearchBean();
         long startTime = System.nanoTime();
         while (System.nanoTime() < startTime + TimeUnit.SECONDS.toNanos(10)) {
             Future<Boolean> downloadReady = searchBean.isDownloadReady();
@@ -95,8 +95,8 @@ public class SearchDownloadResource {
     public ExcelStreamingOutput downloadAsExcel(@Context HttpServletResponse response, @Context HttpServletRequest request) throws DAOException,
             PresentationException, IndexUnreachableException {
         SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
-        String currentQuery = searchBean.getCurrentQuery();
-        List<StringPair> sortFields = searchBean.getSortFields();
+        String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString(), SearchHelper.getDocstrctWhitelistFilterSuffix());
+        List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();
         Map<String, Set<String>> searchTerms = searchBean.getSearchTerms();
 
         final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());

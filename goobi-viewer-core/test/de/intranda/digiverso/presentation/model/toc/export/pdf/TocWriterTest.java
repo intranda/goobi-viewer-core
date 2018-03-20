@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.model.toc.TOCElement;
+import de.intranda.digiverso.presentation.model.toc.metadata.SimpleMetadataValue;
 
 public class TocWriterTest {
 
@@ -71,7 +72,7 @@ public class TocWriterTest {
         String label = LOREM.substring(startIndex, endIndex).trim();
         String pageNo = Integer.toString(random.nextInt(9000) + 1);
 
-        return new TOCElement(label, pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, "", null, null);
+        return new TOCElement(new SimpleMetadataValue(label), pageNo, pageNo, "1234", "LOG_0003", level, "PPNq234", "", true, false, "", null, null);
     }
 
 }

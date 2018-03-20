@@ -25,8 +25,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -36,15 +34,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.managedbeans.ContextMocker;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.model.search.SearchQueryGroup.SearchQueryGroupOperator;
 import de.intranda.digiverso.presentation.model.search.SearchQueryItem.SearchItemOperator;
 import de.intranda.digiverso.presentation.model.security.user.User;
@@ -957,23 +953,32 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
                 .replaceHighlightingPlaceholders(SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "foo" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END));
     }
 
-    //    /**
-    //     * @see SearchHelper#loadFulltext(String,String,String,String)
-    //     * @verifies load fulltext from alto correctly
-    //     */
-    //    @Test
-    //    public void loadFulltext_shouldLoadFulltextFromAltoCorrectly() throws Exception {
-    //        String fulltext = SearchHelper.loadFulltext("PPN648829383", null, "alto/PPN648829383/00000001.xml", null);
-    //        Assert.assertTrue(StringUtils.isNotEmpty(fulltext));
-    //    }
-    //
-    //    /**
-    //     * @see SearchHelper#loadFulltext(String,String,String,String)
-    //     * @verifies load fulltext from plain text correctly
-    //     */
-    //    @Test
-    //    public void loadFulltext_shouldLoadFulltextFromPlainTextCorrectly() throws Exception {
-    //        String fulltext = SearchHelper.loadFulltext("PPN123", null, null, "fulltext/PPN123/00000001.txt");
-    //        Assert.assertEquals("sample text", fulltext);
-    //    }
+    /**
+     * @see SearchHelper#prepareQuery(String,String)
+     * @verifies prepare non-empty queries correctly
+     */
+    @Test
+    public void prepareQuery_shouldPrepareNonemptyQueriesCorrectly() throws Exception {
+        Assert.assertEquals("(FOO:bar)", SearchHelper.prepareQuery("FOO:bar", null));
+    }
+
+    /**
+     * @see SearchHelper#prepareQuery(String,String)
+     * @verifies prepare empty queries correctly
+     */
+    @Test
+    public void prepareQuery_shouldPrepareEmptyQueriesCorrectly() throws Exception {
+        Assert.assertEquals("(ISWORK:true OR ISANCHOR:true) AND BLA:blup", SearchHelper.prepareQuery(null, " AND BLA:blup"));
+    }
+
+    /**
+     * @see SearchHelper#parseSortString(String,NavigationHelper)
+     * @verifies parse string correctly
+     */
+    @Test
+    public void parseSortString_shouldParseStringCorrectly() throws Exception {
+        String sortString = "!SORT_1;SORT_2;SORT_3";
+        Assert.assertEquals(3, SearchHelper.parseSortString(sortString, null)
+                .size());
+    }
 }

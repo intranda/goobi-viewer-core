@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.toc;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,6 +35,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
+import de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
@@ -47,7 +49,7 @@ public class TOCElement implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(TOCElement.class);
 
     private final Map<String, String> metadata = new HashMap<>();
-    private final String label;
+    private final IMetadataValue label;
     private final String pageNo;
     private final String pageNoLabel;
     private final String iddoc;
@@ -91,7 +93,7 @@ public class TOCElement implements Serializable {
      * @should add logId to url
      * @should set correct view url for given docStructType
      */
-    public TOCElement(String label, String pageNo, String pageNoLabel, String iddoc, String logId, int level, String topStructPi, String thumbnailUrl,
+    public TOCElement(IMetadataValue label, String pageNo, String pageNoLabel, String iddoc, String logId, int level, String topStructPi, String thumbnailUrl,
             boolean sourceFormatPdfAllowed, boolean anchorOrGroup, String recordMimeType, String docStructType, String footerId) {
         this.label = label;
         this.pageNo = pageNo;
@@ -171,9 +173,8 @@ public class TOCElement implements Serializable {
      * @param str {@link String}
      * @return {@link String}
      ***************************************************************************************************************/
-    public String getContentServerPdfUrl() {
-        
-        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()), Optional.empty(), Optional.ofNullable(label));
+    public String getContentServerPdfUrl() {        
+        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()), Optional.empty(), label.getValue());
 
     }
     
@@ -244,7 +245,21 @@ public class TOCElement implements Serializable {
      * @return the label
      */
     public String getLabel() {
-        return label;
+        return label.getValue().orElse("");
+    }
+    
+    /**
+     * @return the label
+     */
+    public String getLabel(Locale locale) {
+        return label.getValue(locale).orElse(label.getValue().orElse(""));
+    }
+    
+    /**
+     * @return the label
+     */
+    public String getLabel(String locale) {
+        return label.getValue(locale).orElse(label.getValue().orElse(""));
     }
 
     /**
@@ -304,7 +319,7 @@ public class TOCElement implements Serializable {
      */
     @Deprecated
     public String getSubLabel() {
-        return label;
+        return label.getValue().orElse("");
     }
 
     public String getUrl() {
@@ -424,7 +439,7 @@ public class TOCElement implements Serializable {
      * @return true if label is null, empty or blank
      */
     public boolean isEmpty() {
-        return StringUtils.isBlank(this.label);
+        return StringUtils.isBlank(this.label.toString());
     }
 
 }

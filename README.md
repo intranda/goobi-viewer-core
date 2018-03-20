@@ -1,5 +1,8 @@
 # Goobi viewer - Core
+[![Build Status](https://travis-ci.org/intranda/goobi-viewer-core.svg?branch=master)](https://travis-ci.org/intranda/goobi-viewer-core)
+
 > A highly flexible digital library framework - made by the Goobi developer team
+
 
 ## Digital library framework
 The Goobi viewer is a web application that allows digitised material to be displayed in a web browser. It is used as central basis for an online digital library and offers various functionalities as browsing through digital collections, complex full-text searches, displaying images based on the IIIF standard, deliver audio and video material and a lot more. 

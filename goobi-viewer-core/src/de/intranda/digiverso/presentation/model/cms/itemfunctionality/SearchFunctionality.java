@@ -306,9 +306,15 @@ public class SearchFunctionality implements Functionality {
         return path.toString();
     }
     
-    public String removeFacet(String facet) throws UnsupportedEncodingException {
+    public String removeFacet(String facet) {
         final String currentFacetString = getSearchBean().getFacets().getCurrentFacetString();
-        String facetString = Stream.of(currentFacetString.split(URLEncoder.encode(";;", "utf-8")))
+        String separator = ";;";
+        try {
+            separator = URLEncoder.encode(separator, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            logger.error(e.toString(), e);
+        }
+        String facetString = Stream.of(currentFacetString.split(separator))
         .filter(s -> !s.equalsIgnoreCase(facet))
         .collect(Collectors.joining(";;"));
         if(StringUtils.isBlank(facetString)) {

@@ -1,7 +1,55 @@
 /* ==============================================================
-   User Searches
+   My Searches
    style declarations for userBackendSearches.xhtml
    ==============================================================*/
+/* MY SEARCHES */
+/* BLOCK */
+.my-searches {
+	/* ELEMENT */
+	h2 {}
+	&__table {
+		thead {
+            tr {
+                th {
+                    &:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {
+                    	text-align: center;
+                    }
+                }
+            }
+        }
+        tbody {
+            tr {
+                td {
+                	&:nth-child(1) {}
+                    &:nth-child(2) {}
+                    &:nth-child(3) {
+                    	text-align: center;
+                    }
+                }
+            }
+        }
+	}
+	&__action,
+	&__delete-button {
+		display: inline-block;
+    	padding: 0 5px;
+		text-decoration: none;
+		color: @black;
+		&:hover,
+		&:active,
+		&:focus {
+			text-decoration: none;
+			color: @black;
+		}
+	}
+	&__action {}
+	&__delete-button {}
+	&__delete-modal {}
+}
+
+/* DEPRECATED SINCE 3.4 */
 #mySearches {
     h2 {}
     #my_saved_searches_data_table {

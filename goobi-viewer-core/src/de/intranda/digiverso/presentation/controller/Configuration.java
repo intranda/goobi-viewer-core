@@ -1418,6 +1418,15 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getThemeRootPath() {
+        return getLocalString("viewer.theme.rootPath");
+    }
+
+    /**
      * TagCloud auf der Startseite anzeigen lassen
      * 
      * @return

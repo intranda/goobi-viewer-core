@@ -48,7 +48,7 @@ public class ContextListener implements ServletContextListener {
     public static final String PRETTY_FACES_CONFIG_PARAM_NAME = "com.ocpsoft.pretty.CONFIG_FILES";
 
     public static volatile String prettyConfigFiles =
-            "theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
+            "resources/themes/theme-url-mappings.xml, /WEB-INF/pretty-standard-config.xml, pretty-config-viewer-module-crowdsourcing.xml";
 
     //    static {
     // ImageIO.scanForPlugins();
@@ -73,6 +73,7 @@ public class ContextListener implements ServletContextListener {
         //        createResources();
 
         // Scan for all Pretty config files in module JARs
+        // TODO This doesn't work if /WEB-INF/lib is mapped to a different folder in tomcat
         try {
             String libPath = sce.getServletContext().getRealPath("/WEB-INF/lib");
             if (libPath != null) {

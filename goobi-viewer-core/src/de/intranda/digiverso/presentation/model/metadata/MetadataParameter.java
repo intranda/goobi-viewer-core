@@ -35,7 +35,11 @@ public class MetadataParameter implements Serializable {
         ANCHORFIELD("anchorfield"),
         UNESCAPEDFIELD("unescapedfield"),
         URLESCAPEDFIELD("urlescapedfield"),
-        HIERARCHICALFIELD("hierarchicalfield");
+        HIERARCHICALFIELD("hierarchicalfield"),
+        /**
+         * Same as field but needs to be queried for all indexed languages
+         */
+        MULTILANGUAGEFIELD("multilanguagefield");
 
         private static final Logger logger = LoggerFactory.getLogger(MetadataParameterType.class);
 

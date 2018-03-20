@@ -1181,7 +1181,7 @@ public class NavigationHelper implements Serializable {
                 .getExternalContext()
                 .getRequest();
         String previousUrl = ViewHistory.getPreviousView(request)
-                .map(path -> (path.getApplicationName() + path.getCombinedUrl()).replaceAll(path.getApplicationName() + "/" + path.getApplicationName(), path.getApplicationName()))
+                .map(path -> (path.getCombinedUrl()))
                 .orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = getApplicationUrl();
@@ -1194,7 +1194,36 @@ public class NavigationHelper implements Serializable {
                 .getExternalContext()
                 .getRequest();
         String previousUrl = ViewHistory.getPreviousView(request)
-                .map(path -> path.getCombinedPrettyfiedUrl())
+                .map(path -> path.getApplicationUrl() + path.getCombinedPrettyfiedUrl())
+                .map(path -> path.replaceAll("\\/index\\/?", "\\/"))
+                .orElse("");
+        if (StringUtils.isBlank(previousUrl)) {
+            previousUrl = homePage();
+        }
+        ViewHistory.redirectToUrl(previousUrl);
+
+    }
+    
+    public String getCurrentViewUrl() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequest();
+        String previousUrl = ViewHistory.getCurrentView(request)
+                .map(path -> (path.getCombinedUrl()))
+                .orElse("");
+        if (StringUtils.isBlank(previousUrl)) {
+            previousUrl = getApplicationUrl();
+        }
+        return previousUrl;
+    }
+    
+    public void redirectToCurrentView() throws IOException {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequest();
+        String previousUrl = ViewHistory.getCurrentView(request)
+                .map(path -> path.getApplicationUrl() + path.getCombinedPrettyfiedUrl())
+                .map(path -> path.replaceAll("\\/index\\/?", "\\/"))
                 .orElse("");
         if (StringUtils.isBlank(previousUrl)) {
             previousUrl = homePage();

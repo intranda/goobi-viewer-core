@@ -174,7 +174,7 @@ public class BeanUtils {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Object getBeanByName(String name, Class clazz) {
+    public static Object getBeanByName(String name, Class clazz) {
         BeanManager bm = getBeanManager();
         if (bm != null && bm.getBeans(name)
                 .iterator()

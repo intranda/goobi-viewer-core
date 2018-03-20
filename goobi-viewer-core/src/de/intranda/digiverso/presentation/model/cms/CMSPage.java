@@ -15,6 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -108,7 +111,6 @@ public class CMSPage {
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
     @PrivateOwned
-    @CascadeOnDelete
     private List<CMSSidebarElement> sidebarElements = new ArrayList<>();
 
     @Transient
@@ -463,7 +465,12 @@ public class CMSPage {
     }
 
     public String getMenuTitle(Locale locale) {
-        return getLanguageVersion(locale.getLanguage()).getMenuTitle();
+        CMSPageLanguageVersion lang = getLanguageVersion(locale.getLanguage());
+        if(lang != null) {            
+            return lang.getMenuTitle();
+        } else {
+            return "";
+        }
     }
 
     public Long getPageSorting() {
@@ -567,7 +574,7 @@ public class CMSPage {
      * @return the pretty url to this page (using alternative url if set)
      */
     public String getPageUrl() {
-        return BeanUtils.getCmsBean().getPageUrl(this.id);
+        return BeanUtils.getCmsBean().getUrl(this);
     }
 
     @Deprecated
@@ -694,7 +701,7 @@ public class CMSPage {
     public void setPersistentUrl(String persistentUrl) {
         persistentUrl = StringUtils.removeStart(persistentUrl, "/");
         persistentUrl = StringUtils.removeEnd(persistentUrl, "/");
-        this.persistentUrl = persistentUrl;
+        this.persistentUrl = persistentUrl.trim();
     }
 
     /**
