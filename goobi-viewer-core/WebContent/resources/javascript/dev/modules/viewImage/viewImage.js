@@ -1,22 +1,10 @@
 /**
- * This file is part of the Goobi viewer - a content presentation and management
- * application for digitized objects.
- * 
- * Visit these websites for more information. - http://www.intranda.com -
- * http://digiverso.com
- * 
- * This program is free software; you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- * PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
- * 
- * Module which initializes the viewerJS module.
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects. Visit these websites for more information. -
+ * http://www.intranda.com - http://digiverso.com This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. This program is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. Module which initializes the viewerJS
+ * module.
  * 
  * @version 3.2.0
  * @module viewImage
@@ -26,7 +14,7 @@ var viewImage = ( function() {
     'use strict';
     
     var osViewer = {};
-    var _debug = false;
+    var _debug = true;
     var _footerImage = null;
     var _canvasScale;
     var _container;
@@ -110,7 +98,7 @@ var viewImage = ( function() {
                 // rejects the promise
             	var promise = viewImage.createTileSource(source);
             	promises.push(promise);	
-	                }                
+	        }                
             return Q.all(promises).then(function(tileSources) {
             	var minWidth = Number.MAX_VALUE;  
             	var minHeight = Number.MAX_VALUE;
@@ -120,10 +108,10 @@ var viewImage = ( function() {
             		minWidth = Math.min(minWidth, tileSource.width);
             		minHeight = Math.min(minHeight, tileSource.height);
             		minAspectRatio = Math.min(minAspectRatio, tileSource.aspectRatio);
-	                }
-	                    if(_debug) {                    
+	            }
+	            if(_debug) {                    
             	    console.log("Min aspect ratio = " + minAspectRatio);            	    
-	                    }
+	            }
             	var x = 0;
             	for ( var i=0; i<tileSources.length; i++) {
 	        		var tileSource = tileSources[i];
@@ -261,6 +249,9 @@ var viewImage = ( function() {
             return _defaults.getCoordinates( name );
         },
         createPyramid: function( imageInfo ) {
+            if(_debug) {
+                console.log("Creating legacy tilesource from imageInfo ", imageInfo);
+            }
             var fileExtension = _defaults.image.mimeType;
             fileExtension = fileExtension.replace( "image/", "" );
             fileExtension = fileExtension.replace("jpeg", "jpg").replace("tiff", "tif");
@@ -445,9 +436,10 @@ var viewImage = ( function() {
 		                viewImage.setImageSizes(imageInfo, _defaults.global.imageSizes);       
 		                viewImage.setTileSizes(imageInfo, _defaults.global.tileSizes);                
 		                var tileSource;
-		                if(imageInfo.tiles) {
+		                if(imageInfo.tiles && imageInfo.tiles.length > 0) {
 		                    tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
 		                } else {                
+		                    console.log("tiles? ", imageInfo.tiles);
 		                    tileSource  = osViewer.createPyramid(imageInfo);                    
 		                }
 		                

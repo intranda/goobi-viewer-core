@@ -908,7 +908,7 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getIiifUrl() {
-        return getRestApiUrl() + "iiif/";
+        return getRestApiUrl();
     }
 
     /**

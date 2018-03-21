@@ -287,8 +287,11 @@ public class ViewManager implements Serializable {
     }
 
     public String getWatermarkUrl() throws IndexUnreachableException, DAOException, ConfigurationException {
+        return getWatermarkUrl("viewImage");
+    }
         
-        return imageDelivery.getFooter().getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()), Optional.empty()).orElse("");
+    public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ConfigurationException {
+        return imageDelivery.getFooter().getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()), Optional.ofNullable(PageType.valueOf(pageType))).orElse("");
 
     }
 

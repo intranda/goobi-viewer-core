@@ -26,7 +26,7 @@
                         divId: 'readingModeImage',
                         zoomSlider: '.zoom-slider',
                         zoomSliderHandle: '.zoom-slider-handle',
-				        footerHeight: #{configurationBean.getFooterHeight('viewReadingMode', activeDocumentBean.viewManager.currentPage.fullMimeType)},
+				        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewReadingMode')},
                         persistZoom: #{configurationBean.rememberImageZoom},
                         persistRotation: #{configurationBean.rememberImageRotation},
                         persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
@@ -34,7 +34,7 @@
                     image: {
                         mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
                         tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
-                        baseFooterUrl : "#{activeDocumentBean.viewManager.watermarkUrl}",
+                        baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl('viewReadingMode')}",
                         highlightCoords: [
                             {
                                 name: "searchHighlighting",

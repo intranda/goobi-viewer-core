@@ -55,7 +55,7 @@ public class MediaResource {
     
     @GET
     @Path("/{type}/{format}/{identifier}/{filename}")
-    public void serveMediaContent(@PathParam("type") String type, @PathParam("format") String format, @PathParam("identifier") String identifier, @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, IOException, AccessDeniedException {
+    public String serveMediaContent(@PathParam("type") String type, @PathParam("format") String format, @PathParam("identifier") String identifier, @PathParam("filename") String filename) throws PresentationException, IndexUnreachableException, IOException, AccessDeniedException {
        
         String mimeType = type + "/" + format;
         String mediaFilePath = identifier + "/" +  filename;
@@ -83,6 +83,7 @@ public class MediaResource {
         } else {
             logger.error("File '{}' not found.", file.getAbsolutePath());
         }
+        return "";
     }
 
     /**

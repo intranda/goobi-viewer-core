@@ -16,7 +16,7 @@
     'use strict';
     
     var osViewer = {};
-    var _debug = false;
+    var _debug = true;
     var _footerImage = null;
     var _canvasScale;
     var _container;
@@ -100,7 +100,7 @@
                 // rejects the promise
             	var promise = viewImage.createTileSource(source);
             	promises.push(promise);	
-	                }                
+	        }                
             return Q.all(promises).then(function(tileSources) {
             	var minWidth = Number.MAX_VALUE;  
             	var minHeight = Number.MAX_VALUE;
@@ -110,10 +110,10 @@
             		minWidth = Math.min(minWidth, tileSource.width);
             		minHeight = Math.min(minHeight, tileSource.height);
             		minAspectRatio = Math.min(minAspectRatio, tileSource.aspectRatio);
-	                }
-	                    if(_debug) {                    
+	            }
+	            if(_debug) {                    
             	    console.log("Min aspect ratio = " + minAspectRatio);            	    
-	                    }
+	            }
             	var x = 0;
             	for ( var i=0; i<tileSources.length; i++) {
 	        		var tileSource = tileSources[i];
@@ -251,6 +251,9 @@
             return _defaults.getCoordinates( name );
         },
         createPyramid: function( imageInfo ) {
+            if(_debug) {
+                console.log("Creating legacy tilesource from imageInfo ", imageInfo);
+            }
             var fileExtension = _defaults.image.mimeType;
             fileExtension = fileExtension.replace( "image/", "" );
             fileExtension = fileExtension.replace("jpeg", "jpg").replace("tiff", "tif");
@@ -435,9 +438,10 @@
 		                viewImage.setImageSizes(imageInfo, _defaults.global.imageSizes);       
 		                viewImage.setTileSizes(imageInfo, _defaults.global.tileSizes);                
 		                var tileSource;
-		                if(imageInfo.tiles) {
+		                if(imageInfo.tiles && imageInfo.tiles.length > 0) {
 		                    tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
 		                } else {                
+		                    console.log("tiles? ", imageInfo.tiles);
 		                    tileSource  = osViewer.createPyramid(imageInfo);                    
 		                }
 		                

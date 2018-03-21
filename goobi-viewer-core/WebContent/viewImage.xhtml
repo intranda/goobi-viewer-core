@@ -67,7 +67,7 @@
 									    image: {
 									        mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
  									        tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
-									        baseFooterUrl : "#{activeDocumentBean.viewManager.watermarkUrl}",
+									        baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl('viewImage')}",
 									        highlightCoords: [{
 									                name: "searchHighlighting",
 									                coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
