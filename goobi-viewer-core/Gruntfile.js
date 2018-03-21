@@ -17,7 +17,7 @@ module.exports = function(grunt) {
                 options: {
                     paths: [ '<%=src.lessDevFolder%>' ],
                     plugins: [
-                        new ( require( 'less-plugin-autoprefix' ) ) ( { browsers: ["last 2 versions"] } )
+                        new ( require( 'less-plugin-autoprefix' ) ) ( { browsers: ["last 2 versions"], grid: true } )
                     ],
                     compress: false,
                     optimization: 9
