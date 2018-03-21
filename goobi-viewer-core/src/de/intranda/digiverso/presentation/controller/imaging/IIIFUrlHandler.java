@@ -45,7 +45,7 @@ public class IIIFUrlHandler {
      * </ul>
      */
     public static final String IIIF_IMAGE_REGEX =
-            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color).(jpg|png|tif|jp2|pdf)";
+            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color).(jpg|png|tif|jp2|pdf)(?:\\?.*)";
     public static final int IIIF_IMAGE_REGEX_REGION_GROUP = 1;
     public static final int IIIF_IMAGE_REGEX_SIZE_GROUP = 2;
     public static final int IIIF_IMAGE_REGEX_ROTATION_GROUP = 3;
@@ -154,7 +154,6 @@ public class IIIFUrlHandler {
     public String getModifiedIIIFFUrl(String url, String region, String size, String rotation, String quality, String format) {
         Matcher matcher = Pattern.compile(IIIF_IMAGE_REGEX).matcher(url);
         if (matcher.matches()) {
-
             url = replaceGroup(url, region, matcher, IIIF_IMAGE_REGEX_REGION_GROUP);
             url = replaceGroup(url, size, matcher, IIIF_IMAGE_REGEX_SIZE_GROUP);
             url = replaceGroup(url, rotation, matcher, IIIF_IMAGE_REGEX_ROTATION_GROUP);
@@ -176,7 +175,7 @@ public class IIIFUrlHandler {
      * @should do nothing if not iiif url
      */
     public String getModifiedIIIFFUrl(String url, RegionRequest region, Scale size, Rotation rotation, Colortype quality, ImageFileFormat format) {
-        return getModifiedIIIFFUrl(url, region.toString(), size.toString(), rotation.toString(), quality.toString(), format.getFileExtension());
+        return getModifiedIIIFFUrl(url, region == null ? null : region.toString(), size == null ? null : size.toString(), rotation == null ? null : rotation.toString(), quality == null ? null : quality.toString(), format == null ? null : format.getFileExtension());
     }
 
     /**
@@ -187,13 +186,14 @@ public class IIIFUrlHandler {
      * @return
      */
     private String replaceGroup(String text, String replacement, Matcher matcher, int group) {
-        int start = matcher.start(group);
-        int end = matcher.end(group);
-        if (start > -1 && end > -1) {
-            return text.substring(0, start) + replacement + text.substring(end);
-        } else {
-            return text;
+        if(replacement != null) {            
+            int start = matcher.start(group);
+            int end = matcher.end(group);
+            if (start > -1 && end > -1) {
+                return text.substring(0, start) + replacement + text.substring(end);
+            }
         }
+        return text;
     }
 
     /**

@@ -457,7 +457,7 @@ public class TocMaker {
                 int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
                 
                 ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
-                StructElement struct = new StructElement(Integer.valueOf(volumeIddoc), volumeDoc);
+                StructElement struct = new StructElement(Long.valueOf(volumeIddoc), volumeDoc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct , thumbWidth, thumbHeight);
 
                 String footerId = getFooterId(volumeDoc, DataManager.getInstance().getConfiguration().getWatermarkIdField());

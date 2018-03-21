@@ -799,19 +799,8 @@ public class BrowseElement implements Serializable {
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
             String url = getThumbnailUrl();
-            if (url != null) {
-                url = url.replaceAll("width=\\d+", "").replaceAll("height=\\d+", "");
-                StringBuilder urlBuilder = new StringBuilder(url);
-                if (width != null) {
-                    urlBuilder.append("&width=").append(width);
-                }
-                if (height != null) {
-                    urlBuilder.append("&height=").append(height);
-                }
-                return urlBuilder.toString();
-            } else {
-                return "";
-            }
+            String urlNew = new IIIFUrlHandler().getModifiedIIIFFUrl(url, null, new Scale.ScaleToBox(Integer.parseInt(width), Integer.parseInt(height)), null, null, null);
+            return urlNew;
         }
     }
 

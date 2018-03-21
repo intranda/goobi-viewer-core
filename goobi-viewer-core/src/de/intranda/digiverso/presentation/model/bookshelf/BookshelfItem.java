@@ -267,7 +267,7 @@ public class BookshelfItem implements Serializable {
             
             
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
-            StructElement doc = new StructElement(Integer.parseInt(luceneId), docs.get(0));
+            StructElement doc = new StructElement(Long.parseLong(luceneId), docs.get(0));
             return thumbs.getThumbnailUrl(doc, width, height);
         } else {
             return "";
