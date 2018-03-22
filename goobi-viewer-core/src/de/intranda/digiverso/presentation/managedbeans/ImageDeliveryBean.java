@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
 import de.intranda.digiverso.presentation.controller.imaging.MediaHandler;
@@ -256,6 +257,7 @@ public class ImageDeliveryBean implements Serializable {
     public boolean isCmsUrl(String url) {
         URI uri;
         try {
+            url = Helper.decodeUrl(url);
             uri = new URI(url);
             Path path = Paths.get(uri.getPath());
             if(path.isAbsolute()) {            

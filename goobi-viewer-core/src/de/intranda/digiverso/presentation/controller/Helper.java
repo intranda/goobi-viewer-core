@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -90,6 +91,7 @@ import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
@@ -1122,20 +1124,22 @@ public class Helper {
     }
 
     public static String encodeUrl(String string) {
-        try {            
-            return URLEncoder.encode(string, "utf-8");
-        } catch(UnsupportedEncodingException e) {
-            logger.error("Unable to encode '" + string + "' with utf-8");
-            return string;
-        }
+//        try {
+            return BeanUtils.escapeCriticalUrlChracters(string);
+//            return URLEncoder.encode(string, "utf-8");
+//        } catch(UnsupportedEncodingException e) {
+//            logger.error("Unable to encode '" + string + "' with utf-8");
+//            return string;
+//        }
     }
     
     public static String decodeUrl(String string) {
-        try {            
-            return URLDecoder.decode(string, "utf-8");
-        } catch(UnsupportedEncodingException e) {
-            logger.error("Unable to decode '" + string + "' with utf-8");
-            return string;
-        }
+        return BeanUtils.unescapeCriticalUrlChracters(string);
+//        try {            
+//            return URLDecoder.decode(string, "utf-8");
+//        } catch(UnsupportedEncodingException e) {
+//            logger.error("Unable to decode '" + string + "' with utf-8");
+//            return string;
+//        }
     }
 }

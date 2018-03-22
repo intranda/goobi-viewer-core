@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -74,7 +75,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             } else {
                 size = "full";
             }
-            if(!BeanUtils.getImageDeliveryBean().isExternalUrl(URLDecoder.decode(imageName, "utf-8")) && !BeanUtils.getImageDeliveryBean().isCmsUrl(URLDecoder.decode(imageName, "utf-8")) && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(URLDecoder.decode(imageName, "utf-8"))) {                
+            if(!BeanUtils.getImageDeliveryBean().isExternalUrl(Helper.decodeUrl(imageName)) && !BeanUtils.getImageDeliveryBean().isCmsUrl(Helper.decodeUrl(imageName)) && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(URLDecoder.decode(imageName, "utf-8"))) {                
                 filterForAccessConditions(request, pi, imageName, size);
                 filterForImageSize(requestPath, size);
             }
