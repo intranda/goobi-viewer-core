@@ -16,7 +16,7 @@
     'use strict';
     
     var osViewer = {};
-    var _debug = true;
+    var _debug = false;
     var _footerImage = null;
     var _canvasScale;
     var _container;

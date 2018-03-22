@@ -15,21 +15,32 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tomcat.util.file.Matcher;
+import org.eclipse.persistence.oxm.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
+import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
+import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
 
 /**
  * Provides urls to download pdfs, images and image footer
@@ -41,7 +52,6 @@ public class ImageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ImageHandler.class);
 
-
     /**
      * Returns the image link for the given page and pageType. For external images, this links to the IIIF image information json+ls For external
      * images, this may either also be a IIIF image information or the image itself
@@ -51,13 +61,13 @@ public class ImageHandler {
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
 
-        if(page == null) {
+        if (page == null) {
             throw new NullPointerException("Cannot get image url: PhysicalElement is null");
         }
-        if(pageType == null) {
+        if (pageType == null) {
             throw new NullPointerException("Cannot get image url: PageType is null");
         }
-        
+
         String pageName;
         switch (pageType) {
             case viewFullscreen:
@@ -97,24 +107,44 @@ public class ImageHandler {
         return getImageUrl(page, PageType.viewImage);
     }
 
+    public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException {
+        String path = page.getFilepath();
+        
+        String url;
+        if(isExternalUrl(path)) {
+            url = path;
+        } else {
+            url = page.getPi() + "/" + page.getFilepath();
+        }
+        ImageInformation info = getImageInformation(url);
 
+        return info;
+    }
 
-
-
-
-
-
-
+    /**
+     * @param url
+     * @return
+     * @throws IllegalPathSyntaxException
+     * @throws URISyntaxException
+     * @throws ContentLibException
+     */
+    public ImageInformation getImageInformation(String url) throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
+        if(url.endsWith("info.json")) {
+            url = url.replace("info.json", "full/max/0/default.jpg");
+        }
+        PageSource imageSource = new PageSource(0, url, Collections.EMPTY_MAP);
+        ImageInformation info = new ImageInformation(imageSource.getImageUrl(), new URI(""));
+        return info;
+    }
 
 
     /**
      * @param path
-     * @return  true exactly if the given path starts with {@code http://} or {@code https://}
+     * @return true exactly if the given path starts with {@code http://} or {@code https://}
      */
     protected static boolean isExternalUrl(String path) {
         return path != null && (path.startsWith("http://") || path.startsWith("https://"));
     }
-
 
     /**
      * 
@@ -144,10 +174,9 @@ public class ImageHandler {
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
      */
     public static boolean isRestrictedUrl(String path) {
-        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream()
-                .anyMatch(regex -> Matcher.match(regex, path, true));
+        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream().anyMatch(regex -> Matcher.match(regex, path, true));
     }
-        
+
     protected static ImageType getImageType(ImageInformation info) {
         String id = info.getId();
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
@@ -165,7 +194,5 @@ public class ImageHandler {
     protected static boolean isInternalUrl(String fileUrl) {
         return fileUrl.startsWith("file:/") || fileUrl.startsWith("/");
     }
-
-
 
 }
