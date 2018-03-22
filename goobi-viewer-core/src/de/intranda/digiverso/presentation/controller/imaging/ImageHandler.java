@@ -18,16 +18,9 @@ package de.intranda.digiverso.presentation.controller.imaging;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.tomcat.util.file.Matcher;
-import org.eclipse.persistence.oxm.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,7 +167,7 @@ public class ImageHandler {
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
      */
     public static boolean isRestrictedUrl(String path) {
-        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream().anyMatch(regex -> Matcher.match(regex, path, true));
+        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream().anyMatch(regex -> Pattern.compile(regex).matcher(path).matches());
     }
 
     protected static ImageType getImageType(ImageInformation info) {
