@@ -15,7 +15,9 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,29 +41,35 @@ public class PdfHandler {
         this.iiifUrl = configuration.getIiifUrl();
     }
 
-    public String getPdfUrl(PhysicalElement page, StructElement doc) {
+    public String getPdfUrl(StructElement doc, PhysicalElement page) {
+        return getPdfUrl(doc, new PhysicalElement[]{page});
+    }
+
+    public String getPdfUrl(StructElement doc, PhysicalElement[] pages) {
 
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
-
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("image")
                 .append("/")
-                .append(page.getPi())
+                .append(pages[0].getPi())
                 .append("/")
-                .append(page.getFileName())
+                .append(Arrays.stream(pages).map(page -> page.getFileName()).collect(Collectors.joining("$")))
                 .append("/")
                 .append("full/max/0/")
-                .append(page.getPi())
+                .append(pages[0].getPi())
                 .append("_")
-                .append(page.getOrder())
-                .append(".pdf");
+                .append(pages[0].getOrder());
+                if(pages.length > 1) {
+                    sb.append("-").append(pages[pages.length-1].getOrder());
+                }
+                sb.append(".pdf");
 
         if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
             sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
         }
 
         if (this.watermarkHandler != null) {
-            this.watermarkHandler.getWatermarkTextIfExists(page)
+            this.watermarkHandler.getWatermarkTextIfExists(pages[0])
                     .ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
             this.watermarkHandler.getFooterIdIfExists(doc)
                     .ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
@@ -124,7 +132,7 @@ public class PdfHandler {
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
 
         divId = divId.filter(id -> StringUtils.isNotBlank(id));
-        String filename = label.map(l -> l.replaceAll("[\\s]", "_"))
+        String filename = label.filter(l -> StringUtils.isNotBlank(l)).map(l -> l.replaceAll("[\\s]", "_"))
                 .map(l -> l.replaceAll("[\\W]", ""))
                 .map(l -> l.toLowerCase().endsWith(".pdf") ? l : (l + ".pdf"))
                 .orElse(pi + divId.map(id -> "_" + id).orElse("") + ".pdf");

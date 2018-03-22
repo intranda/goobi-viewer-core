@@ -101,11 +101,12 @@ public class TagLib {
                 SolrConstants.DATECREATED, "desc")), null, Arrays.asList(RSSFeed.FIELDS)).getResults();
         List<SolrDocument> docs = docList;
         for (SolrDocument doc : docs) {
-            String pi = (String) doc.getFieldValue(SolrConstants.PI);
-            String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
-            ret.add(new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                    .append(pi).append('/').append(thumbnailFile).append("&width=150&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
-                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "").toString());
+            ret.add(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc));
+//            String pi = (String) doc.getFieldValue(SolrConstants.PI);
+//            String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
+//            ret.add(new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
+//                    .append(pi).append('/').append(thumbnailFile).append("&width=150&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
+//                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "").toString());
         }
 
         return ret;
@@ -157,9 +158,10 @@ public class TagLib {
             Object o = doc.getFieldValue(SolrConstants.THUMBNAIL);
             if (o != null) {
                 String thumbnailFile = (String) o;
-                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                        "?action=image&sourcepath=").append(pi).append('/').append(thumbnailFile).append("&width=").append(width).append("&height=")
-                        .append(height).append("&rotate=0&format=jpg&resolution=72&thumbnail=true&ignoreWatermark=true").toString();
+                return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, width, height);
+//                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
+//                        "?action=image&sourcepath=").append(pi).append('/').append(thumbnailFile).append("&width=").append(width).append("&height=")
+//                        .append(height).append("&rotate=0&format=jpg&resolution=72&thumbnail=true&ignoreWatermark=true").toString();
             }
             // String thumbnailFile = (String) doc.getFieldValue(LuceneConstants.THUMBNAIL);
         }
@@ -197,9 +199,10 @@ public class TagLib {
             if (o != null) {
                 logger.debug(o.toString());
                 String fileName = (String) o;
-                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                        "?action=image&sourcepath=").append(pi).append('/').append(fileName).append("&width=").append(width).append("&height=")
-                        .append(height).append("&rotate=0&format=jpg&resolution=72&ignoreWatermark=true").toString();
+                return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, imageWidth, imageHeight);
+//                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
+//                        "?action=image&sourcepath=").append(pi).append('/').append(fileName).append("&width=").append(width).append("&height=")
+//                        .append(height).append("&rotate=0&format=jpg&resolution=72&ignoreWatermark=true").toString();
             }
         }
 

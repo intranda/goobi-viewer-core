@@ -59,7 +59,7 @@ public class BookshelfItem implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(BookshelfItem.class);
 
-    private static final String[] FIELDS = { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC };
+    private static final String[] FIELDS = { SolrConstants.THUMBNAIL, SolrConstants.DATAREPOSITORY, SolrConstants.MIMETYPE, SolrConstants.IDDOC, SolrConstants.PI };
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

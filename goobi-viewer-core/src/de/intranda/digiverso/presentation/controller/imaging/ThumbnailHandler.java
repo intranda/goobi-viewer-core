@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,6 +158,47 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(StructElement doc) {
         return getThumbnailUrl(doc, thumbWidth, thumbHeight);
+    }
+    
+    /**
+     * Returns a link to a small image representating the given document. The size depends on viewer configuration
+     * 
+     * @param page
+     * @return
+     */
+    public String getThumbnailUrl(SolrDocument doc) {
+        return getThumbnailUrl(getStructElement(doc), thumbWidth, thumbHeight);
+    }
+
+    /**
+     * @param doc
+     * @return
+     */
+    private StructElement getStructElement(SolrDocument doc) {
+        String value = (String)doc.getFirstValue(SolrConstants.IDDOC);
+        Long iddoc = 0l;
+        if(value != null) {
+            iddoc = Long.valueOf(value);
+        }
+        try {
+            StructElement ele = new StructElement(iddoc, doc);
+            return ele;
+        } catch (IndexUnreachableException e) {
+            logger.error("Unable to create StructElement", e);
+            return new StructElement();
+        }
+    }
+    
+    /**
+     * Returns a link to an image representating the given page of the given size (to be exact: the largest image size which fits within the given
+     * bounds and keeps the image proportions
+     * 
+     * @param page
+     * @return
+     */
+    public String getThumbnailUrl(SolrDocument doc, int width, int height) {
+        return getThumbnailUrl(getStructElement(doc), width, height);
+
     }
 
     /**

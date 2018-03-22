@@ -79,6 +79,7 @@ public class ConfigurationBean implements Serializable {
                 .getModules();
     }
 
+    @Deprecated
     public String getContentServletUrl() {
         return DataManager.getInstance()
                 .getConfiguration()
@@ -252,12 +253,14 @@ public class ConfigurationBean implements Serializable {
                 .isShowSidebarEventMetadata();
     }
 
+    @Deprecated
     public String getContentServerWrapperUrl() {
         return DataManager.getInstance()
                 .getConfiguration()
                 .getContentServerWrapperUrl();
     }
 
+    @Deprecated
     public String getContentServerWrapperUrlWithoutLastSlash() {
         String csWrapperUrl = DataManager.getInstance()
                 .getConfiguration()

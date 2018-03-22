@@ -731,21 +731,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getImageToPdfUrl() {
-        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-        sb.append("?action=pdf")
-                .append("&images=")
-                .append(pi)
-                .append("/")
-                .append(fileName)
-                .append("&metsFile=")
-                .append(pi)
-                .append(".xml")
-                .append("&targetFileName=")
-                .append(pi)
-                .append("_")
-                .append(order)
-                .append(".pdf");
-        return sb.toString();
+        
+        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getImageDeliveryBean().getCurrentDocumentIfExists().orElse(null), this);
+        
+//        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
+//        sb.append("?action=pdf")
+//                .append("&images=")
+//                .append(pi)
+//                .append("/")
+//                .append(fileName)
+//                .append("&metsFile=")
+//                .append(pi)
+//                .append(".xml")
+//                .append("&targetFileName=")
+//                .append(pi)
+//                .append("_")
+//                .append(order)
+//                .append(".pdf");
+//        return sb.toString();
         //        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
         //                + "&targetFileName=" + pi + "_" + order + ".pdf";
     }

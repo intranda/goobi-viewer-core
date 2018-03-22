@@ -114,7 +114,7 @@ public class ImageDeliveryBean implements Serializable {
         return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(bean -> bean.getTopDocument());
     }
 
-    private Optional<StructElement> getCurrentDocumentIfExists() {
+    public Optional<StructElement> getCurrentDocumentIfExists() {
         return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(bean -> {
             try {
                 return bean.getCurrentElement();

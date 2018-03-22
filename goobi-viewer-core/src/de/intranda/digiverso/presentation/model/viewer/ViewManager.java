@@ -199,15 +199,15 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPage());
+        return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
     }
 
-    public String getCurrentImageInfo(String pageType) throws IndexUnreachableException, DAOException {
+    public String getCurrentImageInfo(PageType pageType) throws IndexUnreachableException, DAOException {
         StringBuilder urlBuilder = new StringBuilder();
         if (isDoublePageMode()) {
             urlBuilder.append("[");
-            String imageInfoLeft = getImageInfo(getCurrentLeftPage());
-            String imageInfoRight = getImageInfo(getCurrentRightPage());
+            String imageInfoLeft = getImageInfo(getCurrentLeftPage(), pageType);
+            String imageInfoRight = getImageInfo(getCurrentRightPage(), pageType);
             if (StringUtils.isNotBlank(imageInfoLeft)) {
                 urlBuilder.append("\"").append(imageInfoLeft).append("\"");
             }
@@ -219,7 +219,7 @@ public class ViewManager implements Serializable {
             }
             urlBuilder.append("]");
         } else {
-            urlBuilder.append(getImageInfo(getCurrentPage()));
+            urlBuilder.append(getImageInfo(getCurrentPage(), pageType));
         }
         return urlBuilder.toString();
     }
@@ -993,7 +993,7 @@ public class ViewManager implements Serializable {
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException {
         
-        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), null);
+        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), "");
 
     }
 
@@ -1006,7 +1006,7 @@ public class ViewManager implements Serializable {
      */
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
         
-        return imageDelivery.getPdf().getPdfUrl(getCurrentPage(), getTopDocument());
+        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), getCurrentPage());
     }
 
     /**
@@ -1032,18 +1032,16 @@ public class ViewManager implements Serializable {
             lastPdfPage = firstPdfPage;
         }
 
-        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&images=");
+        
+//        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&images=");
+        List<PhysicalElement> pages = new ArrayList<>();
         for (int i = firstPdfPage; i <= lastPdfPage; ++i) {
             PhysicalElement page = pageLoader.getPage(i);
-            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
+            pages.add(page);
+//            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
         }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append("&targetFileName=").append(getPi()).append('_').append(firstPdfPage).append('-').append(lastPdfPage).append(".pdf");
-        String footerId = getFooterId();
-        if (StringUtils.isNotBlank(footerId)) {
-            sb.append("&watermarkId=").append(footerId);
-        }
-        return sb.toString();
+        PhysicalElement[] pageArr = new PhysicalElement[pages.size()];
+        return imageDelivery.getPdf().getPdfUrl(getActiveDocument(), pages.toArray(pageArr));
     }
 
     public boolean isPdfPartDownloadLinkEnabled() {
