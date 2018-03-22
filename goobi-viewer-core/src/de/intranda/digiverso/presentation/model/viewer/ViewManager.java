@@ -206,8 +206,8 @@ public class ViewManager implements Serializable {
         StringBuilder urlBuilder = new StringBuilder();
         if (isDoublePageMode()) {
             urlBuilder.append("[");
-            String imageInfoLeft = getImageInfo(getCurrentLeftPage(), pageType);
-            String imageInfoRight = getImageInfo(getCurrentRightPage(), pageType);
+            String imageInfoLeft = getCurrentLeftPage().map(page -> getImageInfo(page, pageType)).orElse(null);
+            String imageInfoRight = getCurrentRightPage().map(page -> getImageInfo(page, pageType)).orElse(null);
             if (StringUtils.isNotBlank(imageInfoLeft)) {
                 urlBuilder.append("\"").append(imageInfoLeft).append("\"");
             }
@@ -230,7 +230,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    private PhysicalElement getCurrentLeftPage() throws IndexUnreachableException, DAOException {
+    private Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
         if (actualPageOrientation.equals(PageOrientation.left)) {
@@ -246,7 +246,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    private PhysicalElement getCurrentRightPage() throws IndexUnreachableException, DAOException {
+    private Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
         if (actualPageOrientation.equals(PageOrientation.right)) {
@@ -575,7 +575,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public PhysicalElement getCurrentPage() throws IndexUnreachableException, DAOException {
-        return getPage(currentImageOrder);
+        return getPage(currentImageOrder).orElse(null);
     }
 
     /**
@@ -590,13 +590,13 @@ public class ViewManager implements Serializable {
      * @should return null if order larger than number of pages
      * @should return null if pageLoader is null
      */
-    public PhysicalElement getPage(int order) throws IndexUnreachableException, DAOException {
+    public Optional<PhysicalElement> getPage(int order) throws IndexUnreachableException, DAOException {
         if (pageLoader != null && pageLoader.getPage(order) != null) {
             // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
-            return pageLoader.getPage(order);
+            return Optional.ofNullable(pageLoader.getPage(order));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public PhysicalElement getRepresentativePage() throws PresentationException, IndexUnreachableException, DAOException {
@@ -2050,7 +2050,7 @@ public class ViewManager implements Serializable {
      */
     public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
         if (isDoublePageMode()) {
-            PhysicalElement currentRightPage = getCurrentRightPage();
+            PhysicalElement currentRightPage = getCurrentRightPage().orElse(null);
             if (currentRightPage != null) {
                 return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
             }

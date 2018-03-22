@@ -34,7 +34,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
-        PhysicalElement pe = viewManager.getPage(3);
+        PhysicalElement pe = viewManager.getPage(3).orElse(null);
         Assert.assertNotNull(pe);
         Assert.assertEquals(3, pe.getOrder());
     }
@@ -48,7 +48,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
-        PhysicalElement pe = viewManager.getPage(-1);
+        PhysicalElement pe = viewManager.getPage(-1).orElse(null);
         Assert.assertNull(pe);
     }
 
@@ -61,7 +61,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
-        PhysicalElement pe = viewManager.getPage(17);
+        PhysicalElement pe = viewManager.getPage(17).orElse(null);
         Assert.assertNull(pe);
     }
 
@@ -74,7 +74,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, null, se.getLuceneId(), null, null, null);
-        PhysicalElement pe = viewManager.getPage(0);
+        PhysicalElement pe = viewManager.getPage(0).orElse(null);
         Assert.assertNull(pe);
     }
 
