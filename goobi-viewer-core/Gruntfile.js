@@ -5,7 +5,8 @@ module.exports = function(grunt) {
         },
         pkg: grunt.file.readJSON('package.json'),
         src: {
-            jsDevFolder: 'WebContent/resources/javascript/dev/modules/',
+            jsDevFolder: 'WebContent/resources/javascript/dev/',
+            jsDevFolderModules: 'WebContent/resources/javascript/dev/modules/',
             jsDistFolder: 'WebContent/resources/javascript/dist/',
             jsDocFolder: 'doc/jsdoc/',
             cssDevFolder: 'WebContent/resources/css/dev/',
@@ -55,43 +56,19 @@ module.exports = function(grunt) {
                 }
             }
         },
-        concat: {
-            options: {
-                separator: '\n',
-                stripBanners: true,
-                banner: '/*!\n'
-                    + ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
-                    + ' *\n'
-                    + ' * Visit these websites for more information.\n'
-                    + ' * - http://www.intranda.com\n'
-                    + ' * - http://digiverso.com\n'
-                    + ' *\n'
-                    + ' * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free\n'
-                    + ' * Software Foundation; either version 2 of the License, or (at your option) any later version.\n'
-                    + ' *\n'
-                    + ' * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or\n'
-                    + ' * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n'
-                    + ' *\n'
-                    + ' * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.\n'
-                    + ' */'
-            },
-            distViewer: {
-                src: [ 
-                    '<%=src.jsDevFolder %>viewer/viewerJS.js', 
-                    '<%=src.jsDevFolder %>viewer/viewerJS.*.js',
-                    '<%=src.jsDevFolder %>cms/cmsJS.js',
-                    '<%=src.jsDevFolder %>cms/cmsJS.*.js'
-                ],
-                dest: '<%=src.jsDevFolder %>viewer.js'     
-            },
-            distViewImage: {
-                src: [ 
-                    '<%=src.jsDevFolder %>viewImage/viewImage.js',
-                    '<%=src.jsDevFolder %>viewImage/viewImage.controls.js',
-                    '<%=src.jsDevFolder %>viewImage/viewImage.*.js'
-                ],
-                dest: '<%=src.jsDevFolder %>viewImage.js'     
-            },
+        browserify: {
+            dist: {
+                files: {
+                    '<%=src.jsDevFolder %>viewer.js': '<%=src.jsDevFolderModules %>viewer/*.js',
+                    '<%=src.jsDevFolder %>viewImage.js': '<%=src.jsDevFolderModules %>viewImage/*.js'
+                },
+                options: {
+                    transform: [['babelify', { presets: "es2015" }]],
+                    browserifyOptions: {
+                        debug: true
+                    }
+                }
+            }
         },
         uglify: {
             options: {
@@ -113,8 +90,8 @@ module.exports = function(grunt) {
             },
             uglifyViewer: {
                 files: {
-                    '<%=src.jsDistFolder %>viewer.min.js': ['<%=src.jsDevFolder %><%=theme.name%>.js'],
-                    '<%=src.jsDistFolder %>viewImage.min.js': ['<%=src.jsDevFolder %>viewImage.js']
+                    '<%=src.jsDistFolder%>viewer.min.js': ['<%=src.jsDevFolder%>viewer.js'],
+                    '<%=src.jsDistFolder%>viewImage.min.js': ['<%=src.jsDevFolder%>viewImage.js']
                 },
             }
         },
@@ -127,8 +104,8 @@ module.exports = function(grunt) {
                 }
             },
             js: {
-                files: [ '<%=src.jsDevFolder %>**/*.js' ],
-                tasks: [ 'concat', 'uglify' ],
+                files: [ '<%=src.jsDevFolderModules %>**/*.js' ],
+                tasks: [ 'browserify', 'uglify' ],
                 options: {
                     nospawn: true
                 }
@@ -136,7 +113,7 @@ module.exports = function(grunt) {
         },
         jsdoc : {
             dist : {
-                src: [ '<%=src.jsDevFolder %>**/*.js' ],
+                src: [ '<%=src.jsDevFolderModules %>**/*.js' ],
                 options: {
                     destination: '<%=src.jsDocFolder %>',
                     template : "node_modules/ink-docstrap/template",
@@ -148,10 +125,10 @@ module.exports = function(grunt) {
     
     // load tasks
     grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsdoc');
+    grunt.loadNpmTasks('grunt-browserify');
     
     // register tasks
     grunt.registerTask( 'default', [ 'jsdoc', 'watch' ] );
