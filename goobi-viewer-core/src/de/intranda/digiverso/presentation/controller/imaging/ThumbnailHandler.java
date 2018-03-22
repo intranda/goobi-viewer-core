@@ -210,11 +210,13 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(StructElement doc, int width, int height) {
         String thumbnailUrl = getImagePath(doc);
-        if(thumbnailUrl.contains(staticImagesPath)) {
+        if(thumbnailUrl != null && thumbnailUrl.contains(staticImagesPath)) {
             return thumbnailUrl;
-        } else {       
+        } else if(thumbnailUrl != null){       
         return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
                 thumbCompression);
+        } else {
+            return null;
         }
     }
 
