@@ -80,11 +80,11 @@ public class ImageRequestFilter implements ContainerRequestFilter {
                 filterForImageSize(requestPath, size);
             }
         } catch (ServiceNotAllowedException e) {
-            String mediaType = MediaType.TEXT_XML;
-            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-                mediaType = MediaType.APPLICATION_JSON;
-            }
-            Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
+            String mediaType = MediaType.APPLICATION_JSON;
+//            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
+//                mediaType = MediaType.APPLICATION_JSON;
+//            }
+            Response response = Response.status(Status.NOT_FOUND).type(mediaType).entity(new ErrorMessage(Status.NOT_FOUND, e, false)).build();
             request.abortWith(response);
         }
     }

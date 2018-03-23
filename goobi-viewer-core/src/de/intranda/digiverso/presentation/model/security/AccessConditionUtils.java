@@ -143,6 +143,8 @@ public class AccessConditionUtils {
                 case "xml":
                     useFileName = fileName.replace(extension, "*");
                     break;
+                case "":
+                    useFileName = fileName + ".*";
                 default:
                     break;
             }
