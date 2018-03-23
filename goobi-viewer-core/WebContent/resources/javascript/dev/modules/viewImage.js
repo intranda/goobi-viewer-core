@@ -41,7 +41,7 @@
             imageControlsActive: true,
             visibilityRatio: 0.4,
             loadImageTimeout: 10 * 60 * 1000,
-            maxParallelImageLoads: 4,
+            maxParallelImageLoads: 1,
             adaptContainerHeight: false,
             footerHeight: 50,
             rememberZoom: false,
@@ -165,7 +165,6 @@
                     bottom: _defaults.global.footerHeight
                 }
             } );
-
             var result = Q.defer();
                 
             osViewer.observables = createObservables(window, osViewer.viewer);  

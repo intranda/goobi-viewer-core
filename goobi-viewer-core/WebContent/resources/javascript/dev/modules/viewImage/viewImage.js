@@ -163,7 +163,6 @@ var viewImage = ( function() {
                     bottom: _defaults.global.footerHeight
                 }
             } );
-
             var result = Q.defer();
                 
             osViewer.observables = createObservables(window, osViewer.viewer);  

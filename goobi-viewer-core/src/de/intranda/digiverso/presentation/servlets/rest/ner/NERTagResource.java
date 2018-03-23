@@ -292,7 +292,7 @@ public class NERTagResource {
                                 SolrConstants.FILENAME_ALTO);
                         continue;
                     }
-
+                    //TODO: Load directly from file if on same server?
                     // Load ALTO via the REST service
                     String url = Helper.buildFullTextUrl(dataRepository, altoFileName);
                     try {
