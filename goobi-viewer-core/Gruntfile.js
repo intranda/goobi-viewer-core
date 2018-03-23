@@ -60,7 +60,9 @@ module.exports = function(grunt) {
         browserify: {
             dist: {
                 files: {
+                    '<%=src.jsDevFolder%>es6.viewer.js': '<%=src.jsDevFolderES6%>viewer/*.js',
                     '<%=src.jsDevFolder%>es6.viewer.js': '<%=src.jsDevFolderES6%>viewer/**/*.js',
+                    '<%=src.jsDevFolder%>es6.viewImage.js': '<%=src.jsDevFolderES6%>viewImage/*.js',
                     '<%=src.jsDevFolder%>es6.viewImage.js': '<%=src.jsDevFolderES6%>viewImage/**/*.js'
                 },
                 options: {
@@ -149,8 +151,11 @@ module.exports = function(grunt) {
                 }
             },
             js: {
-                files: [ '<%=src.jsDevFolderModules %>**/*.js' ],
-                tasks: [ 'browserify', 'concat', 'uglify' ],
+                files: [ 
+                    '<%=src.jsDevFolderModules%>**/*.js',
+                    '<%=src.jsDevFolderES6%>**/*.js'
+                ],
+                tasks: [ 'concat', 'uglify', 'browserify' ],
                 options: {
                     nospawn: true
                 }
@@ -165,6 +170,12 @@ module.exports = function(grunt) {
                     configure : "node_modules/ink-docstrap/template/jsdoc.conf.json"
                 }
             }
+        },
+        prettier: {
+            options: {},
+            files: {
+                src: [ '<%=src.jsDevFolder%>es6/viewer/**.js' ]
+            }
         }
     });
     
@@ -175,7 +186,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-prettier');
     
     // register tasks
     grunt.registerTask( 'default', [ 'jsdoc', 'watch' ] );
+    // register development tasks
+//    grunt.registerTask( 'default', [ 'watch' ] );
 };
