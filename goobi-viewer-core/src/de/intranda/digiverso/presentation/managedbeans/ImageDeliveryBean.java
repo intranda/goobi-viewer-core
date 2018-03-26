@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,8 +49,7 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
- *Provides methods for creation all urls for media delivery (images and other)
- * Examples:
+ * Provides methods for creation all urls for media delivery (images and other) Examples:
  * <ul>
  * <li>imageDelivery.thumbs.thumbnailUrl(pyhsicalElement[, width, height])</li>
  * <li>imageDelivery.thumbs.thumbnailUrl(structElement[, width, height])</li>
@@ -88,27 +88,28 @@ public class ImageDeliveryBean implements Serializable {
     private IIIFUrlHandler iiif;
     private MediaHandler media;
 
-
+    @PostConstruct
     public void init() {
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
-            if(servletRequest != null) {
+            if (servletRequest != null) {
                 this.servletPath = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
-            } else if(BeanUtils.hasJsfContext()) {
+            } else if (BeanUtils.hasJsfContext()) {
                 this.servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
             } else {
                 logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
                 servletPath = "";
             }
             this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
-            this.cmsMediaPath = DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+            this.cmsMediaPath =
+                    DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
             iiif = new IIIFUrlHandler();
             images = new ImageHandler();
             footer = new WatermarkHandler(config, servletPath);
             thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
             pdf = new PdfHandler(footer, config);
             media = new MediaHandler(config);
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
     }
@@ -162,7 +163,6 @@ public class ImageDeliveryBean implements Serializable {
         return servletRequest;
     }
 
-
     /**
      * @param servletRequest the servletRequest to set
      */
@@ -174,57 +174,57 @@ public class ImageDeliveryBean implements Serializable {
      * @return the iiif
      */
     public IIIFUrlHandler getIiif() {
-        if(iiif == null) {
+        if (iiif == null) {
             init();
         }
         return iiif;
     }
-    
+
     /**
      * @return the footer
      */
     public WatermarkHandler getFooter() {
-        if(footer == null) {
+        if (footer == null) {
             init();
         }
         return footer;
     }
-    
+
     /**
      * @return the image
      */
     public ImageHandler getImage() {
-        if(images == null) {
+        if (images == null) {
             init();
         }
         return images;
     }
-    
+
     /**
      * @return the pdf
      */
     public PdfHandler getPdf() {
-        if(pdf == null) {
+        if (pdf == null) {
             init();
         }
         return pdf;
     }
-    
+
     /**
      * @return the thumb
      */
     public ThumbnailHandler getThumb() {
-        if(thumbs == null) {
+        if (thumbs == null) {
             init();
         }
         return thumbs;
     }
-    
+
     /**
      * @return the servletPath
      */
     public String getServletPath() {
-        if(servletPath == null) {
+        if (servletPath == null) {
             init();
         }
         return servletPath;
@@ -236,27 +236,27 @@ public class ImageDeliveryBean implements Serializable {
     public boolean isExternalUrl(String urlString) {
         try {
             URI uri = new URI(urlString);
-                if(uri.isAbsolute() && (uri.getScheme().equals("http") || uri.getScheme().equals("https"))) {                    
-                    return !urlString.startsWith(getServletPath());        
-                } else {
-                    return false;
-                }
+            if (uri.isAbsolute() && (uri.getScheme().equals("http") || uri.getScheme().equals("https"))) {
+                return !urlString.startsWith(getServletPath());
+            } else {
+                return false;
+            }
         } catch (URISyntaxException e) {
             return false;
         }
     }
-    
+
     /**
-     * @param theme     The name of the theme housing the images. If this is null or empty, the images are taken from the viewer core
-     * @return          The url to the images folder in resources (possibly in the given theme)
+     * @param theme The name of the theme housing the images. If this is null or empty, the images are taken from the viewer core
+     * @return The url to the images folder in resources (possibly in the given theme)
      */
     public static String getStaticImagesPath(String servletPath, String theme) {
         StringBuilder sb = new StringBuilder(servletPath);
-        if(!sb.toString().endsWith("/")) {
+        if (!sb.toString().endsWith("/")) {
             sb.append("/");
         }
         sb.append("resources").append("/");
-        if(StringUtils.isNotBlank(theme)) {
+        if (StringUtils.isNotBlank(theme)) {
             sb.append("themes").append("/").append(theme).append("/");
         }
         sb.append("images").append("/");
@@ -273,7 +273,7 @@ public class ImageDeliveryBean implements Serializable {
             url = Helper.decodeUrl(url);
             uri = new URI(url);
             Path path = Paths.get(uri.getPath());
-            if(path.isAbsolute()) {            
+            if (path.isAbsolute()) {
                 path = path.normalize();
                 return path.startsWith(getCmsMediaPath());
             }
@@ -290,27 +290,27 @@ public class ImageDeliveryBean implements Serializable {
     public boolean isStaticImageUrl(String url) {
         return url.startsWith(getStaticImagesURI());
     }
-    
+
     /**
      * @return the staticImagesURI
      */
     public String getStaticImagesURI() {
-        if(staticImagesURI == null) {
+        if (staticImagesURI == null) {
             init();
         }
         return staticImagesURI;
     }
-    
+
     /**
      * @return the cmsMediaPath
      */
     public String getCmsMediaPath() {
-        if(cmsMediaPath == null) {
+        if (cmsMediaPath == null) {
             init();
         }
         return cmsMediaPath;
     }
-    
+
     /**
      * @return the media
      */
