@@ -1134,7 +1134,14 @@ public class Helper {
     }
     
     public static String decodeUrl(String string) {
+//    string = string.replace("%", "\\u");
+    try {
+        string =  URLDecoder.decode(string, "utf-8");
         return BeanUtils.unescapeCriticalUrlChracters(string);
+    } catch (UnsupportedEncodingException e) {
+        return string;
+    }
+//    return string;
 //        try {            
 //            return URLDecoder.decode(string, "utf-8");
 //        } catch(UnsupportedEncodingException e) {

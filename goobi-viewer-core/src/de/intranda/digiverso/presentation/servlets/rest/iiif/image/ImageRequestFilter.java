@@ -76,7 +76,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
                 size = "full";
             }
             if(!BeanUtils.getImageDeliveryBean().isExternalUrl(Helper.decodeUrl(imageName)) && !BeanUtils.getImageDeliveryBean().isCmsUrl(Helper.decodeUrl(imageName)) && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(URLDecoder.decode(imageName, "utf-8"))) {                
-                filterForAccessConditions(request, pi, imageName, size);
+                filterForAccessConditions(request, pi, Helper.decodeUrl(imageName), size);
                 filterForImageSize(requestPath, size);
             }
         } catch (ServiceNotAllowedException e) {

@@ -17,6 +17,8 @@ package de.intranda.digiverso.presentation.controller.imaging;
 
 import static org.junit.Assert.*;
 
+import java.util.Optional;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,9 +31,9 @@ import de.intranda.digiverso.presentation.controller.DataManager;
  * @author Florian Alpers
  *
  */
-public class MediaHandlerTest {
+public class PdfHandlerTest {
     
-    MediaHandler handler;
+    PdfHandler handler;
 
     /**
      * @throws java.lang.Exception
@@ -39,7 +41,8 @@ public class MediaHandlerTest {
     @Before
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-        handler = new MediaHandler(DataManager.getInstance().getConfiguration());
+        Configuration configuration = DataManager.getInstance().getConfiguration();
+        handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), configuration);
     }
 
     /**
@@ -50,9 +53,14 @@ public class MediaHandlerTest {
     }
 
     @Test
-    public void testGetMediaUrl() {
-        String mediaUrl = handler.getMediaUrl("audio/ogg", "1234", "audio.ogg");
-        Assert.assertEquals("http://localhost:8080/viewer/rest/media/audio/ogg/1234/audio.ogg", mediaUrl);
+    public void test() {
+       String pi = "1234";
+    Optional<String> divId = Optional.ofNullable("LOG_0003");
+    Optional<String> watermarkId = Optional.ofNullable("footerId");
+    Optional<String> watermarkText = Optional.ofNullable("watermark text");
+    Optional<String> label = Optional.ofNullable("output-filename.pdf");
+    
+    String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
+    Assert.assertEquals("http://localhost:8080/viewer/rest/pdf/mets/1234.xml/LOG_0003/outputfilenamepdf.pdf?watermarkText=watermark text&watermarkId=footerId", url);
     }
-
 }
