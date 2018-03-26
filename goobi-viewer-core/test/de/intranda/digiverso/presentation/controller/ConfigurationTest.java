@@ -179,6 +179,7 @@ public class ConfigurationTest {
      * @see Configuration#getContentServerWrapperUrl()
      * @verifies return correct value
      */
+    @Deprecated
     @Test
     public void getContentServerWrapperUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("contentServerWrapper_value", DataManager.getInstance()

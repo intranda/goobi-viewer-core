@@ -15,11 +15,31 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.iiif.image;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 
+/**
+ * @author Florian Alpers
+ *
+ */
+@Path("/imageTT")
+public class TestResource {
+    
+    @GET
+    @Path("/{a}/{b}/default")
+    public String forwardToContentServer(@Context ContainerRequestContext request, @PathParam("a") String a, @PathParam("b") String b) {
+            System.out.println("Received " + a + "/" + b);
+            return "Received " + a + "/" + b;
+    }
 
-@ApplicationPath("iiif")
-public class ContentServerApplication extends Application {
-
+    @GET
+    @Path("/{b}/default")
+    public String forwardToContentServer1(@Context ContainerRequestContext request, @PathParam("b") String b) {
+            System.out.println("Received only" + b);
+            return "Received only " + b;
+    }
+    
 }

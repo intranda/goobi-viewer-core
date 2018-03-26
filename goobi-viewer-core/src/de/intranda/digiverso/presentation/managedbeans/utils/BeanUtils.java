@@ -29,6 +29,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ import de.intranda.digiverso.presentation.managedbeans.BookshelfBean;
 import de.intranda.digiverso.presentation.managedbeans.BrowseBean;
 import de.intranda.digiverso.presentation.managedbeans.CalendarBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
@@ -91,6 +93,24 @@ public class BeanUtils {
         }
 
         return "";
+    }
+    
+    public static boolean hasJsfContext() {
+        return FacesContext.getCurrentInstance() != null;
+    }
+
+    
+    public static String getServletImagesPathFromRequest(HttpServletRequest request, String theme) {
+        StringBuilder sb = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
+        if(!sb.toString().endsWith("/")) {
+            sb.append("/");
+        }
+        sb.append("resources").append("/");
+        if(StringUtils.isNotBlank(theme)) {
+            sb.append("themes").append("/").append(theme).append("/");
+        }
+        sb.append("images").append("/");
+        return sb.toString();
     }
 
     /**
@@ -215,6 +235,10 @@ public class BeanUtils {
      */
     public static UserBean getUserBean() {
         return (UserBean) getBeanByName("userBean", UserBean.class);
+    }
+    
+    public static ImageDeliveryBean getImageDeliveryBean() {
+        return (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
     }
 
     /**

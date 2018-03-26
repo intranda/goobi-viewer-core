@@ -47,11 +47,16 @@ public class HttpResponseFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        
+        //rest calls should not carry character encoding
+        String path = httpRequest.getServletPath();
+        if(!path.equals("/rest")) {            
+            request.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding("UTF-8");
+        }
         
         if (preventProxyCaching) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
             //            if (httpRequest.getRequestURI().contains("OpenLayers"))
             //            logger.debug(httpRequest.getRequestURI());
             

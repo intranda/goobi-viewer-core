@@ -56,6 +56,7 @@ import net.balusc.webapp.ContentDeliveryServlet;
 /**
  * ContentServer wrapper servlet.
  */
+@Deprecated
 public class ContentServerWrapperServlet extends HttpServlet implements Serializable {
 
     private static final long serialVersionUID = -4174862970784876821L;

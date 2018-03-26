@@ -236,6 +236,12 @@
 			zoomScale="3"> -->
 		<!-- </zoomImageView> -->
 
+        <externalContent>
+            <restrictedUrls>
+                <url>https?://exteral/restricted/.*</url>
+                <url>https?://exteral/.*\.tif</url>
+            </restrictedUrls>
+        </externalContent>
 
 		<rememberImageZoom>true</rememberImageZoom>
 		<rememberImageRotation>true</rememberImageRotation>

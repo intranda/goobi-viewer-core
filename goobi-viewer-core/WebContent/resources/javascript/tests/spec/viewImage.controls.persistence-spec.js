@@ -16,7 +16,6 @@ describe( 'ViewImage zoom/rotation persistence Tests', function() {
 		config = {
 				    global: {
 				    	divId: "map",
-				        useTiles: true,
 				        footerHeight: 0,
 				        adaptContainerHeight: true,
 				        persistZoom: true,

@@ -15,10 +15,20 @@
  */
 package de.intranda.digiverso.presentation.servlets;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
-@ApplicationPath("rest")
-public class ViewerApplication extends Application {
+/**
+ * @author Florian Alpers
+ *
+ */
+public class TestObject {
+    
+    @Context
+    private HttpServletRequest servletRequest;
+    
+    public HttpServletRequest getRequest() {
+        return servletRequest;
+    }
 
 }
