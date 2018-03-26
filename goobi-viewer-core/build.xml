@@ -1295,9 +1295,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config_novemberpogrom/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://www.pogromnovember1938.co.uk/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fwww.pogromnovember1938.co.uk%2Fviewer%2Foai" />
+		<property name="server.url" value="https://www.pogromnovember1938.co.uk/" />
+		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fwww.pogromnovember1938.co.uk%2Fviewer%2Foai" />
 		<property name="theme" value="wienerlibrary-novemberpogrom" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
