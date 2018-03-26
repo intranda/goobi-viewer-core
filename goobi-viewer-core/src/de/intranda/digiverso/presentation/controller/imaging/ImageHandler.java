@@ -100,6 +100,14 @@ public class ImageHandler {
         return getImageUrl(page, PageType.viewImage);
     }
 
+    /**
+     * 
+     * @param page
+     * @return  The image information for the image file of the given page
+     * @throws IllegalPathSyntaxException
+     * @throws ContentLibException
+     * @throws URISyntaxException
+     */
     public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException {
         String path = page.getFilepath();
         

@@ -48,6 +48,22 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
+ *Provides methods for creation all urls for media delivery (images and other)
+ * Examples:
+ * <ul>
+ * <li>imageDelivery.thumbs.thumbnailUrl(pyhsicalElement[, width, height])</li>
+ * <li>imageDelivery.thumbs.thumbnailUrl(structElement[, width, height])</li>
+ * <li>imageDelivery.thumbs.thumbnailUrl(solrDocument[, width, height])</li>
+ * <li>imageDelivery.thumbs.squareThumbnailUrl(pyhsicalElement[, size])</li>
+ * <li>imageDelivery.thumbs.squareThumbnailUrl(structElement[, size])</li>
+ * <li>imageDelivery.thumbs.squareThumbnailUrl(solrDocument[, size])</li>
+ * </ul>
+ * <ul>
+ * <li>imageDelivery.images.imageUrl(pyhsicalElement[, pageType])</li>
+ * <li>imageDelivery.pdf.pdfUrl(structElement[, pyhsicalElement[, more physicalElements...]])</li>
+ * <li>imageDelivery.media.mediaUrl(mimeType, pi, filename)</li>
+ * </ul>
+ * 
  * @author Florian Alpers
  *
  */
@@ -55,9 +71,6 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 @SessionScoped
 public class ImageDeliveryBean implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -7128779942549718191L;
 
     private static final Logger logger = LoggerFactory.getLogger(ImageDeliveryBean.class);
@@ -68,8 +81,8 @@ public class ImageDeliveryBean implements Serializable {
     private String servletPath;
     private String staticImagesURI;
     private String cmsMediaPath;
-    private ImageHandler image;
-    private ThumbnailHandler thumb;
+    private ImageHandler images;
+    private ThumbnailHandler thumbs;
     private PdfHandler pdf;
     private WatermarkHandler footer;
     private IIIFUrlHandler iiif;
@@ -90,9 +103,9 @@ public class ImageDeliveryBean implements Serializable {
             this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
             this.cmsMediaPath = DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
             iiif = new IIIFUrlHandler();
-            image = new ImageHandler();
+            images = new ImageHandler();
             footer = new WatermarkHandler(config, servletPath);
-            thumb = new ThumbnailHandler(iiif, config, this.staticImagesURI);
+            thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
             pdf = new PdfHandler(footer, config);
             media = new MediaHandler(config);
         } catch(NullPointerException e) {
@@ -181,10 +194,10 @@ public class ImageDeliveryBean implements Serializable {
      * @return the image
      */
     public ImageHandler getImage() {
-        if(image == null) {
+        if(images == null) {
             init();
         }
-        return image;
+        return images;
     }
     
     /**
@@ -201,10 +214,10 @@ public class ImageDeliveryBean implements Serializable {
      * @return the thumb
      */
     public ThumbnailHandler getThumb() {
-        if(thumb == null) {
+        if(thumbs == null) {
             init();
         }
-        return thumb;
+        return thumbs;
     }
     
     /**

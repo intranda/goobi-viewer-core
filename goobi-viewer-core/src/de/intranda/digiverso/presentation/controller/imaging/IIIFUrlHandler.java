@@ -82,6 +82,9 @@ public class IIIFUrlHandler {
                 return sb.toString();
             } else {
                 //assume its a iiif id
+                if(fileUrl.endsWith("info.json")) {
+                    fileUrl = fileUrl.substring(0, fileUrl.length()-9);
+                }
                 StringBuilder sb = new StringBuilder(fileUrl);
                 sb.append(region).append("/");
                 sb.append(size).append("/");
@@ -152,6 +155,7 @@ public class IIIFUrlHandler {
      * @should do nothing if not iiif url
      */
     public String getModifiedIIIFFUrl(String url, String region, String size, String rotation, String quality, String format) {
+
         Matcher matcher = Pattern.compile(IIIF_IMAGE_REGEX).matcher(url);
         if (matcher.matches()) {
             url = replaceGroup(url, region, matcher, IIIF_IMAGE_REGEX_REGION_GROUP);

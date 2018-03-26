@@ -58,7 +58,7 @@ public class ThumbnailHandler {
     private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
     private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
 
-    public static final String[] REQUIRED_SOLR_FIELDS = new String[] { SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
+    public static final String[] REQUIRED_SOLR_FIELDS = new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
             SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
 
     private final int thumbWidth;
@@ -169,6 +169,17 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(SolrDocument doc) {
         return getThumbnailUrl(getStructElement(doc), thumbWidth, thumbHeight);
     }
+    
+    /**
+     * Returns a link to a small image representating the given document. The size depends on viewer configuration.
+     * The image may be cut at the longer side to provide a square image
+     * 
+     * @param page
+     * @return
+     */
+    public String getSquareThumbnailUrl(SolrDocument doc) {
+        return getSquareThumbnailUrl(getStructElement(doc), thumbWidth);
+    }
 
     /**
      * @param doc
@@ -198,6 +209,17 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(SolrDocument doc, int width, int height) {
         return getThumbnailUrl(getStructElement(doc), width, height);
+
+    }
+    
+    /**
+     * Returns a link to an image representating the given page of the given size. The image will be cut at the longer side to create a square image
+     * 
+     * @param page
+     * @return
+     */
+    public String getSquareThumbnailUrl(SolrDocument doc, int size) {
+        return getSquareThumbnailUrl(getStructElement(doc), size);
 
     }
 
@@ -412,6 +434,8 @@ public class ThumbnailHandler {
     }
 
     /**
+     * Return the url to the image of the given media item, fit into a box of the given width and height
+     * 
      * @param item
      * @param width
      * @param height
@@ -433,7 +457,7 @@ public class ThumbnailHandler {
      * @param height
      * @return
      */
-    public String getSize(String width, String height) {
+    private String getSize(String width, String height) {
         String size = "max";
         if((StringUtils.isBlank(height) || "0".equals(height)) && StringUtils.isNotBlank(width) && !"0".equals(width)) {
             size = width + ",";

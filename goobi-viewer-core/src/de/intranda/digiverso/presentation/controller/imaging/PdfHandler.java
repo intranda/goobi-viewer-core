@@ -41,10 +41,24 @@ public class PdfHandler {
         this.iiifUrl = configuration.getIiifUrl();
     }
 
+    /**
+     * Return the pdf-download url for the given  {@link StructElement} and {@link PhysicalElement}
+     * 
+     * @param doc
+     * @param page
+     * @return
+     */
     public String getPdfUrl(StructElement doc, PhysicalElement page) {
         return getPdfUrl(doc, new PhysicalElement[]{page});
     }
 
+    /**
+     * Return the pdf-download url for the given  {@link StructElement} and a number of {@link PhysicalElement}s
+     * 
+     * @param doc
+     * @param pages
+     * @return
+     */
     public String getPdfUrl(StructElement doc, PhysicalElement[] pages) {
 
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();

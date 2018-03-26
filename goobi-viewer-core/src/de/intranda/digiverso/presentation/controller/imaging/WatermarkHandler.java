@@ -66,6 +66,18 @@ public class WatermarkHandler {
         this.servletPath = servletPath;
     }
 
+    /**
+     * Creates the watermark url for the given pageType, adding watermarkId for the given {@link StructElement} and {@link page}.
+     *  If the watermark height of the given pageType and image is 0, an empty optional is returned
+     * 
+     * @param page
+     * @param doc
+     * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
+     * @return
+     * @throws ConfigurationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
     public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
             throws ConfigurationException, IndexUnreachableException, DAOException {
         return getWatermarkUrl(Scale.MAX, pageType, page.map(p -> p.getImageType()), doc.map(d -> getFooterIdIfExists(d).orElse(null)),
@@ -222,6 +234,12 @@ public class WatermarkHandler {
         return Optional.empty();
     }
 
+    /**
+     * Return the watermark id for the given {@link StructElement}
+     * 
+     * @param topDocument
+     * @return
+     */
     public Optional<String> getFooterIdIfExists(StructElement topDocument) {
         String footerId = null;
         if (watermarkIdField != null && topDocument != null) {

@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.controller.imaging;
 import de.intranda.digiverso.presentation.controller.Configuration;
 
 /**
+ * Resolves urls audio or video files
+ * 
  * @author Florian Alpers
  *
  */
@@ -31,6 +33,13 @@ public class MediaHandler {
         this.mediaRestApiUrl = config.getRestApiUrl();
     }
     
+    /**
+     * 
+     * @param mimeType
+     * @param pi
+     * @param filename
+     * @return  the url to the media file of the given pi and filename
+     */
     public String getMediaUrl(String mimeType, String pi, String filename) {
         return this.mediaRestApiUrl + URL_TEMPLATE.replace("{mimeType}", mimeType).replace("{identifier}", pi).replace("{filename}", filename);
     }
