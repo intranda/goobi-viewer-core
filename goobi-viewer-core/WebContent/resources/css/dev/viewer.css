@@ -2939,6 +2939,11 @@ div[id*="-Modal"] .email-form .form-group {
 .login-navigation__login-dropdown .form-control {
   height: 32px;
 }
+.login-navigation__user-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 .login-navigation__user-icon {
   /* MODIFICATION */
 }
