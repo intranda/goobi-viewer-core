@@ -63,11 +63,11 @@ public class IIIFUrlHandlerTest {
         int thumbCompression = 75;
         
         String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
-        Assert.assertEquals("http://localhost:8082/viewer/rest/image/1234/filename.tif/full/max/0/default.jpg?compression=75", url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/filename.tif/full/max/0/default.jpg?compression=75", url);
  
         fileUrl = "http://localhost/image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
-        Assert.assertEquals("http://localhost:8082/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg?compression=75", url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg?compression=75", url);
 
     }
 
