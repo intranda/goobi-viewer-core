@@ -154,5 +154,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xpp3-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xstream-1.4.9.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/zookeeper-3.4.6.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/intrandaContentServer"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

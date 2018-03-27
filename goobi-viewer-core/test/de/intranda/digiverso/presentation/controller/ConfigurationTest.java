@@ -2706,7 +2706,7 @@ public class ConfigurationTest {
 
     @Test
     public void testGetIIIFUrl() {
-        Assert.assertEquals("http://localhost:8080/viewer/iiif/", DataManager.getInstance()
+        Assert.assertEquals("http://localhost:8080/viewer/rest/", DataManager.getInstance()
                 .getConfiguration()
                 .getIiifUrl());
     }
