@@ -587,7 +587,7 @@ public class BrowseElement implements Serializable {
             return ImageFileFormat.getImageFileFormatFromFileExtension(fileUrl.getPath()).getMimeType();
         } catch (MalformedURLException e) {
         }
-        return null;
+        return "";
     }
 
     /**

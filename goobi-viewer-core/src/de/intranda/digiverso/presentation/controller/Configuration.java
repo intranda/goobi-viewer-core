@@ -1162,6 +1162,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
+    
+    public String getVocabulariesFolder() {
+        return getLocalString("vocabularies", "vocabularies");
+    }
+
 
     /**
      * 
@@ -3076,5 +3081,6 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getRestrictedImageUrls() {
         return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.EMPTY_LIST);
     }
+    
 
 }

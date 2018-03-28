@@ -516,6 +516,13 @@ public class ConfigurationTest {
                 .getConfiguration()
                 .getMediaFolder());
     }
+    
+    @Test
+    public void getVocabulariesFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("vocabularies", DataManager.getInstance()
+                .getConfiguration()
+                .getVocabulariesFolder());
+    }
 
     /**
      * @see Configuration#getMetsUrl()
