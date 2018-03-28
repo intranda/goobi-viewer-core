@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
@@ -74,7 +73,7 @@ public class IIIFUrlHandler {
                 return getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
             } else if (ImageHandler.isImageUrl(fileUrl, false)) {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-                sb.append("image/-/").append(Helper.encodeUrl(fileUrl)).append("/");
+                sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl)).append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");
