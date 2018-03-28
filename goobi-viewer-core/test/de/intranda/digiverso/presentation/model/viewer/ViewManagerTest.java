@@ -177,7 +177,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         viewManager.setFirstPdfPage("13");
         viewManager.setLastPdfPage("15");
         String url = viewManager.getPdfPartDownloadLink();
-        Assert.assertTrue(url.endsWith(
-                "?action=pdf&images=PPN517154005/00000014.tif$PPN517154005/00000015.tif$PPN517154005/00000016.tif&targetFileName=PPN517154005_13-15.pdf"));
+        Assert.assertTrue(url.endsWith("image/PPN517154005/00000014.tif$00000015.tif$00000016.tif/full/max/0/PPN517154005_13-15.pdf"));
+//                "?action=pdf&images=PPN517154005/00000014.tif$PPN517154005/00000015.tif$PPN517154005/00000016.tif&targetFileName=PPN517154005_13-15.pdf"));
     }
 }
