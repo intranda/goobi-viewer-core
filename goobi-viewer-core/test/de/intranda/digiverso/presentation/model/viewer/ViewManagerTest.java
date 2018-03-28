@@ -179,7 +179,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         viewManager.setLastPdfPage("15");
         String url = viewManager.getPdfPartDownloadLink();
         String expect = "image/PPN517154005/00000014.tif$00000015.tif$00000016.tif/full/max/0/PPN517154005_13-15.pdf";
-        Assert.assertTrue("expeted url to end with " + expect + " but was " + url, url.endsWith(expect));
+        Assert.assertTrue("expeted url to contain " + expect + " but was " + url, url.contains(expect));
 //                "?action=pdf&images=PPN517154005/00000014.tif$PPN517154005/00000015.tif$PPN517154005/00000016.tif&targetFileName=PPN517154005_13-15.pdf"));
     }
 }
