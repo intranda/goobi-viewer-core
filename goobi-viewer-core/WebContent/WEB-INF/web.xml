@@ -169,6 +169,18 @@
 		<servlet-name>OAuthServlet</servlet-name>
 		<url-pattern>/oauth</url-pattern>
 	</servlet-mapping>
+    <servlet>
+        <display-name>DFGViewerImage</display-name>
+        <servlet-name>DFGViewerImage</servlet-name>
+        <servlet-class>
+            de.intranda.digiverso.presentation.servlets.DFGViewerImage
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DFGViewerImage</servlet-name>
+        <url-pattern>/content/*</url-pattern>
+    </servlet-mapping>
+
 	<!--
 	<servlet>
 		<description></description>
