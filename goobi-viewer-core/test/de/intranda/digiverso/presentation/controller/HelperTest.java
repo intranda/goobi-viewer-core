@@ -45,45 +45,6 @@ public class HelperTest {
         Assert.assertEquals("&lt;i&gt;&quot;A&amp;B&quot;&lt;/i&gt;", Helper.escapeHtmlChars("<i>\"A&B\"</i>"));
     }
 
-    /**
-     * @see Helper#getImageUrl(String,String,String,int,int,boolean,boolean)
-     * @verifies build URL correctly without repository
-     */
-    @Test
-    public void getImageUrl_shouldBuildURLCorrectlyWithoutRepository() throws Exception {
-        Assert.assertEquals(
-                "contentServerWrapper_value?action=image&sourcepath=PPN123456789/00000001.tif&width=600&height=800&rotate=180&resolution=72&format=jpg&thumbnail=true&ignoreWatermark=true",
-                Helper.getImageUrl("PPN123456789", "00000001.tif", null, 600, 800, 180, true, true));
-    }
-
-    /**
-     * @see Helper#getImageUrl(String,String,String,int,int,boolean,boolean)
-     * @verifies build URL correctly with repository
-     */
-    @Test
-    public void getImageUrl_shouldBuildURLCorrectlyWithRepository() throws Exception {
-        Assert.assertEquals(
-                "contentServerWrapper_value?action=image&sourcepath=file:/resources/test/data/viewer/data/REPO/media/PPN123456789/00000001.tif&width=600&height=800&rotate=180&resolution=72&format=jpg&thumbnail=true&ignoreWatermark=true",
-                Helper.getImageUrl("PPN123456789", "00000001.tif", "REPO", 600, 800, 180, true, true));
-    }
-
-    /**
-     * @see Helper#getImageUrl(String,String,String,int,int,boolean,boolean)
-     * @verifies throw IllegalArgumentException when pi is null
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void getImageUrl_shouldThrowIllegalArgumentExceptionWhenPiIsNull() throws Exception {
-        Helper.getImageUrl(null, "00000001.tif", null, 600, 800, 0, false, false);
-    }
-
-    /**
-     * @see Helper#getImageUrl(String,String,String,int,int,boolean,boolean)
-     * @verifies throw IllegalArgumentException when fileName is null
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void getImageUrl_shouldThrowIllegalArgumentExceptionWhenFileNameIsNull() throws Exception {
-        Helper.getImageUrl("PPN123456789", null, null, 600, 800, 0, false, false);
-    }
 
     /**
      * @see Helper#removeDiacriticalMarks(String)
