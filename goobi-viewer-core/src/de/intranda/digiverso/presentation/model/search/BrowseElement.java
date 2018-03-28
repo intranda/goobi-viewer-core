@@ -397,7 +397,7 @@ public class BrowseElement implements Serializable {
 
         // Thumbnail
             String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
-            if (sbThumbnailUrl.length() > 0) {
+            if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
                 thumbnailUrl = Helper.intern(sbThumbnailUrl.toString());
             }
             
