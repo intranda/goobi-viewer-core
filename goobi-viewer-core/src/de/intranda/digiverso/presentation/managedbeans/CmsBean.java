@@ -1285,6 +1285,18 @@ public class CmsBean implements Serializable {
                 .getAllCMSPages()
                 .stream()
                 .filter(page -> pi.equals(page.getRelatedPI()))
+                .filter(page -> page.isPublished())
+                .collect(Collectors.toList());
+    }
+    
+    public List<CMSPage> getRelatedPages(String pi, String classification) throws DAOException {
+        return DataManager.getInstance()
+                .getDao()
+                .getAllCMSPages()
+                .stream()
+                .filter(page -> pi.equals(page.getRelatedPI()))
+                .filter(page -> page.getClassifications().contains(classification))
+                .filter(page -> page.isPublished())
                 .collect(Collectors.toList());
     }
 
