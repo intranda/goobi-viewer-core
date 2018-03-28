@@ -13,17 +13,24 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.Vocabularies;
+package de.intranda.digiverso.presentation.model.glossary;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * @author Florian Alpers
  *
  */
+@JsonInclude(Include.NON_NULL)
 public class Glossary {
     
     private final String title;
     private final String filename;
     private final String description;
+    private List<GlossaryRecord> records;
     /**
      * @param title
      * @param filename
@@ -53,6 +60,18 @@ public class Glossary {
     public String getDescription() {
         return description;
     }
-
     
+    /**
+     * @return the records
+     */
+    public List<GlossaryRecord> getRecords() {
+        return records;
+    }
+    
+    /**
+     * @param records the records to set
+     */
+    public void setRecords(List<GlossaryRecord> records) {
+        this.records = records;
+    }
 }

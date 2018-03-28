@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -62,7 +63,10 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
+import de.intranda.digiverso.presentation.model.glossary.Glossary;
+import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 @Entity
@@ -638,6 +642,13 @@ public class CMSPage {
                 case COMPONENT:
                     contentString = item.getComponent();
                     break;
+                case GLOSSARY:
+                    try {
+                        contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
+                    } catch (ContentNotFoundException | IOException e) {
+                        logger.error("Failed to load glossary " + item.getGlossaryName(), e);
+                    }
+                    break;
                 default:
                     contentString = "";
             }
@@ -943,4 +954,6 @@ public class CMSPage {
     public void setRelatedPI(String relatedPI) {
         this.relatedPI = relatedPI;
     }
+
+
 }

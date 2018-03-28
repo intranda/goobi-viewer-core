@@ -69,6 +69,8 @@ import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.cms.CMSTemplateManager;
 import de.intranda.digiverso.presentation.model.cms.PageValidityStatus;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
+import de.intranda.digiverso.presentation.model.glossary.Glossary;
+import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
@@ -1300,5 +1302,13 @@ public class CmsBean implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    public List<Glossary> getGlossaries() {
+        try {
+            return new GlossaryManager().getGlossaries();
+        } catch (IOException e) {
+            logger.error("Error loading glossary files", e);
+            return Collections.EMPTY_LIST;
+        }
+    }
 
 }

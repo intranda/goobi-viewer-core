@@ -70,6 +70,9 @@
 
 							<!-- content type COLLECTION -->
 							<cmsComponent:cms_createPageContentTypeCollection />
+                            
+                            <!-- content type GLOSSARY -->
+                            <cmsComponent:cms_createPageContentTypeGlossary />
 
 						</c:forEach>
 						<h:panelGroup rendered="#{!cmsBean.getDefaultLocale().equals(locale)}">
