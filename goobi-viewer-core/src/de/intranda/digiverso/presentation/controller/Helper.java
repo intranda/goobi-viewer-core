@@ -1124,13 +1124,13 @@ public class Helper {
     }
 
     public static String encodeUrl(String string) {
-//        try {
-            return BeanUtils.escapeCriticalUrlChracters(string);
-//            return URLEncoder.encode(string, "utf-8");
-//        } catch(UnsupportedEncodingException e) {
-//            logger.error("Unable to encode '" + string + "' with utf-8");
-//            return string;
-//        }
+        try {
+//            return BeanUtils.escapeCriticalUrlChracters(string);
+            return URLEncoder.encode(string, "utf-8");
+        } catch(UnsupportedEncodingException e) {
+            logger.error("Unable to encode '" + string + "' with utf-8");
+            return string;
+        }
     }
     
     public static String decodeUrl(String string) {

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
@@ -66,7 +67,7 @@ public class IIIFUrlHandler {
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
         if(ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append("image/-/").append(Helper.encodeUrl(fileUrl)).append("/");
+            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl)).append("/");
             return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
         } else if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {

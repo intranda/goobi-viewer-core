@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -78,7 +79,7 @@ public class ImageHandler {
 
         if (isRestrictedUrl(page.getFilepath())) {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append(pageName).append("/-/").append(Helper.encodeUrl(page.getFilepath())).append("/info.json");
+            sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath())).append("/info.json");
             return sb.toString();
         } else if (isExternalUrl(page.getFilepath())) {
             return page.getFilepath();
