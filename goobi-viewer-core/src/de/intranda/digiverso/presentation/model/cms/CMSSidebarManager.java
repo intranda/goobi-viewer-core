@@ -35,7 +35,7 @@ public final class CMSSidebarManager {
 
     private static final String[] ALLOWED_HTML_TAGS = { "<p>", "<ul>", "<ol>", "<li>", "<a>", "<h3>", "<h4>", "<h5>", "<h6>", "<i>", "<strong>",
         "<address>", "<abbr>", "<dl>", "<dt>", "<dd>", "<img>", "<span>", "<table>", "<tr>", "<th>", "<td>", "<thead>", "<tbody>", "<br>",
-        "<br />", "<style>" };
+        "<br />", "<style>", "<div>" };
 
     private static final String[] HTML_REPLACEMENTS = { "<br\\s?>:=:<br />" };
 
