@@ -441,7 +441,7 @@ public class ThumbnailHandler {
      * @param height
      * @return 
      */
-    public Optional<String> getThumbnailUrl(Optional<CMSMediaItem> item) {
+    public String getThumbnailUrl(Optional<CMSMediaItem> item) {
         return getThumbnailUrl(item, thumbWidth, thumbHeight);
     }
 
@@ -454,7 +454,7 @@ public class ThumbnailHandler {
      * @param height
      * @return 
      */
-    public Optional<String> getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
+    public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
         String imagePath = item.getImageURI();
         String size = getSize(width, height);
@@ -464,7 +464,7 @@ public class ThumbnailHandler {
         }
         return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format,
                 thumbCompression);
-        });
+        }).orElse("");
     }
     
     /**
@@ -475,7 +475,7 @@ public class ThumbnailHandler {
      * @param size
      * @return 
      */
-    public Optional<String> getSquareThumbnailUrl(Optional<CMSMediaItem> optional, int size) {
+    public String getSquareThumbnailUrl(Optional<CMSMediaItem> optional, int size) {
         return optional.map(item -> {
         String imagePath = item.getImageURI();
         String format = "jpg";
@@ -484,7 +484,7 @@ public class ThumbnailHandler {
         }
         return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format,
                 thumbCompression);
-        });
+        }).orElse("");
     }
     
     
@@ -495,7 +495,7 @@ public class ThumbnailHandler {
      * @param item
      * @return 
      */
-    public Optional<String> getSquareThumbnailUrl(Optional<CMSMediaItem> item) {
+    public String getSquareThumbnailUrl(Optional<CMSMediaItem> item) {
         return getSquareThumbnailUrl(item, thumbWidth);
     }
 

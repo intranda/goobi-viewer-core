@@ -322,4 +322,12 @@ public class ImageDeliveryBean implements Serializable {
     public MediaHandler getMedia() {
         return media;
     }
+    
+    /**
+     * 
+     * @return an optional containing the given String if it is non-empty, otherwise an empty optional
+     */
+    public Optional<String> getIfExists(String url) {
+        return Optional.of(url).map(string -> StringUtils.isNotBlank(string) ? string : null);
+    }
 }
