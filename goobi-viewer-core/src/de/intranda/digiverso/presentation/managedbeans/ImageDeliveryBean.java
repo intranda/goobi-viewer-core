@@ -54,6 +54,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
  * <li>imageDelivery.thumbs.thumbnailUrl(pyhsicalElement[, width, height])</li>
  * <li>imageDelivery.thumbs.thumbnailUrl(structElement[, width, height])</li>
  * <li>imageDelivery.thumbs.thumbnailUrl(solrDocument[, width, height])</li>
+ * <li>imageDelivery.thumbs.thumbnailUrl(cmsMediaItem[, width, height])</li>
  * <li>imageDelivery.thumbs.squareThumbnailUrl(pyhsicalElement[, size])</li>
  * <li>imageDelivery.thumbs.squareThumbnailUrl(structElement[, size])</li>
  * <li>imageDelivery.thumbs.squareThumbnailUrl(solrDocument[, size])</li>

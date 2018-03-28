@@ -26,6 +26,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.enterprise.context.SessionScoped;
@@ -176,7 +177,7 @@ public class CmsMediaBean implements Serializable {
     public static String getMediaUrl(CMSMediaItem item, String width, String height) {
         if (item != null && item.getFileName() != null) {
             
-            return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(item, width, height);
+            return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0, StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0).orElse("");
 
         }
         return "";

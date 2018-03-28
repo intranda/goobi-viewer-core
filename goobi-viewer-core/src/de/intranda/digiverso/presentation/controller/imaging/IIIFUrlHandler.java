@@ -137,7 +137,7 @@ public class IIIFUrlHandler {
         StringBuilder url = new StringBuilder(baseUrl);
         url.append(region).append("/");
         url.append(size).append("/");
-        url.append(rotation.getRotation()).append("/");
+        url.append(Math.round(rotation.getRotation())).append("/");
         url.append(quality.getLabel()).append(".");
         url.append(format.getFileExtension()).append("/");
         

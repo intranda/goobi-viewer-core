@@ -105,6 +105,9 @@ public class CMSPage {
     @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
     
+    @Column(name = "related_pi", nullable = true)
+    private String relatedPI;
+    
     @Column(name = "subtheme_discriminator", nullable = true)
     private String subThemeDiscriminatorValue = null;    
 
@@ -603,6 +606,19 @@ public class CMSPage {
     public String getContent(String itemId) {
         return getContent(itemId, null, null);
     }
+    
+    public Optional<CMSMediaItem> getMediaItem(String itemId) {
+        return Optional.ofNullable(getContentItem(itemId))
+        .map(content -> content.getMediaItem());
+    }
+    
+    public Optional<CMSMediaItem> getMediaItem() {
+        return getGlobalContentItems().stream()
+        .filter(content -> CMSContentItemType.MEDIA.equals(content.getType()))
+        .map(content -> content.getMediaItem())
+        .filter(item -> item != null)
+        .findFirst();
+    }
 
     public String getContent(String itemId, String width, String height) {
         logger.trace("Getting content " + itemId + " from page " + getId());
@@ -912,5 +928,19 @@ public class CMSPage {
             logger.warn("Unable to acquire template", e);
             return false;
         }
+    }
+    
+    /**
+     * @return the relatedPI
+     */
+    public String getRelatedPI() {
+        return relatedPI;
+    }
+    
+    /**
+     * @param relatedPI the relatedPI to set
+     */
+    public void setRelatedPI(String relatedPI) {
+        this.relatedPI = relatedPI;
     }
 }

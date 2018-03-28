@@ -168,6 +168,32 @@
 																	} );
 																</script>
 															</div>
+                                                            
+                                                            <!-- RELATED PI -->
+                                                            <div class="edit-content-page__related_pi">
+                                                                <div class="form-group">
+                                                                    <label class="col-sm-3 control-label">
+                                                                        #{msg.cms_page_related_pi}:
+                                                                        <button type="button" class="btn-clean">
+                                                                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                                                        </button>
+                                                                    </label>
+                                                                    <div class="col-sm-9">
+                                                                        <h:inputText value="#{cmsBean.selectedPage.relatedPI}" styleClass="form-control content-input" />
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <script type="text/javascript">
+                                                                    $( '.edit-content-page__related_pi button' ).popover( {
+                                                                        html: true,
+                                                                        title: '#{msg.cms_page_related_pi}',
+                                                                        content: '#{msg.cms_page_related_pi_help}',
+                                                                        placement: 'top',
+                                                                        trigger: 'hover',
+                                                                        container: 'body'
+                                                                    } );
+                                                                </script>
+                                                            </div>
 															
 															<!-- SUBTHEME DISCRIMINATOR -->
 															<div class="edit-content-page__subtheme-discriminator">
