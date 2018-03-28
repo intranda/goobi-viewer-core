@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
+import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
 
 public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -170,7 +171,7 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getPdfPartDownloadLink_shouldConstructUrlCorrectly() throws Exception {
         StructElement se = new StructElement(1387459019047L);
         Assert.assertNotNull(se);
-        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, null);
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
         Assert.assertEquals(16, viewManager.getImagesCount());
 
         // The test index has a 0-based page count
