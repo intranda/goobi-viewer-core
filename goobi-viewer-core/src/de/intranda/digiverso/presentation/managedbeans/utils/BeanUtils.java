@@ -238,7 +238,11 @@ public class BeanUtils {
     }
     
     public static ImageDeliveryBean getImageDeliveryBean() {
-        return (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
+        ImageDeliveryBean bean =  (ImageDeliveryBean) getBeanByName("imageDelivery", ImageDeliveryBean.class);
+        if(bean == null) {
+            bean = new ImageDeliveryBean();
+        }
+        return bean;
     }
 
     /**

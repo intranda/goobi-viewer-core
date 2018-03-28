@@ -100,18 +100,22 @@ public class ImageDeliveryBean implements Serializable {
                 logger.error("Failed to initialize ImageDeliveryBean: No servlet request and no jsf context found");
                 servletPath = "";
             }
-            this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
-            this.cmsMediaPath =
-                    DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
-            iiif = new IIIFUrlHandler();
-            images = new ImageHandler();
-            footer = new WatermarkHandler(config, servletPath);
-            thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
-            pdf = new PdfHandler(footer, config);
-            media = new MediaHandler(config);
+            init(config, servletPath);
         } catch (NullPointerException e) {
             logger.error("Failed to initialize ImageDeliveryBean: Resources misssing");
         }
+    }
+
+    public void init(Configuration config, String servletPath) {
+        this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
+        this.cmsMediaPath =
+                DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
+        iiif = new IIIFUrlHandler();
+        images = new ImageHandler();
+        footer = new WatermarkHandler(config, servletPath);
+        thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
+        pdf = new PdfHandler(footer, config);
+        media = new MediaHandler(config);
     }
 
     private Optional<PhysicalElement> getCurrentPageIfExists() {
