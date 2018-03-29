@@ -1281,6 +1281,23 @@ public class CmsBean implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     */
+    public boolean isHasRelatedPages(String pi) throws DAOException {
+        List<CMSPage> relatedPages = getRelatedPages(pi);
+        return relatedPages != null && relatedPages.size() > 0;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException
+     */
     public List<CMSPage> getRelatedPages(String pi) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
@@ -1290,7 +1307,14 @@ public class CmsBean implements Serializable {
                 .filter(page -> page.isPublished())
                 .collect(Collectors.toList());
     }
-    
+
+    /**
+     * 
+     * @param pi
+     * @param classification
+     * @return
+     * @throws DAOException
+     */
     public List<CMSPage> getRelatedPages(String pi, String classification) throws DAOException {
         return DataManager.getInstance()
                 .getDao()
@@ -1307,7 +1331,7 @@ public class CmsBean implements Serializable {
             return new GlossaryManager().getGlossaries();
         } catch (IOException e) {
             logger.error("Error loading glossary files", e);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

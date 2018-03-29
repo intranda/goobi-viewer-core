@@ -31,10 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -48,7 +44,6 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
-import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -60,16 +55,11 @@ import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
-import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElementStub;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 
 /**
@@ -172,7 +162,7 @@ public class BrowseElement implements Serializable {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
+    BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException {
         this.metadataList = metadataList;
         this.locale = locale;
