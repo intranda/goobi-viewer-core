@@ -48,6 +48,7 @@
                     <dl>
                         <ui:repeat var="record" varStatus="counter" value="#{cmsPage.getContentItem('glossary').glossary.records}">
                             <dt>
+                                <!-- TITLE -->
                                 <ui:fragment rendered="#{record.title != ''}">
                                     <a title="#{record.title}" name="glossary#{counter.index}"></a>
                                     <div class="tpl-glossary__glossary-title">
@@ -56,11 +57,13 @@
                                 </ui:fragment>
                             </dt>
                             <dd>
+                                <!-- DESCRIPTION -->
                                 <ui:fragment rendered="#{record.description != ''}">
                                     <div class="tpl-glossary__glossary-description">
                                         <h:outputText value="#{record.description}" escape="false" />
                                     </div>
                                 </ui:fragment>
+                                <!-- KEYWORDS -->
                                 <ui:fragment rendered="#{record.keywords != ''}">
                                     <div class="tpl-glossary__glossary-keywords">
                                         <i class="fa fa-tags" aria-hidden="true"></i>
@@ -68,6 +71,7 @@
                                         <h:outputText value="#{record.keywords}" escape="false" />
                                     </div>
                                 </ui:fragment>
+                                <!-- SOURCE -->
                                 <ui:fragment rendered="#{record.source != ''}">
                                     <div class="tpl-glossary__glossary-source">
                                         <i class="fa fa-book" aria-hidden="true"></i>
