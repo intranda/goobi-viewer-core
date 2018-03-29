@@ -5433,7 +5433,6 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value {
   display: block;
-  margin-bottom: 0.5rem;
   text-overflow: ellipsis;
   overflow: hidden;
 }
