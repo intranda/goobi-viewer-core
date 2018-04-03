@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -135,10 +136,9 @@ public final class CMSTemplateManager {
             themeFolderPath = themeFolderUrl.map(url -> toURI(url));
             boolean templatesFound = false;
             if (themeFolderPath.isPresent()) {
-                templatesFound = Files.list(themeFolderPath.get())
-                        .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
-                        .findAny()
-                        .isPresent();
+                try (Stream<java.nio.file.Path> templateFiles = Files.list(themeFolderPath.get())) {
+                    templatesFound = templateFiles.filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml")).findAny().isPresent();
+                }
             }
             if (templatesFound) {
                 this.themeTemplateFolderUrl = Optional.of(webContentRoot + "/" + templateFolderUrl);
@@ -157,11 +157,12 @@ public final class CMSTemplateManager {
             boolean templatesFound = false;
             if (coreFolderPath.isPresent()) {
                 logger.trace("coreFolderPath: {}", coreFolderPath.get());
-                templatesFound = Files.list(coreFolderPath.get())
-                        .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
-                        .peek(file -> logger.trace("Found core cms template file " + file))
-                        .findAny()
-                        .isPresent();
+                try (Stream<java.nio.file.Path> templateFiles = Files.list(coreFolderPath.get())) {
+                    templatesFound = templateFiles.filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
+                            .peek(file -> logger.trace("Found core cms template file " + file))
+                            .findAny()
+                            .isPresent();
+                }
             } else {
                 logger.warn("coreFolderPath not found at {}, {} servletContent null ? {}", filesystemPath, templateFolderUrl, servletContext == null);
             }
@@ -262,14 +263,14 @@ public final class CMSTemplateManager {
     private static Map<String, CMSPageTemplate> loadTemplates(Path path) throws IllegalArgumentException {
         Map<String, CMSPageTemplate> templates = new LinkedHashMap<>();
         List<CMSPageTemplate> templateList = null;
-        ;
         try {
-            templateList = Files.list(path)
-                    .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
-                    .sorted()
-                    .map(templatePath -> CMSPageTemplate.loadFromXML(templatePath))
-                    .filter(template -> template != null)
-                    .collect(Collectors.toList());
+            try (Stream<java.nio.file.Path> templateFiles = Files.list(path)) {
+                templateList = templateFiles.filter(file -> file.getFileName().toString().toLowerCase().endsWith(".xml"))
+                        .sorted()
+                        .map(templatePath -> CMSPageTemplate.loadFromXML(templatePath))
+                        .filter(template -> template != null)
+                        .collect(Collectors.toList());
+            }
         } catch (IOException e) {
             throw new IllegalArgumentException("Error reading files from " + path, e);
         }

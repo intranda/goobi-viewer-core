@@ -13,6 +13,9 @@
         <dependent-module archiveName="viewer-module-worldviews.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-worldviews/goobi-viewer-module-worldviews">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="goobi-viewer-module-wienerlibrary.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-module-wienerlibrary/goobi-viewer-module-wienerlibrary">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <!-- AKWIEN -->
         <dependent-module archiveName="viewer-theme-akwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-akwien/goobi-viewer-theme-akwien">
             <dependency-type>uses</dependency-type>

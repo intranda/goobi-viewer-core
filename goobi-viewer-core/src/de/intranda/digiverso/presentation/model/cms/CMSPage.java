@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -62,7 +63,10 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
+import de.intranda.digiverso.presentation.model.glossary.Glossary;
+import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 @Entity
@@ -104,6 +108,9 @@ public class CMSPage {
 
     @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
+    
+    @Column(name = "related_pi", nullable = true)
+    private String relatedPI;
     
     @Column(name = "subtheme_discriminator", nullable = true)
     private String subThemeDiscriminatorValue = null;    
@@ -603,6 +610,19 @@ public class CMSPage {
     public String getContent(String itemId) {
         return getContent(itemId, null, null);
     }
+    
+    public Optional<CMSMediaItem> getMediaItem(String itemId) {
+        return Optional.ofNullable(getContentItem(itemId))
+        .map(content -> content.getMediaItem());
+    }
+    
+    public Optional<CMSMediaItem> getMediaItem() {
+        return getGlobalContentItems().stream()
+        .filter(content -> CMSContentItemType.MEDIA.equals(content.getType()))
+        .map(content -> content.getMediaItem())
+        .filter(item -> item != null)
+        .findFirst();
+    }
 
     public String getContent(String itemId, String width, String height) {
         logger.trace("Getting content " + itemId + " from page " + getId());
@@ -621,6 +641,13 @@ public class CMSPage {
                     break;
                 case COMPONENT:
                     contentString = item.getComponent();
+                    break;
+                case GLOSSARY:
+                    try {
+                        contentString = new GlossaryManager().getGlossaryAsJson(item.getGlossaryName());
+                    } catch (ContentNotFoundException | IOException e) {
+                        logger.error("Failed to load glossary " + item.getGlossaryName(), e);
+                    }
                     break;
                 default:
                     contentString = "";
@@ -913,4 +940,20 @@ public class CMSPage {
             return false;
         }
     }
+    
+    /**
+     * @return the relatedPI
+     */
+    public String getRelatedPI() {
+        return relatedPI;
+    }
+    
+    /**
+     * @param relatedPI the relatedPI to set
+     */
+    public void setRelatedPI(String relatedPI) {
+        this.relatedPI = relatedPI;
+    }
+
+
 }

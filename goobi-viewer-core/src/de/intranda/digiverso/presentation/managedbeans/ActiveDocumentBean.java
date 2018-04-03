@@ -96,6 +96,8 @@ public class ActiveDocumentBean implements Serializable {
     private SearchBean searchBean;
     @Inject
     private BookshelfBean bookshelfBean;
+    @Inject
+    private ImageDeliveryBean imageDelivery;
 
     /** URL parameter 'action'. */
     private String action = "";
@@ -228,6 +230,7 @@ public class ActiveDocumentBean implements Serializable {
      * @should not override topDocumentIddoc if LOGID has changed
      */
     public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException {
+        
         synchronized (this) {
             if (topDocumentIddoc == 0) {
                 throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -293,17 +296,17 @@ public class ActiveDocumentBean implements Serializable {
                     }
 
                 }
-
+                
                 int numPages = topDocument.getNumPages();
                 if (numPages < DataManager.getInstance()
                         .getConfiguration()
                         .getPageLoaderThreshold()) {
                     viewManager = new ViewManager(topDocument, new EagerPageLoader(topDocument), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE));
+                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 } else {
                     logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
                     viewManager = new ViewManager(topDocument, new LeanPageLoader(topDocument, numPages), topDocumentIddoc, logid,
-                            topDocument.getMetadataValue(SolrConstants.MIMETYPE));
+                            topDocument.getMetadataValue(SolrConstants.MIMETYPE), imageDelivery);
                 }
 
                 overviewPage = OverviewPage.loadOverviewPage(topDocument, BeanUtils.getLocale());
@@ -311,6 +314,7 @@ public class ActiveDocumentBean implements Serializable {
                 toc = new TOC();
                 toc.generate(viewManager.getTopDocument(), viewManager.isListAllVolumesInTOC(), viewManager.getMainMimeType(), tocCurrentPage);
             }
+
 
             // If LOGID is set, update the current element
             if (StringUtils.isNotEmpty(logid) && viewManager != null && !logid.equals(viewManager.getLogId())) {
@@ -335,7 +339,7 @@ public class ActiveDocumentBean implements Serializable {
                     // Re-initialize ViewManager with the new current element
                     PageOrientation firstPageOrientation = viewManager.getFirstPageOrientation();
                     viewManager = new ViewManager(viewManager.getTopDocument(), viewManager.getPageLoader(), subElementIddoc, logid,
-                            viewManager.getMainMimeType());
+                            viewManager.getMainMimeType(), imageDelivery);
                     viewManager.setFirstPageOrientation(firstPageOrientation);
                 } else {
                     logger.warn("{} not found for LOGID '{}'.", SolrConstants.IDDOC, logid);

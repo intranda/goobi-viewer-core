@@ -462,5 +462,19 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
     }
+    
+    public String getImageURI() {
+        StringBuilder imageUrlBuilder = new StringBuilder("file:/");
+
+        // Add an extra slash if not on Windows
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.indexOf("win") == -1) {
+            imageUrlBuilder.append('/');
+        }
+        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
+        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
+        imageUrlBuilder.append(getFileName());
+        return imageUrlBuilder.toString();
+    }
 
 }

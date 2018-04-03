@@ -28,10 +28,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -49,10 +51,15 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
+import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
+import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -65,6 +72,13 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -74,6 +88,8 @@ public class ViewManager implements Serializable {
     private static final long serialVersionUID = -7776362205876306849L;
 
     private static final Logger logger = LoggerFactory.getLogger(ViewManager.class);
+    
+    private ImageDeliveryBean imageDelivery;
 
     /** IDDOC of the top level document. */
     private long topDocumentIddoc;
@@ -118,7 +134,7 @@ public class ViewManager implements Serializable {
     private int lastPdfPage;
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
-
+    
     /**
      * 
      * @param topDocument
@@ -129,8 +145,9 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType)
+    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType, ImageDeliveryBean imageDelivery) 
             throws IndexUnreachableException, PresentationException {
+        this.imageDelivery = imageDelivery;
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
         logger.trace("New ViewManager: {} / {} / {}", topDocument.getLuceneId(), currentDocumentIddoc, logId);
@@ -176,44 +193,33 @@ public class ViewManager implements Serializable {
             return "";
         }
 
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl());
-        urlBuilder.append("image/")
-                .append(pi)
-                .append('/')
-                .append(representative.getFileName())
-                .append("/info.json");
+        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
+        urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
         return urlBuilder.toString();
     }
 
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        return getCurrentImageInfo(BeanUtils.getNavigationHelper()
-                .getCurrentPage());
+        return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
     }
 
-    public String getCurrentImageInfo(String pageType) throws IndexUnreachableException, DAOException {
+    public String getCurrentImageInfo(PageType pageType) throws IndexUnreachableException, DAOException {
         StringBuilder urlBuilder = new StringBuilder();
         if (isDoublePageMode()) {
             urlBuilder.append("[");
-            String imageInfoLeft = getImageInfo(getCurrentLeftPage());
-            String imageInfoRight = getImageInfo(getCurrentRightPage());
+            String imageInfoLeft = getCurrentLeftPage().map(page -> getImageInfo(page, pageType)).orElse(null);
+            String imageInfoRight = getCurrentRightPage().map(page -> getImageInfo(page, pageType)).orElse(null);
             if (StringUtils.isNotBlank(imageInfoLeft)) {
-                urlBuilder.append("\"")
-                        .append(imageInfoLeft)
-                        .append("\"");
+                urlBuilder.append("\"").append(imageInfoLeft).append("\"");
             }
             if (StringUtils.isNotBlank(imageInfoLeft) && StringUtils.isNotBlank(imageInfoRight)) {
                 urlBuilder.append(", ");
             }
             if (StringUtils.isNotBlank(imageInfoRight)) {
-                urlBuilder.append("\"")
-                        .append(imageInfoRight)
-                        .append("\"");
+                urlBuilder.append("\"").append(imageInfoRight).append("\"");
             }
             urlBuilder.append("]");
         } else {
-            urlBuilder.append(getImageInfo(getCurrentPage()));
+            urlBuilder.append(getImageInfo(getCurrentPage(), pageType));
         }
         return urlBuilder.toString();
     }
@@ -224,7 +230,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    private PhysicalElement getCurrentLeftPage() throws IndexUnreachableException, DAOException {
+    private Optional<PhysicalElement> getCurrentLeftPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
         if (actualPageOrientation.equals(PageOrientation.left)) {
@@ -240,7 +246,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      */
-    private PhysicalElement getCurrentRightPage() throws IndexUnreachableException, DAOException {
+    private Optional<PhysicalElement> getCurrentRightPage() throws IndexUnreachableException, DAOException {
         boolean actualPageOrderEven = this.currentImageOrder % 2 == 0;
         PageOrientation actualPageOrientation = actualPageOrderEven ? firstPageOrientation.opposite() : firstPageOrientation;
         if (actualPageOrientation.equals(PageOrientation.right)) {
@@ -255,23 +261,11 @@ public class ViewManager implements Serializable {
      * @return
      */
     private String getImageInfo(PhysicalElement page) {
-        StringBuilder urlBuilder = new StringBuilder();
-        if (page != null) {
-            if (page.isExternalUrl()) {
-                String url = page.getFilepath();
-                urlBuilder.append(url);
-            } else {
-                urlBuilder.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getIiifUrl());
-                urlBuilder.append("image/")
-                        .append(pi)
-                        .append('/')
-                        .append(page.getFileName())
-                        .append("/info.json");
-            }
-        }
-        return urlBuilder.toString();
+        return imageDelivery.getImage().getImageUrl(page);
+    }
+
+    private String getImageInfo(PhysicalElement page, PageType pageType) {
+        return imageDelivery.getImage().getImageUrl(page, pageType);
     }
 
     public String getCurrentImageInfoFullscreen() throws IndexUnreachableException, DAOException {
@@ -279,18 +273,8 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return "";
         }
-        if (currentPage.isExternalUrl()) {
-            return getCurrentImageInfo();
-        }
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl());
-        urlBuilder.append("fullscreen/image/")
-                .append(pi)
-                .append('/')
-                .append(currentPage.getFileName())
-                .append("/info.json");
-        return urlBuilder.toString();
+        String url = getImageInfo(currentPage, PageType.viewFullscreen);
+        return url;
     }
 
     public String getCurrentImageInfoCrowd() throws IndexUnreachableException, DAOException {
@@ -298,86 +282,23 @@ public class ViewManager implements Serializable {
         if (currentPage == null) {
             return "";
         }
-        if (currentPage.isExternalUrl()) {
-            return getCurrentImageInfo();
-        }
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl());
-        urlBuilder.append("crowdsourcing/image/")
-                .append(pi)
-                .append('/')
-                .append(currentPage.getFileName())
-                .append("/info.json");
-        return urlBuilder.toString();
+        String url = getImageInfo(currentPage, PageType.editOcr);
+        return url;
     }
 
-    public String getCurrentImageUrl(int width, int height, float rotation) throws IndexUnreachableException, DAOException {
-        PhysicalElement currentPage = getCurrentPage();
-        if (currentPage == null) {
-            return "";
-        }
+    public String getWatermarkUrl() throws IndexUnreachableException, DAOException, ConfigurationException {
+        return getWatermarkUrl("viewImage");
+    }
+        
+    public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ConfigurationException {
+        return imageDelivery.getFooter().getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()), Optional.ofNullable(PageType.valueOf(pageType))).orElse("");
 
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl());
-        urlBuilder.append("image/")
-                .append(pi)
-                .append('/')
-                .append(currentPage.getFileName())
-                .append("/full/!")
-                .append(width)
-                .append(",")
-                .append(height)
-                .append('/')
-                .append(rotation)
-                .append("/default.jpg");
-        return urlBuilder.toString();
     }
 
-    public String getWatermarkUrl() throws IndexUnreachableException, DAOException {
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl());
-        String format = DataManager.getInstance()
-                .getConfiguration()
-                .getWatermarkFormat();
-        if (getCurrentPage() != null) {
-            return urlBuilder
-                    .append("footer/full/!{width},{height}/0/default." + format + "?watermarkId=" + getFooterId()
-                            + getCurrentPage().getWatermarkText())
-                    .toString();
-        }
-
-        return urlBuilder.append("footer/full/!{width},{height}/0/default." + format + "?watermarkId=" + getFooterId())
-                .toString();
-    }
-
-    public String getCurrentPreviewUrl() throws IndexUnreachableException, DAOException {
-        int width = DataManager.getInstance()
-                .getConfiguration()
-                .getPreviewWidth();
-        int previewHeightPercentage = DataManager.getInstance()
-                .getConfiguration()
-                .getPreviewHeightPercentage();
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImg == null) {
-            return "";
-        }
-        String imageUrl = currentImg.getUrl(width, width * previewHeightPercentage, 0, false, false, null, null);
-        String previewUrl = new StringBuilder(imageUrl).append("&ignoreWatermark=true&roi=0,0,100,")
-                .append(previewHeightPercentage)
-                .toString();
-        return previewUrl;
-    }
 
     public String getCurrentThumbnailUrl() throws IndexUnreachableException, DAOException {
-        int width = DataManager.getInstance()
-                .getConfiguration()
-                .getPreviewThumbnailWidth();
-        int height = DataManager.getInstance()
-                .getConfiguration()
-                .getPreviewThumbnailHeight();
+        int width = DataManager.getInstance().getConfiguration().getPreviewThumbnailWidth();
+        int height = DataManager.getInstance().getConfiguration().getPreviewThumbnailHeight();
         PhysicalElement currentImg = getCurrentPage();
         if (currentImg == null) {
             return "";
@@ -385,202 +306,50 @@ public class ViewManager implements Serializable {
         return currentImg.getThumbnailUrl(width, height);
     }
 
-    public String getNeighbourPreviewUrl(int step) throws IndexUnreachableException, DAOException {
-        PhysicalElement page = getPage(currentImageOrder + step);
-        if (page != null) {
-            int width = DataManager.getInstance()
-                    .getConfiguration()
-                    .getPreviewWidth();
-            int previewHeightPercentage = DataManager.getInstance()
-                    .getConfiguration()
-                    .getPreviewHeightPercentage();
-            String imageUrl = page.getUrl(width, width * previewHeightPercentage, 0, false, false, null, null);
-            return imageUrl + "&ignoreWatermark=true" + "&roi=0,0,100," + previewHeightPercentage;
+    public String getCurrentImageUrl() throws ConfigurationException, IndexUnreachableException, DAOException {
+        return getCurrentImageUrl(PageType.viewImage);
+    }
+    
+    /**
+     * @return the iiif url to the image in a configured size
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ConfigurationException
+     */
+    public String getCurrentImageUrl(PageType view) throws IndexUnreachableException, DAOException, ConfigurationException {
+
+        int size = DataManager.getInstance()
+                .getConfiguration()
+                .getImageViewZoomScales(view, getCurrentPage().getImageType())
+                .stream()
+                .mapToInt(string -> Integer.parseInt(string))
+                .max()
+                .orElse(800);
+        return getCurrentImageUrl(view, size);
+    }
+
+    public String getCurrentImageUrl(int size) throws IndexUnreachableException, DAOException {
+        return getCurrentImageUrl(PageType.viewImage, size);
+    }
+    
+    /**
+     * @param view
+     * @param size
+     * @return
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     */
+    private String getCurrentImageUrl(PageType view, int size) throws IndexUnreachableException, DAOException {
+        ImageFileFormat format = ImageFileFormat.JPG;
+        if (ImageFileFormat.PNG.equals(getCurrentPage().getImageType().getFormat())) {
+            format = ImageFileFormat.PNG;
         }
-
-        return "";
-    }
-
-    public String getNeighbourThumbnailUrl(int step) throws IndexUnreachableException, DAOException {
-        PhysicalElement page = getPage(currentImageOrder + step);
-        if (page != null) {
-            int width = DataManager.getInstance()
-                    .getConfiguration()
-                    .getPreviewThumbnailWidth();
-            int height = DataManager.getInstance()
-                    .getConfiguration()
-                    .getPreviewThumbnailHeight();
-            return page.getThumbnailUrl(width, height);
-        }
-
-        return "";
-    }
-
-    public String getCurrentImageUrl() throws IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(false, false);
-    }
-
-    public String getCurrentImageUrlLarge() throws IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(false, true);
-
-    }
-
-    public String getCurrentImageUrlFullscreen() throws IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(true, false);
-    }
-
-    public String getCurrentImageUrlFullscreenLarge() throws IndexUnreachableException, DAOException {
-        return getCurrentImageUrl(true, true);
-    }
-
-    public String getCurrentImageUrl(boolean fullscreen, boolean enlarged) throws IndexUnreachableException, DAOException {
-        logger.trace("getCurrentImageUrl");
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImageOrder != -1 && currentImg != null) {
-            List<String> coords = getSearchResultCoords(currentImg);
-
-            Dimension imageSize = new Dimension(currentImg.getImageWidth(), currentImg.getImageHeight());
-            if (imageSize.height * imageSize.width == 0) {
-                return ""; //no image available
-            }
-            if (fullscreen) {
-                if (enlarged) {
-                    // width=defaultwidth, so the image doesn't have a unique width
-                    logger.debug("Creating larger image");
-                    int height = currentImg.getImageDefaultFullscreenHeight() * DataManager.getInstance()
-                            .getConfiguration()
-                            .getFullscreenZoomScale();
-                    imageSize = scaleToHeight(imageSize, height);
-                } else {
-                    int height = currentImg.getImageDefaultFullscreenHeight();
-                    imageSize = scaleToHeight(imageSize, height);
-                }
-            } else {
-                if (enlarged) {
-                    logger.trace("Creating larger image");
-                    int width = currentImg.getImageDefaultWidth(0) * DataManager.getInstance()
-                            .getConfiguration()
-                            .getImageViewZoomScale();
-                    imageSize = scaleToWidth(imageSize, width);
-                } else {
-                    int width = currentImg.getImageDefaultWidth(0);
-                    imageSize = scaleToWidth(imageSize, width);
-                }
-            }
-
-            String footerId = getFooterId();
-
-            String url = currentImg.getUrl(imageSize.width, imageSize.height, getCurrentRotate(), true, fullscreen, coords, footerId);
-            logger.debug("Calling content server url: {}", url);
-            return url;
-        }
-        return null;
-    }
-
-    public List<ImageLevel> getRepresentativeImageUrls()
-            throws IndexUnreachableException, PresentationException, DAOException, ConfigurationException {
-        PhysicalElement representative = getRepresentativePage();
-        List<ImageLevel> imageUrls = new ArrayList<>();
-        if (representative != null) {
-
-            //            List<String> coords = getSearchResultCoords(currentImage);
-            String footerId = getFooterId();
-            int imageWidth = representative.getImageWidth();
-            int imageHeight = representative.getImageHeight();
-            Dimension origSize = new Dimension(imageWidth, imageHeight);
-
-            List<String> imageScales = DataManager.getInstance()
-                    .getConfiguration()
-                    .getImageViewZoomScales();
-            String scale = imageScales.get(0);
-            if (scale != null) {
-                try {
-                    Dimension size = calculateImageSize(origSize, scale);
-                    if (getCurrentRotate() % 180 == 90) {
-                        size = new Dimension(size.height, size.width);
-                    }
-                    String url = representative.getUrl(size.width, size.height, 0, true, false, null, footerId);
-                    imageUrls.add(new ImageLevel(url, size));
-                } catch (NumberFormatException e) {
-                    logger.error("Cannot parse {} to positive number value", scale);
-                }
-            }
-        }
-        return imageUrls;
-    }
-
-    public List<ImageLevel> getCurrentImageUrls() throws IndexUnreachableException, DAOException, ConfigurationException {
-        int rotation = 0;//gtCurrentRotate();
-        PhysicalElement currentImage = getCurrentPage();
-        List<ImageLevel> imageUrls = new ArrayList<>();
-        if (currentImageOrder != -1 && currentImage != null) {
-
-            getFooterId();
-
-            int imageWidth = currentImage.getImageWidth();
-            int imageHeight = currentImage.getImageHeight();
-
-            Dimension origSize = new Dimension(imageWidth, imageHeight);
-
-            List<String> imageScales = DataManager.getInstance()
-                    .getConfiguration()
-                    .getImageViewZoomScales();
-            for (String scale : imageScales) {
-                if (scale != null) {
-                    try {
-                        Dimension size = calculateImageSize(origSize, scale);
-                        if (rotation % 180 == 90) {
-                            size = new Dimension(size.height, size.width);
-                        }
-                        // String url = currentImage.getUrl(size.width, size.height, getCurrentRotate(), true, false, null, footerId);
-                        String url = getCurrentImageUrl(size.width, size.height, rotation);
-                        imageUrls.add(new ImageLevel(url, size));
-                    } catch (NumberFormatException e) {
-                        logger.error("Cannot parse {} to positive number value", scale);
-                    }
-                }
-            }
-        }
-        return imageUrls;
-    }
-
-    private static Dimension calculateImageSize(Dimension origSize, String scale) throws NumberFormatException {
-        Dimension size = new Dimension(0, 0);
-        if (scale.matches("[\\.\\d]+%")) { //percentage value
-            float factor = Float.parseFloat(scale.replace("%", "")) / 100f;
-            if (factor > 0) {
-                size.width = (int) (origSize.width * factor);
-                size.height = (int) (origSize.height * factor);
-            } else {
-                throw new NumberFormatException("Cannot scale image to zero");
-            }
-        } else if (scale.matches("\\d*x\\d")) {
-            int xIndex = scale.indexOf("x");
-            String xString = scale.substring(0, xIndex);
-            String yString = scale.substring(xIndex + 1);
-            if (!xString.trim()
-                    .isEmpty()) {
-                size = scaleToWidth(origSize, Integer.parseInt(xString));
-            }
-            if (!yString.trim()
-                    .isEmpty()) {
-                size = scaleToHeight(origSize, Integer.parseInt(yString));
-            }
-        } else if (scale.matches("\\d+")) {
-            size = scaleToWidth(origSize, Integer.parseInt(scale));
-        } else {
-            throw new NumberFormatException("Cannot parse" + scale + " to image scale");
-        }
-        if (size.width > origSize.width) {
-            return origSize;
-        }
-        return size;
+        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl(), RegionRequest.FULL,
+                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
     private String getFooterId() {
-        String footerIdField = DataManager.getInstance()
-                .getConfiguration()
-                .getWatermarkIdField();
+        String footerIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
         String footerId = null;
         if (footerIdField != null) {
             footerId = topDocument.getMetadataValue(footerIdField);
@@ -605,13 +374,11 @@ public class ViewManager implements Serializable {
         }
         List<String> coords = null;
         SearchBean searchBean = BeanUtils.getSearchBean();
-        if (searchBean != null && (searchBean.getCurrentSearchFilterString() == null || searchBean.getCurrentSearchFilterString()
-                .equals(SearchHelper.SEARCH_FILTER_ALL.getLabel()) || searchBean.getCurrentSearchFilterString()
-                        .equals("filter_" + SolrConstants.FULLTEXT))) {
-            logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms()
-                    .toString());
-            coords = currentImg.getWordCoords(searchBean.getSearchTerms()
-                    .get(SolrConstants.FULLTEXT), rotate);
+        if (searchBean != null && (searchBean.getCurrentSearchFilterString() == null
+                || searchBean.getCurrentSearchFilterString().equals(SearchHelper.SEARCH_FILTER_ALL.getLabel())
+                || searchBean.getCurrentSearchFilterString().equals("filter_" + SolrConstants.FULLTEXT))) {
+            logger.trace("Adding word coords to page {}: {}", currentImg.getOrder(), searchBean.getSearchTerms().toString());
+            coords = currentImg.getWordCoords(searchBean.getSearchTerms().get(SolrConstants.FULLTEXT), rotate);
         }
         return coords;
     }
@@ -652,43 +419,11 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
-    @Deprecated
-    public String getCurrentDimensionsUrl() throws IndexUnreachableException, DAOException {
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImageOrder != -1 && currentImg != null) {
-            String url = currentImg.getDimensionsUrl();
-            logger.trace("Url for retrieving image dimensions: {}", url);
-            return url;
-        }
-        return "";
-    }
-
-    @Deprecated
-    public String getRepresentativePageDimensionsUrl() {
-        if (representativePage != null) {
-            String url = representativePage.getDimensionsUrl();
-            logger.trace("Url for retrieving image dimensions: {}", url);
-            return url;
-        }
-        return "";
-    }
-
-    @Deprecated
-    public String getRepresentativeImageUrlForOpenLayers()
-            throws IndexUnreachableException, PresentationException, DAOException, ConfigurationException {
-        return getRepresentativeImageUrl();
-
-    }
-
     public String getRepresentativeImageUrl() throws IndexUnreachableException, PresentationException, DAOException, ConfigurationException {
+
         if (getRepresentativePage() != null) {
             Dimension imageSize = new Dimension(representativePage.getImageWidth(), representativePage.getImageHeight());
-            int width = representativePage.getImageDefaultWidth(0);
-            if (representativePage.getMixWidth() > 0 && width > representativePage.getMixWidth()) {
-                width = representativePage.getMixWidth();
-            }
-            imageSize = scaleToWidth(imageSize, width);
-            return representativePage.getUrl(imageSize.width, imageSize.height, 0, true, false, null);
+            return imageDelivery.getThumb().getThumbnailUrl(representativePage);
         }
         return null;
 
@@ -712,9 +447,7 @@ public class ViewManager implements Serializable {
      * @return The current User; null of not logged in.
      */
     public User getCurrentUser() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getRequest();
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         if (request != null) {
             UserBean ub = BeanUtils.getUserBean();
             if (ub != null && ub.getUser() != null) {
@@ -781,8 +514,8 @@ public class ViewManager implements Serializable {
             } else {
                 boolean childIsFilesOnly = isChildFilesOnly();
                 PhysicalElement firstPage = pageLoader.getPage(pageLoader.getFirstPageOrder());
-                filesOnly = childIsFilesOnly || (isHasPages() && firstPage != null && firstPage.getMimeType()
-                        .equals(PhysicalElement.MIME_TYPE_APPLICATION));
+                filesOnly = childIsFilesOnly
+                        || (isHasPages() && firstPage != null && firstPage.getMimeType().equals(PhysicalElement.MIME_TYPE_APPLICATION));
             }
 
         }
@@ -813,9 +546,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public boolean isListAllVolumesInTOC() throws IndexUnreachableException, DAOException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isTocListSiblingRecords() || isFilesOnly();
+        return DataManager.getInstance().getConfiguration().isTocListSiblingRecords() || isFilesOnly();
     }
 
     /**
@@ -844,7 +575,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public PhysicalElement getCurrentPage() throws IndexUnreachableException, DAOException {
-        return getPage(currentImageOrder);
+        return getPage(currentImageOrder).orElse(null);
     }
 
     /**
@@ -859,13 +590,13 @@ public class ViewManager implements Serializable {
      * @should return null if order larger than number of pages
      * @should return null if pageLoader is null
      */
-    public PhysicalElement getPage(int order) throws IndexUnreachableException, DAOException {
+    public Optional<PhysicalElement> getPage(int order) throws IndexUnreachableException, DAOException {
         if (pageLoader != null && pageLoader.getPage(order) != null) {
             // logger.debug("page " + order + ": " + pageLoader.getPage(order).getFileName());
-            return pageLoader.getPage(order);
+            return Optional.ofNullable(pageLoader.getPage(order));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     public PhysicalElement getRepresentativePage() throws PresentationException, IndexUnreachableException, DAOException {
@@ -944,9 +675,7 @@ public class ViewManager implements Serializable {
         } else {
             // If a specific LOGID has been requested, look up its IDDOC
             logger.trace("Selecting currentElementIddoc by LOGID: {} ({})", logId, pi);
-            long iddoc = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getIddocByLogid(getPi(), logId);
+            long iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(getPi(), logId);
             if (iddoc > -1) {
                 currentDocumentIddoc = iddoc;
             } else {
@@ -967,8 +696,7 @@ public class ViewManager implements Serializable {
     public String getCurrentImageLabel() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
-            return currentPage.getOrderLabel()
-                    .trim();
+            return currentPage.getOrderLabel().trim();
         }
 
         return null;
@@ -1081,9 +809,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public List<PhysicalElement> getImagesSection() throws IndexUnreachableException, DAOException {
-        return getImagesSection(DataManager.getInstance()
-                .getConfiguration()
-                .getViewerThumbnailsPerPage());
+        return getImagesSection(DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage());
     }
 
     /**
@@ -1138,9 +864,7 @@ public class ViewManager implements Serializable {
     }
 
     public int getFirstDisplayedThumbnailIndex() {
-        return getFirstDisplayedThumbnailIndex(DataManager.getInstance()
-                .getConfiguration()
-                .getViewerThumbnailsPerPage());
+        return getFirstDisplayedThumbnailIndex(DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage());
     }
 
     public int getCurrentThumbnailPage() {
@@ -1161,17 +885,13 @@ public class ViewManager implements Serializable {
 
     public boolean hasPreviousThumbnailSection() {
         int currentFirstThumbnailIndex = getFirstDisplayedThumbnailIndex();
-        int previousLastThumbnailIndex = currentFirstThumbnailIndex - DataManager.getInstance()
-                .getConfiguration()
-                .getViewerThumbnailsPerPage();
+        int previousLastThumbnailIndex = currentFirstThumbnailIndex - DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
         return previousLastThumbnailIndex >= pageLoader.getFirstPageOrder();
     }
 
     public boolean hasNextThumbnailSection() {
         int currentFirstThumbnailIndex = getFirstDisplayedThumbnailIndex();
-        int previousLastThumbnailIndex = currentFirstThumbnailIndex + DataManager.getInstance()
-                .getConfiguration()
-                .getViewerThumbnailsPerPage();
+        int previousLastThumbnailIndex = currentFirstThumbnailIndex + DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
         return previousLastThumbnailIndex <= pageLoader.getLastPageOrder();
     }
 
@@ -1197,9 +917,7 @@ public class ViewManager implements Serializable {
         if (pageLoader != null) {
             Double im = (double) pageLoader.getNumPages();
 
-            Double thumb = (double) DataManager.getInstance()
-                    .getConfiguration()
-                    .getViewerThumbnailsPerPage();
+            Double thumb = (double) DataManager.getInstance().getConfiguration().getViewerThumbnailsPerPage();
             int answer = new Double(Math.floor(im / thumb)).intValue();
             if (im % thumb != 0 || answer == 0) {
                 answer++;
@@ -1218,12 +936,9 @@ public class ViewManager implements Serializable {
         if (topDocument != null && StructElementStub.SOURCE_DOC_FORMAT_METS.equals(topDocument.getSourceDocFormat()) && isHasPages()) {
             try {
                 StringBuilder sbPath = new StringBuilder();
-                sbPath.append(DataManager.getInstance()
-                        .getConfiguration()
-                        .getViewerDfgViewerUrl());
+                sbPath.append(DataManager.getInstance().getConfiguration().getViewerDfgViewerUrl());
                 sbPath.append(URLEncoder.encode(getMetsResolverUrl(), "utf-8"));
-                sbPath.append("&set[image]=")
-                        .append(currentImageOrder);
+                sbPath.append("&set[image]=").append(currentImageOrder);
                 return sbPath.toString();
             } catch (UnsupportedEncodingException e) {
                 logger.error("error while encoding url", e);
@@ -1263,9 +978,7 @@ public class ViewManager implements Serializable {
     public String getAnchorMetsResolverUrl() {
         if (anchorDocument != null) {
             String parentPi = anchorDocument.getMetadataValue(SolrConstants.PI);
-            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/metsresolver?id=")
-                    .append(parentPi)
-                    .toString();
+            return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/metsresolver?id=").append(parentPi).toString();
         }
 
         return null;
@@ -1276,23 +989,12 @@ public class ViewManager implements Serializable {
      * 
      * @return {@link String}
      * @throws IndexUnreachableException
+     * @throws PresentationException 
      */
-    public String getPdfDownloadLink() throws IndexUnreachableException {
-        // TODO
-        StringBuilder sb = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getContentServerWrapperUrl()).append("?action=pdf&metsFile=")
-                        .append(getPi())
-                        .append(".xml")
-                        .append("&targetFileName=")
-                        .append(getPi())
-                        .append(".pdf");
-        String footerId = getFooterId();
-        if (StringUtils.isNotBlank(footerId)) {
-            sb.append("&watermarkId=")
-                    .append(footerId);
-        }
-        return sb.toString();
+    public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException {
+        
+        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), "");
+
     }
 
     /**
@@ -1303,17 +1005,8 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
-        StringBuilder sb = new StringBuilder();
-        PhysicalElement page = getCurrentPage();
-        if (page != null) {
-            sb.append(page.getImageToPdfUrl());
-        }
-        String footerId = getFooterId();
-        if (StringUtils.isNotBlank(footerId)) {
-            sb.append("&watermarkId=")
-                    .append(footerId);
-        }
-        return sb.toString();
+        
+        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), getCurrentPage());
     }
 
     /**
@@ -1339,30 +1032,16 @@ public class ViewManager implements Serializable {
             lastPdfPage = firstPdfPage;
         }
 
-        StringBuilder sb = new StringBuilder(DataManager.getInstance()
-                .getConfiguration()
-                .getContentServerWrapperUrl()).append("?action=pdf&images=");
+        
+//        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&images=");
+        List<PhysicalElement> pages = new ArrayList<>();
         for (int i = firstPdfPage; i <= lastPdfPage; ++i) {
             PhysicalElement page = pageLoader.getPage(i);
-            sb.append(getPi())
-                    .append('/')
-                    .append(page.getFileName())
-                    .append('$');
+            pages.add(page);
+//            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
         }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append("&targetFileName=")
-                .append(getPi())
-                .append('_')
-                .append(firstPdfPage)
-                .append('-')
-                .append(lastPdfPage)
-                .append(".pdf");
-        String footerId = getFooterId();
-        if (StringUtils.isNotBlank(footerId)) {
-            sb.append("&watermarkId=")
-                    .append(footerId);
-        }
-        return sb.toString();
+        PhysicalElement[] pageArr = new PhysicalElement[pages.size()];
+        return imageDelivery.getPdf().getPdfUrl(getActiveDocument(), pages.toArray(pageArr));
     }
 
     public boolean isPdfPartDownloadLinkEnabled() {
@@ -1383,9 +1062,7 @@ public class ViewManager implements Serializable {
             return false;
         }
         if (accessPermissionPdf == null) {
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .getRequest();
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             try {
                 accessPermissionPdf =
                         AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
@@ -1407,25 +1084,15 @@ public class ViewManager implements Serializable {
      * @return
      */
     public boolean isAllowUserComments() {
-        if (!DataManager.getInstance()
-                .getConfiguration()
-                .isUserCommentsEnabled()) {
+        if (!DataManager.getInstance().getConfiguration().isUserCommentsEnabled()) {
             return false;
         }
 
         if (allowUserComments == null) {
-            String query = DataManager.getInstance()
-                    .getConfiguration()
-                    .getUserCommentsConditionalQuery();
+            String query = DataManager.getInstance().getConfiguration().getUserCommentsConditionalQuery();
             try {
-                if (StringUtils.isNotEmpty(query) && DataManager.getInstance()
-                        .getSearchIndex()
-                        .getHitCount(new StringBuilder(SolrConstants.PI).append(':')
-                                .append(pi)
-                                .append(" AND (")
-                                .append(query)
-                                .append(')')
-                                .toString()) == 0) {
+                if (StringUtils.isNotEmpty(query) && DataManager.getInstance().getSearchIndex().getHitCount(
+                        new StringBuilder(SolrConstants.PI).append(':').append(pi).append(" AND (").append(query).append(')').toString()) == 0) {
                     allowUserComments = false;
                     logger.trace("User comments are not allowed for this record.");
                 } else {
@@ -1444,21 +1111,16 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isDisplayTitleBarPdfLink() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isTitlePdfEnabled() && isAccessPermissionPdf();
+        return DataManager.getInstance().getConfiguration().isTitlePdfEnabled() && isAccessPermissionPdf();
     }
 
     public boolean isDisplayMetadataPdfLink() {
-        return topDocument != null && topDocument.isWork() && DataManager.getInstance()
-                .getConfiguration()
-                .isMetadataPdfEnabled() && isAccessPermissionPdf();
+        return topDocument != null && topDocument.isWork() && DataManager.getInstance().getConfiguration().isMetadataPdfEnabled()
+                && isAccessPermissionPdf();
     }
 
     public boolean isDisplayPagePdfLink() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isPagePdfEnabled() && isAccessPermissionPdf();
+        return DataManager.getInstance().getConfiguration().isPagePdfEnabled() && isAccessPermissionPdf();
     }
 
     /**
@@ -1467,9 +1129,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getOaiMarcUrl() throws IndexUnreachableException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getMarcUrl() + getPi();
+        return DataManager.getInstance().getConfiguration().getMarcUrl() + getPi();
     }
 
     /**
@@ -1478,9 +1138,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getOaiDcUrl() throws IndexUnreachableException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getDcUrl() + getPi();
+        return DataManager.getInstance().getConfiguration().getDcUrl() + getPi();
     }
 
     /**
@@ -1489,9 +1147,7 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getOaiEseUrl() throws IndexUnreachableException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getEseUrl() + getPi();
+        return DataManager.getInstance().getConfiguration().getEseUrl() + getPi();
     }
 
     /**
@@ -1553,10 +1209,7 @@ public class ViewManager implements Serializable {
                     persistentUrl = urn;
                 } else {
                     // Just the URN
-                    url.append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getUrnResolverUrl())
-                            .append(urn);
+                    url.append(DataManager.getInstance().getConfiguration().getUrnResolverUrl()).append(urn);
                     persistentUrl = url.toString();
                 }
             } else {
@@ -1621,21 +1274,17 @@ public class ViewManager implements Serializable {
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
         if (belowFulltextThreshold == null) {
 
-            long pagesWithFulltext = DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                            .append(':')
-                            .append(pi)
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":PAGE")
-                            .append(" +")
-                            .append(SolrConstants.FULLTEXTAVAILABLE)
-                            .append(":true")
-                            .toString());
-            int threshold = DataManager.getInstance()
-                    .getConfiguration()
-                    .getFulltextPercentageWarningThreshold();
+            long pagesWithFulltext = DataManager.getInstance().getSearchIndex().getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                    .append(':')
+                    .append(pi)
+                    .append(" +")
+                    .append(SolrConstants.DOCTYPE)
+                    .append(":PAGE")
+                    .append(" +")
+                    .append(SolrConstants.FULLTEXTAVAILABLE)
+                    .append(":true")
+                    .toString());
+            int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
             double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
             logger.trace("{}% of pages have full-text", percentage);
             if (percentage < threshold) {
@@ -1717,38 +1366,25 @@ public class ViewManager implements Serializable {
      */
     public boolean isDisplayContentDownloadMenu() {
         try {
-            if (DataManager.getInstance()
-                    .getConfiguration()
-                    .isOriginalContentDownload()
-                    && AccessConditionUtils.checkContentFileAccessPermission(pi, (HttpServletRequest) FacesContext.getCurrentInstance()
-                            .getExternalContext()
-                            .getRequest())) {
+            if (DataManager.getInstance().getConfiguration().isOriginalContentDownload() && AccessConditionUtils.checkContentFileAccessPermission(pi,
+                    (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest())) {
 
                 File sourceFileDir;
                 if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-                    String dataRepositoriesHome = DataManager.getInstance()
-                            .getConfiguration()
-                            .getDataRepositoriesHome();
+                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
                     StringBuilder sbFilePath = new StringBuilder();
                     if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                        sbFilePath.append(dataRepositoriesHome)
-                                .append(File.separator);
+                        sbFilePath.append(dataRepositoriesHome).append(File.separator);
                     }
                     sbFilePath.append(topDocument.getDataRepository())
                             .append(File.separator)
-                            .append(DataManager.getInstance()
-                                    .getConfiguration()
-                                    .getOrigContentFolder())
+                            .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
                             .append(File.separator)
                             .append(getPi());
                     sourceFileDir = new File(sbFilePath.toString());
                 } else {
-                    sourceFileDir = new File(new StringBuilder().append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getViewerHome())
-                            .append(DataManager.getInstance()
-                                    .getConfiguration()
-                                    .getOrigContentFolder())
+                    sourceFileDir = new File(new StringBuilder().append(DataManager.getInstance().getConfiguration().getViewerHome())
+                            .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
                             .append(File.separator)
                             .append(getPi())
                             .toString());
@@ -1777,31 +1413,20 @@ public class ViewManager implements Serializable {
 
         File sourceFileDir;
         if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-            String dataRepositoriesHome = DataManager.getInstance()
-                    .getConfiguration()
-                    .getDataRepositoriesHome();
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
             StringBuilder sbFilePath = new StringBuilder();
             if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                sbFilePath.append(dataRepositoriesHome)
-                        .append(File.separator);
+                sbFilePath.append(dataRepositoriesHome).append(File.separator);
             }
             sbFilePath.append(topDocument.getDataRepository())
                     .append(File.separator)
-                    .append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getOrigContentFolder())
+                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
                     .append(File.separator)
                     .append(getPi());
             sourceFileDir = new File(sbFilePath.toString());
         } else {
-            sourceFileDir = new File(new StringBuilder(DataManager.getInstance()
-                    .getConfiguration()
-                    .getViewerHome()).append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getOrigContentFolder())
-                            .append(File.separator)
-                            .append(getPi())
-                            .toString());
+            sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome())
+                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder()).append(File.separator).append(getPi()).toString());
 
         }
         if (sourceFileDir.isDirectory()) {
@@ -1849,35 +1474,27 @@ public class ViewManager implements Serializable {
         String page = String.valueOf(currentImageOrder);
         File sourceFileDir;
         if (StringUtils.isNotEmpty(topDocument.getDataRepository())) {
-            String dataRepositoriesHome = DataManager.getInstance()
-                    .getConfiguration()
-                    .getDataRepositoriesHome();
+            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
             StringBuilder sbFilePath = new StringBuilder();
             if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
-                sbFilePath.append(dataRepositoriesHome)
-                        .append(File.separator);
+                sbFilePath.append(dataRepositoriesHome).append(File.separator);
             }
             sbFilePath.append(topDocument.getDataRepository())
                     .append(File.separator)
-                    .append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getOrigContentFolder())
+                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
                     .append(File.separator)
                     .append(getPi())
                     .append(File.separator)
                     .append(page);
             sourceFileDir = new File(sbFilePath.toString());
         } else {
-            sourceFileDir = new File(new StringBuilder(DataManager.getInstance()
-                    .getConfiguration()
-                    .getViewerHome()).append(DataManager.getInstance()
-                            .getConfiguration()
-                            .getOrigContentFolder())
-                            .append(File.separator)
-                            .append(getPi())
-                            .append(File.separator)
-                            .append(page)
-                            .toString());
+            sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome())
+                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
+                    .append(File.separator)
+                    .append(getPi())
+                    .append(File.separator)
+                    .append(page)
+                    .toString());
 
         }
         if (sourceFileDir.isDirectory()) {
@@ -1927,7 +1544,6 @@ public class ViewManager implements Serializable {
         if (topDocument == null || topDocument.getLuceneId() != topDocumentIddoc) {
             topDocument = new StructElement(topDocumentIddoc, null);
         }
-
         return topDocument;
     }
 
@@ -1988,9 +1604,7 @@ public class ViewManager implements Serializable {
         }
 
         logger.trace("docHierarchy size: {}", docHierarchy.size());
-        if (!DataManager.getInstance()
-                .getConfiguration()
-                .getIncludeAnchorInTitleBreadcrumbs() && !docHierarchy.isEmpty()) {
+        if (!DataManager.getInstance().getConfiguration().getIncludeAnchorInTitleBreadcrumbs() && !docHierarchy.isEmpty()) {
             return docHierarchy.subList(1, docHierarchy.size());
         }
         return docHierarchy;
@@ -2044,12 +1658,8 @@ public class ViewManager implements Serializable {
         String rights = null;
 
         if (this.topDocument.getMetadataValue("MD_TITLE") != null) {
-            title = topDocument.getMetadataValues("MD_TITLE")
-                    .iterator()
-                    .next();
-            result.append("\r<meta name=\"DC.title\" content=\"")
-                    .append(title)
-                    .append("\">");
+            title = topDocument.getMetadataValues("MD_TITLE").iterator().next();
+            result.append("\r<meta name=\"DC.title\" content=\"").append(title).append("\">");
         }
 
         if (this.topDocument.getMetadataValue("MD_CREATOR") != null) {
@@ -2058,35 +1668,25 @@ public class ViewManager implements Serializable {
                 if (StringUtils.isEmpty(creators)) {
                     creators = value;
                 } else {
-                    creators = new StringBuilder(creators).append(", ")
-                            .append(value)
-                            .toString();
+                    creators = new StringBuilder(creators).append(", ").append(value).toString();
                 }
             }
-            result.append("\r<meta name=\"DC.creator\" content=\"")
-                    .append(creators)
-                    .append("\">");
+            result.append("\r<meta name=\"DC.creator\" content=\"").append(creators).append("\">");
         }
 
         if (this.topDocument.getMetadataValue("MD_PUBLISHER") != null) {
             publisher = topDocument.getMetadataValue("MD_PUBLISHER");
-            result.append("\r<meta name=\"DC.publisher\" content=\"")
-                    .append(publisher)
-                    .append("\">");
+            result.append("\r<meta name=\"DC.publisher\" content=\"").append(publisher).append("\">");
         }
 
         if (this.topDocument.getMetadataValue("MD_YEARPUBLISH") != null) {
             date = topDocument.getMetadataValue("MD_YEARPUBLISH");
-            result.append("\r<meta name=\"DC.date\" content=\"")
-                    .append(date)
-                    .append("\">");
+            result.append("\r<meta name=\"DC.date\" content=\"").append(date).append("\">");
         }
 
         if (this.topDocument.getMetadataValue(SolrConstants.URN) != null) {
             identifier = this.topDocument.getMetadataValue(SolrConstants.URN);
-            result.append("\r<meta name=\"DC.identifier\" content=\"")
-                    .append(identifier)
-                    .append("\">");
+            result.append("\r<meta name=\"DC.identifier\" content=\"").append(identifier).append("\">");
         }
 
         String sourceString = new StringBuilder(creators).append(": ")
@@ -2100,16 +1700,12 @@ public class ViewManager implements Serializable {
                 .append('.')
                 .toString();
 
-        result.append("\r<meta name=\"DC.source\" content=\"")
-                .append(sourceString)
-                .append("\">");
+        result.append("\r<meta name=\"DC.source\" content=\"").append(sourceString).append("\">");
 
         if (topDocument.getMetadataValue(SolrConstants.ACCESSCONDITION) != null) {
             rights = this.topDocument.getMetadataValue(SolrConstants.ACCESSCONDITION);
             if (!SolrConstants.OPEN_ACCESS_VALUE.equals(rights)) {
-                result.append("\r<meta name=\"DC.rights\" content=\"")
-                        .append(rights)
-                        .append("\">");
+                result.append("\r<meta name=\"DC.rights\" content=\"").append(rights).append("\">");
             }
         }
 
@@ -2117,12 +1713,8 @@ public class ViewManager implements Serializable {
     }
 
     public boolean isHasVersionHistory() throws PresentationException, IndexUnreachableException {
-        if (StringUtils.isEmpty(DataManager.getInstance()
-                .getConfiguration()
-                .getPreviousVersionIdentifierField()) && StringUtils.isEmpty(
-                        DataManager.getInstance()
-                                .getConfiguration()
-                                .getNextVersionIdentifierField())) {
+        if (StringUtils.isEmpty(DataManager.getInstance().getConfiguration().getPreviousVersionIdentifierField())
+                && StringUtils.isEmpty(DataManager.getInstance().getConfiguration().getNextVersionIdentifierField())) {
             return false;
         }
 
@@ -2141,21 +1733,15 @@ public class ViewManager implements Serializable {
         if (versionHistory == null) {
             versionHistory = new ArrayList<>();
 
-            String versionLabelField = DataManager.getInstance()
-                    .getConfiguration()
-                    .getVersionLabelField();
+            String versionLabelField = DataManager.getInstance().getConfiguration().getVersionLabelField();
 
             {
-                String nextVersionIdentifierField = DataManager.getInstance()
-                        .getConfiguration()
-                        .getNextVersionIdentifierField();
+                String nextVersionIdentifierField = DataManager.getInstance().getConfiguration().getNextVersionIdentifierField();
                 if (StringUtils.isNotEmpty(nextVersionIdentifierField)) {
                     List<String> next = new ArrayList<>();
                     String identifier = topDocument.getMetadataValue(nextVersionIdentifierField);
                     while (identifier != null) {
-                        SolrDocument doc = DataManager.getInstance()
-                                .getSearchIndex()
-                                .getFirstDoc(SolrConstants.PI + ":" + identifier, null);
+                        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + identifier, null);
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
                             String versionLabel =
@@ -2165,18 +1751,14 @@ public class ViewManager implements Serializable {
                             }
                             jsonObj.put("id", identifier);
                             if (doc.getFieldValues("MD_YEARPUBLISH") != null) {
-                                jsonObj.put("year", doc.getFieldValues("MD_YEARPUBLISH")
-                                        .iterator()
-                                        .next());
+                                jsonObj.put("year", doc.getFieldValues("MD_YEARPUBLISH").iterator().next());
                             }
                             jsonObj.put("order", "1"); // "1" means this is a
                                                        // succeeding version
                             next.add(jsonObj.toJSONString());
                             identifier = null;
                             if (doc.getFieldValues(nextVersionIdentifierField) != null) {
-                                identifier = (String) doc.getFieldValues(nextVersionIdentifierField)
-                                        .iterator()
-                                        .next();
+                                identifier = (String) doc.getFieldValues(nextVersionIdentifierField).iterator().next();
                             }
                         }
                     }
@@ -2199,16 +1781,12 @@ public class ViewManager implements Serializable {
             }
 
             {
-                String prevVersionIdentifierField = DataManager.getInstance()
-                        .getConfiguration()
-                        .getPreviousVersionIdentifierField();
+                String prevVersionIdentifierField = DataManager.getInstance().getConfiguration().getPreviousVersionIdentifierField();
                 if (StringUtils.isNotEmpty(prevVersionIdentifierField)) {
                     List<String> previous = new ArrayList<>();
                     String identifier = topDocument.getMetadataValue(prevVersionIdentifierField);
                     while (identifier != null) {
-                        SolrDocument doc = DataManager.getInstance()
-                                .getSearchIndex()
-                                .getFirstDoc(SolrConstants.PI + ":" + identifier, null);
+                        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + identifier, null);
                         if (doc != null) {
                             JSONObject jsonObj = new JSONObject();
                             String versionLabel =
@@ -2218,18 +1796,14 @@ public class ViewManager implements Serializable {
                             }
                             jsonObj.put("id", identifier);
                             if (doc.getFieldValues("MD_YEARPUBLISH") != null) {
-                                jsonObj.put("year", doc.getFieldValues("MD_YEARPUBLISH")
-                                        .iterator()
-                                        .next());
+                                jsonObj.put("year", doc.getFieldValues("MD_YEARPUBLISH").iterator().next());
                             }
                             jsonObj.put("order", "-1"); // "-1" means this is a
                                                         // preceding version
                             previous.add(jsonObj.toJSONString());
                             identifier = null;
                             if (doc.getFieldValues(prevVersionIdentifierField) != null) {
-                                identifier = (String) doc.getFieldValues(prevVersionIdentifierField)
-                                        .iterator()
-                                        .next();
+                                identifier = (String) doc.getFieldValues(prevVersionIdentifierField).iterator().next();
                             }
                         }
                     }
@@ -2251,8 +1825,8 @@ public class ViewManager implements Serializable {
     public String getContextObject() {
         if (currentDocument != null && contextObject == null) {
             try {
-                contextObject = currentDocument.generateContextObject(BeanUtils.getNavigationHelper()
-                        .getCurrentUrl(), currentDocument.getTopStruct());
+                contextObject =
+                        currentDocument.generateContextObject(BeanUtils.getNavigationHelper().getCurrentUrl(), currentDocument.getTopStruct());
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             } catch (IndexUnreachableException e) {
@@ -2277,12 +1851,10 @@ public class ViewManager implements Serializable {
             return "";
         }
 
-        TranskribusSession session = ub.getUser()
-                .getTranskribusSession();
+        TranskribusSession session = ub.getUser().getTranskribusSession();
         if (session == null && login) {
             ub.transkribusLoginAction();
-            session = ub.getUser()
-                    .getTranskribusSession();
+            session = ub.getUser().getTranskribusSession();
         }
         if (session == null) {
             Messages.error("transkribus_recordInjestError");
@@ -2290,9 +1862,8 @@ public class ViewManager implements Serializable {
         }
         try {
             String resolverUrlRoot = "http://viewer-demo01.intranda.com/viewer/metsresolver?id="; // TODO
-            TranskribusJob job = TranskribusUtils.ingestRecord(DataManager.getInstance()
-                    .getConfiguration()
-                    .getTranskribusRestApiUrl(), session, pi, resolverUrlRoot);
+            TranskribusJob job = TranskribusUtils.ingestRecord(DataManager.getInstance().getConfiguration().getTranskribusRestApiUrl(), session, pi,
+                    resolverUrlRoot);
             if (job == null) {
                 Messages.error("transkribus_recordInjestError");
                 return "";
@@ -2307,8 +1878,7 @@ public class ViewManager implements Serializable {
             Messages.error("transkribus_recordInjestError");
         } catch (HTTPException e) {
             if (e.getCode() == 401) {
-                ub.getUser()
-                        .setTranskribusSession(null);
+                ub.getUser().setTranskribusSession(null);
                 Messages.error("transkribus_sessionExpired");
             } else {
                 logger.error(e.getMessage(), e);
@@ -2329,9 +1899,7 @@ public class ViewManager implements Serializable {
         if (session == null) {
             return false;
         }
-        List<TranskribusJob> jobs = DataManager.getInstance()
-                .getDao()
-                .getTranskribusJobs(pi, session.getUserId(), null);
+        List<TranskribusJob> jobs = DataManager.getInstance().getDao().getTranskribusJobs(pi, session.getUserId(), null);
 
         return jobs != null && !jobs.isEmpty();
     }
@@ -2342,9 +1910,7 @@ public class ViewManager implements Serializable {
             return false;
         }
 
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useTiles();
+        return DataManager.getInstance().getConfiguration().useTiles();
     }
 
     public boolean useTilesFullscreen() throws IndexUnreachableException, DAOException, ConfigurationException {
@@ -2353,9 +1919,7 @@ public class ViewManager implements Serializable {
             return false;
         }
 
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useTilesFullscreen();
+        return DataManager.getInstance().getConfiguration().useTilesFullscreen();
     }
 
     /**
@@ -2486,7 +2050,7 @@ public class ViewManager implements Serializable {
      */
     public int getCurrentPageSourceIndex() throws IndexUnreachableException, DAOException {
         if (isDoublePageMode()) {
-            PhysicalElement currentRightPage = getCurrentRightPage();
+            PhysicalElement currentRightPage = getCurrentRightPage().orElse(null);
             if (currentRightPage != null) {
                 return currentRightPage.equals(getCurrentPage()) ? 1 : 0;
             }
@@ -2504,32 +2068,22 @@ public class ViewManager implements Serializable {
         if (document != null) {
             switch (document.docStructType) {
                 case "Comment":
-                    sb.append("\"")
-                            .append(document.getMetadataValue(SolrConstants.TITLE))
-                            .append("\"");
+                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
                     if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
-                        sb.append(" von ")
-                                .append(document.getMetadataValue("MD_AUTHOR"));
+                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
                     }
                     if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
-                        sb.append(" (")
-                                .append(document.getMetadataValue("MD_YEARPUBLISH"))
-                                .append(")");
+                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
                     }
                     break;
                 case "FormationHistory":
-                    sb.append("\"")
-                            .append(document.getMetadataValue(SolrConstants.TITLE))
-                            .append("\"");
+                    sb.append("\"").append(document.getMetadataValue(SolrConstants.TITLE)).append("\"");
                     //TODO: Add Einsatzland z.b.: (Deutschland)
                     if (StringUtils.isNotBlank(document.getMetadataValue("MD_AUTHOR"))) {
-                        sb.append(" von ")
-                                .append(document.getMetadataValue("MD_AUTHOR"));
+                        sb.append(" von ").append(document.getMetadataValue("MD_AUTHOR"));
                     }
                     if (StringUtils.isNotBlank(document.getMetadataValue("MD_YEARPUBLISH"))) {
-                        sb.append(" (")
-                                .append(document.getMetadataValue("MD_YEARPUBLISH"))
-                                .append(")");
+                        sb.append(" (").append(document.getMetadataValue("MD_YEARPUBLISH")).append(")");
                     }
                     break;
                 case "Source":

@@ -169,6 +169,18 @@
 		<servlet-name>OAuthServlet</servlet-name>
 		<url-pattern>/oauth</url-pattern>
 	</servlet-mapping>
+    <servlet>
+        <display-name>DFGViewerImage</display-name>
+        <servlet-name>DFGViewerImage</servlet-name>
+        <servlet-class>
+            de.intranda.digiverso.presentation.servlets.DFGViewerImage
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DFGViewerImage</servlet-name>
+        <url-pattern>/content/*</url-pattern>
+    </servlet-mapping>
+
 	<!--
 	<servlet>
 		<description></description>
@@ -181,38 +193,38 @@
 		<url-pattern>/jQueryServlet</url-pattern>
 	</servlet-mapping>
 	-->
-	<servlet>
-		<display-name>ContentServer</display-name>
-		<servlet-name>ContentServer</servlet-name>
-		<servlet-class>
-			de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer
-		</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ContentServer</servlet-name>
-		<url-pattern>/cs/*</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<display-name>GoobiContentServer</display-name>
-		<servlet-name>GoobiContentServer</servlet-name>
-		<servlet-class>
-			org.goobi.presentation.contentServlet.controller.GoobiContentServer
-		</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>GoobiContentServer</servlet-name>
-		<url-pattern>/gcs</url-pattern>
-	</servlet-mapping>
-	<servlet>
-		<description></description>
-		<display-name>Content</display-name>
-		<servlet-name>Content</servlet-name>
-		<servlet-class>de.intranda.digiverso.presentation.servlets.ContentServerWrapperServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Content</servlet-name>
-		<url-pattern>/content/*</url-pattern>
-	</servlet-mapping>
+<!-- 	<servlet> -->
+<!-- 		<display-name>ContentServer</display-name> -->
+<!-- 		<servlet-name>ContentServer</servlet-name> -->
+<!-- 		<servlet-class> -->
+<!-- 			de.unigoettingen.sub.commons.contentlib.servlet.controller.ContentServer -->
+<!-- 		</servlet-class> -->
+<!-- 	</servlet> -->
+<!-- 	<servlet-mapping> -->
+<!-- 		<servlet-name>ContentServer</servlet-name> -->
+<!-- 		<url-pattern>/cs/*</url-pattern> -->
+<!-- 	</servlet-mapping> -->
+<!-- 	<servlet> -->
+<!-- 		<display-name>GoobiContentServer</display-name> -->
+<!-- 		<servlet-name>GoobiContentServer</servlet-name> -->
+<!-- 		<servlet-class> -->
+<!-- 			org.goobi.presentation.contentServlet.controller.GoobiContentServer -->
+<!-- 		</servlet-class> -->
+<!-- 	</servlet> -->
+<!-- 	<servlet-mapping> -->
+<!-- 		<servlet-name>GoobiContentServer</servlet-name> -->
+<!-- 		<url-pattern>/gcs</url-pattern> -->
+<!-- 	</servlet-mapping> -->
+<!-- 	<servlet> -->
+<!-- 		<description></description> -->
+<!-- 		<display-name>Content</display-name> -->
+<!-- 		<servlet-name>Content</servlet-name> -->
+<!-- 		<servlet-class>de.intranda.digiverso.presentation.servlets.ContentServerWrapperServlet</servlet-class> -->
+<!-- 	</servlet> -->
+<!-- 	<servlet-mapping> -->
+<!-- 		<servlet-name>Content</servlet-name> -->
+<!-- 		<url-pattern>/content/*</url-pattern> -->
+<!-- 	</servlet-mapping> -->
 	<servlet>
 		<display-name>PpnResolver</display-name>
 		<servlet-name>PpnResolver</servlet-name>

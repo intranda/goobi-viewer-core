@@ -877,22 +877,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * 
-     * @return
-     * @should return correct value
-     */
-    public String getIiifUrl() {
-        String urlString = getLocalString("urls.iiif", "http://localhost:8080/viewer/iiif/");
-        if (!urlString.endsWith("/")) {
-            urlString = urlString + "/";
-        }
-        if (!urlString.endsWith("iiif/")) {
-            urlString = urlString + "iiif/";
-        }
-        return urlString;
-    }
-
-    /**
      *
      * @return
      * @should return correct value
@@ -914,7 +898,26 @@ public final class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public String getContentRestApiUrl() {
-        String urlString = getLocalString("urls.contentRestApi", "http://localhost:8080/viewer/rest/content/");
+        return getRestApiUrl() + "content/";
+
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public String getIiifUrl() {
+        return getRestApiUrl();
+    }
+
+    /**
+     * @return
+     */
+    public String getRestApiUrl() {
+        String urlString = getLocalString("urls.rest",
+                getLocalString("urls.contentRestApi", getLocalString("urls.iiif", "http://localhost:8080/viewer/rest/").replace("/iiif", ""))
+                        .replace("/content", ""));
         if (!urlString.endsWith("/")) {
             urlString += "/";
         }
@@ -1159,6 +1162,11 @@ public final class Configuration extends AbstractConfiguration {
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
+    
+    public String getVocabulariesFolder() {
+        return getLocalString("vocabularies", "vocabularies");
+    }
+
 
     /**
      * 
@@ -3069,4 +3077,10 @@ public final class Configuration extends AbstractConfiguration {
     public boolean isDoublePageModeEnabled() {
         return getLocalBoolean("viewer.doublePageMode.enabled", false);
     }
+
+    public List<String> getRestrictedImageUrls() {
+        return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.EMPTY_LIST);
+    }
+    
+
 }

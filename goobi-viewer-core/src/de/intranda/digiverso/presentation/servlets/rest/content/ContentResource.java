@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -93,8 +94,8 @@ public class ContentResource {
     @Path("/document/{dataRepository}/{contentFolder}/{pi}/{fileName}")
     @Produces({ MediaType.TEXT_XML })
     public String getContentDocument(@PathParam("dataRepository") String dataRepository, @PathParam("contentFolder") String contentFolder,
-            @PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException, IndexUnreachableException, DAOException,
-            MalformedURLException, ContentNotFoundException {
+            @PathParam("pi") String pi, @PathParam("fileName") String fileName)
+            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
@@ -137,8 +138,8 @@ public class ContentResource {
     @GET
     @Path("/alto/{pi}/{fileName}")
     @Produces({ MediaType.APPLICATION_XML })
-    public String getAltoDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
-            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
+    public String getAltoDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName)
+            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
         }
@@ -185,8 +186,8 @@ public class ContentResource {
     @GET
     @Path("/fulltext/{pi}/{fileName}")
     @Produces({ MediaType.TEXT_HTML })
-    public String getFulltextDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName) throws PresentationException,
-            IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
+    public String getFulltextDocument(@PathParam("pi") String pi, @PathParam("fileName") String fileName)
+            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
@@ -229,25 +230,28 @@ public class ContentResource {
     @GET
     @Path("/tei/{pi}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
-    public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
-            IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
+    public String getTeiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
+            throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path teiPath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(),
-                pi);
+        java.nio.file.Path teiPath =
+                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
         java.nio.file.Path filePath = null;
         if (Files.exists(teiPath)) {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
-            filePath = Files.list(teiPath).filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst()
-                    .orElse(Files.list(teiPath).findFirst().orElse(null));
+            try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
+                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                        null);
+            }
         }
+
         if (filePath != null) {
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                    servletRequest);
+            boolean access =
+                    AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
             if (!access) {
                 throw new ContentNotFoundException("No permission found");
             }
@@ -283,25 +287,27 @@ public class ContentResource {
     @GET
     @Path("/cmdi/{pi}/{lang}")
     @Produces({ MediaType.APPLICATION_XML })
-    public String getCmdiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode) throws PresentationException,
-            IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
+    public String getCmdiDocument(@PathParam("pi") String pi, @PathParam("lang") String langCode)
+            throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException, IOException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
         }
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
-        java.nio.file.Path cmdiPath = Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration()
-                .getCmdiFolder(), pi);
+        java.nio.file.Path cmdiPath =
+                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getCmdiFolder(), pi);
         java.nio.file.Path filePath = null;
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
-            filePath = Files.list(cmdiPath).filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst()
-                    .orElse(Files.list(cmdiPath).findFirst().orElse(null));
+            try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                        null);
+            }
         }
         if (filePath != null) {
-            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT,
-                    servletRequest);
+            boolean access =
+                    AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
             if (!access) {
                 throw new ContentNotFoundException("No permission found");
             }

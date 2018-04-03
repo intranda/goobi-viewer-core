@@ -179,6 +179,7 @@ public class ConfigurationTest {
      * @see Configuration#getContentServerWrapperUrl()
      * @verifies return correct value
      */
+    @Deprecated
     @Test
     public void getContentServerWrapperUrl_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("contentServerWrapper_value", DataManager.getInstance()
@@ -514,6 +515,13 @@ public class ConfigurationTest {
         Assert.assertEquals("media", DataManager.getInstance()
                 .getConfiguration()
                 .getMediaFolder());
+    }
+    
+    @Test
+    public void getVocabulariesFolder_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("vocabularies", DataManager.getInstance()
+                .getConfiguration()
+                .getVocabulariesFolder());
     }
 
     /**
@@ -2705,7 +2713,7 @@ public class ConfigurationTest {
 
     @Test
     public void testGetIIIFUrl() {
-        Assert.assertEquals("http://localhost:8080/viewer/iiif/", DataManager.getInstance()
+        Assert.assertEquals("http://localhost:8080/viewer/rest/", DataManager.getInstance()
                 .getConfiguration()
                 .getIiifUrl());
     }

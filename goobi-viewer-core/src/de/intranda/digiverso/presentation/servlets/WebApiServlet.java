@@ -53,12 +53,14 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.CompareYearSolrDocWrapper;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
@@ -538,25 +540,15 @@ public class WebApiServlet extends HttpServlet implements Serializable {
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         String fileName = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
-        String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
         StringBuilder sbThumbnailUrl = new StringBuilder(250);
-        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
         StringBuilder sbMediumImage = new StringBuilder(250);
-        sbMediumImage.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
-        if (StringUtils.isNotEmpty(dataRepository)) {
-            String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-            sbThumbnailUrl.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
-                            .getMediaFolder()).append('/');
-            sbMediumImage.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                    .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
-                            .getMediaFolder()).append('/');
+        try {
+            StructElement ele = new StructElement(0, doc);
+            sbThumbnailUrl.append(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele, 100, 120));
+            sbMediumImage.append(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele, 600, 500));
+        } catch (IndexUnreachableException e) {
+            logger.error("Unable to reach index for thumbnail creation");
         }
-        sbThumbnailUrl.append(pi).append('/').append(fileName).append(
-                "&width=100&height=120&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                        .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-        sbMediumImage.append(pi).append('/').append(fileName).append("&width=600&height=500&rotate=0&resolution=72&ignoreWatermark=true").append(
-                DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
 
         jsonObj.put("id", pi);
         jsonObj.put("title", doc.getFieldValue(SolrConstants.TITLE));

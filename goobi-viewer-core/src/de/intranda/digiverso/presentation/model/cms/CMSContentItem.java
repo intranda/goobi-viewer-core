@@ -15,8 +15,10 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.io.IOException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,10 +48,13 @@ import de.intranda.digiverso.presentation.model.cms.itemfunctionality.Functional
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TocFunctionality;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.TrivialFunctionality;
+import de.intranda.digiverso.presentation.model.glossary.Glossary;
+import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView.BrowseDataProvider;
 import de.intranda.digiverso.presentation.servlets.rest.dao.TileGridResource;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
 /**
  * This class represents both template content configuration items and instance items of actual pages. Only the latter are persisted to the DB.
@@ -76,6 +81,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         TOC,
         RSS,
         SEARCH,
+        GLOSSARY,
         COMPONENT;
 
         /**
@@ -86,32 +92,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
          */
         public static CMSContentItemType getByName(String name) {
             if (name != null) {
-                switch (name.toUpperCase()) {
-                    case "TEXT":
-                        return TEXT;
-                    case "HTML":
-                        return HTML;
-                    case "MEDIA":
-                        return MEDIA;
-                    case "SOLRQUERY":
-                        return SOLRQUERY;
-                    case "PAGELIST":
-                        return PAGELIST;
-                    case "COLLECTION":
-                        return COLLECTION;
-                    case "TILEGRID":
-                        return TILEGRID;
-                    case "RSS":
-                        return RSS;
-                    case "TOC":
-                        return TOC;
-                    case "SEARCH":
-                        return CMSContentItemType.SEARCH;
-                    case "COMPONENT":
-                        return COMPONENT;
-                    default:
-                        return null;
-                }
+                return CMSContentItemType.valueOf(name.toUpperCase());
             }
 
             return null;
@@ -214,6 +195,9 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     
     @Column(name = "search_prefix")
     private String searchPrefix;
+    
+    @Column(name = "glossary")
+    private String glossaryName;
 
     /**
      * For TileGrid
@@ -841,5 +825,26 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
     public void setComponent(String component) {
         this.component = component;
     }
+    
+    /**
+     * @return the glossaryName
+     */
+    public String getGlossaryName() {
+        return glossaryName;
+    }
+    
+    /**
+     * @param glossaryName the glossaryName to set
+     */
+    public void setGlossaryName(String glossaryName) {
+        this.glossaryName = glossaryName;
+    }
+    
+    
+    public Glossary getGlossary() throws ContentNotFoundException, IOException, ParseException {
+        Glossary g = new GlossaryManager().getGlossary(getGlossaryName());
+        return g;
+    }
+    
 
 }

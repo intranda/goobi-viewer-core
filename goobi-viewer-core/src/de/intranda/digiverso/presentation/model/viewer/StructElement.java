@@ -38,6 +38,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 
 /**
  * Each instance of this class represents a structure element. This class extends <code>StructElementStub</code> and contains additional
@@ -152,8 +153,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                     logger.warn(
                             "{} not found on anchor record '{}', retrieving the number of volumes by counting the indexed volume records. Re-index the record for faster loading.",
                             SolrConstants.NUMVOLUMES, pi);
-                    SolrDocumentList resp = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.ISWORK).append(
-                            ":true AND ").append(SolrConstants.PI_PARENT).append(':').append(getPi()).toString(), 0, null, null);
+                    SolrDocumentList resp = DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(new StringBuilder(SolrConstants.ISWORK).append(":true AND ")
+                                    .append(SolrConstants.PI_PARENT)
+                                    .append(':')
+                                    .append(getPi())
+                                    .toString(), 0, null, null);
                     numVolumes = resp.getNumFound();
                 }
                 // logger.debug("Volumes found for " + pi + ": " + numVolumes);
@@ -168,7 +174,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             partnerId = getMetadataValue(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
             sourceDocFormat = getMetadataValue(SolrConstants.SOURCEDOCFORMAT);
             fulltextAvailable = Boolean.valueOf(getMetadataValue(SolrConstants.FULLTEXTAVAILABLE));
-            label = getMetadataValue(SolrConstants.LABEL);
+            label = getMetadataValue(SolrConstants.FULLTEXTAVAILABLE);
             if (StringUtils.isEmpty(label)) {
                 label = getMetadataValue("MD_TITLE");
                 if (StringUtils.isEmpty(label)) {
@@ -205,8 +211,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     private SolrDocument getDocument() throws PresentationException, IndexUnreachableException {
         // logger.trace("getDocument(): {}", luceneId);
-        SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC).append(':').append(luceneId)
-                .toString(), 1, null, null);
+        SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
+                new StringBuilder(SolrConstants.IDDOC).append(':').append(luceneId).toString(), 1, null, null);
         if (!hits.isEmpty()) {
             exists = true;
             return hits.get(0);
@@ -265,8 +271,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isHasChildren() throws IndexUnreachableException, PresentationException {
         if (hasChildren == null) {
-            if (DataManager.getInstance().getSearchIndex().getHitCount(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId)
-                    .toString()) > 0) {
+            if (DataManager.getInstance().getSearchIndex().getHitCount(
+                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString()) > 0) {
                 hasChildren = true;
             } else {
                 hasChildren = false;
@@ -289,8 +295,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         logger.trace("getChildren");
         List<StructElement> children = new ArrayList<>();
         try {
-            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':')
-                    .append(luceneId).toString(), fieldList);
+            SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
+                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fieldList);
             if (hits.isEmpty()) {
                 hasChildren = false;
             } else {
@@ -351,8 +357,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
         if (groupLabels.get(groupIdentifier) == null) {
             try {
-                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + groupIdentifier, Collections
-                        .singletonList(SolrConstants.LABEL));
+                SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + groupIdentifier,
+                        Collections.singletonList(SolrConstants.LABEL));
                 if (doc != null) {
                     String label = (String) doc.getFieldValue(SolrConstants.LABEL);
                     if (label != null) {
@@ -422,8 +428,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getImageUrl(int width, int height, int rotation, boolean thumbnail, boolean ignoreWatermark) {
         String filename = getMetadataValue(SolrConstants.THUMBNAIL);
         if (filename != null) {
-            return Helper.getImageUrl(getMetadataValue(SolrConstants.PI_TOPSTRUCT), filename, getMetadataValue(SolrConstants.DATAREPOSITORY), width,
-                    height, rotation, thumbnail, ignoreWatermark);
+            return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(this, width, height);
         }
 
         return null;
@@ -439,9 +444,15 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         logger.trace("generateEventElements");
         try {
             // Return all fields here because the metadata fields are needed to populate the event objects
-            SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC_OWNER).append(':')
-                    .append(getLuceneId()).append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.EVENT).toString(),
-                    SolrSearchIndex.MAX_HITS, null, null);
+            SolrDocumentList result = DataManager.getInstance()
+                    .getSearchIndex()
+                    .search(new StringBuilder(SolrConstants.IDDOC_OWNER).append(':')
+                            .append(getLuceneId())
+                            .append(" AND ")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(':')
+                            .append(DocType.EVENT)
+                            .toString(), SolrSearchIndex.MAX_HITS, null, null);
             logger.trace("{} events found", result.size());
             List<EventElement> ret = new ArrayList<>(result.size());
             for (SolrDocument doc : result) {
@@ -499,8 +510,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isAltoAvailable() throws IndexUnreachableException, PresentationException {
         if (altoAvailable == null) {
-            altoAvailable = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND "
-                    + SolrConstants.FILENAME_ALTO + ":*") > 0;
+            altoAvailable = DataManager.getInstance().getSearchIndex().getHitCount(
+                    SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND " + SolrConstants.FILENAME_ALTO + ":*") > 0;
         }
 
         return altoAvailable;
@@ -515,9 +526,9 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isNerAvailable() throws IndexUnreachableException, PresentationException {
         if (nerAvailable == null) {
-            nerAvailable = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_person"
-                    + SolrConstants._UNTOKENIZED + ":* OR NE_location" + SolrConstants._UNTOKENIZED + ":* OR NE_corporation"
-                    + SolrConstants._UNTOKENIZED + ":*)") > 0;
+            nerAvailable = DataManager.getInstance().getSearchIndex().getHitCount(
+                    SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND (NE_person" + SolrConstants._UNTOKENIZED + ":* OR NE_location"
+                            + SolrConstants._UNTOKENIZED + ":* OR NE_corporation" + SolrConstants._UNTOKENIZED + ":*)") > 0;
         }
 
         return nerAvailable;
@@ -600,12 +611,38 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             throw new IllegalArgumentException("field may not be null");
         }
         if (anchor) {
-            SolrDocument docParent = DataManager.getInstance().getSearchIndex().getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':')
-                    .append(luceneId).toString(), Collections.singletonList(field));
+            SolrDocument docParent = DataManager.getInstance().getSearchIndex().getFirstDoc(
+                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), Collections.singletonList(field));
             if (docParent == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
                 return SolrSearchIndex.getSingleFieldStringValue(docParent, field);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return correct value
+     * @should return null if StructElement not anchor
+     * @should throw IllegalArgumentException if field is null
+     */
+    public StructElement getFirstVolume(List<String> fields) throws PresentationException, IndexUnreachableException {
+
+        if (anchor) {
+            SolrDocument docVolume = DataManager.getInstance().getSearchIndex().getFirstDoc(
+                    new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(), fields);
+            if (docVolume == null) {
+                logger.warn("Anchor has no child element: Cannot determine appropriate value");
+            } else {
+                String iddoc = SolrSearchIndex.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
+                StructElement volume = new StructElement(Long.parseLong(iddoc), docVolume);
+                return volume;
             }
         }
 
@@ -627,8 +664,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             try {
                 int thumbPageNo = Integer.parseInt(getMetadataValue(SolrConstants.THUMBPAGENO));
                 String topStructId = getMetadataValue(SolrConstants.PI_TOPSTRUCT);
-                String query = new StringBuilder("DOCTYPE:PAGE AND ").append(SolrConstants.PI_TOPSTRUCT).append(':').append(topStructId).append(
-                        " AND ORDER: " + thumbPageNo).toString();
+                String query = new StringBuilder("DOCTYPE:PAGE AND ").append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(topStructId)
+                        .append(" AND ORDER: " + thumbPageNo)
+                        .toString();
                 SolrDocumentList pages = DataManager.getInstance().getSearchIndex().search(query, 1, null, null);
                 if (!pages.isEmpty()) {
                     return SolrSearchIndex.getSingleFieldStringValue(pages.get(0), field);

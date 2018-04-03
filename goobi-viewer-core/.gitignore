@@ -7,3 +7,4 @@
 **/.DS_Store
 /package-lock.json
 /config_viewer.xml
+/.tern-project

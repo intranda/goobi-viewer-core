@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.cms;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,6 +47,8 @@ import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentIte
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
+//@RunWith(PowerMockRunner.class)
+//@PrepareForTest(BeanUtils.class)
 public class CMSPageTest extends AbstractDatabaseEnabledTest{
 
     private static final String[] CLASSIFICATIONS = new String[]{"A", "B", "C", "D"};
@@ -55,6 +59,10 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
     @Before
     public void setUp() throws Exception {
         super.setUp();
+//        ImageDeliveryBean idb = new ImageDeliveryBean();
+//        PowerMockito.mockStatic(BeanUtils.class);
+//        BDDMockito.given(BeanUtils.getImageDeliveryBean()).willReturn(idb);
+//        BDDMockito.given(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).willReturn("http://localhost:8080/viewer");
         FacesContext facesContext = TestUtils.mockFacesContext();
         ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
         Mockito.when(servletContext.getRealPath("/")).thenReturn("WebContent");
@@ -102,7 +110,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
             String viewerUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
             String language = CmsBean.getCurrentLocale().getLanguage();
             String expecedUrl = viewerUrl + "/rest/tilegrid/" + language + "/" + numTiles + "/" + numTiles + "/" + allowedTags + "/";
-            expecedUrl = expecedUrl.replace("//", "/");
+//            expecedUrl = expecedUrl.replace("//", "/");
             Assert.assertEquals(expecedUrl, url);
         } catch (IllegalRequestException e) {
             fail("Item not found");
@@ -111,7 +119,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
     }
     
     @Test
-    public void testCMSPage() throws DAOException, IOException, ServletException {
+    public void testCMSPage() throws DAOException, IOException, ServletException, URISyntaxException {
         //setup
         CMSPage page = new CMSPage();
         String templateId = "template";
@@ -182,14 +190,16 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
         Assert.assertEquals(textContent, page.getContent(textId));
         
         String htmlUrl = page.getContent(htmlId);
-        Path htmlUrlPath = Paths.get(htmlUrl);
+        Path htmlUrlPath = Paths.get(new URI(htmlUrl).getPath());
         String htmlResponse = new CMSContentResource().getContentHtml(Long.parseLong(htmlUrlPath.subpath(3, 4).toString()), htmlUrlPath.subpath(4, 5).toString(), htmlUrlPath.subpath(5, 6).toString());
         Assert.assertEquals("<span>" + htmlContent + "</span>", htmlResponse);
        
-        String contentServerUrl = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
-        String viewerPath = DataManager.getInstance().getConfiguration().getViewerHome();
-        String mediaFolderName = DataManager.getInstance().getConfiguration().getCmsMediaFolder();
-        String imageUrl = contentServerUrl + "?action=image&sourcepath=file://" + viewerPath + mediaFolderName + "/" + mediaFilename + "&ignoreWatermark";
+        String contentServerUrl = DataManager.getInstance().getConfiguration().getIiifUrl();
+
+        String filePath = media.getImageURI();
+        filePath = BeanUtils.escapeCriticalUrlChracters(filePath);
+       
+        String imageUrl = contentServerUrl + "image/-/"+filePath+"/full/max/0/default.jpg/";
         Assert.assertEquals(imageUrl, page.getContent(imageId));
         Assert.assertEquals(componentName, page.getContent(componentId));
         

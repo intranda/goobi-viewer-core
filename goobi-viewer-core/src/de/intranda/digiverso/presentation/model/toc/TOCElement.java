@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -172,16 +173,9 @@ public class TOCElement implements Serializable {
      * @param str {@link String}
      * @return {@link String}
      ***************************************************************************************************************/
-    public String getContentServerPdfUrl() {
-        String name = label.getValue().orElse("");
-        name = name.replaceAll("[\\s]", "_");
-        name = name.replaceAll("[\\W]", "") + ".pdf";
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&metsFile=")
-                .append(topStructPi).append(".xml&targetFileName=").append(name).append("&divID=").append(logId);
-        if(StringUtils.isNotBlank(getFooterId())) {
-            urlBuilder.append("&watermarkId=").append(getFooterId());
-        }
-        return urlBuilder.toString();
+    public String getContentServerPdfUrl() {        
+        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()), Optional.empty(), label.getValue());
+
     }
     
     private String getFooterId() {
@@ -228,6 +222,7 @@ public class TOCElement implements Serializable {
     }
 
     public String getThumbnailUrl(int width, int height) {
+
         String url = new String(thumbnailUrl);
         if (StringUtils.isNotBlank(url)) {
             if (url.contains("width=")) {

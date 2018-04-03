@@ -2939,6 +2939,11 @@ div[id*="-Modal"] .email-form .form-group {
 .login-navigation__login-dropdown .form-control {
   height: 32px;
 }
+.login-navigation__user-name {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 .login-navigation__user-icon {
   /* MODIFICATION */
 }
@@ -5428,7 +5433,6 @@ div.olMapViewport {
 }
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value {
   display: block;
-  margin-bottom: 0.5rem;
   text-overflow: ellipsis;
   overflow: hidden;
 }
@@ -8189,7 +8193,48 @@ div.olMapViewport {
   min-height: 150px;
   resize: vertical;
 }
-/* BREAKPOINT FOR LATGE DESKTOPS */
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "Glossary"
+   style declarations for cms_template_20_glossary.xhtml
+   ==============================================================*/
+/* TPL GLOSSARY */
+/* BLOCK */
+.tpl-glossary {
+  /* ELEMENT */
+  /* MODIFICATION */
+}
+.tpl-glossary__text {
+  margin-bottom: 20px;
+}
+.tpl-glossary__glossary {
+  padding: 20px;
+  border: 1px solid #ccc;
+  background-color: #eee;
+}
+.tpl-glossary__glossary hr {
+  border-top-color: #ccc;
+}
+.tpl-glossary__glossary-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.tpl-glossary__glossary-description {
+  margin-bottom: 15px;
+}
+.tpl-glossary__glossary-description p:last-child {
+  margin: 0;
+}
+.tpl-glossary__glossary-keywords .fa,
+.tpl-glossary__glossary-source .fa,
+.tpl-glossary__glossary-keywords strong,
+.tpl-glossary__glossary-source strong {
+  margin-right: 3px;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */

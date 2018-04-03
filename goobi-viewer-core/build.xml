@@ -1235,7 +1235,7 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://goobi-pres.arz.oeaw.ac.at/viewer/" />
+		<property name="server.url" value="https://goobi-pres.arz.oeaw.ac.at/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fgoobi-pres.arz.oeaw.ac.at%2Fviewer%2Foai" />
 		<property name="theme" value="oeadw" />
@@ -1280,9 +1280,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="https://cbl01.intranda.com/viewer/" />
+		<property name="server.url" value="https://viewer.cbl.ie/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fcbl01.intranda.com%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fviewer.cbl.ie%2Fviewer%2Foai" />
 		<property name="theme" value="reference" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
@@ -1291,5 +1291,19 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-
+	<target name="twlnp">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config_novemberpogrom/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="https://www.pogromnovember1938.co.uk/viewer/" />
+		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fwww.pogromnovember1938.co.uk%2Fviewer%2Foai" />
+		<property name="theme" value="wienerlibrary-novemberpogrom" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 </project>

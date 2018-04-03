@@ -31,10 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -47,6 +43,8 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -57,13 +55,12 @@ import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
-import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElementStub;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
+import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 
 /**
  * Representation of a search hit. TODO integrate into SearchHit
@@ -114,8 +111,6 @@ public class BrowseElement implements Serializable {
     private NavigationHelper navigationHelper;
     @JsonIgnore
     private List<Metadata> metadataList = null;
-    @JsonIgnore
-    private String fileExtension = "";
     @JsonIgnore
     private String mimeType = "";
     @JsonIgnore
@@ -168,7 +163,7 @@ public class BrowseElement implements Serializable {
      * @throws DAOException
      */
     BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
-            Map<String, Set<String>> searchTerms) throws PresentationException, IndexUnreachableException, DAOException {
+            Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException {
         this.metadataList = metadataList;
         this.locale = locale;
         this.fulltext = fulltext;
@@ -214,9 +209,11 @@ public class BrowseElement implements Serializable {
                     if (DataManager.getInstance().getConfiguration().isDisplayTopstructLabel()) {
                         String anchorLabel = generateLabel(anchorStructElement, locale);
                         if (StringUtils.isNotEmpty(anchorLabel)) {
-                            this.metadataList.add(position, new Metadata(anchorStructElement.getDocStructType(), null, new MetadataParameter(
-                                    MetadataParameterType.FIELD, null, anchorStructElement.getDocStructType(), null, null, null, null, false, false),
-                                    Helper.intern(anchorLabel)));
+                            this.metadataList.add(position,
+                                    new Metadata(
+                                            anchorStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
+                                                    anchorStructElement.getDocStructType(), null, null, null, null, false, false),
+                                            Helper.intern(anchorLabel)));
                             position++;
                         }
                     }
@@ -230,9 +227,11 @@ public class BrowseElement implements Serializable {
                     if (topStructElement.isAnchorChild() && StringUtils.isNotEmpty(topStructElement.getVolumeNo())) {
                         topstructLabel = new StringBuilder(topstructLabel).append(" (").append(topStructElement.getVolumeNo()).append(')').toString();
                     }
-                    this.metadataList.add(position, new Metadata(topStructElement.getDocStructType(), null, new MetadataParameter(
-                            MetadataParameterType.FIELD, null, topStructElement.getDocStructType(), null, null, null, null, false, false), Helper
-                                    .intern(topstructLabel)));
+                    this.metadataList.add(position,
+                            new Metadata(
+                                    topStructElement.getDocStructType(), null, new MetadataParameter(MetadataParameterType.FIELD, null,
+                                            topStructElement.getDocStructType(), null, null, null, null, false, false),
+                                    Helper.intern(topstructLabel)));
                 }
             }
         }
@@ -269,8 +268,8 @@ public class BrowseElement implements Serializable {
                     List<String> metadataValues = elementToUse.getMetadataValues(param.getKey());
                     // If the current element does not contain metadata values, look in the topstruct
                     if (metadataValues.isEmpty()) {
-                        if (topStructElement != null && !topStructElement.equals(elementToUse) && !MetadataParameterType.ANCHORFIELD.equals(param
-                                .getType()) && !param.isDontUseTopstructValue()) {
+                        if (topStructElement != null && !topStructElement.equals(elementToUse)
+                                && !MetadataParameterType.ANCHORFIELD.equals(param.getType()) && !param.isDontUseTopstructValue()) {
                             metadataValues = topStructElement.getMetadataValues(param.getKey());
                             // logger.debug("Checking topstruct metadata: " + topStructElement.getDocStruct());
                         } else {
@@ -295,8 +294,8 @@ public class BrowseElement implements Serializable {
                                 value = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.DEFAULT));
                             }
                         }
-                        md.setParamValue(count, md.getParams().indexOf(param), Helper.intern(value), null, param.isAddUrl() ? elementToUse.getUrl()
-                                : null, null, locale);
+                        md.setParamValue(count, md.getParams().indexOf(param), Helper.intern(value), null,
+                                param.isAddUrl() ? elementToUse.getUrl() : null, null, locale);
                         count++;
                     }
                 }
@@ -348,21 +347,21 @@ public class BrowseElement implements Serializable {
         if (StringUtils.isEmpty(filename)) {
             filename = structElement.getFirstPageFieldValue(SolrConstants.FILENAME_HTML_SANDBOXED);
         }
-        if (filename != null) {
-            fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
+        //        try {
+        if (anchor) {
+            mimeType = structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
+        } else {
+            mimeType = structElement.getMetadataValue(SolrConstants.MIMETYPE);
         }
-        try {
-            if (anchor) {
-                mimeType = structElement.getFirstVolumeFieldValue(SolrConstants.MIMETYPE);
-            } else {
-                mimeType = structElement.getMetadataValue(SolrConstants.MIMETYPE);
-            }
-            if (mimeType == null && filename != null) {
-                mimeType = getMimeTypeFromExtension(filename);
-            }
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
-            //no children
+        if (mimeType == null && filename != null) {
+            mimeType = getMimeTypeFromExtension(filename);
         }
+        if (mimeType == null) {
+            mimeType = "";
+        }
+        //        } catch (NullPointerException | IndexOutOfBoundsException e) {
+        //            //no children
+        //        }
 
         String imageNoStr = structElement.getMetadataValue(SolrConstants.ORDER);
         if (StringUtils.isNotEmpty(imageNoStr)) {
@@ -394,139 +393,13 @@ public class BrowseElement implements Serializable {
         }
 
         // Thumbnail
-        int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
-        int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
-        if (isAbsoluteUrl(filename) && structElement.mayShowThumbnail()) {
-            // Use absolute thumbnail URL directly (replace requested image size if this is an IFFF URL); no access permission check
-            thumbnailUrl = PhysicalElement.getModifiedIIIFFUrl(filename, thumbWidth, thumbHeight);
-            hasImages = true;
-        } else if (structElement.mayShowThumbnail()) {
-            // Construct URL
-            String filepath = filename;
-            if (StringUtils.isNotEmpty(filepath)) {
-                // Determine whether the file is in a data repository
-                if (StringUtils.isNotEmpty(dataRepository)) {
-                    StringBuilder sb = new StringBuilder();
-                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    sb.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                            .append(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository).append('/').append(
-                                    DataManager.getInstance().getConfiguration().getMediaFolder()).append('/').append(pi).append('/').append(
-                                            filepath);
-                    filepath = sb.toString();
-                } else {
-                    filepath = new StringBuilder(pi).append('/').append(filepath).toString();
-                }
-            }
-            // logger.trace("filepath: {}", filepath);
-
-            StringBuilder sbThumbnailUrl = new StringBuilder(140);
-            if (anchor) {
-                // Anchor
-                //                logger.trace("anchor");
-                switch (DataManager.getInstance().getConfiguration().getAnchorThumbnailMode()) {
-                    case "FIRSTVOLUME":
-                        // Use first volume's representative image
-                        filepath = getFirstVolumeThumbnailPath(pi);
-                        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                "?action=image&sourcepath=").append(filepath).append("&width=").append(thumbWidth).append("&height=").append(
-                                        thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager
-                                                .getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-                        break;
-                    default:
-                        // Default anchor thumbnail
-                        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                        "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                "/images/multivolume_thumbnail.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                        break;
-                }
-            } else if (DocType.DOCSTRCT.equals(docType) || DocType.PAGE.equals(docType) || docType == null) {
-                // Docstruct or page
-                //                logger.trace("normal");
-                if (StringUtils.isNotEmpty(filepath) && !isAbsoluteUrl(filename)) {
-                    switch (fileExtension) {
-                        case "pdf":
-                            // E-Publication page
-                            sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                    "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                            "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                    "/images/thumbnail_epub.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                            break;
-                        default:
-                            // Regular page or docstruct
-                            if (useThumbnail) {
-                                boolean access = FacesContext.getCurrentInstance() != null && FacesContext.getCurrentInstance().getExternalContext()
-                                        .getRequest() != null ? AccessConditionUtils.checkAccessPermissionForThumbnail(
-                                                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest(), pi,
-                                                filename) : false;
-                                // Flag the thumbnail for this element as access denied, so that further visualization can be triggered in HTML.
-                                // The display of the "access denied" thumbnail is done in the ContentServerWrapperServlet.
-                                if (!access) {
-                                    thumbnailAccessDenied = true;
-                                }
-                                sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                        "?action=image&sourcepath=").append(filepath).append("&width=").append(thumbWidth).append("&height=").append(
-                                                thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager
-                                                        .getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-                            }
-                            hasImages = true;
-                            break;
-                    }
-                } else if (mimeType != null) {
-                    switch (mimeType) {
-                        // Default thumbnail for video with no thumbnail file
-                        case "image/png":
-                        case "image/jpg":
-                            sbThumbnailUrl.append(filename);
-                            hasImages = true;
-                            break;
-                        case PhysicalElement.MIME_TYPE_VIDEO:
-                        case PhysicalElement.MIME_TYPE_SANDBOXED_HTML:
-                            sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                    "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                            "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                    "/images/thumbnail_video.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                            logger.trace("Thumbnail: {}", sbThumbnailUrl.toString());
-                        case PhysicalElement.MIME_TYPE_AUDIO:
-                            hasImages = true;
-                            break;
-                    }
-                }
-            } else if (DocType.EVENT.equals(docType)) {
-                // LIDO event
-                sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                        .append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resources/themes/").append(DataManager.getInstance()
-                                .getConfiguration().getTheme()).append("/images/thumbnail_event.jpg&width=").append(thumbWidth).append("&height=")
-                        .append(thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                                .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-            } else if (DocType.GROUP.equals(docType)) {
-                // Group (convolute / series)
-                sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
-                        .append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append("/resources/themes/").append(DataManager.getInstance()
-                                .getConfiguration().getTheme()).append("/images/thumbnail_group.jpg&width=").append(thumbWidth).append("&height=")
-                        .append(thumbHeight).append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance()
-                                .getConfiguration().isForceJpegConversion() ? "&format=jpg" : "");
-            } else if (metadataGroupType != null) {
-                // Grouped metadata
-                switch (metadataGroupType) {
-                    case PERSON:
-                        sbThumbnailUrl.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                                "?action=image&sourcepath=").append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append(
-                                        "/resources/themes/").append(DataManager.getInstance().getConfiguration().getTheme()).append(
-                                                "/images/thumbnail_person.jpg&width=").append(thumbWidth).append("&height=").append(thumbHeight)
-                                .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true&format=jpg");
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if (sbThumbnailUrl.length() > 0) {
-                thumbnailUrl = Helper.intern(sbThumbnailUrl.toString());
-            }
+        String sbThumbnailUrl = thumbs.getThumbnailUrl(structElement);
+        if (sbThumbnailUrl != null && sbThumbnailUrl.length() > 0) {
+            thumbnailUrl = Helper.intern(sbThumbnailUrl.toString());
         }
+
+        //check if we have images
+        hasImages = !isAnchor() && this.mimeType.startsWith("image/");
 
         // Only topstructs should be openened with their overview page view (if they have one)
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
@@ -646,8 +519,8 @@ public class BrowseElement implements Serializable {
                                 // Translate values for certain fields
                                 if (translateFields != null && translateFields.contains(termsFieldName)) {
                                     String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
-                                            + translatedValue + "$3");
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                            "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
@@ -672,8 +545,8 @@ public class BrowseElement implements Serializable {
                                 // Translate values for certain fields
                                 if (translateFields != null && translateFields.contains(termsFieldName)) {
                                     String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)", "$1"
-                                            + translatedValue + "$3");
+                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                            "$1" + translatedValue + "$3");
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
@@ -711,7 +584,7 @@ public class BrowseElement implements Serializable {
             return ImageFileFormat.getImageFileFormatFromFileExtension(fileUrl.getPath()).getMimeType();
         } catch (MalformedURLException e) {
         }
-        return null;
+        return "";
     }
 
     /**
@@ -781,8 +654,8 @@ public class BrowseElement implements Serializable {
 
         if (ret == null) {
             ret = "";
-            logger.error("Index document {}, has no LABEL, MD_TITLE or DOCSTRUCT fields. Perhaps there is no connection to the owner doc?", se
-                    .getLuceneId());
+            logger.error("Index document {}, has no LABEL, MD_TITLE or DOCSTRUCT fields. Perhaps there is no connection to the owner doc?",
+                    se.getLuceneId());
         }
 
         return ret;
@@ -848,8 +721,9 @@ public class BrowseElement implements Serializable {
         String ret = null;
 
         String[] fields = { SolrConstants.PI, SolrConstants.DATAREPOSITORY, SolrConstants.THUMBNAIL };
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI_PARENT).append(':').append(
-                anchorPi).toString(), 1, Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")), Arrays.asList(fields));
+        SolrDocumentList docs =
+                DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI_PARENT).append(':').append(anchorPi).toString(),
+                        1, Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")), Arrays.asList(fields));
         if (!docs.isEmpty()) {
             ret = (String) docs.get(0).getFieldValue(SolrConstants.THUMBNAIL);
             if (StringUtils.isNotEmpty(ret)) {
@@ -857,9 +731,16 @@ public class BrowseElement implements Serializable {
                 if (StringUtils.isNotEmpty(dataRepository)) {
                     StringBuilder sb = new StringBuilder();
                     String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    sb.append("file:/").append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                            .append(dataRepositoriesHome).append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
-                                    .getMediaFolder()).append('/').append(docs.get(0).getFieldValue(SolrConstants.PI)).append('/').append(ret);
+                    sb.append("file:/")
+                            .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
+                            .append(dataRepositoriesHome)
+                            .append(dataRepository)
+                            .append('/')
+                            .append(DataManager.getInstance().getConfiguration().getMediaFolder())
+                            .append('/')
+                            .append(docs.get(0).getFieldValue(SolrConstants.PI))
+                            .append('/')
+                            .append(ret);
                     ret = sb.toString();
                 } else {
                     ret = new StringBuilder((String) docs.get(0).getFieldValue(SolrConstants.PI)).append('/').append(ret).toString();
@@ -923,19 +804,9 @@ public class BrowseElement implements Serializable {
     public String getThumbnailUrl(String width, String height) {
         synchronized (this) {
             String url = getThumbnailUrl();
-            if (url != null) {
-                url = url.replaceAll("width=\\d+", "").replaceAll("height=\\d+", "");
-                StringBuilder urlBuilder = new StringBuilder(url);
-                if (width != null) {
-                    urlBuilder.append("&width=").append(width);
-                }
-                if (height != null) {
-                    urlBuilder.append("&height=").append(height);
-                }
-                return urlBuilder.toString();
-            } else {
-                return "";
-            }
+            String urlNew = new IIIFUrlHandler().getModifiedIIIFFUrl(url, null,
+                    new Scale.ScaleToBox(Integer.parseInt(width), Integer.parseInt(height)), null, null, null);
+            return urlNew;
         }
     }
 
@@ -1098,8 +969,12 @@ public class BrowseElement implements Serializable {
                     // Person metadata search hit ==> execute search for that person
                     // TODO not for aggregated hits?
                     try {
-                        sb.append(PageType.search.getName()).append("/-/").append(originalFieldName).append(":\"").append(URLEncoder.encode(label,
-                                SearchBean.URL_ENCODING)).append("\"/1/-/-/");
+                        sb.append(PageType.search.getName())
+                                .append("/-/")
+                                .append(originalFieldName)
+                                .append(":\"")
+                                .append(URLEncoder.encode(label, SearchBean.URL_ENCODING))
+                                .append("\"/1/-/-/");
                     } catch (UnsupportedEncodingException e) {
                         logger.error("{}: {}", e.getMessage(), label);
                         sb = new StringBuilder();
@@ -1111,15 +986,27 @@ public class BrowseElement implements Serializable {
                 default:
                     PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
                             useOverviewPage, false);
-                    sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId)
-                            ? logId : '-').append('/');
+                    sb.append(pageType.getName())
+                            .append('/')
+                            .append(pi)
+                            .append('/')
+                            .append(imageNo)
+                            .append('/')
+                            .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                            .append('/');
                     break;
             }
         } else {
-            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
-                    useOverviewPage, false);
-            sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId
-                    : '-').append('/');
+            PageType pageType =
+                    PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages, useOverviewPage, false);
+            sb.append(pageType.getName())
+                    .append('/')
+                    .append(pi)
+                    .append('/')
+                    .append(imageNo)
+                    .append('/')
+                    .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                    .append('/');
         }
 
         // logger.trace("generateUrl: {}", sb.toString());
@@ -1139,36 +1026,93 @@ public class BrowseElement implements Serializable {
         if (anchor) {
             if (navigationHelper != null && PageType.viewMetadata.getName().equals(navigationHelper.getCurrentView())) {
                 // Use the preferred view, if set and allowed for multivolumes
-                String view = StringUtils.isNotEmpty(navigationHelper.getPreferredView()) ? navigationHelper.getPreferredView() : PageType.viewToc
-                        .getName();
+                String view = StringUtils.isNotEmpty(navigationHelper.getPreferredView()) ? navigationHelper.getPreferredView()
+                        : PageType.viewToc.getName();
                 if (!view.equals(PageType.viewToc.getName()) && !view.equals(PageType.viewMetadata.getName())) {
                     view = PageType.viewToc.getName();
                 }
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(view).append('/').append(type).append('/').append(
-                        pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
+                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                        .append('/')
+                        .append(view)
+                        .append('/')
+                        .append(type)
+                        .append('/')
+                        .append(pi)
+                        .append('/')
+                        .append(imageNo)
+                        .append('/')
+                        .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                        .append('/');
             } else {
-                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.viewToc.getName()).append('/').append(
-                        type).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                        .append('/')
+                        .append(PageType.viewToc.getName())
+                        .append('/')
+                        .append(type)
+                        .append('/')
+                        .append(pi)
+                        .append('/')
+                        .append(imageNo)
+                        .append('/')
+                        .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                         .append('/');
             }
         } else if (navigationHelper != null && StringUtils.isNotEmpty(navigationHelper.getPreferredView())) {
             // Use the preferred view, if set
-            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(navigationHelper.getPreferredView()).append('/')
-                    .append(type).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-')
+            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                    .append('/')
+                    .append(navigationHelper.getPreferredView())
+                    .append('/')
+                    .append(type)
+                    .append('/')
+                    .append(pi)
+                    .append('/')
+                    .append(imageNo)
+                    .append('/')
+                    .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                     .append('/');
         } else if (configuredPageType != null) {
             logger.trace("Found configured page type: {}", configuredPageType.getName());
-            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(configuredPageType.getName()).append('/').append(type)
-                    .append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
+            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                    .append('/')
+                    .append(configuredPageType.getName())
+                    .append('/')
+                    .append(type)
+                    .append('/')
+                    .append(pi)
+                    .append('/')
+                    .append(imageNo)
+                    .append('/')
+                    .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                    .append('/');
         } else if (hasImages) {
             // Regular image view
-            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.viewImage.getName()).append('/').append(type)
-                    .append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
+            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                    .append('/')
+                    .append(PageType.viewImage.getName())
+                    .append('/')
+                    .append(type)
+                    .append('/')
+                    .append(pi)
+                    .append('/')
+                    .append(imageNo)
+                    .append('/')
+                    .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                    .append('/');
         } else {
             // Metadata view for elements without a thumbnail
-            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/').append(PageType.viewMetadata.getName()).append('/').append(
-                    type).append('/').append(pi).append('/').append(imageNo).append('/').append(StringUtils.isNotEmpty(logId) ? logId : '-').append(
-                            '/');
+            sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
+                    .append('/')
+                    .append(PageType.viewMetadata.getName())
+                    .append('/')
+                    .append(type)
+                    .append('/')
+                    .append(pi)
+                    .append('/')
+                    .append(imageNo)
+                    .append('/')
+                    .append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                    .append('/');
         }
 
         return sb.toString();

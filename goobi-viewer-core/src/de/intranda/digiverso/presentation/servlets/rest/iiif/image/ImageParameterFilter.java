@@ -62,7 +62,9 @@ public class ImageParameterFilter implements ContainerRequestFilter {
         List<String> pathSegments = tokenizer.getTokenList();
         String pi = pathSegments.get(0);
         try {
-            addRepositoryPathIfRequired(request, pi);
+            if(StringUtils.isNotBlank(pi) && !"-".equals(pi)) {                
+                addRepositoryPathIfRequired(request, pi);
+            }
         } catch (PresentationException e) {
             String mediaType = MediaType.TEXT_XML;
             if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {

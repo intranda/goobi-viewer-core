@@ -44,6 +44,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
@@ -241,8 +242,8 @@ public class RSSFeed {
                     placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
                 }
 
-                String imageUrl = createImageUrl(rootPath, anchor, ePublication, pi, thumbnail, thumbWidth, thumbHeight);
-
+                String imageUrl = BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, thumbWidth, thumbHeight);
+                        
                 String imageHtmlElement = null;
                 if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
                     imageHtmlElement = new StringBuilder("<a href=\"").append(rootPath).append('/').append(pageType.getName()).append('/').append(pi)
@@ -452,7 +453,7 @@ public class RSSFeed {
                 
                 String link = createLink(rootPath, pi, pageType);
                 
-                description.setImage(createImageUrl(rootPath, anchor, ePublication, pi, thumbnail, thumbWidth, thumbHeight));
+                description.setImage(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, thumbWidth, thumbHeight));
                                 
                 if(StringUtils.isNotBlank(placeAndTime)) {                    
                     description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
@@ -526,6 +527,7 @@ public class RSSFeed {
      * @param thumbWidth
      * @param thumbHeight
      */
+    @Deprecated
     public static String createImageUrl(String rootPath, boolean anchor, boolean ePublication, String pi, String thumbnail, int thumbWidth,
             int thumbHeight) {
         String imageUrl = null;

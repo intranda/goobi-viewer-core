@@ -26,6 +26,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.enterprise.context.SessionScoped;
@@ -175,33 +176,9 @@ public class CmsMediaBean implements Serializable {
      */
     public static String getMediaUrl(CMSMediaItem item, String width, String height) {
         if (item != null && item.getFileName() != null) {
-            StringBuilder imageUrlBuilder = new StringBuilder("file:/");
+            
+            return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0, StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
 
-            // Add an extra slash if not on Windows
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.indexOf("win") == -1) {
-                imageUrlBuilder.append('/');
-            }
-
-            imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
-            imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
-            imageUrlBuilder.append(item.getFileName());
-
-            StringBuilder csUrlBuilder = new StringBuilder();
-            csUrlBuilder.append(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-            csUrlBuilder.append("?action=image&sourcepath=");
-            csUrlBuilder.append(imageUrlBuilder.toString());
-            if (width != null && !"0".equals(width)) {
-                csUrlBuilder.append("&width=" + width);
-            }
-            if (height != null && !"0".equals(height)) {
-                csUrlBuilder.append("&height=" + height);
-            }
-            csUrlBuilder.append("&ignoreWatermark");
-
-            logger.trace("Getting media URL {}", csUrlBuilder.toString());
-
-            return csUrlBuilder.toString();
         }
         return "";
     }
