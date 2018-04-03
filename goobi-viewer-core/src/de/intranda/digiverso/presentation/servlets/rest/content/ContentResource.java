@@ -245,7 +245,7 @@ public class ContentResource {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
                 filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        teiFiles.findFirst().orElse(null));
+                        null);
             }
         }
 
@@ -302,7 +302,7 @@ public class ContentResource {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
                 filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        cmdiFiles.findFirst().orElse(null));
+                        null);
             }
         }
         if (filePath != null) {
