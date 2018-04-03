@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.json.JsonObject;
 import javax.ws.rs.PathParam;
@@ -47,60 +48,56 @@ public class GlossaryManager {
     private static final Logger logger = LoggerFactory.getLogger(GlossaryManager.class);
     private static final String VOCABULARY_TITLE_REGEX = "\"title\":\"(.*?)\"";
     private static final String VOCABULARY_DESCRIPTION_REGEX = "\"description\":\"(.*?)\"";
-    
+
     public List<Glossary> getGlossaries() throws IOException {
         java.nio.file.Path viewerHome = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         java.nio.file.Path vocabulariesPath = viewerHome.resolve(DataManager.getInstance().getConfiguration().getVocabulariesFolder());
 
-        List<java.nio.file.Path> vocabFiles = Files.list(vocabulariesPath)
-                .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".json"))
-                .collect(Collectors.toList());
+        try (Stream<java.nio.file.Path> allVocabFiles = Files.list(vocabulariesPath)) {
+            List<java.nio.file.Path> vocabFiles =
+                    allVocabFiles.filter(path -> path.getFileName().toString().toLowerCase().endsWith(".json")).collect(Collectors.toList());
 
-        List<Glossary> glossaries = new ArrayList<>();
-        for (java.nio.file.Path vocabPath : vocabFiles) {
-            Optional<String> title = readFromFile(vocabPath, VOCABULARY_TITLE_REGEX, 1);
-            Optional<String> description = readFromFile(vocabPath, VOCABULARY_DESCRIPTION_REGEX, 1);
-            
-            title.map(t -> new Glossary(t, vocabPath.getFileName().toString(), description.orElse(""))).ifPresent(g -> glossaries.add(g));
+            List<Glossary> glossaries = new ArrayList<>();
+            for (java.nio.file.Path vocabPath : vocabFiles) {
+                Optional<String> title = readFromFile(vocabPath, VOCABULARY_TITLE_REGEX, 1);
+                Optional<String> description = readFromFile(vocabPath, VOCABULARY_DESCRIPTION_REGEX, 1);
+
+                title.map(t -> new Glossary(t, vocabPath.getFileName().toString(), description.orElse(""))).ifPresent(g -> glossaries.add(g));
+            }
+            return glossaries;
         }
-        return glossaries;
-        
-        
     }
 
     public String getGlossaryAsJson(String filename) throws IOException, ContentNotFoundException {
         java.nio.file.Path viewerHome = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         java.nio.file.Path vocabulariesPath = viewerHome.resolve(DataManager.getInstance().getConfiguration().getVocabulariesFolder());
         java.nio.file.Path vocabularyPath = vocabulariesPath.resolve(filename);
-        
-        if(Files.exists(vocabularyPath)) {            
+
+        if (Files.exists(vocabularyPath)) {
             List<String> lines = Files.readAllLines(vocabularyPath);
             return StringUtils.join(lines, "\n");
-        } else {
-            throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
         }
-        
+        throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
     }
-    
-    
+
     public Glossary getGlossary(String filename) throws IOException, ContentNotFoundException, ParseException {
         java.nio.file.Path viewerHome = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         java.nio.file.Path vocabulariesPath = viewerHome.resolve(DataManager.getInstance().getConfiguration().getVocabulariesFolder());
         java.nio.file.Path vocabularyPath = vocabulariesPath.resolve(filename);
-        
-        if(Files.exists(vocabularyPath)) {            
+
+        if (Files.exists(vocabularyPath)) {
             List<String> lines = Files.readAllLines(vocabularyPath);
             String jsonString = StringUtils.join(lines, "\n");
             JSONObject json = new JSONObject(jsonString);
-            
+
             String title = json.getString("title");
             String description = json.getString("description");
-            
+
             Glossary glossary = new Glossary(title, filename, description);
-            
+
             List<GlossaryRecord> glossaryRecords = new ArrayList<>();
             JSONArray records = json.getJSONArray("records");
-            
+
             for (int i = 0; i < records.length(); i++) {
                 JSONObject record = records.getJSONObject(i);
                 GlossaryRecord glossaryRecord = new GlossaryRecord();
@@ -109,7 +106,7 @@ public class GlossaryManager {
                     JSONObject field = fields.getJSONObject(j);
                     String label = field.getString("label");
                     String value = field.getString("value");
-                    switch(label) {
+                    switch (label) {
                         case "Title":
                             glossaryRecord.setTitle(value);
                             break;
@@ -131,7 +128,7 @@ public class GlossaryManager {
         } else {
             throw new ContentNotFoundException("No vocabulary found at " + vocabularyPath);
         }
-        
+
     }
 
     /**
@@ -146,11 +143,9 @@ public class GlossaryManager {
                 logger.error("Unable to read file " + path, e);
                 return new ArrayList<String>();
             }
-        }).map(lines -> lines.size() > 0 ? lines.get(0) : "")
-        .map(line -> Pattern.compile(regex).matcher(line))
-        .filter(matcher -> matcher.find())
-        .map(matcher -> matcher.group(group));
+        }).map(lines -> lines.size() > 0 ? lines.get(0) : "").map(line -> Pattern.compile(regex).matcher(line)).filter(matcher -> matcher.find()).map(
+                matcher -> matcher.group(group));
         return title;
     }
-    
+
 }
