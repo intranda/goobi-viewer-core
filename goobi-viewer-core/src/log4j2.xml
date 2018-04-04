@@ -80,6 +80,7 @@
 			additivity="true" />
 		<Logger name="net.sf.ehcache" level="ERROR" additivity="true" />
 		<Logger name="org.apache" level="ERROR" additivity="true" />
+		<Logger name="org.jboss.weld" level="WARN" additivity="true" />
 		<Logger name="ugh" level="ERROR" additivity="true" />
 		<Root level="info">
 			<AppenderRef ref="stdout" />
