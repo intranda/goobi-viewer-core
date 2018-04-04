@@ -399,7 +399,7 @@ public class BrowseElement implements Serializable {
         }
 
         //check if we have images
-        hasImages = !isAnchor() && this.mimeType.startsWith("image/");
+        hasImages = !isAnchor() && this.mimeType.startsWith("image");
 
         // Only topstructs should be openened with their overview page view (if they have one)
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
