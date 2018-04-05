@@ -9,7 +9,7 @@ module.exports = function(grunt) {
 			jsDevFolderModules : 'WebContent/resources/javascript/dev/modules/',
 			jsDevFolderES6 : 'WebContent/resources/javascript/dev/es6/',
 			jsDistFolder : 'WebContent/resources/javascript/dist/',
-			jsDocFolder : 'doc/jsdoc/',
+//			jsDocFolder : 'doc/jsdoc/',
 			cssDevFolder : 'WebContent/resources/css/dev/',
 			cssDistFolder : 'WebContent/resources/css/dist/',
 			lessDevFolder : 'WebContent/resources/css/less/viewer/'
@@ -168,16 +168,16 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		jsdoc : {
-			dist : {
-				src : [ '<%=src.jsDevFolderModules %>**/*.js' ],
-				options : {
-					destination : '<%=src.jsDocFolder %>',
-					template : "node_modules/ink-docstrap/template",
-					configure : "node_modules/ink-docstrap/template/jsdoc.conf.json"
-				}
-			}
-		}
+//		jsdoc : {
+//			dist : {
+//				src : [ '<%=src.jsDevFolderModules %>**/*.js' ],
+//				options : {
+//					destination : '<%=src.jsDocFolder %>',
+//					template : "node_modules/ink-docstrap/template",
+//					configure : "node_modules/ink-docstrap/template/jsdoc.conf.json"
+//				}
+//			}
+//		}
 	});
 
 	// load tasks
@@ -185,11 +185,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-jsdoc');
+//	grunt.loadNpmTasks('grunt-jsdoc');
 	grunt.loadNpmTasks('grunt-browserify');
 
 	// register tasks
-//	grunt.registerTask('default', [ 'jsdoc', 'watch' ]);
+////	grunt.registerTask('default', [ 'jsdoc', 'watch' ]);
 // register development tasks
     grunt.registerTask( 'default', [ 'watch' ] );
 };
