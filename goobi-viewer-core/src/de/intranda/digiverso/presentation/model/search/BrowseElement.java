@@ -594,7 +594,6 @@ public class BrowseElement implements Serializable {
      * @return
      */
     private String generateLabel(StructElement se, Locale locale) {
-        logger.trace("generateLabel");
         String ret = "";
 
         if (docType != null) {
@@ -670,7 +669,6 @@ public class BrowseElement implements Serializable {
      * @should translate docstruct label
      */
     static String generateDefaultLabel(StructElement se, Locale locale) {
-        logger.trace("generateDefaultLabel");
         String ret = null;
         if (locale != null) {
             // Prefer localized title
@@ -680,17 +678,13 @@ public class BrowseElement implements Serializable {
             for (String key : se.getMetadataFields().keySet()) {
                 if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
                     ret = se.getMetadataValue(key);
-                    logger.trace("key: {}", key);
                     break;
                 } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
                     germanTitle = se.getMetadataValue(key);
-                    logger.trace("key: {}", key);
                 } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
                     englishTitle = se.getMetadataValue(key);
-                    logger.trace("key: {}", key);
                 } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
                     anyTitle = se.getMetadataValue(key);
-                    logger.trace("key: {}", key);
                 }
             }
             if (StringUtils.isBlank(ret)) {
