@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.content;
 import java.net.URI;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
@@ -57,7 +58,6 @@ public class ImageContent implements IContent {
 	/* (non-Javadoc)
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#setWidth(int)
 	 */
-	@Override
 	public void setWidth(int width) {
 		this.width = width;
 	}
@@ -73,7 +73,6 @@ public class ImageContent implements IContent {
 	/* (non-Javadoc)
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#setHeight(int)
 	 */
-	@Override
 	public void setHeight(int height) {
 		this.height = height;
 	}
@@ -89,7 +88,6 @@ public class ImageContent implements IContent {
 	/* (non-Javadoc)
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#setFormat(de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format)
 	 */
-	@Override
 	public void setFormat(Format format) {
 		this.format = format;
 	}
@@ -115,6 +113,14 @@ public class ImageContent implements IContent {
 	public URI getId() {
 		return id;
 	}
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getLabel()
+     */
+    @Override
+    public IMetadataValue getLabel() {
+        return null;
+    }
 	
 
 }

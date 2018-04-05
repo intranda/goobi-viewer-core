@@ -32,6 +32,9 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
  */
 public abstract class AbstractPresentationModelElement implements IPresentationModelElement {
 	
+    protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+
+    
 	private final URI id;
 	private IMetadataValue label;
 	private IMetadataValue description;

@@ -13,45 +13,31 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.iiif.presentation.content;
+package de.intranda.digiverso.presentation.model.iiif.presentation;
 
 import java.net.URI;
 
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-
 /**
- * @author florian
+ * @author Florian Alpers
  *
  */
-public interface IContent {
+public class Range extends AbstractPresentationModelElement implements IPresentationModelElement {
 
-	public String getType();
+    /**
+     * @param id
+     */
+    public Range(URI id) {
+        super(id);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @return the width
-	 */
-	public int getWidth();
-
-	/**
-	 * @return the height
-	 */
-	public int getHeight();
-
-	/**
-	 * @return the format
-	 */
-	public Format getFormat();
-
-	/**
-	 * @return the id
-	 */
-	public URI getId();
-	
-	/**
-	 * 
-	 * @return the label
-	 */
-	public IMetadataValue getLabel();
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement#getType()
+     */
+    @Override
+    public String getType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

@@ -140,6 +140,8 @@ public class CollectionResource {
                     element -> element.getAllDescendents(true).stream()).filter(element -> topElement.equals(element.getName())).findFirst().orElse(
                             null);
         }
+        
+        
 
         Collection collection = new BaseCollection(collectionView, locale, url, baseElement, collectionField, facetField, getServletPath());
         return collection;
