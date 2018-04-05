@@ -71,11 +71,11 @@ public class StatisticsBean implements Serializable {
         List<String> dateList = new ArrayList<>();
         // Facetting
         try {
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(":*").append(
-                    SearchHelper.getAllSuffixes(false)).toString(), 0, 0, null, Collections.singletonList(SolrConstants.DATECREATED), "count",
-                    Collections.singletonList(SolrConstants.DATECREATED), null, null);
-            if (resp != null && resp.getFacetField(SolrConstants.DATECREATED) != null && resp.getFacetField(SolrConstants.DATECREATED)
-                    .getValues() != null) {
+            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(
+                    new StringBuilder(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes(false)).toString(), 0, 0, null,
+                    Collections.singletonList(SolrConstants.DATECREATED), "count", Collections.singletonList(SolrConstants.DATECREATED), null, null);
+            if (resp != null && resp.getFacetField(SolrConstants.DATECREATED) != null
+                    && resp.getFacetField(SolrConstants.DATECREATED).getValues() != null) {
                 List<Count> counts = resp.getFacetField(SolrConstants.DATECREATED).getValues();
                 countList = new ArrayList<>(counts.size() + dataPoints + 1);
                 dateList = new ArrayList<>(counts.size());
@@ -144,12 +144,19 @@ public class StatisticsBean implements Serializable {
         logger.debug("getTopStructTypesByNumber start");
 
         try {
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(":*").append(
-                    SearchHelper.getAllSuffixes(false)).toString(), 0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT), "count",
-                    Collections.singletonList(SolrConstants.DOCSTRCT), null, null);
-            if (resp != null && resp.getFacetField(SolrConstants.DOCSTRCT) != null && resp.getFacetField(SolrConstants.DOCSTRCT)
-                    .getValues() != null) {
-                //                Map<Long, List<String>> resultDocstrcts = new HashMap<>();
+            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(
+                    new StringBuilder(SolrConstants.PI).append(":*")
+                            .append(" AND (")
+                            .append(SolrConstants.ISWORK)
+                            .append(":true OR ")
+                            .append(SolrConstants.ISANCHOR)
+                            .append(":true)")
+                            .append(SearchHelper.getAllSuffixes(false))
+                            .toString(),
+                    0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT), "count", Collections.singletonList(SolrConstants.DOCSTRCT), null,
+                    null);
+            if (resp != null && resp.getFacetField(SolrConstants.DOCSTRCT) != null
+                    && resp.getFacetField(SolrConstants.DOCSTRCT).getValues() != null) {
                 List<Count> counts = resp.getFacetField(SolrConstants.DOCSTRCT).getValues();
                 List<String> ret = new ArrayList<>(counts.size());
                 for (Count count : counts) {
@@ -183,12 +190,12 @@ public class StatisticsBean implements Serializable {
             if (lastUpdateMap.get("getImportedPages") == null || now - lastUpdateMap.get("getImportedPages") >= DAY_MS) {
                 logger.debug("Refreshing number of imported pages...");
                 // TODO filter query might not work for PAGE documents
-                long pages = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper
-                        .getAllSuffixes(false));
+                long pages = DataManager.getInstance().getSearchIndex().getHitCount(
+                        SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes(false));
                 // Fallback for older indexes that do not have the DOCTYPE field (slower)
                 if (pages == 0) {
-                    pages = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.FILENAME + ":['' TO *]" + SearchHelper
-                            .getAllSuffixes(false));
+                    pages = DataManager.getInstance().getSearchIndex().getHitCount(
+                            SolrConstants.FILENAME + ":['' TO *]" + SearchHelper.getAllSuffixes(false));
                 }
                 valueMap.put("getImportedPages", pages);
                 lastUpdateMap.put("getImportedPages", now);
@@ -220,8 +227,8 @@ public class StatisticsBean implements Serializable {
                         + " AND " + SolrConstants.FULLTEXTAVAILABLE + ":true" + SearchHelper.getAllSuffixes(false));
                 // Fallback for older indexes that do not have the DOCTYPE and/or FULLTEXTAVAILABLE fields (WAY slower)
                 if (pages == 0) {
-                    pages = DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.FULLTEXT + ":['' TO *]" + SearchHelper
-                            .getAllSuffixes(false));
+                    pages = DataManager.getInstance().getSearchIndex().getHitCount(
+                            SolrConstants.FULLTEXT + ":['' TO *]" + SearchHelper.getAllSuffixes(false));
                 }
                 valueMap.put("getImportedFullTexts", pages);
                 lastUpdateMap.put("getImportedFullTexts", now);
