@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,17 +63,26 @@ public class MetsResolver extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getParameter("id") != null) {
-            String id = request.getParameter("id");
-            if (!PIValidator.validatePi(id)) {
+        String id = request.getParameter("id");
+        String urn = request.getParameter("urn");
+        if (id != null || urn != null) {
+            if (id != null && !PIValidator.validatePi(id)) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ERRTXT_ILLEGAL_IDENTIFIER + ": " + id);
                 return;
             }
             StringBuilder sbPath = new StringBuilder();
             try {
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + id);
+                String query = null;
+                if (id != null) {
+                    query = SolrConstants.PI + ":\"" + id + '"';
+                } else if (urn != null) {
+                    query = SolrConstants.URN + ":\"" + urn + '"';
+                }
+                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(query);
                 if (hits != null && !hits.isEmpty()) {
                     // If the user has no listing privilege for this record, act as if it does not exist
+                    SolrDocument doc = hits.get(0);
+                    id = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
                     boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(id, null, IPrivilegeHolder.PRIV_LIST, request);
                     if (!access) {
                         logger.debug("User may not list {}", id);
@@ -80,8 +90,8 @@ public class MetsResolver extends HttpServlet {
                         return;
                     }
 
-                    String format = (String) hits.get(0).getFieldValue(SolrConstants.SOURCEDOCFORMAT);
-                    String dataRepository = (String) hits.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
+                    String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
+                    String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
                     if (StringUtils.isNotEmpty(dataRepository)) {
                         String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
                         if (StringUtils.isNotEmpty(dataRepositoriesHome)) {
@@ -90,12 +100,12 @@ public class MetsResolver extends HttpServlet {
                         if (format != null) {
                             switch (format.toUpperCase()) {
                                 case SolrConstants._METS:
-                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
-                                            .getIndexedMetsFolder());
+                                    sbPath.append(dataRepository).append('/').append(
+                                            DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                                     break;
                                 case SolrConstants._LIDO:
-                                    sbPath.append(dataRepository).append('/').append(DataManager.getInstance().getConfiguration()
-                                            .getIndexedLidoFolder());
+                                    sbPath.append(dataRepository).append('/').append(
+                                            DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
                                     break;
                             }
                         } else {
@@ -106,18 +116,18 @@ public class MetsResolver extends HttpServlet {
                         if (format != null) {
                             switch (format.toUpperCase()) {
                                 case SolrConstants._METS:
-                                    sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
-                                            .getConfiguration().getIndexedMetsFolder());
+                                    sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome())
+                                            .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                                     break;
                                 case SolrConstants._LIDO:
-                                    sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
-                                            .getConfiguration().getIndexedLidoFolder());
+                                    sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome())
+                                            .append(DataManager.getInstance().getConfiguration().getIndexedLidoFolder());
                                     break;
                                 default: // nothing
                             }
                         } else {
-                            sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome()).append(DataManager.getInstance()
-                                    .getConfiguration().getIndexedMetsFolder());
+                            sbPath.append(DataManager.getInstance().getConfiguration().getViewerHome())
+                                    .append(DataManager.getInstance().getConfiguration().getIndexedMetsFolder());
                         }
                     }
                     if (sbPath.charAt(sbPath.length() - 1) != '/') {
