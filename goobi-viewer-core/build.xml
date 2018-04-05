@@ -15,7 +15,8 @@
 	<property name="dir.tests.src" value="./test" />
 	<property name="dir.tests.classes" value="${dir.build}/test-classes" />
 	<property name="dir.tests.report" value="${dir.build}/test-reports" />
-	<property name="dir.javadoc" value="doc" />
+	<property name="dir.doc" value="doc" />
+	<property name="dir.javadoc" value="doc/javadoc" />
 
 	<!-- Compiler options -->
 	<property name="javac.source" value="1.8" />
@@ -48,6 +49,8 @@
 		<mkdir dir="${dir.build.classes}" />
 		<mkdir dir="${dir.tests.classes}" />
 		<mkdir dir="${dir.tests.classes}/META-INF" />
+		<mkdir dir="${dir.doc}" />
+		<mkdir dir="${dir.javadoc}" />
 	</target>
 
 	<!-- Copy any resource or configuration files -->
@@ -192,7 +195,7 @@
 		<delete dir="${dir.javadoc}" />
 		<mkdir dir="${dir.javadoc}" />
 		<!-- create javadocs -->
-		<javadoc destdir="${dir.javadoc}" sourcepath="${dir.src}" Author="true" version="true" Use="true" noindex="true" Windowtitle="intranda viewer Javadoc References" Doctitle="intranda viewer Javadoc References" bottom="Copyright 2013, inranda GmbH" encoding="UTF8">
+		<javadoc destdir="${dir.javadoc}" sourcepath="${dir.src}" Author="false" version="true" Use="true" noindex="false" Windowtitle="Goobi viewer Javadoc References" Doctitle="Goobi viewer Javadoc References" bottom="Copyright, inranda GmbH" encoding="UTF8">
 			<classpath refid="classpath">
 			</classpath>
 			<tag name="should" description="Generate Test Cases plugin" enabled="false"/>
@@ -254,7 +257,7 @@
 	</target>
 
 	<!-- Build of war file for customer distribution. -->
-	<target name="war" depends="compile, junit-withcoverage, javadoc, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
+	<target name="war" depends="compile, junit-withcoverage, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
 		<!-- replace custom faces and pretty config path in web.xml -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/faces-config.xml" replace="/resources/themes/${theme}/faces-config.xml" byline="true" /> -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/theme-url-mappings.xml" replace="/resources/themes/${theme}/theme-url-mappings.xml" byline="true" /> -->
@@ -290,7 +293,7 @@
 	</target>
 
 	<!-- Build of war file for customer distribution. -->
-	<target name="war-root" depends="compile, junit-withcoverage, javadoc, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
+	<target name="war-root" depends="compile, junit-withcoverage, resources, prepareConfig, customModifications" description="Build of war file for customer distribution">
 		<!-- replace custom faces and pretty config path in web.xml -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/faces-config.xml" replace="/resources/themes/${theme}/faces-config.xml" byline="true" /> -->
 		<!-- <replaceregexp file="${dir.build}/WEB-INF/web.xml" match="/resources/themes/(.*)/theme-url-mappings.xml" replace="/resources/themes/${theme}/theme-url-mappings.xml" byline="true" /> -->

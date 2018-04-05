@@ -26,9 +26,13 @@
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.1",
     "karma-mocha-reporter": "^2.2.5",
-    "less-plugin-autoprefix": "^1.5.1"
+    "less-plugin-autoprefix": "^1.5.1",
+    "jsdoc": "^3.4.0"
   },
   "dependencies": {
     "jquery": "^3.3.1"
+  },
+  "scripts": {
+    "docs": "jsdoc -c jsdoc.conf"
   }
 }
