@@ -10,7 +10,7 @@ before_install:
   - npm --prefix goobi-viewer-core/ install
 
 script:
-  - cd goobi-viewer-core; ant war-internal javadoc
+  - cd goobi-viewer-core; ant war-internal junit-simple javadoc
   - npm run docs
 
 deploy:
