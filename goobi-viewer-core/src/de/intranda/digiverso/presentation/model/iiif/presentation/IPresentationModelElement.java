@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.List;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
+import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
@@ -73,12 +74,12 @@ public interface IPresentationModelElement {
 	/**
 	 * @return the related
 	 */
-	URI getRelated();
+	LinkingContent getRelated();
 
 	/**
 	 * @return the rendering
 	 */
-	URI getRendering();
+	LinkingContent getRendering();
 
 	/**
 	 * @return the id

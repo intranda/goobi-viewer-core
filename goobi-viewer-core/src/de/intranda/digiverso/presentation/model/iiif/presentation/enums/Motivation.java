@@ -18,36 +18,24 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.enums;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
  */
-public enum Format {
-	
-	IMAGE_JPEG("image/jpeg"),
-	IMAGE_PNG("image/png"),
-	VIDEO_MP4("video/mp4"),
-	VIDEO_WEBM("video/webm"),
-	AUDIO_OGG("audio/ogg"),
-	AUDI_MP3("audio/mp3"),
-	TEXT_PLAIN("text/plain"),
-	TEXT_XML("text/xml"),
-	TEXT_HTML("text/html"),
-	APPLICATION_PDF("applocation/pdf");
-	
-	private String label;
-	
-	private Format(String label) {
-		this.label = label;
-	}
-	
-	/**
-	 * @return the label
-	 */
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
-	
-	
+public enum Motivation {
 
+    PAINTING("sc:painting"),
+    COMMENTING("oa:commenting"),
+    LINKING("oa:linking");
+    
+    
+    private final String label;
+    
+    private Motivation(String label) {
+        this.label = label;
+    }
+    
+    @JsonValue
+    public String getLabel() {
+        return label;
+    }
 }

@@ -19,27 +19,26 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
+import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
 
 /**
  * @author Florian Alpers
  *
  */
-public class Range extends AbstractPresentationModelElement implements IPresentationModelElement {
+public class Canvas extends AbstractPresentationModelElement implements IPresentationModelElement, ICanvas {
 
-    private static final String TYPE = "sc:range";
+    private static final String TYPE = "sc:canvas";
     
-    private final List<Canvas> canvases = new ArrayList<>();
-    private final List<Range> ranges = new ArrayList<>();
-    private Layer contentLayer;
-    private Range within = null;
-    private Canvas startCanvas;
-    
+    private int width;
+    private int height;
+    private Sequence within;
+    private final List<AbstractAnnotation> images = new ArrayList<>();
+    private final List<AnnotationList> otherContent = new ArrayList<>();
     
     /**
      * @param id
      */
-    public Range(URI id) {
+    public Canvas(URI id) {
         super(id);
     }
 
@@ -52,70 +51,66 @@ public class Range extends AbstractPresentationModelElement implements IPresenta
     }
     
     /**
-     * @return the startCanvas
+     * @return the width
      */
-    public Canvas getStartCanvas() {
-        return startCanvas;
+    public int getWidth() {
+        return width;
     }
     
     /**
-     * @param startCanvas the startCanvas to set
+     * @return the height
      */
-    public void setStartCanvas(Canvas startCanvas) {
-        this.startCanvas = startCanvas;
+    public int getHeight() {
+        return height;
     }
     
+    /**
+     * @param width the width to set
+     */
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    
+    /**
+     * @param height the height to set
+     */
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     /**
      * @return the within
      */
-    public Range getWithin() {
+    public Sequence getWithin() {
         return within;
     }
     
     /**
      * @param within the within to set
      */
-    public void setWithin(Range within) {
+    public void setWithin(Sequence within) {
         this.within = within;
     }
     
     /**
-     * @return the contentLayer
+     * @return the images
      */
-    public Layer getContentLayer() {
-        return contentLayer;
+    public List<AbstractAnnotation> getImages() {
+        return images;
     }
     
     /**
-     * @param contentLayer the contentLayer to set
+     * @return the otherContent
      */
-    public void setContentLayer(Layer contentLayer) {
-        this.contentLayer = contentLayer;
+    public List<AnnotationList> getOtherContent() {
+        return otherContent;
     }
     
-    /**
-     * @return the canvases
-     */
-    public List<Canvas> getCanvases() {
-        return canvases;
+    public void addImage(AbstractAnnotation image) {
+        this.images.add(image);
     }
     
-    /**
-     * @return the ranges
-     */
-    public List<Range> getRanges() {
-        return ranges;
+    public void addOtherContent(AnnotationList content) {
+        this.otherContent.add(content);
     }
-    
-    public void addCanvas(Canvas canvas) {
-        this.canvases.add(canvas);
-    }
-    
-    public void addRange(Range range) {
-        this.ranges.add(range);
-    }
-    
-    
-    
-
 }

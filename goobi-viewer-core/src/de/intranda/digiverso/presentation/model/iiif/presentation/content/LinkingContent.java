@@ -24,13 +24,17 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
  * @author Florian Alpers
  *
  */
-public class URLContent implements IContent {
+public class LinkingContent implements IContent {
 
+    private final URI id;
+    private IMetadataValue label;
+    private Format format = Format.TEXT_HTML;
+    
     /**
      * 
      */
-    public URLContent() {
-        // TODO Auto-generated constructor stub
+    public LinkingContent(URI id) {
+        this.id = id;
     }
 
     /* (non-Javadoc)
@@ -38,7 +42,6 @@ public class URLContent implements IContent {
      */
     @Override
     public String getType() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -46,18 +49,16 @@ public class URLContent implements IContent {
      * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getWidth()
      */
     @Override
-    public int getWidth() {
-        // TODO Auto-generated method stub
-        return 0;
+    public Integer getWidth() {
+        return null;
     }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getHeight()
      */
     @Override
-    public int getHeight() {
-        // TODO Auto-generated method stub
-        return 0;
+    public Integer getHeight() {
+        return null;
     }
 
     /* (non-Javadoc)
@@ -65,8 +66,7 @@ public class URLContent implements IContent {
      */
     @Override
     public Format getFormat() {
-        // TODO Auto-generated method stub
-        return null;
+        return format;
     }
 
     /* (non-Javadoc)
@@ -74,8 +74,7 @@ public class URLContent implements IContent {
      */
     @Override
     public URI getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return id;
     }
 
     /* (non-Javadoc)
@@ -83,8 +82,7 @@ public class URLContent implements IContent {
      */
     @Override
     public IMetadataValue getLabel() {
-        // TODO Auto-generated method stub
-        return null;
+        return label;
     }
 
 }

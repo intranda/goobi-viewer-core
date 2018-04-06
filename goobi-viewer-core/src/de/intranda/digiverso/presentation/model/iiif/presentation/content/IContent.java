@@ -31,12 +31,12 @@ public interface IContent {
 	/**
 	 * @return the width
 	 */
-	public int getWidth();
+	public Integer getWidth();
 
 	/**
 	 * @return the height
 	 */
-	public int getHeight();
+	public Integer getHeight();
 
 	/**
 	 * @return the format

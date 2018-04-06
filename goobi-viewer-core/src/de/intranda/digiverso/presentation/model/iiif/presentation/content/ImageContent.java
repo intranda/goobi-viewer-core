@@ -51,7 +51,7 @@ public class ImageContent implements IContent {
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getWidth()
 	 */
 	@Override
-	public int getWidth() {
+	public Integer getWidth() {
 		return width;
 	}
 
@@ -66,7 +66,7 @@ public class ImageContent implements IContent {
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getHeight()
 	 */
 	@Override
-	public int getHeight() {
+	public Integer getHeight() {
 		return height;
 	}
 

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
+import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
@@ -32,6 +33,8 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
  */
 public abstract class AbstractPresentationModelElement implements IPresentationModelElement {
 	
+    public static final String CONTEXT = "http://iiif.io/api/presentation/2/context.json";
+    
     protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     
@@ -44,8 +47,8 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private URI license;
 	private ImageContent logo;
 	private ViewingHint viewingHint;
-	private URI related;
-	private URI rendering;
+	private LinkingContent related;
+	private LinkingContent rendering;
 	
 	public AbstractPresentationModelElement(URI id) {
 		this.id = id;
@@ -190,14 +193,14 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getRelated()
 	 */
 	@Override
-	public URI getRelated() {
+	public LinkingContent getRelated() {
 		return related;
 	}
 
 	/**
 	 * @param related the related to set
 	 */
-	public void setRelated(URI related) {
+	public void setRelated(LinkingContent related) {
 		this.related = related;
 	}
 
@@ -205,14 +208,14 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getRendering()
 	 */
 	@Override
-	public URI getRendering() {
+	public LinkingContent getRendering() {
 		return rendering;
 	}
 
 	/**
 	 * @param rendering the rendering to set
 	 */
-	public void setRendering(URI rendering) {
+	public void setRendering(LinkingContent rendering) {
 		this.rendering = rendering;
 	}
 
@@ -224,5 +227,10 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 		return id;
 	}
 	
-	
+	/**
+     * @return the context
+     */
+    public static String getContext() {
+        return CONTEXT;
+    }
 }

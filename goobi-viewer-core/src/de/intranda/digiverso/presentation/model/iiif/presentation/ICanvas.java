@@ -13,41 +13,15 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.iiif.presentation.enums;
+package de.intranda.digiverso.presentation.model.iiif.presentation;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.net.URI;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
  */
-public enum Format {
-	
-	IMAGE_JPEG("image/jpeg"),
-	IMAGE_PNG("image/png"),
-	VIDEO_MP4("video/mp4"),
-	VIDEO_WEBM("video/webm"),
-	AUDIO_OGG("audio/ogg"),
-	AUDI_MP3("audio/mp3"),
-	TEXT_PLAIN("text/plain"),
-	TEXT_XML("text/xml"),
-	TEXT_HTML("text/html"),
-	APPLICATION_PDF("applocation/pdf");
-	
-	private String label;
-	
-	private Format(String label) {
-		this.label = label;
-	}
-	
-	/**
-	 * @return the label
-	 */
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
-	
-	
+public interface ICanvas {
 
+    public URI getId();
 }
