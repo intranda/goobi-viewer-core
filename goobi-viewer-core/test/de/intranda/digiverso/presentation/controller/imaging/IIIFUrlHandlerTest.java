@@ -22,6 +22,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 
 /**
  * @author Florian Alpers
@@ -30,12 +32,14 @@ import org.junit.Test;
 public class IIIFUrlHandlerTest {
 
     IIIFUrlHandler handler;
-    
+
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+
         handler = new IIIFUrlHandler();
         
     }

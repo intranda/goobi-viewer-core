@@ -16,12 +16,26 @@
 package de.intranda.digiverso.presentation.model.toc;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.model.toc.metadata.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
+
 public class TOCElementTest {
+
+
+     /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
+
 
     /**
      * @see TOCElement#TOCElement(String,String,String,String,String,int,String,String,boolean,boolean,String,String)
