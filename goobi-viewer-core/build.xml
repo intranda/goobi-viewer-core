@@ -188,7 +188,7 @@
 				<classpath refid="test.classpath" />
 				<formatter type="xml" usefile="true" />
 				<batchtest todir="${dir.tests.report}">
-					<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/JPAClassLoaderTest.class" />
+					<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*" />
 				</batchtest>
 			</junit>
 		</jacoco:coverage>
