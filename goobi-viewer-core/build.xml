@@ -15,6 +15,7 @@
 	<property name="dir.tests.src" value="./test" />
 	<property name="dir.tests.classes" value="${dir.build}/test-classes" />
 	<property name="dir.tests.report" value="${dir.build}/test-reports" />
+	<property name="dir.tests.htmlreport" value="./test-reports-html" />
 	<property name="dir.doc" value="doc" />
 	<property name="dir.javadoc" value="doc/javadoc" />
 
@@ -176,6 +177,13 @@
 				<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/SolrSearchIndexTest*, de/intranda/digiverso/**/TranskribusUtilsTest*, de/intranda/digiverso/**/JPADAOTest*, de/intranda/digiverso/**/ActiveDocumentBeanTest*, de/intranda/digiverso/**/AdminBeanTest*, de/intranda/digiverso/**/CmsBeanTest*, de/intranda/digiverso/**/CmsMediaBeanTest*, de/intranda/digiverso/**/SearchBeanTest*, de/intranda/digiverso/**/CMSPageTest*, de/intranda/digiverso/**/DownloadJobTest*, de/intranda/digiverso/**/MetadataTest*, de/intranda/digiverso/**/OverviewPageTest*, de/intranda/digiverso/**/BrowseElementTest*, de/intranda/digiverso/**/FacetItemTest*, de/intranda/digiverso/**/SearchHelperTest*, de/intranda/digiverso/**/SearchHitTest*, de/intranda/digiverso/**/AccessConditionUtilsTest*, de/intranda/digiverso/**/TocMakerTest*, de/intranda/digiverso/**/IpRangeTest*, de/intranda/digiverso/**/UserTest*, de/intranda/digiverso/**/CollectionViewTest*, de/intranda/digiverso/**/PhysicalElementTest*, de/intranda/digiverso/**/StructElementStubTest*, de/intranda/digiverso/**/StructElementTest*, de/intranda/digiverso/**/ViewManagerTest*, de/intranda/digiverso/**/EagerPageLoaderTest*, de/intranda/digiverso/**/LeanPageLoaderTest*, de/intranda/digiverso/**/IdentifierResolverTest*, de/intranda/digiverso/**/MetsResolverTest*, de/intranda/digiverso/**/PpnResolverTest*, de/intranda/digiverso/**/WebApiServletTest*, de/intranda/digiverso/**/BookshelfResourceTest*, de/intranda/digiverso/**/CMSContentResourceTest*, de/intranda/digiverso/**/ContentResourceTest*" />
 			</batchtest>
 		</junit>
+		<mkdir dir="${dir.tests.htmlreport}"/>
+		<junitreport todir="${dir.tests.report}">
+			<fileset dir="${dir.tests.report}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${dir.tests.htmlreport}" />
+		</junitreport>
 		<delete dir="${dir.tests.classes}" />
 	</target>
 
