@@ -29,11 +29,11 @@ public class JPAClassLoaderTest {
         // TODO Fails on Jenkins
         File masterFile = new File("src/META-INF/persistence.xml");
         Assert.assertTrue(masterFile.isFile());
-        URL masterUrl = new URL("file:/" + masterFile.getAbsolutePath());
+        URL masterUrl = new URL("file:///" + masterFile.getAbsolutePath());
 
         File file = new File("resources/test/modules/persistence.xml");
         Assert.assertTrue(file.isFile());
-        URL moduleUrl = new URL("file:/" + file.getAbsolutePath());
+        URL moduleUrl = new URL("file:///" + file.getAbsolutePath());
 
         Document doc = JPAClassLoader.scanPersistenceXML(masterUrl, Collections.singletonList(moduleUrl));
         Assert.assertNotNull(doc);
@@ -45,7 +45,7 @@ public class JPAClassLoaderTest {
 
         {
             Element elePU1 = eleListPU.get(0);
-            Assert.assertEquals(27, elePU1.getChildren("class", null).size());
+            Assert.assertEquals(29, elePU1.getChildren("class", null).size());
             Set<String> classes = new HashSet<>();
             for (Element eleClass : elePU1.getChildren("class", null)) {
                 classes.add(eleClass.getText());

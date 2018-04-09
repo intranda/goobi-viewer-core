@@ -45,6 +45,11 @@ A complete documentation of the Goobi viewer can be found using this URL:
 
 Please notice that the Goobi viewer was formerly known as proprietary software under the name 'intranda viewer' and is released under an open source license since June 2017. Lots of our documentation and description sites still have to be updated to represent the new product name 'Goobi viewer'.
 
+You can find technical documentation for backend and frontend developers here:
+- [Javadoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/javadoc/index.html)
+- [JSDoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/jsdoc/index.html)
+
+
 ## Technical background
 
 The Goobi viewer consists of multiple packages which all have to be installed and configured properly:

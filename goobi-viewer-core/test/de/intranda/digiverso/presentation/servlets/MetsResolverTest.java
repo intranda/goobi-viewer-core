@@ -55,13 +55,26 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
-     * @verifies return METS file correctly
+     * @verifies return METS file correctly via pi
      */
     @Test
-    public void doGet_shouldReturnMETSFileCorrectly() throws Exception {
+    public void doGet_shouldReturnMETSFileCorrectlyViaPi() throws Exception {
         ServletUnitClient sc = sr.newClient();
         WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
         request.setParameter("id", "PPN517154005");
+        WebResponse response = sc.getResponse(request);
+        Assert.assertNotNull(response);
+    }
+
+    /**
+     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
+     * @verifies return METS file correctly via urn
+     */
+    @Test
+    public void doGet_shouldReturnMETSFileCorrectlyViaUrn() throws Exception {
+        ServletUnitClient sc = sr.newClient();
+        WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+        request.setParameter("urn", "ooe:landesbibliothek-610285");
         WebResponse response = sc.getResponse(request);
         Assert.assertNotNull(response);
     }
@@ -86,8 +99,27 @@ public class MetsResolverTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test(expected = HttpNotFoundException.class)
     public void doGet_shouldReturn404IfFileNotFound() throws Exception {
         ServletUnitClient sc = sr.newClient();
+        {
+            WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+            request.setParameter("id", "NOTFOUND");
+            WebResponse response = sc.getResponse(request);
+        }
+        {
+            WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
+            request.setParameter("urn", "NOTFOUND");
+            WebResponse response = sc.getResponse(request);
+        }
+    }
+
+    /**
+     * @see MetsResolver#doGet(HttpServletRequest,HttpServletResponse)
+     * @verifies return 409 if more than one record matched
+     */
+    @Test(expected = HttpException.class)
+    public void doGet_shouldReturn409IfMoreThanOneRecordMatched() throws Exception {
+        ServletUnitClient sc = sr.newClient();
         WebRequest request = new PostMethodWebRequest("http://test.intranda.com/" + RESOLVER_NAME);
-        request.setParameter("id", "NOTFOUND");
+        request.setParameter("urn", "test:1234:goobi:3431");
         WebResponse response = sc.getResponse(request);
     }
 

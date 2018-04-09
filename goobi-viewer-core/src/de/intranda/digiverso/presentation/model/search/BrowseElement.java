@@ -399,7 +399,7 @@ public class BrowseElement implements Serializable {
         }
 
         //check if we have images
-        hasImages = !isAnchor() && this.mimeType.startsWith("image/");
+        hasImages = !isAnchor() && this.mimeType.startsWith("image");
 
         // Only topstructs should be openened with their overview page view (if they have one)
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
@@ -669,40 +669,43 @@ public class BrowseElement implements Serializable {
      * @should translate docstruct label
      */
     static String generateDefaultLabel(StructElement se, Locale locale) {
-        String ret = se.getMetadataValue(SolrConstants.LABEL);
-        if (StringUtils.isEmpty(ret)) {
-            ret = se.getMetadataValue(SolrConstants.TITLE);
-            if (StringUtils.isEmpty(ret)) {
-                if (locale != null) {
-                    String englishTitle = null;
-                    String germanTitle = null;
-                    String anyTitle = null;
-                    for (String key : se.getMetadataFields().keySet()) {
-                        if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
-                            ret = se.getMetadataValue(key);
-                            break;
-                        } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
-                            germanTitle = se.getMetadataValue(key);
-                        } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
-                            englishTitle = se.getMetadataValue(key);
-                        } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
-                            anyTitle = se.getMetadataValue(key);
-                        }
-                    }
-                    if (StringUtils.isBlank(ret)) {
-                        if (StringUtils.isNotBlank(englishTitle)) {
-                            ret = englishTitle;
-                        } else if (StringUtils.isNotBlank(germanTitle)) {
-                            ret = germanTitle;
-                        } else {
-                            ret = anyTitle;
-                        }
-                    }
-                }
-                if (StringUtils.isEmpty(ret)) {
-                    ret = Helper.getTranslation(se.getDocStructType(), locale);
+        String ret = null;
+        if (locale != null) {
+            // Prefer localized title
+            String englishTitle = null;
+            String germanTitle = null;
+            String anyTitle = null;
+            for (String key : se.getMetadataFields().keySet()) {
+                if (key.equals(SolrConstants.TITLE + "_LANG_" + locale.getLanguage().toUpperCase())) {
+                    ret = se.getMetadataValue(key);
+                    break;
+                } else if (key.equals(SolrConstants.TITLE + "_LANG_DE")) {
+                    germanTitle = se.getMetadataValue(key);
+                } else if (key.equals(SolrConstants.TITLE + "_LANG_EN")) {
+                    englishTitle = se.getMetadataValue(key);
+                } else if (key.matches(SolrConstants.TITLE + "_LANG_[A-Z][A-Z]")) {
+                    anyTitle = se.getMetadataValue(key);
                 }
             }
+            if (StringUtils.isBlank(ret)) {
+                if (StringUtils.isNotBlank(englishTitle)) {
+                    ret = englishTitle;
+                } else if (StringUtils.isNotBlank(germanTitle)) {
+                    ret = germanTitle;
+                } else {
+                    ret = anyTitle;
+                }
+            }
+        }
+        // Fallback to LABEL or TITLE
+        if (StringUtils.isEmpty(ret)) {
+            ret = se.getMetadataValue(SolrConstants.LABEL);
+            if (StringUtils.isEmpty(ret)) {
+                ret = se.getMetadataValue(SolrConstants.TITLE);
+            }
+        }
+        if (StringUtils.isEmpty(ret)) {
+            ret = Helper.getTranslation(se.getDocStructType(), locale);
         }
 
         return ret;
