@@ -60,7 +60,7 @@
                 <viewerComponent:simplePaginator 
                     itemCount="#{searchBean.lastPage}" 
                     itemActive="#{searchBean.currentPage}"
-                    urlPrefix="#{navigationHelper.applicationUrl}cms/#{cmsPage.id}/search/"
+                    urlPrefix="#{cmsPage.pageUrl}search/"
                     urlSuffix="#{searchBean.facets.currentFacetString}/#{searchBean.facets.currentFacetString}/" />
 			</div>
 			
