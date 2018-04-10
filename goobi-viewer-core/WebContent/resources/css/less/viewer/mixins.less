@@ -50,3 +50,9 @@
     white-space: nowrap; 
     overflow: hidden; 
 }
+/* GRID */
+.mx-grid(@width: 145px; @gap: 15px) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(@width, 1fr));
+  grid-gap: @gap;
+}
