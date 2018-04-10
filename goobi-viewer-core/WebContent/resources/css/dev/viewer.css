@@ -4419,6 +4419,10 @@ div[id*="-Modal"] .email-form .form-group {
 .search-termlist__list {
   margin-bottom: 1.3125rem;
 }
+.search-termlist__list ul {
+  column-count: 3;
+  column-gap: 15px;
+}
 .search-termlist__list a {
   display: block;
   padding: 5px 10px;
