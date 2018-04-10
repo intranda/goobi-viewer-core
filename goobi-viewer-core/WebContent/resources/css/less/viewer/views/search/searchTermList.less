@@ -28,7 +28,16 @@
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {}
+@media screen and (max-width: @smallBreakpoint) {
+	.search-termlist__list ul {
+		column-count: 2;
+	}
+}
 
 /* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: @xSmallBreakpoint) {}
+@media screen and (max-width: @xSmallBreakpoint) {
+	.search-termlist__list ul {
+		column-count: 1;
+		column-gap: 0;
+	}
+}

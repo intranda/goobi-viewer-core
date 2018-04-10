@@ -4449,7 +4449,18 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .search-termlist__list ul {
+    column-count: 2;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .search-termlist__list ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
 /* ==============================================================
    Search Timeline
    style declarations for searchTimeline.xhtml 
