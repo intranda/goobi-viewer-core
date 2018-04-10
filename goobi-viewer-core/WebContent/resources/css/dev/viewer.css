@@ -4006,6 +4006,30 @@ div[id*="-Modal"] .email-form .form-group {
   border: 2px solid #fff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
+.search-list__hit-thumbnail [data-link="related-page"] {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 30px;
+  height: auto !important;
+  padding: 0 5px;
+  text-align: center;
+  color: #fff;
+  border-radius: 3px;
+  background-color: #428bca;
+}
+.search-list__hit-thumbnail [data-link="related-page"]:before {
+  content: "";
+  position: absolute;
+  display: block;
+  right: 3px;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-width: 4px;
+  border-style: solid;
+  border-color: #428bca transparent transparent transparent;
+}
 .search-list__hit-thumbnail [data-bookshelf-type="add"] {
   position: absolute;
   top: 0;
