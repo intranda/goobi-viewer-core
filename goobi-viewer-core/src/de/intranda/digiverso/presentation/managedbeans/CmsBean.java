@@ -1288,8 +1288,11 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public boolean isHasRelatedPages(String pi) throws DAOException {
+        if (StringUtils.isEmpty(pi)) {
+            return false;
+        }
         List<CMSPage> relatedPages = getRelatedPages(pi);
-        return relatedPages != null && relatedPages.size() > 0;
+        return relatedPages != null && !relatedPages.isEmpty();
     }
 
     /**
