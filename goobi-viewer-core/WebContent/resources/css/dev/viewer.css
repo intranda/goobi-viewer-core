@@ -35,6 +35,15 @@
   display: none !important;
   visibility: hidden !important;
 }
+/* VISUALLY HIDDEN */
+.mx-v-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  overflow: hidden;
+}
 /* ==============================================================
    General styling
    ==============================================================*/
@@ -555,6 +564,15 @@ button {
 .oneUp {
   position: relative;
   top: -1px;
+}
+/* VISUALLY HIDDEN */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  overflow: hidden;
 }
 /* ==============================================================
    IE lower EDGE Styles

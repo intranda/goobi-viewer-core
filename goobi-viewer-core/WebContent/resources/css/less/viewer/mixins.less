@@ -21,7 +21,7 @@
 	background-size: @size;
 }
 /* CSS TRIANGLE */
-.mx-triangle(@top: 0; @left: 0; @bWidth: 10px; @bcTop: transparent; @bcRight: transparent; @bcBottom: #000; @bcLeft: transparent;) {
+.mx-triangle(@top: 0; @left: 0; @bWidth: 10px; @bcTop: transparent; @bcRight: transparent; @bcBottom: #000; @bcLeft: transparent) {
 	position: relative;
 	&:after {
 		content: "";
@@ -40,4 +40,13 @@
 .mx-hidden {
 	display: none !important;
 	visibility: hidden !important;
+}
+/* VISUALLY HIDDEN */
+.mx-v-hidden {
+    position: absolute; 
+    width: 1px;
+    height: 1px; 
+	clip: rect(1px, 1px, 1px, 1px); 
+    white-space: nowrap; 
+    overflow: hidden; 
 }
