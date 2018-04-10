@@ -1659,26 +1659,43 @@ div.mce-fullscreen {
    Alphabetic Paginator
    style declarations for alphabeticPaginator.xhtml
    ==============================================================*/
-#alphabeticPaginator {
+/* ALPHABETIC PAGINATOR */
+/* BLOCK */
+.alphabetic-paginator {
   margin-bottom: 1.3125rem;
+  /* ELEMENT */
 }
-#alphabeticPaginator ul li {
-  display: inline-block;
-  margin: 0 0 3px 0;
-  text-align: center;
+.alphabetic-paginator ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
 }
-#alphabeticPaginator ul li.active {
-  font-weight: bold;
-}
-#alphabeticPaginator ul li a {
-  display: block;
+.alphabetic-paginator li {
   width: 32px;
   height: 32px;
-  line-height: 32px;
-  text-decoration: none;
+  margin: 5px 5px 0 0;
   border: 1px solid #eee;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
+.alphabetic-paginator li.active {
+  font-weight: bold;
+  background-color: #428bca;
+}
+.alphabetic-paginator li.active a {
+  color: #fff;
+}
+.alphabetic-paginator a {
+  display: block;
+  height: 100%;
+  line-height: 30px;
+  text-align: center;
+  text-decoration: none;
+}
+.alphabetic-paginator a:hover,
+.alphabetic-paginator a:active,
+.alphabetic-paginator a:focus {
+  background-color: #eee;
+}
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
