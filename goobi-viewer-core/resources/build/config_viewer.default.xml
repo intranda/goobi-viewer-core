@@ -222,6 +222,18 @@
 
 		<!-- TODO DOCUMENTATION-->
 		<rememberImageRotation>false</rememberImageRotation>
+        
+        <!-- URL patterns for external image urls which should be served via the contentServner
+        All image urls (= page filenames in SOLR) which match one of the externalContent.restrictedUrls.urls 
+        Will not be delivered to the client directly, but rather embedded within a contentServer IIIF url, so the actual image
+        is requested by the viewer/contentServer and not the client
+         -->
+        <externalContent>
+            <restrictedUrls>
+                <url>https?://external/restricted/.*</url>
+                <url>https?://external/noaccess/.*\.tif</url>
+            </restrictedUrls>
+        </externalContent>
 
 		<!-- FIXME DEPRECATED-->
 		<!-- image size settings for the "newspaper" preview view. previewWidth	is the pixel-width of the preview image as delivered by the contentServer;
