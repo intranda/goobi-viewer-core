@@ -16,32 +16,63 @@
 package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 
 /**
  * @author Florian Alpers
  *
  */
-public class ContentLinkSerializer extends JsonSerializer<IPresentationModelElement> {
+public class ContentLinkSerializer extends JsonSerializer<List<IPresentationModelElement>> {
 
     /* (non-Javadoc)
      * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
      */
     @Override
-    public void serialize(IPresentationModelElement element, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+    public void serialize(List<IPresentationModelElement> elements, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
         
+        if(elements != null && !elements.isEmpty()) {
+            if(elements.size() == 1) {
+                writeElement(elements.get(0), generator, provider);
+            } else {
+                generator.writeStartArray();
+                for (IPresentationModelElement element : elements) {                    
+                    writeElement(element, generator, provider);
+                }
+                generator.writeEndArray();
+            }
+        }
+        
+    }
+
+    /**
+     * @param element
+     * @param generator
+     * @throws IOException
+     */
+    public void writeElement(IPresentationModelElement element, JsonGenerator generator, SerializerProvider provider) throws IOException {
         generator.writeStartObject();
         generator.writeStringField("@id", element.getId().toString());
         generator.writeStringField("@type", element.getType());
         if(element.getLabel() != null && !element.getLabel().isEmpty()) {            
             generator.writeObjectField("label", element.getLabel());
         }
+        if(element.getViewingHint() != null) {
+            generator.writeObjectField("viewingHint", element.getViewingHint());
+        }
+        if(element.getThumbnail() != null) {
+            generator.writeFieldName("thumbnail");
+            new ImageContentLinkSerializer().serialize(element.getThumbnail(), generator, provider);
+        }
+        generator.writeEndObject(); 
     }
 
 }

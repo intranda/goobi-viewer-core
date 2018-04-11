@@ -23,6 +23,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
 
 /**
  * @author Florian Alpers

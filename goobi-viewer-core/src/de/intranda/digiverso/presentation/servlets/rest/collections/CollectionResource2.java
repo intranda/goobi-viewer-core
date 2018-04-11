@@ -38,12 +38,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -202,9 +204,15 @@ public class CollectionResource2 {
             collection.setAttribution(new SimpleMetadataValue(ATTRIBUTION));
             
             if(baseElement != null) {                
-                collection.setLabel(new SimpleMetadataValue(baseElement.getName()));
+                collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
                 
-                ImageContent thumb = new ImageContent(absolutize(baseElement.getInfo().getIconURI()));
+                URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
+                ImageContent thumb = new ImageContent(thumbURI);
+                if(IIIFUrlHandler.isIIIFImageUrl(thumbURI.toString())) {
+                    URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbURI.toString()));
+                    ImageInformation info = new ImageInformation(imageInfoURI.toString());
+                    thumb.setService(info);
+                }
                 collection.setThumbnail(thumb);
                 
                 long volumes = baseElement.getNumberOfVolumes();
@@ -289,7 +297,7 @@ public class CollectionResource2 {
      */
     public String getBaseUrl() {
         String url = servletRequest.getRequestURL().toString();
-        url = url.substring(0, url.indexOf("/collections") + "/collections".length());
+        url = url.substring(0, url.indexOf("/collections2") + "/collections2".length());
         return url;
     }
 

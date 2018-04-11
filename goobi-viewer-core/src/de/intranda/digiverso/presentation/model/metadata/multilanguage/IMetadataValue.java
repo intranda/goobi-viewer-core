@@ -16,9 +16,14 @@
 package de.intranda.digiverso.presentation.model.metadata.multilanguage;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+
+import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 
 /**
  * Interface to access both single and multi language metadata.
@@ -112,4 +117,23 @@ public interface IMetadataValue {
      * @return  true if no entry is set for the given locale
      */
     public boolean isEmpty(String locale);
+    
+    
+    /**
+     * Returns a Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
+     * 
+     * @param key the message key
+     * @return  A Multilanguage metadata value containing all found translations for the {@code key}, or the key itself if not translations were found
+     */
+    public static IMetadataValue getTranslations(String key) {
+        Map<String, String> translations = new HashMap<>();
+        for (Locale locale : (Iterable<Locale>)() -> ViewerResourceBundle.getAllLocales()) {
+            translations.put(locale.getLanguage(), ViewerResourceBundle.getTranslation(key, locale));
+        }
+        if(translations.isEmpty()) {
+            return new SimpleMetadataValue(key);
+        } else {
+            return new MultiLanguageMetadataValue(translations);
+        }
+    }
 }

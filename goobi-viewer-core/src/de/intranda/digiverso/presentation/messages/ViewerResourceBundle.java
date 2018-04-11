@@ -27,12 +27,15 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -376,5 +379,16 @@ public class ViewerResourceBundle extends ResourceBundle {
     @Override
     public Enumeration<String> getKeys() {
         return null;
+    }
+
+    public static Iterator<Locale> getAllLocales() {
+        
+        FacesContext context2 = FacesContext.getCurrentInstance();
+        
+        Optional<Iterator<Locale>> o = Optional.ofNullable(FacesContext.getCurrentInstance())
+                .map(context -> context.getApplication())
+                .map(app -> app.getSupportedLocales());
+        
+        return o.orElse(Collections.emptyIterator());
     }
 }

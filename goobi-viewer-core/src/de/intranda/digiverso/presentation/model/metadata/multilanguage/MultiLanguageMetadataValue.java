@@ -24,57 +24,62 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.h2.value.Value;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author Florian Alpers
  *
  */
 public class MultiLanguageMetadataValue implements IMetadataValue {
-    
+
     public static final String DEFAULT_LANGUAGE = "_DEFAULT";
 
     private final Map<String, String> values;
-    
+
     public MultiLanguageMetadataValue() {
         values = new HashMap<>();
 
     }
-    
+
     /**
-     * Creates values from a map with the language codes as keys and values which are either Strings or a list of Strings.
-     * In the latter case, the first entry in the list is taken as value
+     * Creates values from a map with the language codes as keys and values which are either Strings or a list of Strings. In the latter case, the
+     * first entry in the list is taken as value
      * 
      * @param metadataValuesForLanguage
      */
     public MultiLanguageMetadataValue(Map<String, ? extends Object> metadataValuesForLanguage) {
         this(metadataValuesForLanguage, 0);
     }
-    
+
     /**
-     * Creates values from a map with the language codes as keys and values which are either Strings or a list of Strings.
-     * In the latter case, the entry of index {@code valueIndex} in the list is as taken as value
+     * Creates values from a map with the language codes as keys and values which are either Strings or a list of Strings. In the latter case, the
+     * entry of index {@code valueIndex} in the list is as taken as value
      * 
      * @param metadataValuesForLanguage
      */
     @SuppressWarnings("unchecked")
     public MultiLanguageMetadataValue(Map<String, ? extends Object> metadataValuesForLanguage, int valueIndex) {
-        if(metadataValuesForLanguage.isEmpty()) {
+        if (metadataValuesForLanguage.isEmpty()) {
             values = new HashMap<>();
-        } else if(metadataValuesForLanguage.values().iterator().next() instanceof List) {
+        } else if (metadataValuesForLanguage.values().iterator().next() instanceof List) {
             this.values = new HashMap<>();
             for (String language : metadataValuesForLanguage.keySet()) {
                 List<String> langValues = (List<String>) metadataValuesForLanguage.get(language);
-                if(valueIndex < langValues.size()) {                    
+                if (valueIndex < langValues.size()) {
                     this.values.put(language, langValues.get(valueIndex));
                 }
             }
         } else {
             this.values = (Map<String, String>) metadataValuesForLanguage;
         }
-        
+
     }
 
     /* (non-Javadoc)
@@ -93,17 +98,16 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
         return getValue(language.getLanguage());
     }
 
-
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue#setValue(java.lang.String, java.lang.String)
      */
     @Override
     public void setValue(String value, String locale) {
-        if(value == null) {
+        if (value == null) {
             value = "";
         }
         this.values.put(locale, value);
-        if(this.values.get(DEFAULT_LANGUAGE) == null) {
+        if (this.values.get(DEFAULT_LANGUAGE) == null) {
             setValue(value);
         }
     }
@@ -128,29 +132,29 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
      * @see de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue#getValue()
      */
     @Override
+    @JsonIgnore
     public Optional<String> getValue() {
-        if(this.values.containsKey(DEFAULT_LANGUAGE)) {
+        if (this.values.containsKey(DEFAULT_LANGUAGE)) {
             return Optional.ofNullable(this.values.get(DEFAULT_LANGUAGE));
-        } else if(!this.values.isEmpty()) {
+        } else if (!this.values.isEmpty()) {
             return Optional.ofNullable(this.values.values().iterator().next());
         } else {
             return Optional.empty();
         }
     }
-    
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        if(values.isEmpty()) {
+        if (values.isEmpty()) {
             return "";
-        } else {            
+        } else {
             return values.toString();
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -158,14 +162,14 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
     public int hashCode() {
         return values.hashCode();
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj.getClass().equals(MultiLanguageMetadataValue.class)) {
-            return ((MultiLanguageMetadataValue)obj).values.equals(this.values);
+        if (obj.getClass().equals(MultiLanguageMetadataValue.class)) {
+            return ((MultiLanguageMetadataValue) obj).values.equals(this.values);
         } else {
             return false;
         }
@@ -175,9 +179,10 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
      * @see de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue#getLanguages()
      */
     @Override
+    @JsonIgnore
     public Collection<String> getLanguages() {
         Set<String> languages = values.keySet();
-        if(languages.isEmpty()) {
+        if (languages.isEmpty()) {
             return Collections.singleton(DEFAULT_LANGUAGE);
         } else {
             return languages;
@@ -219,6 +224,7 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
      * @see de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue#isEmpty()
      */
     @Override
+    @JsonIgnore
     public boolean isEmpty() {
         return values.isEmpty() || values.values().stream().noneMatch(value -> StringUtils.isNotBlank(value));
     }
@@ -239,5 +245,44 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
         return StringUtils.isBlank(values.get(locale));
 
     }
-    
+
+    @JsonValue
+    public List<ValuePair> getValues() {
+        return this.values.entrySet().stream().map(entry -> new ValuePair(entry.getValue(), entry.getKey())).collect(Collectors.toList());
+    }
+
+    /**
+     * Helper class for IIIF representation
+     * 
+     * @author Florian Alpers
+     *
+     */
+    private static class ValuePair {
+
+        private final String value;
+        private final String language;
+
+        public ValuePair(String value, String language) {
+            this.value = value;
+            this.language = language;
+        }
+
+        /**
+         * @return the language
+         */
+        @JsonProperty("@language")
+        public String getLanguage() {
+            return language;
+        }
+
+        /**
+         * @return the value
+         */
+        @JsonProperty("@value")
+        public String getValue() {
+            return value;
+        }
+
+    }
+
 }

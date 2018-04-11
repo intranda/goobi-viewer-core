@@ -44,8 +44,9 @@ public class IIIFUrlHandler {
      * <li>5: output format</li>
      * </ul>
      */
+    public static final String IIIF_IMAGE_PARAMS_REGEX ="\\/?((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color)\\.(jpg|png|tif|jp2|pdf)\\/?(?:\\?.*)?";
     public static final String IIIF_IMAGE_REGEX =
-            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color).(jpg|png|tif|jp2|pdf)(?:\\?.*)";
+            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color)\\.(jpg|png|tif|jp2|pdf)\\/?(?:\\?.*)?";
     public static final int IIIF_IMAGE_REGEX_REGION_GROUP = 1;
     public static final int IIIF_IMAGE_REGEX_SIZE_GROUP = 2;
     public static final int IIIF_IMAGE_REGEX_ROTATION_GROUP = 3;
@@ -180,6 +181,17 @@ public class IIIFUrlHandler {
      */
     public String getModifiedIIIFFUrl(String url, RegionRequest region, Scale size, Rotation rotation, Colortype quality, ImageFileFormat format) {
         return getModifiedIIIFFUrl(url, region == null ? null : region.toString(), size == null ? null : size.toString(), rotation == null ? null : rotation.toString(), quality == null ? null : quality.toString(), format == null ? null : format.getFileExtension());
+    }
+    
+    /**
+     * If the given {@code url} is a IIIF image url, then return a url up to the identifier (removing all url parts starting with the region part)
+     * if no such parts exist, the original url is returned
+     * 
+     * @param url
+     * @return the base url up to the identifier (no trailing slash)
+     */
+    public static String getIIIFImageBaseUrl(String url) {
+        return url.replaceAll(IIIF_IMAGE_PARAMS_REGEX, "");
     }
 
     /**
