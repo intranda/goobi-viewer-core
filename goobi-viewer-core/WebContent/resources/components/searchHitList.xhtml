@@ -107,6 +107,13 @@
 											</h:panelGroup>
 										</h:outputLink>
                                         
+                                        <!-- RELATED PAGE LINK -->
+                                        <ui:fragment rendered="#{cmsBean.isHasRelatedPages(hit.browseElement.pi)}">
+                                            <a href="#{cmsBean.getRelatedPages(hit.browseElement.pi).get(0).pageUrl}" data-link="related-page">
+                                                <i class="fa fa-bars" aria-hidden="true"></i>
+                                            </a>
+                                        </ui:fragment>
+                                        
                                         <!-- ADD TO BOOKSHELF -->
                                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
                                             <button type="button" class="btn-clean" data-bookshelf-type="add" data-pi="#{hit.browseElement.pi}">
@@ -152,7 +159,7 @@
 
 						<div class="search-list__hit-content"></div>
 					</div>
-				</ui:repeat>
+                </ui:repeat>
 			</h:form>
 		</div>
 	</composite:implementation>

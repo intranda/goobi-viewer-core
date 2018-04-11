@@ -35,6 +35,16 @@
   display: none !important;
   visibility: hidden !important;
 }
+/* VISUALLY HIDDEN */
+.mx-v-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* GRID */
 /* ==============================================================
    General styling
    ==============================================================*/
@@ -555,6 +565,15 @@ button {
 .oneUp {
   position: relative;
   top: -1px;
+}
+/* VISUALLY HIDDEN */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  overflow: hidden;
 }
 /* ==============================================================
    IE lower EDGE Styles
@@ -1640,26 +1659,43 @@ div.mce-fullscreen {
    Alphabetic Paginator
    style declarations for alphabeticPaginator.xhtml
    ==============================================================*/
-#alphabeticPaginator {
+/* ALPHABETIC PAGINATOR */
+/* BLOCK */
+.alphabetic-paginator {
   margin-bottom: 1.3125rem;
+  /* ELEMENT */
 }
-#alphabeticPaginator ul li {
-  display: inline-block;
-  margin: 0 0 3px 0;
-  text-align: center;
+.alphabetic-paginator ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
 }
-#alphabeticPaginator ul li.active {
-  font-weight: bold;
-}
-#alphabeticPaginator ul li a {
-  display: block;
+.alphabetic-paginator li {
   width: 32px;
   height: 32px;
-  line-height: 32px;
-  text-decoration: none;
+  margin: 5px 5px 0 0;
   border: 1px solid #eee;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
+.alphabetic-paginator li.active {
+  font-weight: bold;
+  background-color: #428bca;
+}
+.alphabetic-paginator li.active a {
+  color: #fff;
+}
+.alphabetic-paginator a {
+  display: block;
+  height: 100%;
+  line-height: 30px;
+  text-align: center;
+  text-decoration: none;
+}
+.alphabetic-paginator a:hover,
+.alphabetic-paginator a:active,
+.alphabetic-paginator a:focus {
+  background-color: #eee;
+}
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
@@ -4006,6 +4042,30 @@ div[id*="-Modal"] .email-form .form-group {
   border: 2px solid #fff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
+.search-list__hit-thumbnail [data-link="related-page"] {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 30px;
+  height: auto !important;
+  padding: 0 5px;
+  text-align: center;
+  color: #fff;
+  border-radius: 3px;
+  background-color: #428bca;
+}
+.search-list__hit-thumbnail [data-link="related-page"]:before {
+  content: "";
+  position: absolute;
+  display: block;
+  right: 3px;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-width: 4px;
+  border-style: solid;
+  border-color: #428bca transparent transparent transparent;
+}
 .search-list__hit-thumbnail [data-bookshelf-type="add"] {
   position: absolute;
   top: 0;
@@ -4376,6 +4436,10 @@ div[id*="-Modal"] .email-form .form-group {
 .search-termlist__list {
   margin-bottom: 1.3125rem;
 }
+.search-termlist__list ul {
+  column-count: 3;
+  column-gap: 15px;
+}
 .search-termlist__list a {
   display: block;
   padding: 5px 10px;
@@ -4385,7 +4449,18 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .search-termlist__list ul {
+    column-count: 2;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: 480px) {
+  .search-termlist__list ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
 /* ==============================================================
    Search Timeline
    style declarations for searchTimeline.xhtml 

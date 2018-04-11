@@ -4,6 +4,9 @@
     <description>Dieses Template zeigt eine Sammlung und deren Werke als Suchtreffer, sowie ein Bild und einen Beschreibungstext zur Sammlung. Diese Seite kann ebenfalls mit der News-Übersicht kombiniert werden.</description>
     <icon>cms_template_12_singleCollection.png</icon>
     <html>cms_template_12_singleCollection.xhtml</html>
+    <options>    
+        <appliesToExpandedUrl>true</appliesToExpandedUrl>
+    </options>
     <content>
  	    <item id="image01" order="1" label="Sammlungsbild" type="MEDIA" mandatory="false" />
  	    <item id="preview01" order="2" label="Textabschnitt (Vorschau)" type="HTML" mandatory="false" />

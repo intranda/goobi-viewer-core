@@ -2,29 +2,42 @@
    Alphabetic Paginator
    style declarations for alphabeticPaginator.xhtml
    ==============================================================*/
-#alphabeticPaginator {
-    margin-bottom: 1.3125rem;
-    ul {
-        li {
-            display: inline-block;
-            margin: 0 0 3px 0;
-            text-align: center;
-            &.active {
-                font-weight: bold;
-            }
-            a {
-                display: block;
-                width: 32px;
-                height: 32px;
-                line-height: 32px;
-                text-decoration: none;
-                border: 1px solid @lightgray;
-            }
-        }
-    }
+/* ALPHABETIC PAGINATOR */
+/* BLOCK */
+.alphabetic-paginator {
+	margin-bottom: 1.3125rem;
+	/* ELEMENT */
+	ul {
+		display: flex;
+		flex-wrap: wrap;
+	}
+	li {
+		width: 32px;
+		height: 32px;
+		margin: 5px 5px 0 0;
+		border: 1px solid @lightgray;
+		&.active {
+			font-weight: bold;
+			background-color: @blue;
+			a {
+				color: @white;				
+			}
+		}
+	}
+	a {
+		display: block;
+		height: 100%;
+    	line-height: 30px;
+		text-align: center;
+		text-decoration: none;
+		&:hover,
+		&:active,
+		&:focus {
+			background-color: @lightgray;
+		}
+	}
 }
 
-/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOP */
