@@ -8667,10 +8667,18 @@ div.olMapViewport {
   background-color: #fff;
 }
 .media-gallery__item-image {
+  position: relative;
   height: 125px;
   padding: 5px;
   border-radius: 4px 4px 0 0;
   overflow: hidden;
+}
+.media-gallery__item-image [data-copy="img-url"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  z-index: 999;
 }
 .media-gallery__item-image img {
   display: block;
