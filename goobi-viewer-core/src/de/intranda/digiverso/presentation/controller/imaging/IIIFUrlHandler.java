@@ -66,14 +66,14 @@ public class IIIFUrlHandler {
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
         if(ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl)).append("/");
+            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
             return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
         } else if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {
                 return getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
             } else if (ImageHandler.isImageUrl(fileUrl, false)) {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-                sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl)).append("/");
+                sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");

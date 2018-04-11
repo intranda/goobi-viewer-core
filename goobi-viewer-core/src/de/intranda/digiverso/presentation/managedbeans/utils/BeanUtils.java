@@ -55,6 +55,8 @@ public class BeanUtils {
     public static final String SLASH_REPLACEMENT = "U002F";
     public static final String BACKSLASH_REPLACEMENT = "U005C";
     public static final String QUESTION_MARK_REPLACEMENT = "U003F";
+    public static final String PERCENT_REPLACEMENT = "U0025";
+
 
     
     /**
@@ -279,20 +281,28 @@ public class BeanUtils {
         return null;
     }
 
+    public static String escapeCriticalUrlChracters(String value) {
+        return escapeCriticalUrlChracters(value, false);
+    }
+    
     /**
      *
      * @param value
      * @return
      * @should replace characters correctly
      */
-    public static String escapeCriticalUrlChracters(String value) {
+    public static String escapeCriticalUrlChracters(String value, boolean escapePercentCharacters) {
         if (value == null) {
             throw new IllegalArgumentException("value may not be null");
         }
 
-        return value.replace("/", SLASH_REPLACEMENT)
+        value = value.replace("/", SLASH_REPLACEMENT)
                 .replace("\\", BACKSLASH_REPLACEMENT)
                 .replace("?", QUESTION_MARK_REPLACEMENT);
+        if(escapePercentCharacters) {
+            value = value.replace("%", PERCENT_REPLACEMENT);
+        }
+        return value;
     }
 
     /**
@@ -308,6 +318,7 @@ public class BeanUtils {
 
         return value.replace(SLASH_REPLACEMENT, "/")
                 .replace(BACKSLASH_REPLACEMENT, "\\")
-                .replace(QUESTION_MARK_REPLACEMENT, "?");
+                .replace(QUESTION_MARK_REPLACEMENT, "?")
+                .replace(PERCENT_REPLACEMENT, "%");
     }
 }

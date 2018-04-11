@@ -78,7 +78,7 @@ public class ImageHandler {
 
         if (isRestrictedUrl(page.getFilepath())) {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath())).append("/info.json");
+            sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath(), true)).append("/info.json");
             return sb.toString();
         } else if (isExternalUrl(page.getFilepath())) {
             return page.getFilepath();

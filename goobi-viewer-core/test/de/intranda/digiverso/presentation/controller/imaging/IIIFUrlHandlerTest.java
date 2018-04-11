@@ -73,6 +73,10 @@ public class IIIFUrlHandlerTest {
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg?compression=75", url);
 
+        fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
+        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002Frosdok.uni-rostock.deU002FiiifU002Fimage-apiU002FrosdokU0025252Fppn740913301U0025252Fphys_0001U002FfullU002FfullU002F0U002Fnative.jpg/full/max/0/default.jpg?compression=75", url);
+
     }
 
 
