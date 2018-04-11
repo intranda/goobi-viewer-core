@@ -23,6 +23,8 @@ import java.util.function.UnaryOperator;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author Florian Alpers
  *
@@ -93,6 +95,7 @@ public class SimpleMetadataValue implements IMetadataValue{
      * @see java.lang.Object#toString()
      */
     @Override
+    @JsonValue
     public String toString() {
         return value;
     }

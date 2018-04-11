@@ -17,6 +17,9 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.content;
 
 import java.net.URI;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
@@ -25,9 +28,10 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
  * @author florian
  *
  */
+@JsonInclude(Include.NON_EMPTY)
 public class ImageContent implements IContent {
 	
-	public final String TYPE = "dcTypes:Image";
+	private final String TYPE = "dcTypes:Image";
 	
 	private final URI id;
 	private int width;

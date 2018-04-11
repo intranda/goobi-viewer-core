@@ -18,10 +18,14 @@ package de.intranda.digiverso.presentation.model.iiif.presentation;
 import java.net.URI;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
 
 /**
  * @author florian
@@ -44,11 +48,12 @@ public interface IPresentationModelElement {
 	/**
 	 * @return the metadata
 	 */
-	List<IMetadataValue> getMetadata();
+	List<Metadata> getMetadata();
 
 	/**
 	 * @return the thumbnail
 	 */
+	@JsonSerialize(using=ImageContentLinkSerializer.class)
 	ImageContent getThumbnail();
 
 	/**
@@ -64,6 +69,7 @@ public interface IPresentationModelElement {
 	/**
 	 * @return the logo
 	 */
+	@JsonSerialize(using=ImageContentLinkSerializer.class)
 	ImageContent getLogo();
 
 	/**

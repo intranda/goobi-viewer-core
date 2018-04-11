@@ -21,11 +21,14 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * @author Florian Alpers
  *
  */
+@JsonInclude(Include.NON_EMPTY)
 public class Collection extends AbstractPresentationModelElement implements IPresentationModelElement {
 
     public static final String TYPE = "sc:collection";
@@ -45,6 +48,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     /**
      * @return the collections
      */
+//    @JsonSerialize(using = ContentLinkSerializer.class)
     public List<Collection> getCollections() {
         return collections;
     }
@@ -67,6 +71,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     /**
      * @return the within
      */
+//    @JsonSerialize(using = URLOnlySerializer.class)
     public List<Collection> getWithin() {
         return within;
     }
@@ -98,5 +103,6 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     public String getType() {
         return TYPE;
     }
+
 
 }

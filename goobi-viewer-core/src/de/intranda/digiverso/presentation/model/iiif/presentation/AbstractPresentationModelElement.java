@@ -20,10 +20,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
 
 /**
  * Parent class for all classes modeling the iiif presentation api resources except images and other canvas content
@@ -31,9 +38,9 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
  * @author florian
  *
  */
+@JsonPropertyOrder({"@context", "@id", "@type"})
 public abstract class AbstractPresentationModelElement implements IPresentationModelElement {
 	
-    public static final String CONTEXT = "http://iiif.io/api/presentation/2/context.json";
     
     protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -41,7 +48,7 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private final URI id;
 	private IMetadataValue label;
 	private IMetadataValue description;
-	private List<IMetadataValue> metadata;
+	private List<Metadata> metadata;
 	private ImageContent thumbnail;
 	private IMetadataValue attribution;
 	private URI license;
@@ -49,15 +56,33 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private ViewingHint viewingHint;
 	private LinkingContent related;
 	private LinkingContent rendering;
+	private String context = null;
 	
 	public AbstractPresentationModelElement(URI id) {
 		this.id = id;
 	}
 	
+	/**
+     * @param context the context to set
+     */
+    public void setContext(String context) {
+        this.context = context;
+    }
+    
+    /**
+     * @return the context
+     */
+    @JsonProperty("@context")
+    public String getContext() {
+        return context;
+    }
+
+	
 	/* (non-Javadoc)
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getType()
 	 */
 	@Override
+    @JsonProperty("@type")
 	public abstract String getType();
 
 	/* (non-Javadoc)
@@ -94,13 +119,13 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getMetadata()
 	 */
 	@Override
-	public List<IMetadataValue> getMetadata() {
+	public List<Metadata> getMetadata() {
 		if(metadata == null)  {
 			return Collections.EMPTY_LIST;
 		}
 		return metadata;
 	}
-	public void addMetadata(IMetadataValue md)  {
+	public void addMetadata(Metadata md)  {
 		if(this.metadata == null) {
 			this.metadata = new ArrayList<>();
 		}
@@ -110,7 +135,7 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	/**
 	 * @param metadata the metadata to set
 	 */
-	public void setMetadata(List<IMetadataValue> metadata) {
+	public void setMetadata(List<Metadata> metadata) {
 		this.metadata = metadata;
 	}
 
@@ -223,14 +248,9 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getId()
 	 */
 	@Override
+    @JsonProperty("@id")
 	public URI getId() {
 		return id;
 	}
-	
-	/**
-     * @return the context
-     */
-    public static String getContext() {
-        return CONTEXT;
-    }
+
 }

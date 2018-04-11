@@ -36,6 +36,11 @@ public class LinkingContent implements IContent {
     public LinkingContent(URI id) {
         this.id = id;
     }
+    
+    public LinkingContent(URI id, IMetadataValue label) {
+        this.id = id;
+        this.label = label;
+    }
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getType()
@@ -67,6 +72,13 @@ public class LinkingContent implements IContent {
     @Override
     public Format getFormat() {
         return format;
+    }
+    
+    /**
+     * @param format the format to set
+     */
+    public void setFormat(Format format) {
+        this.format = format;
     }
 
     /* (non-Javadoc)
