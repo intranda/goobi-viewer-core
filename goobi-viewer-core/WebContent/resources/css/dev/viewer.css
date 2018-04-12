@@ -5514,33 +5514,6 @@ div.olMapViewport {
 #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value:last-child {
   margin-bottom: 0;
 }
-#metadataElementWrapper .metadata-element-box.level-1 {
-  padding-left: 20px;
-}
-#metadataElementWrapper .metadata-element-box.level-2 {
-  padding-left: 30px;
-}
-#metadataElementWrapper .metadata-element-box.level-3 {
-  padding-left: 40px;
-}
-#metadataElementWrapper .metadata-element-box.level-4 {
-  padding-left: 50px;
-}
-#metadataElementWrapper .metadata-element-box.level-5 {
-  padding-left: 60px;
-}
-#metadataElementWrapper .metadata-element-box.level-6 {
-  padding-left: 70px;
-}
-#metadataElementWrapper .metadata-element-box.level-7 {
-  padding-left: 80px;
-}
-#metadataElementWrapper .metadata-element-box.level-8 {
-  padding-left: 90px;
-}
-#metadataElementWrapper .metadata-element-box.level-9 {
-  padding-left: 100px;
-}
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal {
   margin: 0;
 }
