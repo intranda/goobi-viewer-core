@@ -17,6 +17,9 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.content;
 
 import java.net.URI;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
@@ -24,6 +27,7 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
  * @author Florian Alpers
  *
  */
+@JsonInclude(Include.NON_EMPTY)
 public class LinkingContent implements IContent {
 
     private final URI id;

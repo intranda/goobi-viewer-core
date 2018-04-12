@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -32,6 +33,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.codec.StringEncoder;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
@@ -169,25 +172,25 @@ public class CollectionResource2 {
 
         Collection collection;
         if (baseElement != null) {
-            collection = createCollection(baseElement, getCollectionUrl(baseUrl, collectionField, baseElement.getName()));
+            collection = createCollection(collectionView, baseElement, getCollectionUrl(baseUrl, collectionField, baseElement.getName()));
             
             String parentName = null;
             if (baseElement.getParent() != null) {
                 parentName = baseElement.getParent().getName();
             }
             Collection parent =
-                    createCollection(baseElement.getParent(), getCollectionUrl(baseUrl, collectionField, parentName));
+                    createCollection(collectionView, baseElement.getParent(), getCollectionUrl(baseUrl, collectionField, parentName));
             collection.addWithin(parent);
 
             for (HierarchicalBrowseDcElement childElement : baseElement.getChildren()) {
-                Collection child = createCollection(childElement, getCollectionUrl(baseUrl, collectionField, childElement.getName()));
+                Collection child = createCollection(collectionView, childElement, getCollectionUrl(baseUrl, collectionField, childElement.getName()));
                 collection.addCollection(child);
             }
         } else {
-            collection = createCollection(null, getCollectionUrl(baseUrl, collectionField, null));
+            collection = createCollection(collectionView, null, getCollectionUrl(baseUrl, collectionField, null));
 
             for (HierarchicalBrowseDcElement childElement : collectionView.getVisibleDcElements()) {
-                Collection child = createCollection(childElement, getCollectionUrl(baseUrl, collectionField, childElement.getName()));
+                Collection child = createCollection(collectionView, childElement, getCollectionUrl(baseUrl, collectionField, childElement.getName()));
                 collection.addCollection(child);
             }
         }
@@ -203,7 +206,7 @@ public class CollectionResource2 {
      * @throws URISyntaxException
      * @throws ContentLibException
      */
-    public Collection createCollection(HierarchicalBrowseDcElement baseElement, URI uri) throws URISyntaxException {
+    public Collection createCollection(CollectionView collectionView, HierarchicalBrowseDcElement baseElement, URI uri) throws URISyntaxException {
         Collection collection = null;
         try {
             collection = new Collection(uri);
@@ -226,12 +229,13 @@ public class CollectionResource2 {
 
                 int subCollections = baseElement.getChildren().size();
                 collection.addMetadata(new Metadata(NUM_SUBCOLLECTIONS_LABEL, Integer.toString(subCollections)));
-
-                LinkingContent rss = new LinkingContent(new URI(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
+                
+                
+                LinkingContent rss = new LinkingContent(absolutize(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.setRelated(rss);
 
                 LinkingContent viewer =
-                        new LinkingContent(baseElement.getInfo().getLinkURI(servletRequest), new SimpleMetadataValue(baseElement.getName()));
+                        new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)), new SimpleMetadataValue(baseElement.getName()));
                 collection.setRendering(viewer);
 
             } else {
@@ -244,6 +248,8 @@ public class CollectionResource2 {
         }
         return collection;
     }
+
+
 
     /**
      * @param collectionField
@@ -290,11 +296,23 @@ public class CollectionResource2 {
     }
 
     public URI absolutize(URI uri) throws URISyntaxException {
-        if (uri.isAbsolute()) {
+        if (uri == null || uri.isAbsolute()) {
             return uri;
         } else {
             return new URI(getServletURI() + uri.toString());
         }
+    }
+    
+    /**
+     * @param rssUrl
+     * @return
+     * @throws URISyntaxException 
+     */
+    private URI absolutize(String url) throws URISyntaxException {
+        if(url != null) {
+            url = url.replaceAll("\\s", "+");
+        }
+        return absolutize(new URI(url));
     }
 
     /**
