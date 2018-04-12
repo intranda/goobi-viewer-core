@@ -114,12 +114,13 @@
         															<span class="glyphicon glyphicon-circle-arrow-right"></span>                                                            
                                                                 </button>
                                                             </div>
-                                                            
+                                                            #{visibleItem.pageUrl}<br/>
+                                                            #{visibleItem.availableItemId}
                                                             <div class="menu-item__text">#{msg[visibleItem.itemLabel]}</div>
                                                             
 															<h:panelGroup rendered="#{visibleItem.absoluteLink}">
                                                                 <div class="menu-item__edit text-right">
-    																<h:commandLink action="#{cmsNavigationBean.selectNavigationItem(visibleItem.availableItemId)}">
+    																<h:commandLink action="#{cmsNavigationBean.selectVisibleNavigationItem(visibleItem.availableItemId)}">
     																	<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
     																	<f:passThroughAttribute name="data-toggle" value="modal" />
     																	<f:passThroughAttribute name="data-target" value="#addMenuItemModal" />
@@ -151,7 +152,8 @@
                                                                     <span class="glyphicon glyphicon-circle-arrow-right"></span>                                                            
                                                                 </button>
                                                             </div>
-                                                            
+                                                            #{availableItem.pageUrl}<br/>
+                                                              #{availableItem.availableItemId}/#{availableItem.id}
                                                             <div class="menu-item__text">#{msg[availableItem.itemLabel]}</div>
                                                             
                                                             <h:panelGroup rendered="#{visibleItem.absoluteLink}">
