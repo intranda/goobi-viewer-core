@@ -44,7 +44,7 @@ public class IIIFUrlHandler {
      * <li>5: output format</li>
      * </ul>
      */
-    public static final String IIIF_IMAGE_PARAMS_REGEX ="\\/?((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color)\\.(jpg|png|tif|jp2|pdf)\\/?(?:\\?.*)?";
+    public static final String IIIF_IMAGE_PARAMS_REGEX ="\\/?((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color|native)\\.(jpg|png|tif|jp2|pdf)\\/?(?:\\?.*)?";
     public static final String IIIF_IMAGE_REGEX =
             "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color)\\.(jpg|png|tif|jp2|pdf)\\/?(?:\\?.*)?";
     public static final int IIIF_IMAGE_REGEX_REGION_GROUP = 1;

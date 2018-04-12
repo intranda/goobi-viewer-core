@@ -73,7 +73,7 @@ public class CollectionResource2 {
 
     private static Map<String, String> facetFieldMap = new HashMap<>();
     private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
-    
+
     private String ATTRIBUTION = "Provided by intranda GmbH";
     public final static String NUM_MANIFESTS_LABEL = "volumes";
     public final static String NUM_SUBCOLLECTIONS_LABEL = "subCollections";
@@ -85,7 +85,6 @@ public class CollectionResource2 {
     @Context
     private HttpServletResponse servletResponse;
 
-    
     /**
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
      * collections. Child collections may be accessed following the links in the @id properties in the member-collections Requires passing a language
@@ -97,7 +96,7 @@ public class CollectionResource2 {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws MalformedURLException
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     @GET
     @Path("/{collectionField}")
@@ -117,14 +116,15 @@ public class CollectionResource2 {
      * Returns a iiif collection of the given topCollection for the give collection field The response includes the metadata and subcollections of the
      * direct child collections. Collections further down the hierarchy may be accessed following the links in the @id properties in the
      * member-collections Requires passing a language to set the language for all metadata values
-     * @throws URISyntaxException 
+     * 
+     * @throws URISyntaxException
      * 
      */
     @GET
     @Path("/{collectionField}/{topElement}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Collection getCollection(@PathParam("collectionField") String collectionField,
-            @PathParam("topElement") final String topElement) throws IndexUnreachableException, URISyntaxException {
+    public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
+            throws IndexUnreachableException, URISyntaxException {
 
         Collection collection = generateCollection(collectionField, topElement, getBaseUrl(), getFacetField(collectionField));
 
@@ -143,12 +143,11 @@ public class CollectionResource2 {
      * @return
      * @throws IndexUnreachableException
      * @throws MalformedURLException
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public Collection generateCollection(String collectionField, final String topElement, String baseUrl, String facetField)
             throws IndexUnreachableException, URISyntaxException {
 
-        
         CollectionView collectionView = getCollectionView(collectionField, facetField);
 
         if (StringUtils.isNotBlank(topElement) && !"-".equals(topElement)) {
@@ -159,34 +158,42 @@ public class CollectionResource2 {
 
         HierarchicalBrowseDcElement baseElement = null;
         if (StringUtils.isNotBlank(collectionView.getTopVisibleElement())) {
-            baseElement = collectionView.getCompleteList().stream().filter(element -> topElement.startsWith(element.getName())).flatMap(
-                    element -> element.getAllDescendents(true).stream()).filter(element -> topElement.equals(element.getName())).findFirst().orElse(
-                            null);
+            baseElement = collectionView.getCompleteList()
+                    .stream()
+                    .filter(element -> topElement.startsWith(element.getName()))
+                    .flatMap(element -> element.getAllDescendents(true).stream())
+                    .filter(element -> topElement.equals(element.getName()))
+                    .findFirst()
+                    .orElse(null);
 
         }
-        
+
         Collection collection;
-        if(baseElement != null) {            
+        if (baseElement != null) {
             collection = createCollection(baseElement, getCollectionUrl(baseUrl, collectionField, baseElement.getName()));
-            if(baseElement.getParent() != null) {            
-                Collection parent = createCollection(baseElement.getParent(), getCollectionUrl(baseUrl, collectionField, baseElement.getParent().getName()));
-                collection.addWithin(parent);
-            }
             
+            String parentName = null;
+            if (baseElement.getParent() != null) {
+                parentName = baseElement.getParent().getName();
+            }
+            Collection parent =
+                    createCollection(baseElement.getParent(), getCollectionUrl(baseUrl, collectionField, parentName));
+            collection.addWithin(parent);
+
             for (HierarchicalBrowseDcElement childElement : baseElement.getChildren()) {
                 Collection child = createCollection(childElement, getCollectionUrl(baseUrl, collectionField, childElement.getName()));
                 collection.addCollection(child);
             }
         } else {
             collection = createCollection(null, getCollectionUrl(baseUrl, collectionField, null));
-            
+
             for (HierarchicalBrowseDcElement childElement : collectionView.getVisibleDcElements()) {
                 Collection child = createCollection(childElement, getCollectionUrl(baseUrl, collectionField, childElement.getName()));
                 collection.addCollection(child);
             }
         }
 
-//        Collection collection = new BaseCollection(collectionView, locale, url, baseElement, collectionField, facetField, getServletPath());
+        //        Collection collection = new BaseCollection(collectionView, locale, url, baseElement, collectionField, facetField, getServletPath());
         return collection;
     }
 
@@ -194,50 +201,50 @@ public class CollectionResource2 {
      * @param url
      * @param baseElement
      * @return
-     * @throws URISyntaxException 
-     * @throws ContentLibException 
+     * @throws URISyntaxException
+     * @throws ContentLibException
      */
     public Collection createCollection(HierarchicalBrowseDcElement baseElement, URI uri) throws URISyntaxException {
         Collection collection = null;
         try {
             collection = new Collection(uri);
             collection.setAttribution(new SimpleMetadataValue(ATTRIBUTION));
-            
-            if(baseElement != null) {                
+
+            if (baseElement != null) {
                 collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
-                
+
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 ImageContent thumb = new ImageContent(thumbURI);
-                if(IIIFUrlHandler.isIIIFImageUrl(thumbURI.toString())) {
+                if (IIIFUrlHandler.isIIIFImageUrl(thumbURI.toString())) {
                     URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbURI.toString()));
                     ImageInformation info = new ImageInformation(imageInfoURI.toString());
                     thumb.setService(info);
                 }
                 collection.setThumbnail(thumb);
-                
+
                 long volumes = baseElement.getNumberOfVolumes();
                 collection.addMetadata(new Metadata(NUM_MANIFESTS_LABEL, Long.toString(volumes)));
-                
+
                 int subCollections = baseElement.getChildren().size();
                 collection.addMetadata(new Metadata(NUM_SUBCOLLECTIONS_LABEL, Integer.toString(subCollections)));
 
                 LinkingContent rss = new LinkingContent(new URI(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.setRelated(rss);
-                
-                LinkingContent viewer = new LinkingContent(baseElement.getInfo().getLinkURI(servletRequest), new SimpleMetadataValue(baseElement.getName()));
+
+                LinkingContent viewer =
+                        new LinkingContent(baseElement.getInfo().getLinkURI(servletRequest), new SimpleMetadataValue(baseElement.getName()));
                 collection.setRendering(viewer);
-                
+
             } else {
                 collection.setViewingHint(ViewingHint.top);
             }
-            
+
         } catch (URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return collection;
     }
-
 
     /**
      * @param collectionField
@@ -253,8 +260,8 @@ public class CollectionResource2 {
             }
         }
 
-        CollectionView view = new CollectionView(collectionField, () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, true,
-                true, true, true));
+        CollectionView view = new CollectionView(collectionField,
+                () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, true, true, true, true));
         view.populateCollectionList();
 
         synchronized (collectionViewMap) {
@@ -277,15 +284,14 @@ public class CollectionResource2 {
         }
         return locale;
     }
-    
+
     public String getServletURI() {
         return ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
-//        return servletRequest.getContextPath();
+        //        return servletRequest.getContextPath();
     }
 
-    
     public URI absolutize(URI uri) throws URISyntaxException {
-        if(uri.isAbsolute()) {
+        if (uri.isAbsolute()) {
             return uri;
         } else {
             return new URI(getServletURI() + uri.toString());
@@ -330,11 +336,9 @@ public class CollectionResource2 {
         }
 
     }
-    
+
     public URI getCollectionUrl(String baseUrl, String collectionField, String baseCollectionName) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(baseUrl)
-                .append("/")
-                .append(collectionField).append("/");
+        StringBuilder sb = new StringBuilder(baseUrl).append("/").append(collectionField).append("/");
         if (StringUtils.isNotBlank(baseCollectionName)) {
             sb.append(baseCollectionName).append("/");
         }

@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,17 +29,36 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationM
  * @author Florian Alpers
  *
  */
-public class URLOnlySerializer extends JsonSerializer<IPresentationModelElement> {
+public class URLOnlySerializer extends JsonSerializer<Object> {
 
     /* (non-Javadoc)
      * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
      */
     @Override
-    public void serialize(IPresentationModelElement element, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
-       
-        generator.writeString(element.getId().toString());
+    public void serialize(Object o, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+
+        if (o instanceof IPresentationModelElement) {
+            IPresentationModelElement element = (IPresentationModelElement) o;
+            generator.writeString(element.getId().toString());
+        } else if (o instanceof Collection) {
+            Collection collection = (Collection) o;
+            if (collection.size() == 1) {
+                Object obj = collection.iterator().next();
+                if (obj instanceof IPresentationModelElement) {
+                    IPresentationModelElement element = (IPresentationModelElement) obj;
+                    generator.writeString(element.getId().toString());
+                } else if(collection.size() > 1){
+                    generator.writeStartArray();
+                    for (Object child : collection) {
+                        if (child instanceof IPresentationModelElement) {
+                            IPresentationModelElement element = (IPresentationModelElement) child;
+                            generator.writeString(element.getId().toString());
+                        }
+                    }
+                    generator.writeEndArray();
+                }
+            }
+        }
     }
-
-
 
 }

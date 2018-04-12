@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
@@ -38,6 +39,8 @@ import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 
@@ -46,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 
 public class ViewerResourceBundle extends ResourceBundle {
@@ -57,6 +61,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
     protected static final Map<String, Boolean> reloadNeededMap = new ConcurrentHashMap<>();
     protected static volatile Locale defaultLocale;
+    private static List<Locale> allLocales = null;
 
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
@@ -381,14 +386,24 @@ public class ViewerResourceBundle extends ResourceBundle {
         return null;
     }
 
-    public static Iterator<Locale> getAllLocales() {
-        
-        FacesContext context2 = FacesContext.getCurrentInstance();
-        
-        Optional<Iterator<Locale>> o = Optional.ofNullable(FacesContext.getCurrentInstance())
-                .map(context -> context.getApplication())
-                .map(app -> app.getSupportedLocales());
-        
-        return o.orElse(Collections.emptyIterator());
+    public static List<Locale> getAllLocales() {
+
+        if (allLocales == null) {
+            Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+            try (Stream<Path> messageFiles =
+                    Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
+                allLocales = messageFiles
+                        .map(path -> Helper.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
+                        .filter(lang -> lang != null)
+                        .map(language -> Locale.forLanguageTag(language))
+                        .collect(Collectors.toList());
+            } catch (IOException e) {
+                logger.error("Error reading config directory " + configPath);
+            }
+
+        }
+
+        return allLocales;
     }
+
 }

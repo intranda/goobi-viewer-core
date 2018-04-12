@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 
 /**
  * @author Florian Alpers
@@ -74,7 +75,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     /**
      * @return the within
      */
-//    @JsonSerialize(using = URLOnlySerializer.class)
+    @JsonSerialize(using = URLOnlySerializer.class)
     public List<Collection> getWithin() {
         return within;
     }
