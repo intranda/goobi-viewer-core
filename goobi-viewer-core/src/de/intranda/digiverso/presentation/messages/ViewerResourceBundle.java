@@ -206,18 +206,22 @@ public class ViewerResourceBundle extends ResourceBundle {
         return getTranslation(key, FacesContext.getCurrentInstance().getViewRoot().getLocale());
     }
 
+    public static String getTranslation(final String key, Locale locale) {
+        return getTranslation(key, locale, true);
+    }
+    
     /**
      * 
      * @param text
      * @param locale
      * @return
      */
-    public static String getTranslation(final String key, Locale locale) {
+    public static String getTranslation(final String key, Locale locale, boolean useFallback) {
         //        logger.trace("Translation for: {}", key);
         checkAndLoadDefaultResourceBundles();
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
-        if (StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
+        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
             value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale));
         }
         if (value == null) {

@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.collections;
+package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -52,7 +52,6 @@ import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
-import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.IIIFPresentationBinding;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
