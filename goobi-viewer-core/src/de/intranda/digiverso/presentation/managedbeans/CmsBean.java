@@ -696,6 +696,7 @@ public class CmsBean implements Serializable {
         } else {
             this.selectedPage = currentPage;
         }
+        this.selectedPage.getSidebarElements().forEach(element -> element.deSerialize());
         logger.debug("Selected page " + currentPage);
 
     }
