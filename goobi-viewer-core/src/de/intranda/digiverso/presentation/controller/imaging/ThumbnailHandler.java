@@ -17,7 +17,6 @@ package de.intranda.digiverso.presentation.controller.imaging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -113,8 +112,12 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         String path = getImagePath(page);
-        if(path.contains(staticImagesPath)) {
+        if(isStaticImageResource(path)) {
             return path;
+        } else if(IIIFUrlHandler.isIIIFImageUrl(path)) {
+            return iiifUrlHandler.getModifiedIIIFFUrl(path, null, getScale(width, height), null, null, null);
+        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
+            return iiifUrlHandler.getIIIFImageUrl(path, null, getScale(width, height), null, null, null);
         } else {            
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
                     thumbCompression);
@@ -143,12 +146,17 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(PhysicalElement page, int size) {
         String path = getImagePath(page);
-        if(path.contains(staticImagesPath)) {
+        if(isStaticImageResource(path)) {
             return path;
+        } else if(IIIFUrlHandler.isIIIFImageUrl(path)) {
+            return iiifUrlHandler.getModifiedIIIFFUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
+            return iiifUrlHandler.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {                  
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg", thumbCompression);
         }
     }
+
 
     /**
      * Returns a link to a small image representating the given document. The size depends on viewer configuration
@@ -232,8 +240,12 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(StructElement doc, int width, int height) {
         String thumbnailUrl = getImagePath(doc);
-        if(thumbnailUrl != null && thumbnailUrl.contains(staticImagesPath)) {
+        if(thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
+        } else if(IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
+            return iiifUrlHandler.getModifiedIIIFFUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
+        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
+            return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
         } else if(thumbnailUrl != null){       
         return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
                 thumbCompression);
@@ -241,6 +253,7 @@ public class ThumbnailHandler {
             return null;
         }
     }
+
 
     /**
      * returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
@@ -264,8 +277,12 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(StructElement doc, int size) {
         String thumbnailUrl = getImagePath(doc);
-        if(thumbnailUrl.contains(staticImagesPath)) {
+        if(isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
+        } else if(IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
+            return iiifUrlHandler.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
+            return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {   
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg",            
                     thumbCompression);
@@ -561,4 +578,39 @@ public class ThumbnailHandler {
         }
         return size;
     }
+    
+    /**
+     * Tests whether the given url refers to an image within the viewer image resource folder
+     * 
+     * @param thumbnailUrl
+     * @return  true if the url starts with the viewer url path to image resources
+     */
+    public boolean isStaticImageResource(String thumbnailUrl) {
+        return thumbnailUrl.contains(staticImagesPath);
+    }
+    
+
+    /**
+     * Creates a {@link Scale} representing the given width and height. If both values are greater than 0, a scale is returned 
+     * which scaled the image to fit a box of the given size. If just of width and height is greater than 0, a scale is returned to
+     * that value; if both values are 0 or less, the full (max) image scale is returned
+     * 
+     * @param width
+     * @param height
+     * @return  An instance of {@link Scale} which represents the given values for width and height
+     */
+    private Scale getScale(int width, int height) {
+        if(width > 0 && height > 0) {
+            return new Scale.ScaleToBox(width, height);
+        } else if(width > 0) {
+            return new Scale.ScaleToWidth(width);
+        } else if(height > 0) {
+            return new Scale.ScaleToHeight(height);
+        } else {
+            return Scale.MAX;
+        }
+    }
+
+
+
 }

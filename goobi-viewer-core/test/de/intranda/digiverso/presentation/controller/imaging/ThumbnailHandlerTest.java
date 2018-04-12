@@ -66,6 +66,28 @@ public class ThumbnailHandlerTest {
     }
     
     @Test
+    public void testExternalIIIFImageUrl() {
+        String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
+        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+
+        String url = handler.getThumbnailUrl(page, 200, 300);
+        System.out.println(url);
+        String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/native.jpg";
+        Assert.assertEquals(refrenceUrl, url);
+    }
+    
+    @Test
+    public void testExternalIIIFImageInfoUrl() {
+        String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/info.json";
+        PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+
+        String url = handler.getThumbnailUrl(page, 200, 300);
+        System.out.println(url);
+        String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/default.jpg";
+        Assert.assertEquals(refrenceUrl, url);
+    }
+    
+    @Test
     public void testDocLocal() throws IndexUnreachableException {
 
         SolrDocument solrDoc = new SolrDocument();

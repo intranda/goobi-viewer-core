@@ -45,7 +45,7 @@ public class IIIFUrlHandler {
      * </ul>
      */
     public static final String IIIF_IMAGE_REGEX =
-            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color).(jpg|png|tif|jp2|pdf)(?:\\?.*)";
+            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color|native).(jpg|png|tif|jp2|pdf)(?:\\?.*)?";
     public static final int IIIF_IMAGE_REGEX_REGION_GROUP = 1;
     public static final int IIIF_IMAGE_REGEX_SIZE_GROUP = 2;
     public static final int IIIF_IMAGE_REGEX_ROTATION_GROUP = 3;
@@ -209,4 +209,13 @@ public class IIIFUrlHandler {
         return url.matches(IIIF_IMAGE_REGEX);
     }
 
+    /**
+     * Test whether the given url refers to a IIIF image information
+     * 
+     * @param url
+     * @return true if the given url ends in "/info.json" which is assumed to refer to a IIIF image information
+     */
+    public static boolean isIIIFImageInfoUrl(String url) {
+        return url.matches(IIIF_IMAGE_REGEX);
+    }
 }
