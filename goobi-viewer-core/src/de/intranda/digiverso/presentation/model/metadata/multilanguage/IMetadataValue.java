@@ -128,7 +128,10 @@ public interface IMetadataValue {
     public static IMetadataValue getTranslations(String key) {
         Map<String, String> translations = new HashMap<>();
         for (Locale locale : ViewerResourceBundle.getAllLocales()) {
-            translations.put(locale.getLanguage(), ViewerResourceBundle.getTranslation(key, locale));
+            String translation = ViewerResourceBundle.getTranslation(key, locale);
+            if(!key.equals(translation)) {                
+                translations.put(locale.getLanguage(), ViewerResourceBundle.getTranslation(key, locale));
+            }
         }
         if(translations.isEmpty()) {
             return new SimpleMetadataValue(key);

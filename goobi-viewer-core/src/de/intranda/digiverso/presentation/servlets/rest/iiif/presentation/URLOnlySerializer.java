@@ -47,17 +47,17 @@ public class URLOnlySerializer extends JsonSerializer<Object> {
                 if (obj instanceof IPresentationModelElement) {
                     IPresentationModelElement element = (IPresentationModelElement) obj;
                     generator.writeString(element.getId().toString());
-                } else if(collection.size() > 1){
-                    generator.writeStartArray();
-                    for (Object child : collection) {
-                        if (child instanceof IPresentationModelElement) {
-                            IPresentationModelElement element = (IPresentationModelElement) child;
-                            generator.writeString(element.getId().toString());
-                        }
-                    }
-                    generator.writeEndArray();
                 }
-            }
+            } else if (collection.size() > 1) {
+                generator.writeStartArray();
+                for (Object child : collection) {
+                    if (child instanceof IPresentationModelElement) {
+                        IPresentationModelElement element = (IPresentationModelElement) child;
+                        generator.writeString(element.getId().toString());
+                    }
+                }
+                generator.writeEndArray();
+            } 
         }
     }
 

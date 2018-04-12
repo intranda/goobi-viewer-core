@@ -395,6 +395,24 @@ public class ViewerResourceBundle extends ResourceBundle {
                 allLocales = messageFiles
                         .map(path -> Helper.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
                         .filter(lang -> lang != null)
+                        .sorted((l1, l2) -> {
+                            if (l1.equals(l2)) {
+                                return 0;
+                            }
+                            switch (l1) {
+                                case "en":
+                                    return -1;
+                                case "de":
+                                    return l2.equals("en") ? 1 : -1;
+                                default:
+                                    switch (l2) {
+                                        case "en":
+                                        case "de":
+                                            return 1;
+                                    }
+                            }
+                            return l1.compareTo(l2);
+                        })
                         .map(language -> Locale.forLanguageTag(language))
                         .collect(Collectors.toList());
             } catch (IOException e) {

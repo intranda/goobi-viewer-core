@@ -77,7 +77,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
      */
     @JsonSerialize(using = URLOnlySerializer.class)
     public List<Collection> getWithin() {
-        return within;
+        return within == null || within.isEmpty() ? null : within;
     }
     
     public void addWithin(Collection collection) {
