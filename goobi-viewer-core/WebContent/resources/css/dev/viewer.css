@@ -8598,6 +8598,7 @@ div.olMapViewport {
 .edit-content-page__facetting,
 .edit-content-page__toc,
 .edit-content-page__pretty-url,
+.edit-content-page__related_pi,
 .edit-content-page__subtheme-discriminator,
 .edit-content-page__breadcrumb-parent {
   padding: 5px 0;
@@ -8606,6 +8607,7 @@ div.olMapViewport {
 .edit-content-page__facetting label,
 .edit-content-page__toc label,
 .edit-content-page__pretty-url label,
+.edit-content-page__related_pi label,
 .edit-content-page__subtheme-discriminator label,
 .edit-content-page__breadcrumb-parent label {
   padding-right: 0;
@@ -8614,6 +8616,7 @@ div.olMapViewport {
 .edit-content-page__facetting button,
 .edit-content-page__toc button,
 .edit-content-page__pretty-url button,
+.edit-content-page__related_pi button,
 .edit-content-page__subtheme-discriminator button,
 .edit-content-page__breadcrumb-parent button {
   margin-left: 5px;
@@ -8622,6 +8625,7 @@ div.olMapViewport {
 .edit-content-page__facetting .form-group,
 .edit-content-page__toc .form-group,
 .edit-content-page__pretty-url .form-group,
+.edit-content-page__related_pi .form-group,
 .edit-content-page__subtheme-discriminator .form-group,
 .edit-content-page__breadcrumb-parent .form-group {
   margin-bottom: 0;
@@ -8663,10 +8667,18 @@ div.olMapViewport {
   background-color: #fff;
 }
 .media-gallery__item-image {
+  position: relative;
   height: 125px;
   padding: 5px;
   border-radius: 4px 4px 0 0;
   overflow: hidden;
+}
+.media-gallery__item-image [data-copy="img-url"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  z-index: 999;
 }
 .media-gallery__item-image img {
   display: block;

@@ -444,6 +444,18 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(Optional<CMSMediaItem> item) {
         return getThumbnailUrl(item, thumbWidth, thumbHeight);
     }
+    
+    /**
+     * Return the url to the image of the given media item, fit into a box of the default width and height
+     * 
+     * @param item
+     * @param width
+     * @param height
+     * @return 
+     */
+    public String getThumbnailUrl(CMSMediaItem item) {
+        return getThumbnailUrl(Optional.ofNullable(item), thumbWidth, thumbHeight);
+    }
 
 
     /**
@@ -468,6 +480,18 @@ public class ThumbnailHandler {
     }
     
     /**
+     * Return the url to the image of the given media item, fit into a box of the given width and height
+     * 
+     * @param item
+     * @param width
+     * @param height
+     * @return 
+     */
+    public String getThumbnailUrl(CMSMediaItem media, int width, int height) {
+        return getThumbnailUrl(Optional.ofNullable(media), width, height);
+    }
+    
+    /**
      * Return the url to the image of the given media item of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
@@ -487,6 +511,17 @@ public class ThumbnailHandler {
         }).orElse("");
     }
     
+    /**
+     * Return the url to the image of the given media item of the given size. The image is always square and contains as much of the actual
+     * image as is possible to fit into a square - the delivered square is always centered within the full image
+     * 
+     * @param item
+     * @param size
+     * @return 
+     */
+    public String getSquareThumbnailUrl(CMSMediaItem media, int size) {
+        return getSquareThumbnailUrl(Optional.ofNullable(media), size);
+    }
     
     /**
      * Return the url to the image of the given media item of the default size. The image is always square and contains as much of the actual
@@ -498,6 +533,17 @@ public class ThumbnailHandler {
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> item) {
         return getSquareThumbnailUrl(item, thumbWidth);
     }
+    
+    /**
+     * Return the url to the image of the given media item of the default size. The image is always square and contains as much of the actual
+     * image as is possible to fit into a square - the delivered square is always centered within the full image
+     * 
+     * @param item
+     * @return 
+     */
+    public String getSquareThumbnailUrl(CMSMediaItem item) {
+        return getSquareThumbnailUrl(Optional.ofNullable(item));
+    }
 
     /**
      * @param width
@@ -506,9 +552,9 @@ public class ThumbnailHandler {
      */
     private String getSize(Integer width, Integer height) {
         String size = "max";
-        if(height == null || height.equals(0) && width != null && !width.equals(0)) {
+        if(height == null || (height.equals(0) && width != null && !width.equals(0))) {
             size = width + ",";
-        } else if((width == null || width.equals(0)) && height != null && !height.equals(0)) {
+        } else if((width == null || (width.equals(0)) && height != null && !height.equals(0))) {
             size = "," + height;
         } else if(height != null && width != null && !width.equals(0) && !width.equals(0)) {
             size = "!" + width + "," + height;

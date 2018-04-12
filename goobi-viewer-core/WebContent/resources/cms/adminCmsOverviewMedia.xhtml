@@ -69,6 +69,11 @@
                                         <h:panelGroup id="media-gallery-item-#{media.id}">
                                             <div class="media-gallery__item">
                                                 <div class="media-gallery__item-image">
+                                                    <!-- COPY IMAGE URL TO CLIPBOARD -->
+                                                    <button type="button" class="btn-clean" data-copy="img-url" data-clipboard-text="#{imageDelivery.thumb.getThumbnailUrl(media, 0, 0)}" title="#{msg.cms_media_copyUrlToClipboard}">
+                                                        <i class="fa fa-clipboard" aria-hidden="true"></i>
+                                                    </button>
+
                                                     <img class="image" alt="#{media.fileName}" title="#{media.fileName}" src="#{cmsMediaBean.getMediaPreviewUrl(media)}" />
                                                 </div>
                                                 <div class="row media-gallery__item-action-wrap">
@@ -81,7 +86,7 @@
                                                     </div>
                                                     <div class="col-xs-4">
                                                         <div class="media-gallery__item-action text-right">
-                                                            <!-- edit media button -->
+                                                            <!-- EDIT MEDIA BUTTON -->
                                                             <h:commandLink action="#{cmsMediaBean.setCurrentMediaItem(media)}" title="#{msg.edit}">
                                                                 <span class="glyphicon glyphicon-pencil"></span>
                                                                 <f:passThroughAttribute name="data-toggle" value="modal" />
@@ -89,7 +94,7 @@
                                                                 <f:ajax render=":uploadMediaDialog:fileUploadForm" />
                                                             </h:commandLink>
     
-                                                            <!-- delete media button -->
+                                                            <!-- DELETE MEDIA BUTTON -->
                                                             <button type="button" class="btn-clean" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" title="#{msg.delete}">
                                                                 <span class="glyphicon glyphicon-trash"></span>
                                                             </button>
@@ -155,6 +160,10 @@
                 </h:panelGroup>
             </div>
         </h:panelGroup>
+        
+        <script>
+            var clipboard = new ClipboardJS( '[data-copy="img-url"]' );
+        </script>
     </ui:define>
 
 	<ui:define name="sidebar">
