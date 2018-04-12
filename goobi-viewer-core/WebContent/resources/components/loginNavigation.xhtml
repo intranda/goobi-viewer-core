@@ -130,7 +130,12 @@
                         type="button"
                         class="btn-clean"
                         data-toggle="user-dropdown">
-                        <span class="col-xs-9 login-navigation__user-name" title="#{userBean.user.nickName}">#{userBean.user.nickName}</span>
+                        <ui:fragment rendered="#{userBean.user.nickName != ''}">
+                            <span class="col-xs-9 login-navigation__user-name" title="#{userBean.user.nickName}">#{userBean.user.nickName}</span>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{userBean.user.nickName == ''}">
+                            <span class="col-xs-9 login-navigation__user-name" title="#{userBean.user.email}">#{userBean.user.email}</span>
+                        </ui:fragment>                        
                         <span class="col-xs-3 login-navigation__user-icon login-navigation__user-icon--loggedin">
                             <!-- GRAVATAR -->
                             <ui:fragment rendered="#{user.useGravatar}">
