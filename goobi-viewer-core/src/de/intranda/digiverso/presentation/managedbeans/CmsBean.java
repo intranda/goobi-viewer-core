@@ -528,7 +528,7 @@ public class CmsBean implements Serializable {
     public static boolean validateSidebarElement(CMSSidebarElement element) {
         if (element != null && !element.isValid()) {
             String msg = Helper.getTranslation("cms_validationWarningHtmlInvalid", null);
-            Messages.error(msg.replace("{0}", element.getType()).replace("{1}", CMSSidebarManager.getInstance().getAllowedHtmlTagsForDisplay()));
+            Messages.error(msg.replace("{0}", element.getType()).replace("{1}", CMSSidebarManager.getInstance().getDisallowedHtmlTagsForDisplay()));
             return false;
         }
         return true;

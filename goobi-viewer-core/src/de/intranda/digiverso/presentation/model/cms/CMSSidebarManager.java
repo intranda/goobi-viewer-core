@@ -22,7 +22,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +35,20 @@ public final class CMSSidebarManager {
 
     private static final Logger logger = LoggerFactory.getLogger(CMSSidebarManager.class);
 
+    @Deprecated
     private static final String[] ALLOWED_HTML_TAGS = { "<p>", "<ul>", "<ol>", "<li>", "<a>", "<h3>", "<h4>", "<h5>", "<h6>", "<i>", "<strong>",
         "<address>", "<abbr>", "<dl>", "<dt>", "<dd>", "<img>", "<span>", "<table>", "<tr>", "<th>", "<td>", "<thead>", "<tbody>", "<br>",
         "<br />", "<style>", "<div>" };
+    private static final String[] DISALLOWED_HTML_TAGS = { "<script>" };
 
     private static final String[] HTML_REPLACEMENTS = { "<br\\s?>:=:<br />" };
 
+    @Deprecated
     private Set<String> allowedHtmlTags;
+    private Set<String> disallowedHtmlTags;
+    @Deprecated
     private String allowedHtmlTagsForDisplay;
+    private String disallowedHtmlTagsForDisplay;
     private Map<String, String> htmlReplacements;
 
     /**
@@ -62,6 +70,7 @@ public final class CMSSidebarManager {
 
     private void init() {
         allowedHtmlTags = new HashSet<>(Arrays.asList(ALLOWED_HTML_TAGS));
+        disallowedHtmlTags = new HashSet<>(Arrays.asList(DISALLOWED_HTML_TAGS));
 
         htmlReplacements = new HashMap<>();
         for (String string : HTML_REPLACEMENTS) {
@@ -81,6 +90,8 @@ public final class CMSSidebarManager {
             sb.append(tag);
         }
         allowedHtmlTagsForDisplay = sb.toString();
+        
+        disallowedHtmlTagsForDisplay = StringUtils.join(disallowedHtmlTags, ", ");
     }
 
     public static List<CMSSidebarElement> getAvailableSidebarElements() {
@@ -116,8 +127,18 @@ public final class CMSSidebarManager {
      *
      * @return
      */
+    @Deprecated
     public Set<String> getAllowedHtmlTags() {
         return allowedHtmlTags;
+    }
+    
+    /**
+     * Returns the HTML tags in DISALLOWED_HTML_TAGS as a <code>HashSet</code> for fast <code>contains()</code> calls.
+     *
+     * @return
+     */
+    public Set<String> getDisallowedHtmlTags() {
+        return disallowedHtmlTags;
     }
 
     /**
@@ -132,8 +153,16 @@ public final class CMSSidebarManager {
      *
      * @return
      */
+    @Deprecated
     public String getAllowedHtmlTagsForDisplay() {
         return allowedHtmlTagsForDisplay;
     }
 
+    /**
+     * @return the disallowedHtmlTagsForDisplay
+     */
+    public String getDisallowedHtmlTagsForDisplay() {
+        return disallowedHtmlTagsForDisplay;
+    }
+    
 }
