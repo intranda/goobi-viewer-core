@@ -52,7 +52,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     /**
      * @return the collections
      */
-//    @JsonSerialize(using = ContentLinkSerializer.class)
+    @JsonSerialize(using = ContentLinkSerializer.class)
     public List<Collection> getCollections() {
         return collections;
     }

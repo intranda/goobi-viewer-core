@@ -66,12 +66,12 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
  *
  */
 
-@Path("/collections2")
+@Path("/collections")
 @ViewerRestServiceBinding
 @IIIFPresentationBinding
-public class CollectionResource2 {
+public class CollectionResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(CollectionResource2.class);
+    private static final Logger logger = LoggerFactory.getLogger(CollectionResource.class);
 
     private static Map<String, String> facetFieldMap = new HashMap<>();
     private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
@@ -320,7 +320,7 @@ public class CollectionResource2 {
      */
     public String getBaseUrl() {
         String url = servletRequest.getRequestURL().toString();
-        url = url.substring(0, url.indexOf("/collections2") + "/collections2".length());
+        url = url.substring(0, url.indexOf("/collections") + "/collections".length());
         return url;
     }
 

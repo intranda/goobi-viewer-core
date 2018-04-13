@@ -31,6 +31,7 @@ var cmsJS = ( function( cms ) {
     var _defaults = {
         collectionsSelector: '.tpl-stacked-collection__collections',
         collectionDefaultThumb: '',
+        displayLanguage: 'de',
         msg: {
             noSubCollectionText: ''
         }
@@ -58,6 +59,10 @@ var cmsJS = ( function( cms ) {
             
             // render RSS Feed
             _renderCollections( data );
+        },
+    
+        readIIIFPresentationStringValue: function(element, locale) {
+            return _getValue(element, locale);
         }
     };
     
@@ -97,7 +102,7 @@ var cmsJS = ( function( cms ) {
             // create panel title
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
-            panelTitleLink = $( '<a />' ).text( member.label + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
+            panelTitleLink = $( '<a />' ).text( _getValue(member.label, _defaults.displayLanguage) + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
             // check if subcollections exist
             if ( _getMetadataValue( member, 'subCollections' ) > 0 ) {
                 panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
@@ -136,6 +141,44 @@ var cmsJS = ( function( cms ) {
             
             $( _defaults.collectionsSelector ).append( panelGroup );
         } );
+    }
+    
+    /**
+     * parses the given element to return the appropriate String value for the given language.
+     * If the given element is a String itself, that String is returned, if it is a single object, the property @value 
+     * is returned, if it is an array of Strings, the first String is returned, if it is an array of objects,
+     * the @value property of the first object with an @language property equals to the given language is returned
+     *  
+     * @param element   The js property value to parse, either a String, an object with properties @value and @language or an array of either of those
+     * @param language  The preferred language String as a two digit code
+     * @returns         The most appropriate String value found
+     */
+    function _getValue(element, locale) {
+        if(element) {
+            if(typeof element === 'string') {
+                return element;
+            } else if (Array.isArray(element)) {
+               for (index in element) {
+                   var item = element[index];
+                   if(typeof item === 'string') {
+                       return item;
+                   } else {
+                       var value = element['@value'];
+                       var language = element['@language'];
+                       if(locale == language) {
+                           return value;
+                       }
+                   }
+               }
+               if(locale != 'en') {
+                   return _getValue(element, 'en');
+               } else {
+                   return _geValue(element, '');
+               }
+            } else {
+                return element['@value'];                
+            }
+        }
     }
     
     /**
