@@ -2,48 +2,52 @@
    Simple (Numeric) Paginator
    style declarations for simplePaginator.xhtml
    ==============================================================*/
-#numeric_paginator_nav {
-    margin: 1rem 0 1.5rem 0;
-    overflow: hidden;
-    ul {
-        position: relative;
-        float: left;
-        left: 50%;
-        margin: 0 auto;
-        li {
-            display: inline-block;
-            position: relative;
-            float: left;
-            right: 50%;
-            margin: 0 3px;
-            text-align: center;
-            a, span {
-                display: block;
-                min-width: 32px;
-                height: 32px;
-                line-height: 32px;
-                padding: 0 5px;
-                text-decoration: none;
-                border: 1px solid @middlegray;
-            }
-            &.paginator-active {
-                a, span {
-                    font-weight: bold;
-                    background-color: @middlegray;
-                }
-            }
-            &.numeric-paginator-dots {
-                a, span {
-                    min-width: 0;
-                    padding: 0;
-                    border: none;
-                }
-            }
-            &.paginator-navigate {
-                a, span {}
-            }
-        }
-    }
+/* NUMERIC PAGINATOR */
+/* BLOCK */
+.numeric-paginator {
+    margin: 15px 0;
+	/* ELEMENT */
+	ul {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	li {
+		min-width: 32px;
+		height: 32px;
+		margin: 0 3px 5px 0;
+		border: 1px solid @middlegray;
+	}
+	a, span {
+		display: block;
+		line-height: 30px;
+		padding: 0 3px;
+		text-align: center;
+	}
+	a {
+		text-decoration: none;
+		&:hover,
+		&:active,
+		&:focus {
+			background-color: @lightgray;
+		}
+	}
+	span {}
+	&__active {
+		a, span {
+			font-weight: 700;
+			background-color: @middlegray;
+		}
+	}
+	&__dots {
+		a, span {}
+	}
+	&__navigate {}
+	/* MODIFICATION */
+	li.numeric-paginator__dots {
+		min-width: 0;
+		border: none;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -57,21 +61,18 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    #numeric_paginator_nav {
-        ul {
-            li {
-                margin: 0 2px;
-                a, span {}
-                &.paginator-active {
-                    a, span {}
-                }
-                &.numeric-paginator-dots {
-                    a, span {}
-                }
-                &.paginator-navigate {
-                    a, span {}
-                }
-            }
-        }
-    }
+	.numeric-paginator {
+		/* ELEMENT */
+		li {
+			margin-right: -1px;
+		}
+		a, span {
+			padding: 0 4px;
+		}
+		/* MODIFICATION */
+		li.numeric-paginator__navigate {
+			width: 50%;
+			order: 1;			
+		}
+	}
 }

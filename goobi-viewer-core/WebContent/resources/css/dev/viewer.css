@@ -1703,43 +1703,49 @@ div.mce-fullscreen {
    Simple (Numeric) Paginator
    style declarations for simplePaginator.xhtml
    ==============================================================*/
-#numeric_paginator_nav {
-  margin: 1rem 0 1.5rem 0;
-  overflow: hidden;
+/* NUMERIC PAGINATOR */
+/* BLOCK */
+.numeric-paginator {
+  margin: 15px 0;
+  /* ELEMENT */
+  /* MODIFICATION */
 }
-#numeric_paginator_nav ul {
-  position: relative;
-  float: left;
-  left: 50%;
-  margin: 0 auto;
+.numeric-paginator ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
 }
-#numeric_paginator_nav ul li {
-  display: inline-block;
-  position: relative;
-  float: left;
-  right: 50%;
-  margin: 0 3px;
-  text-align: center;
-}
-#numeric_paginator_nav ul li a,
-#numeric_paginator_nav ul li span {
-  display: block;
+.numeric-paginator li {
   min-width: 32px;
   height: 32px;
-  line-height: 32px;
-  padding: 0 5px;
-  text-decoration: none;
+  margin: 0 3px 5px 0;
   border: 1px solid #ccc;
 }
-#numeric_paginator_nav ul li.paginator-active a,
-#numeric_paginator_nav ul li.paginator-active span {
-  font-weight: bold;
+.numeric-paginator a,
+.numeric-paginator span {
+  display: block;
+  line-height: 30px;
+  padding: 0 3px;
+  text-align: center;
+}
+.numeric-paginator a {
+  text-decoration: none;
+}
+.numeric-paginator a:hover,
+.numeric-paginator a:active,
+.numeric-paginator a:focus {
+  background-color: #eee;
+}
+.numeric-paginator__active a,
+.numeric-paginator__active span {
+  font-weight: 700;
   background-color: #ccc;
 }
-#numeric_paginator_nav ul li.numeric-paginator-dots a,
-#numeric_paginator_nav ul li.numeric-paginator-dots span {
+.numeric-paginator li.numeric-paginator__dots {
   min-width: 0;
-  padding: 0;
   border: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -1747,8 +1753,21 @@ div.mce-fullscreen {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
-  #numeric_paginator_nav ul li {
-    margin: 0 2px;
+  .numeric-paginator {
+    /* ELEMENT */
+    /* MODIFICATION */
+  }
+  .numeric-paginator li {
+    margin-right: -1px;
+  }
+  .numeric-paginator a,
+  .numeric-paginator span {
+    padding: 0 4px;
+  }
+  .numeric-paginator li.numeric-paginator__navigate {
+    width: 50%;
+    -ms-flex-order: 1;
+        order: 1;
   }
 }
 /* ==============================================================
