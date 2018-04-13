@@ -102,6 +102,8 @@ public class BrowseElement implements Serializable {
     @JsonIgnore
     private boolean hasImages = false;
     @JsonIgnore
+    private boolean hasMedia = false;
+    @JsonIgnore
     private boolean useOverviewPage = false;
     @JsonIgnore
     private long numVolumes = 0;
@@ -400,6 +402,9 @@ public class BrowseElement implements Serializable {
 
         //check if we have images
         hasImages = !isAnchor() && this.mimeType.startsWith("image");
+        
+        //..or if we have video or audio
+        hasMedia = !hasImages && !isAnchor() && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
 
         // Only topstructs should be openened with their overview page view (if they have one)
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
@@ -987,7 +992,7 @@ public class BrowseElement implements Serializable {
 
                     break;
                 default:
-                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages,
+                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
                             useOverviewPage, false);
                     sb.append(pageType.getName())
                             .append('/')
@@ -1001,7 +1006,7 @@ public class BrowseElement implements Serializable {
             }
         } else {
             PageType pageType =
-                    PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages, useOverviewPage, false);
+                    PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, useOverviewPage, false);
             sb.append(pageType.getName())
                     .append('/')
                     .append(pi)
@@ -1088,7 +1093,7 @@ public class BrowseElement implements Serializable {
                     .append('/')
                     .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                     .append('/');
-        } else if (hasImages) {
+        } else if (hasImages || hasMedia) {
             // Regular image view
             sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append('/')
@@ -1191,4 +1196,19 @@ public class BrowseElement implements Serializable {
     public List<String> getRecordLanguages() {
         return recordLanguages;
     }
+    
+    /**
+     * @param hasMedia the hasMedia to set
+     */
+    public void setHasMedia(boolean hasMedia) {
+        this.hasMedia = hasMedia;
+    }
+    
+    /**
+     * @return the hasMedia
+     */
+    public boolean isHasMedia() {
+        return hasMedia;
+    }
+
 }

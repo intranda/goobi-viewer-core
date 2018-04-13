@@ -911,7 +911,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl(), RegionRequest.FULL, Scale.MAX,
+        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl()+ "image/" + pi + "/" + getFileName(), RegionRequest.FULL, Scale.MAX,
                 Rotation.NONE, Colortype.DEFAULT, format);
     }
 
@@ -920,7 +920,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl(), RegionRequest.FULL,
+        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl()+ "image/" + pi + "/" + getFileName(), RegionRequest.FULL,
                 new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
