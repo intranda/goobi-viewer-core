@@ -6179,7 +6179,7 @@ div.olMapViewport {
     display: inline-block;
   }
   .reading-mode__navigation-controls .image-controls {
-    padding: 0;
+    padding: 0 !important;
   }
   .reading-mode__navigation-controls .image-controls__actions {
     display: none;
