@@ -9,34 +9,31 @@
 
     <!-- component content -->
 	<composite:implementation>
-        <div id="ePubWrapper">
-            <h3>
-                <h:outputText value="#{msg.epub_fileList}" />
-                <!-- 				<h:outputText value="#{activeDocumentBean.viewManager.activeDocument.label}" /> -->
-            </h3>
-
-            <h:panelGroup rendered="#{!activeDocumentBean.viewManager.currentPage.accessForJs}">
+        <div id="ePub" class="e-pub">
+            <h3><h:outputText value="#{msg.epub_fileList}" /></h3>
+            
+            <!-- ACCESS DENIED -->
+            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessForJs}">
                 <p>
                     <h:outputText value="#{msg.ePub_accessConditionText}" escape="false" />
                 </p>
-            </h:panelGroup>
-
-            <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
-                <ul>
+            </ui:fragment>
+            
+            <!-- ACCESS GRANTED -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessForJs}">
+                <div class="e-pub__items">
                     <ui:repeat var="page" value="#{activeDocumentBean.viewManager.allPages}">
-                        <li>
-                            <dl class="dl-horizontal">
-                                <dt>
-                                    <a href="#{page.url}" target="_blank">
-                                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i> [#{page.fileSizeAsString}]
-                                    </a>
-                                </dt>
-                                <dd>#{page.orderLabel}</dd>
-                            </dl>
-                        </li>
+                        <div class="e-pub__item">
+                            <a href="#{page.url}" target="_blank">
+                                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                <br />
+                                [#{page.fileSizeAsString}]
+                                <span class="e-pub__item-order-label">#{page.orderLabel}</span>
+                            </a>
+                        </div>        
                     </ui:repeat>
-                </ul>
-            </h:panelGroup>
+                </div>
+            </ui:fragment>
         </div>
     </composite:implementation>
 </ui:composition>
