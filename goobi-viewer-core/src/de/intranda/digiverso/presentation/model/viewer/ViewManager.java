@@ -1806,6 +1806,9 @@ public class ViewManager implements Serializable {
                             if (doc.getFieldValues(prevVersionIdentifierField) != null) {
                                 identifier = (String) doc.getFieldValues(prevVersionIdentifierField).iterator().next();
                             }
+                        } else {
+                            //Identifier has no matching document. break while-loop
+                            break;
                         }
                     }
                     versionHistory.addAll(previous);
