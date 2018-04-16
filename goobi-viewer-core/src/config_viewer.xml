@@ -1144,7 +1144,7 @@
             <classification>team</classification>
         </classifications>
         
-        <mediaDisplayWidth>400</mediaDisplayWidth>
+        <mediaDisplayWidth>0</mediaDisplayWidth>
     </cms>
     
     <!-- Transkribus settings (enabled: default false) -->
