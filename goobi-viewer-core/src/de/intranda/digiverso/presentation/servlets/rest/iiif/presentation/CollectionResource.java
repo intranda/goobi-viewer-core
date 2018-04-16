@@ -45,6 +45,7 @@ import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
+import de.intranda.digiverso.presentation.model.iiif.presentation.CollectionExtent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
@@ -225,11 +226,11 @@ public class CollectionResource {
                 collection.setThumbnail(thumb);
 
                 long volumes = baseElement.getNumberOfVolumes();
-                collection.addMetadata(new Metadata(NUM_MANIFESTS_LABEL, Long.toString(volumes)));
-
                 int subCollections = baseElement.getChildren().size();
-                collection.addMetadata(new Metadata(NUM_SUBCOLLECTIONS_LABEL, Integer.toString(subCollections)));
+                collection.addService(new CollectionExtent(subCollections, (int)volumes));
                 
+//                collection.addMetadata(new Metadata(NUM_MANIFESTS_LABEL, Long.toString(volumes)));
+//                collection.addMetadata(new Metadata(NUM_SUBCOLLECTIONS_LABEL, Integer.toString(subCollections)));
                 
                 LinkingContent rss = new LinkingContent(absolutize(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
                 collection.setRelated(rss);

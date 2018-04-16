@@ -31,6 +31,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingH
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
+import de.intranda.digiverso.presentation.servlets.rest.services.Service;
 
 /**
  * Parent class for all classes modeling the iiif presentation api resources except images and other canvas content
@@ -57,6 +58,7 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private LinkingContent related;
 	private LinkingContent rendering;
 	private String context = null;
+	private List<Service> service;
 	
 	public AbstractPresentationModelElement(URI id) {
 		this.id = id;
@@ -188,6 +190,7 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getLogo()
 	 */
 	@Override
+	   @JsonSerialize(using=ImageContentLinkSerializer.class)
 	public ImageContent getLogo() {
 		return logo;
 	}
@@ -252,5 +255,19 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	public URI getId() {
 		return id;
 	}
+	
+	/* (non-Javadoc)
+	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getService()
+	 */
+	@Override
+	public List<Service> getService() {
+	    return service;
+	}
 
+	public void addService(Service service) {
+	   if(this.service == null) {
+	       this.service = new ArrayList<>();
+	   }
+	   this.service.add(service);
+	}
 }

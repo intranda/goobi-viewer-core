@@ -94,7 +94,8 @@ var cmsJS = ( function( cms ) {
         var panelBody = null;
         
         // create members
-        data.members.forEach( function( member ) {
+        data.collections.forEach( function( member ) {
+            console.log("creationg collection ", member);
             // increase counter
             counter++;
             // create panels
@@ -102,9 +103,9 @@ var cmsJS = ( function( cms ) {
             // create panel title
             panelHeading = $( '<div />' ).addClass( 'panel-heading' );
             panelTitle = $( '<h4 />' ).addClass( 'panel-title' );
-            panelTitleLink = $( '<a />' ).text( _getValue(member.label, _defaults.displayLanguage) + ' (' + _getMetadataValue( member, 'volumes' ) + ')' );
+            panelTitleLink = $( '<a />' ).text( _getValue(member.label, _defaults.displayLanguage) + ' (' + _getMetadataValue( member, 'volumes') + ')' );
             // check if subcollections exist
-            if ( _getMetadataValue( member, 'subCollections' ) > 0 ) {
+            if ( _getMetadataValue( member, 'subCollections') > 0 ) {
                 panelTitleLink.attr( 'href', '#collapse-' + counter ).attr( 'role', 'button' ).attr( 'data-toggle', 'collapse' ).attr( 'data-parent', '#stackedCollections' )
                         .attr( 'aria-expanded', 'false' );
             }
@@ -158,23 +159,22 @@ var cmsJS = ( function( cms ) {
             if(typeof element === 'string') {
                 return element;
             } else if (Array.isArray(element)) {
-               for (index in element) {
+               var fallback;
+                for (var index in element) {
                    var item = element[index];
                    if(typeof item === 'string') {
                        return item;
                    } else {
-                       var value = element['@value'];
-                       var language = element['@language'];
+                       var value = item['@value'];
+                       var language = item['@language'];
                        if(locale == language) {
                            return value;
+                       } else if(!fallback || language == 'en') {
+                           fallback = value;
                        }
                    }
                }
-               if(locale != 'en') {
-                   return _getValue(element, 'en');
-               } else {
-                   return _geValue(element, '');
-               }
+                return fallback;
             } else {
                 return element['@value'];                
             }
@@ -190,7 +190,7 @@ var cmsJS = ( function( cms ) {
      * @param label {String} The label property value of the metadata to return.
      * @returns {String} The count of works in the collection.
      */
-    function _getMetadataValue( collection, label ) {
+    function _getMetadataValue( collection, label) {
         if ( _debug ) {
             console.log( '---------- _getMetadataValue() ----------' );
             console.log( '_getMetadataValue: collection = ', collection );
@@ -200,8 +200,8 @@ var cmsJS = ( function( cms ) {
         var value = '';
         
         collection.metadata.forEach( function( metadata ) {
-            if ( metadata.label == label ) {
-                value = metadata.value;
+            if ( _getValue(metadata.label, _defaults.displayLanguage) == label ) {
+                value = _getValue(metadata.value, _defaults.displayLanguage);
             }
         } );
         
@@ -235,11 +235,11 @@ var cmsJS = ( function( cms ) {
         } ).then( function( data ) {
             subCollectionItem = $( '<li />' );
             
-            if ( !$.isEmptyObject( data.members ) ) {
+            if ( !$.isEmptyObject( data.collections ) ) {
                 // add subcollection items
-                data.members.forEach( function( member ) {
-                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( member.label + ' ('
-                            + _getMetadataValue( member, 'volumes' ) + ')' );
+                data.collections.forEach( function( member ) {
+                    subCollectionItemLink = $( '<a />' ).attr( 'href', member.rendering[ '@id' ] ).addClass( 'panel-body__collection' ).text( _getValue(member.label, _defaults.displayLanguage) + ' ('
+                            + _getMetadataValue( member, 'volumes') + ')' );
                     subCollectionItemRSSLink = $( '<a />' ).attr( 'href', member.related[ '@id' ] ).attr( 'target', '_blank' ).addClass( 'panel-body__rss' )
                             .html( '<i class="fa fa-rss" aria-hidden="true"></i>' );
                     // build subcollection item

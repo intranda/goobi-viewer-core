@@ -26,6 +26,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingH
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
+import de.intranda.digiverso.presentation.servlets.rest.services.Service;
 
 /**
  * @author florian
@@ -69,7 +70,6 @@ public interface IPresentationModelElement {
 	/**
 	 * @return the logo
 	 */
-	@JsonSerialize(using=ImageContentLinkSerializer.class)
 	ImageContent getLogo();
 
 	/**
@@ -86,6 +86,12 @@ public interface IPresentationModelElement {
 	 * @return the rendering
 	 */
 	LinkingContent getRendering();
+	
+	/**
+	 * @return one or more services
+	 */
+	@JsonSerialize(using=ListOrObjectSerializer.class)
+	List<Service> getService();
 
 	/**
 	 * @return the id
