@@ -217,18 +217,19 @@ public class CollectionResource {
                 collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
-                ImageContent thumb = new ImageContent(thumbURI);
-                if (IIIFUrlHandler.isIIIFImageUrl(thumbURI.toString())) {
-                    URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbURI.toString()));
-                    ImageInformation info = new ImageInformation(imageInfoURI.toString());
-                    thumb.setService(info);
+                if(thumbURI != null) {                    
+                    ImageContent thumb = new ImageContent(thumbURI);
+                    if (IIIFUrlHandler.isIIIFImageUrl(thumbURI.toString())) {
+                        URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbURI.toString()));
+                        ImageInformation info = new ImageInformation(imageInfoURI.toString());
+                        thumb.setService(info);
+                    }
+                    collection.setThumbnail(thumb);
                 }
-                collection.setThumbnail(thumb);
 
                 long volumes = baseElement.getNumberOfVolumes();
                 int subCollections = baseElement.getChildren().size();
-                collection.addService(new CollectionExtent(subCollections, (int)volumes));
-                
+                collection.getService().addItem(new CollectionExtent(subCollections, (int)volumes));
 //                collection.addMetadata(new Metadata(NUM_MANIFESTS_LABEL, Long.toString(volumes)));
 //                collection.addMetadata(new Metadata(NUM_SUBCOLLECTIONS_LABEL, Integer.toString(subCollections)));
                 
@@ -241,6 +242,7 @@ public class CollectionResource {
 
             } else {
                 collection.setViewingHint(ViewingHint.top);
+                
             }
 
         } catch (URISyntaxException e) {

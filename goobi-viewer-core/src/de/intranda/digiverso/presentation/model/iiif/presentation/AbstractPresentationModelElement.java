@@ -22,7 +22,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
@@ -31,6 +30,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingH
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 import de.intranda.digiverso.presentation.servlets.rest.services.Service;
 
 /**
@@ -58,7 +58,7 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private LinkingContent related;
 	private LinkingContent rendering;
 	private String context = null;
-	private List<Service> service;
+	private PropertyList<Service> service = new PropertyList<Service>();
 	
 	public AbstractPresentationModelElement(URI id) {
 		this.id = id;
@@ -260,14 +260,8 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getService()
 	 */
 	@Override
-	public List<Service> getService() {
+	public PropertyList<Service> getService() {
 	    return service;
 	}
 
-	public void addService(Service service) {
-	   if(this.service == null) {
-	       this.service = new ArrayList<>();
-	   }
-	   this.service.add(service);
-	}
 }

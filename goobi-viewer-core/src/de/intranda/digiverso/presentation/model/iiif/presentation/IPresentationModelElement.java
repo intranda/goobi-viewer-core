@@ -18,6 +18,8 @@ package de.intranda.digiverso.presentation.model.iiif.presentation;
 import java.net.URI;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
@@ -26,12 +28,14 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingH
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 import de.intranda.digiverso.presentation.servlets.rest.services.Service;
 
 /**
  * @author florian
  *
  */
+@JsonInclude(Include.NON_EMPTY)
 public interface IPresentationModelElement {
 
 	String getType();
@@ -90,8 +94,7 @@ public interface IPresentationModelElement {
 	/**
 	 * @return one or more services
 	 */
-	@JsonSerialize(using=ListOrObjectSerializer.class)
-	List<Service> getService();
+	PropertyList<Service> getService();
 
 	/**
 	 * @return the id
