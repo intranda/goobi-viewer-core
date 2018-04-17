@@ -74,7 +74,7 @@ public class CmsNavigationBean implements Serializable {
             }
             int level = Integer.parseInt(id.substring(id.indexOf('?') + 1));
             id = id.substring(0, id.indexOf('?'));
-            CMSNavigationItem item = new CMSNavigationItem(getItemManager().getAvailableItem(id));
+            CMSNavigationItem item = new CMSNavigationItem(getItemManager().getItem(id));
             if (level == 0 || previousItem == null) {
                 item.setOrder(selectedItems.size());
                 selectedItems.add(item);
@@ -128,13 +128,15 @@ public class CmsNavigationBean implements Serializable {
     }
 
     public List<CMSNavigationItem> getVisibleMenuItems() {
-        return getItemManager().getVisibleItems();
+        List<CMSNavigationItem> items = getItemManager().getVisibleItems();
+        return items;
 
     }
 
     public void saveNavigationItem() {
         //	DataManager.getInstance().getDao().addCMSNavigationItem(getNavigationItem());
         deserializeMenuItems(getMenuItemList());
+//        getItemManager().synchronizeItem(getNavigationItem());
         if (getNavigationItem().getAvailableItemId() == null) {
             getItemManager().addVisibleItem(getNavigationItem());
         }
@@ -147,7 +149,12 @@ public class CmsNavigationBean implements Serializable {
     public void setItemManager(CMSNavigationManager itemManager) {
         this.itemManager = itemManager;
     }
-
+    
+    public void selectVisibleNavigationItem(String itemId) {
+        selectedNavigationItem = getItemManager().getVisibleItem(itemId);
+        setEditMode(true);
+    }
+    
     public void selectNavigationItem(String itemId) {
         selectedNavigationItem = getItemManager().getAvailableItem(itemId);
         setEditMode(true);

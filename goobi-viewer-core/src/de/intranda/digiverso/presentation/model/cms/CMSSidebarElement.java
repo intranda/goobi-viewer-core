@@ -320,7 +320,8 @@ public class CMSSidebarElement {
     public boolean isValid() {
         if (hasHtml()) {
             Matcher m = patternHtmlTag.matcher(html);
-            Set<String> allowedTags = CMSSidebarManager.getInstance().getAllowedHtmlTags();
+//            Set<String> allowedTags = CMSSidebarManager.getInstance().getAllowedHtmlTags();
+            Set<String> disallowedTags = CMSSidebarManager.getInstance().getDisallowedHtmlTags();
             while (m.find()) {
                 String tag = m.group();
                 if (tag.startsWith("<!--")) {
@@ -328,7 +329,7 @@ public class CMSSidebarElement {
                 }
                 tag = cleanupHtmlTag(tag);
                 logger.trace("Check tag '{}' for validity", tag);
-                if (!allowedTags.contains(tag)) {
+                if (disallowedTags != null && disallowedTags.contains(tag)) {
                     logger.debug("Tag '{}' is not allowed in sidebar widget HTML.", tag);
                     return false;
                 }

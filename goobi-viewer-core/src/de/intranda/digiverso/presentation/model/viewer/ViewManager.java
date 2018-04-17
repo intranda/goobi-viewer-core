@@ -344,8 +344,9 @@ public class ViewManager implements Serializable {
         if (ImageFileFormat.PNG.equals(getCurrentPage().getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl(), RegionRequest.FULL,
-                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        return imageDelivery.getThumb().getThumbnailUrl(getCurrentPage(), size, size);
+//        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getCurrentPage().getFileName(), RegionRequest.FULL,
+//                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
     private String getFooterId() {
@@ -1805,6 +1806,9 @@ public class ViewManager implements Serializable {
                             if (doc.getFieldValues(prevVersionIdentifierField) != null) {
                                 identifier = (String) doc.getFieldValues(prevVersionIdentifierField).iterator().next();
                             }
+                        } else {
+                            //Identifier has no matching document. break while-loop
+                            break;
                         }
                     }
                     versionHistory.addAll(previous);

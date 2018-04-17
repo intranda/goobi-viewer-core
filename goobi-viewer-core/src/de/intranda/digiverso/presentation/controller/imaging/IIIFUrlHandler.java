@@ -46,7 +46,7 @@ public class IIIFUrlHandler {
      */
     public static final String IIIF_IMAGE_PARAMS_REGEX ="\\/?((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color|native)\\.(jpg|png|tif|jp2|pdf)\\/?(?:\\?.*)?";
     public static final String IIIF_IMAGE_REGEX =
-            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color)\\.(jpg|png|tif|jp2|pdf)\\/?(?:\\?.*)?";
+            "https?:\\/\\/.*\\/((?:pct:)?(?:\\d+,\\d+,\\d+,\\d+)|full|square)\\/((?:pct:\\d{1,2})|!?(?:(?:\\d+)?,(?:\\d+)?)|full|max)\\/(!?-?\\d{1,3})\\/(default|bitonal|gray|color|native)\\.(jpg|png|tif|jp2|pdf)(?:\\?.*)?";
     public static final int IIIF_IMAGE_REGEX_REGION_GROUP = 1;
     public static final int IIIF_IMAGE_REGEX_SIZE_GROUP = 2;
     public static final int IIIF_IMAGE_REGEX_ROTATION_GROUP = 3;
@@ -67,14 +67,14 @@ public class IIIFUrlHandler {
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
         if(ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl)).append("/");
+            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
             return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
         } else if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {
                 return getModifiedIIIFFUrl(fileUrl, region, size, rotation, quality, format);
             } else if (ImageHandler.isImageUrl(fileUrl, false)) {
                 StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-                sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl)).append("/");
+                sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
                 sb.append(region).append("/");
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");
@@ -156,14 +156,14 @@ public class IIIFUrlHandler {
      * @should do nothing if not iiif url
      */
     public String getModifiedIIIFFUrl(String url, String region, String size, String rotation, String quality, String format) {
-
-        Matcher matcher = Pattern.compile(IIIF_IMAGE_REGEX).matcher(url);
-        if (matcher.matches()) {
-            url = replaceGroup(url, region, matcher, IIIF_IMAGE_REGEX_REGION_GROUP);
-            url = replaceGroup(url, size, matcher, IIIF_IMAGE_REGEX_SIZE_GROUP);
-            url = replaceGroup(url, rotation, matcher, IIIF_IMAGE_REGEX_ROTATION_GROUP);
-            url = replaceGroup(url, quality, matcher, IIIF_IMAGE_REGEX_QUALITY_GROUP);
-            url = replaceGroup(url, format, matcher, IIIF_IMAGE_REGEX_FORMAT_GROUP);
+        Pattern pattern = Pattern.compile(IIIF_IMAGE_REGEX);
+//        Matcher matcher = Pattern.compile(IIIF_IMAGE_REGEX).matcher(url);
+        if (pattern.matcher(url).matches()) {
+            url = replaceGroup(url, region, pattern.matcher(url), IIIF_IMAGE_REGEX_REGION_GROUP);
+            url = replaceGroup(url, size, pattern.matcher(url), IIIF_IMAGE_REGEX_SIZE_GROUP);
+            url = replaceGroup(url, rotation, pattern.matcher(url), IIIF_IMAGE_REGEX_ROTATION_GROUP);
+            url = replaceGroup(url, quality, pattern.matcher(url), IIIF_IMAGE_REGEX_QUALITY_GROUP);
+            url = replaceGroup(url, format, pattern.matcher(url), IIIF_IMAGE_REGEX_FORMAT_GROUP);
 
         }
         return url;
@@ -202,7 +202,7 @@ public class IIIFUrlHandler {
      * @return
      */
     private String replaceGroup(String text, String replacement, Matcher matcher, int group) {
-        if(replacement != null) {            
+        if(replacement != null && matcher.find()) {        
             int start = matcher.start(group);
             int end = matcher.end(group);
             if (start > -1 && end > -1) {
@@ -218,7 +218,16 @@ public class IIIFUrlHandler {
      * @return true if the given url conforms to a IIIF image request pattern (that is, an actual image is requested, not just image information)
      */
     public static boolean isIIIFImageUrl(String url) {
-        return StringUtils.isNotBlank(url) &&  url.matches(IIIF_IMAGE_REGEX);
+        return url != null && url.matches(IIIF_IMAGE_REGEX);
     }
 
+    /**
+     * Test whether the given url refers to a IIIF image information
+     * 
+     * @param url
+     * @return true if the given url ends in "/info.json" which is assumed to refer to a IIIF image information
+     */
+    public static boolean isIIIFImageInfoUrl(String url) {
+        return url != null && url.toLowerCase().endsWith("/image.info");
+    }
 }

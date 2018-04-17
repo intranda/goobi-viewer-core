@@ -74,7 +74,7 @@ public class CMSNavigationManager {
 
         addModuleItems();
         addCMSPageItems();
-        
+
         visibleItems = loadVisibleItems();
         return availableItems;
     }
@@ -96,10 +96,12 @@ public class CMSNavigationManager {
      * 
      */
     private void addModuleItems() {
-        DataManager.getInstance().getModules().stream()
-        .flatMap(module -> module.getCmsMenuContributions().entrySet().stream())
-        .map(entry -> new CMSNavigationItem(entry.getValue(), entry.getKey()))
-        .forEach(item -> addAvailableItem(item));
+        DataManager.getInstance()
+                .getModules()
+                .stream()
+                .flatMap(module -> module.getCmsMenuContributions().entrySet().stream())
+                .map(entry -> new CMSNavigationItem(entry.getValue(), entry.getKey()))
+                .forEach(item -> addAvailableItem(item));
 
     }
 
@@ -119,7 +121,7 @@ public class CMSNavigationManager {
      * @throws DAOException
      */
     public final List<CMSNavigationItem> loadVisibleItems() throws DAOException {
-        List<CMSNavigationItem> daoList = DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
+           List<CMSNavigationItem> daoList = DataManager.getInstance().getDao().getAllTopCMSNavigationItems();
         setVisibleItems(daoList);
         return visibleItems;
     }
@@ -204,6 +206,15 @@ public class CMSNavigationManager {
 
     }
 
+    public CMSNavigationItem getVisibleItem(String id) {
+        for (CMSNavigationItem availableItem : getVisibleItems()) {
+            if (availableItem.getAvailableItemId().equals(Long.parseLong(id))) {
+                return availableItem;
+            }
+        }
+        return null;
+    }
+
     public CMSNavigationItem getAvailableItem(String id) {
         for (CMSNavigationItem availableItem : getAvailableItems()) {
             if (availableItem.getAvailableItemId().equals(Long.parseLong(id))) {
@@ -248,5 +259,31 @@ public class CMSNavigationManager {
      */
     public void reload() throws DAOException {
         loadItems();
+    }
+
+    /**
+     * Apply changes made to the given item to the available items of the same id
+     */
+    public void synchronizeItem(CMSNavigationItem visibleItem) {
+        if (visibleItem != null) {
+            CMSNavigationItem availableItem = getAvailableItem(visibleItem.getAvailableItemId().toString());
+            if (availableItem != null) {
+                availableItem.setItemLabel(visibleItem.getItemLabel());
+                availableItem.setPageUrl(visibleItem.getPageUrl());
+            }
+        }
+
+    }
+
+    /**
+     * @param id
+     * @return  The first matching item from all visible items, or - failing that - the first matching item of all available items
+     */
+    public CMSNavigationItem getItem(String id) {
+        CMSNavigationItem item = getVisibleItem(id);
+        if(item == null) {
+            item = getAvailableItem(id);
+        }
+        return item;
     }
 }
