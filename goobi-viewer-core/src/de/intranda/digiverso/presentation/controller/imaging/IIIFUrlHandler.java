@@ -79,7 +79,7 @@ public class IIIFUrlHandler {
                 sb.append(size).append("/");
                 sb.append(rotation).append("/");
                 sb.append("default.").append(format);
-                sb.append("?compression=").append(thumbCompression);
+//                sb.append("?compression=").append(thumbCompression);
                 return sb.toString();
             } else {
                 //assume its a iiif id
@@ -100,7 +100,7 @@ public class IIIFUrlHandler {
             sb.append(size).append("/");
             sb.append(rotation).append("/");
             sb.append("default.").append(format);
-            sb.append("?compression=").append(thumbCompression);
+//            sb.append("?compression=").append(thumbCompression);
             return sb.toString();
         }
     }
