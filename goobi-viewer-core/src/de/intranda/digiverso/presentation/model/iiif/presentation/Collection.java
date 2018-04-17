@@ -55,7 +55,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
      * @return the collections
      */
     @JsonSerialize(using = ContentLinkSerializer.class)
-    @JsonIgnore
+//    @JsonIgnore
     public List<Collection> getCollections() {
         return collections.isEmpty() ? null : collections;
     }
@@ -68,7 +68,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
      * @return the manifests
      */
     @JsonSerialize(using = ContentLinkSerializer.class)
-    @JsonIgnore
+//    @JsonIgnore
     public List<Manifest> getManifests() {
         return manifests.isEmpty() ? null : manifests;
     }
