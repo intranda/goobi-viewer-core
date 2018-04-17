@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.iiif.presentation;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,8 +27,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
-import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
-import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 
 /**
  * @author Florian Alpers
@@ -39,9 +38,9 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     public static final String TYPE = "sc:collection";
     
     @JsonIgnore
-    public final List<Collection> collections = new PropertyList<>();
+    public final List<Collection> collections = new ArrayList<>();
     @JsonIgnore
-    public final List<Manifest> manifests = new PropertyList<>();
+    public final List<Manifest> manifests = new ArrayList<>();
     public Date navDate = null;
     
     /**
@@ -54,8 +53,9 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     /**
      * @return the collections
      */
-    @JsonSerialize(using = ContentLinkSerializer.class)
-//    @JsonIgnore
+//    @JsonSerialize(using = URLOnlySerializer.class)
+//    @JsonSerialize(using = ContentLinkSerializer.class)
+    @JsonIgnore
     public List<Collection> getCollections() {
         return collections.isEmpty() ? null : collections;
     }
@@ -67,8 +67,9 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     /**
      * @return the manifests
      */
-    @JsonSerialize(using = ContentLinkSerializer.class)
-//    @JsonIgnore
+//    @JsonSerialize(using = URLOnlySerializer.class)
+//    @JsonSerialize(using = ContentLinkSerializer.class)
+    @JsonIgnore
     public List<Manifest> getManifests() {
         return manifests.isEmpty() ? null : manifests;
     }
@@ -77,9 +78,10 @@ public class Collection extends AbstractPresentationModelElement implements IPre
         this.manifests.add(manifest);
     }
     
+//    @JsonSerialize(using = URLOnlySerializer.class)
     @JsonSerialize(using = ContentLinkSerializer.class)
     public List<IPresentationModelElement> getMembers() {
-        List<IPresentationModelElement> list = new PropertyList<>();
+        List<IPresentationModelElement> list = new ArrayList<>();
         list.addAll(collections);
         list.addAll(manifests);
         return list.isEmpty() ? null : list;

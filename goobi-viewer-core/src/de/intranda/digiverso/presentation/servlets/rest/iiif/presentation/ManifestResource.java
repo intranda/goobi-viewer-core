@@ -71,6 +71,7 @@ import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoade
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ComplianceLevel;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ComplianceLevelProfile;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.IiifProfile;
@@ -123,6 +124,29 @@ public class ManifestResource extends AbstractResource {
         }
 
         return manifest;
+
+    }
+    
+    @GET
+    @Path("/{pi}/sequence/basic")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Sequence getBasicSequence(@PathParam("pi") String pi)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, IllegalRequestException {
+
+        StructElement doc = getDocument(pi);
+        servletResponse.addHeader("Access-Control-Allow-Origin", "*");
+
+        IPresentationModelElement manifest = generateManifest(doc, getBaseUrl());
+
+        if (manifest instanceof Collection) {
+//            addVolumes((Collection) manifest, doc.getLuceneId(), getBaseUrl());
+            throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
+        } else if (manifest instanceof Manifest) {
+//            addAnchor((Manifest) manifest, doc, getBaseUrl());
+            addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            return ((Manifest)manifest).getSequences().get(0);
+        }
+        throw new IllegalRequestException("Not manifest with identifier " + pi + " found");
 
     }
 
@@ -364,15 +388,20 @@ public class ManifestResource extends AbstractResource {
      * @throws PresentationException
      */
     private void addVolumes(Collection anchor, long iddoc, String baseUrl) throws PresentationException, IndexUnreachableException {
-        List<StructElement> volumes = getChildDocs(iddoc);
-        volumes.stream().sorted((v1, v2) -> getSortingNumber(v1).compareTo(getSortingNumber(v2))).map(volume -> {
+        List<StructElement> volumes = getChildDocs(iddoc).stream().sorted((v1, v2) -> getSortingNumber(v1).compareTo(getSortingNumber(v2))).collect(Collectors.toList());
+        
+        for (StructElement volume : volumes) {
             try {
-                return generateManifest(volume, baseUrl);
+                IPresentationModelElement child =  generateManifest(volume, baseUrl);
+                if(child instanceof Manifest) {
+//                    addBaseSequence((Manifest)child, volume, child.getId().toString());
+                    anchor.addManifest((Manifest)child);
+                }
             } catch (ConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error creating child manigest for " + volume);
-                return null;
             }
-        }).filter(child -> child != null && child instanceof Manifest).forEach(child -> anchor.addManifest((Manifest) child));
+            
+        }
     }
 
     /**
