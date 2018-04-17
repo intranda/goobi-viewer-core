@@ -16,6 +16,10 @@
 package de.intranda.digiverso.presentation.model.iiif.presentation;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
 
 /**
  * @author Florian Alpers
@@ -23,6 +27,8 @@ import java.net.URI;
  */
 public class Sequence extends AbstractPresentationModelElement implements IPresentationModelElement {
 
+    private final List<Canvas> canvases = new ArrayList<>();
+    
     /**
      * @param id
      */
@@ -38,6 +44,17 @@ public class Sequence extends AbstractPresentationModelElement implements IPrese
     public String getType() {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    /**
+     * @return the images
+     */
+    public List<Canvas> getCanvases() {
+        return canvases.isEmpty() ? null : canvases;
+    }
+    
+    public void addCanvas(Canvas image) {
+        this.canvases.add(image);
     }
 
 }

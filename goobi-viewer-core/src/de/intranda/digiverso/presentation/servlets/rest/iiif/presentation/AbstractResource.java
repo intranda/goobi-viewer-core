@@ -18,16 +18,23 @@ package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
+import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -103,6 +110,30 @@ public abstract class AbstractResource {
             Messages.error("errGetCurrUrl");
         }
         return ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest) + "/metsresolver?id=" + 0;
+    }
+    
+
+    /**
+     * Simple method to create a label for a {@link SolrDocument} from {@link SolrConstants.LABEL}, {@link SolrConstants.TITLE} or {@link SolrConstants.DOCSTRUCT}
+     * 
+     * @param solrDocument
+     * @return
+     */
+    public static Optional<IMetadataValue> getLabelIfExists(SolrDocument solrDocument) {
+        
+        String label = (String) solrDocument.getFirstValue(SolrConstants.LABEL);
+        String title = (String) solrDocument.getFirstValue(SolrConstants.TITLE);
+        String docStruct = (String) solrDocument.getFirstValue(SolrConstants.DOCSTRCT);
+                
+        if(StringUtils.isNotBlank(label)) {
+            return Optional.of(new SimpleMetadataValue(label));
+        } else if(StringUtils.isNotBlank(title)) {
+            return Optional.of(new SimpleMetadataValue(title));
+        } else if(StringUtils.isNotBlank(docStruct)) {
+            return Optional.of(IMetadataValue.getTranslations(docStruct));
+        } else {
+            return Optional.empty();
+        }
     }
     
     protected abstract String getPath();

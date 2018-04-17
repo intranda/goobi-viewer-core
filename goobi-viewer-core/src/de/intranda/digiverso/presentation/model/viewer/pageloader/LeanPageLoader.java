@@ -227,7 +227,7 @@ public class LeanPageLoader implements IPageLoader, Serializable {
         List<String> fields = new ArrayList<>(Arrays.asList(FIELDS));
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi()).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
+        sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
                 .append(DocType.PAGE);
         if (pageNumber >= 0) {
             sbQuery.append(" AND ").append(SolrConstants.ORDER).append(':').append(pageNumber);
@@ -238,7 +238,7 @@ public class LeanPageLoader implements IPageLoader, Serializable {
         SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, fields);
         if (result == null || result.isEmpty()) {
             sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(topElement.getPi());
+            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
             if (pageNumber >= 0) {
                 sbQuery.append(" AND ").append(SolrConstants.ORDER).append(':').append(pageNumber);
             }

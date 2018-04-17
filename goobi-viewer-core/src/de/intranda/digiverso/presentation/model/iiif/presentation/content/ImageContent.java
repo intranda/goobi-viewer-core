@@ -24,10 +24,12 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageInformationSerializer;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
@@ -137,6 +139,7 @@ public class ImageContent implements IContent {
 	/**
 	 * @param service the service to set
 	 */
+	@JsonSerialize(using=ImageInformationSerializer.class)
 	public void setService(ImageInformation service) {
 		this.service = service;
 	}

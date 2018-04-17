@@ -17,11 +17,14 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.annotation;
 
 import java.net.URI;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 
 /**
  * @author Florian Alpers
@@ -67,6 +70,7 @@ public class Annotation extends AbstractPresentationModelElement implements IPre
     /**
      * @return the on
      */
+    @JsonSerialize(using=URLOnlySerializer.class)
     public Canvas getOn() {
         return on;
     }

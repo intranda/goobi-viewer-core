@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
 import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 
@@ -32,7 +33,7 @@ public class Canvas extends AbstractPresentationModelElement implements IPresent
     
     private int width;
     private int height;
-    private final List<AbstractAnnotation> images = new ArrayList<>();
+    private final List<Annotation> images = new ArrayList<>();
     private final List<AnnotationList> otherContent = new ArrayList<>();
     
     /**
@@ -81,7 +82,7 @@ public class Canvas extends AbstractPresentationModelElement implements IPresent
     /**
      * @return the images
      */
-    public List<AbstractAnnotation> getImages() {
+    public List<Annotation> getImages() {
         return images;
     }
     
@@ -92,7 +93,7 @@ public class Canvas extends AbstractPresentationModelElement implements IPresent
         return otherContent;
     }
     
-    public void addImage(AbstractAnnotation image) {
+    public void addImage(Annotation image) {
         this.images.add(image);
     }
     
