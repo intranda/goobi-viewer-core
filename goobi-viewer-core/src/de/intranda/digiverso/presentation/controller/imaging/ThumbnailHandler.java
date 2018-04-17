@@ -277,7 +277,7 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(StructElement doc, int size) {
         String thumbnailUrl = getImagePath(doc);
-        if(isStaticImageResource(thumbnailUrl)) {
+        if(StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
         } else if(IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
@@ -351,7 +351,9 @@ public class ThumbnailHandler {
 
         String thumbnailUrl = null;
 
-        if (doc.isAnchor()) {
+        if(doc == null) {
+            return null;
+        } else if (doc.isAnchor()) {
             if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
                 thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
             } else if(ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(this.anchorThumbnailMode)) {
