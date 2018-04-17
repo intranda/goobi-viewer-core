@@ -641,8 +641,10 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
                 String iddoc = SolrSearchIndex.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
-                StructElement volume = new StructElement(Long.parseLong(iddoc), docVolume);
-                return volume;
+                if(StringUtils.isNotBlank(iddoc)) {                    
+                    StructElement volume = new StructElement(Long.parseLong(iddoc), docVolume);
+                    return volume;
+                }
             }
         }
 
