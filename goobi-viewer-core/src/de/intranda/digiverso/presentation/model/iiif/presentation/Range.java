@@ -32,7 +32,6 @@ public class Range extends AbstractPresentationModelElement implements IPresenta
     private final List<Canvas> canvases = new ArrayList<>();
     private final List<Range> ranges = new ArrayList<>();
     private Layer contentLayer;
-    private Range within = null;
     private Canvas startCanvas;
     
     
@@ -63,20 +62,6 @@ public class Range extends AbstractPresentationModelElement implements IPresenta
      */
     public void setStartCanvas(Canvas startCanvas) {
         this.startCanvas = startCanvas;
-    }
-    
-    /**
-     * @return the within
-     */
-    public Range getWithin() {
-        return within;
-    }
-    
-    /**
-     * @param within the within to set
-     */
-    public void setWithin(Range within) {
-        this.within = within;
     }
     
     /**

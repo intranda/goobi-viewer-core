@@ -42,7 +42,6 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     public final List<Collection> collections = new PropertyList<>();
     @JsonIgnore
     public final List<Manifest> manifests = new PropertyList<>();
-    public final List<IPresentationModelElement> within = new PropertyList<>();
     public Date navDate = null;
     
     /**
@@ -78,24 +77,12 @@ public class Collection extends AbstractPresentationModelElement implements IPre
         this.manifests.add(manifest);
     }
     
-    /**
-     * @return the within
-     */
-    @JsonSerialize(using = URLOnlySerializer.class)
-    public List<IPresentationModelElement> getWithin() {
-        return within.isEmpty() ? null : within;
-    }
-    
-    public void addWithin(Collection collection) {
-        this.within.add(collection);
-    }
-    
     @JsonSerialize(using = ContentLinkSerializer.class)
     public List<IPresentationModelElement> getMembers() {
         List<IPresentationModelElement> list = new PropertyList<>();
         list.addAll(collections);
         list.addAll(manifests);
-        return list;
+        return list.isEmpty() ? null : list;
     }
     
     /**

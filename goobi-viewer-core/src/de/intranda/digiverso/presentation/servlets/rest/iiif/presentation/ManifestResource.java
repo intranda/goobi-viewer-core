@@ -21,6 +21,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
@@ -74,10 +77,12 @@ public class ManifestResource extends AbstractResource {
 
     private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
-            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT };
+            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT };
     private static final List<String> HIDDEN_SOLR_FIELDS = Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI,
             SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
-            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT });
+            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNOSORT });
 
     @Context
     private HttpServletRequest servletRequest;
@@ -92,20 +97,19 @@ public class ManifestResource extends AbstractResource {
 
         StructElement doc = getDocument(pi);
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
-//
-//        if (doc.isAnchor()) {
-//            Collection anchor = generateAnchorCollection(doc, getBaseUrl());
-//            return anchor;
-//        } else {
-//            Manifest manifest = generateManifest(doc, getBaseUrl());
-//            return manifest;
-//        }
-        
+
+
         IPresentationModelElement manifest = generateManifest(doc, getBaseUrl());
+        
+        if(manifest instanceof Collection) {
+            addVolumes((Collection) manifest, doc.getLuceneId(), getBaseUrl());
+        } else if(manifest instanceof Manifest){
+            addAnchor((Manifest) manifest, doc, getBaseUrl());
+        }
+        
         return manifest;
 
     }
-
 
     /**
      * @param pi
@@ -134,22 +138,41 @@ public class ManifestResource extends AbstractResource {
     private IPresentationModelElement generateManifest(StructElement ele, String baseUrl)
             throws URISyntaxException, PresentationException, IndexUnreachableException, ConfigurationException, DAOException {
 
-        AbstractPresentationModelElement manifest;
-        
-        if(ele.isAnchor()) {
+        final AbstractPresentationModelElement manifest;
+
+        if (ele.isAnchor()) {
             manifest = new Collection(getManifestUrl(baseUrl, ele.getPi()));
-        } else {            
-           manifest = new Manifest(getManifestUrl(baseUrl, ele.getPi()));
+            manifest.setViewingHint(ViewingHint.multipart);
+        } else {
+            manifest = new Manifest(getManifestUrl(baseUrl, ele.getPi()));
         }
 
+        populate(ele, manifest);
+
+        return manifest;
+    }
+
+    /**
+     * @param ele
+     * @param manifest
+     * @throws ConfigurationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     */
+    public void populate(StructElement ele, final AbstractPresentationModelElement manifest)
+            throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException {
         manifest.setAttribution(new SimpleMetadataValue(ATTRIBUTION));
         manifest.setLabel(new SimpleMetadataValue(ele.getLabel()));
 
         addMetadata(manifest, ele);
 
         try {
-            ImageContent thumb = new ImageContent(new URI(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele)), true);
-            manifest.setThumbnail(thumb);
+            String thumbUrl = BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele);
+            if (StringUtils.isNotBlank(thumbUrl)) {
+                ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
+                manifest.setThumbnail(thumb);
+            }
         } catch (URISyntaxException e) {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
@@ -174,6 +197,7 @@ public class ManifestResource extends AbstractResource {
             }
         }
 
+        /*METS/MODS*/
         try {
             LinkingContent metsResolver = new LinkingContent(new URI(getMetsResolverUrl(ele)));
             metsResolver.setFormat(Format.TEXT_XML);
@@ -183,6 +207,7 @@ public class ManifestResource extends AbstractResource {
             logger.error("Unable to retrieve mets resolver url for {}", ele);
         }
 
+        /*VIEWER*/
         try {
             LinkingContent viewerPage = new LinkingContent(new URI(getServletURI() + ele.getUrl()));
             viewerPage.setLabel(new SimpleMetadataValue("goobi viewer"));
@@ -191,24 +216,104 @@ public class ManifestResource extends AbstractResource {
             logger.error("Unable to retrieve viewer url for {}", ele);
         }
 
-        try {
-            String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, manifest.getLabel().getValue().orElse(null));
-            LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
-            pdfDownload.setFormat(Format.APPLICATION_PDF);
-            pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
-            manifest.addRendering(pdfDownload);
-        } catch (URISyntaxException e) {
-            logger.error("Unable to retrieve pdf download url for {}", ele);
-        }
+        if (manifest instanceof Manifest) {
+            /*PDF*/
+            try {
+                String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, manifest.getLabel().getValue().orElse(null));
+                LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
+                pdfDownload.setFormat(Format.APPLICATION_PDF);
+                pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
+                manifest.addRendering(pdfDownload);
+            } catch (URISyntaxException e) {
+                logger.error("Unable to retrieve pdf download url for {}", ele);
+            }
 
+        }
+    }
+
+    /**
+     * @param manifest
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws DAOException 
+     * @throws URISyntaxException 
+     * @throws ConfigurationException 
+     */
+    private void addAnchor(Manifest manifest, StructElement ele, String baseUrl) throws PresentationException, IndexUnreachableException, ConfigurationException, URISyntaxException, DAOException {
+
+        /*ANCHOR*/
         String anchorPI = ele.getAncestors().get(SolrConstants.PI_PARENT);
         if (StringUtils.isNotBlank(anchorPI)) {
             StructElement anchor = getDocument(anchorPI);
             IPresentationModelElement anchorCollection = generateManifest(anchor, baseUrl);
             manifest.addWithin(anchorCollection);
         }
+        
+    }
 
-        return manifest;
+    /**
+     * @param baseUrl2
+     * @param manifest
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    private void addVolumes(Collection anchor, long iddoc, String baseUrl) throws PresentationException, IndexUnreachableException {
+        List<StructElement> volumes = getChildDocs(iddoc);
+        volumes.stream()
+                .sorted((v1, v2) -> getSortingNumber(v1).compareTo(getSortingNumber(v2)))
+                .map(volume -> {
+                    try {
+                        return generateManifest(volume, baseUrl);
+                    } catch (ConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
+                       logger.error("Error creating child manigest for " + volume);
+                       return null;
+                    }
+                })
+                .filter(child -> child != null && child instanceof Manifest)
+                .forEach(child -> anchor.addManifest((Manifest) child));
+    }
+
+    /**
+     * @param v1
+     * @return
+     */
+    private Integer getSortingNumber(StructElement volume) {
+        String numSort = volume.getVolumeNoSort();
+        if(StringUtils.isNotBlank(numSort)) {
+            try {                
+                return Integer.parseInt(numSort);
+            } catch(NumberFormatException e) {
+                logger.error("Cannot read integer value from " + numSort);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @param anchor
+     * @return
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     */
+    private List<StructElement> getChildDocs(long iddocParent) throws PresentationException, IndexUnreachableException {
+        String query = SolrConstants.IDDOC_PARENT + ":" + iddocParent;
+        SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
+        if(solrDocs != null) {
+            return solrDocs.stream()
+            .filter(doc -> doc.getFieldValue(SolrConstants.IDDOC) != null)
+            .map(doc -> {
+                try {
+                    return new StructElement(Long.parseLong((String)doc.getFieldValue(SolrConstants.IDDOC)), doc);
+                } catch (NumberFormatException | IndexUnreachableException e) {
+                    logger.error("Failed to create struct element from " + doc);
+                    return null;
+                }
+            })
+            .filter(ele -> ele != null)
+            .collect(Collectors.toList());
+        } else {
+            return Collections.EMPTY_LIST;
+        }
     }
 
     /**
@@ -251,13 +356,11 @@ public class ManifestResource extends AbstractResource {
      * @throws URISyntaxException
      */
     private URI getManifestUrl(String baseUrl, String pi) throws URISyntaxException {
-        return new URI(baseUrl + "/manifests/" + pi + "/");
+        return new URI(baseUrl + "/" + pi + "/");
     }
 
     protected String getPath() {
         return "/manifests";
     }
-    
-    
 
 }

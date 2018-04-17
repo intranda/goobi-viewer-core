@@ -65,6 +65,7 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private String context = null;
 	private List<Service> service = new PropertyList<Service>();
 	private List<LinkingContent> seeAlso = new PropertyList<>();
+	private List<IPresentationModelElement> within = new PropertyList<>();
 	
 	public AbstractPresentationModelElement(URI id) {
 		this.id = id;
@@ -303,10 +304,11 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
      * @return the within
      */
     public List<IPresentationModelElement> getWithin() {
-        return null;
+        return within.isEmpty() ? null : within;
     }
     
-    public void addWithin(IPresentationModelElement collection) {
+    public void addWithin(IPresentationModelElement within) {
+        this.within.add(within);
     }
 
 }

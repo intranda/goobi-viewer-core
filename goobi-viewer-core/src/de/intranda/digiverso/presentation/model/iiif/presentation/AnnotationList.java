@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 
 /**
  * @author Florian Alpers
@@ -29,7 +30,7 @@ public class AnnotationList extends AbstractPresentationModelElement implements 
     
      private static final String TYPE = "sc:AnnotationList";
      private final List<AbstractAnnotation> resources = new ArrayList<>();
-     private IPresentationModelElement within;
+     private List<IPresentationModelElement> within = new PropertyList<>();
      
     /**
      * @param id
@@ -60,7 +61,11 @@ public class AnnotationList extends AbstractPresentationModelElement implements 
     /**
      * @return the within
      */
-    public IPresentationModelElement getWithin() {
-        return within;
+    public List<IPresentationModelElement> getWithin() {
+        return within.isEmpty() ? null : within;
+    }
+
+    public void addWithin(IPresentationModelElement within) {
+        this.within.add(within);
     }
 }

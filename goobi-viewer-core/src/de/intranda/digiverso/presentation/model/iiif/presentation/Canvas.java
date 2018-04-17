@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 
 /**
  * @author Florian Alpers
@@ -31,7 +32,6 @@ public class Canvas extends AbstractPresentationModelElement implements IPresent
     
     private int width;
     private int height;
-    private Sequence within;
     private final List<AbstractAnnotation> images = new ArrayList<>();
     private final List<AnnotationList> otherContent = new ArrayList<>();
     
@@ -76,20 +76,6 @@ public class Canvas extends AbstractPresentationModelElement implements IPresent
      */
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    /**
-     * @return the within
-     */
-    public Sequence getWithin() {
-        return within;
-    }
-    
-    /**
-     * @param within the within to set
-     */
-    public void setWithin(Sequence within) {
-        this.within = within;
     }
     
     /**

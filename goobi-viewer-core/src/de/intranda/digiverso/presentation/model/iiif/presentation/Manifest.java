@@ -31,7 +31,6 @@ public class Manifest extends AbstractPresentationModelElement implements IPrese
     public static final String TYPE = "sc:manifest";
     public final List<Sequence> sequences = new ArrayList<>(1);
     public final List<Range> structures = new ArrayList<>(1);
-    public final List<IPresentationModelElement> within = new ArrayList<>();
     public Date navDate = null;
     
     /**
@@ -78,18 +77,6 @@ public class Manifest extends AbstractPresentationModelElement implements IPrese
             this.structures.set(0, range);
         }
     }
-    
-    /**
-     * @return the within
-     */
-    public List<IPresentationModelElement> getWithin() {
-        return within;
-    }
-    
-    public void addWithin(Collection collection) {
-        this.within.add(collection);
-    }
-    
     /**
      * @return the navDate
      */

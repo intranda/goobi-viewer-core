@@ -30,6 +30,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.content.Linkin
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageContentLinkSerializer;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 import de.intranda.digiverso.presentation.servlets.rest.services.Service;
@@ -122,5 +123,8 @@ public interface IPresentationModelElement {
 	 */
 	URI getId();
 
+    @JsonSerialize(using = ContentLinkSerializer.class)
+	List<IPresentationModelElement> getWithin();
+	
 
 }

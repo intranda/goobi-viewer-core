@@ -333,6 +333,26 @@ public final class SolrSearchIndex {
 
         return null;
     }
+    
+    /**
+    *   Returns all SolrDocuments matching the given query. If no documents were found, null is returned
+    *
+    * @param query
+    * @param fieldList
+    * @return
+    * @throws PresentationException
+    * @throws IndexUnreachableException
+    * @should return SolrDocumentList containing all hits, or null if no hits are found
+    */
+   public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+       logger.trace("getDocs: {}", query);
+       SolrDocumentList hits = search(query, fieldList);
+       if (hits.getNumFound() > 0) {
+           return hits;
+       }
+
+       return null;
+   }
 
     /**
      *

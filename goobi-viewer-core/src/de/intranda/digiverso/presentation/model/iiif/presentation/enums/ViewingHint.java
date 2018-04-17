@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.model.iiif.presentation.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Part of the IIIF presentation api
  * 
@@ -28,8 +30,26 @@ public enum ViewingHint {
     individuals,
     paged,
     continuous,
-    multipart,
-    nonpaged,
+    multipart("multi-part"),
+    nonpaged("non-paged"),
     top,
-    facingpages;
+    facingpages("facing-pages");
+    
+    private final String label;
+    
+    private ViewingHint(String label) {
+        this.label = label;
+    }
+    
+    private ViewingHint() {
+        this.label = this.name();
+    }
+    
+    /**
+     * @return the label
+     */
+    @JsonValue
+    public String getLabel() {
+        return label;
+    }
 }
