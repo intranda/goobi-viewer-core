@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingDirection;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 
 /**
  * @author Florian Alpers
@@ -27,14 +29,17 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Ann
  */
 public class Sequence extends AbstractPresentationModelElement implements IPresentationModelElement {
 
+    private static final String TYPE = "sc:sequence";
+
+    
     private final List<Canvas> canvases = new ArrayList<>();
+
     
     /**
      * @param id
      */
     public Sequence(URI id) {
         super(id);
-        // TODO Auto-generated constructor stub
     }
 
     /* (non-Javadoc)
@@ -42,8 +47,7 @@ public class Sequence extends AbstractPresentationModelElement implements IPrese
      */
     @Override
     public String getType() {
-        // TODO Auto-generated method stub
-        return null;
+        return TYPE;
     }
     
     /**
@@ -55,6 +59,16 @@ public class Sequence extends AbstractPresentationModelElement implements IPrese
     
     public void addCanvas(Canvas image) {
         this.canvases.add(image);
+    }
+    
+    /*TODO: viewinghint dependent on configuration or metadata*/
+    public ViewingHint getViewingHint() {
+        return ViewingHint.paged;
+    }
+    
+    /*TODO: viewingdirection dependent on configuration or metadata*/
+    public ViewingDirection getViewingDirection() {
+        return ViewingDirection.LEFT_TO_RIGHT;
     }
 
 }

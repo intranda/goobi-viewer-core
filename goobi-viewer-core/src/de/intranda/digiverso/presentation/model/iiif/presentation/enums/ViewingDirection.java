@@ -13,51 +13,32 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.model.iiif.presentation.content;
+package de.intranda.digiverso.presentation.model.iiif.presentation.enums;
 
-import java.net.URI;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * @author florian
+ * @author Florian Alpers
  *
  */
-@JsonPropertyOrder({"@id", "@type"})
-public interface IContent {
+public enum ViewingDirection {
 
-    @JsonProperty("@type")
-	public String getType();
-
-	/**
-	 * @return the width
-	 */
-	public Integer getWidth();
-
-	/**
-	 * @return the height
-	 */
-	public Integer getHeight();
-
-	/**
-	 * @return the format
-	 */
-	public Format getFormat();
-
-	/**
-	 * @return the id
-	 */
-	@JsonProperty("@id")
-	public URI getId();
-	
-	/**
-	 * 
-	 * @return the label
-	 */
-	public IMetadataValue getLabel();
-
-}
+    LEFT_TO_RIGHT("left-to-right"),
+    RIGHT_TO_LEFT("right-to-left"),
+    TOP_TO_BOTTOM("top-to-bottom"),
+    BOTTOM_TO_TOP("bottom-to-top");
+    
+    private String label;
+    
+    private ViewingDirection(String label) {
+        this.label = label;
+    }
+    
+    /**
+     * @return the label
+     */
+    @JsonValue
+    public String getLabel() {
+        return label;
+    }
+} 
