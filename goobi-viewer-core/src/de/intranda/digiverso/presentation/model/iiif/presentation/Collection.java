@@ -16,16 +16,17 @@
 package de.intranda.digiverso.presentation.model.iiif.presentation;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 
 /**
@@ -37,9 +38,11 @@ public class Collection extends AbstractPresentationModelElement implements IPre
 
     public static final String TYPE = "sc:collection";
     
-    public final List<Collection> collections = new ArrayList<>();
-    public final List<Manifest> manifests = new ArrayList<>();
-    public final List<Collection> within = new ArrayList<>();
+    @JsonIgnore
+    public final List<Collection> collections = new PropertyList<>();
+    @JsonIgnore
+    public final List<Manifest> manifests = new PropertyList<>();
+    public final List<IPresentationModelElement> within = new PropertyList<>();
     public Date navDate = null;
     
     /**
@@ -53,8 +56,9 @@ public class Collection extends AbstractPresentationModelElement implements IPre
      * @return the collections
      */
     @JsonSerialize(using = ContentLinkSerializer.class)
+    @JsonIgnore
     public List<Collection> getCollections() {
-        return collections;
+        return collections.isEmpty() ? null : collections;
     }
     
     public void addCollection(Collection collection) {
@@ -64,8 +68,10 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     /**
      * @return the manifests
      */
+    @JsonSerialize(using = ContentLinkSerializer.class)
+    @JsonIgnore
     public List<Manifest> getManifests() {
-        return manifests;
+        return manifests.isEmpty() ? null : manifests;
     }
     
     public void addManifest(Manifest manifest) {
@@ -76,12 +82,20 @@ public class Collection extends AbstractPresentationModelElement implements IPre
      * @return the within
      */
     @JsonSerialize(using = URLOnlySerializer.class)
-    public List<Collection> getWithin() {
-        return within == null || within.isEmpty() ? null : within;
+    public List<IPresentationModelElement> getWithin() {
+        return within.isEmpty() ? null : within;
     }
     
     public void addWithin(Collection collection) {
         this.within.add(collection);
+    }
+    
+    @JsonSerialize(using = ContentLinkSerializer.class)
+    public List<IPresentationModelElement> getMembers() {
+        List<IPresentationModelElement> list = new PropertyList<>();
+        list.addAll(collections);
+        list.addAll(manifests);
+        return list;
     }
     
     /**
@@ -107,6 +121,7 @@ public class Collection extends AbstractPresentationModelElement implements IPre
     public String getType() {
         return TYPE;
     }
+
 
 
 }

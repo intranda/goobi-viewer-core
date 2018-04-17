@@ -13,16 +13,10 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
+package de.intranda.digiverso.presentation.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import de.intranda.digiverso.presentation.servlets.rest.services.Service;
 
@@ -30,34 +24,14 @@ import de.intranda.digiverso.presentation.servlets.rest.services.Service;
  * @author Florian Alpers
  *
  */
-public class PropertyList<T> extends ArrayList<T>{
+public class TestService implements Service {
 
-    /**
-     * 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.servlets.rest.services.Service#getContext()
      */
-    private static final long serialVersionUID = -4452705676844989719L;
-
-    /**
-     * @param collect
-     */
-    public PropertyList(List<T> collect) {
-        super(collect);
-    }
-
-    /**
-     * 
-     */
-    public PropertyList() {
-        super();
-    }
-
-    @JsonValue
-    public Object getValue() {
-         if(this.size() == 1) {
-            return this.get(0);
-        } else {
-            return new ArrayList<T>(this);
-        }
+    @Override
+    public URI getContext() throws URISyntaxException {
+        return new URI("test");
     }
 
 }

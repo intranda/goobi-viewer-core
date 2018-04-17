@@ -31,7 +31,7 @@ public class Manifest extends AbstractPresentationModelElement implements IPrese
     public static final String TYPE = "sc:manifest";
     public final List<Sequence> sequences = new ArrayList<>(1);
     public final List<Range> structures = new ArrayList<>(1);
-    public final List<Collection> within = new ArrayList<>();
+    public final List<IPresentationModelElement> within = new ArrayList<>();
     public Date navDate = null;
     
     /**
@@ -82,7 +82,7 @@ public class Manifest extends AbstractPresentationModelElement implements IPrese
     /**
      * @return the within
      */
-    public List<Collection> getWithin() {
+    public List<IPresentationModelElement> getWithin() {
         return within;
     }
     

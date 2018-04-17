@@ -16,10 +16,16 @@
 package de.intranda.digiverso.presentation.model.iiif.presentation.content;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
@@ -30,6 +36,8 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
  */
 @JsonInclude(Include.NON_EMPTY)
 public class ImageContent implements IContent {
+    
+    private static final Logger logger = LoggerFactory.getLogger(ImageContent.class);
 	
 	private final String TYPE = "dcTypes:Image";
 	
@@ -39,11 +47,34 @@ public class ImageContent implements IContent {
 	private Format format;
 	private ImageInformation service;
 	
-	public ImageContent(URI id) {
+	public ImageContent(URI id, boolean includeService) {
 		this.id = id;
+		if(includeService) {		    
+		    this.service = deductService(id).orElse(null);
+		}
 	}
 	
-	/* (non-Javadoc)
+	/**
+     * @param id2
+     * @return
+	 * @throws URISyntaxException 
+     */
+    private Optional<ImageInformation> deductService(URI id){
+        if (id != null && IIIFUrlHandler.isIIIFImageUrl(id.toString())) {
+            try {
+                URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(id.toString()));
+                ImageInformation info = new ImageInformation(imageInfoURI.toString());
+                return Optional.ofNullable(info);
+            } catch (URISyntaxException e) {
+                logger.error(e.toString(), e);
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /* (non-Javadoc)
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getType()
 	 */
 	@Override

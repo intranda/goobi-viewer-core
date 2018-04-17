@@ -82,8 +82,8 @@ public class ContentLinkSerializer extends JsonSerializer<List<IPresentationMode
 
         if (element.getService() != null) {
             
-            generator.writeObjectField("service", element.getService());
-            
+            generator.writeObjectField("service", element.getService(CollectionExtent.class));
+//            
 //            List<Service> services =
 //                    element.getService().stream().filter(service -> (service instanceof CollectionExtent)).collect(Collectors.toList());
 //            if (!services.isEmpty()) {

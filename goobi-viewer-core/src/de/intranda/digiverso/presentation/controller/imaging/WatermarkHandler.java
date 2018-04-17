@@ -105,10 +105,12 @@ public class WatermarkHandler {
 
             StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
 
-            urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format).append("?");
+            urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format);
 
-            watermarkId.ifPresent(footerId -> urlBuilder.append("watermarkId=").append(footerId).append("&"));
-            watermarkText.ifPresent(text -> urlBuilder.append("watermarkText=").append(text));
+            UrlParameterSeparator separator = new UrlParameterSeparator();
+            
+            watermarkId.ifPresent(footerId -> urlBuilder.append(separator.getChar()).append("watermarkId=").append(footerId));
+            watermarkText.ifPresent(text -> urlBuilder.append(separator.getChar()).append("watermarkText=").append(text));
 
             return Optional.of(urlBuilder.toString());
         } else {

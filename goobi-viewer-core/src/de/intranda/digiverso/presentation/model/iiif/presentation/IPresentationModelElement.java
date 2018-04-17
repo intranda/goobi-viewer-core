@@ -16,7 +16,10 @@
 package de.intranda.digiverso.presentation.model.iiif.presentation;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -84,21 +87,40 @@ public interface IPresentationModelElement {
 	/**
 	 * @return the related
 	 */
-	LinkingContent getRelated();
-
+	List<LinkingContent> getRelated();
+	
 	/**
 	 * @return the rendering
 	 */
-	LinkingContent getRendering();
+	List<LinkingContent> getRendering();
 	
 	/**
-	 * @return one or more services
+	 * @return one or more services - may be null!
 	 */
-	PropertyList<Service> getService();
+	List<Service> getService();
+	
+	List<LinkingContent> getSeeAlso();
 
+	/**
+	 * 
+	 * @param allowedClasses   All classes which should be included in the service list
+	 * @return                 A PropertyList of all services of one of the given classes
+	 */
+	default List<Service> getService(Class... allowedClasses) {
+	    List<Class> allowedClassesList = Arrays.asList(allowedClasses);
+	    if(this.getService() != null) {
+	        return new PropertyList(this.getService().stream()
+	        .filter(service -> allowedClassesList.contains(service.getClass()))
+	        .collect(Collectors.toList()));
+	    } else {
+	        return null;
+	    }
+	}
+	
 	/**
 	 * @return the id
 	 */
 	URI getId();
+
 
 }

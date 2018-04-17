@@ -44,6 +44,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.TestService;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.CollectionExtent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
@@ -70,23 +71,15 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
 @Path("/collections")
 @ViewerRestServiceBinding
 @IIIFPresentationBinding
-public class CollectionResource {
+public class CollectionResource extends AbstractResource{
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionResource.class);
 
     private static Map<String, String> facetFieldMap = new HashMap<>();
     private static Map<String, CollectionView> collectionViewMap = new HashMap<>();
 
-    private String ATTRIBUTION = "Provided by intranda GmbH";
-    public final static String NUM_MANIFESTS_LABEL = "volumes";
-    public final static String NUM_SUBCOLLECTIONS_LABEL = "subCollections";
     public final static String RSS_FEED_LABEL = "Rss feed";
     public final static String RSS_FEED_FORMAT = "Rss feed";
-
-    @Context
-    private HttpServletRequest servletRequest;
-    @Context
-    private HttpServletResponse servletResponse;
 
     /**
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
@@ -218,31 +211,24 @@ public class CollectionResource {
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if(thumbURI != null) {                    
-                    ImageContent thumb = new ImageContent(thumbURI);
-                    if (IIIFUrlHandler.isIIIFImageUrl(thumbURI.toString())) {
-                        URI imageInfoURI = new URI(IIIFUrlHandler.getIIIFImageBaseUrl(thumbURI.toString()));
-                        ImageInformation info = new ImageInformation(imageInfoURI.toString());
-                        thumb.setService(info);
-                    }
+                    ImageContent thumb = new ImageContent(thumbURI, true);
                     collection.setThumbnail(thumb);
                 }
 
                 long volumes = baseElement.getNumberOfVolumes();
                 int subCollections = baseElement.getChildren().size();
-                collection.getService().addItem(new CollectionExtent(subCollections, (int)volumes));
-//                collection.addMetadata(new Metadata(NUM_MANIFESTS_LABEL, Long.toString(volumes)));
-//                collection.addMetadata(new Metadata(NUM_SUBCOLLECTIONS_LABEL, Integer.toString(subCollections)));
+                collection.addService(new CollectionExtent(subCollections, (int)volumes));
                 
                 LinkingContent rss = new LinkingContent(absolutize(baseElement.getRssUrl()), new SimpleMetadataValue(RSS_FEED_LABEL));
-                collection.setRelated(rss);
+                collection.addRelated(rss);
 
                 LinkingContent viewer =
                         new LinkingContent(absolutize(collectionView.getCollectionUrl(baseElement)), new SimpleMetadataValue(baseElement.getName()));
-                collection.setRendering(viewer);
+                collection.addRendering(viewer);
 
             } else {
                 collection.setViewingHint(ViewingHint.top);
-                
+//                collection.addService(new CollectionExtent(collectionView.getVisibleDcElements().size(), 0));
             }
 
         } catch (URISyntaxException e) {
@@ -281,51 +267,6 @@ public class CollectionResource {
         }
     }
 
-    /**
-     * @param language
-     * @return
-     */
-    public Locale getLocale(String language) {
-        Locale locale = Locale.forLanguageTag(language);
-        if (locale == null) {
-            locale = Locale.ENGLISH;
-        }
-        return locale;
-    }
-
-    public String getServletURI() {
-        return ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
-        //        return servletRequest.getContextPath();
-    }
-
-    public URI absolutize(URI uri) throws URISyntaxException {
-        if (uri == null || uri.isAbsolute()) {
-            return uri;
-        } else {
-            return new URI(getServletURI() + uri.toString());
-        }
-    }
-    
-    /**
-     * @param rssUrl
-     * @return
-     * @throws URISyntaxException 
-     */
-    private URI absolutize(String url) throws URISyntaxException {
-        if(url != null) {
-            url = url.replaceAll("\\s", "+");
-        }
-        return absolutize(new URI(url));
-    }
-
-    /**
-     * @return
-     */
-    public String getBaseUrl() {
-        String url = servletRequest.getRequestURL().toString();
-        url = url.substring(0, url.indexOf("/collections") + "/collections".length());
-        return url;
-    }
 
     /**
      * @param collectionField
@@ -363,5 +304,9 @@ public class CollectionResource {
             sb.append(baseCollectionName).append("/");
         }
         return new URI(sb.toString());
+    }
+    
+    protected String getPath() {
+        return  "/collections";
     }
 }

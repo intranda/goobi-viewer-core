@@ -485,7 +485,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getCollection() {
         return this.getMetadataValue(SolrConstants.DC);
     }
-
+    
+    public List<String> getCollections() {
+        return this.getMetadataValues(SolrConstants.DC);
+    }
+    
     /**
      * @return the fulltextAvailable
      */

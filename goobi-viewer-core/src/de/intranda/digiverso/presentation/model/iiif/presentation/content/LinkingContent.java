@@ -100,5 +100,12 @@ public class LinkingContent implements IContent {
     public IMetadataValue getLabel() {
         return label;
     }
+    
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(IMetadataValue label) {
+        this.label = label;
+    }
 
 }

@@ -18,10 +18,14 @@ package de.intranda.digiverso.presentation.model.iiif.presentation;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
@@ -40,6 +44,7 @@ import de.intranda.digiverso.presentation.servlets.rest.services.Service;
  *
  */
 @JsonPropertyOrder({"@context", "@id", "@type"})
+@JsonInclude(Include.NON_EMPTY)
 public abstract class AbstractPresentationModelElement implements IPresentationModelElement {
 	
     
@@ -49,16 +54,17 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private final URI id;
 	private IMetadataValue label;
 	private IMetadataValue description;
-	private List<Metadata> metadata;
+	private List<Metadata> metadata = new PropertyList<Metadata>();
 	private ImageContent thumbnail;
 	private IMetadataValue attribution;
 	private URI license;
 	private ImageContent logo;
 	private ViewingHint viewingHint;
-	private LinkingContent related;
-	private LinkingContent rendering;
+	private List<LinkingContent> related = new PropertyList<>();
+	private List<LinkingContent> rendering = new PropertyList<>();
 	private String context = null;
-	private PropertyList<Service> service = new PropertyList<Service>();
+	private List<Service> service = new PropertyList<Service>();
+	private List<LinkingContent> seeAlso = new PropertyList<>();
 	
 	public AbstractPresentationModelElement(URI id) {
 		this.id = id;
@@ -122,15 +128,9 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 */
 	@Override
 	public List<Metadata> getMetadata() {
-		if(metadata == null)  {
-			return Collections.EMPTY_LIST;
-		}
-		return metadata;
+		return this.metadata.isEmpty() ? null : this.metadata;
 	}
 	public void addMetadata(Metadata md)  {
-		if(this.metadata == null) {
-			this.metadata = new ArrayList<>();
-		}
 		this.metadata.add(md);
 	}
 
@@ -221,31 +221,48 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getRelated()
 	 */
 	@Override
-	public LinkingContent getRelated() {
-		return related;
+	public List<LinkingContent> getRelated() {
+		return related.isEmpty() ? null : related;
 	}
 
 	/**
 	 * @param related the related to set
 	 */
-	public void setRelated(LinkingContent related) {
-		this.related = related;
+	public void addRelated(LinkingContent related) {
+		this.related.add(related);
 	}
 
 	/* (non-Javadoc)
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getRendering()
 	 */
 	@Override
-	public LinkingContent getRendering() {
-		return rendering;
+	public List<LinkingContent> getRendering() {
+		return rendering.isEmpty() ? null : rendering;
 	}
 
 	/**
 	 * @param rendering the rendering to set
 	 */
-	public void setRendering(LinkingContent rendering) {
-		this.rendering = rendering;
+	public void addRendering(LinkingContent rendering) {
+		this.rendering.add(rendering);
 	}
+	
+	   /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getRendering()
+     */
+    @Override
+    public List<LinkingContent> getSeeAlso() {
+        return seeAlso.isEmpty() ? null : seeAlso;
+    }
+
+    /**
+     * @param rendering the rendering to set
+     */
+    public void addSeeAlso(LinkingContent seeAlso) {
+        this.seeAlso.add(seeAlso);
+    }
+	
+	
 
 	/* (non-Javadoc)
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getId()
@@ -260,8 +277,36 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement#getService()
 	 */
 	@Override
-	public PropertyList<Service> getService() {
-	    return service;
+	public List<Service> getService() {
+	    return service.isEmpty() ? null : service;
 	}
+	
+	public void addService(Service service) {
+	    this.service.add(service);
+	}
+	
+    /**
+     * @return the navDate
+     */
+    @JsonFormat(pattern = DATETIME_FORMAT)
+    public Date getNavDate() {
+        return null;
+    }
+
+    /**
+     * @param navDate the navDate to set
+     */
+    public void setNavDate(Date navDate) {
+    }
+    
+    /**
+     * @return the within
+     */
+    public List<IPresentationModelElement> getWithin() {
+        return null;
+    }
+    
+    public void addWithin(IPresentationModelElement collection) {
+    }
 
 }
