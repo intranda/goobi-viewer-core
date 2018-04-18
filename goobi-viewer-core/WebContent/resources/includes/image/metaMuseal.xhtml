@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	<composite:interface />
+    
+	<composite:implementation>
+        <f:view contentType="text/html" encoding="utf-8">
+            <nav id="metaMusealWrapper">
+                <ul id="metadataTabs" class="nav nav-tabs">
+                    <c:forEach items="#{metadataBean.metadataElementList}" var="metadataElement">
+                        <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
+                            <c:forEach items="#{metadataElement.metadataTypes}" var="type">
+                                <ui:fragment rendered="#{metadataElement.hasMetadata()}">
+	                                <li class="active">
+	                                    <a href="##{msg[type.tabName]}" data-toggle="tab">#{msg[type.tabName]}</a>
+	                                </li>
+                                </ui:fragment>
+                            </c:forEach>
+                        </h:panelGroup>
+                    </c:forEach>
+
+                    <c:forEach items="#{metadataBean.events}" var="event" varStatus="status">
+                        <li>
+                            <a href="#event-#{status.count}" data-toggle="tab">#{event.label}</a>
+                        </li>
+                    </c:forEach>
+                </ul>
+
+                <div class="tab-content">
+                    <c:forEach items="#{metadataBean.metadataElementList}" var="metadataElement">
+                        <h:panelGroup rendered="#{fn:length(metadataElement.metadataList) > 0}">
+                            <c:forEach items="#{metadataElement.metadataTypes}" var="type">
+                            	<ui:fragment rendered="#{metadataElement.hasMetadata()}">
+	                                <div class="tab-pane fade in active" id="#{msg[type.tabName]}">
+	                                    <c:forEach items="#{metadataElement.metadataList}" var="metadata">
+	                                        <h:panelGroup rendered="#{!metadata.blank and metadata.type == type.type}">
+	                                            <dl class="dl-horizontal">
+	                                                <dt>#{msg[metadata.label]}:</dt>
+	                                                <h:panelGroup>
+	                                                    <dd>
+	                                                        <ui:repeat value="#{metadata.values}" var="val">
+	                                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+	                                                                <f:param value="#{val.getComboValueShort(0)}" />
+	                                                                <f:param value="#{val.getComboValueShort(1)}" />
+	                                                                <f:param value="#{val.getComboValueShort(2)}" />
+	                                                                <f:param value="#{val.getComboValueShort(3)}" />
+	                                                                <f:param value="#{val.getComboValueShort(4)}" />
+	                                                                <f:param value="#{val.getComboValueShort(5)}" />
+	                                                                <f:param value="#{val.getComboValueShort(6)}" />
+	                                                                <f:param value="#{val.getComboValueShort(7)}" />
+	                                                                <f:param value="#{val.getComboValueShort(8)}" />
+	                                                                <f:param value="#{val.getComboValueShort(9)}" />
+	                                                            </h:outputFormat>
+	                                                            <br />
+	                                                        </ui:repeat>
+	                                                    </dd>
+	                                                </h:panelGroup>
+	                                            </dl>
+	                                        </h:panelGroup>
+	                                    </c:forEach>
+	                                </div>
+	                            </ui:fragment>
+                            </c:forEach>
+                        </h:panelGroup>
+                    </c:forEach>
+
+                    <!-- META MUSEAL EVENTS -->
+                    <c:forEach items="#{metadataBean.events}" var="event" varStatus="status">
+                        <div class="tab-pane fade" id="event-#{status.count}">
+                            <c:forEach items="#{event.metadata}" var="metadata">
+                                <h:panelGroup rendered="#{!metadata.blank}">
+                                    <dl class="dl-horizontal">
+                                        <dt>#{msg[metadata.label]}:</dt>
+                                        <h:panelGroup>
+                                            <dd>
+                                                <ui:repeat value="#{metadata.values}" var="val">
+                                                    <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
+                                                        <f:param value="#{val.getComboValueShort(0)}" />
+                                                        <f:param value="#{val.getComboValueShort(1)}" />
+                                                        <f:param value="#{val.getComboValueShort(2)}" />
+                                                        <f:param value="#{val.getComboValueShort(3)}" />
+                                                        <f:param value="#{val.getComboValueShort(4)}" />
+                                                        <f:param value="#{val.getComboValueShort(5)}" />
+                                                        <f:param value="#{val.getComboValueShort(6)}" />
+                                                        <f:param value="#{val.getComboValueShort(7)}" />
+                                                        <f:param value="#{val.getComboValueShort(8)}" />
+                                                        <f:param value="#{val.getComboValueShort(9)}" />
+                                                    </h:outputFormat>
+                                                    <br />
+                                                </ui:repeat>
+                                            </dd>
+                                        </h:panelGroup>
+                                    </dl>
+                                </h:panelGroup>
+                            </c:forEach>
+                        </div>
+                    </c:forEach>
+                </div>
+            </nav>
+            
+            <div class="clearfix"></div>
+        </f:view>
+    </composite:implementation>
+</ui:composition>

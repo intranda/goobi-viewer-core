@@ -1,0 +1,41 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <!-- AUDIO CONTROLS -->
+    <viewerComponent:imageControls />
+
+    <!-- VIEW AUDIO -->
+    <div style="text-align: center">
+        <audio 
+            id="audio_container" 
+            autoplay="autoplay" 
+            controls="controls" 
+            style="margin-left: auto; margin-right: auto; margin-top: 15px;">
+            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('ogg')}" type="audio/ogg" />
+            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mpeg" />
+            <source src="#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}" type="audio/mp3" />
+            <object type="application/x-shockwave-flash" data="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" width="200" height="20">
+                <param name="movie" value="#{navigationHelper.applicationUrl}resources/components/player_mp3.swf" />
+                <param name="flashvars" value="mp3=#{activeDocumentBean.viewManager.currentPage.getMediaUrl('mpeg3')}&amp;autoplay=1" />
+            </object>
+        </audio>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <!--  PAGINATOR -->
+    <viewerComponent:simplePaginator 
+        itemCount="#{activeDocumentBean.viewManager.imagesCount}" 
+        itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
+        urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/" 
+        urlSuffix="#topDocAnchor" />
+</ui:composition>

@@ -1,0 +1,106 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:jsf="http://xmlns.jcp.org/jsf" 
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+
+    <!-- OPEN SEADRAGON -->
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
+
+    <a name="topDocAnchor"></a>
+    
+    <h:outputText value="#{activeDocumentBean.viewManager.linkForDFGViewer}" id="imageNumber" styleClass="hiddenDfgViewerLink" style="display:none;" />
+
+    <!-- INAGE CONTROLS -->
+    <viewerComponent:imageControls />
+
+    <div id="image_container" class="hidden-xs hidden-sm">
+        <!-- AJAX Loader -->
+        <div id="AJAXLoader"></div>
+        
+        <!-- MAP -->
+        <div id="map"></div>
+        
+        <script type="text/javascript" rel="nofollow">
+        	//<![CDATA[
+            var imageMap = $('#map');
+            var configViewer = {
+            	global: {
+                	footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewImage')},
+                	adaptContainerHeight: true,
+                	persistZoom: #{configurationBean.rememberImageZoom},
+                	persistRotation: #{configurationBean.rememberImageRotation},
+                	persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
+                },
+                image: {
+                	mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
+                    tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+                    baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl('viewImage')}",
+                    highlightCoords: [
+        				{
+                			name: "searchHighlighting",
+                			coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
+                			displayTooltip: false,
+                			pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
+                		}
+            		],
+            		tileUrl: null
+            	}
+            };
+            
+        	var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
+            var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
+            var openSeadragonVisible = $( "#image_container" ).is( ":visible" )
+            
+        	$(document).ready(function() {
+        		if ( access && openSeadragonVisible) {
+        			// console.log("load image with config ", configViewer);
+        			viewImage.init( configViewer ).then(function(osViewer) {
+        				//TODO: Hide loader?
+        			}).catch(function(error){
+        				console.error( 'viewImage.xhtml - viewImage.init: Error opening image' );
+        				imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
+        			});
+        		} else if(openSeadragonVisible){
+        			imageMap.html( accessDeniedMessage );
+        		}
+        	})
+        	//]]>   
+        </script>
+    </div>
+
+    <!-- mobile image view -->
+    <div id="image_container_mobile" class="hidden-lg hidden-md"></div>
+
+    <script type="text/javascript">
+    	var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
+    	var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
+    	var staticImage = '<img src="#{activeDocumentBean.viewManager.currentImageUrl}" alt="current image" class="img-responsive" />';
+
+    	if( $( "#image_container_mobile" ).is( ":visible" ) ) {
+    		if ( access ) {
+    			$( "#image_container_mobile" ).append( staticImage );
+    		}
+    		else {
+    			$( "#image_container_mobile" ).append( accessDeniedMessage );
+    		}
+    	}
+    </script>
+
+    <div class="clearfix"></div>
+
+    <!--  PAGINATOR -->
+    <viewerComponent:simplePaginator 
+        itemCount="#{activeDocumentBean.viewManager.imagesCount}" 
+        itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
+        urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/" 
+        urlSuffix="#topDocAnchor" />
+</ui:composition>
