@@ -58,7 +58,7 @@
 								    var imageMap = $('#map');
 									var configViewer = {
 									    global: {
-									        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewImage')},
+									        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
 									        adaptContainerHeight: true,
 									        persistZoom: #{configurationBean.rememberImageZoom},
 								            persistRotation: #{configurationBean.rememberImageRotation},
@@ -67,16 +67,14 @@
 									    image: {
 									        mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
  									        tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
-									        baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl('viewImage')}",
+									        baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
 									        highlightCoords: [{
 									                name: "searchHighlighting",
 									                coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
 									                displayTooltip: false,
 									                pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
 									            }
-									        ],
-									        tileUrl: null
-									    }
+									        ]									    }
 									};
 									var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
 									var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
