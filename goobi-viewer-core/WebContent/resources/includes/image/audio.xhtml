@@ -10,11 +10,8 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-    <!-- AUDIO CONTROLS -->
-    <viewerComponent:imageControls />
-
     <!-- VIEW AUDIO -->
-    <div style="text-align: center">
+    <div id="audioContainer" class="view-object__audio">
         <audio 
             id="audio_container" 
             autoplay="autoplay" 
@@ -29,13 +26,4 @@
             </object>
         </audio>
     </div>
-
-    <div class="clearfix"></div>
-
-    <!--  PAGINATOR -->
-    <viewerComponent:simplePaginator 
-        itemCount="#{activeDocumentBean.viewManager.imagesCount}" 
-        itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
-        urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/" 
-        urlSuffix="#topDocAnchor" />
 </ui:composition>

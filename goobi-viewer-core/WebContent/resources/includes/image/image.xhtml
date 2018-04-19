@@ -15,26 +15,21 @@
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
 
-    <a name="topDocAnchor"></a>
-    
-    <h:outputText value="#{activeDocumentBean.viewManager.linkForDFGViewer}" id="imageNumber" styleClass="hiddenDfgViewerLink" style="display:none;" />
-
-    <!-- INAGE CONTROLS -->
-    <viewerComponent:imageControls />
-
-    <div id="image_container" class="hidden-xs hidden-sm">
+    <!-- IMAGE CONTAINER -->
+    <div id="imageContainer" class="view-object__image">
         <!-- AJAX Loader -->
-        <div id="AJAXLoader"></div>
+        <div id="AJAXLoader" class="view-object__image-loader"></div>
         
         <!-- MAP -->
-        <div id="map"></div>
+        <div id="imageMap" class="view-object__image-map"></div>
         
         <script type="text/javascript" rel="nofollow">
         	//<![CDATA[
-            var imageMap = $('#map');
+            var imageMap = $('#imageMap');
             var configViewer = {
             	global: {
-                	footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewImage')},
+            		divId: 'imageMap',
+                	footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
                 	adaptContainerHeight: true,
                 	persistZoom: #{configurationBean.rememberImageZoom},
                 	persistRotation: #{configurationBean.rememberImageRotation},
@@ -43,7 +38,7 @@
                 image: {
                 	mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
                     tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
-                    baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl('viewImage')}",
+                    baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
                     highlightCoords: [
         				{
                 			name: "searchHighlighting",
@@ -51,14 +46,13 @@
                 			displayTooltip: false,
                 			pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
                 		}
-            		],
-            		tileUrl: null
+            		]
             	}
             };
             
         	var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
             var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
-            var openSeadragonVisible = $( "#image_container" ).is( ":visible" )
+            var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" )
             
         	$(document).ready(function() {
         		if ( access && openSeadragonVisible) {
@@ -77,30 +71,21 @@
         </script>
     </div>
 
-    <!-- mobile image view -->
-    <div id="image_container_mobile" class="hidden-lg hidden-md"></div>
+    <!-- MOBILE IMAGE VIEW -->
+    <div id="imageContainerMobile" class="view-object__image-mobile"></div>
 
     <script type="text/javascript">
     	var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
     	var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
     	var staticImage = '<img src="#{activeDocumentBean.viewManager.currentImageUrl}" alt="current image" class="img-responsive" />';
 
-    	if( $( "#image_container_mobile" ).is( ":visible" ) ) {
+    	if( $( "#imageContainerMobile" ).is( ":visible" ) ) {
     		if ( access ) {
-    			$( "#image_container_mobile" ).append( staticImage );
+    			$( "#imageContainerMobile" ).append( staticImage );
     		}
     		else {
-    			$( "#image_container_mobile" ).append( accessDeniedMessage );
+    			$( "#imageContainerMobile" ).append( accessDeniedMessage );
     		}
     	}
     </script>
-
-    <div class="clearfix"></div>
-
-    <!--  PAGINATOR -->
-    <viewerComponent:simplePaginator 
-        itemCount="#{activeDocumentBean.viewManager.imagesCount}" 
-        itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
-        urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/" 
-        urlSuffix="#topDocAnchor" />
 </ui:composition>

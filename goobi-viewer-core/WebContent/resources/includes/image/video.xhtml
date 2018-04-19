@@ -10,11 +10,8 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-    <!-- VIDEO CONTROLS -->
-    <viewerComponent:imageControls />
-
     <!-- VIEW VIDEO -->
-    <div style="text-align: center">
+    <div id="videoContainer" class="view-object__video">
         <video 
             id="video_container" 
             width="#{activeDocumentBean.viewManager.currentPage.videoWidth}" 
@@ -45,13 +42,4 @@
             </object>
         </video>
     </div>
-
-    <div class="clearfix"></div>
-
-    <!--  Paginator -->
-    <viewerComponent:simplePaginator 
-        itemCount="#{activeDocumentBean.viewManager.imagesCount}" 
-        itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
-        urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/" 
-        urlSuffix="#topDocAnchor" />
 </ui:composition>

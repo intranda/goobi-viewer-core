@@ -20,16 +20,29 @@
             <h:outputText escape="false" value="#{activeDocumentBean.viewManager.htmlHeadDCMetadata}"
                 rendered="#{navigationHelper.htmlHeadDCMetadata == true}" />
         </f:view>
+    </ui:define>
+    
+    <!-- BREADCRUMBS -->
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>    
 
+    <!-- CONTENT -->
     <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
             <!-- reCAPTCHA API -->
             <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
                 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
             </h:panelGroup>
+            
+            <!-- HIDDEN DFG VIEWER LINK -->
+            <h:outputText value="#{activeDocumentBean.viewManager.linkForDFGViewer}" id="imageNumber" styleClass="hiddenDfgViewerLink" style="display:none;" />
+            
+            <!-- TOP DOC ANCHOR -->
+            <a name="topDocAnchor"></a>
 
-            <div id="view_image">
+            <!-- VIEW OBJECT -->
+            <div id="viewObject" class="view-object">
                 <!-- TITLE -->
                 <ui:include src="/resources/includes/title.xhtml">
                     <ui:param name="structure" value="false" />
@@ -37,6 +50,9 @@
                     <ui:param name="displayCollectionAndPartnerID" value="false" />
                 </ui:include>
 
+                <!-- INAGE CONTROLS -->
+                <viewerComponent:imageControls />
+                
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                     <ui:insert name="viewImage">
@@ -48,14 +64,14 @@
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
                     <ui:insert name="viewVideo">
                         <ui:include src="/resources/includes/image/video.xhtml" />        
-                    </ui:insert>
+                    </ui:insert>                    
                 </h:panelGroup>
 
                 <!-- VIEW AUDIO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
                     <ui:insert name="viewAudio">
                         <ui:include src="/resources/includes/image/audio.xhtml" />        
-                    </ui:insert>
+                    </ui:insert>                    
                 </h:panelGroup>
                 
                 <!-- TODO -->
@@ -66,7 +82,12 @@
                     </ui:insert>
                 </h:panelGroup>
                 
-                <div class="clearfix"></div>
+                <!--  PAGINATOR -->
+                <viewerComponent:simplePaginator
+                    itemCount="#{activeDocumentBean.viewManager.imagesCount}"
+                    itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
+                    urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/"
+                    urlSuffix="#topDocAnchor" />                    
                 
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.lidoRecord}">
                     <!-- VIEW META MUSEAL -->
@@ -152,9 +173,4 @@
         
         <widgetComponent:widget_user />        
     </ui:define>
-
-	<ui:define name="breadcrumbs">
-		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
-	</ui:define>
-
 </ui:composition>

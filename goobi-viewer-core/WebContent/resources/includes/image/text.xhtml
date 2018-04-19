@@ -11,18 +11,11 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
     <!-- VIEW TEXT -->
-    <iframe 
-        src="#{activeDocumentBean.viewManager.currentPage.url}" 
-        width="#{activeDocumentBean.viewManager.currentPage.videoWidth}"
-        height="#{activeDocumentBean.viewManager.currentPage.videoHeight}" 
-        allowfullscreen="true"></iframe>
-
-    <div class="clearfix"></div>
-
-    <!--  PAGINATOR -->
-    <viewerComponent:simplePaginator 
-        itemCount="#{activeDocumentBean.viewManager.imagesCount}" 
-        itemActive="#{activeDocumentBean.viewManager.currentImageNoForPaginator}"
-        urlPrefix="#{navigationHelper.imageUrl}/#{activeDocumentBean.persistentIdentifier}/" 
-        urlSuffix="#topDocAnchor" />
+    <div id="textContainer" class="view-object__text">
+        <iframe 
+            src="#{activeDocumentBean.viewManager.currentPage.url}" 
+            width="#{activeDocumentBean.viewManager.currentPage.videoWidth}"
+            height="#{activeDocumentBean.viewManager.currentPage.videoHeight}" 
+            allowfullscreen="true"></iframe>
+    </div>
 </ui:composition>

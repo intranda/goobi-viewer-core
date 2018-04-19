@@ -31,6 +31,11 @@
 /* BACKGROUND IMAGE */
 /* CSS TRIANGLE */
 /* HIDDEN */
+.mx-visible {
+  display: block !important;
+  visibility: visible !important;
+}
+/* HIDDEN */
 .mx-hidden {
   display: none !important;
   visibility: hidden !important;
@@ -5955,6 +5960,72 @@ div.olMapViewport {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Object
+   style declarations for viewObject.xhtml 
+   ==============================================================*/
+/* VIEW OBJECT */
+/* BLOCK */
+.view-object {
+  /* ELEMENT */
+  /* IMAGE */
+  /* IMGAE MOBILE */
+  /* VIDEO, AUDIO, TEXT */
+  /* VIDEO */
+  /* AUDIO */
+  /* TEXT */
+}
+.view-object__image {
+  position: relative;
+  border: 1px solid #eee;
+  overflow: hidden;
+}
+.view-object__image-map {
+  position: relative;
+  width: 100%;
+  height: 600px;
+}
+.view-object__image-map span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-size: 1.5rem;
+}
+.view-object__image-map img {
+  max-width: none;
+}
+.view-object__image-map .ugcBox.focus {
+  border: 2px solid red;
+}
+.view-object__image-map .ugcBox.drawing {
+  border: 2px solid blue;
+}
+.view-object__image-mobile {
+  display: none !important;
+  visibility: hidden !important;
+}
+.view-object__video,
+.view-object__audio,
+.view-object__text {
+  text-align: center;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .view-object {
+    /* ELEMENT */
+  }
+  .view-object__image {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  .view-object__image-mobile {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    View Overview
