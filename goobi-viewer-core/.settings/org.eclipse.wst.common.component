@@ -197,6 +197,9 @@
         <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-novemberpogrom.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-novemberpogrom/goobi-viewer-theme-wienerlibrary-novemberpogrom">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-testifyingtothetruth.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-testifyingtothetruth/goobi-viewer-theme-wienerlibrary-testifyingtothetruth">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>

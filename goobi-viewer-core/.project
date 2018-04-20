@@ -47,6 +47,7 @@
 		<project>goobi-viewer-theme-sudanmemories</project>
 		<project>goobi-viewer-theme-lie</project>
 		<project>goobi-viewer-theme-wienerlibrary-novemberpogrom</project>
+		<project>goobi-viewer-theme-wienerlibrary-testifyingtothetruth</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
