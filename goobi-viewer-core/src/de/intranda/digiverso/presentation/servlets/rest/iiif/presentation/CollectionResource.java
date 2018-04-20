@@ -31,6 +31,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.CollectionBuilder;
+import de.intranda.digiverso.presentation.model.iiif.presentation.builder.ManifestBuilder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 /**
@@ -106,5 +107,21 @@ public class CollectionResource extends AbstractResource{
         return collection;
 
     }
+    
+    
+    /**
+     * @return the manifestBuilder
+     */
+    public CollectionBuilder getCollectionBuilder() {
+        if (this.collectionBuilder == null) {
+            try {
+                this.collectionBuilder = new CollectionBuilder(servletRequest);
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return collectionBuilder;
+    }
+
 
 }

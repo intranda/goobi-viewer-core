@@ -71,71 +71,65 @@ public class ManifestResource extends AbstractResource {
     private static Logger logger = LoggerFactory.getLogger(ManifestResource.class);
 
     private ManifestBuilder manifestBuilder;
-    
-    public ManifestResource() {
-        try {
-            this.manifestBuilder = new ManifestBuilder(servletRequest);
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-    
+
     @GET
     @Path("/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public IPresentationModelElement geManifest(@PathParam("pi") String pi)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException {
 
-        StructElement doc = manifestBuilder.getDocument(pi);
+        StructElement doc = getManifestBuilder().getDocument(pi);
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
-        IPresentationModelElement manifest = manifestBuilder.generateManifest(doc);
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
 
         if (manifest instanceof Collection) {
-            manifestBuilder.addVolumes((Collection) manifest, doc.getLuceneId());
+            getManifestBuilder().addVolumes((Collection) manifest, doc.getLuceneId());
         } else if (manifest instanceof Manifest) {
-            manifestBuilder.addAnchor((Manifest) manifest, doc);
-            manifestBuilder.addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            getManifestBuilder().addAnchor((Manifest) manifest, doc);
+            getManifestBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
         }
 
         return manifest;
 
     }
-    
+
     @GET
     @Path("/{pi}/sequence/basic")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Sequence getBasicSequence(@PathParam("pi") String pi)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, IllegalRequestException {
+    public Sequence getBasicSequence(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
+            ConfigurationException, DAOException, IllegalRequestException {
 
-        StructElement doc = manifestBuilder.getDocument(pi);
+        StructElement doc = getManifestBuilder().getDocument(pi);
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
-        IPresentationModelElement manifest = manifestBuilder.generateManifest(doc);
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
 
         if (manifest instanceof Collection) {
-//            addVolumes((Collection) manifest, doc.getLuceneId(), getBaseUrl());
+            //            addVolumes((Collection) manifest, doc.getLuceneId(), getBaseUrl());
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-//            addAnchor((Manifest) manifest, doc, getBaseUrl());
-            manifestBuilder.addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
-            return ((Manifest)manifest).getSequences().get(0);
+            //            addAnchor((Manifest) manifest, doc, getBaseUrl());
+            getManifestBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            return ((Manifest) manifest).getSequences().get(0);
         }
         throw new IllegalRequestException("Not manifest with identifier " + pi + " found");
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * @return the manifestBuilder
+     */
+    public ManifestBuilder getManifestBuilder() {
+        if (this.manifestBuilder == null) {
+            try {
+                this.manifestBuilder = new ManifestBuilder(servletRequest);
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return manifestBuilder;
+    }
 
     /**
      * @param baseUrl
