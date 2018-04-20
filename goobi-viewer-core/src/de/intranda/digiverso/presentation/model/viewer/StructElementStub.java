@@ -22,9 +22,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
+import org.h2.expression.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,9 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 
 /**
  * StructElement essentials with a reduced memory footprint.
@@ -553,6 +558,25 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
         return sb.toString();
     }
+    
+    public IMetadataValue getMultiLanguageMetadataValue(String fieldName) {
+        List<String> fieldNames = this.getMetadataFields().keySet().stream().filter(key -> key.equals(fieldName) || key.startsWith(fieldName + "_LANG_")).collect(Collectors.toList());
+        Map<String, List<String>> valueMap = fieldNames.stream().collect(Collectors.toMap(field -> getLanguage(field), field -> getMetadataValues(field)));
+        if(valueMap.size() == 1 && valueMap.containsKey(MultiLanguageMetadataValue.DEFAULT_LANGUAGE)) {
+            //only default language: Simple MEtadata value
+            return new SimpleMetadataValue(StringUtils.join(valueMap.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE), "; "));
+        } else {
+            return new MultiLanguageMetadataValue(valueMap);
+        }
+    }
+    
+    private String getLanguage(String fieldName) {
+        if(fieldName.contains("_LANG_")) {
+            return fieldName.substring(fieldName.indexOf("_LANG_") + "_LANG_".length());
+        } else {
+            return MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
+        }
+    }
 
     /**
      *
@@ -588,4 +612,5 @@ public class StructElementStub implements Comparable<StructElementStub>, Seriali
 
         return "";
     }
+    
 }

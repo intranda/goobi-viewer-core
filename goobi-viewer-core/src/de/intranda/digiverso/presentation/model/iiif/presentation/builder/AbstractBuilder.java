@@ -17,6 +17,8 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -27,11 +29,16 @@ import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
@@ -44,6 +51,18 @@ public abstract class AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
     
+    private static final List<String> HIDDEN_SOLR_FIELDS = Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI,
+            SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
+            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID });
+    
+    private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
+            SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
+            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID };
+
+    
+    
     protected static String ATTRIBUTION = "Provided by intranda GmbH";
     
     private final URI servletURI;
@@ -53,7 +72,7 @@ public abstract class AbstractBuilder {
     
     public AbstractBuilder(HttpServletRequest request) throws URISyntaxException {
         this.servletURI = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
-        this.requestURI = new URI(request.getRequestURI());
+        this.requestURI = new URI(ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
     }
     
     public AbstractBuilder(URI servletUri, URI requestURI) {
@@ -150,7 +169,70 @@ public abstract class AbstractBuilder {
         }
     }
     
+
+    /**
+     * @param manifest
+     * @param ele
+     */
+    public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
+        for (String field : ele.getMetadataFields().keySet()) {
+            if (!HIDDEN_SOLR_FIELDS.contains(field) && !field.endsWith("_UNTOKENIZED")) {
+                Optional<IMetadataValue> mdValue =
+                        ele.getMetadataValues(field).stream().reduce((s1, s2) -> s1 + "; " + s2).map(value -> IMetadataValue.getTranslations(value));
+                mdValue.ifPresent(value -> {
+                    manifest.addMetadata(new Metadata(IMetadataValue.getTranslations(field), value));
+                });
+            }
+        }
+    }
     
+    /**
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public StructElement getDocument(String pi, String logId) throws PresentationException, IndexUnreachableException {
+        String query = "PI_TOPSTRUCT:" + pi + " AND LOGID:" + logId;
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, getSolrFieldList());
+        StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+        ele.setImageNumber(1);
+        return ele;
+    }
+
+
+    /**
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
+        String query = "PI:" + pi;
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, getSolrFieldList());
+        StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+        ele.setImageNumber(1);
+        return ele;
+    }
+    
+
+
+    /**
+     * @return
+     */
+    protected List<String> getSolrFieldList() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
+        for (String string : REQUIRED_SOLR_FIELDS) {
+            if (!fields.contains(string)) {
+                fields.add(string);
+            }
+        }
+        String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
+        if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
+            fields.add(navDateField);
+        }
+        return fields;
+    }
     
 
     public URI getCollectionURI(String collectionField, String baseCollectionName) throws URISyntaxException {
@@ -163,6 +245,11 @@ public abstract class AbstractBuilder {
     
     public URI getManifestURI(String pi) throws URISyntaxException {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi);
+        return new URI(sb.toString());
+    }
+    
+    public URI getRangeUri(String pi, String logId) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/range/").append(logId);
         return new URI(sb.toString());
     }
     

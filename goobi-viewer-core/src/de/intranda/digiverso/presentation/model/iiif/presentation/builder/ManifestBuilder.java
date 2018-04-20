@@ -73,15 +73,7 @@ public class ManifestBuilder extends AbstractBuilder {
     private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
     
 
-    private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
-            SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
-            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
-            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT };
-    private static final List<String> HIDDEN_SOLR_FIELDS = Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI,
-            SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
-            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
-            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNOSORT });
-    
+
     /**
      * @param request
      * @throws URISyntaxException
@@ -205,21 +197,6 @@ public class ManifestBuilder extends AbstractBuilder {
     }
     
 
-    /**
-     * @param manifest
-     * @param ele
-     */
-    public void addMetadata(AbstractPresentationModelElement manifest, StructElement ele) {
-        for (String field : ele.getMetadataFields().keySet()) {
-            if (!HIDDEN_SOLR_FIELDS.contains(field) && !field.endsWith("_UNTOKENIZED")) {
-                Optional<IMetadataValue> mdValue =
-                        ele.getMetadataValues(field).stream().reduce((s1, s2) -> s1 + "; " + s2).map(value -> IMetadataValue.getTranslations(value));
-                mdValue.ifPresent(value -> {
-                    manifest.addMetadata(new Metadata(IMetadataValue.getTranslations(field), value));
-                });
-            }
-        }
-    }
     
     /**
      * @param baseUrl2
@@ -314,8 +291,10 @@ public class ManifestBuilder extends AbstractBuilder {
                         resource = new ImageContent(new URI(thumbnailUrl), true);
                         resource.setWidth(size.width);
                         resource.setHeight(size.height);
+                        
                     }
                 }
+                resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
 
                 Annotation imageAnnotation = new Annotation(null);
                 imageAnnotation.setMotivation(Motivation.PAINTING);
@@ -358,20 +337,6 @@ public class ManifestBuilder extends AbstractBuilder {
     }
     
 
-    /**
-     * @param pi
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     */
-    public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
-        String query = "PI:" + pi;
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, getSolrFieldList());
-        StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
-        ele.setImageNumber(1);
-        return ele;
-    }
-    
 
     /**
      * @param v1
@@ -389,23 +354,6 @@ public class ManifestBuilder extends AbstractBuilder {
         return -1;
     }
 
-
-    /**
-     * @return
-     */
-    private List<String> getSolrFieldList() {
-        List<String> fields = DataManager.getInstance().getConfiguration().getIIIFMetadataFields();
-        for (String string : REQUIRED_SOLR_FIELDS) {
-            if (!fields.contains(string)) {
-                fields.add(string);
-            }
-        }
-        String navDateField = DataManager.getInstance().getConfiguration().getIIIFNavDateField();
-        if (StringUtils.isNotBlank(navDateField) && !fields.contains(navDateField)) {
-            fields.add(navDateField);
-        }
-        return fields;
-    }
     
     /**
      * @param page

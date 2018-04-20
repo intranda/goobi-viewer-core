@@ -47,6 +47,19 @@ public enum Format {
 	public String getLabel() {
 		return label;
 	}
+
+    /**
+     * @param displayMimeType
+     * @return
+     */
+    public static Format fromMimeType(String mimeType) {
+        for (Format format : Format.values()) {
+            if(mimeType.toLowerCase().equals(format.getLabel())) {
+                return format;
+            }
+        }
+        return null;
+    }
 	
 	
 

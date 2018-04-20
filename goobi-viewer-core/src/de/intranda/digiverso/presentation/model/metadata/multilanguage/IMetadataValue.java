@@ -22,7 +22,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
+import org.apache.solr.common.SolrDocument;
+
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 
 /**
@@ -138,5 +142,9 @@ public interface IMetadataValue {
         } else {
             return new MultiLanguageMetadataValue(translations);
         }
+    }
+    
+    public static IMetadataValue getTranslations(String fieldName, SolrDocument doc) {
+        return new MultiLanguageMetadataValue(SolrSearchIndex.getMetadataValuesForLanguage(doc, SolrConstants.TITLE));
     }
 }

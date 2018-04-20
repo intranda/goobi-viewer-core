@@ -15,49 +15,33 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
-import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
+import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Sequence;
-import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.ManifestBuilder;
-import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
-import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
+import de.intranda.digiverso.presentation.model.iiif.presentation.builder.StructureBuilder;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
-import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
-import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
  * @author Florian Alpers
@@ -71,6 +55,8 @@ public class ManifestResource extends AbstractResource {
     private static Logger logger = LoggerFactory.getLogger(ManifestResource.class);
 
     private ManifestBuilder manifestBuilder;
+    private StructureBuilder structureBuilder;
+
 
     @GET
     @Path("/{pi}")
@@ -115,6 +101,33 @@ public class ManifestResource extends AbstractResource {
         }
         throw new IllegalRequestException("Not manifest with identifier " + pi + " found");
 
+    }
+    
+    @GET
+    @Path("/{pi}/range/{logId}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Range geManifest(@PathParam("pi") String pi, @PathParam("logId") String logId)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException {
+        
+        StructElement doc = getStructureBuilder().getDocument(pi, logId);
+        
+        if(doc == null) {
+            throw new NotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
+        } else {
+            Range topRange = getStructureBuilder().generateStructure(doc, getStructureBuilder().getRangeUri(pi, logId));
+            return topRange;
+        }
+    }
+    
+    private StructureBuilder getStructureBuilder() {
+        if(this.structureBuilder == null) {
+            try {
+                this.structureBuilder = new StructureBuilder(this.servletRequest);
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return this.structureBuilder;
     }
 
     /**

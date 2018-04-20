@@ -38,4 +38,23 @@ public class ServletUtils {
 
         return scheme + "://" + serverName + ":" + serverPort + contextPath;
     }
+    
+    /**
+     * retrieve complete Servlet url from servlet context, including Url, Port, callable without jsf servletName
+     *
+     * @return complete url as string
+     */
+    public static String getServletPathWithoutHostAsUrlFromRequest(HttpServletRequest request) {
+        String scheme = request.getScheme(); // http
+        String serverName = request.getServerName(); // hostname.com
+        int serverPort = request.getServerPort(); // 80
+        if ("http".equals(scheme) && serverPort == 80) {
+            return scheme + "://" + serverName;
+        }
+        if ("https".equals(scheme) && serverPort == 443) {
+            return scheme + "://" + serverName;
+        }
+
+        return scheme + "://" + serverName + ":" + serverPort;
+    }
 }
