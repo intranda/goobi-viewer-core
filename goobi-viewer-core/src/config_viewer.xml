@@ -846,13 +846,19 @@
 		</volumeSortFields>
 
 		<!-- labelConfig: Layout configuration for the label of TOC elements. The configuration is analogous to a metadata template. -->
-		<labelConfig>
-			<template name="_DEFAULT">
-				<metadata label="" value="{LABEL}{MD_CREATOR}">
-					<param type="translatedfield" key="LABEL" />
-					<param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
-				</metadata>
-			</template>
+        <labelConfig>
+            <template name="_DEFAULT">
+                <metadata label="" value="{LABEL}{CURRENTNO}">
+                    <param type="translatedfield" key="LABEL" />
+                    <param type="field" key="CURRENTNO" prefix="_SPACE_(" suffix=")" />
+                </metadata>
+            </template>
+            <template name="_GROUPS">
+                <metadata label="" value="{LABEL}{MD_SERIESDISPLAYORDER}">
+                    <param type="translatedfield" key="LABEL" />
+                    <param type="field" key="MD_SERIESDISPLAYORDER" prefix="_SPACE_(" suffix=")" />
+                </metadata>
+            </template>
 		</labelConfig>
 
 		<!-- tocAnchorGroupElementsPerPage: Number of elements displayed per page in anchor/group TOCs. Values below 1 disable pagination. Default is 0. -->
