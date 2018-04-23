@@ -314,12 +314,13 @@ public class TocMaker {
                 int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
                 String thumbnailUrl = null;
                 if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
-                    thumbnailUrl = Helper.getImageUrl(topStructPi, thumbnailFile, dataRepository, thumbWidth, thumbHeight, 0, true, true);
+                    ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
+                    StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
+                    thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
                 }
                 label.mapEach(value -> StringEscapeUtils.unescapeHtml(value));
                 ret.add(new TOCElement(label, "1", null, volumeIddoc, logId, 1, topStructPi, thumbnailUrl, sourceFormatPdfAllowed, false, mimeType,
                         docStructType, footerId));
-
             }
         }
     }
@@ -625,6 +626,7 @@ public class TocMaker {
      * @param footerIdField
      * @return
      */
+    @SuppressWarnings("rawtypes")
     public static String getFirstFieldValue(SolrDocument doc, String footerIdField) {
         Object object = doc.getFieldValue(footerIdField);
         if (object == null) {
