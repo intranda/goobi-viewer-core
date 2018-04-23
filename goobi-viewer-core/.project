@@ -49,6 +49,7 @@
 		<project>goobi-viewer-theme-wienerlibrary-novemberpogrom</project>
 		<project>goobi-viewer-theme-wienerlibrary-testifyingtothetruth</project>
 		<project>goobi-viewer-theme-zlb</project>
+		<project>goobi-viewer-theme-kuepo</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
