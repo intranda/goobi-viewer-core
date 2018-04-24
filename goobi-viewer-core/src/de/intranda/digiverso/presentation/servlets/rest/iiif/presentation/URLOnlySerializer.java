@@ -42,13 +42,13 @@ public class URLOnlySerializer extends JsonSerializer<Object> {
             generator.writeString(element.getId().toString());
         } else if (o instanceof Collection) {
             Collection collection = (Collection) o;
-            if (collection.size() == 1) {
+            if (collection instanceof PropertyList &&  collection.size() == 1) {
                 Object obj = collection.iterator().next();
                 if (obj instanceof IPresentationModelElement) {
                     IPresentationModelElement element = (IPresentationModelElement) obj;
                     generator.writeString(element.getId().toString());
                 }
-            } else if (collection.size() > 1) {
+            } else if (!collection.isEmpty()) {
                 generator.writeStartArray();
                 for (Object child : collection) {
                     if (child instanceof IPresentationModelElement) {

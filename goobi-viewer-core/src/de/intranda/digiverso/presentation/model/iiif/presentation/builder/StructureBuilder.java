@@ -137,23 +137,23 @@ public class StructureBuilder extends AbstractBuilder {
             logger.error("Unable to retrieve pdf download url for {}", ele);
         }
         
-        try {
-            populatePages(ele, range);
-        } catch (URISyntaxException e) {
-            logger.error(e.toString(), e);
-        }
+//        try {
+//            populatePages(ele, range);
+//        } catch (URISyntaxException e) {
+//            logger.error(e.toString(), e);
+//        }
 
-        if (range.isUseMembers()) {
-            try {
-                int startPageNo = ele.getImageNumber();
-                if (startPageNo > 0) {
-                    URI pageURI = getCanvasURI(ele.getPi(), startPageNo);
-                    range.setStartCanvas(new Canvas(pageURI));
-                }
-            } catch (URISyntaxException e) {
-                logger.error("Unable to create start page URI for {}", ele);
-            }
-        }
+//        if (range.isUseMembers()) {
+//            try {
+//                int startPageNo = ele.getImageNumber();
+//                if (startPageNo > 0) {
+//                    URI pageURI = getCanvasURI(ele.getPi(), startPageNo);
+//                    range.setStartCanvas(new Canvas(pageURI));
+//                }
+//            } catch (URISyntaxException e) {
+//                logger.error("Unable to create start page URI for {}", ele);
+//            }
+//        }
 
     }
 
