@@ -139,14 +139,14 @@ public class Comment implements Comparable<Comment> {
         String body = null;
         if (StringUtils.isEmpty(oldText)) {
             subject = Helper.getTranslation("commentNewNotificationEmailSubject", locale);
-            subject = subject.replace("{0}", comment.getOwner().getDisplayName()).replace("{1}", comment.getPi()).replace("{2}", String.valueOf(
-                    comment.getPage()));
+            subject = subject.replace("{0}", comment.getOwner().getDisplayName()).replace("{1}", comment.getPi()).replace("{2}",
+                    String.valueOf(comment.getPage()));
             body = Helper.getTranslation("commentNewNotificationEmailBody", locale);
             body = body.replace("{0}", comment.getText());
         } else {
             subject = Helper.getTranslation("commentChangedNotificationEmailSubject", locale);
-            subject = subject.replace("{0}", comment.getOwner().getDisplayName()).replace("{1}", comment.getPi()).replace("{2}", String.valueOf(
-                    comment.getPage()));
+            subject = subject.replace("{0}", comment.getOwner().getDisplayName()).replace("{1}", comment.getPi()).replace("{2}",
+                    String.valueOf(comment.getPage()));
             body = Helper.getTranslation("commentChangedNotificationEmailBody", locale);
             body = body.replace("{0}", oldText).replace("{1}", comment.getText());
         }
@@ -249,6 +249,10 @@ public class Comment implements Comparable<Comment> {
      */
     public String getText() {
         return text;
+    }
+
+    public String getDisplayText() {
+        return Helper.stripJS(text);
     }
 
     /**

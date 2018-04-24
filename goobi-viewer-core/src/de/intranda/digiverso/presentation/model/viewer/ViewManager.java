@@ -33,7 +33,6 @@ import java.util.Optional;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -51,10 +50,6 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
-import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
-import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
-import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
-import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -73,12 +68,6 @@ import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType.Colortype;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.RegionRequest;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
@@ -88,7 +77,7 @@ public class ViewManager implements Serializable {
     private static final long serialVersionUID = -7776362205876306849L;
 
     private static final Logger logger = LoggerFactory.getLogger(ViewManager.class);
-    
+
     private ImageDeliveryBean imageDelivery;
 
     /** IDDOC of the top level document. */
@@ -134,7 +123,7 @@ public class ViewManager implements Serializable {
     private int lastPdfPage;
     private CalendarView calendarView;
     private Boolean belowFulltextThreshold = null;
-    
+
     /**
      * 
      * @param topDocument
@@ -145,8 +134,8 @@ public class ViewManager implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType, ImageDeliveryBean imageDelivery) 
-            throws IndexUnreachableException, PresentationException {
+    public ViewManager(StructElement topDocument, IPageLoader pageLoader, long currentDocumentIddoc, String logId, String mainMimeType,
+            ImageDeliveryBean imageDelivery) throws IndexUnreachableException, PresentationException {
         this.imageDelivery = imageDelivery;
         this.topDocument = topDocument;
         this.topDocumentIddoc = topDocument.getLuceneId();
@@ -289,12 +278,14 @@ public class ViewManager implements Serializable {
     public String getWatermarkUrl() throws IndexUnreachableException, DAOException, ConfigurationException {
         return getWatermarkUrl("viewImage");
     }
-        
+
     public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ConfigurationException {
-        return imageDelivery.getFooter().getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()), Optional.ofNullable(PageType.getByName(pageType))).orElse("");
+        return imageDelivery.getFooter()
+                .getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()),
+                        Optional.ofNullable(PageType.getByName(pageType)))
+                .orElse("");
 
     }
-
 
     public String getCurrentThumbnailUrl() throws IndexUnreachableException, DAOException {
         int width = DataManager.getInstance().getConfiguration().getPreviewThumbnailWidth();
@@ -309,7 +300,7 @@ public class ViewManager implements Serializable {
     public String getCurrentImageUrl() throws ConfigurationException, IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage);
     }
-    
+
     /**
      * @return the iiif url to the image in a configured size
      * @throws IndexUnreachableException
@@ -331,7 +322,7 @@ public class ViewManager implements Serializable {
     public String getCurrentImageUrl(int size) throws IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage, size);
     }
-    
+
     /**
      * @param view
      * @param size
@@ -345,8 +336,8 @@ public class ViewManager implements Serializable {
             format = ImageFileFormat.PNG;
         }
         return imageDelivery.getThumb().getThumbnailUrl(getCurrentPage(), size, size);
-//        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getCurrentPage().getFileName(), RegionRequest.FULL,
-//                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        //        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getCurrentPage().getFileName(), RegionRequest.FULL,
+        //                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
     private String getFooterId() {
@@ -990,10 +981,10 @@ public class ViewManager implements Serializable {
      * 
      * @return {@link String}
      * @throws IndexUnreachableException
-     * @throws PresentationException 
+     * @throws PresentationException
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException {
-        
+
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), "");
 
     }
@@ -1006,7 +997,7 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
-        
+
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), getCurrentPage());
     }
 
@@ -1033,13 +1024,12 @@ public class ViewManager implements Serializable {
             lastPdfPage = firstPdfPage;
         }
 
-        
-//        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&images=");
+        //        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=pdf&images=");
         List<PhysicalElement> pages = new ArrayList<>();
         for (int i = firstPdfPage; i <= lastPdfPage; ++i) {
             PhysicalElement page = pageLoader.getPage(i);
             pages.add(page);
-//            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
+            //            sb.append(getPi()).append('/').append(page.getFileName()).append('$');
         }
         PhysicalElement[] pageArr = new PhysicalElement[pages.size()];
         return imageDelivery.getPdf().getPdfUrl(getActiveDocument(), pages.toArray(pageArr));
@@ -1216,22 +1206,12 @@ public class ViewManager implements Serializable {
             } else {
                 if (isHasPages()) {
                     url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                    url.append('/')
-                            .append(PageType.viewImage.getName())
-                            .append('/')
-                            .append(getPi())
-                            .append('/')
-                            .append(currentImageOrder)
-                            .append('/');
+                    url.append('/').append(PageType.viewImage.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append(
+                            '/');
                 } else {
                     url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                    url.append('/')
-                            .append(PageType.viewMetadata.getName())
-                            .append('/')
-                            .append(getPi())
-                            .append('/')
-                            .append(currentImageOrder)
-                            .append('/');
+                    url.append('/').append(PageType.viewMetadata.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append(
+                            '/');
                 }
                 persistentUrl = url.toString();
             }
@@ -1275,16 +1255,18 @@ public class ViewManager implements Serializable {
     public boolean isBelowFulltextThreshold() throws PresentationException, IndexUnreachableException {
         if (belowFulltextThreshold == null) {
 
-            long pagesWithFulltext = DataManager.getInstance().getSearchIndex().getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
-                    .append(':')
-                    .append(pi)
-                    .append(" +")
-                    .append(SolrConstants.DOCTYPE)
-                    .append(":PAGE")
-                    .append(" +")
-                    .append(SolrConstants.FULLTEXTAVAILABLE)
-                    .append(":true")
-                    .toString());
+            long pagesWithFulltext = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder("+").append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(pi)
+                            .append(" +")
+                            .append(SolrConstants.DOCTYPE)
+                            .append(":PAGE")
+                            .append(" +")
+                            .append(SolrConstants.FULLTEXTAVAILABLE)
+                            .append(":true")
+                            .toString());
             int threshold = DataManager.getInstance().getConfiguration().getFulltextPercentageWarningThreshold();
             double percentage = pagesWithFulltext * 100.0 / pageLoader.getNumPages();
             logger.trace("{}% of pages have full-text", percentage);
@@ -1310,10 +1292,11 @@ public class ViewManager implements Serializable {
     }
 
     /**
-     *
+     * Returns the full-text for the current page, stripped of any included JavaScript.
+     * 
      * @param escapeHtml If true HTML tags will be escaped to prevent pseudo-HTML from breaking the text.
      * @param language
-     * @return
+     * @return Full-text for the current page.
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws IOException
@@ -1325,14 +1308,14 @@ public class ViewManager implements Serializable {
         // Current page fulltext
         PhysicalElement currentImg = getCurrentPage();
         if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-            //            // Check permissions first
-            //            boolean access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap((HttpServletRequest) FacesContext
-            //                    .getCurrentInstance().getExternalContext().getRequest(), getPi(), currentImg.getFileName(), IPrivilegeHolder.PRIV_VIEW_FULLTEXT);
-            //            if (access) {
-            currentFulltext = escapeHtml ? Helper.escapeHtmlChars(currentImg.getFullText()) : currentImg.getFullText();
-            //            } else {
-            //                currentFulltext = "ACCESS DENIED";
-            //            }
+            currentFulltext = Helper.stripJS(currentImg.getFullText());
+            if (currentFulltext.length() < currentImg.getFullText().length()) {
+                logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, currentImg.getOrder());
+            }
+            if (escapeHtml) {
+                currentFulltext = Helper.escapeHtmlChars(currentImg.getFullText());
+            }
+
         }
 
         // logger.trace(currentFulltext);
@@ -1427,7 +1410,10 @@ public class ViewManager implements Serializable {
             sourceFileDir = new File(sbFilePath.toString());
         } else {
             sourceFileDir = new File(new StringBuilder(DataManager.getInstance().getConfiguration().getViewerHome())
-                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder()).append(File.separator).append(getPi()).toString());
+                    .append(DataManager.getInstance().getConfiguration().getOrigContentFolder())
+                    .append(File.separator)
+                    .append(getPi())
+                    .toString());
 
         }
         if (sourceFileDir.isDirectory()) {

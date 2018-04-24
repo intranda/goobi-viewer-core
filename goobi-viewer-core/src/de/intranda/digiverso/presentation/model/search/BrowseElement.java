@@ -402,9 +402,10 @@ public class BrowseElement implements Serializable {
 
         //check if we have images
         hasImages = !isAnchor() && this.mimeType.startsWith("image");
-        
+
         //..or if we have video or audio
-        hasMedia = !hasImages && !isAnchor() && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
+        hasMedia = !hasImages && !isAnchor()
+                && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
 
         // Only topstructs should be openened with their overview page view (if they have one)
         if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
@@ -851,14 +852,16 @@ public class BrowseElement implements Serializable {
     }
 
     /**
-     * Returns a relevant full-text fragment for displaying in the search hit box.
+     * Returns a relevant full-text fragment for displaying in the search hit box, stripped of any contained JavaScript.
      *
-     * @return
+     * @return Full-text fragment sans any line breaks or JavaScript
+     * @should remove any line breaks
+     * @should remove any JS
      */
     public String getFulltextForHtml() {
         if (fulltextForHtml == null) {
             if (fulltext != null) {
-                fulltextForHtml = fulltext.replaceAll("\n", " ");
+                fulltextForHtml = Helper.stripJS(fulltext).replaceAll("\n", " ");
             } else {
                 fulltextForHtml = "";
             }
@@ -992,8 +995,8 @@ public class BrowseElement implements Serializable {
 
                     break;
                 default:
-                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
-                            useOverviewPage, false);
+                    PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
+                            hasImages || hasMedia, useOverviewPage, false);
                     sb.append(pageType.getName())
                             .append('/')
                             .append(pi)
@@ -1005,8 +1008,8 @@ public class BrowseElement implements Serializable {
                     break;
             }
         } else {
-            PageType pageType =
-                    PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, useOverviewPage, false);
+            PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
+                    useOverviewPage, false);
             sb.append(pageType.getName())
                     .append('/')
                     .append(pi)
@@ -1196,14 +1199,14 @@ public class BrowseElement implements Serializable {
     public List<String> getRecordLanguages() {
         return recordLanguages;
     }
-    
+
     /**
      * @param hasMedia the hasMedia to set
      */
     public void setHasMedia(boolean hasMedia) {
         this.hasMedia = hasMedia;
     }
-    
+
     /**
      * @return the hasMedia
      */

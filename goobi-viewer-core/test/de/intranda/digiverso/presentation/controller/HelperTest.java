@@ -45,7 +45,6 @@ public class HelperTest {
         Assert.assertEquals("&lt;i&gt;&quot;A&amp;B&quot;&lt;/i&gt;", Helper.escapeHtmlChars("<i>\"A&B\"</i>"));
     }
 
-
     /**
      * @see Helper#removeDiacriticalMarks(String)
      * @verifies remove diacritical marks correctly
@@ -61,8 +60,8 @@ public class HelperTest {
      */
     @Test
     public void getDataFilePath_shouldConstructMETSFilePathCorrectly() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/data/1/indexed_mets/PPN123.xml", Helper.getDataFilePath("PPN123.xml", "1",
-                SolrConstants._METS));
+        Assert.assertEquals("resources/test/data/viewer/data/1/indexed_mets/PPN123.xml",
+                Helper.getDataFilePath("PPN123.xml", "1", SolrConstants._METS));
         Assert.assertEquals("resources/test/data/viewer/indexed_mets/PPN123.xml", Helper.getDataFilePath("PPN123.xml", null, SolrConstants._METS));
     }
 
@@ -72,8 +71,8 @@ public class HelperTest {
      */
     @Test
     public void getDataFilePath_shouldConstructLIDOFilePathCorrectly() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/data/1/indexed_lido/PPN123.xml", Helper.getDataFilePath("PPN123.xml", "1",
-                SolrConstants._LIDO));
+        Assert.assertEquals("resources/test/data/viewer/data/1/indexed_lido/PPN123.xml",
+                Helper.getDataFilePath("PPN123.xml", "1", SolrConstants._LIDO));
         Assert.assertEquals("resources/test/data/viewer/indexed_lido/PPN123.xml", Helper.getDataFilePath("PPN123.xml", null, SolrConstants._LIDO));
     }
 
@@ -101,12 +100,12 @@ public class HelperTest {
      */
     @Test
     public void getTextFilePath_shouldReturnCorrectPath() throws Exception {
-        Assert.assertEquals("resources/test/data/viewer/data/1/alto/PPN123/1.xml", Helper.getTextFilePath("PPN123", "1.xml", "1",
-                SolrConstants.FILENAME_ALTO));
-        Assert.assertEquals("resources/test/data/viewer/data/1/fulltext/PPN123/1.txt", Helper.getTextFilePath("PPN123", "1.txt", "1",
-                SolrConstants.FILENAME_FULLTEXT));
-        Assert.assertEquals("resources/test/data/viewer/data/1/tei/PPN123/1.xml", Helper.getTextFilePath("PPN123", "1.xml", "1",
-                SolrConstants.FILENAME_TEI));
+        Assert.assertEquals("resources/test/data/viewer/data/1/alto/PPN123/1.xml",
+                Helper.getTextFilePath("PPN123", "1.xml", "1", SolrConstants.FILENAME_ALTO));
+        Assert.assertEquals("resources/test/data/viewer/data/1/fulltext/PPN123/1.txt",
+                Helper.getTextFilePath("PPN123", "1.txt", "1", SolrConstants.FILENAME_FULLTEXT));
+        Assert.assertEquals("resources/test/data/viewer/data/1/tei/PPN123/1.xml",
+                Helper.getTextFilePath("PPN123", "1.xml", "1", SolrConstants.FILENAME_TEI));
     }
 
     /**
@@ -124,7 +123,17 @@ public class HelperTest {
      */
     @Test
     public void buildFullTextUrl_shouldBuildUrlCorrectly() throws Exception {
-        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001.xml/", Helper
-                .buildFullTextUrl(null, "alto/PPN123/00000001.xml"));
+        Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001.xml/",
+                Helper.buildFullTextUrl(null, "alto/PPN123/00000001.xml"));
+    }
+
+    /**
+     * @see Helper#stripJS(String)
+     * @verifies remove JS blocks correctly
+     */
+    @Test
+    public void stripJS_shouldRemoveJSBlocksCorrectly() throws Exception {
+        Assert.assertEquals("foo  bar", Helper.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
+        Assert.assertEquals("foo  bar", Helper.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
     }
 }
