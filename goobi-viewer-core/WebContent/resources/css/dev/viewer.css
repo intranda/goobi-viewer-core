@@ -4776,6 +4776,10 @@ div[id*="-Modal"] .email-form .form-group {
 .userdata__action .btn {
   margin: 0;
 }
+#editUserdataModal .checkbox input[type=checkbox],
+#editUserdataModal .checkbox-inline input[type=checkbox] {
+  margin-left: -15px;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
