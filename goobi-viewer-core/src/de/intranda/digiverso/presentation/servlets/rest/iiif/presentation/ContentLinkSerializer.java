@@ -48,16 +48,12 @@ public class ContentLinkSerializer extends JsonSerializer<List<IPresentationMode
             throws IOException, JsonProcessingException {
 
         if (elements != null && !elements.isEmpty()) {
-            if (elements.size() == 1) {
-                writeElement(elements.get(0), generator, provider);
-            } else {
                 generator.writeStartArray();
                 for (IPresentationModelElement element : elements) {
                     writeElement(element, generator, provider);
                 }
                 generator.writeEndArray();
             }
-        }
 
     }
 
