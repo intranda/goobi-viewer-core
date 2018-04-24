@@ -186,7 +186,7 @@ public class SequenceBuilder extends AbstractBuilder {
             }
             resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
 
-            Annotation imageAnnotation = new Annotation(null);
+            Annotation imageAnnotation = new Annotation(getImageAnnotationURI(page.getPi(), page.getOrder()));
             imageAnnotation.setMotivation(Motivation.PAINTING);
             imageAnnotation.setOn(new Canvas(canvas.getId()));
 
@@ -196,6 +196,7 @@ public class SequenceBuilder extends AbstractBuilder {
         }
         return canvas;
     }
+
 
     public Map<AnnotationType, AnnotationList> addOtherContent(PhysicalElement page, Canvas canvas, String dataRepository) throws URISyntaxException, PresentationException, IndexUnreachableException {
 
@@ -209,7 +210,7 @@ public class SequenceBuilder extends AbstractBuilder {
             fulltextLink.setFormat(Format.TEXT_PLAIN);
             fulltextLink.setType("dcTypes:Text");
             fulltextLink.setLabel(IMetadataValue.getTranslations("FULLTEXT"));
-            Annotation fulltextAnnotation = new Annotation(null);
+            Annotation fulltextAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.FULLTEXT, 1));
             fulltextAnnotation.setMotivation(Motivation.PAINTING);
             fulltextAnnotation.setOn(canvas);
             fulltextAnnotation.setResource(fulltextLink);
@@ -224,7 +225,7 @@ public class SequenceBuilder extends AbstractBuilder {
             altoLink.setFormat(Format.TEXT_XML);
             altoLink.setType("dcTypes:Text");
             altoLink.setLabel(IMetadataValue.getTranslations("ALTO"));
-            Annotation altoAnnotation = new Annotation(null);
+            Annotation altoAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.ALTO, 1));
             altoAnnotation.setMotivation(Motivation.PAINTING);
             altoAnnotation.setOn(canvas);
             altoAnnotation.setResource(altoLink);
@@ -243,7 +244,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 audioLink.setFormat(format);
                 audioLink.setType("dcTypes:Audio");
                 audioLink.setLabel(IMetadataValue.getTranslations("AUDIO"));
-                Annotation annotation = new Annotation(null);
+                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.AUDIO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
                 annotation.setOn(canvas);
                 annotation.setResource(audioLink);
@@ -265,7 +266,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 link.setFormat(format);
                 link.setType("dcTypes:Sound");
                 link.setLabel(IMetadataValue.getTranslations("VIDEO"));
-                Annotation annotation = new Annotation(null);
+                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.VIDEO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
                 annotation.setOn(canvas);
                 annotation.setResource(link);
@@ -285,7 +286,7 @@ public class SequenceBuilder extends AbstractBuilder {
                     link.setFormat(Format.TEXT_HTML);
                     link.setType("dcTypes:Video");
                     link.setLabel(IMetadataValue.getTranslations("VIDEO"));
-                    Annotation annotation = new Annotation(null);
+                    Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.VIDEO, 1));
                     annotation.setMotivation(Motivation.PAINTING);
                     annotation.setOn(canvas);
                     annotation.setResource(link);
@@ -307,7 +308,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 link.setFormat(Format.APPLICATION_PDF);
                 link.setType("dcTypes:Software");
                 link.setLabel(IMetadataValue.getTranslations("PDF"));
-                Annotation annotation = new Annotation(null);
+                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.PDF, 1));
                 annotation.setMotivation(Motivation.PAINTING);
                 annotation.setOn(canvas);
                 annotation.setResource(link);

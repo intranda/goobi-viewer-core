@@ -308,5 +308,22 @@ public abstract class AbstractBuilder {
         }
         return new URI(sb.toString());
     }
+    
+
+    /**
+     * @param pi
+     * @param order
+     * @return
+     * @throws URISyntaxException 
+     */
+    public URI getImageAnnotationURI(String pi, int order) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(order).append("/image/1");
+        return new URI(sb.toString());
+    }
+    
+    public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(order).append("/").append(type.name()).append("/").append(annoNum);
+        return new URI(sb.toString());
+    }
         
 }
