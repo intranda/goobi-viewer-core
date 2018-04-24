@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.iiif.presentation;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public abstract class AbstractPresentationModelElement implements IPresentationM
 	private final URI id;
 	private IMetadataValue label;
 	private IMetadataValue description;
-	private List<Metadata> metadata = new PropertyList<Metadata>();
+	private List<Metadata> metadata = new ArrayList<Metadata>();
 	private ImageContent thumbnail;
 	private IMetadataValue attribution;
 	private URI license;
