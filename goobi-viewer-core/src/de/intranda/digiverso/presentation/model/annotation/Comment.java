@@ -178,6 +178,21 @@ public class Comment implements Comparable<Comment> {
         return DateTools.formatterDEDateTime.print(date.getTime());
     }
 
+    /**
+     * Removes any script tags from the text value.
+     * 
+     * @should remove scripts correctly
+     */
+    public void checkAndCleanScripts() {
+        if (text != null) {
+            String cleanText = Helper.stripJS(text);
+            if (cleanText.length() < text.length()) {
+                logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", pi, page, text);
+                text = cleanText;
+            }
+        }
+    }
+
     // Property accessors
 
     /**

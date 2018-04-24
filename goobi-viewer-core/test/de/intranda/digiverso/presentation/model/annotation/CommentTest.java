@@ -69,4 +69,18 @@ public class CommentTest {
         Comment comment = new Comment("PPN123", 1, owner, "comment text", null);
         Assert.assertFalse(comment.mayEdit(null));
     }
+
+    /**
+     * @see Comment#checkAndCleanScripts()
+     * @verifies remove scripts correctly
+     */
+    @Test
+    public void checkAndCleanScripts_shouldRemoveScriptsCorrectly() throws Exception {
+        User owner = new User();
+        owner.setId(1L);
+        Comment comment =
+                new Comment("PPN123", 1, owner, "foo <script type=\\\"javascript\\\">\\nfunction f {\\n alert();\\n}\\n</script> bar", null);
+        comment.checkAndCleanScripts();
+        Assert.assertEquals("foo  bar", comment.getText());
+    }
 }
