@@ -15,6 +15,7 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,21 +35,22 @@ public class CommentAnnotationCollection extends AbstractAnnotation {
      * @param comments
      * @param servletRequest
      * @param addContext If true, an @context field will be added to the JSON document
+     * @throws URISyntaxException 
      */
-    public CommentAnnotationCollection(String label, List<Comment> comments, HttpServletRequest servletRequest, boolean addContext) {
+    public CommentAnnotationCollection(String label, List<Comment> comments, HttpServletRequest servletRequest, boolean addContext) throws URISyntaxException {
+        super(servletRequest);
         if (comments == null) {
             throw new IllegalArgumentException("comments may not be null");
         }
 
         this.label = label;
-        this.servletRequest = servletRequest;
         this.addContext = addContext;
 
         List<CommentAnnotation> items = new ArrayList<>(comments.size());
         for (Comment comment : comments) {
             items.add(new CommentAnnotation(comment, servletRequest, false));
         }
-        page = new CommentAnnotationPage(getId(), items, servletRequest, false);
+        page = new CommentAnnotationPage(getId().toString(), items, servletRequest, false);
     }
 
     @JsonSerialize()

@@ -15,6 +15,9 @@
  */
 package de.intranda.digiverso.presentation.model.iiif.presentation.enums;
 
+import org.apache.commons.compress.compressors.FileNameUtil;
+import org.apache.commons.io.FilenameUtils;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
@@ -22,31 +25,31 @@ import com.fasterxml.jackson.annotation.JsonValue;
  *
  */
 public enum Format {
-	
-	IMAGE_JPEG("image/jpeg"),
-	IMAGE_PNG("image/png"),
-	VIDEO_MP4("video/mp4"),
-	VIDEO_WEBM("video/webm"),
-	AUDIO_OGG("audio/ogg"),
-	AUDI_MP3("audio/mp3"),
-	TEXT_PLAIN("text/plain"),
-	TEXT_XML("text/xml"),
-	TEXT_HTML("text/html"),
-	APPLICATION_PDF("applocation/pdf");
-	
-	private String label;
-	
-	private Format(String label) {
-		this.label = label;
-	}
-	
-	/**
-	 * @return the label
-	 */
-	@JsonValue
-	public String getLabel() {
-		return label;
-	}
+
+    IMAGE_JPEG("image/jpeg"),
+    IMAGE_PNG("image/png"),
+    VIDEO_MP4("video/mp4"),
+    VIDEO_WEBM("video/webm"),
+    AUDIO_OGG("audio/ogg"),
+    AUDI_MP3("audio/mp3"),
+    TEXT_PLAIN("text/plain"),
+    TEXT_XML("text/xml"),
+    TEXT_HTML("text/html"),
+    APPLICATION_PDF("applocation/pdf");
+
+    private String label;
+
+    private Format(String label) {
+        this.label = label;
+    }
+
+    /**
+     * @return the label
+     */
+    @JsonValue
+    public String getLabel() {
+        return label;
+    }
 
     /**
      * @param displayMimeType
@@ -54,13 +57,45 @@ public enum Format {
      */
     public static Format fromMimeType(String mimeType) {
         for (Format format : Format.values()) {
-            if(mimeType.toLowerCase().equals(format.getLabel())) {
+            if (mimeType.toLowerCase().equals(format.getLabel())) {
                 return format;
             }
         }
         return null;
     }
-	
-	
+
+    /**
+     * @param displayMimeType
+     * @return
+     */
+    public static Format fromFilename(String filename) {
+        String suffix = FilenameUtils.getExtension(filename).toLowerCase();
+        switch (suffix) {
+            case "txt":
+                return Format.TEXT_PLAIN;
+            case "html":
+            case "xhtml":
+                return Format.TEXT_HTML;
+            case "xml":
+                return Format.TEXT_XML;
+            case "ogg":
+                return Format.AUDIO_OGG;
+            case "mp3":
+            case "mpeg3":
+                return Format.AUDI_MP3;
+            case "mp4":
+            case "mpeg4":
+                return Format.VIDEO_MP4;
+            case "webm":
+                return Format.VIDEO_WEBM;
+            case "pdf":
+                return Format.APPLICATION_PDF;
+            case "png":
+                return Format.IMAGE_PNG;
+            default:
+                return Format.IMAGE_JPEG;
+
+        }
+    }
 
 }

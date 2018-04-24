@@ -16,6 +16,8 @@
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,23 +31,21 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
-public class CommentAnnotation extends AbstractAnnotation {
+public class CommentAnnotation extends AbstractAnnotation  implements IAnnotation {
 
-    public static final String PATH = "/comments";
 
     private final Comment comment;
 
     @Override
     @JsonSerialize()
-    public String getId() {
-        return new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
-                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length(),
-                        servletRequest.getRequestURI().indexOf(PATH) + PATH.length()))
+    public URI getId() throws URISyntaxException {
+        String idString = new StringBuilder(servicePath)
                 .append('/')
                 .append(comment.getPi())
                 .append('/')
@@ -54,6 +54,7 @@ public class CommentAnnotation extends AbstractAnnotation {
                 .append(comment.getId())
                 .append('/')
                 .toString();
+        return new URI(idString);
     }
 
     /**
@@ -61,20 +62,31 @@ public class CommentAnnotation extends AbstractAnnotation {
      * @param comment
      * @param servletRequest
      * @param addContext If true, an @context field will be added to the JSON document
+     * @throws URISyntaxException 
      */
     public CommentAnnotation(Comment comment, HttpServletRequest servletRequest, boolean addContext) {
+        super(servletRequest);
         if (comment == null) {
             throw new IllegalArgumentException("comment may not be null");
         }
 
         this.comment = comment;
-        this.servletRequest = servletRequest;
+        this.addContext = addContext;
+    }
+    
+    public CommentAnnotation(Comment comment, String appplicationPath, boolean addContext) {
+        super(appplicationPath);
+
+        if (comment == null) {
+            throw new IllegalArgumentException("comment may not be null");
+        }
+        this.comment = comment;
         this.addContext = addContext;
     }
 
     @JsonSerialize()
-    public String getTarget() {
-        return new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest)).append('/')
+    public URI getTarget() throws URISyntaxException {
+        String uri = new StringBuilder(applicationPath).append('/')
                 .append(PageType.viewImage.getName())
                 .append('/')
                 .append(comment.getPi())
@@ -82,6 +94,7 @@ public class CommentAnnotation extends AbstractAnnotation {
                 .append(comment.getPage())
                 .append('/')
                 .toString();
+        return new URI(uri);
     }
 
     @JsonSerialize(using = BodySerializer.class)

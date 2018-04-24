@@ -19,22 +19,31 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 
 /**
  * @author Florian Alpers
  *
  */
+@JsonInclude(Include.NON_EMPTY)
 public class Range extends AbstractPresentationModelElement implements IPresentationModelElement {
 
     private static final String TYPE = "sc:range";
-    
+
     private final List<Canvas> canvases = new ArrayList<>();
     private final List<Range> ranges = new ArrayList<>();
     private Layer contentLayer;
     private Canvas startCanvas;
-    
-    
+    @JsonIgnore
+    private boolean useMembers = false;
+
     /**
      * @param id
      */
@@ -49,58 +58,93 @@ public class Range extends AbstractPresentationModelElement implements IPresenta
     public String getType() {
         return TYPE;
     }
-    
+
     /**
      * @return the startCanvas
      */
+    @JsonSerialize(using=URLOnlySerializer.class)
     public Canvas getStartCanvas() {
         return startCanvas;
     }
-    
+
     /**
      * @param startCanvas the startCanvas to set
      */
     public void setStartCanvas(Canvas startCanvas) {
         this.startCanvas = startCanvas;
     }
-    
+
     /**
      * @return the contentLayer
      */
+    @JsonSerialize(using=URLOnlySerializer.class)
     public Layer getContentLayer() {
         return contentLayer;
     }
-    
+
     /**
      * @param contentLayer the contentLayer to set
      */
     public void setContentLayer(Layer contentLayer) {
         this.contentLayer = contentLayer;
     }
-    
+
     /**
      * @return the canvases
      */
+    @JsonSerialize(using = URLOnlySerializer.class)
     public List<Canvas> getCanvases() {
-        return canvases;
+        if(isUseMembers()) {
+            return null; 
+        } else {            
+            return canvases.isEmpty() ? null : canvases;
+        }
     }
-    
+
     /**
      * @return the ranges
      */
+    @JsonSerialize(using = URLOnlySerializer.class)
     public List<Range> getRanges() {
-        return ranges;
+        if(isUseMembers()) {
+            return null;
+        } else {            
+            return ranges.isEmpty() ? null : ranges;
+        }
     }
-    
+
     public void addCanvas(Canvas canvas) {
         this.canvases.add(canvas);
     }
-    
+
     public void addRange(Range range) {
         this.ranges.add(range);
     }
-    
-    
-    
+
+    @JsonSerialize(using = ContentLinkSerializer.class)
+    public List<IPresentationModelElement> getMembers() {
+        if(isUseMembers()) {            
+            List<IPresentationModelElement> list = new ArrayList<>();
+            list.addAll(ranges);
+            list.addAll(canvases);
+            return list.isEmpty() ? null : list;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param useMembers the useMembers to set
+     */
+    public void setUseMembers(boolean useMembers) {
+        this.useMembers = useMembers;
+    }
+
+    /**
+     * @return the useMembers
+     */
+    public boolean isUseMembers() {
+        return useMembers;
+    }
 
 }

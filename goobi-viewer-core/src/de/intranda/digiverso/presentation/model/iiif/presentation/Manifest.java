@@ -70,12 +70,8 @@ public class Manifest extends AbstractPresentationModelElement implements IPrese
         return structures;
     }
     
-    public void setStructure(Range range) {
-        if(this.structures.isEmpty()) {
-            this.structures.add(range);
-        } else {
-            this.structures.set(0, range);
-        }
+    public void addStructure(Range range) {
+        this.structures.add(range);
     }
     /**
      * @return the navDate

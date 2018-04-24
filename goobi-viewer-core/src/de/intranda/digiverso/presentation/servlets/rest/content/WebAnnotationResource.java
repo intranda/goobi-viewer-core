@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -119,6 +120,7 @@ public class WebAnnotationResource {
      * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
+     * @throws URISyntaxException 
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
@@ -126,7 +128,7 @@ public class WebAnnotationResource {
     @Path(CommentAnnotation.PATH + "/{pi}/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     public CommentAnnotationCollection getAnnotationsForPage(@PathParam("pi") String pi, @PathParam("page") Integer page)
-            throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException {
+            throws PresentationException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);
@@ -151,6 +153,7 @@ public class WebAnnotationResource {
      * @throws DAOException
      * @throws MalformedURLException
      * @throws ContentNotFoundException
+     * @throws URISyntaxException 
      * @should return document correctly
      * @should throw ContentNotFoundException if file not found
      */
@@ -158,7 +161,7 @@ public class WebAnnotationResource {
     @Path(CommentAnnotation.PATH + "/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public CommentAnnotationCollection getAnnotationsForRecord(@PathParam("pi") String pi)
-            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException {
+            throws PresentationException, IndexUnreachableException, DAOException, MalformedURLException, ContentNotFoundException, URISyntaxException {
         if (servletResponse != null) {
             servletResponse.addHeader("Access-Control-Allow-Origin", "*");
             servletResponse.setCharacterEncoding(Helper.DEFAULT_ENCODING);

@@ -17,26 +17,21 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.Date;
-import java.time.Instant;
-import java.time.format.DateTimeParseException;
-import java.util.Optional;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
+import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
@@ -53,9 +48,9 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 public class StructureBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(StructureBuilder.class);
-    
+
     public static final String BASE_RANGE_LABEL = "CONTENT";
-    
+
     /**
      * @param request
      * @throws URISyntaxException
@@ -71,20 +66,35 @@ public class StructureBuilder extends AbstractBuilder {
     public StructureBuilder(URI servletUri, URI requestURI) {
         super(servletUri, requestURI);
     }
-    
-    public Range generateStructure(StructElement baseElement, URI uri) throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException {
+
+    /**
+     * Generates the topmost range from the given baseElement. This is an abstract "CONTENT" range if baseElement is a work, or the range representing
+     * the given baseElement otherwise
+     * 
+     * @param baseElement
+     * @param uri
+     * @param useMembers
+     * @return
+     * @throws ConfigurationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws URISyntaxException 
+     */
+    public Range generateStructure(StructElement baseElement, URI uri, boolean useMembers)
+            throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
         Range range = new Range(uri);
-        IMetadataValue label = baseElement.isWork() ? IMetadataValue.getTranslations(BASE_RANGE_LABEL) : baseElement.getMultiLanguageMetadataValue(SolrConstants.TITLE);
+        range.setUseMembers(useMembers);
+        IMetadataValue label = baseElement.getMultiLanguageDisplayLabel();
         range.setLabel(label);
-        if(baseElement.isWork()) {
-            range.setViewingHint(ViewingHint.top);
-        } else {
-            populate(baseElement, range);
-        }
+        populate(baseElement, range);
+        populateChildren(baseElement, range, useMembers);
         return range;
     }
-    
+
     /**
+     * Adds Metadata and links to external services to a range
+     * 
      * @param ele
      * @param manifest
      * @throws ConfigurationException
@@ -116,19 +126,30 @@ public class StructureBuilder extends AbstractBuilder {
             logger.error("Unable to retrieve viewer url for {}", ele);
         }
 
-            /*PDF*/
+        /*PDF*/
+        try {
+            String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, range.getLabel().getValue().orElse(null));
+            LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
+            pdfDownload.setFormat(Format.APPLICATION_PDF);
+            pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
+            range.addRendering(pdfDownload);
+        } catch (URISyntaxException e) {
+            logger.error("Unable to retrieve pdf download url for {}", ele);
+        }
+
+        if (range.isUseMembers()) {
             try {
-                String pdfDownloadUrl = BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(ele, range.getLabel().getValue().orElse(null));
-                LinkingContent pdfDownload = new LinkingContent(new URI(pdfDownloadUrl));
-                pdfDownload.setFormat(Format.APPLICATION_PDF);
-                pdfDownload.setLabel(new SimpleMetadataValue("PDF"));
-                range.addRendering(pdfDownload);
+                int startPageNo = ele.getImageNumber();
+                if (startPageNo > 0) {
+                    URI pageURI = getCanvasURI(ele.getPi(), startPageNo);
+                    range.setStartCanvas(new Canvas(pageURI));
+                }
             } catch (URISyntaxException e) {
-                logger.error("Unable to retrieve pdf download url for {}", ele);
+                logger.error("Unable to create start page URI for {}", ele);
             }
+        }
 
     }
-    
 
     /**
      * @param logid
@@ -145,6 +166,43 @@ public class StructureBuilder extends AbstractBuilder {
     @Override
     protected String getPath() {
         return "/manifests";
+    }
+
+    /**
+     * @param doc
+     * @param topRange
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws URISyntaxException
+     * @throws DAOException
+     * @throws ConfigurationException
+     */
+    public void populateChildren(StructElement doc, Range topRange, boolean useMembers)
+            throws PresentationException, IndexUnreachableException, ConfigurationException, DAOException, URISyntaxException {
+        List<StructElement> children = doc.getChildren(getSolrFieldList());
+        for (StructElement structElement : children) {
+            Range child = generateStructure(structElement, getRangeURI(doc.getPi(), structElement.getLogid()), useMembers);
+            topRange.addRange(child);
+        }
+
+    }
+
+    /**
+     * @param doc
+     * @param topRange
+     * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     */
+    public void populatePages(StructElement doc, Range range) throws URISyntaxException, IndexUnreachableException {
+        int startPageNo = doc.getImageNumber();
+        int numPages = doc.getNumPages();
+        if (startPageNo > 0) {
+            for (int i = startPageNo; i < numPages; i++) {
+                URI pageURI = getCanvasURI(doc.getPi(), i);
+                Canvas canvas = new Canvas(pageURI);
+                range.addCanvas(canvas);
+            }
+        }
     }
 
 }

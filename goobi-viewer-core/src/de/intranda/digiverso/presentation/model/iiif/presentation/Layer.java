@@ -19,6 +19,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
+
 /**
  * @author Florian Alpers
  *
@@ -47,6 +51,7 @@ public class Layer extends AbstractPresentationModelElement implements IPresenta
     /**
      * @return the otherContent
      */
+    @JsonSerialize(using=URLOnlySerializer.class)
     public List<AnnotationList> getOtherContent() {
         return otherContent;
     }

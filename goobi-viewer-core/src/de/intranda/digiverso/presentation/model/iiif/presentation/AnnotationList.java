@@ -19,7 +19,13 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
+import de.intranda.digiverso.presentation.servlets.rest.content.IAnnotation;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.IIIFAnnotationSerializer;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 
 /**
@@ -29,7 +35,7 @@ import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.Proper
 public class AnnotationList extends AbstractPresentationModelElement implements IPresentationModelElement{
     
      private static final String TYPE = "sc:AnnotationList";
-     private final List<AbstractAnnotation> resources = new ArrayList<>();
+     private final List<IAnnotation> resources = new ArrayList<>();
      private List<IPresentationModelElement> within = new PropertyList<>();
      
     /**
@@ -48,13 +54,14 @@ public class AnnotationList extends AbstractPresentationModelElement implements 
     }
     
     /**
-     * @return the resources
+     * @return the resources, null if empty
      */
-    public List<AbstractAnnotation> getResources() {
-        return resources;
+    @JsonSerialize(using=IIIFAnnotationSerializer.class)
+    public List<IAnnotation> getResources() {
+        return resources.isEmpty() ? null : resources;
     }
     
-    public void addResource(AbstractAnnotation resource) {
+    public void addResource(IAnnotation resource) {
         this.resources.add(resource);
     }
     
@@ -68,4 +75,6 @@ public class AnnotationList extends AbstractPresentationModelElement implements 
     public void addWithin(IPresentationModelElement within) {
         this.within.add(within);
     }
+    
+    
 }

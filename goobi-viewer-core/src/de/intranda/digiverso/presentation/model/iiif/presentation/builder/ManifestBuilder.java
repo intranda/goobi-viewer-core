@@ -18,12 +18,15 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,21 +39,27 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.faces.facelets.util.Path;
+
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
+import de.intranda.digiverso.presentation.model.iiif.presentation.Layer;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Sequence;
 import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
@@ -61,6 +70,9 @@ import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
+import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
+import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
+import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
@@ -72,8 +84,6 @@ public class ManifestBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
     
-
-
     /**
      * @param request
      * @throws URISyntaxException
@@ -89,7 +99,7 @@ public class ManifestBuilder extends AbstractBuilder {
     public ManifestBuilder(URI servletUri, URI requestURI) {
         super(servletUri, requestURI);
     }
-    
+
     /**
      * @param pi
      * @param baseUrl
@@ -116,7 +126,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         return manifest;
     }
-    
+
     /**
      * @param ele
      * @param manifest
@@ -133,7 +143,7 @@ public class ManifestBuilder extends AbstractBuilder {
         addMetadata(manifest, ele);
 
         try {
-            String thumbUrl = BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele);
+            String thumbUrl = getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
                 manifest.setThumbnail(thumb);
@@ -195,9 +205,7 @@ public class ManifestBuilder extends AbstractBuilder {
 
         }
     }
-    
 
-    
     /**
      * @param baseUrl2
      * @param manifest
@@ -205,22 +213,22 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws PresentationException
      */
     public void addVolumes(Collection anchor, long iddoc) throws PresentationException, IndexUnreachableException {
-        List<StructElement> volumes = getChildDocs(iddoc).stream().sorted((v1, v2) -> getSortingNumber(v1).compareTo(getSortingNumber(v2))).collect(Collectors.toList());
-        
+        List<StructElement> volumes =
+                getChildDocs(iddoc).stream().sorted((v1, v2) -> getSortingNumber(v1).compareTo(getSortingNumber(v2))).collect(Collectors.toList());
+
         for (StructElement volume : volumes) {
             try {
-                IPresentationModelElement child =  generateManifest(volume);
-                if(child instanceof Manifest) {
-//                    addBaseSequence((Manifest)child, volume, child.getId().toString());
-                    anchor.addManifest((Manifest)child);
+                IPresentationModelElement child = generateManifest(volume);
+                if (child instanceof Manifest) {
+                    //                    addBaseSequence((Manifest)child, volume, child.getId().toString());
+                    anchor.addManifest((Manifest) child);
                 }
             } catch (ConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error creating child manigest for " + volume);
             }
-            
+
         }
     }
-    
 
     /**
      * @param manifest
@@ -242,76 +250,7 @@ public class ManifestBuilder extends AbstractBuilder {
         }
 
     }
-    
-    /**
-     * @param manifest
-     * @param doc
-     * @param string
-     * @throws URISyntaxException
-     * @throws DAOException
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     */
-    public void addBaseSequence(Manifest manifest, StructElement doc, String manifestId)
-            throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
 
-        Sequence sequence = new Sequence(new URI(manifestId + "/sequence/basic"));
-
-        IPageLoader pageLoader = new EagerPageLoader(doc);
-
-        for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
-            PhysicalElement page = pageLoader.getPage(i);
-
-            URI canvasId = new URI(manifestId + "/canvas/" + i);
-            Canvas canvas = new Canvas(canvasId);
-            canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
-
-            Dimension size = getSize(page);
-            if (size.getWidth() * size.getHeight() > 0) {
-                canvas.setWidth(size.width);
-                canvas.setHeight(size.height);
-            }
-
-            if (page.getMimeType().toLowerCase().startsWith("image") && StringUtils.isNotBlank(page.getFilepath())) {
-
-                String thumbnailUrl = page.getThumbnailUrl();
-                ImageContent resource;
-                if (size.getWidth() * size.getHeight() > 0) {
-                    resource = new ImageContent(new URI(thumbnailUrl), true);
-                    resource.setWidth(size.width);
-                    resource.setHeight(size.height);
-                } else {
-                    ImageInformation imageInfo;
-                    resource = new ImageContent(new URI(thumbnailUrl), false);
-                    try {
-                        imageInfo = imageDelivery.getImage().getImageInformation(page);
-                        resource.setService(imageInfo);
-                    } catch (ContentLibException e) {
-                        logger.error("Error reading image information from " + thumbnailUrl + ": " + e.toString());
-                        resource = new ImageContent(new URI(thumbnailUrl), true);
-                        resource.setWidth(size.width);
-                        resource.setHeight(size.height);
-                        
-                    }
-                }
-                resource.setFormat(Format.fromMimeType(page.getDisplayMimeType()));
-
-                Annotation imageAnnotation = new Annotation(null);
-                imageAnnotation.setMotivation(Motivation.PAINTING);
-                imageAnnotation.setOn(new Canvas(canvas.getId()));
-
-                imageAnnotation.setResource(resource);
-                canvas.addImage(imageAnnotation);
-
-            }
-
-            sequence.addCanvas(canvas);
-        }
-        if (sequence.getCanvases() != null) {
-            manifest.setSequence(sequence);
-        }
-    }
-    
 
     /**
      * @param anchor
@@ -337,6 +276,58 @@ public class ManifestBuilder extends AbstractBuilder {
     }
     
 
+    /**
+     * @param pi
+     * @param annoLists
+     * @param topLogId
+     * @param topRange
+     * @return
+     * @throws URISyntaxException
+     */
+    public Layer generateContentLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, String logId)
+            throws URISyntaxException {
+        Layer layer = new Layer(getLayerURI(pi, logId));
+        for (AnnotationType annoType : annoLists.keySet()) {
+            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
+            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
+            annoLists.get(annoType).stream()
+            .filter(al -> al.getResources() != null)
+            .flatMap(al -> al.getResources().stream())
+            .forEach(annotation -> content.addResource(annotation));
+            layer.addOtherContent(content);
+        }
+        return layer;
+    }
+    
+    public Layer generateLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, AnnotationType annoType)
+            throws URISyntaxException {
+        Layer layer = new Layer(getLayerURI(pi, annoType));
+        if(annoLists.get(annoType) != null) {
+            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
+            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
+            annoLists.get(annoType).stream()
+            .filter(al -> al.getResources() != null)
+//            .flatMap(al -> al.getResources().stream())
+            .forEach(al -> layer.addOtherContent(al));
+//            layer.addOtherContent(content);
+        }
+        return layer;
+    }
+    
+    public Map<AnnotationType, AnnotationList> mergeAnnotationLists(String pi, Map<AnnotationType, List<AnnotationList>> annoLists)
+            throws URISyntaxException {
+        Map<AnnotationType, AnnotationList> map = new HashMap<>();
+        for (AnnotationType annoType : annoLists.keySet()) {
+            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
+            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
+            annoLists.get(annoType).stream()
+            .filter(al -> al.getResources() != null)
+            .flatMap(al -> al.getResources().stream())
+            .forEach(annotation -> content.addResource(annotation));
+            map.put(annoType, content);
+        }
+        return map;
+    }
 
     /**
      * @param v1
@@ -353,31 +344,6 @@ public class ManifestBuilder extends AbstractBuilder {
         }
         return -1;
     }
-
-    
-    /**
-     * @param page
-     * @return
-     */
-    private Dimension getSize(PhysicalElement page) {
-        Dimension size = new Dimension(0, 0);
-        if (page.getMimeType().toLowerCase().startsWith("video") || page.getMimeType().toLowerCase().startsWith("text")) {
-            size.setSize(page.getVideoWidth(), page.getVideoHeight());
-        } else if (page.getMimeType().toLowerCase().startsWith("image")) {
-            if (page.hasIndividualSize()) {
-                size.setSize(page.getImageWidth(), page.getImageHeight());
-            } else {
-                try {
-                    ImageInformation info = imageDelivery.getImage().getImageInformation(page);
-                    size.setSize(info.getWidth(), info.getHeight());
-                } catch (ContentLibException | URISyntaxException e) {
-                    logger.error("Unable to retrieve image size for " + page + ": " + e.toString());
-                }
-            }
-        }
-        return size;
-    }
-
 
 
     /* (non-Javadoc)

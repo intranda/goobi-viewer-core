@@ -31,12 +31,14 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
@@ -51,15 +53,17 @@ public abstract class AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
     
+    private ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
+    
     private static final List<String> HIDDEN_SOLR_FIELDS = Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI,
             SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
             SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
-            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID });
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO });
     
     private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
             SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
-            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID };
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO };
 
     
     
@@ -67,15 +71,18 @@ public abstract class AbstractBuilder {
     
     private final URI servletURI;
     private final URI requestURI;
+    private final Optional<HttpServletRequest> request;
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
     
     public AbstractBuilder(HttpServletRequest request) throws URISyntaxException {
+        this.request = Optional.ofNullable(request);
         this.servletURI = new URI(ServletUtils.getServletPathWithHostAsUrlFromRequest(request));
         this.requestURI = new URI(ServletUtils.getServletPathWithoutHostAsUrlFromRequest(request) + request.getRequestURI());
     }
     
     public AbstractBuilder(URI servletUri, URI requestURI) {
+        this.request = Optional.empty();
         this.servletURI = servletUri;
         this.requestURI = requestURI;
     }
@@ -234,6 +241,20 @@ public abstract class AbstractBuilder {
         return fields;
     }
     
+    /**
+     * @return the thumbs
+     */
+    protected ThumbnailHandler getThumbs() {
+        return thumbs;
+    }
+    
+    /**
+     * @return the request
+     */
+    protected Optional<HttpServletRequest> getRequest() {
+        return request;
+    }
+    
 
     public URI getCollectionURI(String collectionField, String baseCollectionName) throws URISyntaxException {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("collections/").append(collectionField);
@@ -248,8 +269,39 @@ public abstract class AbstractBuilder {
         return new URI(sb.toString());
     }
     
-    public URI getRangeUri(String pi, String logId) throws URISyntaxException {
+    public URI getRangeURI(String pi, String logId) throws URISyntaxException {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/range/").append(logId);
+        return new URI(sb.toString());
+    }
+    
+    public URI getCanvasURI(String pi, int pageNo) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/canvas/").append(pageNo);
+        return new URI(sb.toString());
+    }
+    
+    public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/list/").append(pageNo).append("/").append(type.name());
+        return new URI(sb.toString());
+    }
+    
+    public URI getAnnotationListURI(String pi, AnnotationType type) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/list/").append(type.name());
+        return new URI(sb.toString());
+    }
+    
+    public URI getLayerURI(String pi, AnnotationType type) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/layer");
+        sb.append("/").append(type.name());
+        return new URI(sb.toString());
+    }
+    
+    public URI getLayerURI(String pi, String logId) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/layer");
+        if(StringUtils.isNotBlank(logId)) {            
+            sb.append("/").append(logId);
+        } else {
+            sb.append("/base");
+        }
         return new URI(sb.toString());
     }
     

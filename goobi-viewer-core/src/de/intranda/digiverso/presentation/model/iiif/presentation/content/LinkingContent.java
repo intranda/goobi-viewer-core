@@ -32,6 +32,7 @@ public class LinkingContent implements IContent {
 
     private final URI id;
     private IMetadataValue label;
+    private String type = null;
     private Format format = Format.TEXT_HTML;
     
     /**
@@ -51,7 +52,14 @@ public class LinkingContent implements IContent {
      */
     @Override
     public String getType() {
-        return null;
+        return type;
+    }
+    
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 
     /* (non-Javadoc)

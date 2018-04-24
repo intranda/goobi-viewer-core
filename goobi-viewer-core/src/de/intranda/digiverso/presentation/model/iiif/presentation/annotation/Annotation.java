@@ -16,7 +16,9 @@
 package de.intranda.digiverso.presentation.model.iiif.presentation.annotation;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
@@ -24,13 +26,14 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
+import de.intranda.digiverso.presentation.servlets.rest.content.IAnnotation;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 
 /**
  * @author Florian Alpers
  *
  */
-public class Annotation extends AbstractPresentationModelElement implements IPresentationModelElement{
+public class Annotation extends AbstractPresentationModelElement implements IPresentationModelElement, IAnnotation{
     
     public final static String TYPE = "oa:annotation";
 
@@ -94,6 +97,15 @@ public class Annotation extends AbstractPresentationModelElement implements IPre
      */
     public void setResource(IContent resource) {
         this.resource = resource;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.servlets.rest.content.IComment#getTarget()
+     */
+    @Override
+    @JsonIgnore
+    public URI getTarget() throws URISyntaxException {
+        return on.getId();
     }
 
     
