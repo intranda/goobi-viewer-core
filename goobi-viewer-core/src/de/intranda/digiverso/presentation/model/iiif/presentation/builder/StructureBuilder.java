@@ -136,6 +136,12 @@ public class StructureBuilder extends AbstractBuilder {
         } catch (URISyntaxException e) {
             logger.error("Unable to retrieve pdf download url for {}", ele);
         }
+        
+        try {
+            populatePages(ele, range);
+        } catch (URISyntaxException e) {
+            logger.error(e.toString(), e);
+        }
 
         if (range.isUseMembers()) {
             try {
@@ -188,9 +194,9 @@ public class StructureBuilder extends AbstractBuilder {
      */
     public void populatePages(StructElement doc, Range range) throws URISyntaxException, IndexUnreachableException {
         int startPageNo = doc.getImageNumber();
-        int numPages = doc.getNumPages();
+        int numPages = 1;
         if (startPageNo > 0) {
-            for (int i = startPageNo; i < numPages; i++) {
+            for (int i = startPageNo; i < startPageNo+numPages; i++) {
                 URI pageURI = getCanvasURI(doc.getPi(), i);
                 Canvas canvas = new Canvas(pageURI);
                 range.addCanvas(canvas);

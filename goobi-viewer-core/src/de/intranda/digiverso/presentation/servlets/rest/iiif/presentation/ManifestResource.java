@@ -93,6 +93,7 @@ public class ManifestResource extends AbstractResource {
             String topLogId = doc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
                 Range topRange = getStructureBuilder().generateStructure(doc, getStructureBuilder().getRangeURI(pi, topLogId), true);
+                
                 if(topRange.getMembers() != null) {
                     for (IPresentationModelElement ele : topRange.getMembers()) {
                         if(ele instanceof Range) {
