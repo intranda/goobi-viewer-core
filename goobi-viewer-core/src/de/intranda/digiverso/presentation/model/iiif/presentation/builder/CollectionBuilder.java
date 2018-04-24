@@ -162,12 +162,12 @@ public class CollectionBuilder extends AbstractBuilder {
             throws PresentationException, IndexUnreachableException, URISyntaxException {
         SolrDocumentList containedWorks = getContainedWorks(createCollectionQuery(collectionField, topElement));
         if(containedWorks != null) {
-            String restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
             for (SolrDocument solrDocument : containedWorks) {
                 
                 AbstractPresentationModelElement work;
                 Boolean anchor = (Boolean)solrDocument.getFirstValue(SolrConstants.ISANCHOR);
-                URI uri = new URI(restUrl + "manifests/" + solrDocument.getFirstValue(SolrConstants.PI));
+                String pi = solrDocument.getFirstValue(SolrConstants.PI).toString();
+                URI uri = getManifestURI(pi);
                 if(Boolean.TRUE.equals(anchor)) {
                     work = new Collection(uri);
                     work.setViewingHint(ViewingHint.multipart);
@@ -311,13 +311,5 @@ public class CollectionBuilder extends AbstractBuilder {
             return facetField;
         }
 
-    }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.iiif.presentation.builder.AbstractBuilder#getPath()
-     */
-    @Override
-    protected String getPath() {
-        return "/collection";
     }
 }

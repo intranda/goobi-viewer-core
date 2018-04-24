@@ -19,11 +19,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.servlets.rest.content.IAnnotation;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.IIIFAnnotationSerializer;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;

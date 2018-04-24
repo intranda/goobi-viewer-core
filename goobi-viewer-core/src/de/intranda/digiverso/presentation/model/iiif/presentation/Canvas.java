@@ -22,8 +22,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
-import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
-import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.PropertyList;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 
 /**

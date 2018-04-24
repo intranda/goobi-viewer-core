@@ -19,7 +19,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingDirection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 

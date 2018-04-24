@@ -126,10 +126,10 @@ public abstract class AbstractBuilder {
     protected URI getBaseUrl() {
         
         String request = requestURI.toString();
-        if(!request.contains(getPath())) {
+        if(!request.contains("/iiif/")) {
             return requestURI;
         } else {
-            request = request.substring(0, request.indexOf(getPath())+1);
+            request = request.substring(0, request.indexOf("/iiif/")+1);
             try {
                 return new URI(request);
             } catch (URISyntaxException e) {
@@ -261,7 +261,7 @@ public abstract class AbstractBuilder {
     
 
     public URI getCollectionURI(String collectionField, String baseCollectionName) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("collections/").append(collectionField);
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/collections/").append(collectionField);
         if (StringUtils.isNotBlank(baseCollectionName)) {
             sb.append("/").append(baseCollectionName);
         }
@@ -269,38 +269,38 @@ public abstract class AbstractBuilder {
     }
     
     public URI getManifestURI(String pi) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi);
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi);
         return new URI(sb.toString());
     }
     
     public URI getRangeURI(String pi, String logId) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/range/").append(logId);
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/range/").append(logId);
         return new URI(sb.toString());
     }
     
     public URI getCanvasURI(String pi, int pageNo) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/canvas/").append(pageNo);
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(pageNo);
         return new URI(sb.toString());
     }
     
     public URI getAnnotationListURI(String pi, int pageNo, AnnotationType type) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/list/").append(pageNo).append("/").append(type.name());
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/list/").append(pageNo).append("/").append(type.name());
         return new URI(sb.toString());
     }
     
     public URI getAnnotationListURI(String pi, AnnotationType type) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/list/").append(type.name());
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/list/").append(type.name());
         return new URI(sb.toString());
     }
     
     public URI getLayerURI(String pi, AnnotationType type) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/layer");
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/layer");
         sb.append("/").append(type.name());
         return new URI(sb.toString());
     }
     
     public URI getLayerURI(String pi, String logId) throws URISyntaxException {
-        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("manifests/").append(pi).append("/layer");
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/layer");
         if(StringUtils.isNotBlank(logId)) {            
             sb.append("/").append(logId);
         } else {
@@ -308,7 +308,5 @@ public abstract class AbstractBuilder {
         }
         return new URI(sb.toString());
     }
-    
-    protected abstract String getPath();
-    
+        
 }

@@ -360,13 +360,5 @@ public class SequenceBuilder extends AbstractBuilder {
         }
         return size;
     }
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.iiif.presentation.builder.AbstractBuilder#getPath()
-     */
-    @Override
-    protected String getPath() {
-        return "/manifests";
-    }
     
 }

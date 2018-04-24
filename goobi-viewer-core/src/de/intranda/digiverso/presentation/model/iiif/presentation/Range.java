@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
 

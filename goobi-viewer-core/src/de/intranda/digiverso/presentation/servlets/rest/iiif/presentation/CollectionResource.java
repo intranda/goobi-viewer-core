@@ -41,7 +41,7 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
  *
  */
 
-@Path("/collections")
+@Path("/iiif/collections")
 @ViewerRestServiceBinding
 @IIIFPresentationBinding
 public class CollectionResource extends AbstractResource{
@@ -49,14 +49,7 @@ public class CollectionResource extends AbstractResource{
     private static final Logger logger = LoggerFactory.getLogger(CollectionResource.class);
 
     private CollectionBuilder collectionBuilder;
-    
-    public CollectionResource() {
-        try {
-            this.collectionBuilder = new CollectionBuilder(servletRequest);
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
-    }
+
 
     /**
      * Returns a iiif collection of all collections from the given solr-field The response includes the metadata and subcollections of the topmost
@@ -77,7 +70,7 @@ public class CollectionResource extends AbstractResource{
     public Collection getCollections(@PathParam("collectionField") String collectionField)
             throws PresentationException, IndexUnreachableException, URISyntaxException {
 
-        Collection collection =  collectionBuilder.generateCollection(collectionField, null);
+        Collection collection =  getCollectionBuilder().generateCollection(collectionField, null);
                 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
@@ -100,7 +93,7 @@ public class CollectionResource extends AbstractResource{
     public Collection getCollection(@PathParam("collectionField") String collectionField, @PathParam("topElement") final String topElement)
             throws IndexUnreachableException, URISyntaxException, PresentationException {
 
-        Collection collection = collectionBuilder.generateCollection(collectionField, topElement);
+        Collection collection = getCollectionBuilder().generateCollection(collectionField, topElement);
 
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 

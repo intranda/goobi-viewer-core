@@ -17,7 +17,6 @@ package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,11 +29,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.response.PythonResponseWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.javafx.geom.transform.GeneralTransform3D;
 
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -65,7 +61,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
  * @author Florian Alpers
  *
  */
-@Path("/manifests")
+@Path("/iiif/manifests")
 @ViewerRestServiceBinding
 @IIIFPresentationBinding
 public class ManifestResource extends AbstractResource {
