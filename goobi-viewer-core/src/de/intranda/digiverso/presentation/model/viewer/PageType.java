@@ -36,6 +36,7 @@ public enum PageType {
     viewFulltext("fulltext"),
     viewOverview("overview"),
     viewFullscreen("fullscreen"),
+    viewObject("object"),
     viewReadingMode("readingmode"),
     viewCalendar("calendar"),
     search("search", PageTypeHandling.cms),
@@ -122,6 +123,7 @@ public enum PageType {
             case viewReadingMode:
             case viewThumbs:
             case viewToc:
+            case viewObject:
                 return true;
             default:
                 return false;

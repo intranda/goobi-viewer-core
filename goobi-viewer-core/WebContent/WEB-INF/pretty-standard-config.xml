@@ -319,6 +319,40 @@
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	
+	<!-- object -->
+	<url-mapping id="object2">
+		<pattern
+			value="/object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+    <url-mapping id="object2active">
+        <pattern
+            value="/!object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewObject.xhtml" />
+        <action onPostback="false">#{navigationHelper.setPreferredView('image')}</action>
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+	<url-mapping id="object3">
+		<pattern
+			value="/object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="object3active">
+		<pattern
+			value="/!object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{navigationHelper.setPreferredView('image')}</action>
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="object4">
+		<pattern
+			value="/object/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	
 	<!-- READING MODE -->
     <url-mapping id="readingmode2">
         <pattern

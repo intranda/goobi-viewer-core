@@ -2097,7 +2097,7 @@ public final class Configuration extends AbstractConfiguration {
 
             if (pageType != null) {
                 List<Object> views = subConfig.getList("useFor.view");
-                if (views.isEmpty() || views.contains(pageType.name())) {
+                if (views.isEmpty() || views.contains(pageType.name()) || views.contains(pageType.getName())) {
                     //match
                 } else {
                     continue;

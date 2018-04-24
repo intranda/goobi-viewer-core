@@ -245,8 +245,10 @@ public class ManifestBuilder extends AbstractBuilder {
         String anchorPI = ele.getAncestors().get(SolrConstants.PI_PARENT);
         if (StringUtils.isNotBlank(anchorPI)) {
             StructElement anchor = getDocument(anchorPI);
-            IPresentationModelElement anchorCollection = generateManifest(anchor);
-            manifest.addWithin(anchorCollection);
+            if(anchor != null) {                
+                IPresentationModelElement anchorCollection = generateManifest(anchor);
+                manifest.addWithin(anchorCollection);
+            }
         }
 
     }

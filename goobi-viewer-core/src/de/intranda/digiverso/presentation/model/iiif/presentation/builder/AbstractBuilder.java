@@ -217,9 +217,13 @@ public abstract class AbstractBuilder {
     public StructElement getDocument(String pi) throws PresentationException, IndexUnreachableException {
         String query = "PI:" + pi;
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, getSolrFieldList());
-        StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
-        ele.setImageNumber(1);
-        return ele;
+        if(doc != null) {            
+            StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+            ele.setImageNumber(1);
+            return ele;
+        } else {
+            return null;
+        }
     }
     
 
