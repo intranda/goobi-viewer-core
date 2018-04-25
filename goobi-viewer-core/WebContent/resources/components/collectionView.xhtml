@@ -19,7 +19,7 @@
                 	<!-- COLLECTIONS -->
                 	<ul class="collection">
                 		<ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
-                			<li class="collection__item collection__item--level-#{browseDcElement.level}" style="padding-left: #{browseDcElement.level * 32}px">
+                        	<li class="collection__item collection__item--level-#{browseDcElement.level}" style="padding-left: #{browseDcElement.level * 32}px">
                 				<div class="row">
                                     <div class="col-xs-2 col-sm-1 collection__structure-col">
                                         <!-- STRUCTURE -->
@@ -39,32 +39,8 @@
                                     </div>
                                     <div class="col-xs-7 col-sm-9">
 										<div class="collection__title">
-											<h:panelGroup rendered="#{browseDcElement.opensInNewWindow}">
-												<!-- TITLE -->
-												<h:commandLink action="#{collection.expand(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__title--top' : ''}">
-													<h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.name]} (#{browseDcElement.numberOfVolumes})" />
-													<h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.name]}" />
-													<f:ajax render="@form" />
-												</h:commandLink>
-											</h:panelGroup>
 
-											<h:panelGroup rendered="#{!browseDcElement.opensInNewWindow}">
 												<div class="row">
-<!-- 													<h:panelGroup rendered="#{collection.baseElementName != null}"> -->
-<!-- 														<div class="col-xs-1"> -->
-															<!-- ICONS -->
-<!-- 															<h:outputLink value="#{collection.getCollectionUrl(browseDcElement)}"> -->
-<!-- 																<h:panelGroup rendered="#{browseDcElement.opensInSearch}"> -->
-<!-- 																	<i class="fa fa-search" aria-hidden="true"></i> -->
-<!-- 																</h:panelGroup> -->
-<!-- 																<h:panelGroup rendered="#{browseDcElement.redirectsToWork}"> -->
-<!-- 																	<i class="fa fa-file" aria-hidden="true"></i> -->
-<!-- 																</h:panelGroup> -->
-<!-- 																<f:ajax render="@form" /> -->
-<!-- 															</h:outputLink> -->
-<!-- 														</div> -->
-<!-- 													</h:panelGroup> -->
-<!-- 													<div class="#{collection.baseElementName == null ? 'col-xs-12' : 'col-xs-11'}"> -->
                                                     <div class="col-xs-12">
 														<!-- TITLE -->
 														<h:outputLink value="#{collection.getCollectionUrl(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
@@ -74,7 +50,6 @@
 														</h:outputLink>
 													</div>
 												</div>
-											</h:panelGroup>
 										</div>
 									</div>
                                     <div class="col-xs-3 col-sm-2">

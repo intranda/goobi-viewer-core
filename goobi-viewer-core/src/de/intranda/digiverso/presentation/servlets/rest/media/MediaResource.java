@@ -17,7 +17,15 @@ package de.intranda.digiverso.presentation.servlets.rest.media;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.net.URLDecoder;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -72,7 +80,7 @@ public class MediaResource {
                     .getConfiguration().getMediaFolder() + '/' + mediaFilePath + '/');
         }
         if (file.isFile()) {
-            logger.debug("AV file: {} ({} bytes)", file.getAbsolutePath(), file.length());
+            logger.debug("Video file: {} ({} bytes)", file.getAbsolutePath(), file.length());
             
             try {
                 new ContentDeliveryServlet().processRequest(request, response, true, file.getAbsolutePath(), mimeType);
@@ -85,6 +93,7 @@ public class MediaResource {
         }
         return "";
     }
+
 
     /**
      * @param mediaFilePath

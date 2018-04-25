@@ -32,6 +32,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 
 public class CollectionView {
 
@@ -165,7 +166,7 @@ public class CollectionView {
             }
             this.visibleCollectionList = sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
                     getTopVisibleElement());
-            if (!isDisplayParentCollections()) {
+            if (!isDisplayParentCollections() && StringUtils.isNotBlank(topVisibleElement)) {
                 //if parent elements should be hidden, remove topElement from the list
                 //This cannot be done earlier because it breaks sortDcList...
                 this.visibleCollectionList.remove(0);
@@ -234,7 +235,8 @@ public class CollectionView {
 
     public int calculateLevel(String name) {
         if (StringUtils.isNotEmpty(BrowseDcElement.split)) {
-            return name.split("\\" + BrowseDcElement.split).length - 1;
+            int parts = name.split("\\" + BrowseDcElement.split).length - 1;
+            return parts;
         }
         return 0;
     }
@@ -615,11 +617,11 @@ public class CollectionView {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
         } else if (collection.isOpensInNewWindow()) {
-            String baseUri = BeanUtils.getRequest().getRequestURL().toString();
-            int cutoffIndex = baseUri.indexOf(PageType.expandCollection.getName());
-            if (cutoffIndex > 0) {
-                baseUri = baseUri.substring(0, cutoffIndex - 1);
-            }
+            String baseUri = ViewHistory.getCurrentView(BeanUtils.getRequest()).map(view -> view.getApplicationUrl() + "/" + view.getPagePath().toString()).orElse("");// BeanUtils.getRequest().getRequestURL().toString();
+//            int cutoffIndex = baseUri.indexOf(PageType.expandCollection.getName());
+//            if (cutoffIndex > 0) {
+//                baseUri = baseUri.substring(0, cutoffIndex - 1);
+//            }
             return baseUri + "/" + PageType.expandCollection.getName() + "/" + collection.getName() + "/";
         } else if (collection.getNumberOfVolumes() == 1) {
             //            return collection.getRepresentativeUrl();
