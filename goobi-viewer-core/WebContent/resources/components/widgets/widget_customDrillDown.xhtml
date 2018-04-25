@@ -28,7 +28,7 @@
 						<ul>
 							<ui:repeat value="#{facelets:getDrillDown(cc.attrs.widget.searchField, cc.attrs.widget.additionalQuery, searchBean.facets.isDrillDownExpanded(cc.attrs.widget.id.toString()) ? -1 : cc.attrs.widget.resultDisplayLimit, cc.attrs.widget.descendingOrder)}" var="filterLink">
 								<li>
-									<a href="#{navigationHelper.searchUrl}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}#{cc.attrs.widget.additionalQuery != '' ? ' AND ('.concat(cc.attrs.widget.additionalQuery).concat(')'):''}/1/-/-/">
+									<a href="#{navigationHelper.searchUrl}/-/(ISWORK:true OR ISANCHOR:true) AND #{filterLink.escapedLink}#{cc.attrs.widget.additionalQuerySuffix}/1/-/-/">
 										#{msg[cc.attrs.labelPrefix]}#{msg[filterLink.label]}#{msg[cc.attrs.labelSuffix]} (#{filterLink.count})
 									</a>
 								</li>
