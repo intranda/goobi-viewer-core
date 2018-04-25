@@ -68,6 +68,19 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     }
 
     /**
+     * 
+     * @return additionalQuery with an AND() wrapper
+     * @should build suffix correctly
+     */
+    public String getAdditionaQuerySuffix() {
+        if (StringUtils.isNotBlank(additionalQuery)) {
+            return " AND (" + additionalQuery + ")";
+        }
+
+        return "";
+    }
+
+    /**
      * @return the additionalQuery
      */
     public String getAdditionalQuery() {
@@ -113,8 +126,8 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     @Override
     public boolean equals(Object o) {
         return o.getClass().equals(CMSSidebarElementWithQuery.class) && bothNullOrEqual(getType(), ((CMSSidebarElement) o).getType())
-                && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithQuery) o).getWidgetTitle()) && bothNullOrEqual(getSearchField(),
-                        ((CMSSidebarElementWithQuery) o).getSearchField());
+                && bothNullOrEqual(getWidgetTitle(), ((CMSSidebarElementWithQuery) o).getWidgetTitle())
+                && bothNullOrEqual(getSearchField(), ((CMSSidebarElementWithQuery) o).getSearchField());
     }
 
 }

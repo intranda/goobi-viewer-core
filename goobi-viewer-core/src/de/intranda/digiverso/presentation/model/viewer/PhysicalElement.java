@@ -274,7 +274,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * 
      * @return the url to the media content of the page, for example the
      * @throws IndexUnreachableException
-     * @throws ConfigurationException 
+     * @throws ConfigurationException
      */
     public String getUrl() throws IndexUnreachableException, ConfigurationException {
 
@@ -283,7 +283,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
                 return getImageUrl();
             case MIME_TYPE_VIDEO:
             case MIME_TYPE_AUDIO: {
-                
+
                 String format = getFileNames().keySet().stream().findFirst().orElse("");
                 return getMediaUrl(format);
             }
@@ -304,7 +304,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return "";
     }
-    
+
     public String getSandboxedUrl() {
         logger.trace(fileNames.toString());
         if (fileNames.get("html-sandboxed") != null) {
@@ -731,24 +731,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getImageToPdfUrl() {
-        
+
         return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getImageDeliveryBean().getCurrentDocumentIfExists().orElse(null), this);
-        
-//        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-//        sb.append("?action=pdf")
-//                .append("&images=")
-//                .append(pi)
-//                .append("/")
-//                .append(fileName)
-//                .append("&metsFile=")
-//                .append(pi)
-//                .append(".xml")
-//                .append("&targetFileName=")
-//                .append(pi)
-//                .append("_")
-//                .append(order)
-//                .append(".pdf");
-//        return sb.toString();
+
+        //        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
+        //        sb.append("?action=pdf")
+        //                .append("&images=")
+        //                .append(pi)
+        //                .append("/")
+        //                .append(fileName)
+        //                .append("&metsFile=")
+        //                .append(pi)
+        //                .append(".xml")
+        //                .append("&targetFileName=")
+        //                .append(pi)
+        //                .append("_")
+        //                .append(order)
+        //                .append(".pdf");
+        //        return sb.toString();
         //        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
         //                + "&targetFileName=" + pi + "_" + order + ".pdf";
     }
@@ -761,7 +761,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws IndexUnreachableException
      */
     public String getMediaUrl(String format) throws IndexUnreachableException, ConfigurationException {
-        
+
         String url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(mimeType + "/" + format, pi, getFileNameForFormat(format));
 
         logger.trace("currentMediaUrl: {}", url.toString());
@@ -911,8 +911,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl()+ "image/" + pi + "/" + getFileName(), RegionRequest.FULL, Scale.MAX,
-                Rotation.NONE, Colortype.DEFAULT, format);
+        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getFileName(),
+                RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
     }
 
     public String getImageUrl(int size) {
@@ -920,8 +920,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl()+ "image/" + pi + "/" + getFileName(), RegionRequest.FULL,
-                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getFileName(),
+                RegionRequest.FULL, new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
     /**
@@ -999,11 +999,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return false;
     }
-    
+
     public int getFooterHeight() throws ConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType());
     }
-    
+
     public int getFooterHeight(String pageType) throws ConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType());
     }
@@ -1105,6 +1105,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         if (FacesContext.getCurrentInstance() != null) {
             defaultLocale = FacesContext.getCurrentInstance().getApplication().getDefaultLocale();
         }
+        // Check for any JS added to the comment text and remove it
+        comment.checkAndCleanScripts();
         if (comment.getId() == null) {
             if (DataManager.getInstance().getDao().addComment(comment)) {
                 Comment.sendEmailNotifications(comment, null, defaultLocale);

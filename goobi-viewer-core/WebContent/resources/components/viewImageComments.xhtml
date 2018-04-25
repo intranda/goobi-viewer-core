@@ -71,7 +71,7 @@
 									</div>
 									<div class="comments-comment">
 										<div class="comments-comment-text">
-											<h:outputText value="#{comment.text}" />
+											<h:outputText value="#{comment.displayText}" />
 										</div>
 	
 										<h:panelGroup rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
