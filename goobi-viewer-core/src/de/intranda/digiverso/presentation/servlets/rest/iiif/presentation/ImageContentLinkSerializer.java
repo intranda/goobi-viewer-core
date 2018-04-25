@@ -38,10 +38,15 @@ public class ImageContentLinkSerializer extends JsonSerializer<ImageContent>{
     public void serialize(ImageContent element, JsonGenerator generator, SerializerProvider provicer) throws IOException, JsonProcessingException {
         
         if(element.getService() == null) {
-            generator.writeString(element.getId().toString());
+//            generator.writeString(element.getId().toString());
+            generator.writeStartObject();
+            generator.writeStringField("@id", element.getId().toString());
+            generator.writeStringField("@type", "dcTypes:Image");
+            generator.writeEndObject();
         } else {
             generator.writeStartObject();
             generator.writeStringField("@id", element.getId().toString());
+            generator.writeStringField("@type", "dcTypes:Image");
             generator.writeObjectFieldStart("service");
             generator.writeStringField("@context", ImageInformation.JSON_CONTEXT);
             generator.writeStringField("@id", element.getService().getId());

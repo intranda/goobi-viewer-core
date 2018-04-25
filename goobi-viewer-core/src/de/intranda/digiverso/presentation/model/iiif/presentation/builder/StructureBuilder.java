@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -36,7 +36,6 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -85,9 +84,15 @@ public class StructureBuilder extends AbstractBuilder {
             throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
         Range range = new Range(uri);
         range.setUseMembers(useMembers);
-        IMetadataValue label = baseElement.getMultiLanguageDisplayLabel();
-        range.setLabel(label);
-        populate(baseElement, range);
+        if(baseElement.isWork()) {
+            IMetadataValue label = IMetadataValue.getTranslations(BASE_RANGE_LABEL);
+            range.setLabel(label);
+        } else {            
+            IMetadataValue label = baseElement.getMultiLanguageDisplayLabel();
+            range.setLabel(label);
+            populate(baseElement, range);
+            populatePages(baseElement, range);
+        }
         populateChildren(baseElement, range, useMembers);
         return range;
     }
@@ -181,6 +186,7 @@ public class StructureBuilder extends AbstractBuilder {
         List<StructElement> children = doc.getChildren(getSolrFieldList());
         for (StructElement structElement : children) {
             Range child = generateStructure(structElement, getRangeURI(doc.getPi(), structElement.getLogid()), useMembers);
+            child.addWithin(topRange);
             topRange.addRange(child);
         }
 
@@ -202,6 +208,18 @@ public class StructureBuilder extends AbstractBuilder {
                 range.addCanvas(canvas);
             }
         }
+    }
+
+    /**
+     * @param topRange
+     */
+    public List<Range> getDescendents(Range range) {
+        List<Range> children = new ArrayList<>();
+        for (Range child : range.getRangeList()) {
+            children.add(child);
+            children.addAll(getDescendents(child));
+        }
+        return children;
     }
 
 }

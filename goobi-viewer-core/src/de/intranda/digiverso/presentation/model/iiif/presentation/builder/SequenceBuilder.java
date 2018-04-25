@@ -112,7 +112,7 @@ public class SequenceBuilder extends AbstractBuilder {
             Canvas canvas = generateCanvas(doc, page);
             Map<AnnotationType, AnnotationList> content = addOtherContent(page, canvas, dataRepository);
             
-            merge(annotationMap, content);
+//            merge(annotationMap, content);
             
             sequence.addCanvas(canvas);
         }

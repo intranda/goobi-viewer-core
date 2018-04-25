@@ -20,12 +20,16 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
@@ -75,6 +79,17 @@ public class ManifestResource extends AbstractResource {
     @GET
     @Path("/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
+    public Response geManifestAlt(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException {
+        Response resp = Response.seeOther(new URI(request.getRequestURI() + "manifest")).header("Content-Type", response.getContentType())
+                .build();
+        return resp;
+        
+    }
+    
+    @GET
+    @Path("/{pi}/manifest")
+    @Produces({ MediaType.APPLICATION_JSON })
     public IPresentationModelElement geManifest(@PathParam("pi") String pi)
             throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException {
 
@@ -92,17 +107,24 @@ public class ManifestResource extends AbstractResource {
 
             String topLogId = doc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
-                Range topRange = getStructureBuilder().generateStructure(doc, getStructureBuilder().getRangeURI(pi, topLogId), true);
+                Range topRange = getStructureBuilder().generateStructure(doc, getStructureBuilder().getRangeURI(pi, topLogId), false);
+                topRange.setViewingHint(ViewingHint.top);
                 
-                if(topRange.getMembers() != null) {
-                    for (IPresentationModelElement ele : topRange.getMembers()) {
-                        if(ele instanceof Range) {
-                            ((Range) ele).setViewingHint(ViewingHint.top);
-                            ((Manifest)manifest).addStructure((Range)ele);
-                        }
-                    }
-                }
-//                ((Manifest) manifest).setStructure(topRange);
+                List<Range> ranges = getStructureBuilder().getDescendents(topRange);
+                ranges.add(0, topRange);
+                ranges.forEach(range -> {
+//                    range.resetRanges();
+                    ((Manifest) manifest).addStructure(range);
+                });
+                
+//                if(topRange.getMembers() != null) {
+//                    for (IPresentationModelElement ele : topRange.getMembers()) {
+//                        if(ele instanceof Range) {
+//                            ((Range) ele).setViewingHint(ViewingHint.top);
+//                            ((Manifest)manifest).addStructure((Range)ele);
+//                        }
+//                    }
+//                }
 
 //                Layer layer = getManifestBuilder().generateContentLayer(pi, annoLists, null);
 //                topRange.setContentLayer(layer);
@@ -149,6 +171,14 @@ public class ManifestResource extends AbstractResource {
             throw new NotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
         } else {
             Range topRange = getStructureBuilder().generateStructure(doc, getStructureBuilder().getRangeURI(pi, logId), false);
+            if(doc.isWork()) {
+                topRange.setViewingHint(ViewingHint.top);
+            } else {
+                StructElement parent = doc.getParent();
+                if(parent != null) {                    
+                    topRange.addWithin(new Range(getStructureBuilder().getRangeURI(pi, parent.getLogid())));
+                }
+            }
             getStructureBuilder().populatePages(doc, topRange);
             return topRange;
         }

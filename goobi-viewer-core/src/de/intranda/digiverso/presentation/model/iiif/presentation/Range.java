@@ -111,6 +111,15 @@ public class Range extends AbstractPresentationModelElement implements IPresenta
             return ranges.isEmpty() ? null : ranges;
         }
     }
+    
+    @JsonIgnore
+    public List<Range> getRangeList() {
+        return ranges;
+    }
+    
+    public void resetRanges() {
+        this.ranges.clear();
+    }
 
     public void addCanvas(Canvas canvas) {
         this.canvases.add(canvas);
