@@ -120,14 +120,5 @@
 				<arguments>1.0-name-matches-false-false-*.less</arguments>
 			</matcher>
 		</filter>
-		<filter>
-			<id>1524213097571</id>
-			<name>WebContent/resources/css/less</name>
-			<type>22</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-*.less</arguments>
-			</matcher>
-		</filter>
 	</filteredResources>
 </projectDescription>

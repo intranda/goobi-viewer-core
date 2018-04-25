@@ -78,8 +78,8 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
             Assert.assertNotNull(be.getMetadataList(field));
             List<Metadata> mdList = be.getMetadataList(field);
             Assert.assertFalse(mdList.get(0).getValues().isEmpty());
-            Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>", mdList
-                    .get(0).getValues().get(0).getComboValueShort(0));
+            Assert.assertEquals("FROM <span class=\"search-list--highlight\">FOO</span> TO <span class=\"search-list--highlight\">BAR</span>",
+                    mdList.get(0).getValues().get(0).getComboValueShort(0));
         }
         {
             String field = "MD_YEARPUBLISH";
@@ -182,6 +182,28 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         se.setDocStructType("Monograph");
         String label = BrowseElement.generateDefaultLabel(se, Locale.GERMAN);
         Assert.assertEquals("Monographie", label);
+    }
+
+    /**
+     * @see BrowseElement#getFulltextForHtml()
+     * @verifies remove any line breaks
+     */
+    @Test
+    public void getFulltextForHtml_shouldRemoveAnyLineBreaks() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR", "foo\nbar", false, Locale.ENGLISH, null);
+        Assert.assertEquals("foo bar", be.getFulltextForHtml());
+
+    }
+
+    /**
+     * @see BrowseElement#getFulltextForHtml()
+     * @verifies remove any JS
+     */
+    @Test
+    public void getFulltextForHtml_shouldRemoveAnyJS() throws Exception {
+        BrowseElement be = new BrowseElement(null, 1, "FROM FOO TO BAR",
+                "foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar", false, Locale.ENGLISH, null);
+        Assert.assertEquals("foo  bar", be.getFulltextForHtml());
     }
 
 }

@@ -1000,4 +1000,18 @@ public class Helper {
             return Optional.empty();
         }
     }
+
+    /**
+     * 
+     * @param s String to clean
+     * @return String sans any <script></script> blocks
+     * @should remove JS blocks correctly
+     */
+    public static String stripJS(String s) {
+        if (StringUtils.isBlank(s)) {
+            return s;
+        }
+
+        return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "");
+    }
 }
