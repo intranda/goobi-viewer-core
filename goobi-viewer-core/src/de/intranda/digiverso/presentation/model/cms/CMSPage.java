@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -56,6 +58,7 @@ import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentIte
 import de.intranda.digiverso.presentation.model.cms.CMSPageLanguageVersion.CMSPageStatus;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
 import de.intranda.digiverso.presentation.model.glossary.GlossaryManager;
+import de.intranda.digiverso.presentation.model.viewer.CollectionView;
 import de.intranda.digiverso.presentation.servlets.rest.cms.CMSContentResource;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -944,6 +947,10 @@ public class CMSPage {
      */
     public void setRelatedPI(String relatedPI) {
         this.relatedPI = relatedPI;
+    }
+    
+    public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
+        return BeanUtils.getCmsBean().getCollection(this);
     }
 
 

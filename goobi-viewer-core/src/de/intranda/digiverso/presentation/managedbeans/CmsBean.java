@@ -836,6 +836,8 @@ public class CmsBean implements Serializable {
                         searchBean.resetSearchAction();
                     }
                     return searchAction(item);
+                } else if(item  != null && CMSContentItemType.COLLECTION.equals(item.getType())) {
+                    getCollection(item.getItemId(), currentPage).reset(true);
                 }
             }
         }

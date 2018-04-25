@@ -661,6 +661,7 @@
     <url-mapping id="cmsOpenPageWithCollection">
         <pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
+        <action obPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
     </url-mapping>
     <url-mapping id="cmsOpenPageWithSearch">
