@@ -836,6 +836,8 @@ public class CmsBean implements Serializable {
                         searchBean.resetSearchAction();
                     }
                     return searchAction(item);
+                } else if(item  != null && CMSContentItemType.COLLECTION.equals(item.getType())) {
+                    getCollection(item.getItemId(), currentPage).reset(true);
                 }
             }
         }
@@ -1082,6 +1084,15 @@ public class CmsBean implements Serializable {
             }
         }
         return collection;
+    }
+    
+    public CollectionView getCollection(CMSPage page) throws PresentationException, IndexUnreachableException {
+        Optional<CMSContentItem> collectionItem = page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.COLLECTION.equals(item.getType())).findFirst();
+        if(collectionItem.isPresent()) {
+            return getCollection(collectionItem.get().getItemId(), page);
+        } else {
+            return null;
+        }
     }
 
     public static List<String> getLuceneFields() {
