@@ -21,14 +21,14 @@ import org.junit.Test;
 public class CMSSidebarElementWithQueryTest {
 
     /**
-     * @see CMSSidebarElementWithQuery#getAdditionaQuerySuffix()
+     * @see CMSSidebarElementWithQuery#getAdditionalQuerySuffix()
      * @verifies build suffix correctly
      */
     @Test
-    public void getAdditionaQuerySuffix_shouldBuildSuffixCorrectly() throws Exception {
+    public void getAdditionalQuerySuffix_shouldBuildSuffixCorrectly() throws Exception {
         CMSSidebarElementWithQuery element = new CMSSidebarElementWithQuery();
-        Assert.assertEquals("", element.getAdditionaQuerySuffix());
+        Assert.assertEquals("", element.getAdditionalQuerySuffix());
         element.setAdditionalQuery("foo:bar");
-        Assert.assertEquals(" AND (foo:bar)", element.getAdditionaQuerySuffix());
+        Assert.assertEquals(" AND (foo:bar)", element.getAdditionalQuerySuffix());
     }
 }
