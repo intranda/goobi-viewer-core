@@ -72,7 +72,7 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
      * @return additionalQuery with an AND() wrapper
      * @should build suffix correctly
      */
-    public String getAdditionaQuerySuffix() {
+    public String getAdditionalQuerySuffix() {
         if (StringUtils.isNotBlank(additionalQuery)) {
             return " AND (" + additionalQuery + ")";
         }
