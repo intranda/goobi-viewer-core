@@ -28,7 +28,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingH
  */
 public class Sequence extends AbstractPresentationModelElement implements IPresentationModelElement {
 
-    private static final String TYPE = "sc:sequence";
+    private static final String TYPE = "sc:Sequence";
 
     
     private final List<Canvas> canvases = new ArrayList<>();

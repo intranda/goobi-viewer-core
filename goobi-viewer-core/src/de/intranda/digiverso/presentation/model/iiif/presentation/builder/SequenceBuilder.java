@@ -110,11 +110,13 @@ public class SequenceBuilder extends AbstractBuilder {
             PhysicalElement page = pageLoader.getPage(i);
 
             Canvas canvas = generateCanvas(doc, page);
-            Map<AnnotationType, AnnotationList> content = addOtherContent(page, canvas, dataRepository);
-            
-//            merge(annotationMap, content);
-            
-            sequence.addCanvas(canvas);
+            if(canvas != null) {                
+                Map<AnnotationType, AnnotationList> content = addOtherContent(page, canvas, dataRepository);
+                
+                merge(annotationMap, content);
+                
+                sequence.addCanvas(canvas);
+            }
         }
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
@@ -150,6 +152,9 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      */
     public Canvas generateCanvas(StructElement doc, PhysicalElement page) throws URISyntaxException {
+        if(doc == null || page == null) {
+            return null;
+        }
         URI canvasId = getCanvasURI(doc.getPi(), page.getOrder());
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));

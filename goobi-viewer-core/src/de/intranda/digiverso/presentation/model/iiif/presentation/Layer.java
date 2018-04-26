@@ -53,7 +53,7 @@ public class Layer extends AbstractPresentationModelElement implements IPresenta
      */
     @JsonSerialize(using=URLOnlySerializer.class)
     public List<AnnotationList> getOtherContent() {
-        return otherContent;
+        return otherContent.isEmpty() ? null : otherContent;
     }
     
     public void addOtherContent(AnnotationList content) {

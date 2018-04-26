@@ -35,7 +35,7 @@ import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.Conten
 @JsonInclude(Include.NON_EMPTY)
 public class Collection extends AbstractPresentationModelElement implements IPresentationModelElement {
 
-    public static final String TYPE = "sc:collection";
+    public static final String TYPE = "sc:Collection";
     
     @JsonIgnore
     public final List<Collection> collections = new ArrayList<>();

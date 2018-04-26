@@ -30,7 +30,7 @@ import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnl
  */
 public class Canvas extends AbstractPresentationModelElement implements IPresentationModelElement, ICanvas {
 
-    private static final String TYPE = "sc:canvas";
+    private static final String TYPE = "sc:Canvas";
     
     private int width;
     private int height;

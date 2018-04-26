@@ -34,7 +34,7 @@ import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnl
 @JsonInclude(Include.NON_EMPTY)
 public class Range extends AbstractPresentationModelElement implements IPresentationModelElement {
 
-    private static final String TYPE = "sc:range";
+    private static final String TYPE = "sc:Range";
 
     private final List<Canvas> canvases = new ArrayList<>();
     private final List<Range> ranges = new ArrayList<>();

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public class Manifest extends AbstractPresentationModelElement implements IPresentationModelElement {
 
-    public static final String TYPE = "sc:manifest";
+    public static final String TYPE = "sc:Manifest";
     public final List<Sequence> sequences = new ArrayList<>(1);
     public final List<Range> structures = new ArrayList<>(1);
     public Date navDate = null;

@@ -35,7 +35,7 @@ import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnl
  */
 public class Annotation extends AbstractPresentationModelElement implements IPresentationModelElement, IAnnotation{
     
-    public final static String TYPE = "oa:annotation";
+    public final static String TYPE = "oa:Annotation";
 
     private Motivation motivation;
     private Canvas on;
