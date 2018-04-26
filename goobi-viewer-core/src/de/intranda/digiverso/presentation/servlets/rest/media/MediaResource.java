@@ -83,7 +83,8 @@ public class MediaResource {
             logger.debug("Video file: {} ({} bytes)", file.getAbsolutePath(), file.length());
             
             try {
-                new ContentDeliveryServlet().processRequest(request, response, true, file.getAbsolutePath(), mimeType);
+                new MediaDeliveryService().processRequest(request, response, file.getAbsolutePath(), mimeType);
+//                new ContentDeliveryServlet().processRequest(request, response, true, file.getAbsolutePath(), mimeType);
             } catch (IOException e) {
                 throw new PresentationException("Error accessing media resource", e);
             }
