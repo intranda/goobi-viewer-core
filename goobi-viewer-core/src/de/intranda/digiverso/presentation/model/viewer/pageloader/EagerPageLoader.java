@@ -253,21 +253,12 @@ public class EagerPageLoader implements IPageLoader, Serializable {
             PhysicalElement pe = new PhysicalElement(physId, fileName, order, orderLabel, urn, sbPurlPart.toString(), pi, mimeType, dataRepository);
             ret.put(order, pe);
 
-            // METS file ID root
-            // TODO comment in
-            // if (doc.getFieldValue(LuceneConstants.FILEIDROOT) != null) {
-            // pe.setFileIdRoot((String) doc.getFieldValue(LuceneConstants.FILEIDROOT));
-            // }
-
-            // Dimensions (video only)
-            if (!PhysicalElement.MIME_TYPE_IMAGE.equals(mimeType)) {
                 if (doc.getFieldValue(SolrConstants.WIDTH) != null) {
                     pe.setWidth((Integer) doc.getFieldValue(SolrConstants.WIDTH));
                 }
                 if (doc.getFieldValue(SolrConstants.HEIGHT) != null) {
                     pe.setHeight((Integer) doc.getFieldValue(SolrConstants.HEIGHT));
                 }
-            }
 
             // Full-text filename
             pe.setFulltextFileName((String) doc.getFirstValue(SolrConstants.FILENAME_FULLTEXT));

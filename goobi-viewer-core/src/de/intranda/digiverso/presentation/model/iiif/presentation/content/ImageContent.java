@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.DcType;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ImageInformationSerializer;
@@ -41,7 +42,7 @@ public class ImageContent implements IContent {
     
     private static final Logger logger = LoggerFactory.getLogger(ImageContent.class);
 	
-	private final String TYPE = "dcTypes:Image";
+	private final DcType TYPE = DcType.IMAGE;
 	
 	private final URI id;
 	private int width;
@@ -80,7 +81,7 @@ public class ImageContent implements IContent {
 	 * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getType()
 	 */
 	@Override
-	public String getType() {
+	public DcType getType() {
 		return TYPE;
 	}
 

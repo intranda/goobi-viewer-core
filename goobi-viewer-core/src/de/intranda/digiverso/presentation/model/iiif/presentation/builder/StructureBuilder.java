@@ -18,7 +18,9 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -36,6 +39,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -67,10 +71,10 @@ public class StructureBuilder extends AbstractBuilder {
     }
 
     /**
-     * Generates the topmost range from the given baseElement. This is an abstract "CONTENT" range if baseElement is a work, or the range representing
+     * Generates the topmost range from the given elements. This is an abstract "CONTENT" range if baseElement is a work, or the range representing
      * the given baseElement otherwise
      * 
-     * @param baseElement
+     * @param elements All elements to include in the list
      * @param uri
      * @param useMembers
      * @return
@@ -78,23 +82,59 @@ public class StructureBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
-    public Range generateStructure(StructElement baseElement, URI uri, boolean useMembers)
+    public List<Range> generateStructure(List<StructElement> elements, boolean useMembers)
             throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
-        Range range = new Range(uri);
-        range.setUseMembers(useMembers);
-        if(baseElement.isWork()) {
-            IMetadataValue label = IMetadataValue.getTranslations(BASE_RANGE_LABEL);
-            range.setLabel(label);
-        } else {            
-            IMetadataValue label = baseElement.getMultiLanguageDisplayLabel();
-            range.setLabel(label);
-            populate(baseElement, range);
-            populatePages(baseElement, range);
+        List<Range> ranges = new ArrayList<>();
+        Map<String, String> idMap = new HashMap<>();
+        if (elements != null && !elements.isEmpty()) {
+            
+            for (StructElement structElement : elements) {
+                URI rangeURI = getRangeURI(structElement.getPi(), structElement.getLogid());
+                Range range = new Range(rangeURI);
+                range.setUseMembers(useMembers);
+                idMap.put(Long.toString(structElement.getLuceneId()), structElement.getLogid());
+                if (structElement.isWork()) {
+                    IMetadataValue label = IMetadataValue.getTranslations(BASE_RANGE_LABEL);
+                    range.setLabel(label);
+                    range.setViewingHint(ViewingHint.top);
+                } else {
+                    IMetadataValue label = structElement.getMultiLanguageDisplayLabel();
+                    range.setLabel(label);
+                    String parentId = idMap.get(structElement.getMetadataValue(SolrConstants.IDDOC_PARENT));
+                    if(StringUtils.isNotBlank(parentId)) {                        
+                        range.addWithin(new Range(getRangeURI(structElement.getPi(), parentId)));
+                    }
+                    populate(structElement, range);
+                    populatePages(structElement, range);
+                }                
+                populateChildren(elements, structElement.getLuceneId(),structElement.getPi(), range);
+                ranges.add(range);
+            }
+
         }
-        populateChildren(baseElement, range, useMembers);
-        return range;
+        return ranges;
+    }
+
+    /**
+     * Generates the list of child ranges of the given range from the given elements which have the given parentiddoc
+     * 
+     * @param elements
+     * @param luceneId
+     * @param range
+     */
+    private void populateChildren(List<StructElement> elements, long parentIddoc, String pi, Range range) {
+        elements.stream().filter(element -> Long.toString(parentIddoc).equals(element.getMetadataValue(SolrConstants.IDDOC_PARENT)))
+        .map(element -> element.getLogid())
+        .forEach(logId -> {
+            try {
+                range.addRange(new Range(getRangeURI(pi, logId)));
+            } catch (URISyntaxException e) {
+               logger.error("Error creating uri for range with pi={} and logId={}", pi, logId);
+            }
+        });
+        
     }
 
     /**
@@ -141,56 +181,10 @@ public class StructureBuilder extends AbstractBuilder {
         } catch (URISyntaxException e) {
             logger.error("Unable to retrieve pdf download url for {}", ele);
         }
-        
-//        try {
-//            populatePages(ele, range);
-//        } catch (URISyntaxException e) {
-//            logger.error(e.toString(), e);
-//        }
 
-//        if (range.isUseMembers()) {
-//            try {
-//                int startPageNo = ele.getImageNumber();
-//                if (startPageNo > 0) {
-//                    URI pageURI = getCanvasURI(ele.getPi(), startPageNo);
-//                    range.setStartCanvas(new Canvas(pageURI));
-//                }
-//            } catch (URISyntaxException e) {
-//                logger.error("Unable to create start page URI for {}", ele);
-//            }
-//        }
 
     }
 
-    /**
-     * @param logid
-     * @return
-     */
-    private URI generateRangeId(String logid, URI manifestURI) {
-        URI uri = manifestURI.resolve("range").resolve(logid);
-        return uri;
-    }
-
-
-    /**
-     * @param doc
-     * @param topRange
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws URISyntaxException
-     * @throws DAOException
-     * @throws ConfigurationException
-     */
-    public void populateChildren(StructElement doc, Range topRange, boolean useMembers)
-            throws PresentationException, IndexUnreachableException, ConfigurationException, DAOException, URISyntaxException {
-        List<StructElement> children = doc.getChildren(getSolrFieldList());
-        for (StructElement structElement : children) {
-            Range child = generateStructure(structElement, getRangeURI(doc.getPi(), structElement.getLogid()), useMembers);
-            child.addWithin(topRange);
-            topRange.addRange(child);
-        }
-
-    }
 
     /**
      * @param doc
@@ -201,8 +195,13 @@ public class StructureBuilder extends AbstractBuilder {
     public void populatePages(StructElement doc, Range range) throws URISyntaxException, IndexUnreachableException {
         int startPageNo = doc.getImageNumber();
         int numPages = 1;
+        try {            
+            numPages = Integer.parseInt(doc.getMetadataValue(SolrConstants.NUMPAGES));
+        } catch(NullPointerException | NumberFormatException e) {
+            //can't determine number of pages. Ignore
+        }
         if (startPageNo > 0) {
-            for (int i = startPageNo; i < startPageNo+numPages; i++) {
+            for (int i = startPageNo; i < startPageNo + numPages; i++) {
                 URI pageURI = getCanvasURI(doc.getPi(), i);
                 Canvas canvas = new Canvas(pageURI);
                 range.addCanvas(canvas);

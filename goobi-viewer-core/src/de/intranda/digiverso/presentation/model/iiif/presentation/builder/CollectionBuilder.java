@@ -247,8 +247,7 @@ public class CollectionBuilder extends AbstractBuilder {
             }
 
         } catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.toString(), e);
         }
         return collection;
     }

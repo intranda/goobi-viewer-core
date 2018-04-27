@@ -20,6 +20,7 @@ import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.DcType;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
@@ -32,7 +33,7 @@ public class LinkingContent implements IContent {
 
     private final URI id;
     private IMetadataValue label;
-    private String type = null;
+    private DcType type = null;
     private Format format = Format.TEXT_HTML;
     
     /**
@@ -51,14 +52,14 @@ public class LinkingContent implements IContent {
      * @see de.intranda.digiverso.presentation.model.iiif.presentation.content.IContent#getType()
      */
     @Override
-    public String getType() {
+    public DcType getType() {
         return type;
     }
     
     /**
      * @param type the type to set
      */
-    public void setType(String type) {
+    public void setType(DcType type) {
         this.type = type;
     }
 

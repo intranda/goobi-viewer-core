@@ -15,18 +15,13 @@
  */
 package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 
-import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,47 +29,26 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.faces.facelets.util.Path;
-
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
-import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Layer;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
-import de.intranda.digiverso.presentation.model.iiif.presentation.Sequence;
-import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
-import de.intranda.digiverso.presentation.model.metadata.multilanguage.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.SimpleMetadataValue;
-import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
-import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
-import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
-import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
-import de.intranda.digiverso.presentation.servlets.rest.content.AbstractAnnotation;
-import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
  * @author Florian Alpers
@@ -216,6 +190,14 @@ public class ManifestBuilder extends AbstractBuilder {
         List<StructElement> volumes =
                 getChildDocs(iddoc).stream().sorted((v1, v2) -> getSortingNumber(v1).compareTo(getSortingNumber(v2))).collect(Collectors.toList());
 
+        addVolumes(anchor, volumes);
+    }
+
+    /**
+     * @param anchor
+     * @param volumes
+     */
+    public void addVolumes(Collection anchor, List<StructElement> volumes) {
         for (StructElement volume : volumes) {
             try {
                 IPresentationModelElement child = generateManifest(volume);
@@ -238,17 +220,12 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      * @throws ConfigurationException
      */
-    public void addAnchor(Manifest manifest, StructElement ele)
+    public void addAnchor(Manifest manifest, String anchorPI)
             throws PresentationException, IndexUnreachableException, ConfigurationException, URISyntaxException, DAOException {
 
         /*ANCHOR*/
-        String anchorPI = ele.getAncestors().get(SolrConstants.PI_PARENT);
         if (StringUtils.isNotBlank(anchorPI)) {
-            StructElement anchor = getDocument(anchorPI);
-            if(anchor != null) {                
-                IPresentationModelElement anchorCollection = generateManifest(anchor);
-                manifest.addWithin(anchorCollection);
-            }
+            manifest.addWithin(new Collection(getManifestURI(anchorPI)));
         }
 
     }
@@ -260,6 +237,7 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
+    @SuppressWarnings("unchecked")
     private List<StructElement> getChildDocs(long iddocParent) throws PresentationException, IndexUnreachableException {
         String query = SolrConstants.IDDOC_PARENT + ":" + iddocParent;
         SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
@@ -276,60 +254,7 @@ public class ManifestBuilder extends AbstractBuilder {
             return Collections.EMPTY_LIST;
         }
     }
-    
 
-    /**
-     * @param pi
-     * @param annoLists
-     * @param topLogId
-     * @param topRange
-     * @return
-     * @throws URISyntaxException
-     */
-    public Layer generateContentLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, String logId)
-            throws URISyntaxException {
-        Layer layer = new Layer(getLayerURI(pi, logId));
-        for (AnnotationType annoType : annoLists.keySet()) {
-            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
-            annoLists.get(annoType).stream()
-            .filter(al -> al.getResources() != null)
-            .flatMap(al -> al.getResources().stream())
-            .forEach(annotation -> content.addResource(annotation));
-            layer.addOtherContent(content);
-        }
-        return layer;
-    }
-    
-    public Layer generateLayer(String pi, Map<AnnotationType, List<AnnotationList>> annoLists, AnnotationType annoType)
-            throws URISyntaxException {
-        Layer layer = new Layer(getLayerURI(pi, annoType));
-        if(annoLists.get(annoType) != null) {
-            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
-            annoLists.get(annoType).stream()
-            .filter(al -> al.getResources() != null)
-//            .flatMap(al -> al.getResources().stream())
-            .forEach(al -> layer.addOtherContent(al));
-//            layer.addOtherContent(content);
-        }
-        return layer;
-    }
-    
-    public Map<AnnotationType, AnnotationList> mergeAnnotationLists(String pi, Map<AnnotationType, List<AnnotationList>> annoLists)
-            throws URISyntaxException {
-        Map<AnnotationType, AnnotationList> map = new HashMap<>();
-        for (AnnotationType annoType : annoLists.keySet()) {
-            AnnotationList content = new AnnotationList(getAnnotationListURI(pi, annoType));
-            content.setLabel(IMetadataValue.getTranslations(annoType.name()));
-            annoLists.get(annoType).stream()
-            .filter(al -> al.getResources() != null)
-            .flatMap(al -> al.getResources().stream())
-            .forEach(annotation -> content.addResource(annotation));
-            map.put(annoType, content);
-        }
-        return map;
-    }
 
     /**
      * @param v1

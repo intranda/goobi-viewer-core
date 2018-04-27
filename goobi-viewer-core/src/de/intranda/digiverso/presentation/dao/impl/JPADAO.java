@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -1548,6 +1549,25 @@ public class JPADAO implements IDAO {
         } finally {
             em.close();
         }
+    }
+    
+    /**
+     * Gets all page numbers (order) within a work with the given pi which contain comments
+     * 
+     * @param pi
+     * @return
+     * @throws DAOException 
+     */
+    @Override
+    public List<Integer> getPagesWithComments(String pi) throws DAOException {
+        preQuery();
+        StringBuilder sbQuery = new StringBuilder(80);
+        sbQuery.append("SELECT o.page FROM Comment o WHERE o.pi = :pi");
+        Query q = em.createQuery(sbQuery.toString());
+        q.setParameter("pi", pi);
+        q.setHint("javax.persistence.cache.storeMode", "REFRESH");
+        List<Integer> results = q.getResultList();
+        return results.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     /* (non-Javadoc)

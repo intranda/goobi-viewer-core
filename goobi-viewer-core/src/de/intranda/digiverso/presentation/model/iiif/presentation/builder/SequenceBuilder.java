@@ -18,22 +18,17 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 import java.awt.Dimension;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.faces.application.annotation.AnnotationManager;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -48,6 +43,7 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Ann
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.ImageContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.content.LinkingContent;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.DcType;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
@@ -59,7 +55,6 @@ import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.intranda.digiverso.presentation.servlets.rest.content.CommentAnnotation;
 import de.intranda.digiverso.presentation.servlets.rest.content.ContentResource;
-import de.intranda.digiverso.presentation.servlets.rest.content.IAnnotation;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
@@ -88,7 +83,9 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     /**
-     * @param manifest
+     * Creates a sequence from all pages within the given doc and appends it to manifest
+     * 
+     * @param manifest The manifest to include the sequence. May be null
      * @param doc
      * @param string
      * @throws URISyntaxException
@@ -98,31 +95,67 @@ public class SequenceBuilder extends AbstractBuilder {
      */
     public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId)
             throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
-        
+
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
-        Sequence sequence = new Sequence(new URI(manifestId + "/sequence/basic"));
+        Sequence sequence = new Sequence(getSequenceURI(doc.getPi(), null));
 
         IPageLoader pageLoader = new EagerPageLoader(doc);
+
         String dataRepository = ContentResource.getDataRepository(doc.getPi());
-        
+
+        Map<Integer, Canvas> canvasMap = new HashMap<>();
         for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
             PhysicalElement page = pageLoader.getPage(i);
 
             Canvas canvas = generateCanvas(doc, page);
-            if(canvas != null) {                
-                Map<AnnotationType, AnnotationList> content = addOtherContent(page, canvas, dataRepository);
-                
+            if (canvas != null) {
+                Map<AnnotationType, AnnotationList> content = addOtherContent(doc, page, canvas, dataRepository, false);
+
                 merge(annotationMap, content);
-                
+                canvasMap.put(i, canvas);
                 sequence.addCanvas(canvas);
             }
         }
+        annotationMap.put(AnnotationType.COMMENT, addComments(canvasMap, doc.getPi(), false));
+
         if (manifest != null && sequence.getCanvases() != null) {
             manifest.setSequence(sequence);
         }
-        
+
         return annotationMap;
+    }
+
+    /**
+     * Adds a comment annotation to all cavases which contain comments
+     * 
+     * @param canvases All canvases which may get comments, mapped by their page order
+     * @param pi The pi of the work containing the pages
+     * @param populate if true, the actual annotations will be included in the resources property
+     * @return a map with the list of all annotationlists (one list per page)
+     * @throws DAOException
+     * @throws URISyntaxException
+     */
+    public List<AnnotationList> addComments(Map<Integer, Canvas> canvases, String pi, boolean populate) throws DAOException, URISyntaxException {
+        List<AnnotationList> list = new ArrayList<>();
+        List<Integer> pages = DataManager.getInstance().getDao().getPagesWithComments(pi);
+        for (Integer order : pages) {
+            Canvas canvas = canvases.get(order);
+            if (canvas != null) {
+                AnnotationList annoList = new AnnotationList(getAnnotationListURI(pi, order, AnnotationType.COMMENT));
+                annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.COMMENT.name()));
+                if (populate) {
+                    List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, false);
+                    for (Comment comment : comments) {
+                        CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
+                        annoList.addResource(anno);
+                    }
+                }
+                canvas.addOtherContent(annoList);
+                list.add(annoList);
+            }
+        }
+        return list;
     }
 
     /**
@@ -130,9 +163,9 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param content
      */
     public void merge(Map<AnnotationType, List<AnnotationList>> annotationMap, Map<AnnotationType, AnnotationList> content) {
-        for (AnnotationType  type : content.keySet()) {
+        for (AnnotationType type : content.keySet()) {
             List<AnnotationList> list = annotationMap.get(type);
-            if(list == null) {
+            if (list == null) {
                 list = new ArrayList<AnnotationList>();
                 annotationMap.put(type, list);
             }
@@ -152,15 +185,14 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws URISyntaxException
      */
     public Canvas generateCanvas(StructElement doc, PhysicalElement page) throws URISyntaxException {
-        if(doc == null || page == null) {
+        if (doc == null || page == null) {
             return null;
         }
         URI canvasId = getCanvasURI(doc.getPi(), page.getOrder());
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
         canvas.setThumbnail(new ImageContent(new URI(getThumbs().getThumbnailUrl(page)), false));
-        
-        
+
         Dimension size = getSize(page);
         if (size.getWidth() * size.getHeight() > 0) {
             canvas.setWidth(size.width);
@@ -202,147 +234,154 @@ public class SequenceBuilder extends AbstractBuilder {
         return canvas;
     }
 
-
-    public Map<AnnotationType, AnnotationList> addOtherContent(PhysicalElement page, Canvas canvas, String dataRepository) throws URISyntaxException, PresentationException, IndexUnreachableException {
+    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas, String dataRepository,
+            boolean populate) throws URISyntaxException, PresentationException, IndexUnreachableException {
 
         Map<AnnotationType, AnnotationList> annotationMap = new HashMap<>();
-        
-        if (Files.exists(ContentResource.getFulltextFile(page.getPi(), page.getFileName("txt"), dataRepository))
-                || Files.exists(ContentResource.getAltoFile(page.getPi(), page.getFileName("xml"), dataRepository))) {
+
+        if (StringUtils.isNotBlank(page.getFulltextFileName()) || StringUtils.isNotBlank(page.getAltoFileName())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT));
             annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.FULLTEXT.name()));
-            LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
-            fulltextLink.setFormat(Format.TEXT_PLAIN);
-            fulltextLink.setType("dcTypes:Text");
-            fulltextLink.setLabel(IMetadataValue.getTranslations("FULLTEXT"));
-            Annotation fulltextAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.FULLTEXT, 1));
+            Annotation fulltextAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.FULLTEXT, 1));
             fulltextAnnotation.setMotivation(Motivation.PAINTING);
             fulltextAnnotation.setOn(canvas);
-            fulltextAnnotation.setResource(fulltextLink);
             annoList.addResource(fulltextAnnotation);
             annotationMap.put(AnnotationType.FULLTEXT, annoList);
+            if(populate) {                
+                LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
+                fulltextLink.setFormat(Format.TEXT_PLAIN);
+                fulltextLink.setType(DcType.TEXT);
+                fulltextLink.setLabel(IMetadataValue.getTranslations("FULLTEXT"));
+                fulltextAnnotation.setResource(fulltextLink);
+            }
         }
 
-        if (Files.exists(ContentResource.getAltoFile(page.getPi(), page.getFileName("xml"), dataRepository))) {
+        if (StringUtils.isNotBlank(page.getAltoFileName())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.ALTO));
             annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.ALTO.name()));
-            LinkingContent altoLink = new LinkingContent(ContentResource.getAltoURI(page.getPi(), page.getFileName("xml")));
-            altoLink.setFormat(Format.TEXT_XML);
-            altoLink.setType("dcTypes:Text");
-            altoLink.setLabel(IMetadataValue.getTranslations("ALTO"));
-            Annotation altoAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.ALTO, 1));
+            Annotation altoAnnotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.ALTO, 1));
             altoAnnotation.setMotivation(Motivation.PAINTING);
             altoAnnotation.setOn(canvas);
-            altoAnnotation.setResource(altoLink);
             annoList.addResource(altoAnnotation);
             annotationMap.put(AnnotationType.ALTO, annoList);
+            if(populate) {                
+                LinkingContent altoLink = new LinkingContent(ContentResource.getAltoURI(page.getPi(), page.getFileName("xml")));
+                altoLink.setFormat(Format.TEXT_XML);
+                altoLink.setType(DcType.TEXT);
+                altoLink.setLabel(IMetadataValue.getTranslations("ALTO"));
+                altoAnnotation.setResource(altoLink);
+            }
         }
 
         if (PhysicalElement.MIME_TYPE_AUDIO.equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO));
             annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.AUDIO.name()));
             try {
-                String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
-                Format format = Format.fromFilename(url);
-
-                LinkingContent audioLink = new LinkingContent(new URI(url));
-                audioLink.setFormat(format);
-                audioLink.setType("dcTypes:Audio");
-                audioLink.setLabel(IMetadataValue.getTranslations("AUDIO"));
-                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.AUDIO, 1));
+                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
                 annotation.setOn(canvas);
-                annotation.setResource(audioLink);
                 annoList.addResource(annotation);
                 annotationMap.put(AnnotationType.AUDIO, annoList);
+                if(populate) {                    
+                    String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
+                    Format format = Format.fromFilename(url);
+                    LinkingContent audioLink = new LinkingContent(new URI(url));
+                    audioLink.setFormat(format);
+                    audioLink.setType(DcType.SOUND);
+                    audioLink.setLabel(IMetadataValue.getTranslations("AUDIO"));
+                    annotation.setResource(audioLink);
+                }
             } catch (ConfigurationException e) {
                 logger.error(e.toString(), e);
             }
         }
-        
+
         AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO));
         videoList.setLabel(IMetadataValue.getTranslations(AnnotationType.VIDEO.name()));
         if (PhysicalElement.MIME_TYPE_VIDEO.equals(page.getMimeType())) {
             try {
-                String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
-                Format format = Format.fromFilename(url);
-
-                LinkingContent link = new LinkingContent(new URI(url));
-                link.setFormat(format);
-                link.setType("dcTypes:Sound");
-                link.setLabel(IMetadataValue.getTranslations("VIDEO"));
-                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.VIDEO, 1));
+                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
                 annotation.setMotivation(Motivation.PAINTING);
                 annotation.setOn(canvas);
-                annotation.setResource(link);
                 videoList.addResource(annotation);
+                if(populate) {                    
+                    String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
+                    Format format = Format.fromFilename(url);
+                    LinkingContent link = new LinkingContent(new URI(url));
+                    link.setFormat(format);
+                    link.setType(DcType.MOVING_IMAGE);
+                    link.setLabel(IMetadataValue.getTranslations("VIDEO"));
+                    annotation.setResource(link);
+                }
             } catch (ConfigurationException e) {
                 logger.error(e.toString(), e);
             }
         }
         if (PhysicalElement.MIME_TYPE_SANDBOXED_HTML.equals(page.getMimeType())) {
-                try {
+            try {
+                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
+                annotation.setMotivation(Motivation.PAINTING);
+                annotation.setOn(canvas);
+                videoList.addResource(annotation);
+                if(populate) {                    
                     String url = page.getUrl();
-                    if(url.startsWith("//")) {
+                    if (url.startsWith("//")) {
                         url = "http:" + url;
                     }
                     
                     LinkingContent link = new LinkingContent(new URI(url));
                     link.setFormat(Format.TEXT_HTML);
-                    link.setType("dcTypes:Video");
+                    link.setType(DcType.MOVING_IMAGE);
                     link.setLabel(IMetadataValue.getTranslations("VIDEO"));
-                    Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.VIDEO, 1));
-                    annotation.setMotivation(Motivation.PAINTING);
-                    annotation.setOn(canvas);
                     annotation.setResource(link);
-                    videoList.addResource(annotation);
-                } catch (ConfigurationException e) {
-                    logger.error(e.toString(), e);
                 }
+            } catch (ConfigurationException e) {
+                logger.error(e.toString(), e);
+            }
         }
-        if(videoList.getResources() != null) {            
+        if (videoList.getResources() != null) {
             annotationMap.put(AnnotationType.VIDEO, videoList);
         }
-        
-        if (PhysicalElement.MIME_TYPE_APPLICATION.equals(page.getMimeType())) {
+
+        if (PhysicalElement.MIME_TYPE_APPLICATION.equals(page.getMimeType()) || PhysicalElement.MIME_TYPE_IMAGE.equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.PDF));
             annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.PDF.name()));
-                String url = page.getFilepath();
 
+            Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.PDF, 1));
+            annotation.setMotivation(Motivation.PAINTING);
+            annotation.setOn(canvas);
+            annoList.addResource(annotation);
+            annotationMap.put(AnnotationType.PDF, annoList);
+            if (populate) {
+                String url = imageDelivery.getPdf().getPdfUrl(doc, page);
                 LinkingContent link = new LinkingContent(new URI(url));
                 link.setFormat(Format.APPLICATION_PDF);
-                link.setType("dcTypes:Software");
+                link.setType(DcType.SOFTWARE);
                 link.setLabel(IMetadataValue.getTranslations("PDF"));
-                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(),  AnnotationType.PDF, 1));
-                annotation.setMotivation(Motivation.PAINTING);
-                annotation.setOn(canvas);
                 annotation.setResource(link);
-                annoList.addResource(annotation);
-                annotationMap.put(AnnotationType.PDF, annoList);
-        }
-        
-        
-        try {
-            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.COMMENT));
-            annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.COMMENT.name()));
-            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(page.getPi(), page.getOrder(), false);
-            for (Comment comment : comments) {
-                CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
-                annoList.addResource(anno);
             }
-            if(comments != null && !comments.isEmpty()) {                
-                annotationMap.put(AnnotationType.COMMENT, annoList);
-            }
-        } catch (DAOException e) {
-            logger.error(e.toString(), e);
         }
-        
+
+        //        try {
+        //            AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.COMMENT));
+        //            annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.COMMENT.name()));
+        //            List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(page.getPi(), page.getOrder(), false);
+        //            for (Comment comment : comments) {
+        //                CommentAnnotation anno = new CommentAnnotation(comment, getServletURI().toString(), false);
+        //                annoList.addResource(anno);
+        //            }
+        //            if(comments != null && !comments.isEmpty()) {                
+        //                annotationMap.put(AnnotationType.COMMENT, annoList);
+        //            }
+        //        } catch (DAOException e) {
+        //            logger.error(e.toString(), e);
+        //        }
+
         for (AnnotationType type : annotationMap.keySet()) {
             canvas.addOtherContent(annotationMap.get(type));
         }
         return annotationMap;
     }
-    
 
     /**
      * @param page
@@ -366,5 +405,5 @@ public class SequenceBuilder extends AbstractBuilder {
         }
         return size;
     }
-    
+
 }

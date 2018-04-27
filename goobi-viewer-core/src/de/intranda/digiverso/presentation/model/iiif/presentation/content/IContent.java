@@ -20,6 +20,7 @@ import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.DcType;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
@@ -31,7 +32,7 @@ import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadata
 public interface IContent {
 
     @JsonProperty("@type")
-	public String getType();
+	public DcType getType();
 
 	/**
 	 * @return the width

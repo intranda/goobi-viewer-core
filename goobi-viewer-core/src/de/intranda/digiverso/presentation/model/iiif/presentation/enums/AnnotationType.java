@@ -30,4 +30,44 @@ public enum AnnotationType {
     COMMENT,
     TEI,
     CMDI;
+
+    public Format getFormat() {
+        switch (this) {
+            case ALTO:
+            case TEI:
+            case CMDI:
+                return Format.TEXT_XML;
+            case HTML:
+            case COMMENT:
+                return Format.TEXT_HTML;
+            case AUDIO:
+                return Format.AUDI_MP3;
+            case VIDEO:
+                return Format.VIDEO_WEBM;
+            case PDF:
+                return Format.APPLICATION_PDF;
+            case FULLTEXT:
+            default:
+                return Format.TEXT_PLAIN;
+        }
+    }
+    
+    public DcType getDcType() {
+        switch (this) {
+            case AUDIO:
+                return DcType.SOUND;
+            case VIDEO:
+                return DcType.MOVING_IMAGE;
+            case PDF:
+                return DcType.SOFTWARE;
+            case ALTO:
+            case TEI:
+            case CMDI:
+            case HTML:
+            case COMMENT:
+            case FULLTEXT:
+            default:
+                return DcType.TEXT;
+        }
+    }
 }

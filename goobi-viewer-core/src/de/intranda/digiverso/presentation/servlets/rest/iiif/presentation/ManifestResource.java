@@ -15,10 +15,15 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,11 +53,15 @@ import de.intranda.digiverso.presentation.model.iiif.presentation.Layer;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Sequence;
+import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
+import de.intranda.digiverso.presentation.model.iiif.presentation.builder.LayerBuilder;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.ManifestBuilder;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.SequenceBuilder;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.StructureBuilder;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
-import de.intranda.digiverso.presentation.model.iiif.presentation.enums.ViewingHint;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.DcType;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Format;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.Motivation;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -75,7 +84,21 @@ public class ManifestResource extends AbstractResource {
     private ManifestBuilder manifestBuilder;
     private StructureBuilder structureBuilder;
     private SequenceBuilder sequenceBuilder;
+    private LayerBuilder layerBuilder;
 
+    /**
+     * forwards to {@link #getManifest(String)}
+     * 
+     * @param request
+     * @param response
+     * @param pi
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     */
     @GET
     @Path("/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -87,47 +110,45 @@ public class ManifestResource extends AbstractResource {
         
     }
     
+    /**
+     * Returns the entire IIIF manifest for the given pi. If the given pi points to an anchor, a IIIF collection is returned instead 
+     * 
+     * @param pi
+     * @return  The manifest or collection
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException     If no object with the given pi was found in the index
+     */
     @GET
     @Path("/{pi}/manifest")
     @Produces({ MediaType.APPLICATION_JSON })
-    public IPresentationModelElement geManifest(@PathParam("pi") String pi)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException {
+    public IPresentationModelElement getManifest(@PathParam("pi") String pi)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException {
 
-        StructElement doc = getManifestBuilder().getDocument(pi);
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
 
-        IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
+        List<StructElement> docs = getManifestBuilder().getDocumentWithChildren(pi);
+        if(docs.isEmpty()) {
+            throw new ContentNotFoundException("No document found for pi " + pi);
+        }
+        StructElement mainDoc = docs.get(0);
+        IPresentationModelElement manifest = getManifestBuilder().generateManifest(mainDoc);
 
-        if (manifest instanceof Collection) {
-            getManifestBuilder().addVolumes((Collection) manifest, doc.getLuceneId());
+        if (manifest instanceof Collection && docs.size() > 1) {
+            getManifestBuilder().addVolumes((Collection) manifest, docs.subList(1, docs.size()));
         } else if (manifest instanceof Manifest) {
-            getManifestBuilder().addAnchor((Manifest) manifest, doc);
-            Map<AnnotationType, List<AnnotationList>> annoLists =
-            getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
+            getManifestBuilder().addAnchor((Manifest) manifest, mainDoc.getMetadataValue(SolrConstants.PI_ANCHOR));
+            getSequenceBuilder().addBaseSequence((Manifest) manifest, mainDoc, manifest.getId().toString());
 
-            String topLogId = doc.getMetadataValue(SolrConstants.LOGID);
+            String topLogId = mainDoc.getMetadataValue(SolrConstants.LOGID);
             if (StringUtils.isNotBlank(topLogId)) {
-                Range topRange = getStructureBuilder().generateStructure(doc, getStructureBuilder().getRangeURI(pi, topLogId), false);
-                topRange.setViewingHint(ViewingHint.top);
-                
-                List<Range> ranges = getStructureBuilder().getDescendents(topRange);
-                ranges.add(0, topRange);
+                List<Range> ranges = getStructureBuilder().generateStructure(docs, false);
                 ranges.forEach(range -> {
-//                    range.resetRanges();
                     ((Manifest) manifest).addStructure(range);
                 });
-                
-//                if(topRange.getMembers() != null) {
-//                    for (IPresentationModelElement ele : topRange.getMembers()) {
-//                        if(ele instanceof Range) {
-//                            ((Range) ele).setViewingHint(ViewingHint.top);
-//                            ((Manifest)manifest).addStructure((Range)ele);
-//                        }
-//                    }
-//                }
-
-//                Layer layer = getManifestBuilder().generateContentLayer(pi, annoLists, null);
-//                topRange.setContentLayer(layer);
             }
         }
 
@@ -135,12 +156,24 @@ public class ManifestResource extends AbstractResource {
 
     }
 
-
+    /**
+     * Creates A IIIF sequence containing all pages belonging to the given pi
+     * 
+     * @param pi
+     * @return  A IIIF sequence with all pages of the book (if applicable)
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     * @throws IllegalRequestException If the document for the given pi can not contain any pages, usually because it is an anchor
+     * @throws ContentNotFoundException  If no document was found for the given pi
+     */
     @GET
     @Path("/{pi}/sequence/basic")
     @Produces({ MediaType.APPLICATION_JSON })
     public Sequence getBasicSequence(@PathParam("pi") String pi) throws PresentationException, IndexUnreachableException, URISyntaxException,
-            ConfigurationException, DAOException, IllegalRequestException {
+            ConfigurationException, DAOException, IllegalRequestException, ContentNotFoundException {
 
         StructElement doc = getManifestBuilder().getDocument(pi);
         servletResponse.addHeader("Access-Control-Allow-Origin", "*");
@@ -148,65 +181,110 @@ public class ManifestResource extends AbstractResource {
         IPresentationModelElement manifest = getManifestBuilder().generateManifest(doc);
 
         if (manifest instanceof Collection) {
-            //            addVolumes((Collection) manifest, doc.getLuceneId(), getBaseUrl());
             throw new IllegalRequestException("Identifier refers to a collection which does not have a sequence");
         } else if (manifest instanceof Manifest) {
-            //            addAnchor((Manifest) manifest, doc, getBaseUrl());
             getSequenceBuilder().addBaseSequence((Manifest) manifest, doc, manifest.getId().toString());
             return ((Manifest) manifest).getSequences().get(0);
         }
-        throw new IllegalRequestException("Not manifest with identifier " + pi + " found");
+        throw new ContentNotFoundException("Not manifest with identifier " + pi + " found");
 
     }
 
+    /**
+     * Creates a IIIF range for the structural element denoted by the given pi and logid
+     * 
+     * @param pi        The pi of the containing work
+     * @param logId     The METS logid of the structural element to return
+     * @return  A IIIF range
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException If no structural element was found for the given pi and logid
+     */
     @GET
     @Path("/{pi}/range/{logId}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Range getRange(@PathParam("pi") String pi, @PathParam("logId") String logId)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException {
 
-        StructElement doc = getStructureBuilder().getDocument(pi, logId);
+        List<StructElement> docs = getStructureBuilder().getDocumentWithChildren(pi);
 
-        if (doc == null) {
-            throw new NotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
+        if (docs.isEmpty()) {
+            throw new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
         } else {
-            Range topRange = getStructureBuilder().generateStructure(doc, getStructureBuilder().getRangeURI(pi, logId), false);
-            if(doc.isWork()) {
-                topRange.setViewingHint(ViewingHint.top);
-            } else {
-                StructElement parent = doc.getParent();
-                if(parent != null) {                    
-                    topRange.addWithin(new Range(getStructureBuilder().getRangeURI(pi, parent.getLogid())));
-                }
-            }
-            getStructureBuilder().populatePages(doc, topRange);
-            return topRange;
+            List<Range> ranges = getStructureBuilder().generateStructure(docs, false);
+            Optional<Range> range = ranges.stream().filter(r -> r.getId().toString().endsWith(logId)).findFirst();
+            return range.orElseThrow(() -> new ContentNotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found"));
         }
     }
 
+    /**
+     * Creates a canvas for the page with the given pyhsPageNo (order) within the work with the given pi
+     * 
+     * @param pi            The pi of the containing work
+     * @param physPageNo    The physical ordering of the page (1-based)
+     * @return  A IIIF canvas
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
+     */
     @GET
     @Path("/{pi}/canvas/{physPageNo}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Canvas getCanvas(@PathParam("pi") String pi, @PathParam("physPageNo") int physPageNo)
-            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException {
         StructElement doc = getManifestBuilder().getDocument(pi);
-        PhysicalElement page = getSequenceBuilder().getPage(doc, physPageNo);
-        Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
-        getSequenceBuilder().addOtherContent(page, canvas, ContentResource.getDataRepository(pi));
-        return canvas;
+        if(doc != null) {            
+            PhysicalElement page = getSequenceBuilder().getPage(doc, physPageNo);
+            Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
+            if(canvas != null) {            
+                getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), false);
+                return canvas;
+            }
+        }
+        throw new ContentNotFoundException("No page found with order= " + physPageNo + " and pi = " + pi);
     }
     
+    /**
+     * Creates an annotation list for the given page of annotations of the given {@link AnnotationType type}
+     * 
+     * @param pi            The pi of the containing work
+     * @param physPageNo    The physical ordering of the page (1-based)
+     * @param typeName      The name of the {@link AnnotationType} for which annotations should be returned
+     * @return  A IIIF AnnotationList
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
+     * @throws IllegalRequestException  If there is no annotation type of the given name
+     */
     @GET
     @Path("/{pi}/list/{physPageNo}/{type}")
     @Produces({ MediaType.APPLICATION_JSON })
     public AnnotationList getOtherContent(@PathParam("pi") String pi, @PathParam("physPageNo") int physPageNo, @PathParam("type") String typeName) throws PresentationException,
             IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException {
             AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
-            if(type != null) {                
+            if(type != null) {         
                 StructElement doc = getManifestBuilder().getDocument(pi);
                 PhysicalElement page = getSequenceBuilder().getPage(doc, physPageNo);
                 Canvas canvas = getSequenceBuilder().generateCanvas(doc, page);
-                Map<AnnotationType, AnnotationList> annotations = getSequenceBuilder().addOtherContent(page, canvas, ContentResource.getDataRepository(pi));
+                Map<AnnotationType, AnnotationList> annotations;
+                if(AnnotationType.COMMENT.equals(type)) {
+                    annotations = new HashMap<>();
+                    List<AnnotationList> comments = getSequenceBuilder().addComments(Collections.singletonMap(physPageNo, canvas), pi, true);
+                    if(!comments.isEmpty()) {
+                        annotations.put(AnnotationType.COMMENT, comments.get(0));
+                    }
+                } else {                    
+                    annotations = getSequenceBuilder().addOtherContent(doc, page, canvas, ContentResource.getDataRepository(pi), true);
+                }
                 if (annotations.get(type) != null) {
                     AnnotationList al = annotations.get(type);
                     Layer layer = new Layer(getManifestBuilder().getLayerURI(pi, type));
@@ -220,54 +298,48 @@ public class ManifestResource extends AbstractResource {
                 throw new IllegalRequestException("No valid annotation type: " + typeName);
             }
     }
-
-    @GET
-    @Path("/{pi}/list/{type}")
-    @Produces({ MediaType.APPLICATION_JSON })
-    public AnnotationList getOtherContent(@PathParam("pi") String pi, @PathParam("type") String typeName) throws PresentationException,
-            IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException {
-            AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
-            if(type != null) {                
-                StructElement doc = getStructureBuilder().getDocument(pi);
-
-                if (doc == null) {
-                    throw new NotFoundException("Not document with PI = " + pi + " found");
-//                    throw new NotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
-                } else {
-                    Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "");
-                    Map<AnnotationType, AnnotationList> annoMap = getManifestBuilder().mergeAnnotationLists(pi, annoLists);
-                    if(annoMap.get(type) != null) {                        
-                        AnnotationList al = annoMap.get(type);
-                        Layer layer = new Layer(getManifestBuilder().getLayerURI(pi, type));
-                        layer.setLabel(IMetadataValue.getTranslations(type.name()));
-                        al.addWithin(layer);
-                        return al;
-                    } else {
-                        throw new ContentNotFoundException("Not annotations found of type " + type);
-                    }
-                }
-            } else {
-                throw new IllegalRequestException("No valid annotation type: " + typeName);
-            }
-    }
     
+    /**
+     * Creates a layer containing all annnotations of the given {@link AnnotationType type} for the work with the given pi. 
+     * The annotations are groupd into annotation lists by page, if they belong to a page. Otherwise they are grouped in a single annotation list
+     * 
+     * @param pi            The pi of the containing work
+     * @param typeName      The name of the {@link AnnotationType} for which annotations should be returned
+     * @return  A IIIF layer
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException If there is no work with the given pi
+     * @throws IllegalRequestException  If there is no annotation type of the given name
+     * @throws IOException
+     */
     @GET
     @Path("/{pi}/layer/{type}")
     @Produces({ MediaType.APPLICATION_JSON })
     public Layer getLayer(@PathParam("pi") String pi, @PathParam("type") String typeName) throws PresentationException,
-            IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException {
+            IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException, IOException {
                 StructElement doc = getStructureBuilder().getDocument(pi);
                 AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
-                
+                if(type == null) {
+                    throw new IllegalRequestException("No valid annotation type: " + typeName);
+                }
                 if (doc == null) {
-                    throw new NotFoundException("Not document with PI = " + pi + " found");
-//                    throw new NotFoundException("Not document with PI = " + pi + " and logId = " + logId + " found");
+                    throw new ContentNotFoundException("Not document with PI = " + pi + " found");
+                } else if(AnnotationType.TEI.equals(type)) {
+                    return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id, repo), (id, lang) -> ContentResource.getTEIURI(id, lang));
+                } else if(AnnotationType.CMDI.equals(type)) {
+                    return getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo), (id, lang) -> ContentResource.getCMDIURI(id, lang));
+    
                 } else {
                     Map<AnnotationType, List<AnnotationList>> annoLists = getSequenceBuilder().addBaseSequence(null, doc, "");
-                    Layer layer = getManifestBuilder().generateLayer(pi, annoLists, type);
+                    Layer layer = getLayerBuilder().generateLayer(pi, annoLists, type);
                     return layer;
                 }
     }
+
+
 
     private StructureBuilder getStructureBuilder() {
         if (this.structureBuilder == null) {
@@ -301,19 +373,18 @@ public class ManifestResource extends AbstractResource {
         }
         return sequenceBuilder;
     }
-
-    /**
-     * @param baseUrl
-     * @param pi
-     * @return
-     * @throws URISyntaxException
-     */
-    public static URI getManifestUrl(String baseUrl, String pi) throws URISyntaxException {
-        return new URI(baseUrl + "/" + pi);
+    
+    public LayerBuilder getLayerBuilder() {
+        if (this.layerBuilder == null) {
+            try {
+                this.layerBuilder = new LayerBuilder(servletRequest);
+            } catch (URISyntaxException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return layerBuilder;
     }
 
-    protected String getPath() {
-        return "/manifests";
-    }
+
 
 }

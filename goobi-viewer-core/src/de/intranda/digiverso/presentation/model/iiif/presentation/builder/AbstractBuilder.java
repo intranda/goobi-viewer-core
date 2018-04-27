@@ -17,7 +17,9 @@ package de.intranda.digiverso.presentation.model.iiif.presentation.builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +60,13 @@ public abstract class AbstractBuilder {
     
     private static final List<String> HIDDEN_SOLR_FIELDS = Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI,
             SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
-            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
-            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT });
+            SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID, SolrConstants.ISWORK, SolrConstants.FILENAME_TEI,
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES});
     
     private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
             SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
-            SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED, SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK,
-            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.PI_PARENT, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT };
+            SolrConstants.FILENAME_TEI, SolrConstants.FILENAME_WEBM, SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID, SolrConstants.ISWORK,
+            SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES};
 
     
     
@@ -194,17 +197,87 @@ public abstract class AbstractBuilder {
     }
     
     /**
+     * Queries the StructElement with the given PI and LOGID
+     * If nothing is found, null is returned;
+     * 
      * @param pi
-     * @return
+     * @return  The first matching StructElement, or null
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
     public StructElement getDocument(String pi, String logId) throws PresentationException, IndexUnreachableException {
-        String query = "PI_TOPSTRUCT:" + pi + " AND LOGID:" + logId;
+        String query = "PI_TOPSTRUCT:" + pi + " AND LOGID:" + logId + " AND DOCTYPE:DOCTRCT";
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, getSolrFieldList());
-        StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
-        ele.setImageNumber(1);
-        return ele;
+        if(doc != null) {            
+            StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);
+            ele.setImageNumber(1);
+            return ele;
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Queries all direct children of the given element
+     * 
+     * @param pi
+     * @param logId
+     * @return  The list of direct child elements, or an empty list if no elements were found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<StructElement> getChildren(StructElement parent) throws PresentationException, IndexUnreachableException {
+        String query = "IDDOC_PARENT:" + parent.getLuceneId() + " AND DOCTYPE:DOCTRCT";
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
+        List<StructElement> eles = new ArrayList<StructElement>();
+        if(docs != null) {
+            for (SolrDocument doc : docs) {                
+                StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);                   
+                    eles.add(ele);
+                    try {                        
+                        Integer pageNo = (Integer) doc.getFieldValue(SolrConstants.THUMBPAGENO);
+                        ele.setImageNumber(pageNo);
+//                        Integer numPages = (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
+                    } catch(NullPointerException | ClassCastException e) {
+                       ele.setImageNumber(1);
+                    }
+            }
+        }
+        Collections.sort(eles, new StructElementComparator());
+        return eles;
+    }
+    
+    
+    /**
+     * Queries all DocStructs which have the given PI as PI_TOPSTRUCT or anchor (or are the anchor themselves). Works are sorted by a {@link StructElementComparator}
+     * If no hits are found, an empty list is returned
+     * 
+     * @param pi
+     * @return  A list of all docstructs with the given pi or children thereof. An empty list if no hits are found
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public List<StructElement> getDocumentWithChildren(String pi) throws PresentationException, IndexUnreachableException {
+        String anchorQuery = "(ISWORK:* AND PI_ANCHOR:"+pi+") OR (ISANCHOR:* AND PI:"+pi+")";
+        String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
+        String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
+        List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
+        List<StructElement> eles = new ArrayList<StructElement>();
+        if(docs != null) {
+            for (SolrDocument doc : docs) {                
+                StructElement ele = new StructElement(Long.parseLong(doc.getFieldValue(SolrConstants.IDDOC).toString()), doc);                   
+                    eles.add(ele);
+                    try {                        
+                        Integer pageNo = (Integer) doc.getFieldValue(SolrConstants.THUMBPAGENO);
+                        ele.setImageNumber(pageNo);
+//                        Integer numPages = (Integer) doc.getFieldValue(SolrConstants.NUMPAGES);
+                    } catch(NullPointerException | ClassCastException e) {
+                       ele.setImageNumber(1);
+                    }
+            }
+        }
+        Collections.sort(eles, new StructElementComparator());
+        return eles;
     }
 
 
@@ -278,6 +351,14 @@ public abstract class AbstractBuilder {
         return new URI(sb.toString());
     }
     
+    public URI getSequenceURI(String pi, String label) throws URISyntaxException {
+        if(StringUtils.isBlank(label)) {
+            label = "basic";
+        }
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/sequence/").append(label);
+        return new URI(sb.toString());
+    }
+    
     public URI getCanvasURI(String pi, int pageNo) throws URISyntaxException {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(pageNo);
         return new URI(sb.toString());
@@ -308,7 +389,7 @@ public abstract class AbstractBuilder {
         }
         return new URI(sb.toString());
     }
-    
+
 
     /**
      * @param pi
@@ -323,6 +404,11 @@ public abstract class AbstractBuilder {
     
     public URI getAnnotationURI(String pi, int order, AnnotationType type, int annoNum) throws URISyntaxException {
         StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append("/canvas/").append(order).append("/").append(type.name()).append("/").append(annoNum);
+        return new URI(sb.toString());
+    }
+    
+    public URI getAnnotationURI(String pi, AnnotationType type, int annoNum) throws URISyntaxException {
+        StringBuilder sb = new StringBuilder(getBaseUrl().toString()).append("iiif/manifests/").append(pi).append(type.name()).append("/").append(annoNum);
         return new URI(sb.toString());
     }
         

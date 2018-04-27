@@ -92,6 +92,16 @@ public class Timer {
     }
 
     public void debug(String message, String key, TimeScale scale) {
+        String timeString = getTime(key, scale);
+        logger.debug(message + timeString);
+    }
+
+    /**
+     * @param key
+     * @param scale
+     * @return
+     */
+    public String getTime(String key, TimeScale scale) {
         Long time;
         if (key != null) {
             time = measuredTimeMap.get(key);
@@ -113,8 +123,9 @@ public class Timer {
             default:
                 timeString = seconds(time);
         }
-        logger.debug(message + timeString);
+        return timeString;
     }
+    
 
     public void debug(String message, String key) {
         debug(message, key, TimeScale.SECONDS);

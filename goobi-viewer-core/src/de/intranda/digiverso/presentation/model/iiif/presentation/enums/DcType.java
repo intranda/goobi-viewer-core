@@ -15,31 +15,30 @@
  */
 package de.intranda.digiverso.presentation.model.iiif.presentation.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author Florian Alpers
  *
  */
-public enum Motivation {
-
-    PAINTING("sc:painting"),
-    COMMENTING("oa:commenting"),
-    LINKING("oa:linking"),
-    BOOKMARKING("oa:bookmarking"),
-    CLASSIFYING("oa:classifying"),
-    DESCRIBING("oa:describing"),
-    EDITING("oa:editing"),
-    HIGHLIGHTING("oa:highlighting"),
-    IDENTIFIYING("oa:identifying"),
-    MODERATING("oa:moderating"),
-    QUESTIONING("oa:questioning"),
-    REPLYING("oa:replying"),
-    TAGGING("oa:tagging");
+public enum DcType {
+    COLLECTION("dcTypes:Collection"),
+    DATASET("dcTypes:Dataset"),
+    EVENT("dcTypes:Event"),
+    IMAGE("dcTypes:Image"),
+    INTERACTIVE_RESOURCE("dcTypes:InteractiveResource"),
+    MOVING_IMAGE("dcTypes:MovingImage"),
+    PHYSICAL_OBJECT("dcTypes:PhysicalObject"),
+    SERVICE("dcTypes:Service"),
+    SOFTWARE("dcTypes:SOFTWARE"),
+    SOUND("dcTypes:Sound"),
+    STILL_IMAGE("dcTypes:StillImage"),
+    TEXT("dcTypes:Text");
     
-    private final String label;
+    private String label;
     
-    private Motivation(String label) {
+    private DcType(String label) {
         this.label = label;
     }
     
@@ -47,4 +46,5 @@ public enum Motivation {
     public String getLabel() {
         return label;
     }
+    
 }
