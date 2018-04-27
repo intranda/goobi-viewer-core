@@ -34,6 +34,8 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
@@ -65,6 +67,8 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformati
 public class SequenceBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(SequenceBuilder.class);
+
+    protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
     /**
      * @param request

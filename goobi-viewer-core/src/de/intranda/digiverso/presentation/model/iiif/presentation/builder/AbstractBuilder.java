@@ -75,7 +75,6 @@ public abstract class AbstractBuilder {
     private final URI servletURI;
     private final URI requestURI;
     private final Optional<HttpServletRequest> request;
-    protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
     
     public AbstractBuilder(HttpServletRequest request) throws URISyntaxException {
