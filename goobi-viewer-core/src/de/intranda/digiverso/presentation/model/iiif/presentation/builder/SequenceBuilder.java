@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -69,6 +70,7 @@ public class SequenceBuilder extends AbstractBuilder {
     private static final Logger logger = LoggerFactory.getLogger(SequenceBuilder.class);
 
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
+
 
     /**
      * @param request
@@ -195,7 +197,7 @@ public class SequenceBuilder extends AbstractBuilder {
         URI canvasId = getCanvasURI(doc.getPi(), page.getOrder());
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
-        canvas.setThumbnail(new ImageContent(new URI(getThumbs().getThumbnailUrl(page)), false));
+        canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumb().getThumbnailUrl(page)), false));
 
         Dimension size = getSize(page);
         if (size.getWidth() * size.getHeight() > 0) {

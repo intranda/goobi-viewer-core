@@ -55,9 +55,7 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 public abstract class AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractBuilder.class);
-    
-    private ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
-    
+        
     private static final List<String> HIDDEN_SOLR_FIELDS = Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI,
             SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
             SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID, SolrConstants.ISWORK, SolrConstants.FILENAME_TEI,
@@ -316,13 +314,7 @@ public abstract class AbstractBuilder {
         }
         return fields;
     }
-    
-    /**
-     * @return the thumbs
-     */
-    protected ThumbnailHandler getThumbs() {
-        return thumbs;
-    }
+
     
     /**
      * @return the request

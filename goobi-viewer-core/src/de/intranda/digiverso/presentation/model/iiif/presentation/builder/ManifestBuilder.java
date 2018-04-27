@@ -38,6 +38,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Collection;
@@ -57,7 +58,8 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 public class ManifestBuilder extends AbstractBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(ManifestBuilder.class);
-    
+    protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
+
     /**
      * @param request
      * @throws URISyntaxException
@@ -117,7 +119,7 @@ public class ManifestBuilder extends AbstractBuilder {
         addMetadata(manifest, ele);
 
         try {
-            String thumbUrl = getThumbs().getThumbnailUrl(ele);
+            String thumbUrl = imageDelivery.getThumb().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
                 manifest.setThumbnail(thumb);
