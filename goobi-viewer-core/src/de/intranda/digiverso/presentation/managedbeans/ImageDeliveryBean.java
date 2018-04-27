@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.imaging.IIIFPresentationAPIHandler;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
 import de.intranda.digiverso.presentation.controller.imaging.MediaHandler;
@@ -88,6 +89,7 @@ public class ImageDeliveryBean implements Serializable {
     private WatermarkHandler footer;
     private IIIFUrlHandler iiif;
     private MediaHandler media;
+    private IIIFPresentationAPIHandler presentation;
 
     @PostConstruct
     public void init() {
@@ -117,6 +119,11 @@ public class ImageDeliveryBean implements Serializable {
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
         pdf = new PdfHandler(footer, config);
         media = new MediaHandler(config);
+        try {
+            presentation = new IIIFPresentationAPIHandler(servletPath, config);
+        } catch (URISyntaxException e) {
+            logger.error("Failed to initalize presentation api handler", e.toString());
+        }
     }
 
     private Optional<PhysicalElement> getCurrentPageIfExists() {
@@ -323,6 +330,13 @@ public class ImageDeliveryBean implements Serializable {
         return media;
     }
     
+    public IIIFPresentationAPIHandler getPresentation() {
+        if(presentation == null) {
+            throw new IllegalStateException("Presentation handler was not initialized");
+        }
+        return presentation;
+    }
+    
     /**
      * 
      * @return an optional containing the given String if it is non-empty, otherwise an empty optional
@@ -330,4 +344,5 @@ public class ImageDeliveryBean implements Serializable {
     public Optional<String> getIfExists(String url) {
         return Optional.of(url).map(string -> StringUtils.isNotBlank(string) ? string : null);
     }
+    
 }
