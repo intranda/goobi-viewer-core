@@ -2159,6 +2159,18 @@ div.mce-fullscreen {
 .image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark {
   display: inline-block;
 }
+.image-control__iiif {
+  height: 32px;
+}
+.image-control__iiif a {
+  display: block;
+  height: 100%;
+  border: none;
+  background-image: url("../../images/icons/icon-iiif-logo.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 85%;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 @media screen and (max-width: 1024px) {
@@ -2190,7 +2202,8 @@ div.mce-fullscreen {
   }
   li.image-control__zoom-slider,
   li.image-control__pdf,
-  li.image-control__add-to-bookshelf {
+  li.image-control__add-to-bookshelf,
+  li.image-control__iiif {
     display: none;
   }
 }

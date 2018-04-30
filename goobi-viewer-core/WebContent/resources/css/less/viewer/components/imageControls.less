@@ -151,6 +151,18 @@
 		    }
 		}
 	}
+	&__iiif {
+		height: 32px;
+		a {
+			display: block;
+			height: 100%;
+			border: none;
+			background-image: url("@{images}/icons/icon-iiif-logo.svg");
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: 85%;
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
@@ -191,7 +203,8 @@
 	}
     li.image-control__zoom-slider,
     li.image-control__pdf,
-    li.image-control&__add-to-bookshelf {
+    li.image-control__add-to-bookshelf,
+    li.image-control__iiif {
         display: none;
     }
 }
