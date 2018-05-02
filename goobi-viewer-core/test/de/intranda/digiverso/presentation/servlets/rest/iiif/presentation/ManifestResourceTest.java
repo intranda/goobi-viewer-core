@@ -19,10 +19,15 @@ import static org.junit.Assert.fail;
 
 import java.net.URISyntaxException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -44,7 +49,10 @@ public class ManifestResourceTest {
      */
     @Before
     public void setUp() throws Exception {
-        resource = new ManifestResource();
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        resource = new ManifestResource(request, response);
     }
 
     /**
@@ -63,7 +71,7 @@ public class ManifestResourceTest {
      * @throws ContentNotFoundException 
      * @throws ConfigurationException 
      */
-//    @Test
+    @Test
     public void testGetManifest() throws ConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
         IPresentationModelElement manifest = resource.getManifest("PPN517154005");
         Assert.assertTrue(manifest instanceof Manifest);

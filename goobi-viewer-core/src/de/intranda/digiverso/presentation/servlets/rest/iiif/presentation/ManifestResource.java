@@ -87,6 +87,23 @@ public class ManifestResource extends AbstractResource {
     private LayerBuilder layerBuilder;
 
     /**
+     * Default constructor
+     */
+    public ManifestResource() {
+        super();
+    }
+    
+    /**
+     * Unit test constructor injecting request and response
+     * 
+     * @param request
+     * @param response
+     */
+    public ManifestResource(HttpServletRequest request, HttpServletResponse response) {
+        super(request, response);
+    }
+    
+    /**
      * forwards to {@link #getManifest(String)}
      * 
      * @param request

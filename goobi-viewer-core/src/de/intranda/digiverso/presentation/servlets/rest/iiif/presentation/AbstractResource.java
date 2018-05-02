@@ -44,6 +44,23 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
  */
 public abstract class AbstractResource {
 
+    /**
+     * Dedault constructor
+     */
+    public AbstractResource() {
+        // TODO Auto-generated constructor stub
+    }
+    
+    /**
+     * Unit test constructor injecting request and response
+     * 
+     * @param request
+     * @param response
+     */
+    public AbstractResource(HttpServletRequest request, HttpServletResponse response) {
+        this.servletRequest = request;
+        this.servletResponse = response;
+    }
     private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
     
     @Context
