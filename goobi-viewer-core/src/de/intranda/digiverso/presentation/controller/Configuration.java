@@ -1976,8 +1976,17 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isHtmlHeadDCMetadata() {
-        return getLocalBoolean("metadata.htmlHeadDCMetadata", false);
+    public boolean isAddDublinCoreMetaTags() {
+        return getLocalBoolean("metadata.addDublinCoreMetaTags", false);
+    }
+    
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isAddHighwirePressMetaTags() {
+        return getLocalBoolean("metadata.addHighwirePressMetaTags", false);
     }
 
     /**

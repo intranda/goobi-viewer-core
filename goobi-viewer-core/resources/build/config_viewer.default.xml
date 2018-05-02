@@ -949,9 +949,11 @@
 			<!-- <luceneField recordsAndAnchorsOnly="true" >MD_SHELFMARK</luceneField> -->
 		</browsingMenu>
 
-		<!-- htmlHeadDCMetadata: render dc meta data to html head -->
-		<htmlHeadDCMetadata>true</htmlHeadDCMetadata>
-
+        <!-- addDublinCoreMetaTags: render dc metadata to html head -->
+        <addDublinCoreMetaTags>true</addDublinCoreMetaTags>
+        
+        <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
+        <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
 	</metadata>
 
 

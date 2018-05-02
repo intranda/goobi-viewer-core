@@ -984,9 +984,7 @@ public class ViewManager implements Serializable {
      * @throws PresentationException
      */
     public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException {
-
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), "");
-
     }
 
     /**
@@ -997,7 +995,6 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
-
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), getCurrentPage());
     }
 
@@ -1628,11 +1625,15 @@ public class ViewManager implements Serializable {
 
     }
 
-    /**
-     * generates DC meta Tags for the head of a HTML page
-     */
-
+    @Deprecated
     public String getHtmlHeadDCMetadata() {
+        return getDublinCoreMetaTags();
+    }
+
+    /**
+     * Generates DC meta tags for the head of a HTML page.
+     */
+    public String getDublinCoreMetaTags() {
         StringBuilder result = new StringBuilder(100);
 
         String title = "-";
@@ -1646,7 +1647,7 @@ public class ViewManager implements Serializable {
 
         if (this.topDocument.getMetadataValue("MD_TITLE") != null) {
             title = topDocument.getMetadataValues("MD_TITLE").iterator().next();
-            result.append("\r<meta name=\"DC.title\" content=\"").append(title).append("\">");
+            result.append("\r\n<meta name=\"DC.title\" content=\"").append(title).append("\">");
         }
 
         if (this.topDocument.getMetadataValue("MD_CREATOR") != null) {
@@ -1658,22 +1659,22 @@ public class ViewManager implements Serializable {
                     creators = new StringBuilder(creators).append(", ").append(value).toString();
                 }
             }
-            result.append("\r<meta name=\"DC.creator\" content=\"").append(creators).append("\">");
+            result.append("\r\n<meta name=\"DC.creator\" content=\"").append(creators).append("\">");
         }
 
         if (this.topDocument.getMetadataValue("MD_PUBLISHER") != null) {
             publisher = topDocument.getMetadataValue("MD_PUBLISHER");
-            result.append("\r<meta name=\"DC.publisher\" content=\"").append(publisher).append("\">");
+            result.append("\r\n<meta name=\"DC.publisher\" content=\"").append(publisher).append("\">");
         }
 
         if (this.topDocument.getMetadataValue("MD_YEARPUBLISH") != null) {
             date = topDocument.getMetadataValue("MD_YEARPUBLISH");
-            result.append("\r<meta name=\"DC.date\" content=\"").append(date).append("\">");
+            result.append("\r\n<meta name=\"DC.date\" content=\"").append(date).append("\">");
         }
 
         if (this.topDocument.getMetadataValue(SolrConstants.URN) != null) {
             identifier = this.topDocument.getMetadataValue(SolrConstants.URN);
-            result.append("\r<meta name=\"DC.identifier\" content=\"").append(identifier).append("\">");
+            result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\">");
         }
 
         String sourceString = new StringBuilder(creators).append(": ")
@@ -1687,13 +1688,67 @@ public class ViewManager implements Serializable {
                 .append('.')
                 .toString();
 
-        result.append("\r<meta name=\"DC.source\" content=\"").append(sourceString).append("\">");
+        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append("\">");
 
         if (topDocument.getMetadataValue(SolrConstants.ACCESSCONDITION) != null) {
             rights = this.topDocument.getMetadataValue(SolrConstants.ACCESSCONDITION);
             if (!SolrConstants.OPEN_ACCESS_VALUE.equals(rights)) {
-                result.append("\r<meta name=\"DC.rights\" content=\"").append(rights).append("\">");
+                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append("\">");
             }
+        }
+
+        return result.toString();
+    }
+
+    /**
+     * 
+     * @return String with tags.
+     */
+    public String getHighwirePressMetaTags() {
+        StringBuilder result = new StringBuilder(100);
+
+        // citation_title
+        if (this.topDocument.getMetadataValue("MD_TITLE") != null) {
+            String value = topDocument.getMetadataValue("MD_TITLE");
+            result.append("\r\n<meta name=\"citation_title\" content=\"").append(value).append("\">");
+        }
+        // citation_author
+        if (this.topDocument.getMetadataValue("MD_CREATOR") != null) {
+            for (Object fieldValue : topDocument.getMetadataValues("MD_CREATOR")) {
+                String value = (String) fieldValue;
+                result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append("\">");
+            }
+        }
+        // citation_publication_date
+        if (this.topDocument.getMetadataValue("MD_YEARPUBLISH") != null) {
+            String value = topDocument.getMetadataValue("MD_YEARPUBLISH");
+            result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(value).append("\">");
+        }
+        // citation_isbn
+        if (this.topDocument.getMetadataValue("MD_ISBN") != null) {
+            String value = this.topDocument.getMetadataValue("MD_ISBN");
+            result.append("\r\n<meta name=\"citation_isbn\" content=\"").append(value).append("\">");
+        }
+        // citation_issn
+        if (this.topDocument.getMetadataValue("MD_ISSN") != null) {
+            String value = this.topDocument.getMetadataValue("MD_ISSN");
+            result.append("\r\n<meta name=\"citation_issn\" content=\"").append(value).append("\">");
+        }
+        // citation_volume
+        if (this.topDocument.getMetadataValue(SolrConstants.CURRENTNO) != null) {
+            String value = this.topDocument.getMetadataValue(SolrConstants.CURRENTNO);
+            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\">");
+        }
+        // TODO citation_pdf_url
+        try {
+            if (isFilesOnly()) {
+                String value = "TODO";
+                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\">");
+            }
+        } catch (IndexUnreachableException e) {
+           logger.error(e.getMessage(), e);
+        } catch (DAOException e) {
+            logger.error(e.getMessage(), e);
         }
 
         return result.toString();

@@ -17,7 +17,10 @@
 
     <ui:define name="head">
         <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.htmlHeadDCMetadata}" rendered="#{navigationHelper.htmlHeadDCMetadata == true}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
+                rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
+                rendered="#{configurationBean.addHighwirePressMetaTags}" />
         </f:view>
     </ui:define>
 </ui:composition>
