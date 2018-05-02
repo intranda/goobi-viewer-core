@@ -169,6 +169,20 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Return the URL to the IIIF manifest of the current work, of it exists. Otherwise return empty String
+     */
+    public String getIiifManifest() {
+        return getCurrentDocumentIfExists().map(doc -> {
+            try {
+                return getPresentation().getManifestUrl(doc.getPi());
+            } catch (URISyntaxException e) {
+                logger.error(e.toString(), e);
+                return null;
+            }
+        }).orElse("");
+    }
+
+    /**
      * @return the servletRequest
      */
     public HttpServletRequest getServletRequest() {
@@ -329,14 +343,14 @@ public class ImageDeliveryBean implements Serializable {
     public MediaHandler getMedia() {
         return media;
     }
-    
+
     public IIIFPresentationAPIHandler getPresentation() {
-        if(presentation == null) {
+        if (presentation == null) {
             throw new IllegalStateException("Presentation handler was not initialized");
         }
         return presentation;
     }
-    
+
     /**
      * 
      * @return an optional containing the given String if it is non-empty, otherwise an empty optional
@@ -344,5 +358,5 @@ public class ImageDeliveryBean implements Serializable {
     public Optional<String> getIfExists(String url) {
         return Optional.of(url).map(string -> StringUtils.isNotBlank(string) ? string : null);
     }
-    
+
 }
