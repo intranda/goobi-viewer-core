@@ -29,8 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
-import de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue;
-import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 
 public class SolrSearchIndexTest extends AbstractSolrEnabledTest {

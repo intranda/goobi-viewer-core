@@ -480,6 +480,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         this.height = height;
     }
 
+    /**
+     * Returns the filename alone, if {@link PhysicalElement#getFilePath()} is a local file, or the entire
+     * filepath otherwise
+     */
     public String getFileName() {
         if (StringUtils.isEmpty(fileName)) {
             determineFileName(filePath);
@@ -1189,6 +1193,23 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         ImageType imageType = new ImageType(false);
         imageType.setFormat(ImageFileFormat.getImageFileFormatFromFileExtension(fileName));
         return imageType;
+    }
+
+    /**
+     * Gets the filename but with its extension replaced by the given extension
+     * If the extension is an empty String, the filename without any extension is returned
+     * If the extension is null, {@link PhysicalElement#getFileName()} is returned
+     * 
+     * @param string
+     * @return
+     */
+    public String getFileName(String extension) {
+        if(extension == null) {
+            return getFileName();
+        } else {            
+            String baseName = FilenameUtils.removeExtension(getFileName());
+            return baseName +  (StringUtils.isNotBlank(extension) ? "." + extension : "");
+        }
     }
 
 }

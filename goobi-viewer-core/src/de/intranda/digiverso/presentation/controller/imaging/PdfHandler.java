@@ -125,6 +125,7 @@ public class PdfHandler {
         String pi = doc.getTopStruct().getPi();
         String divId = doc.isWork() ? null : doc.getLogid();
 
+        
         return getPdfUrl(pi, Optional.ofNullable(divId), this.watermarkHandler.getFooterIdIfExists(doc),
                 this.watermarkHandler.getWatermarkTextIfExists(doc), Optional.ofNullable(label));
     }

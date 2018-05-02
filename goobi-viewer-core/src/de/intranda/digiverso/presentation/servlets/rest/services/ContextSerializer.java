@@ -13,23 +13,27 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.collections;
+package de.intranda.digiverso.presentation.servlets.rest.services;
+
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * Part of the IIIF presentation api
- * 
- * Values for the viewing hint property of collections or sequences
- * 
  * @author Florian Alpers
  *
  */
-public enum ViewingHint {
+public class ContextSerializer extends JsonSerializer<Context> {
 
-    individuals,
-    paged,
-    continuous,
-    multipart,
-    nonpaged,
-    top,
-    facingpages;
+    /* (non-Javadoc)
+     * @see com.fasterxml.jackson.databind.JsonSerializer#serialize(java.lang.Object, com.fasterxml.jackson.core.JsonGenerator, com.fasterxml.jackson.databind.SerializerProvider)
+     */
+    @Override
+    public void serialize(Context context, JsonGenerator generator, SerializerProvider provider) throws IOException, JsonProcessingException {
+        generator.writeStringField(context.getName(), context.getUri());
+    }
+
 }

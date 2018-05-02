@@ -15,24 +15,35 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 public abstract class AbstractAnnotation {
+    
+
+    public static final String PATH = "/comments";
+    public static final String SERVICE = "webannotation";
+
 
     protected static final String CONTEXT_URI = "http://www.w3.org/ns/anno.jsonld";
     private static final String GENERATOR_URI = "https://www.intranda.com/en/digiverso/goobi-viewer/goobi-viewer-overview/";
     protected static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
-    protected HttpServletRequest servletRequest;
+//    protected HttpServletRequest servletRequest;
+    protected final String servicePath;
+    protected final String applicationPath;
     protected boolean addContext = true;
-
+    
     @JsonSerialize()
     @JsonProperty("@context")
     @JsonInclude(Include.NON_NULL)
@@ -43,12 +54,27 @@ public abstract class AbstractAnnotation {
 
         return null;
     }
+    
+    /**
+     * 
+     */
+    public AbstractAnnotation(HttpServletRequest servletRequest) {
+        this.servicePath = new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
+                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length(),
+                        servletRequest.getRequestURI().indexOf(PATH) + PATH.length())).toString();
+        this.applicationPath = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
+    }
+    
+    public AbstractAnnotation(String applicationPath) {
+        this.servicePath = DataManager.getInstance().getConfiguration().getRestApiUrl() + SERVICE + PATH;
+        this.applicationPath = applicationPath;
+    }
 
     @JsonSerialize()
-    public String getId() {
-        return new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
-                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
+    public URI getId() throws URISyntaxException {
+        String idString = new StringBuilder(servicePath)
                 .toString();
+        return new URI(idString);
     }
 
     @JsonSerialize()

@@ -349,4 +349,11 @@ public interface IDAO {
      */
     CMSPage getCMSPageForEditing(long id) throws DAOException;
 
+    /**
+     * @param pi
+     * @return
+     * @throws DAOException 
+     */
+    List<Integer> getPagesWithComments(String pi) throws DAOException;
+
 }

@@ -84,12 +84,12 @@
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
 		
-		<iiif>http://localhost:8080/viewer/</iiif>
+		<rest>http://localhost:8080/viewer/rest/</rest>
 		
 		<download>http://localhost:8080/viewer/download/</download>
 		
 		<!-- contentRestApi: REST API URL for content files -->
-        <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi>
+<!--         <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi> -->
 	</urls>
 
 	<user>
@@ -1055,6 +1055,17 @@
 			<field jsonField="json1" luceneField="lucene1" multivalue="true" />
 			<field jsonField="json2" luceneField="lucene2" />
 		</fields>
+        
+        <iiif>
+        <!-- A list of all metadata fields which should be included within the IIIF Presentation response for manifests 
+        and ranges representing structural elements
+         -->
+            <metadataFields>
+                <field>MD_*</field>
+            </metadataFields>
+            <!-- Solr field to use for IIIF Presentation navDate property, if any -->
+            <navDateField>MD_DATING</navDateField>
+        </iiif>
 	</webapi>
 
 </config>

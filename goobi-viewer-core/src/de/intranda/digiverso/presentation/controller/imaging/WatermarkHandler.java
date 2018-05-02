@@ -16,7 +16,9 @@
 package de.intranda.digiverso.presentation.controller.imaging;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -33,13 +35,11 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 
 /**
  * @author Florian Alpers
@@ -56,6 +56,10 @@ public class WatermarkHandler {
     public static final String[] REQUIRED_SOLR_FIELDS = new String[] { SolrConstants.PI, SolrConstants.IDDOC, SolrConstants.LOGID,
             SolrConstants.ISWORK, SolrConstants.ISANCHOR, SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY };
 
+    /**
+     * caches all watermark texts for documents by document pi
+     */
+    private final Map<String, String> documentWatermarkTextMap = new HashMap<>();
     private final List<String> watermarkTextConfiguration;
     private final String watermarkIdField;
     private final String servletPath;
@@ -67,8 +71,8 @@ public class WatermarkHandler {
     }
 
     /**
-     * Creates the watermark url for the given pageType, adding watermarkId for the given {@link StructElement} and {@link page}.
-     *  If the watermark height of the given pageType and image is 0, an empty optional is returned
+     * Creates the watermark url for the given pageType, adding watermarkId for the given {@link StructElement} and {@link page}. If the watermark
+     * height of the given pageType and image is 0, an empty optional is returned
      * 
      * @param page
      * @param doc
@@ -105,10 +109,12 @@ public class WatermarkHandler {
 
             StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
 
-            urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format).append("?");
+            urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format);
 
-            watermarkId.ifPresent(footerId -> urlBuilder.append("watermarkId=").append(footerId).append("&"));
-            watermarkText.ifPresent(text -> urlBuilder.append("watermarkText=").append(text));
+            UrlParameterSeparator separator = new UrlParameterSeparator();
+
+            watermarkId.ifPresent(footerId -> urlBuilder.append(separator.getChar()).append("watermarkId=").append(footerId));
+            watermarkText.ifPresent(text -> urlBuilder.append(separator.getChar()).append("watermarkText=").append(text));
 
             return Optional.of(urlBuilder.toString());
         } else {
@@ -164,6 +170,7 @@ public class WatermarkHandler {
                 }
             }
             if (StringUtils.isNotBlank(urlBuilder.toString())) {
+
                 return Optional.of(urlBuilder.toString());
             }
         }
@@ -178,56 +185,64 @@ public class WatermarkHandler {
      * @return
      */
     public Optional<String> getWatermarkTextIfExists(StructElement doc) {
-        if (!watermarkTextConfiguration.isEmpty()) {
-            StringBuilder urlBuilder = new StringBuilder();
-            for (String text : watermarkTextConfiguration) {
-                if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
-                    String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
-                    try {
-                        SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
-                                new StringBuilder(SolrConstants.PI).append(":").append(doc.getPi()).toString(), SolrSearchIndex.MAX_HITS, null,
-                                Collections.singletonList(field));
-                        if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
-                            // logger.debug(field + ":" + res.get(0).getFirstValue(field));
-                            urlBuilder.append((String) res.get(0).getFirstValue(field));
+        if (documentWatermarkTextMap.containsKey(doc.getPi())) {
+            return Optional.ofNullable(documentWatermarkTextMap.get(doc.getPi()));
+        }
+        synchronized (documentWatermarkTextMap) {
+            if (!watermarkTextConfiguration.isEmpty()) {
+                StringBuilder urlBuilder = new StringBuilder();
+                for (String text : watermarkTextConfiguration) {
+                    if (StringUtils.startsWithIgnoreCase(text, WATERMARK_TEXT_TYPE_SOLR)) {
+                        String field = text.substring(WATERMARK_TEXT_TYPE_SOLR.length());
+                        try {
+                            SolrDocumentList res = DataManager.getInstance().getSearchIndex().search(
+                                    new StringBuilder(SolrConstants.PI).append(":").append(doc.getPi()).toString(), SolrSearchIndex.MAX_HITS, null,
+                                    Collections.singletonList(field));
+                            if (res != null && !res.isEmpty() && res.get(0).getFirstValue(field) != null) {
+                                // logger.debug(field + ":" + res.get(0).getFirstValue(field));
+                                urlBuilder.append((String) res.get(0).getFirstValue(field));
+                                break;
+                            }
+                        } catch (PresentationException e) {
+                            logger.debug("PresentationException thrown here: " + e.getMessage());
+                        } catch (IndexUnreachableException e) {
+                            logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
+
+                        }
+                    } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
+                        String urn = doc.getMetadataValue(SolrConstants.URN);
+                        if (StringUtils.isBlank(urn)) {
+                            try {
+                                urn = doc.getTopStruct().getMetadataValue(SolrConstants.URN);
+                            } catch (PresentationException | IndexUnreachableException e) {
+                                logger.error(e.toString());
+                            }
+                        }
+                        if (StringUtils.isNotEmpty(urn)) {
+                            urlBuilder.append(urn);
                             break;
                         }
-                    } catch (PresentationException e) {
-                        logger.debug("PresentationException thrown here: " + e.getMessage());
-                    } catch (IndexUnreachableException e) {
-                        logger.debug("IndexUnreachableException thrown here: " + e.getMessage());
-
-                    }
-                } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_URN)) {
-                    String urn = doc.getMetadataValue(SolrConstants.URN);
-                    if (StringUtils.isBlank(urn)) {
-                        try {
-                            urn = doc.getTopStruct().getMetadataValue(SolrConstants.URN);
-                        } catch (PresentationException | IndexUnreachableException e) {
-                            logger.error(e.toString());
-                        }
-                    }
-                    if (StringUtils.isNotEmpty(urn)) {
-                        urlBuilder.append(urn);
+                    } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
+                        urlBuilder.append(servletPath)
+                                .append("/")
+                                .append(PageType.viewImage.getName())
+                                .append("/")
+                                .append(doc.getPi())
+                                .append("/")
+                                .append(1)
+                                .append("/");
+                        break;
+                    } else {
+                        urlBuilder.append(text);
                         break;
                     }
-                } else if (StringUtils.equalsIgnoreCase(text, WATERMARK_TEXT_TYPE_PURL)) {
-                    urlBuilder.append(servletPath)
-                            .append("/")
-                            .append(PageType.viewImage.getName())
-                            .append("/")
-                            .append(doc.getPi())
-                            .append("/")
-                            .append(1)
-                            .append("/");
-                    break;
-                } else {
-                    urlBuilder.append(text);
-                    break;
                 }
-            }
-            if (StringUtils.isNotBlank(urlBuilder.toString())) {
-                return Optional.of(urlBuilder.toString());
+                if (!documentWatermarkTextMap.containsKey(doc.getPi())) {
+                    documentWatermarkTextMap.put(doc.getPi(), urlBuilder.length() > 0 ? urlBuilder.toString(): null);
+                }
+                if (StringUtils.isNotBlank(urlBuilder.toString())) {
+                    return Optional.of(urlBuilder.toString());
+                }
             }
         }
 

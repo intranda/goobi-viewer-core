@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.content;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,10 +32,10 @@ public class CommentAnnotationPage extends AbstractAnnotation {
     
     @Override
     @JsonSerialize()
-    public String getId() {
-        return new StringBuilder(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest))
-                .append(servletRequest.getRequestURI().substring(servletRequest.getContextPath().length()))
+    public URI getId() throws URISyntaxException {
+        String id = new StringBuilder(servicePath)
                 .append("page1/").toString();
+        return new URI(id);
     }
 
 
@@ -45,9 +47,9 @@ public class CommentAnnotationPage extends AbstractAnnotation {
      * @param addContext If true, an @context field will be added to the JSON document
      */
     public CommentAnnotationPage(String collectionIri, List<CommentAnnotation> items, HttpServletRequest servletRequest, boolean addContext) {
+        super(servletRequest);
         this.collectionIri = collectionIri;
         this.items = items;
-        this.servletRequest = servletRequest;
         this.addContext = addContext;
     }
 

@@ -39,7 +39,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -980,6 +983,22 @@ public class Helper {
         //            logger.error("Unable to decode '" + string + "' with utf-8");
         //            return string;
         //        }
+    }
+    
+    /**
+     * Finds the first String matching a regex within another string and return it as an {@link Optional}
+     * 
+     * @param text      The String in which to search
+     * @param regex     The regex to search for
+     * @return  An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
+     */
+    public static Optional<String> findFirstMatch(String text, String regex, int group) {
+        Matcher matcher = Pattern.compile(regex).matcher(text);
+        if(matcher.find()) {
+            return Optional.of(matcher.group(group));
+        } else {
+            return Optional.empty();
+        }
     }
 
     /**

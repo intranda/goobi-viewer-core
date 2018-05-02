@@ -23,6 +23,9 @@ import java.util.function.UnaryOperator;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
+
 /**
  * @author Florian Alpers
  *
