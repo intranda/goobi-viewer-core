@@ -1,20 +1,13 @@
 /* ==============================================================
    Image Controls
+   Style declarations for imageControls.xhtml
    ==============================================================*/
 /* CONTROLS */
 /* BLOCK */
-.image-controls,
-.controls {
+.image-controls {
+	position: relative;
 	padding: 15px 0;
-    .mx-clearfloats;
     /* ELEMENT */
-    [data-toggle="mobile-image-controls"] {
-    	display: none;
-    	padding: 15px 0;
-    	font-size: 21px;
-    	text-align: center;
-    	width: 100%;
-    }
 	/* DOCUMENT OPTIONS */
 	&__options {
 		ul {
@@ -27,6 +20,8 @@
 	    }
 	}
 	&__option {
+		width: 21px;
+		height: 21px;
 		a, 
 		span, 
 		button {
@@ -38,9 +33,11 @@
 			}
 		}
 		a, button {
-			display: inline-block;
-			min-width: 16px;
-			padding: 10px 5px;
+			display: block;
+			width: 100%;
+			height: 100%;
+			line-height: 21px;
+			text-align: center;
 		}
 		&.pdf {}
 		&.fulltext {}
@@ -70,7 +67,6 @@
 		}
 		&.iiif {
 			a {
-				min-width: 20px;
 				background-image: url("@{images}/icons/icon-iiif-logo.svg");
 				background-repeat: no-repeat;
 				background-position: center center;
@@ -80,170 +76,164 @@
 	}
     /* ACTIONS */
     &__actions {
-	    ul {}
-	    li {}
-	    a {}
-	    span {}
+    	ul {
+			display: flex;
+			flex-wrap: wrap;
+    		justify-content: center;
+		}
+	    li {
+	    	align-self: center;
+	    }
     }
+    &__action {
+		width: 32px;
+		height: 32px;
+		margin: 0 3px 6px 3px;
+		border: 1px solid @gray;
+	    /* ELEMENT */
+	    a, 
+		span, 
+		button {
+			display: block;
+			height: 100%;
+			line-height: 30px;
+			text-align: center;
+			color: @gray;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+				color: @gray;
+			}
+		}
+		[class*="image-"] {
+			position: relative;
+			top: 3px;
+			font-size: 24px;
+		}
+		&.inactive {
+	    	a,
+	    	span,
+	    	button {
+	        	opacity: 0.4;
+	    	}
+		}    
+	    /* ELEMENT */
+	    &.start {}
+	    &.page-browse,
+	    &.select {}
+	    &.page-browse {
+	        a, span {}
+	    }
+	    &.back {}
+	    &.select-text {
+	    	span {
+		    	font-size: 14px;
+	    		border: none;
+		    	cursor: text;
+	    	}
+	    }
+	    &.select {
+	    	width: 96px;
+	        .form-control__select {
+	        	height: 30px;
+	            padding: 0;
+	            border: none;
+	            background: none;
+	            select {
+	                background: none;
+	            }
+	        }
+	    }
+	    &.forward {}
+	    &.end {}
+	    &.double-page-view,
+	    &.single-page-view,
+	    &.switch-pages {
+		    [class*="image-"] {
+				font-size: 20px;
+			}	    	
+	    }
+	    &.double-page-view {}
+	    &.single-page-view {}
+	    &.switch-pages {
+			[class*="image-"] {
+				top: 0;
+				left: 2px;
+			}
+	    }
+	    &.rotate-left,
+	    &.rotate-right {
+	    	[class*="image-"] {
+				top: 4px;
+			}
+	    }
+	    &.rotate-left {}
+	    &.rotate-right {}
+	    &.reset {}
+	    &.fullscreen {}
+	    &.zoom-slider {
+	        width: 96px;
+	        border: none;
+	        .zoom-slider {
+	            height: 16px;
+	            margin-top: 8px;
+	            border: 1px solid @gray;
+	        }
+	        .zoom-slider-handle {
+	            position: relative;
+	            top: -9px;
+	            width: 15px;
+	            min-width: inherit;
+	            height: 32px;
+	            line-height: inherit;
+	            border: none;
+	            background-color: @gray;
+	        }
+	    }
+	}
     /* MODIFICATION */
 	.labeltext {
 		padding: 0;
-		display: none !important;
-	}
-}
-
-/* BLOCK */
-.image-control {
-    margin-right: 5px;
-    font-size: 1.5rem;
-    /* ELEMENT */
-    &.inactive {
-        a, span {
-            opacity: 0.4;
-        }
-        [class^="control-icon-"], 
-        [class*=" control-icon-"] {
-            cursor: default;
-        }
-    }
-    a, span {
-    	position: relative;
-        display: block;
-        min-width: 32px;
-        height: 32px;
-        line-height: 32px;
-        padding: 0;
-        text-align: center;
-        color: @gray;
-        border: 1px solid @gray;
-        cursor: pointer;
-        &:hover {
-            text-decoration: none;
-        }
-    }
-    [class^="control-icon-"], 
-    [class*=" control-icon-"] {
-        display: inline-block;
-        border: 0;
-        margin: 1px 0 0 1px;
-        padding: 0;
-        font-size: 29px;
-        cursor: pointer;
-    }    
-    /* ELEMENT */
-    &__start {}
-    &__page-browse,
-    &__select {
-    	font-family: Arial, Helvetica, sans-serif !important;
-    }
-    &__page-browse {
-        font-size: 1rem;
-        a, span {}
-    }
-    &__back {}
-    &__select-text {
-    	span {
-	    	font-family: @fontFamily;
-	    	font-size: 14px;
-    		border: none;
-	    	cursor: text;
-    	}
-    }
-    &__select {
-        .form-control__select {
-            max-width: 100px;
-            height: 32px;
-            padding: 0;
-            border: 1px solid @gray;
-            background: none;
-            select {
-                background: none;
-            }
-        }
-    }
-    &__forward {}
-    &__end {}
-    &__double-page-view {}
-    &__single-page-view {}
-    &__switch-pages {}
-    &__rotate-left {}
-    &__rotate-right {}
-    &__reset {}
-    &__fullscreen {}
-    &__zoom-slider {
-        width: 100px;
-        .zoom-slider {
-            height: 16px;
-            margin-top: 8px;
-            border: 1px solid @gray;
-        }
-        .zoom-slider-handle {
-            position: relative;
-            top: -9px;
-            width: 15px;
-            min-width: inherit;
-            height: 32px;
-            line-height: inherit;
-            border: none;
-            background-color: @gray;
-        }
-    }
-}
-
-@media screen and (max-width: @largeBreakpoint) {} 
-
-
-/* BREAKPOINT FOR DESKTOP */
-@media screen and (max-width: 1024px) {
-	li.image-control__page-browse {
 		display: none;
 	}
 }
 
+/* BREAKPOINT FOR LARGE DESKTOP */
+@media screen and (max-width: @largeBreakpoint) {} 
+
+/* BREAKPOINT FOR DESKTOP */
 @media screen and (max-width: @mediumBreakpoint) {}
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-	.controls {
+	.image-controls {
 		&__options {
-			margin-bottom: 5px;
-			font-size: 21px;
+			margin-bottom: 10px;
 		}
 		&__option {
-			a,
-			button {
-				padding: 10px;
-			}
-			&.iiif {
-				a {
-					min-width: 30px;
-					background-size: 21px;					
-				}
+			width: 32px;
+			height: 32px;
+			a, button {
+				line-height: 32px;
 			}
 		}
-	}	
-    li.image-control__double-page-view,
-    li.image-control__single-page-view,
-    li.image-control__switch-pages,
-    li.image-control__rotate-left,
-    li.image-control__rotate-right,
-    li.image-control__reset {
-        display: none;
-    }
+	}
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	li.image-control__start,
-	li.image-control__back,
-	li.image-control__select,
-	li.image-control__forward,
-	li.image-control__end,
-	li.image-control__fullscreen {
-		display: inline-block;
-	    float: left;
+	.image-controls {
+		&__actions {
+			ul {
+				justify-content: space-around;
+			}
+		}
+		&__action {
+			margin: 0 5px 5px 5px;
+			&.zoom-slider {
+				.mx-hidden;
+			}
+		}
 	}
-    li.image-control__zoom-slider {
-        display: none;
-    }
 }

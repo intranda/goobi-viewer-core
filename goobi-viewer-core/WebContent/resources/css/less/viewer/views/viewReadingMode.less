@@ -6,7 +6,6 @@
 #readingMode {
     margin: 0;
     padding: 0;
-    padding-top: 70px;
     background-color: @readingModeBg; 
 }
 
@@ -21,36 +20,91 @@
     /* ELEMENT */
     /* NAVIGATION */
     &__navigation {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: 0;
-        min-height: 70px;
-        padding-left: 15px;
-        padding-right: 15px;
+        display: grid;
+        grid-template-columns: 1fr 4fr 1fr;
+        align-content: center;
+        height: 70px;
         background-color: @middlegray;
-        z-index: 1000;
     }
-    &__navigation-logo {
-        padding: 16px 0;
-    }
-    &__navigation-controls {
-    	position: relative;
-    }
-    &__navigation-goback {
-        padding-top: 12px;
-        text-align: right;
-        a {
-            color: @gray;
-            &:hover {
-                text-decoration: none;
-            }
+    &__nav {
+        &.logo {
+        	padding-left: 15px;
+        	a {
+        		display: flex;
+        		align-items: center;
+        		font-size: 14px;
+        		color: @black;
+        		&:hover,
+        		&:active,
+        		&:focus {
+        			color: @black;
+        			text-decoration: none;
+        		}
+        	}
+        	img {
+        		display: inline-block;
+        		max-width: 50px;
+        		max-height: 70px;
+        		margin-right: 10px;
+        	}
         }
-        
-        .fa {
-            font-size: 28px;
-            cursor: pointer;
+        &.controls {
+        	[data-toggle="mobile-image-controls"] {
+        		display: none;
+        		width: 100%;
+        		font-size: 21px;
+        		color: @gray;
+        	}
+	    	.image-controls {
+	    		padding: 0;
+		    	&__options {
+		    		float: right;
+		    	}
+		    	&__option {
+		    		width: 21px;
+					height: 32px;
+					margin: 0 3px;
+		    		a,
+		    		button {
+		    			display: block;
+						height: 30px;
+						line-height: 30px;
+						padding: 0;
+						text-align: center;
+						color: @gray;
+						&:hover,
+						&:active,
+						&:focus {
+							text-decoration: none;
+							color: @gray;
+						}
+		    		}
+		    		&.add-to-bookshelf {
+		    			.mx-hidden;
+		    		}
+		    	}
+		    	&__actions {
+		    		float: left;
+		    	}
+		    	&__action {}
+	    	}        	
         }
+        &.back {
+        	padding-right: 15px;
+        	a {
+        		display: flex;
+        		justify-content: flex-end;
+        		align-items: center;
+        		font-size: 28px;
+        		color: @gray;
+        		&:hover,
+        		&:active,
+        		&:focus {
+        			color: @gray;
+        			text-decoration: none;
+        		}
+        	}
+        }    	
     }
     /* CONTENT */
     &__content {}
@@ -121,99 +175,120 @@
 @media screen and (max-width: @largeBreakpoint) {} 
 
 /* BREAKPOINT FOR DESKTOP */
-@media screen and (max-width: @mediumBreakpoint) {}
-
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: @smallBreakpoint) {
-	.reading-mode__navigation-logo {
-		span {
-			display: none;
-		}
-	}
-    .reading-mode__navigation-controls {
-	    [data-toggle="mobile-image-controls"] {
-	    	display: inline-block;
+@media screen and (max-width: 1070px) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 5fr 1fr;
 	    }
-    	.image-controls {
-		padding: 0 !important;
-			&__actions {
-				display: none;
-				position: absolute;
-				top: 100%;
-				left: -25%;
-				right: -25%;
-				border: 1px solid @middlegray;
-				background-color: @white;
-				z-index: 999;
-			}
-			.list {
-				float: none;
-				left: 0;
-				padding: 10px;
-				padding-top: 0;
-				li {
-				    float: none;
-				    right: 0;
-				    left: 0;
-				    width: 100%;
-				    margin: 0;
-					&.image-control {
-					    a, span {
-					    	position: relative;
-					        display: block;
-					        min-width: inherit;
-					        width: 100%;
-					        height: auto;
-					        padding: 5px;
-					        text-align: left;
-					        border: none;
-					        &:hover {}
-					    }
-					    .labeltext {
-					    	display: inline;
-					    	position: absolute;
-					    	top: 0;
-					    	bottom: 0;
-					    	left: 40px;
-					    	width: calc(~"100% - 40px");
-					    	line-height: 40px;
-					    	padding: 0;
-					    	font-family: @fontFamily;
-					    	font-size: 0.9rem;
-					    }
-					    /* ELEMENT */
-					    &__page-browse,
-					    &__select,
-					    &__zoom-slider {
-					    	display: none;
-					    }
-					}
+		&__nav {
+			&.logo {
+				span {
+					.mx-hidden;
 				}
 			}
 		}
-    }
-    .reading-mode__content-view.in {
-        width: 60%;
-    }
-    .reading-mode__content-sidebar.in { 
-        width: 40%;
+	}
+}
+@media screen and (max-width: @mediumBreakpoint) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 6fr 1fr;
+	    }
+	}
+}
+@media screen and (max-width: 950px) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 7fr 1fr;
+	    }
+	}
+}
+@media screen and (max-width: 918px) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 8fr 1fr;
+	    }
+	}
+}
+@media screen and (max-width: 893px) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 9fr 1fr;
+	    }
+	}
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 10fr 1fr;
+	    }
+	    &__nav {
+	    	&.controls {
+	    		.image-controls {
+	    			&__action {
+	    				&.select {
+	    					width: 64px;
+	    				}
+	    				&.zoom-slider {
+	    					.mx-hidden;
+	    				}
+	    			}
+	    		}
+	    	}
+	    }
+	    &__content-view {
+	    	&.in {
+		        width: 60%;	    		
+	    	}
+	    }
+	    &__content-sidebar {
+	    	&.in {
+		        width: 40%;	    		
+	    	} 
+	    }
     }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-	.reading-mode__navigation-controls {
-		.image-controls {
-			&__actions {
-				left: -50%;
-				right: -50%;
-			}
-		}
-	}
-    .reading-mode__content-view.in {
-        width: 10%;
-    }
-    .reading-mode__content-sidebar.in { 
-        width: 90%;
+	.reading-mode {
+		&__nav {
+	    	&.controls {
+	    		[data-toggle="mobile-image-controls"] {
+	    			display: inline-block;
+	    		}
+	    		.image-controls {
+	    			display: none;
+	    			position: absolute;
+	    			top: 100%;
+	    			right: 0;
+	    			left: 0;
+	    			padding: 15px;
+	    			border-bottom: 2px solid @blue;
+	    			background-color: @white;
+	    			z-index: 999;
+	    			&__actions {
+	    				ul {
+	    					justify-content: flex-start;
+	    				}
+	    			}
+	    			&__action {
+	    				margin: 0 3px 5px 3px;
+	    			}
+	    		}
+	    	}
+	    }
+	    &__content-view {
+	    	&.in {
+		        width: 10%;	    		
+	    	}
+	    }
+	    &__content-sidebar {
+	    	&.in {
+		        width: 90%;	    		
+	    	} 
+	    }
     }
 }

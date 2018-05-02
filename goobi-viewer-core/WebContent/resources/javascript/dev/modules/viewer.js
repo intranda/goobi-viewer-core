@@ -108,7 +108,7 @@
             $( '#mobileNav' ).slideToggle( 'fast' );
         } );
         $( '[data-toggle="mobile-image-controls"]' ).on( 'click', function() {
-            $( '.image-controls__actions' ).slideToggle( 'fast' );
+            $( '.image-controls' ).slideToggle( 'fast' );
         } );
         
         // toggle language
