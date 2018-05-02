@@ -2229,11 +2229,14 @@ div.mce-fullscreen {
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .image-controls__actions ul {
-    -ms-flex-pack: distribute;
-        justify-content: space-around;
+    -ms-flex-pack: start;
+        justify-content: flex-start;
   }
   .image-controls__action {
-    margin: 0 5px 5px 5px;
+    margin: 0 5px 10px 5px;
+  }
+  .image-controls__action.select {
+    width: 74px;
   }
   .image-controls__action.zoom-slider {
     display: none !important;
@@ -6255,7 +6258,9 @@ div.olMapViewport {
 .reading-mode__nav.controls [data-toggle="mobile-image-controls"] {
   display: none;
   width: 100%;
+  padding: 0 20px;
   font-size: 21px;
+  text-align: right;
   color: #6f6f6f;
 }
 .reading-mode__nav.controls .image-controls {
@@ -6304,7 +6309,7 @@ div.olMapViewport {
       justify-content: flex-end;
   -ms-flex-align: center;
       align-items: center;
-  font-size: 28px;
+  font-size: 24px;
   color: #6f6f6f;
 }
 .reading-mode__nav.back a:hover,
@@ -6312,6 +6317,10 @@ div.olMapViewport {
 .reading-mode__nav.back a:focus {
   color: #6f6f6f;
   text-decoration: none;
+}
+.reading-mode__nav.back a .fa {
+  position: relative;
+  top: 2px;
 }
 .reading-mode__content-view,
 .reading-mode__content-sidebar {
@@ -6428,6 +6437,9 @@ div.olMapViewport {
 }
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
+  .reading-mode__navigation {
+    height: 50px;
+  }
   .reading-mode__nav.controls [data-toggle="mobile-image-controls"] {
     display: inline-block;
   }

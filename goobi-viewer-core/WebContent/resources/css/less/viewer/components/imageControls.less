@@ -226,11 +226,14 @@
 	.image-controls {
 		&__actions {
 			ul {
-				justify-content: space-around;
+				justify-content: flex-start;
 			}
 		}
 		&__action {
-			margin: 0 5px 5px 5px;
+			margin: 0 5px 10px 5px;
+			&.select {
+				width: 74px;
+			}
 			&.zoom-slider {
 				.mx-hidden;
 			}

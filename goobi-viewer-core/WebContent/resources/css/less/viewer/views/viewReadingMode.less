@@ -52,7 +52,9 @@
         	[data-toggle="mobile-image-controls"] {
         		display: none;
         		width: 100%;
+        		padding: 0 20px;
         		font-size: 21px;
+        		text-align: right;
         		color: @gray;
         	}
 	    	.image-controls {
@@ -95,13 +97,17 @@
         		display: flex;
         		justify-content: flex-end;
         		align-items: center;
-        		font-size: 28px;
+        		font-size: 24px;
         		color: @gray;
         		&:hover,
         		&:active,
         		&:focus {
         			color: @gray;
         			text-decoration: none;
+        		}
+        		.fa {
+        			position: relative;
+        			top: 2px;
         		}
         	}
         }    	
@@ -254,6 +260,9 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 	.reading-mode {
+		&__navigation {
+			height: 50px;
+		}
 		&__nav {
 	    	&.controls {
 	    		[data-toggle="mobile-image-controls"] {
