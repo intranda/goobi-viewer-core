@@ -59,7 +59,7 @@ html {
 }
 body {
   height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 0.875rem;
 }
 h1,
@@ -2030,24 +2030,120 @@ div.mce-fullscreen {
    ==============================================================*/
 /* CONTROLS */
 /* BLOCK */
-.image-controls {
+.image-controls,
+.controls {
   padding: 15px 0;
   /* ELEMENT */
+  /* DOCUMENT OPTIONS */
+  /* ACTIONS */
+  /* MODIFICATION */
 }
 .image-controls:before,
-.image-controls:after {
+.controls:before,
+.image-controls:after,
+.controls:after {
   content: " ";
   display: table;
 }
-.image-controls:after {
+.image-controls:after,
+.controls:after {
   clear: both;
 }
-.image-controls [data-toggle="mobile-image-controls"] {
+.image-controls [data-toggle="mobile-image-controls"],
+.controls [data-toggle="mobile-image-controls"] {
   display: none;
   padding: 15px 0;
   font-size: 21px;
   text-align: center;
   width: 100%;
+}
+.image-controls__options ul,
+.controls__options ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
+}
+.image-controls__options li,
+.controls__options li {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+.image-controls__option a,
+.controls__option a,
+.image-controls__option span,
+.controls__option span,
+.image-controls__option button,
+.controls__option button {
+  color: #6f6f6f;
+}
+.image-controls__option a:hover,
+.controls__option a:hover,
+.image-controls__option span:hover,
+.controls__option span:hover,
+.image-controls__option button:hover,
+.controls__option button:hover,
+.image-controls__option a:active,
+.controls__option a:active,
+.image-controls__option span:active,
+.controls__option span:active,
+.image-controls__option button:active,
+.controls__option button:active,
+.image-controls__option a:focus,
+.controls__option a:focus,
+.image-controls__option span:focus,
+.controls__option span:focus,
+.image-controls__option button:focus,
+.controls__option button:focus {
+  color: #6f6f6f;
+}
+.image-controls__option a,
+.controls__option a,
+.image-controls__option button,
+.controls__option button {
+  display: inline-block;
+  min-width: 16px;
+  padding: 10px 5px;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"],
+.controls__option.add-to-bookshelf [data-bookshelf-type="add"] {
+  background-image: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark-o,
+.controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark-o {
+  display: inline-block;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark,
+.controls__option.add-to-bookshelf [data-bookshelf-type="add"] span .fa-bookmark {
+  display: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark-o,
+.controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark-o,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark-o,
+.controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark-o {
+  display: none;
+}
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark,
+.controls__option.add-to-bookshelf [data-bookshelf-type="add"].added span .fa-bookmark,
+.image-controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark,
+.controls__option.add-to-bookshelf [data-bookshelf-type="add"]:hover span .fa-bookmark {
+  display: inline-block;
+}
+.image-controls__option.iiif a,
+.controls__option.iiif a {
+  min-width: 20px;
+  background-image: url("../../images/icons/icon-iiif-logo.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 16px;
+}
+.image-controls .labeltext,
+.controls .labeltext {
+  padding: 0;
+  display: none !important;
 }
 /* BLOCK */
 .image-control {
@@ -2090,9 +2186,6 @@ div.mce-fullscreen {
   font-size: 29px;
   cursor: pointer;
 }
-.image-control .labeltext {
-  display: none;
-}
 .image-control__page-browse,
 .image-control__select {
   font-family: Arial, Helvetica, sans-serif !important;
@@ -2101,7 +2194,7 @@ div.mce-fullscreen {
   font-size: 1rem;
 }
 .image-control__select-text span {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 14px;
   border: none;
   cursor: text;
@@ -2134,44 +2227,6 @@ div.mce-fullscreen {
   border: none;
   background-color: #6f6f6f;
 }
-.image-control__pdf a,
-.image-control__fulltext a {
-  line-height: 26px;
-  border: none;
-}
-.image-control__add-to-bookshelf [data-bookshelf-type="add"] {
-  line-height: 26px;
-  color: #6f6f6f;
-  background-image: none;
-}
-.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark-o {
-  display: inline-block;
-}
-.image-control__add-to-bookshelf [data-bookshelf-type="add"] .fa-bookmark {
-  display: none;
-  color: #6f6f6f;
-}
-.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark-o,
-.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark-o {
-  display: none;
-}
-.image-control__add-to-bookshelf [data-bookshelf-type="add"].added .fa-bookmark,
-.image-control__add-to-bookshelf [data-bookshelf-type="add"]:hover .fa-bookmark {
-  display: inline-block;
-}
-.image-control__iiif {
-  height: 32px;
-}
-.image-control__iiif a {
-  display: block;
-  height: 100%;
-  border: none;
-  background-image: url("../../images/icons/icon-iiif-logo.svg");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 85%;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 @media screen and (max-width: 1024px) {
   li.image-control__page-browse {
@@ -2200,10 +2255,7 @@ div.mce-fullscreen {
     display: inline-block;
     float: left;
   }
-  li.image-control__zoom-slider,
-  li.image-control__pdf,
-  li.image-control__add-to-bookshelf,
-  li.image-control__iiif {
+  li.image-control__zoom-slider {
     display: none;
   }
 }
@@ -6334,7 +6386,7 @@ div.olMapViewport {
     width: calc(100% - 40px);
     line-height: 40px;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 0.9rem;
   }
   .reading-mode__navigation-controls .image-controls .list li.image-control__page-browse,
