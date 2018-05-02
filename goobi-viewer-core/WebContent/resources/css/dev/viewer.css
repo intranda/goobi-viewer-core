@@ -2235,6 +2235,18 @@ div.mce-fullscreen {
 }
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
+  .controls__options {
+    margin-bottom: 5px;
+    font-size: 21px;
+  }
+  .controls__option a,
+  .controls__option button {
+    padding: 10px;
+  }
+  .controls__option.iiif a {
+    min-width: 30px;
+    background-size: 21px;
+  }
   li.image-control__double-page-view,
   li.image-control__single-page-view,
   li.image-control__switch-pages,

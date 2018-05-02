@@ -204,6 +204,24 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+	.controls {
+		&__options {
+			margin-bottom: 5px;
+			font-size: 21px;
+		}
+		&__option {
+			a,
+			button {
+				padding: 10px;
+			}
+			&.iiif {
+				a {
+					min-width: 30px;
+					background-size: 21px;					
+				}
+			}
+		}
+	}	
     li.image-control__double-page-view,
     li.image-control__single-page-view,
     li.image-control__switch-pages,
