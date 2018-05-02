@@ -132,7 +132,7 @@ public class StructElementTest extends AbstractSolrEnabledTest {
     @Test
     public void getImageUrl_shouldConstructUrlCorrectly() throws Exception {
         StructElement element = new StructElement(1387459019047L);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/PPN517154005/00000001.tif/full/!600,800/0/default.jpg?compression=30",
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/PPN517154005/00000001.tif/full/!600,800/0/default.jpg",
                 element.getImageUrl(600, 800, 90, true, true));
     }
 

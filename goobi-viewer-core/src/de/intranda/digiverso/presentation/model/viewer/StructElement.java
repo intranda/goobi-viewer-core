@@ -32,13 +32,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
 /**
  * Each instance of this class represents a structure element. This class extends <code>StructElementStub</code> and contains additional
@@ -485,7 +485,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getCollection() {
         return this.getMetadataValue(SolrConstants.DC);
     }
-
+    
+    public List<String> getCollections() {
+        return this.getMetadataValues(SolrConstants.DC);
+    }
+    
     /**
      * @return the fulltextAvailable
      */
@@ -584,6 +588,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             label = getMetadataValue(SolrConstants.TITLE);
             if (StringUtils.isEmpty(label)) {
                 label = getDocStructType();
+            }
+        }
+
+        return label;
+    }
+    
+    public IMetadataValue getMultiLanguageDisplayLabel() {
+        IMetadataValue label = getMultiLanguageMetadataValue(SolrConstants.LABEL);
+        if (label.isEmpty()) {
+            label = getMultiLanguageMetadataValue(SolrConstants.TITLE);
+            if (label.isEmpty()) {
+                label = IMetadataValue.getTranslations(getDocStructType());
             }
         }
 

@@ -57,7 +57,7 @@ public class ThumbnailHandler {
     private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
     private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
 
-    public static final String[] REQUIRED_SOLR_FIELDS = new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
+    public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
             SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
 
     private final int thumbWidth;

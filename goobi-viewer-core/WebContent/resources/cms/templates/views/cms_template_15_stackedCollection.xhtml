@@ -43,12 +43,13 @@
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: '#{request.contextPath}/rest/collections/#{navigationHelper.localeString}/#{cmsPage.getContentItem("collection").collectionField}/#{cmsPage.getContentItem("collection").baseCollection != null ? cmsPage.getContentItem("collection").baseCollection : "-"}',
+                        url: '#{request.contextPath}/rest/collections/#{cmsPage.getContentItem("collection").collectionField}/#{cmsPage.getContentItem("collection").baseCollection != null ? cmsPage.getContentItem("collection").baseCollection : "-"}',
                         type: 'GET',
                         datatype: 'JSON'
                     } ).then( function( data ) {
                         var stackedCollectionConfig = {
                             collectionDefaultThumb: '#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/collections/collection_tiled_default.jpg',
+                            displayLanguage: '#{navigationHelper.localeString}',
                             msg: {
                                 noSubCollectionText: '#{msg.cms_noSubCollectionText}'
                             }

@@ -13,33 +13,43 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.collections;
+package de.intranda.digiverso.presentation.model.iiif.presentation.enums;
 
-import java.net.MalformedURLException;
-import java.util.Locale;
-
-import de.intranda.digiverso.presentation.model.viewer.CollectionView;
-import de.intranda.digiverso.presentation.model.viewer.HierarchicalBrowseDcElement;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Part of the IIIF presentation api
  * 
- * Represents a collection that is embedded within another collection in the json+ld response
+ * Values for the viewing hint property of collections or sequences
  * 
  * @author Florian Alpers
  *
  */
-public class SubCollection extends Collection {
+public enum ViewingHint {
 
-    /**
-     * @param collectionView
-     * @param locale
-     * @param collectionField
-     * @param facetField
-     * @throws MalformedURLException
-     */
-    public SubCollection(CollectionView collectionView, Locale locale, String baseUrl, HierarchicalBrowseDcElement topElement, String collectionField, String facetField, String contextPath) throws MalformedURLException {
-        super(collectionView, locale, baseUrl, topElement, collectionField, facetField, contextPath);
+    individuals,
+    paged,
+    continuous,
+    multipart("multi-part"),
+    nonpaged("non-paged"),
+    top,
+    facingpages("facing-pages");
+    
+    private final String label;
+    
+    private ViewingHint(String label) {
+        this.label = label;
     }
-
+    
+    private ViewingHint() {
+        this.label = this.name();
+    }
+    
+    /**
+     * @return the label
+     */
+    @JsonValue
+    public String getLabel() {
+        return label;
+    }
 }

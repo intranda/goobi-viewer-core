@@ -80,7 +80,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
         Object responseObject = response.getEntity();
-        if (responseObject instanceof ImageInformation) {
+        if (responseObject != null && responseObject instanceof ImageInformation) {
 
             Path requestPath = Paths.get(request.getUriInfo().getPath());
 

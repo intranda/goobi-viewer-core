@@ -56,9 +56,10 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.model.toc.metadata.IMetadataValue;
-import de.intranda.digiverso.presentation.model.toc.metadata.MultiLanguageMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.Tag;
 
 public final class SolrSearchIndex {
@@ -333,6 +334,26 @@ public final class SolrSearchIndex {
 
         return null;
     }
+    
+    /**
+    *   Returns all SolrDocuments matching the given query. If no documents were found, null is returned
+    *
+    * @param query
+    * @param fieldList
+    * @return
+    * @throws PresentationException
+    * @throws IndexUnreachableException
+    * @should return SolrDocumentList containing all hits, or null if no hits are found
+    */
+   public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+       logger.trace("getDocs: {}", query);
+       SolrDocumentList hits = search(query, fieldList);
+       if (hits.getNumFound() > 0) {
+           return hits;
+       }
+
+       return null;
+   }
 
     /**
      *
@@ -1081,4 +1102,5 @@ public final class SolrSearchIndex {
         }
         return map;
     }
+
 }

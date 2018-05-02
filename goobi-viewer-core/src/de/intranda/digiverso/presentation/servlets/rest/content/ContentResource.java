@@ -18,8 +18,16 @@ package de.intranda.digiverso.presentation.servlets.rest.content;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +45,7 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
@@ -211,6 +220,16 @@ public class ContentResource {
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
+        } else {
+            file = getAltoFile(pi, fileName.replace(".txt", ".xml"), dataRepository);
+            if (file != null && Files.isRegularFile(file)) {
+                try {
+                    AltoDocument alto = AltoDocument.getDocumentFromFile(file.toFile());
+                    return alto.getContent();
+                } catch (IOException | JDOMException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
         }
 
         throw new ContentNotFoundException("Resource not found");
@@ -244,8 +263,9 @@ public class ContentResource {
         if (Files.exists(teiPath)) {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
+                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
 
@@ -301,8 +321,9 @@ public class ContentResource {
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
-                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
             }
         }
         if (filePath != null) {
@@ -327,5 +348,136 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+    }
+
+    public static URI getAltoURI(String pi, String filename) throws URISyntaxException {
+        URI uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
+        uri = uri.resolve("content/alto/" + pi + "/" + filename);
+        return uri;
+    }
+
+    public static URI getFulltextURI(String pi, String filename) throws URISyntaxException {
+        URI uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
+        uri = uri.resolve("content/fulltext/" + pi + "/" + filename);
+        return uri;
+    }
+
+    public static URI getTEIURI(String pi, String locale) {
+        URI uri = null;
+        try {
+            uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            uri = uri.resolve("content/tei/" + pi + "/" + locale);
+        } catch (URISyntaxException e) {
+            logger.error(e.toString(), e);
+        }
+        return uri;
+    }
+
+    public static URI getCMDIURI(String pi, String locale) {
+        URI uri = null;
+        try {
+            uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
+            uri = uri.resolve("content/cmdi/" + pi + "/" + locale);
+        } catch (URISyntaxException e) {
+            logger.error(e.toString(), e);
+        }
+        return uri;
+    }
+
+    public static String getDataRepository(String pi) throws PresentationException, IndexUnreachableException {
+        String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
+        return dataRepository;
+    }
+
+    public static java.nio.file.Path getAltoFile(String pi, String fileName, String dataRepository)
+            throws PresentationException, IndexUnreachableException {
+        String filePath = DataManager.getInstance().getConfiguration().getAltoFolder() + '/' + pi + '/' + fileName;
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+        return file;
+    }
+
+    public static java.nio.file.Path getFulltextFile(String pi, String fileName, String dataRepository)
+            throws PresentationException, IndexUnreachableException {
+        String filePath = DataManager.getInstance().getConfiguration().getFulltextFolder() + '/' + pi + '/' + fileName;
+        java.nio.file.Path file = Paths.get(Helper.getRepositoryPath(dataRepository), filePath);
+        return file;
+    }
+
+    public static java.nio.file.Path getTEIFile(String pi, String langCode, String dataRepository)
+            throws PresentationException, IndexUnreachableException, IOException {
+        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+        java.nio.file.Path teiPath =
+                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
+        java.nio.file.Path filePath = null;
+        if (Files.exists(teiPath)) {
+            // This will return the file with the requested language or alternatively the first file in the TEI folder
+            try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
+                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+        return filePath;
+    }
+
+    public static List<java.nio.file.Path> getTEIFiles(String pi, String dataRepository) {
+        java.nio.file.Path teiPath =
+                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
+        List<java.nio.file.Path> filePaths = new ArrayList<>();
+        if (Files.exists(teiPath)) {
+            // This will return the file with the requested language or alternatively the first file in the TEI folder
+            try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
+                filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
+            } catch (IOException e) {
+                logger.error(e.toString(), e);
+            }
+        }
+        return filePaths;
+    }
+
+    public static java.nio.file.Path getCMDIFile(String pi, String langCode, String dataRepository)
+            throws PresentationException, IndexUnreachableException, IOException {
+        final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
+        java.nio.file.Path cmdiPath =
+                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getCmdiFolder(), pi);
+        java.nio.file.Path filePath = null;
+        if (Files.exists(cmdiPath)) {
+            // This will return the file with the requested language or alternatively the first file in the CMDI folder
+            try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+        return filePath;
+    }
+
+    public static List<java.nio.file.Path> getCMDIFiles(String pi, String dataRepository){
+        java.nio.file.Path teiPath =
+                Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getCmdiFolder(), pi);
+        List<java.nio.file.Path> filePaths = new ArrayList<>();
+        if (Files.exists(teiPath)) {
+            // This will return the file with the requested language or alternatively the first file in the TEI folder
+            try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
+                filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
+            } catch (IOException e) {
+               logger.error(e.toString(), e);
+            }
+        }
+        return filePaths;
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    public static Optional<String> getLanguage(String filename) {
+        String regex = "([a-z]{1,3})\\.[a-z]+";
+        Matcher matcher = Pattern.compile(regex).matcher(filename);
+        if (matcher.find()) {
+            return Optional.of(matcher.group(1));
+        } else {
+            return Optional.empty();
+        }
     }
 }

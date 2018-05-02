@@ -13,51 +13,40 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.collections;
+package de.intranda.digiverso.presentation.servlets.rest.services;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Part of the IIIF presentation api
- * 
- * Represents a simple single-language metadata within ny presentation api object
+ * Provides a link to a context definition
  * 
  * @author Florian Alpers
  *
  */
-@JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({"label", "value"})
-public class Metadata {
+public class Context {
+
+    private final String name;
+    private final String uri;
     
-    private final String label;
-    private final String value;
-    /**
-     * @param label
-     * @param value
-     */
-    public Metadata(String label, String value) {
-        super();
-        this.label = label;
-        this.value = value;
+    public Context(String name, String uri) {
+        this.name = name;
+        this.uri = uri;
     }
     
     /**
-     * @return the label
+     * @return the name
      */
-    public String getLabel() {
-        return label;
+    public String getName() {
+        return name;
     }
     
     /**
-     * @return the value
+     * @return the uri
      */
-    public String getValue() {
-        return value;
+    @JsonValue
+    public String getUri() {
+        return uri;
     }
-    
+
 
 }

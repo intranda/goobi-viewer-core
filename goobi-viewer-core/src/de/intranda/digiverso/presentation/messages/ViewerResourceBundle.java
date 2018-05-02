@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
@@ -27,14 +28,19 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 
@@ -43,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 
 public class ViewerResourceBundle extends ResourceBundle {
@@ -54,6 +61,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     protected static final Map<Locale, ResourceBundle> localBundles = new ConcurrentHashMap<>();
     protected static final Map<String, Boolean> reloadNeededMap = new ConcurrentHashMap<>();
     protected static volatile Locale defaultLocale;
+    private static List<Locale> allLocales = null;
 
     public ViewerResourceBundle() {
         registerFileChangedService(Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath()));
@@ -198,18 +206,22 @@ public class ViewerResourceBundle extends ResourceBundle {
         return getTranslation(key, FacesContext.getCurrentInstance().getViewRoot().getLocale());
     }
 
+    public static String getTranslation(final String key, Locale locale) {
+        return getTranslation(key, locale, true);
+    }
+    
     /**
      * 
      * @param text
      * @param locale
      * @return
      */
-    public static String getTranslation(final String key, Locale locale) {
+    public static String getTranslation(final String key, Locale locale, boolean useFallback) {
         //        logger.trace("Translation for: {}", key);
         checkAndLoadDefaultResourceBundles();
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
-        if (StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
+        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
             value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale));
         }
         if (value == null) {
@@ -377,4 +389,43 @@ public class ViewerResourceBundle extends ResourceBundle {
     public Enumeration<String> getKeys() {
         return null;
     }
+
+    public static List<Locale> getAllLocales() {
+
+        if (allLocales == null) {
+            Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
+            try (Stream<Path> messageFiles =
+                    Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
+                allLocales = messageFiles
+                        .map(path -> Helper.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
+                        .filter(lang -> lang != null)
+                        .sorted((l1, l2) -> {
+                            if (l1.equals(l2)) {
+                                return 0;
+                            }
+                            switch (l1) {
+                                case "en":
+                                    return -1;
+                                case "de":
+                                    return l2.equals("en") ? 1 : -1;
+                                default:
+                                    switch (l2) {
+                                        case "en":
+                                        case "de":
+                                            return 1;
+                                    }
+                            }
+                            return l1.compareTo(l2);
+                        })
+                        .map(language -> Locale.forLanguageTag(language))
+                        .collect(Collectors.toList());
+            } catch (IOException e) {
+                logger.error("Error reading config directory " + configPath);
+            }
+
+        }
+
+        return allLocales;
+    }
+
 }

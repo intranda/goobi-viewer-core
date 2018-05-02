@@ -174,7 +174,7 @@
 			<formatter type="xml" usefile="true" />
 			<batchtest todir="${dir.tests.report}">
 				<!--fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*" /-->
-				<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/SolrSearchIndexTest*, de/intranda/digiverso/**/TranskribusUtilsTest*, de/intranda/digiverso/**/JPADAOTest*, de/intranda/digiverso/**/ActiveDocumentBeanTest*, de/intranda/digiverso/**/AdminBeanTest*, de/intranda/digiverso/**/CmsBeanTest*, de/intranda/digiverso/**/CmsMediaBeanTest*, de/intranda/digiverso/**/SearchBeanTest*, de/intranda/digiverso/**/CMSPageTest*, de/intranda/digiverso/**/DownloadJobTest*, de/intranda/digiverso/**/MetadataTest*, de/intranda/digiverso/**/OverviewPageTest*, de/intranda/digiverso/**/BrowseElementTest*, de/intranda/digiverso/**/FacetItemTest*, de/intranda/digiverso/**/SearchHelperTest*, de/intranda/digiverso/**/SearchHitTest*, de/intranda/digiverso/**/AccessConditionUtilsTest*, de/intranda/digiverso/**/TocMakerTest*, de/intranda/digiverso/**/IpRangeTest*, de/intranda/digiverso/**/UserTest*, de/intranda/digiverso/**/CollectionViewTest*, de/intranda/digiverso/**/PhysicalElementTest*, de/intranda/digiverso/**/StructElementStubTest*, de/intranda/digiverso/**/StructElementTest*, de/intranda/digiverso/**/ViewManagerTest*, de/intranda/digiverso/**/EagerPageLoaderTest*, de/intranda/digiverso/**/LeanPageLoaderTest*, de/intranda/digiverso/**/IdentifierResolverTest*, de/intranda/digiverso/**/MetsResolverTest*, de/intranda/digiverso/**/PpnResolverTest*, de/intranda/digiverso/**/WebApiServletTest*, de/intranda/digiverso/**/BookshelfResourceTest*, de/intranda/digiverso/**/CMSContentResourceTest*, de/intranda/digiverso/**/ContentResourceTest*" />
+				<fileset dir="${dir.tests.classes}" includes="de/intranda/digiverso/**/*Test.class" excludes="de/intranda/digiverso/**/Abstract*, de/intranda/digiverso/**/SolrSearchIndexTest*, de/intranda/digiverso/**/TranskribusUtilsTest*, de/intranda/digiverso/**/JPADAOTest*, de/intranda/digiverso/**/ActiveDocumentBeanTest*, de/intranda/digiverso/**/AdminBeanTest*, de/intranda/digiverso/**/CmsBeanTest*, de/intranda/digiverso/**/CmsMediaBeanTest*, de/intranda/digiverso/**/SearchBeanTest*, de/intranda/digiverso/**/CMSPageTest*, de/intranda/digiverso/**/DownloadJobTest*, de/intranda/digiverso/**/MetadataTest*, de/intranda/digiverso/**/OverviewPageTest*, de/intranda/digiverso/**/BrowseElementTest*, de/intranda/digiverso/**/FacetItemTest*, de/intranda/digiverso/**/SearchHelperTest*, de/intranda/digiverso/**/SearchHitTest*, de/intranda/digiverso/**/AccessConditionUtilsTest*, de/intranda/digiverso/**/TocMakerTest*, de/intranda/digiverso/**/IpRangeTest*, de/intranda/digiverso/**/UserTest*, de/intranda/digiverso/**/CollectionViewTest*, de/intranda/digiverso/**/PhysicalElementTest*, de/intranda/digiverso/**/StructElementStubTest*, de/intranda/digiverso/**/StructElementTest*, de/intranda/digiverso/**/ViewManagerTest*, de/intranda/digiverso/**/EagerPageLoaderTest*, de/intranda/digiverso/**/LeanPageLoaderTest*, de/intranda/digiverso/**/IdentifierResolverTest*, de/intranda/digiverso/**/MetsResolverTest*, de/intranda/digiverso/**/PpnResolverTest*, de/intranda/digiverso/**/WebApiServletTest*, de/intranda/digiverso/**/BookshelfResourceTest*, de/intranda/digiverso/**/CMSContentResourceTest*, de/intranda/digiverso/**/ContentResourceTest*, de/intranda/digiverso/**/ManifestResourceTest*" />
 			</batchtest>
 		</junit>
 		<mkdir dir="${dir.tests.htmlreport}"/>
@@ -1343,6 +1343,21 @@
 		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fwww.pogromnovember1938.co.uk%2Fviewer%2Foai" />
 		<property name="theme" value="wienerlibrary-novemberpogrom" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
+	<target name="twltttt">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config_testifyingtothetruth/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="https://www.testifyingtothetruth.co.uk/viewer/" />
+		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fwww.testifyingtothetruth.co.uk%2Fviewer%Foai" />
+		<property name="theme" value="wienerlibrary-testifyingtothetruth" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />

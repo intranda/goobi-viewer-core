@@ -62,7 +62,7 @@ public class ThumbnailHandlerTest {
 
         String url = handler.getThumbnailUrl(page, 200, 300);
         System.out.println(url);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg?compression=30", url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
     }
     
     @Test
@@ -104,7 +104,7 @@ public class ThumbnailHandlerTest {
         
         String url = handler.getThumbnailUrl(doc, 200, 300);
         System.out.println(url);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg?compression=30", url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
    }
    
     @Test
@@ -124,7 +124,7 @@ public class ThumbnailHandlerTest {
         
         String url = handler.getThumbnailUrl(doc, 200, 300);
         System.out.println(url);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg?compression=30", url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
    }
     
     @Test

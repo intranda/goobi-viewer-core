@@ -3091,5 +3091,14 @@ public final class Configuration extends AbstractConfiguration {
         return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.EMPTY_LIST);
     }
     
+    public List<String> getIIIFMetadataFields() {
+        return getLocalList("webapi.iiif.metadataFields.field", Collections.EMPTY_LIST);
+    }
 
+    /**
+     * @return
+     */
+    public String getIIIFNavDateField() {
+        return getLocalString("webapi.iiif.navDateField", null);
+    }
 }
