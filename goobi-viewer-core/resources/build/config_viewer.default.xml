@@ -41,11 +41,11 @@
 	<!-- wcFolder: contains TEI word coordinate files -->
 	<wcFolder>wc</wcFolder>
 	
-    <!-- teiFolder: contains TEI metadata/fulltext files -->
-    <teiFolder>tei</teiFolder>
+	<!-- teiFolder: contains TEI metadata/fulltext files -->
+	<teiFolder>tei</teiFolder>
     
-    <!-- cmdiFolder: contains CMDI metadata/fulltext files -->
-    <cmdiFolder>cmdi</cmdiFolder>
+	<!-- cmdiFolder: contains CMDI metadata/fulltext files -->
+	<cmdiFolder>cmdi</cmdiFolder>
 
 	<!-- hotfolder: defines the hotfolder from the Goobi viewer Indexer for indexing uploaded born-digital-material (see <content> also) -->
 	<hotfolder>/opt/digiverso/viewer/hotfolder/</hotfolder>
@@ -87,8 +87,8 @@
 		<!-- The base urls to access download pages for pdf and epub downloads -->
 		<download>http://localhost:8080/viewer/download/</download>
 
-        <!-- contentRestApi: REST API URL for content files -->
-        <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi>
+		<!-- contentRestApi: REST API URL for content files -->
+		<contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi>
 	</urls>
 
 
@@ -223,17 +223,17 @@
 		<!-- TODO DOCUMENTATION-->
 		<rememberImageRotation>false</rememberImageRotation>
         
-        <!-- URL patterns for external image urls which should be served via the contentServner
-        All image urls (= page filenames in SOLR) which match one of the externalContent.restrictedUrls.urls 
-        Will not be delivered to the client directly, but rather embedded within a contentServer IIIF url, so the actual image
-        is requested by the viewer/contentServer and not the client
-         -->
-        <externalContent>
-            <restrictedUrls>
-                <url>https?://external/restricted/.*</url>
-                <url>https?://external/noaccess/.*\.tif</url>
-            </restrictedUrls>
-        </externalContent>
+	        <!-- URL patterns for external image urls which should be served via the contentServner
+	        All image urls (= page filenames in SOLR) which match one of the externalContent.restrictedUrls.urls 
+	        Will not be delivered to the client directly, but rather embedded within a contentServer IIIF url, so the actual image
+	        is requested by the viewer/contentServer and not the client
+	         -->
+		<externalContent>
+			<restrictedUrls>
+				<url>https?://external/restricted/.*</url>
+				<url>https?://external/noaccess/.*\.tif</url>
+			</restrictedUrls>
+		</externalContent>
 
 		<!-- FIXME DEPRECATED-->
 		<!-- image size settings for the "newspaper" preview view. previewWidth	is the pixel-width of the preview image as delivered by the contentServer;
@@ -311,20 +311,20 @@
 			<Periodical>toc</Periodical>
 		</docstructTargetPageTypes>
 		
-        <!-- <fulltextPercentageWarningThreshold>: If a record's percentage of pages having full-Text/ALTO documents
-            falls below the configured value, a warning will be displayed for that record. -->
-        <fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
+		<!-- <fulltextPercentageWarningThreshold>: If a record's percentage of pages having full-Text/ALTO documents
+		falls below the configured value, a warning will be displayed for that record. -->
+		<fulltextPercentageWarningThreshold>30</fulltextPercentageWarningThreshold>
         
-        <!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will 
-            also change the preferred language for record metadata. Default is false. -->
-        <useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
+		<!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will 
+		also change the preferred language for record metadata. Default is false. -->
+		<useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="false" addFilterQuery="false" filterQueryVisible="false">
-        <!-- rootPath: If the theme is localed externally, the CMS template loading 
-            mechanism needs the root path of the theme. The path must be defined down 
-            to the /themes folder, just above the folder named like the theme. -->
-            <!-- <rootPath>/opt/digiverso/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/src/META-INF/resources/resources/themes/</rootPath> -->
+			<!-- rootPath: If the theme is localed externally, the CMS template loading 
+			mechanism needs the root path of the theme. The path must be defined down 
+			to the /themes folder, just above the folder named like the theme. -->
+			<!-- <rootPath>/opt/digiverso/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/src/META-INF/resources/resources/themes/</rootPath> -->
 		</theme>
 	</viewer>
 
@@ -365,10 +365,10 @@
 
 		<!-- TODO DOCUMENTATION-->
 		<drillDown>
-			<hierarchicalField initialElementNumber="4">DC</hierarchicalField>
-			<field initialElementNumber="3">DOCSTRCT</field>
-			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_CREATOR</field>
-			<field initialElementNumber="3" sortOrder="alphabetical_asc">MD_PLACEPUBLISH</field>
+			<hierarchicalField initialElementNumber="4">FACET_DC</hierarchicalField>
+			<field initialElementNumber="3">FACET_DOCSTRCT</field>
+			<field initialElementNumber="3" sortOrder="alphabetical_asc">FACET_CREATOR</field>
+			<field initialElementNumber="3" sortOrder="alphabetical_asc">FACET_PLACEPUBLISH</field>
 			<field initialElementNumber="3" sortOrder="numerical_desc">YEAR</field>
 		</drillDown>
 
@@ -441,9 +441,9 @@
 			<ignoreField>DOCTYPE</ignoreField>
 			<ignoreField>ISANCHOR</ignoreField>
 			<ignoreField>ISWORK</ignoreField>
-            <ignoreField>MD_FIRSTNAME</ignoreField>
-            <ignoreField>MD_LASTNAME</ignoreField>
-            <ignoreField>MD_VALUE</ignoreField>
+		        <ignoreField>MD_FIRSTNAME</ignoreField>
+            		<ignoreField>MD_LASTNAME</ignoreField>
+            		<ignoreField>MD_VALUE</ignoreField>
 			<ignoreField>NORMDATATERMS</ignoreField>
 			<ignoreField>PI_ANCHOR</ignoreField>
 			<ignoreField>PI_TOPSTRUCT</ignoreField>
@@ -987,12 +987,12 @@
 					<param type="field" key="CURRENTNO" prefix="_SPACE_(" suffix=")" />
 				</metadata>
 			</template>
-            <template name="_GROUPS">
-                <metadata label="" value="{LABEL}{MD_SERIESDISPLAYORDER}">
-                    <param type="translatedfield" key="LABEL" />
-                    <param type="field" key="MD_SERIESDISPLAYORDER" prefix="_SPACE_(" suffix=")" />
-                </metadata>
-            </template>
+			<template name="_GROUPS">
+				<metadata label="" value="{LABEL}{MD_SERIESDISPLAYORDER}">
+					<param type="translatedfield" key="LABEL" />
+					<param type="field" key="MD_SERIESDISPLAYORDER" prefix="_SPACE_(" suffix=")" />
+				</metadata>
+			</template>
 		</labelConfig>
 
 		<!-- tocAnchorGroupElementsPerPage: Number of elements displayed per page in anchor/group TOCs. Values below 1 disable pagination. Default is 0. -->
