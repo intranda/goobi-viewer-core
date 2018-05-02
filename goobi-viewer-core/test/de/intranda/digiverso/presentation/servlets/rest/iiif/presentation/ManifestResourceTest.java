@@ -15,8 +15,7 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.iiif.presentation;
 
-import static org.junit.Assert.fail;
-
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,14 +29,18 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
-import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
+import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
+import de.intranda.digiverso.presentation.model.iiif.presentation.Layer;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
+import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 
 /**
  * @author Florian Alpers
@@ -92,7 +95,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
      * @throws ContentNotFoundException 
      * @throws ConfigurationException 
      */
-//    @Test
+    @Test
     public void testGetRange() throws ConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
         Range range = resource.getRange("PPN517154005", "LOG_0003");
         Assert.assertTrue(range instanceof Range);
@@ -101,26 +104,53 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
 
     /**
      * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getCanvas(java.lang.String, int)}.
+     * @throws DAOException 
+     * @throws URISyntaxException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws ContentNotFoundException 
+     * @throws ConfigurationException 
      */
-//    @Test
-    public void testGetCanvas() {
-        fail("Not yet implemented");
+    @Test
+    public void testGetCanvas() throws ConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
+        Canvas canvas = resource.getCanvas("PPN517154005", 1);
+        Assert.assertTrue(canvas instanceof Canvas);
+        System.out.println(canvas);
     }
 
     /**
      * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getOtherContent(java.lang.String, int, java.lang.String)}.
+     * @throws DAOException 
+     * @throws URISyntaxException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws IllegalRequestException 
+     * @throws ContentNotFoundException 
+     * @throws ConfigurationException 
      */
-//    @Test
-    public void testGetOtherContent() {
-        fail("Not yet implemented");
+    @Test
+    public void testGetOtherContent() throws ConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
+        AnnotationList annoList = resource.getOtherContent("PPN517154005", 1, AnnotationType.FULLTEXT.name());
+        Assert.assertTrue(annoList instanceof AnnotationList);
+        System.out.println(annoList);
     }
 
     /**
      * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getLayer(java.lang.String, java.lang.String)}.
+     * @throws IOException 
+     * @throws DAOException 
+     * @throws URISyntaxException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws IllegalRequestException 
+     * @throws ContentNotFoundException 
+     * @throws ConfigurationException 
      */
-//    @Test
-    public void testGetLayer() {
-        fail("Not yet implemented");
+    @Test
+    public void testGetLayer() throws ConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException, IOException {
+       Layer layer = resource.getLayer("PPN517154005", AnnotationType.FULLTEXT.name());
+       Assert.assertTrue(layer instanceof Layer);
+       System.out.println(layer);
     }
 
 }
