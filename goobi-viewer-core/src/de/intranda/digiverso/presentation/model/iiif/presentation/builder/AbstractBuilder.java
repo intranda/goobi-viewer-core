@@ -58,7 +58,7 @@ public abstract class AbstractBuilder {
         
     private static final List<String> HIDDEN_SOLR_FIELDS = Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.PI,
             SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE, SolrConstants.METADATATYPE,
-            SolrConstants.PI_PARENT, SolrConstants.PI_ANCHOR, SolrConstants.LOGID, SolrConstants.ISWORK, SolrConstants.FILENAME_TEI,
+            SolrConstants.PI_PARENT, SolrConstants.LOGID, SolrConstants.ISWORK, SolrConstants.FILENAME_TEI,
             SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES});
     
     private static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.TITLE, SolrConstants.PI_TOPSTRUCT,
@@ -255,7 +255,7 @@ public abstract class AbstractBuilder {
      * @throws IndexUnreachableException
      */
     public List<StructElement> getDocumentWithChildren(String pi) throws PresentationException, IndexUnreachableException {
-        String anchorQuery = "(ISWORK:* AND PI_ANCHOR:"+pi+") OR (ISANCHOR:* AND PI:"+pi+")";
+        String anchorQuery = "(ISWORK:* AND PI_PARENT:"+pi+") OR (ISANCHOR:* AND PI:"+pi+")";
         String workQuery = "PI_TOPSTRUCT:" + pi + " AND DOCTYPE:DOCSTRCT";
         String query = "(" + anchorQuery + ") OR (" + workQuery + ")";
         List<SolrDocument> docs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());

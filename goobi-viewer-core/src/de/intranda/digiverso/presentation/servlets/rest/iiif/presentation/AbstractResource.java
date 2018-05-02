@@ -45,10 +45,9 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 public abstract class AbstractResource {
 
     /**
-     * Dedault constructor
+     * Default constructor
      */
     public AbstractResource() {
-        // TODO Auto-generated constructor stub
     }
     
     /**

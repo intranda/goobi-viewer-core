@@ -36,6 +36,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Manifest;
+import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 
 /**
@@ -84,10 +85,18 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
 
     /**
      * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getRange(java.lang.String, java.lang.String)}.
+     * @throws DAOException 
+     * @throws URISyntaxException 
+     * @throws IndexUnreachableException 
+     * @throws PresentationException 
+     * @throws ContentNotFoundException 
+     * @throws ConfigurationException 
      */
 //    @Test
-    public void testGetRange() {
-        fail("Not yet implemented");
+    public void testGetRange() throws ConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
+        Range range = resource.getRange("PPN517154005", "LOG_0003");
+        Assert.assertTrue(range instanceof Range);
+        System.out.println(range);
     }
 
     /**
