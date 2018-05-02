@@ -29,6 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
+import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -40,7 +42,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
  * @author Florian Alpers
  *
  */
-public class ManifestResourceTest {
+public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
     
     private ManifestResource resource;
 
@@ -49,6 +51,7 @@ public class ManifestResourceTest {
      */
     @Before
     public void setUp() throws Exception {
+        super.setUp();
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
@@ -60,6 +63,7 @@ public class ManifestResourceTest {
      */
     @After
     public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     /**
