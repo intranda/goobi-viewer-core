@@ -55,6 +55,7 @@ import de.intranda.digiverso.presentation.controller.BCrypt;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.AuthenticationException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -299,8 +300,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
                         // If PI and Solr condition subquery are present, check via Solr
                         StringBuilder sbQuery = new StringBuilder();
                         sbQuery.append(SolrConstants.PI).append(':').append(pi).append(" AND (").append(license.getConditions()).append(')');
-                        if (DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(), Collections.singletonList(
-                                SolrConstants.IDDOC)) != null) {
+                        if (DataManager.getInstance().getSearchIndex().getFirstDoc(sbQuery.toString(),
+                                Collections.singletonList(SolrConstants.IDDOC)) != null) {
                             logger.debug("Permission found for user: {} (query: {})", id, sbQuery.toString());
                             return true;
                         }
@@ -402,8 +403,8 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * @should return false if user has no license
      * @should return true if condition list empty
      */
-    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi) throws PresentationException,
-            IndexUnreachableException, DAOException {
+    public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
+            throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
             return true;
@@ -619,9 +620,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
      * @param email
      * @param password
      * @return The user, if successful.
+     * @throws AuthenticationException if login data incorrect
      * @throws DAOException
      */
-    public static User auth(String email, String password) throws DAOException {
+    public static User auth(String email, String password) throws AuthenticationException, DAOException {
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only allow non-openID accounts
         if (user != null && user.getPasswordHash() != null && BCrypt.checkpw(password, user.getPasswordHash())) {
@@ -629,7 +631,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             return user;
         }
 
-        return null;
+        throw new AuthenticationException("User not found or passwort incorrect");
     }
 
     /*********************************** Getter and Setter ***************************************/
