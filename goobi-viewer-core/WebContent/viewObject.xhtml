@@ -50,8 +50,10 @@
                     <ui:param name="displayCollectionAndPartnerID" value="false" />
                 </ui:include>
 
-                <!-- INAGE CONTROLS -->
-                <viewerComponent:imageControls />
+                <!-- IMAGE CONTROLS -->
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType != 'video' and activeDocumentBean.viewManager.currentPage.mimeType != 'audio'}">
+                    <viewerComponent:imageControls />
+                </h:panelGroup>
                 
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
