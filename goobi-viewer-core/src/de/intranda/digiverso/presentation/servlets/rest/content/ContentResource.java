@@ -263,9 +263,15 @@ public class ContentResource {
         if (Files.exists(teiPath)) {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-                        .findFirst()
-                        .orElse(null);
+                filePath =
+                        teiFiles.filter(path -> path.getFileName().toString().endsWith("_tei_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                                null);
+                // Try old naming scheme without the format name in the file name
+                if (filePath == null) {
+                    filePath =
+                            teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                                    null);
+                }
             }
         }
 
@@ -321,9 +327,15 @@ public class ContentResource {
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
-                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_cmdi_" + language.getIsoCode() + ".xml"))
                         .findFirst()
                         .orElse(null);
+                // Try old naming scheme without the format name in the file name
+                if (filePath == null) {
+                    filePath =
+                            cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                                    null);
+                }
             }
         }
         if (filePath != null) {
@@ -412,9 +424,8 @@ public class ContentResource {
         if (Files.exists(teiPath)) {
             // This will return the file with the requested language or alternatively the first file in the TEI folder
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-                        .findFirst()
-                        .orElse(null);
+                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                        null);
             }
         }
         return filePath;
@@ -444,15 +455,14 @@ public class ContentResource {
         if (Files.exists(cmdiPath)) {
             // This will return the file with the requested language or alternatively the first file in the CMDI folder
             try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
-                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml"))
-                        .findFirst()
-                        .orElse(null);
+                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
+                        null);
             }
         }
         return filePath;
     }
 
-    public static List<java.nio.file.Path> getCMDIFiles(String pi, String dataRepository){
+    public static List<java.nio.file.Path> getCMDIFiles(String pi, String dataRepository) {
         java.nio.file.Path teiPath =
                 Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getCmdiFolder(), pi);
         List<java.nio.file.Path> filePaths = new ArrayList<>();
@@ -461,7 +471,7 @@ public class ContentResource {
             try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
                 filePaths = teiFiles.filter(path -> path.getFileName().toString().matches(".*_[a-z]{1,3}\\.xml")).collect(Collectors.toList());
             } catch (IOException e) {
-               logger.error(e.toString(), e);
+                logger.error(e.toString(), e);
             }
         }
         return filePaths;
