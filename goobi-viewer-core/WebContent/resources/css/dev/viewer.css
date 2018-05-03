@@ -3783,6 +3783,17 @@ div[id*="-Modal"] .email-form .form-group {
    Privacy
    style declarations for privacy.xhtml
    ==============================================================*/
+/* PRIVACY */
+/* BLOCK */
+.view-privacy {
+  /* ELEMENT */
+}
+.view-privacy iframe {
+  width: 100%;
+  height: 165px;
+  border: none;
+  border-top: 1px solid #ccc;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
