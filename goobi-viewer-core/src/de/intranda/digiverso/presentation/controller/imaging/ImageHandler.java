@@ -134,7 +134,7 @@ public class ImageHandler {
             url = url.replace("info.json", "full/max/0/default.jpg");
         }
         PageSource imageSource = new PageSource(0, url, Collections.EMPTY_MAP);
-        ImageInformation info = new ImageInformation(imageSource.getImageUrl(), new URI(""));
+        ImageInformation info = new ImageInformation(imageSource.getImageUri(), new URI(""));
         return info;
     }
 
