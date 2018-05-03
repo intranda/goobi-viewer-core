@@ -51,22 +51,19 @@
             };
             
         	var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-            var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
+            var accessDeniedMessage = $('<div />').addClass('view-object__access-denied').html('#{msg.noImage_accessDenied}');
             var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" )
             
-        	$(document).ready(function() {
-        		if ( access && openSeadragonVisible) {
-        			// console.log("load image with config ", configViewer);
-        			viewImage.init( configViewer ).then(function(osViewer) {
-        				//TODO: Hide loader?
-        			}).catch(function(error){
-        				console.error( 'viewImage.xhtml - viewImage.init: Error opening image' );
+        	$( document ).ready( function() {
+        		if ( access && openSeadragonVisible ) {
+        			viewImage.init( configViewer ).then( function( osViewer ) {} ).catch( function( error ) {
+        				console.error( 'viewObject.xhtml - viewImage.init: Error opening image' );
         				imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
-        			});
-        		} else if(openSeadragonVisible){
-        			imageMap.html( accessDeniedMessage );
+        			} );
+        		} else if ( openSeadragonVisible ){
+        			imageMap.append( accessDeniedMessage );
         		}
-        	})
+        	} );
         	//]]>   
         </script>
     </div>
