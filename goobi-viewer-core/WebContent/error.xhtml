@@ -14,12 +14,15 @@
         </f:metadata>
     </ui:define>
 
+    <!-- BREADCRUMBS -->
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
-	<ui:define name="content">
+	
+    <!-- CONTENT -->
+    <ui:define name="content">
 		<f:view contentType="text/html" encoding="utf-8">
-			<div id="error">
+			<div id="error" class="view-error">
                 <c:if test="#{type == null}">
 				    <c:set var="type" value="#{flash.keep.errorType}" scope="request" />
 				</c:if>
@@ -30,7 +33,7 @@
                     <c:set var="type" value="general" scope="request" />
                 </c:if>
                 
-				<!-- error general -->
+				<!-- ERROR GENERAL -->
                 <h:panelGroup rendered="#{type == 'general'}">
                     <h2>#{msg.failure}</h2>
                 
@@ -38,15 +41,15 @@
                         #{msg.generalError} <br />
                         <h:outputText value="#{msg.details}:" />
                     </p>
-
-                    <p class="bg-danger">
+                    
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{!empty header['referer']}" value="URL: #{header['referer']}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl != null}" value="URL: #{sourceUrl}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl == null}" value="URL: #{flash.sourceUrl}" />
                         <br />
                         <h:outputText rendered="#{errMsg != null}" value="#{errMsg}" />
                         <h:outputText rendered="#{errMsg == null}" value="#{flash.keep.errorDetails}" />
-                    </p>
+                    </div>
 
                     <p>
                         <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
@@ -55,15 +58,15 @@
                     </p>
                 </h:panelGroup>
 
-                <!-- error record deleted -->				
+                <!-- ERROR RECORD DELETED -->				
 				<h:panelGroup rendered="#{type == 'recordDeleted' or typeHttp == 'recordDeleted'}">
 					<h2>#{msg.errRecordDeletedTitle}</h2>
 
-                    <p class="bg-danger">
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{errMsg != null}" value="#{errMsg}" />
                         <h:outputText rendered="#{errMsg == null}" value="#{flash.keep.errorDetails}" />
                         <h:outputText rendered="#{!empty header['referer']}" value="#{header['referer']}" />
-                    </p>
+                    </div>
 
                     <p>
                         #{msg.errRecordNotFoundOptions_part01}
@@ -74,16 +77,16 @@
                     </p>
                 </h:panelGroup>
 				
-				<!-- error record not found -->             
+				<!-- ERROR RECORD NOT FOUND -->             
                 <h:panelGroup rendered="#{type == 'recordNotFound'}">
                     <h2>#{msg.errRecordNotFoundTitle}</h2>
 
                     <h:form>
-                        <p class="bg-danger">
+                        <div class="alert alert-danger" role="alert">
                             <h:outputText rendered="#{errMsg != null}" value="#{errMsg}" />
                             <h:outputText rendered="#{errMsg == null}" value="#{flash.keep.errorDetails}" />
                             <h:outputText rendered="#{!empty header['referer']}" value="#{header['referer']}" />
-                        </p>
+                        </div>
 
                         <p>
                             #{msg.errRecordNotFoundOptions_part01}
@@ -95,19 +98,19 @@
                     </h:form>
                 </h:panelGroup>
                 
-                <!-- Index unreachable -->             
+                <!-- INDEX UNREACHABLE -->             
                 <h:panelGroup rendered="#{type == 'indexUnreachable'}">
                     <h3>#{msg.errIndexUnreachableTitle}</h3>
 
-                    <p class="bg-danger">
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{errMsg == null}" value="#{msg.errIndexUnreachableMsg}" />
-                    </p>
+                    </div>
 
-                    <p class="bg-danger">
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{!empty header['referer']}" value="URL: #{header['referer']}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl != null}" value="URL: #{sourceUrl}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl == null}" value="URL: #{flash.sourceUrl}" />
-                    </p>
+                    </div>
 
                     <p>
                         <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
@@ -116,19 +119,19 @@
                     </p>
                 </h:panelGroup>
                 
-                <!-- DAO error -->             
+                <!-- DAO ERROR -->             
                 <h:panelGroup rendered="#{type == 'dao'}">
                     <h2>#{msg.errDAOExceptionTitle}</h2>
 
-                    <p class="bg-danger">
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.errDAOExceptionMsg}" />
-                    </p>
+                    </div>
 
-                    <p class="bg-danger">
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{!empty header['referer']}" value="URL: #{header['referer']}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl != null}" value="URL: #{sourceUrl}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl == null}" value="URL: #{flash.sourceUrl}" />
-                    </p>
+                    </div>
 
                     <p>
                         <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
@@ -137,7 +140,7 @@
                     </p>
                 </h:panelGroup>
                 
-                <!-- Download error -->             
+                <!-- DOWNLOAD ERROR -->             
                 <h:panelGroup rendered="#{type == 'download'}">
                     <h2>#{msg.errDownloadExceptionTitle}</h2>
                 
@@ -146,11 +149,11 @@
                         <h:outputText rendered="#{errMsg == null}" value="#{msg[flash.keep.errorDetails]}" />
                     </p>
 
-                    <p class="bg-danger">
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText rendered="#{!empty header['referer']}" value="URL: #{header['referer']}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl != null}" value="URL: #{sourceUrl}" />
                         <h:outputText rendered="#{empty header['referer'] and sourceUrl == null}" value="URL: #{flash.sourceUrl}" />
-                    </p>
+                    </div>
 
                     <p>
                         <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
@@ -159,13 +162,13 @@
                     </p>
                 </h:panelGroup>
 				
-				<!-- error view expired -->
+				<!-- ERROR VIEW EXPIRED -->
 				<h:panelGroup rendered="#{type == 'viewExpired'}">
 					<h2>#{msg.sessionExpiredTitle}</h2>
 
-                    <p class="bg-danger">
+                    <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.sessionExpired}" escape="false" />
-                    </p>
+                    </div>
 
                     <p>
                         <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">

@@ -3521,9 +3521,10 @@ div[id*="-Modal"] .email-form .form-group {
    Error
    style declarations for error.xhtml
    ==============================================================*/
-#error p.bg-danger {
-  padding: 15px;
-  border: 1px solid #c25e5e;
+/* ERROR */
+/* BLOCK */
+.view-error {
+  /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
