@@ -27,7 +27,7 @@
                 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
             </h:panelGroup>
         		
-			<div id="view_fulltext">	
+			<div id="view_fulltext" class="view-fulltext">
 				
 				<ui:include src="/resources/includes/title.xhtml">
 					<ui:param name="structure" value="false" />
@@ -39,11 +39,13 @@
                     <!-- TODO: Komponente durch imageControls.xhtml ersetzen -->
                     <viewerComponent:imageControls />
                     
-                    <div id="view_fulltext_wrapp">
-						<div id="fulltext-box">
-                            <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false"
-                                rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
-                            <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
+                    <div id="view_fulltext_wrapp" class="view-fulltext__wrapper">
+						<div id="fulltext-box" class="view-fulltext__box">
+                            <pre>
+                                <h:outputText value="#{activeDocumentBean.viewManager.getFulltext(false, null)}" escape="false"
+                                    rendered="#{activeDocumentBean.viewManager.fulltext != null}" />
+                                <h:outputText value="#{msg.noFulltextAvailable}" rendered="#{activeDocumentBean.viewManager.fulltext == null}" />
+                            </pre>
                         </div>
                     </div>
                     

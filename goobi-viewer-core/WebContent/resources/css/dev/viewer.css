@@ -3174,6 +3174,107 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   NER Popovers
+   style declarations for NER Popovers in viewFulltext.xhtml 
+   ==============================================================*/
+/* NER POPOVERS */
+.ner-person {
+  color: #0174DF;
+}
+.ner-location {
+  color: #FF8000;
+}
+.ner-institution {
+  color: #298A08;
+}
+.ner-trigger,
+.ner-detail-trigger {
+  position: relative;
+  text-decoration: underline;
+  color: #428bca;
+  cursor: pointer;
+}
+.ner-trigger .glyphicon {
+  margin-right: 0.1875rem;
+}
+.ner-trigger .ner-popover-pointer {
+  display: none;
+  position: absolute;
+  bottom: -0.7rem;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin: 0 0 0 -0.5rem;
+  border-width: 0.5rem;
+  border-style: solid;
+  border-color: transparent transparent #6f6f6f transparent;
+}
+.ner-detail-trigger .ner-detail-loader {
+  display: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-left: 0.3125rem;
+  background-image: url("../../images/ajax_preloader_ner.gif");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.ner-popover {
+  position: absolute;
+  width: 18.75rem;
+  border: 2px solid #6f6f6f;
+  background-color: #fff;
+  z-index: 100;
+}
+.ner-popover-close {
+  position: absolute;
+  top: 0.3125rem;
+  right: 0.3125rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  line-height: 0.625rem;
+  cursor: pointer;
+}
+.ner-popover-header {
+  padding: 0.625rem;
+}
+.ner-popover-header h4 {
+  margin: 0;
+}
+.ner-popover-body {
+  padding: 0.625rem 0;
+}
+.ner-popover-body .dl-horizontal {
+  margin: 0;
+}
+.ner-popover-body .dl-horizontal dt {
+  width: 40%;
+  padding-left: 0.625rem;
+  text-align: left;
+}
+.ner-popover-body .dl-horizontal dd {
+  margin-left: 40%;
+  padding: 0 0.625rem 0 0.3125rem;
+}
+.ner-popover-body .dl-horizontal .ner-popover-detail {
+  position: relative;
+  background-color: #eee;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) inset;
+}
+.ner-popover-body .dl-horizontal .ner-popover-detail-header {
+  padding: 0.625rem;
+}
+.ner-popover-body .dl-horizontal .ner-popover-detail-header h4 {
+  margin: 0;
+}
+.ner-popover-body .dl-horizontal .ner-popover-detail-body {
+  padding: 0.625rem 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ADMIN VIEWS */
 /* ==============================================================
    Admin 
@@ -5347,103 +5448,17 @@ div[id*="-Modal"] .email-form .form-group {
    View Fulltext
    style declarations for viewFulltext.xhtml 
    ==============================================================*/
-#view_fulltext_wrapp #fulltext-box {
-  width: 100%;
-  margin: 1rem auto;
-  padding: 0.5rem;
-  border: 1px solid #eee;
+/* VIEW FULLTEXT */
+/* BLOCK */
+.view-fulltext {
+  /* ELEMENT */
 }
-.ner-person {
-  color: #0174DF;
-}
-.ner-location {
-  color: #FF8000;
-}
-.ner-institution {
-  color: #298A08;
-}
-.ner-trigger,
-.ner-detail-trigger {
-  position: relative;
-  text-decoration: underline;
-  color: #428bca;
-  cursor: pointer;
-}
-.ner-trigger .glyphicon {
-  margin-right: 0.1875rem;
-}
-.ner-trigger .ner-popover-pointer {
-  display: none;
-  position: absolute;
-  bottom: -0.7rem;
-  left: 50%;
-  width: 0;
-  height: 0;
-  margin: 0 0 0 -0.5rem;
-  border-width: 0.5rem;
-  border-style: solid;
-  border-color: transparent transparent #6f6f6f transparent;
-}
-.ner-detail-trigger .ner-detail-loader {
-  display: none;
-  width: 0.75rem;
-  height: 0.75rem;
-  margin-left: 0.3125rem;
-  background-image: url("../../images/ajax_preloader_ner.gif");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-}
-.ner-popover {
-  position: absolute;
-  width: 18.75rem;
-  border: 2px solid #6f6f6f;
-  background-color: #fff;
-  z-index: 100;
-}
-.ner-popover-close {
-  position: absolute;
-  top: 0.3125rem;
-  right: 0.3125rem;
-  width: 0.625rem;
-  height: 0.625rem;
-  line-height: 0.625rem;
-  cursor: pointer;
-}
-.ner-popover-header {
-  padding: 0.625rem;
-}
-.ner-popover-header h4 {
-  margin: 0;
-}
-.ner-popover-body {
-  padding: 0.625rem 0;
-}
-.ner-popover-body .dl-horizontal {
-  margin: 0;
-}
-.ner-popover-body .dl-horizontal dt {
-  width: 40%;
-  padding-left: 0.625rem;
-  text-align: left;
-}
-.ner-popover-body .dl-horizontal dd {
-  margin-left: 40%;
-  padding: 0 0.625rem 0 0.3125rem;
-}
-.ner-popover-body .dl-horizontal .ner-popover-detail {
-  position: relative;
+.view-fulltext__box pre {
+  line-height: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 0;
   background-color: #eee;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) inset;
-}
-.ner-popover-body .dl-horizontal .ner-popover-detail-header {
-  padding: 0.625rem;
-}
-.ner-popover-body .dl-horizontal .ner-popover-detail-header h4 {
-  margin: 0;
-}
-.ner-popover-body .dl-horizontal .ner-popover-detail-body {
-  padding: 0.625rem 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
