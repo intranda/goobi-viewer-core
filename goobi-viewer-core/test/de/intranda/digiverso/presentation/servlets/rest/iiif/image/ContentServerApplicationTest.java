@@ -54,7 +54,7 @@ public class ContentServerApplicationTest {
         sampleFileName = "file://" + sampleFile.getAbsolutePath();
         sampleFileName = sampleFileName.replaceAll("\\s", "%20");
         sampleFileName = sampleFileName.replace("\\", "/");
-        sampleFileName = new URI(sampleFileName).toString();
+//        sampleFileName = new URI(sampleFileName).toString();
 
         requestURI = new URI("http://intranda/viewer/iiif");
 
