@@ -739,7 +739,13 @@ var viewImage = ( function( osViewer ) {
             if ( $( '#fullscreenTemplate' ).length > 0 ) {
                 $( '#fullscreenTemplate' ).on( 'mousemove', function() {  
                     osViewer.controls.fullscreenControlsFadeout();
-                } );
+                } )
+                
+                $('#fullscreenMap').on('touchmove', function() {
+                	osViewer.controls.fullscreenControlsFadeout();
+                }).on('touchend', function() {
+                	osViewer.controls.fullscreenControlsFadeout();
+                });
             }
         },
         getLocation: function() {
