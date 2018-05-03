@@ -2637,52 +2637,6 @@ input[id*="cmdMoveTo"] {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
-   Search Sorting Dropdown
-   style declarations for searchSortingDropdown.xhtml
-   ==============================================================*/
-#searchSortingDropdown {
-  float: right;
-  width: 40%;
-  margin: 1rem 0;
-  border: 1px solid #eee;
-  background-color: #fff;
-}
-#searchSortingDropdown .sort-header,
-#searchSortingDropdown .sort-body {
-  float: left;
-  height: 2rem;
-}
-#searchSortingDropdown .sort-header {
-  width: 30%;
-  line-height: 2rem;
-  padding: 0 0.5rem 0 0;
-  text-align: right;
-}
-#searchSortingDropdown .sort-body {
-  width: 70%;
-}
-#searchSortingDropdown .sort-body form .form-group select {
-  height: 2rem;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-}
-/* BREAKPOINT FOR LARGE DESKTOPS */
-/* BREAKPOINT FOR DESKTOP */
-/* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  #searchSortingDropdown {
-    margin: 0.75rem 0;
-  }
-}
-/* BREAKPOINT FOR SMARTPHONES */
-@media screen and (max-width: 480px) {
-  #searchSortingDropdown {
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-}
-/* ==============================================================
    Normdata
    style declarations for normdata.xhtml 
    ==============================================================*/
@@ -3567,9 +3521,10 @@ div[id*="-Modal"] .email-form .form-group {
    Error
    style declarations for error.xhtml
    ==============================================================*/
-#error p.bg-danger {
-  padding: 15px;
-  border: 1px solid #c25e5e;
+/* ERROR */
+/* BLOCK */
+.view-error {
+  /* ELEMENT */
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
