@@ -7012,29 +7012,34 @@ div[id*="-Modal"] .email-form .form-group {
    Widget SearchInCurrentItem
    style declarations for widget_searchInCurrentItem.xhtml
    ==============================================================*/
-#widgetSearchInCurrentItem .form-group {
+/* WIDGET SEARCH IN CURRENT ITEM */
+/* BLOCK */
+.widget-search-in-current-item {
+  /* ELEMENT */
+}
+.widget-search-in-current-item .form-group {
   width: 100%;
   margin: 0;
 }
-#widgetSearchInCurrentItem .form-group .input-group {
+.widget-search-in-current-item .input-group {
   width: 100%;
 }
-#widgetSearchInCurrentItem .form-group .input-group input {
-  padding-right: 5px;
-  padding-left: 5px;
-}
-#widgetSearchInCurrentItem .form-group .input-group .input-group-addon {
+.widget-search-in-current-item .input-group-addon {
   padding: 0;
+  border-radius: 0;
 }
-#widgetSearchInCurrentItem .form-group .input-group .input-group-addon input {
-  width: 1rem;
-  height: 1rem;
-  padding: 16px;
+.widget-search-in-current-item .input-group-addon input {
+  position: relative;
+  top: 1px;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
   border: none;
-  background-image: url("../../images/icons/icon-search.png");
+  background-image: url("../../images/icons/icon-search.svg");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: 50%;
+  background-size: 20px;
   background-color: transparent;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */

@@ -2,31 +2,35 @@
    Widget SearchInCurrentItem
    style declarations for widget_searchInCurrentItem.xhtml
    ==============================================================*/
-#widgetSearchInCurrentItem {
+/* WIDGET SEARCH IN CURRENT ITEM */
+/* BLOCK */
+.widget-search-in-current-item {
+	/* ELEMENT */
     .form-group {
         width: 100%;
         margin: 0;
-        .input-group {
-            width: 100%;
-            input {
-            	padding-right: 5px;
-            	padding-left: 5px;
-            }
-            .input-group-addon {
-                padding: 0;
-                input {
-                    width: 1rem;
-                    height: 1rem;
-                    padding: 16px;
-                    border: none;
-                    background-image: url("@{images}/icons/icon-search.png");
-		            background-repeat: no-repeat;
-		            background-position: center center;
-		            background-size: 50%;
-		            background-color: transparent;
-                }
-            }
-        }
+    }
+    .input-group {
+    	width: 100%;
+    	input {}
+    }
+    .input-group-addon {
+    	padding: 0;
+    	border-radius: 0;
+    	input {
+    		position: relative;
+    		top: 1px;
+    		width: 30px;
+    		height: 30px;
+    		margin: 0;
+    		padding: 0;
+    		border: none;
+    		background-image: url("@{images}/icons/icon-search.svg");
+    		background-repeat: no-repeat;
+    		background-position: center center;
+    		background-size: 20px;
+    		background-color: transparent;
+    	}
     }
 }
 
