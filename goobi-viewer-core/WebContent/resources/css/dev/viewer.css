@@ -5888,6 +5888,9 @@ div[id*="-Modal"] .email-form .form-group {
 .view-object__image-map .ugcBox.drawing {
   border: 2px solid blue;
 }
+.view-object__access-denied {
+  text-align: center;
+}
 .view-object__image-mobile {
   display: none !important;
   visibility: hidden !important;
