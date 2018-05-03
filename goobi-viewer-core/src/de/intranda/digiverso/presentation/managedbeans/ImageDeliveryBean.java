@@ -156,7 +156,7 @@ public class ImageDeliveryBean implements Serializable {
      * @return The representative thumbnail for the current top docStruct element
      */
     public String getRepresentativeThumbnail() {
-        return getTopDocumentIfExists().map(doc -> getThumb().getThumbnailUrl(doc)).orElse("");
+        return getTopDocumentIfExists().map(doc -> getThumbs().getThumbnailUrl(doc)).orElse("");
     }
 
     /**
@@ -165,7 +165,7 @@ public class ImageDeliveryBean implements Serializable {
      * @return The thumbnail of the current page
      */
     public String getCurrentPageThumbnail() {
-        return getCurrentPageIfExists().map(page -> getThumb().getThumbnailUrl(page)).orElse("");
+        return getCurrentPageIfExists().map(page -> getThumbs().getThumbnailUrl(page)).orElse("");
     }
 
     /**
@@ -217,9 +217,9 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @return the image
+     * @return the images
      */
-    public ImageHandler getImage() {
+    public ImageHandler getImages() {
         if (images == null) {
             init();
         }
@@ -237,9 +237,9 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @return the thumb
+     * @return the thumbs
      */
-    public ThumbnailHandler getThumb() {
+    public ThumbnailHandler getThumbs() {
         if (thumbs == null) {
             init();
         }

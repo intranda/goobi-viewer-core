@@ -153,7 +153,7 @@ public class StructureBuilder extends AbstractBuilder {
         addMetadata(range, ele);
 
         try {
-            String thumbUrl = BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele);
+            String thumbUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
                 range.setThumbnail(thumb);

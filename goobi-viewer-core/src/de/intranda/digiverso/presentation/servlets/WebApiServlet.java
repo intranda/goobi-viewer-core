@@ -544,8 +544,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
         StringBuilder sbMediumImage = new StringBuilder(250);
         try {
             StructElement ele = new StructElement(0, doc);
-            sbThumbnailUrl.append(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele, 100, 120));
-            sbMediumImage.append(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(ele, 600, 500));
+            sbThumbnailUrl.append(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele, 100, 120));
+            sbMediumImage.append(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(ele, 600, 500));
         } catch (IndexUnreachableException e) {
             logger.error("Unable to reach index for thumbnail creation");
         }

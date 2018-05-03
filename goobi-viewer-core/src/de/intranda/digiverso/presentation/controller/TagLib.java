@@ -101,7 +101,7 @@ public class TagLib {
                 SolrConstants.DATECREATED, "desc")), null, Arrays.asList(RSSFeed.FIELDS)).getResults();
         List<SolrDocument> docs = docList;
         for (SolrDocument doc : docs) {
-            ret.add(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc));
+            ret.add(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc));
 //            String pi = (String) doc.getFieldValue(SolrConstants.PI);
 //            String thumbnailFile = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
 //            ret.add(new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
@@ -158,7 +158,7 @@ public class TagLib {
             Object o = doc.getFieldValue(SolrConstants.THUMBNAIL);
             if (o != null) {
                 String thumbnailFile = (String) o;
-                return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, width, height);
+                return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
 //                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
 //                        "?action=image&sourcepath=").append(pi).append('/').append(thumbnailFile).append("&width=").append(width).append("&height=")
 //                        .append(height).append("&rotate=0&format=jpg&resolution=72&thumbnail=true&ignoreWatermark=true").toString();
@@ -199,7 +199,7 @@ public class TagLib {
             if (o != null) {
                 logger.debug(o.toString());
                 String fileName = (String) o;
-                return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, imageWidth, imageHeight);
+                return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, imageWidth, imageHeight);
 //                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
 //                        "?action=image&sourcepath=").append(pi).append('/').append(fileName).append("&width=").append(width).append("&height=")
 //                        .append(height).append("&rotate=0&format=jpg&resolution=72&ignoreWatermark=true").toString();

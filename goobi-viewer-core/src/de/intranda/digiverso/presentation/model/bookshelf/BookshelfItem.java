@@ -266,7 +266,7 @@ public class BookshelfItem implements Serializable {
             String luceneId = (String) docs.get(0).getFieldValue(SolrConstants.IDDOC);
             
             
-            ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
+            ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
             StructElement doc = new StructElement(Long.parseLong(luceneId), docs.get(0));
             return thumbs.getThumbnailUrl(doc, width, height);
         } else {

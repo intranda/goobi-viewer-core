@@ -372,7 +372,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     public String getThumbnailUrl(int width, int height) {
-        ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumb();
+        ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumbs();
         return thumbHandler.getThumbnailUrl(this, width, height);
     }
 
