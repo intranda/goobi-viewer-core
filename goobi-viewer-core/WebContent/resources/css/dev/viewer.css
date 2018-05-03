@@ -6991,8 +6991,6 @@ div[id*="-Modal"] .email-form .form-group {
   border-radius: 0;
 }
 .widget-searchfield .input-group-addon input {
-  position: relative;
-  top: 1px;
   width: 30px;
   height: 30px;
   margin: 0;
@@ -7004,7 +7002,13 @@ div[id*="-Modal"] .email-form .form-group {
   background-size: 20px;
   background-color: transparent;
 }
-/* BREAKPOINT FOR LARGE DESKTOPS */
+/* CHROME POSITIONING HACK */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .widget-searchfield .input-group-addon input {
+    position: relative;
+    top: 1px;
+  }
+}
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
@@ -7029,8 +7033,6 @@ div[id*="-Modal"] .email-form .form-group {
   border-radius: 0;
 }
 .widget-search-in-current-item .input-group-addon input {
-  position: relative;
-  top: 1px;
   width: 30px;
   height: 30px;
   margin: 0;
@@ -7041,6 +7043,13 @@ div[id*="-Modal"] .email-form .form-group {
   background-position: center center;
   background-size: 20px;
   background-color: transparent;
+}
+/* CHROME POSITIONING HACK */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .widget-search-in-current-item .input-group-addon input {
+    position: relative;
+    top: 1px;
+  }
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
