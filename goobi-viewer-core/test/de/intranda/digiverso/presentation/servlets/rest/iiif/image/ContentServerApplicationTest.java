@@ -50,7 +50,7 @@ public class ContentServerApplicationTest {
         //    			ContentServerConfiguration.getBasePathAsFile().isDirectory());
         //    	Assert.assertTrue("Config file " + ContentServerConfiguration.getBasePathAsFile().getAbsolutePath() + "contentServerConfig.xml" + " is no file",
         //    			new File(ContentServerConfiguration.getBaseBathAsString(), "contentServerConfig.xml").isFile());
-        File sampleFile = new File("stuff/images/multivolume_thumbnail.png");
+        File sampleFile = new File("stuff/images and more/multivolume_thumbnail.png");
         sampleFileName = "file://" + sampleFile.getAbsolutePath();
         sampleFileName = sampleFileName.replaceAll("\\s", "%20");
         sampleFileName = sampleFileName.replace("\\", "/");
