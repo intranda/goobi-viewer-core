@@ -595,6 +595,18 @@ button {
 .is-IE .custom-control--select select {
   padding: 0;
 }
+/* ==============================================================
+   CSS Template Hacks for different browsers
+   ==============================================================*/
+/* INTERNET EXPLORER > 10 AND EDGE */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+}
+/* GOOGLE CHROME */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+}
+/* FIREFOX */
+@-moz-document url-prefix() {
+}
 /* BASIC COMPONENTS */
 /* ==============================================================
    Icons
