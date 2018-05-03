@@ -6974,25 +6974,34 @@ div[id*="-Modal"] .email-form .form-group {
    Widget Searchfield
    style declarations for widget_searchField.xhtml
    ==============================================================*/
-#widgetSearchField .form-group {
+/* WIDGET SEARCHFIELD */
+/* BLOCK */
+.widget-searchfield {
+  /* ELEMENT */
+}
+.widget-searchfield .form-group {
   width: 100%;
   margin: 0;
 }
-#widgetSearchField .form-group .input-group {
+.widget-searchfield .input-group {
   width: 100%;
 }
-#widgetSearchField .form-group .input-group .input-group-addon {
+.widget-searchfield .input-group-addon {
   padding: 0;
+  border-radius: 0;
 }
-#widgetSearchField .form-group .input-group .input-group-addon input {
-  width: 1rem;
-  height: 1rem;
-  padding: 16px;
+.widget-searchfield .input-group-addon input {
+  position: relative;
+  top: 1px;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
   border: none;
-  background-image: url("../../images/icons/icon-search.png");
+  background-image: url("../../images/icons/icon-search.svg");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: 50%;
+  background-size: 20px;
   background-color: transparent;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
