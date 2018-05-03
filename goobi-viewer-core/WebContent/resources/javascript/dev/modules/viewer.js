@@ -108,7 +108,7 @@
             $( '#mobileNav' ).slideToggle( 'fast' );
         } );
         $( '[data-toggle="mobile-image-controls"]' ).on( 'click', function() {
-            $( '.image-controls__actions' ).slideToggle( 'fast' );
+            $( '.image-controls' ).slideToggle( 'fast' );
         } );
         
         // toggle language
@@ -7983,7 +7983,7 @@ var cmsJS = ( function( cms ) {
         
         // create members
         data.collections.forEach( function( member ) {
-            console.log("creationg collection ", member)
+            console.log("creationg collection ", member);
             // increase counter
             counter++;
             // create panels

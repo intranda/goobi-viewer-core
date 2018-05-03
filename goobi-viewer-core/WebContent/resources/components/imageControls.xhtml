@@ -11,24 +11,18 @@
     
     <!-- IMPLEMENTATION -->
     <composite:implementation>
-        <nav class="image-controls controls" role="navigation">
-            <!--  TOGGLE MOBILE IMAGE CONTROLS -->
-            <button type="button" class="btn-clean" data-toggle="mobile-image-controls">
-                <i class="fa fa-bars" aria-hidden="true"></i>
-            </button>
-            
+        <nav class="image-controls" role="navigation">            
             <!-- FORM -->
             <h:form id="imageControlsForm" prependId="false">
                 <!-- DOCUMENT OPTIONS -->
-                <div class="controls__options">
+                <div class="image-controls__options">
                     <ul>
                         <!-- PDF -->
                         <h:panelGroup rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
-                            <li class="controls__option pdf">
+                            <li class="image-controls__option pdf">
                                 <h:outputLink value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" title="#{msg.pdfDownloadCurrentPage}"
-                                    rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}">
+                                    rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}" target="_blank">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                                    <span class="labeltext">#{msg.pdfDownloadCurrentPage}</span>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                     <f:passThroughAttribute name="data-placement" value="bottom" />
                                 </h:outputLink>
@@ -36,11 +30,10 @@
                         </h:panelGroup>
                         <!-- FULLTEXT -->
                         <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
-                            <li class="controls__option fulltext">
+                            <li class="image-controls__option fulltext">
                                 <h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/"
-                                    title="#{msg.fulltext}">
+                                    title="#{msg.fulltext}" target="_blank">
                                     <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                    <span class="labeltext">#{msg.fulltext}</span>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                     <f:passThroughAttribute name="data-placement" value="bottom" />
                                 </h:outputLink>
@@ -48,9 +41,8 @@
                         </ui:fragment>
                         <!-- ADD TO BOOKSHELF -->
                         <ui:fragment rendered="#{configurationBean.bookshelvesEnabled}">
-                            <li class="controls__option add-to-bookshelf">
+                            <li class="image-controls__option add-to-bookshelf">
                                 <button type="button" class="btn-clean" data-bookshelf-type="add" data-pi="#{activeDocumentBean.viewManager.pi}">
-                                    <span class="labeltext">#{msg.bookshelf_addToBookshelf}</span>
                                     <span title="#{msg.bookshelf_addToBookshelf}" data-toggle="tooltip" data-placement="bottom">
                                         <i class="fa #{msg.bookshelf_icon}" aria-hidden="true"></i>
                                         <i class="fa #{msg.bookshelf_iconAdded}" aria-hidden="true"></i>
@@ -59,21 +51,19 @@
                             </li>
                         </ui:fragment>
                         <!-- IIIF -->
-                        <li class="controls__option iiif">
-                            <a href="#" title="#{msg.iiif}" data-toggle="tooltip" data-placement="bottom">
-                                <span class="labeltext">#{msg.iiif}</span>
-                            </a>
+                        <li class="image-controls__option iiif">
+                            <a href="#{imageDelivery.iiifManifest}" title="#{msg.iiif}" data-toggle="tooltip" data-placement="bottom" target="_blank"></a>
                         </li>
                     </ul>
                 </div>
 
                 <!-- ACTIONS -->
-                <div class="image-controls__actions clearfix">
-                    <ul class="list list--horizontal list--center">
+                <div class="image-controls__actions">
+                    <ul>
                         <!-- START -->
                         <h:panelGroup rendered="#{activeDocumentBean.viewManager.multiPageRecord}">
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-                                <li class="image-control image-control__start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+                                <li class="image-controls__action start #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
                                     <h:outputLink value="#{activeDocumentBean.firstPageUrl}" title="#{msg.firstImage}"
                                         disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
                                         <i class="image-start"></i>
@@ -88,7 +78,7 @@
                                 rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep3Visible}">
                                     <li
-                                        class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'inactive' : ''}">
+                                        class="image-controls__action page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'inactive' : ''}">
                                         <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(configurationBean.pageBrowseStep3)}"
                                             title="#{configurationBean.pageBrowseStep3} #{msg.stepBack}"
                                             disabled="#{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'true' : 'false'}">
@@ -100,7 +90,7 @@
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep2Visible}">
                                     <li
-                                        class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep2 + 1) ? 'inactive' : ''}">
+                                        class="image-controls__action page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep2 + 1) ? 'inactive' : ''}">
                                         <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(configurationBean.pageBrowseStep2)}"
                                             title="#{configurationBean.pageBrowseStep2} #{msg.stepBack}"
                                             disabled="#{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep2 + 1) ? 'true' : 'false'}">
@@ -112,7 +102,7 @@
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep1Visible}">
                                     <li
-                                        class="image-control image-control__page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep1 + 1) ? 'inactive' : ''}">
+                                        class="image-controls__action page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep1 + 1) ? 'inactive' : ''}">
                                         <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(configurationBean.pageBrowseStep1)}"
                                             title="#{configurationBean.pageBrowseStep2} #{msg.stepBack}"
                                             disabled="#{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep1 + 1) ? 'true' : 'false'}">
@@ -125,7 +115,7 @@
                             </h:panelGroup>
                             <!-- BACK -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-                                <li class="image-control image-control__back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
+                                <li class="image-controls__action back #{activeDocumentBean.imageToShow == 1 ? 'inactive' : ''}">
                                     <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(1 )}" title="#{msg.prevImage}"
                                         disabled="#{activeDocumentBean.imageToShow == 1 ? 'true' : 'false'}">
                                         <i class="image-back"></i>
@@ -136,12 +126,12 @@
                                 </li>
                             </ui:fragment>
                             <ui:fragment rendered="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold}">
-                                <li class="image-control image-control__select-text">
+                                <li class="image-controls__action select-text">
                                     <span>#{msg.pageSelectDropdown}</span>
                                 </li>
                             </ui:fragment>
                             <!-- SELECT -->
-                            <li class="image-control image-control__select">
+                            <li class="image-controls__action select">
                                 <div class="form-control__select">
                                     <!-- Image view select -->
                                     <h:selectOneMenu rendered="#{navigationHelper.currentPage != 'fulltext'}"
@@ -159,7 +149,7 @@
                             </li>
                             <!-- FORWARD -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-                                <li class="image-control image-control__forward #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
+                                <li class="image-controls__action forward #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
                                     <h:outputLink value="#{activeDocumentBean.getNextPageUrl(1 )}" title="#{msg.nextImage}"
                                         disabled="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'true' : 'false'}">
                                         <i class="image-forward"></i>
@@ -173,7 +163,7 @@
                             <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep1Visible}">
                                     <li
-                                        class="image-control image-control__page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
+                                        class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
                                         <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep1)}"
                                             title="#{configurationBean.pageBrowseStep1} #{msg.stepForward}"
                                             disabled="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'true' : 'false'}">
@@ -185,7 +175,7 @@
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep2Visible}">
                                     <li
-                                        class="image-control image-control__page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2) ? 'inactive' : ''}">
+                                        class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2) ? 'inactive' : ''}">
                                         <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep2)}"
                                             title="#{configurationBean.pageBrowseStep2} #{msg.stepForward}"
                                             disabled="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep2) ? 'true' : 'false'}">
@@ -197,7 +187,7 @@
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep3Visible}">
                                     <li
-                                        class="image-control image-control__page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3) ? 'inactive' : ''}">
+                                        class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3) ? 'inactive' : ''}">
                                         <h:outputLink value="#{activeDocumentBean.getNextPageUrl(configurationBean.pageBrowseStep3)}"
                                             title="#{configurationBean.pageBrowseStep3} #{msg.stepForward}"
                                             disabled="#{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep3) ? 'true' : 'false'}">
@@ -210,7 +200,7 @@
                             </h:panelGroup>
                             <!-- END -->
                             <ui:fragment rendered="#{!(navigationHelper.currentPage == 'fulltext' and activeDocumentBean.viewManager.belowFulltextThreshold)}">
-                                <li class="image-control image-control__end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
+                                <li class="image-controls__action end #{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'inactive' : ''}">
                                     <h:outputLink value="#{activeDocumentBean.getLastPageUrl()}" title="#{msg.lastImage}"
                                         disabled="#{activeDocumentBean.imageToShow == activeDocumentBean.viewManager.imagesCount ? 'true' : 'false'}">
                                         <i class="image-end"></i>
@@ -223,7 +213,7 @@
                             <!-- DOUBLEPAGEVIEW -->
                             <h:panelGroup
                                 rendered="#{activeDocumentBean.numberOfImages gt 1 and !activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext' and configurationBean.doublePageModeEnabled}">
-                                <li class="image-control image-control__double-page-view">
+                                <li class="image-controls__action double-page-view">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(true)}" title="#{msg.doublePageView}">
                                         <i class="image-doublePageView"></i>
                                         <span class="labeltext">#{msg.doublePageView}</span>
@@ -233,7 +223,7 @@
                                 </li>
                             </h:panelGroup>
                             <h:panelGroup rendered="#{activeDocumentBean.viewManager.doublePageMode and navigationHelper.currentPage != 'fulltext'}">
-                                <li class="image-control image-control__single-page-view">
+                                <li class="image-controls__action single-page-view">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.setDoublePageMode(false)}" title="#{msg.singlePageView}">
                                         <i class="image-singlePageView"></i>
                                         <span class="labeltext">#{msg.singlePageView}</span>
@@ -241,7 +231,7 @@
                                         <f:passThroughAttribute name="data-placement" value="bottom" />
                                     </h:commandLink>
                                 </li>
-                                <li class="image-control image-control__switch-pages">
+                                <li class="image-controls__action switch-pages">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.togglePageOrientation()}" title="#{msg.switchPages}">
                                         <i class="image-switchPages">
                                             <span class="path1"></span>
@@ -262,20 +252,20 @@
                         </h:panelGroup>
                         <h:panelGroup rendered="#{navigationHelper.currentPage != 'fulltext'}">
                             <!-- ROTATE -->
-                            <li class="image-control image-control__rotate-left">
+                            <li class="image-controls__action rotate-left">
                                 <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateLeft}" onclick="viewImage.controls.rotateLeft();">
                                     <i class="image-rotate_left"></i>
                                     <span class="labeltext">#{msg.rotateLeft}</span>
                                 </a>
                             </li>
-                            <li class="image-control image-control__rotate-right">
+                            <li class="image-controls__action rotate-right">
                                 <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateRight}" onclick="viewImage.controls.rotateRight();">
                                     <i class="image-rotate_right"></i>
                                     <span class="labeltext">#{msg.rotateRight}</span>
                                 </a>
                             </li>
                             <!-- RESET -->
-                            <li class="image-control image-control__reset">
+                            <li class="image-controls__action reset">
                                 <a data-toggle="tooltip" data-placement="bottom" title="#{msg.resetImage}" onclick="viewImage.controls.reset(true);">
                                     <i class="image-reset"></i>
                                     <span class="labeltext">#{msg.resetImage}</span>
@@ -283,7 +273,7 @@
                             </li>
                             <!-- FULLSCREEN -->
                             <ui:fragment rendered="#{navigationHelper.currentPage != 'readingmode'}">
-                                <li class="image-control image-control__fullscreen">
+                                <li class="image-controls__action fullscreen">
                                     <h:outputLink value="#{activeDocumentBean.fullscreenImageUrl}" title="#{msg.enterFullscreen}">
                                         <i class="image-fullscreen"></i>
                                         <span class="labeltext">#{msg.enterFullscreen}</span>
@@ -294,7 +284,7 @@
                             </ui:fragment>
                             <!-- ZOMMSLIDER -->
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
-                            <li class="image-control image-control__zoom-slider">
+                            <li class="image-controls__action zoom-slider">
                                 <div class="zoom-slider">
                                     <span class="zoom-slider-handle"></span>
                                 </div>

@@ -1082,7 +1082,7 @@
 
 		<!-- dfg: if false, the dfg-viewer link is hidden -->
 		<dfg>
-			<visible>true</visible>
+			<visible>false</visible>
 		</dfg>
 
 		<!-- opac: if false, the link to the catalogue is hidden -->
