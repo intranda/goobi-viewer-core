@@ -55,7 +55,6 @@ public class ContentServerApplicationTest {
         sampleFileName = sampleFileName.replaceAll("\\s", "%20");
         sampleFileName = sampleFileName.replace("\\", "/");
         sampleFileName = new URI(sampleFileName).toString();
-        System.out.println("Sample file name = " + sampleFileName);
 
         requestURI = new URI("http://intranda/viewer/iiif");
 
@@ -81,10 +80,9 @@ public class ContentServerApplicationTest {
 
     @Test
     public void testResolveAbsoluteURI() throws ContentLibException, UnsupportedEncodingException {
-
         ImageResource service = new ImageResource(request, "-", URLEncoder.encode(sampleFileName, "utf-8"));
-        Assert.assertEquals(sampleFileName, service.getImageURI().toString());
         Assert.assertEquals(requestURI.toString() + "/image/-/" + URLEncoder.encode(sampleFileName, "utf-8"), service.getResourceURI().toString());
+        Assert.assertEquals(sampleFileName, service.getImageURI().toString());
     }
 
 }
