@@ -225,8 +225,18 @@
 
 		<!-- pageTypes: Sub-elements of this element can override the URL names in the PageType enum. Sub-elements must have the same names as the enum values. -->
 		<pageTypes>
-			<!-- <viewImage>objekt</viewImage> <viewToc></viewToc> <viewThumbs></viewThumbs> <viewMetadata></viewMetadata> <viewFulltext></viewFulltext> <search>suche</search> <term></term> 
-				<browse></browse> <viewFullscreen></viewFullscreen> <sites></sites> -->
+			<viewImage>object</viewImage>
+			<!--
+			<viewToc></viewToc>
+			<viewThumbs></viewThumbs>
+			<viewMetadata></viewMetadata>
+			<viewFulltext></viewFulltext>
+			<search>suche</search>
+			<term></term>
+			<browse></browse>
+			<viewFullscreen></viewFullscreen>
+			<sites></sites>
+			-->
 		</pageTypes>
 
 		<!-- docstructTargetPageTypes: Overrides the default target view URL for given docstruct types. An optinal _DEFAULT configuration can be used for all docstruct types without an explicit 
