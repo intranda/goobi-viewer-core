@@ -3534,12 +3534,17 @@ div[id*="-Modal"] .email-form .form-group {
    Feedback
    style declarations for feedback.xhtml
    ==============================================================*/
-#feedbackForm .form-group .btn {
-  margin: 0;
+/* FEEDBACK */
+/* BLOCK */
+.view-feedback {
+  /* ELEMENT */
 }
-#feedbackForm .form-group textarea {
+.view-feedback .form-group textarea {
   min-height: 150px;
   resize: vertical;
+}
+.view-feedback .form-group .btn {
+  margin: 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
