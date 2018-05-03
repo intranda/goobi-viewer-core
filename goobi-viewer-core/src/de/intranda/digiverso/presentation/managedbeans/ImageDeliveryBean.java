@@ -45,6 +45,7 @@ import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
@@ -92,7 +93,7 @@ public class ImageDeliveryBean implements Serializable {
     private IIIFPresentationAPIHandler presentation;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         try {
             Configuration config = DataManager.getInstance().getConfiguration();
             if (servletRequest != null) {
@@ -109,7 +110,7 @@ public class ImageDeliveryBean implements Serializable {
         }
     }
 
-    public void init(Configuration config, String servletPath) {
+    private void init(Configuration config, String servletPath) {
         this.staticImagesURI = getStaticImagesPath(servletPath, config.getTheme());
         this.cmsMediaPath =
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
@@ -141,7 +142,7 @@ public class ImageDeliveryBean implements Serializable {
         return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(bean -> bean.getTopDocument());
     }
 
-    public Optional<StructElement> getCurrentDocumentIfExists() {
+    private Optional<StructElement> getCurrentDocumentIfExists() {
         return Optional.ofNullable(BeanUtils.getActiveDocumentBean()).map(bean -> {
             try {
                 return bean.getCurrentElement();
@@ -153,13 +154,47 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Returns the default size thumbnail url of the current top level document (according to the {@link ViewManager}
+     * Returns an empty string if no current document exists
+     * 
      * @return The representative thumbnail for the current top docStruct element
      */
     public String getRepresentativeThumbnail() {
         return getTopDocumentIfExists().map(doc -> getThumbs().getThumbnailUrl(doc)).orElse("");
     }
+    
+    /**
+     * Returns a thumbnail url of the current top level document (according to the {@link ViewManager} with the given width/height.
+     * Returns an empty string if no current document exists
+     * 
+     * @return The representative thumbnail for the current top docStruct element
+     */
+    public String getRepresentativeThumbnail(int width, int height) {
+        return getTopDocumentIfExists().map(doc -> getThumbs().getThumbnailUrl(doc, width, height)).orElse("");
+    }
+    
+    /**
+     * Returns the default size thumbnail url of the current top level document (according to the {@link ViewManager} for a square thumbnail image.
+     * Returns an empty string if no current document exists
+     * @return The representative thumbnail for the current top docStruct element
+     */
+    public String getRepresentativeSquareThumbnail() {
+        return getTopDocumentIfExists().map(doc -> getThumbs().getSquareThumbnailUrl(doc)).orElse("");
+    }
+    
 
     /**
+     * Returns a thumbnail url of the current top level document (according to the {@link ViewManager} for a square thumbnail image of the given size.
+     * Returns an empty string if no current document exists
+     * @return The representative thumbnail for the current top docStruct element
+     */
+    public String getRepresentativeSquareThumbnail(int size) {
+        return getTopDocumentIfExists().map(doc -> getThumbs().getSquareThumbnailUrl(doc, size)).orElse("");
+    }
+
+    /**
+     * Returns the default size thumbnail url of the current page (according to the {@link ViewManager}.
+     * Returns an empty string if no current page exists
      * 
      * @param page
      * @return The thumbnail of the current page
@@ -167,9 +202,88 @@ public class ImageDeliveryBean implements Serializable {
     public String getCurrentPageThumbnail() {
         return getCurrentPageIfExists().map(page -> getThumbs().getThumbnailUrl(page)).orElse("");
     }
+    
+    /**
+     * Returns a thumbnail url of the current page (according to the {@link ViewManager} of the given width/height.
+     * Returns an empty string if no current page exists
+     * 
+     * @param page
+     * @return The thumbnail of the current page
+     */
+    public String getCurrentPageThumbnail(int width, int height) {
+        return getCurrentPageIfExists().map(page -> getThumbs().getThumbnailUrl(page, width, height)).orElse("");
+    }
+    
+    /**
+     * Returns the default size thumbnail url of the current page (according to the {@link ViewManager} for a square thumbnail image.
+     * Returns an empty string if no current page exists
+     * 
+     * @param page
+     * @return The thumbnail of the current page
+     */
+    public String getCurrentPageSquareThumbnail() {
+        return getCurrentPageIfExists().map(page -> getThumbs().getSquareThumbnailUrl(page)).orElse("");
+    }
+    
+    /**
+     * Returns a thumbnail url of the current page (according to the {@link ViewManager} for a square thumbnail image of the given size.
+     * Returns an empty string if no current page exists
+     * 
+     * @param page
+     * @return The thumbnail of the current page
+     */
+    public String getCurrentPageSquareThumbnail(int size) {
+        return getCurrentPageIfExists().map(page -> getThumbs().getSquareThumbnailUrl(page, size)).orElse("");
+    }
+    
+    /**
+     *  Returns the url to the image of the current page: Either a IIIF manifest if available, or a full image url
+     *  For image size and tiling ingormation {@link PageType#viewImage} is assumed
+     * 
+     * @return  The url to the image of the current page: Either a IIIF manifest if available, or a full image url
+     */
+    public String getCurrentImage() {
+        return getCurrentPageIfExists().map(page -> getImages().getImageUrl(page)).orElse("");
+    }
+    
+    /**
+     *  Returns the url to the image of the current page: Either a IIIF image information if available, or a full image url
+     *  The given pageType affects image size and tiling suggestions for IIIF image information. If the given pageType does 
+     *  not match any known pageType, an empty String is returned 
+     * 
+     * @return  The url to the image of the current page for the current pageType: Either a IIIF manifest if available, or a full image url
+     */
+    public String getCurrentImage(String pageType) {
+        PageType type = PageType.getByName(pageType);
+        if(type == null) {
+            return "";
+        }
+        return getCurrentPageIfExists().map(page -> getImages().getImageUrl(page, type)).orElse("");
+    }
+    
+    /**
+     * returns The media url for the current page in the fist available format
+     * 
+     * @return  The media url for the current page in the fist available format
+     */
+    public String getCurrentMedia() {
+        return getCurrentPageIfExists().map(page -> getMedia().getMediaUrl(page.getMimeType(), page.getPi(), page.getFilename())).orElse("");
+    }
+    
+    /**
+     * returns The media url for the current page in the given format
+     * 
+     * @param format    The requested format. Format is the part of the Solr field name after the underscore, generally the second part of the mime type
+     * @return  The media url for the current page in the given format
+     */
+    public String getCurrentMedia(String format) {
+        return getCurrentPageIfExists().map(page -> getMedia().getMediaUrl(page.getMimeType(), page.getPi(), page.getFileNameForFormat(format))).orElse("");
+    }
+
 
     /**
      * Return the URL to the IIIF manifest of the current work, of it exists. Otherwise return empty String
+     * @return  the manifest url
      */
     public String getIiifManifest() {
         return getCurrentDocumentIfExists().map(doc -> {
@@ -183,20 +297,8 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @return the servletRequest
-     */
-    public HttpServletRequest getServletRequest() {
-        return servletRequest;
-    }
-
-    /**
-     * @param servletRequest the servletRequest to set
-     */
-    public void setServletRequest(HttpServletRequest servletRequest) {
-        this.servletRequest = servletRequest;
-    }
-
-    /**
+     * Retrieves the #{@link IIIFUrlHandler}, creates it if it doesn't exist yet
+     * 
      * @return the iiif
      */
     public IIIFUrlHandler getIiif() {
@@ -207,6 +309,8 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Retrieves the #{@link WatermarkHandler}, creates it if it doesn't exist yet
+     * 
      * @return the footer
      */
     public WatermarkHandler getFooter() {
@@ -217,6 +321,8 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Retrieves the #{@link ImageHandler}, creates it if it doesn't exist yet
+     * 
      * @return the images
      */
     public ImageHandler getImages() {
@@ -227,6 +333,8 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Retrieves the #{@link PdfHandler}, creates it if it doesn't exist yet
+     *
      * @return the pdf
      */
     public PdfHandler getPdf() {
@@ -237,6 +345,8 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Retrieves the #{@link ThumbnailHandler}, creates it if it doesn't exist yet
+     * 
      * @return the thumbs
      */
     public ThumbnailHandler getThumbs() {
@@ -245,11 +355,32 @@ public class ImageDeliveryBean implements Serializable {
         }
         return thumbs;
     }
+    
+    /**
+     * Retrieves the #{@link MediaHandler}, creates it if it doesn't exist yet
+     * 
+     * @return the media
+     */
+    public MediaHandler getMedia() {
+        return media;
+    }
+
+    /**
+     * Retrieves the #{@link IIIFPresentationAPIHandler}, creates it if it doesn't exist yet
+     * 
+     * @return  the iiif presentation handler
+     */
+    public IIIFPresentationAPIHandler getPresentation() {
+        if (presentation == null) {
+            throw new IllegalStateException("Presentation handler was not initialized");
+        }
+        return presentation;
+    }
 
     /**
      * @return the servletPath
      */
-    public String getServletPath() {
+    private String getServletPath() {
         if (servletPath == null) {
             init();
         }
@@ -257,12 +388,15 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @param decode
+     * Returns true if the given String denotes an absolute url that is not a file url, false otherwise
+     * 
+     * @return whether the given string denotes to an external url resource
+     * @param urlString the string to test
      */
     public boolean isExternalUrl(String urlString) {
         try {
             URI uri = new URI(urlString);
-            if (uri.isAbsolute() && (uri.getScheme().equals("http") || uri.getScheme().equals("https"))) {
+            if (uri.isAbsolute() && uri.getScheme().toLowerCase().startsWith("file")) {
                 return !urlString.startsWith(getServletPath());
             } else {
                 return false;
@@ -273,6 +407,8 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Retrieves the url path to the viewer image resource folder. Ith the theme is given, the image resource folder within the theme is returned
+     * 
      * @param theme The name of the theme housing the images. If this is null or empty, the images are taken from the viewer core
      * @return The url to the images folder in resources (possibly in the given theme)
      */
@@ -290,8 +426,10 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @param decode
-     * @return
+     * Tests whether the given url points to a cms media file - i.e. any file within the configured cms media path
+     * 
+     * @param url   The url to test
+     * @return  true if the url points to a cms media file
      */
     public boolean isCmsUrl(String url) {
         URI uri;
@@ -310,9 +448,11 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
-     * @param decode
-     * @return
-     */
+     * Tests whether the given url points to a static image resource within the current theme
+     * 
+     * @param url   the url to test
+     * @return  true if the url points to a static image resource within the current theme
+     */ 
     public boolean isStaticImageUrl(String url) {
         return url.startsWith(getStaticImagesURI());
     }
@@ -320,7 +460,7 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * @return the staticImagesURI
      */
-    public String getStaticImagesURI() {
+    private String getStaticImagesURI() {
         if (staticImagesURI == null) {
             init();
         }
@@ -330,26 +470,14 @@ public class ImageDeliveryBean implements Serializable {
     /**
      * @return the cmsMediaPath
      */
-    public String getCmsMediaPath() {
+    private String getCmsMediaPath() {
         if (cmsMediaPath == null) {
             init();
         }
         return cmsMediaPath;
     }
 
-    /**
-     * @return the media
-     */
-    public MediaHandler getMedia() {
-        return media;
-    }
 
-    public IIIFPresentationAPIHandler getPresentation() {
-        if (presentation == null) {
-            throw new IllegalStateException("Presentation handler was not initialized");
-        }
-        return presentation;
-    }
 
     /**
      * 
