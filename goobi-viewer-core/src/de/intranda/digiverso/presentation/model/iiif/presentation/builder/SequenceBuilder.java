@@ -197,7 +197,7 @@ public class SequenceBuilder extends AbstractBuilder {
         URI canvasId = getCanvasURI(doc.getPi(), page.getOrder());
         Canvas canvas = new Canvas(canvasId);
         canvas.setLabel(new SimpleMetadataValue(page.getOrderLabel()));
-        canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumb().getThumbnailUrl(page)), false));
+        canvas.setThumbnail(new ImageContent(new URI(imageDelivery.getThumbs().getThumbnailUrl(page)), false));
 
         Dimension size = getSize(page);
         if (size.getWidth() * size.getHeight() > 0) {
@@ -217,7 +217,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 ImageInformation imageInfo;
                 resource = new ImageContent(new URI(thumbnailUrl), false);
                 try {
-                    imageInfo = imageDelivery.getImage().getImageInformation(page);
+                    imageInfo = imageDelivery.getImages().getImageInformation(page);
                     resource.setService(imageInfo);
                 } catch (ContentLibException e) {
                     logger.error("Error reading image information from " + thumbnailUrl + ": " + e.toString());
@@ -402,7 +402,7 @@ public class SequenceBuilder extends AbstractBuilder {
                 size.setSize(page.getImageWidth(), page.getImageHeight());
             } else {
                 try {
-                    ImageInformation info = imageDelivery.getImage().getImageInformation(page);
+                    ImageInformation info = imageDelivery.getImages().getImageInformation(page);
                     size.setSize(info.getWidth(), info.getHeight());
                 } catch (ContentLibException | URISyntaxException e) {
                     logger.error("Unable to retrieve image size for " + page + ": " + e.toString());

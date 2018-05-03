@@ -119,7 +119,7 @@ public class ManifestBuilder extends AbstractBuilder {
         addMetadata(manifest, ele);
 
         try {
-            String thumbUrl = imageDelivery.getThumb().getThumbnailUrl(ele);
+            String thumbUrl = imageDelivery.getThumbs().getThumbnailUrl(ele);
             if (StringUtils.isNotBlank(thumbUrl)) {
                 ImageContent thumb = new ImageContent(new URI(thumbUrl), true);
                 manifest.setThumbnail(thumb);

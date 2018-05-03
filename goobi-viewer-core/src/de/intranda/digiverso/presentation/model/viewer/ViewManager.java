@@ -250,11 +250,11 @@ public class ViewManager implements Serializable {
      * @return
      */
     private String getImageInfo(PhysicalElement page) {
-        return imageDelivery.getImage().getImageUrl(page);
+        return imageDelivery.getImages().getImageUrl(page);
     }
 
     private String getImageInfo(PhysicalElement page, PageType pageType) {
-        return imageDelivery.getImage().getImageUrl(page, pageType);
+        return imageDelivery.getImages().getImageUrl(page, pageType);
     }
 
     public String getCurrentImageInfoFullscreen() throws IndexUnreachableException, DAOException {
@@ -335,7 +335,7 @@ public class ViewManager implements Serializable {
         if (ImageFileFormat.PNG.equals(getCurrentPage().getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return imageDelivery.getThumb().getThumbnailUrl(getCurrentPage(), size, size);
+        return imageDelivery.getThumbs().getThumbnailUrl(getCurrentPage(), size, size);
         //        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getCurrentPage().getFileName(), RegionRequest.FULL,
         //                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
@@ -415,7 +415,7 @@ public class ViewManager implements Serializable {
 
         if (getRepresentativePage() != null) {
             Dimension imageSize = new Dimension(representativePage.getImageWidth(), representativePage.getImageHeight());
-            return imageDelivery.getThumb().getThumbnailUrl(representativePage);
+            return imageDelivery.getThumbs().getThumbnailUrl(representativePage);
         }
         return null;
 

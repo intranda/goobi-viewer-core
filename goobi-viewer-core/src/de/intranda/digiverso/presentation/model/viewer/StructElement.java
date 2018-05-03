@@ -428,7 +428,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getImageUrl(int width, int height, int rotation, boolean thumbnail, boolean ignoreWatermark) {
         String filename = getMetadataValue(SolrConstants.THUMBNAIL);
         if (filename != null) {
-            return BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(this, width, height);
+            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, width, height);
         }
 
         return null;

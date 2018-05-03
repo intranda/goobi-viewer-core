@@ -316,7 +316,7 @@ public class TocMaker {
                 int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
                 String thumbnailUrl = null;
                 if (StringUtils.isNotEmpty(topStructPi) && StringUtils.isNotEmpty(thumbnailFile)) {
-                    ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
+                    ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                     StructElement struct = new StructElement(Long.valueOf(volumeIddoc), doc);
                     thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
                 }
@@ -413,7 +413,7 @@ public class TocMaker {
                 int thumbWidth = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailWidth();
                 int thumbHeight = DataManager.getInstance().getConfiguration().getMultivolumeThumbnailHeight();
 
-                ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumb();
+                ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
                 StructElement struct = new StructElement(Long.valueOf(volumeIddoc), volumeDoc);
                 thumbnailUrl = thumbs.getThumbnailUrl(struct, thumbWidth, thumbHeight);
 

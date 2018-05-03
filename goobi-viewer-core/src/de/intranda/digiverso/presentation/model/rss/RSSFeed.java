@@ -242,7 +242,7 @@ public class RSSFeed {
                     placeAndTime = new StringBuilder(placeAndTime).append("<br />").toString();
                 }
 
-                String imageUrl = BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, thumbWidth, thumbHeight);
+                String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
                         
                 String imageHtmlElement = null;
                 if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
@@ -453,7 +453,7 @@ public class RSSFeed {
                 
                 String link = createLink(rootPath, pi, pageType);
                 
-                description.setImage(BeanUtils.getImageDeliveryBean().getThumb().getThumbnailUrl(doc, thumbWidth, thumbHeight));
+                description.setImage(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight));
                                 
                 if(StringUtils.isNotBlank(placeAndTime)) {                    
                     description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));

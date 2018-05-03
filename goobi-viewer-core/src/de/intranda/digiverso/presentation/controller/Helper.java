@@ -1004,7 +1004,7 @@ public class Helper {
     /**
      * 
      * @param s String to clean
-     * @return String sans any <script></script> blocks
+     * @return String sans any script-tag blocks
      * @should remove JS blocks correctly
      */
     public static String stripJS(String s) {

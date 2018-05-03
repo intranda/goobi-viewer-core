@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pretty-config 
-	xmlns="http://ocpsoft.com/prettyfaces/3.3.3"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<pretty-config xmlns="http://ocpsoft.com/prettyfaces/3.3.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://ocpsoft.com/prettyfaces/3.3.3 http://ocpsoft.com/xml/ns/prettyfaces/ocpsoft-pretty-faces-3.3.3.xsd">
 
 	<rewrite match="/;jsessionid=\w+" substitute="/" />
@@ -9,39 +7,43 @@
 
 	<!-- GET parameter example -->
 	<!-- <query-param name="language"> #{bean.language} </query-param> -->
-	<!-- Quick and dirty, Sorry -->
-	<!-- TODO die links in eine Logik packen -->
-
-	<!-- Begin UrlMappings -->
+	
+	<!-- INDEX -->
 	<url-mapping id="index">
 		<pattern value="/" />
 		<view-id value="/index.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-    <url-mapping id="index0">
-        <pattern value="/index/" />
-        <view-id value="/index.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-    </url-mapping>
-    <url-mapping id="index1">
-        <pattern value="/index/#{subThemeDiscriminatorValue:navigationHelper.subThemeDiscriminatorValue}/" />
-        <view-id value="/index.xhtml" />
-        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-    </url-mapping>
-    <url-mapping id="privacy">
-        <pattern value="/privacy/" />
-        <view-id value="/privacy.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-    </url-mapping>
+	<url-mapping id="index0">
+		<pattern value="/index/" />
+		<view-id value="/index.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+	<url-mapping id="index1">
+		<pattern value="/index/#{subThemeDiscriminatorValue:navigationHelper.subThemeDiscriminatorValue}/" />
+		<view-id value="/index.xhtml" />
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+	
+	<!-- PRIVACY -->
+	<url-mapping id="privacy">
+		<pattern value="/privacy/" />
+		<view-id value="/privacy.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+	
+	<!-- TAGS -->
 	<url-mapping id="tags">
 		<pattern value="/tags/" />
 		<view-id value="/tags.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
+	
+	<!-- BROWSE -->
 	<url-mapping id="browse">
 		<pattern value="/browse/" />
 		<view-id value="/browse.xhtml" />
@@ -50,56 +52,47 @@
 		<action onPostback="false">#{browseBean.initializeCollection('DC', 'FACET_DC')}</action>
 		<action onPostback="false">#{browseBean.populateCollection('DC')}</action>
 	</url-mapping>
-	<url-mapping id="search">
-		<pattern value="/search/" />
-		<view-id value="/search.xhtml" />
+	<url-mapping id="browseTopics">
+		<pattern value="/browseTopics/" />
+		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
-		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{browseBean.initializeCollection('MD_TOPIC', 'SORT_TOPIC')}</action>
+		<action onPostback="false">#{browseBean.populateCollection('MD_TOPIC')}</action>
+		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
+		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
 	</url-mapping>
-    <url-mapping id="searchadvanced">
-        <pattern value="/searchadvanced/" />
-        <view-id value="/searchAdvanced.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
-        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-    </url-mapping>
-    <url-mapping id="searchtimeline">
-        <pattern value="/searchtimeline/" />
-        <view-id value="/searchTimeline.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
-        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(2)}</action>
-    </url-mapping>
-    <url-mapping id="searchcalendar">
-        <pattern value="/searchcalendar/" />
-        <view-id value="/searchCalendar.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
-        <action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
-    </url-mapping>
+	<url-mapping id="browseHierarchy">
+		<pattern value="/browseHierarchy/" />
+		<view-id value="/browse.xhtml" />
+		<action onPostback="false">#{browseBean.initializeCollection('MD_HIERARCHY', 'MD_HIERARCHY')}</action>
+		<action onPostback="false">#{browseBean.populateCollection('MD_HIERARCHY')}</action>
+		<!-- <action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
+		<!-- <action onPostback="false">#{browseBean.collection.showAll()}</action> -->
+	</url-mapping>	
+	
+	<!-- STATISTICS -->
 	<url-mapping id="statistics">
 		<pattern value="/statistics/" />
 		<view-id value="/statistics.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="timematrix">
-        <pattern value="/timematrix/" />
-        <view-id value="/viewTimematrix.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-    </url-mapping>
+	
+	<!-- TIMEMATRIX -->
+	<url-mapping id="timematrix">
+		<pattern value="/timematrix/" />
+		<view-id value="/viewTimematrix.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+	
+	<!-- FEEDBACK -->
 	<url-mapping id="feedback">
 		<pattern value="/feedback/" />
 		<view-id value="/feedback.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 
-	<!-- User account -->
+	<!-- USER ACCOUNT -->
 	<url-mapping id="user">
 		<pattern value="/user/" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
@@ -110,82 +103,106 @@
 		<view-id value="/user.xhtml" />
 	</url-mapping>
 	<url-mapping id="userActivate">
-		<pattern
-			value="/user/activate/#{email:userBean.email}/#{key:userBean.activationKey}/" />
+		<pattern value="/user/activate/#{email:userBean.email}/#{key:userBean.activationKey}/" />
 		<view-id value="/index.xhtml" />
 		<action onPostback="false">#{userBean.activateUserAccountAction}</action>
 	</url-mapping>
 	<url-mapping id="userResetPassword">
-		<pattern
-			value="/user/resetpw/#{email:userBean.email}/#{key:userBean.activationKey}/" />
+		<pattern value="/user/resetpw/#{email:userBean.email}/#{key:userBean.activationKey}/" />
 		<view-id value="/index.xhtml" />
 		<action onPostback="false">#{userBean.resetPasswordAction}</action>
 	</url-mapping>
-
 	<url-mapping id="userEdit">
 		<pattern value="/userEditData/" />
 		<view-id value="/user.xhtml" />
 	</url-mapping>
-
 	<url-mapping id="createUserAccount">
 		<pattern value="/createAccount/" />
 		<view-id value="/user.xhtml" />
 	</url-mapping>
-
 	<url-mapping id="retrieveUserAccount">
 		<pattern value="/retrieveAccount/" />
 		<view-id value="/user.xhtml" />
 	</url-mapping>
-	
 	<url-mapping id="userAccountRetrieve">
-        <pattern value="/userAccountRetrieve/" />
-        <view-id value="/userAccountRetrieve.xhtml" />
-    </url-mapping>
-    
-    <url-mapping id="userAccountCreate">
-        <pattern value="/userAccountCreate/" />
-        <view-id value="/userAccountCreate.xhtml" />
-    </url-mapping>
+		<pattern value="/userAccountRetrieve/" />
+		<view-id value="/userAccountRetrieve.xhtml" />
+	</url-mapping>
+	<url-mapping id="userAccountCreate">
+		<pattern value="/userAccountCreate/" />
+		<view-id value="/userAccountCreate.xhtml" />
+	</url-mapping>
 
-    <!-- search -->
+	<!-- SEARCH -->
+	<url-mapping id="search">
+		<pattern value="/search/" />
+		<view-id value="/search.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+	<url-mapping id="searchadvanced">
+		<pattern value="/searchadvanced/" />
+		<view-id value="/searchAdvanced.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+	</url-mapping>
+	<url-mapping id="searchtimeline">
+		<pattern value="/searchtimeline/" />
+		<view-id value="/searchTimeline.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(2)}</action>
+	</url-mapping>
+	<url-mapping id="searchcalendar">
+		<pattern value="/searchcalendar/" />
+		<view-id value="/searchCalendar.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentCollection}</action>
+		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
+	</url-mapping>
+	<url-mapping id="searchList">
+		<pattern value="/searchList/" />
+		<view-id value="/searchList.xhtml" />
+	</url-mapping>
 	<url-mapping id="browse5">
-		<pattern
-			value="/browse/#{dc:searchBean.facets.currentCollection}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{filter:searchBean.facets.currentFacetString}/" />
+		<pattern value="/browse/#{dc:searchBean.facets.currentCollection}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{filter:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.search}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 	</url-mapping>
 	<url-mapping id="newSearchTerm2">
-		<pattern
-			value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPageResetFilter}/" />
+		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPageResetFilter}/" />
 		<view-id value="/searchTermsList.xhtml" />
 		<action onPostback="false">#{browseBean.searchTerms}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	<url-mapping id="newSearchTerm3">
-		<pattern
-			value="/term/#{field:browseBean.browsingMenuField}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
+		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
 		<action onPostback="false">#{browseBean.searchTerms}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 	<url-mapping id="newSearch1">
-        <pattern
-            value="/search/#{dc:searchBean.facets.currentCollection}/" />
-        <view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{searchBean.search}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-    </url-mapping>
-        <url-mapping id="searchAdvanced1">
-        <pattern value="/searchadvanced/#{currentCollection:searchBean.facets.currentCollection}/" />
-        <view-id value="/searchAdvanced.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-    </url-mapping>
+		<pattern value="/search/#{dc:searchBean.facets.currentCollection}/" />
+		<view-id value="/searchList.xhtml" />
+		<action onPostback="false">#{searchBean.search}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+	</url-mapping>
+	<url-mapping id="searchAdvanced1">
+		<pattern value="/searchadvanced/#{currentCollection:searchBean.facets.currentCollection}/" />
+		<view-id value="/searchAdvanced.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+	</url-mapping>
 	<url-mapping id="newSearch3">
-		<pattern
-			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
+		<pattern value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
@@ -193,412 +210,343 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch4">
-		<pattern
-			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+		<pattern value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
-    <url-mapping id="searchAdvanced4">
-        <pattern
-            value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
-        <view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-        <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{searchBean.search}</action>
-    </url-mapping>
+	<url-mapping id="searchAdvanced4">
+		<pattern value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+		<view-id value="/searchList.xhtml" />
+		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
+	</url-mapping>
 	<url-mapping id="newSearch5">
-		<pattern
-			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+		<pattern value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
-    <url-mapping id="searchAdvanced5">
-        <pattern
-            value="/searchadvanced/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-        <view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{searchBean.search}</action>
-    </url-mapping>
+	<url-mapping id="searchAdvanced5">
+		<pattern value="/searchadvanced/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+		<view-id value="/searchList.xhtml" />
+		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
+	</url-mapping>
 	<url-mapping id="search6">
-		<pattern
-			value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
+		<pattern value="/search/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
-	   <url-mapping id="searchAdvanced6">
-        <pattern
-            value="/searchadvanced/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
-        <view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{searchBean.search}</action>
-    </url-mapping>
-    <url-mapping id="searchCalendar5">
-        <pattern
-            value="/searchcalendar/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-        <view-id value="/searchList.xhtml" />
-        <action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{searchBean.search}</action>
-    </url-mapping>
+	<url-mapping id="searchAdvanced6">
+		<pattern value="/searchadvanced/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
+		<view-id value="/searchList.xhtml" />
+		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
+	</url-mapping>
+	<url-mapping id="searchCalendar5">
+		<pattern value="/searchcalendar/#{dc:searchBean.facets.currentCollection}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+		<view-id value="/searchList.xhtml" />
+		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.search}</action>
+	</url-mapping>
 
-    <!-- overview -->
-    <url-mapping id="overview2">
-        <pattern
-            value="/overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-        <view-id value="/viewOverview.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>  
-        <url-mapping id="overview3">
-        <pattern
-            value="/overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewOverview.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="overview3active">
-        <pattern
-            value="/!overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewOverview.xhtml" />
-        <action onPostback="false">#{navigationHelper.setPreferredView('overview')}</action>
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="overview2active">
-        <pattern
-            value="/!overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-        <view-id value="/viewOverview.xhtml" />
-        <action onPostback="false">#{navigationHelper.setPreferredView('overview')}</action>
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="overview4">
-        <pattern
-            value="/overview/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewOverview.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-      
-	<!-- image -->
-	<url-mapping id="image2">
-		<pattern
-			value="/image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-		<view-id value="/viewImage.xhtml" />
+	<!-- OVERVIEW -->
+	<url-mapping id="overview2">
+		<pattern value="/overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewOverview.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-    <url-mapping id="image2active">
-        <pattern
-            value="/!image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-        <view-id value="/viewImage.xhtml" />
-        <action onPostback="false">#{navigationHelper.setPreferredView('image')}</action>
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
+	<url-mapping id="overview3">
+		<pattern value="/overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewOverview.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="overview3active">
+		<pattern value="/!overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewOverview.xhtml" />
+		<action onPostback="false">#{navigationHelper.setPreferredView('overview')}</action>
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="overview2active">
+		<pattern value="/!overview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewOverview.xhtml" />
+		<action onPostback="false">#{navigationHelper.setPreferredView('overview')}</action>
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="overview4">
+		<pattern value="/overview/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewOverview.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+
+	<!-- IMAGE -->
+	<url-mapping id="image2">
+		<pattern value="/image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="image2active">
+		<pattern value="/!image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{navigationHelper.setPreferredView('object')}</action>
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
 	<url-mapping id="image3">
-		<pattern
-			value="/image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewImage.xhtml" />
+		<pattern value="/image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewObject.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="image3active">
-		<pattern
-			value="/!image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewImage.xhtml" />
-		<action onPostback="false">#{navigationHelper.setPreferredView('image')}</action>
+		<pattern value="/!image/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{navigationHelper.setPreferredView('object')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="image4">
 		<pattern
 			value="/image/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-		<view-id value="/viewImage.xhtml" />
-		<action onPostback="false">#{activeDocumentBean.open}</action>
-	</url-mapping>
-	
-	<!-- object -->
-	<url-mapping id="object2">
-		<pattern
-			value="/object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewObject.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-    <url-mapping id="object2active">
-        <pattern
-            value="/!object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-        <view-id value="/viewObject.xhtml" />
-        <action onPostback="false">#{navigationHelper.setPreferredView('image')}</action>
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
+
+	<!-- OBJECT -->
+	<url-mapping id="object2">
+		<pattern value="/object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="object2active">
+		<pattern value="/!object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewObject.xhtml" />
+		<action onPostback="false">#{navigationHelper.setPreferredView('object')}</action>
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
 	<url-mapping id="object3">
-		<pattern
-			value="/object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewObject.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="object3active">
-		<pattern
-			value="/!object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/!object/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewObject.xhtml" />
-		<action onPostback="false">#{navigationHelper.setPreferredView('image')}</action>
+		<action onPostback="false">#{navigationHelper.setPreferredView('object')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="object4">
-		<pattern
-			value="/object/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/object/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewObject.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-	
-	<!-- READING MODE -->
-    <url-mapping id="readingmode2">
-        <pattern
-            value="/readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-        <view-id value="/viewReadingMode.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="readingmode3">
-        <pattern
-            value="/readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewReadingMode.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="readingmode3active">
-        <pattern
-            value="/!readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewReadingMode.xhtml" />
-        <action onPostback="false">#{navigationHelper.setPreferredView('readingmode')}</action>
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="readingmode4">
-        <pattern
-            value="/readingmode/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewReadingMode.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
 
-	<!-- preview -->
-	<url-mapping id="preview2">
+	<!-- READING MODE -->
+	<url-mapping id="readingmode2">
+		<pattern value="/readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewReadingMode.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="readingmode3">
+		<pattern value="/readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewReadingMode.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="readingmode3active">
+		<pattern value="/!readingmode/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewReadingMode.xhtml" />
+		<action onPostback="false">#{navigationHelper.setPreferredView('readingmode')}</action>
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="readingmode4">
 		<pattern
-			value="/preview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+			value="/readingmode/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewReadingMode.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+
+	<!-- PREVIEW -->
+	<url-mapping id="preview2">
+		<pattern value="/preview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewPreview.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="preview3">
-		<pattern
-			value="/preview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/preview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewPreview.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="preview3active">
-		<pattern
-			value="/!preview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/!preview/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewPreview.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('image')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="preview4">
-		<pattern
-			value="/preview/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/preview/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewPreview.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
-	<!-- fulltext -->
+	<!-- FULLTEXT -->
 	<url-mapping id="fulltext2">
-		<pattern
-			value="/fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<pattern value="/fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewFulltext.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.openFulltext}</action>
 	</url-mapping>
 	<url-mapping id="fulltext2active">
-		<pattern
-			value="/!fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<pattern value="/!fulltext/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewFulltext.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('fulltext')}</action>
 		<action onPostback="false">#{activeDocumentBean.openFulltext}</action>
 	</url-mapping>
 	<url-mapping id="fulltext4">
-		<pattern
-			value="/fulltext/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/fulltext/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewFulltext.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-	
-	<!-- ner -->
-	<url-mapping id="ner">
-        <pattern value="/ner/#{pi:activeDocumentBean.persistentIdentifier}/" />
-        <view-id value="/viewNerFacetting.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
 
-	<!-- metadata -->
+	<!-- NER -->
+	<url-mapping id="ner">
+		<pattern value="/ner/#{pi:activeDocumentBean.persistentIdentifier}/" />
+		<view-id value="/viewNerFacetting.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+
+	<!-- METADATA -->
 	<url-mapping id="metadata1">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="metadata2">
-		<pattern
-			value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="metadata3">
-		<pattern
-			value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="metadata3active">
-		<pattern
-			value="/!metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/!metadata/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('metadata')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="metadata4">
-		<pattern
-			value="/metadata/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/metadata/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewMetadata.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
-	<!-- thumbs -->
+	<!-- THUMBS -->
 	<url-mapping id="thumbs2">
-		<pattern
-			value="/thumbs/#{pi:activeDocumentBean.persistentIdentifier}/#{thumbnailPage:activeDocumentBean.currentThumbnailPage}/" />
+		<pattern value="/thumbs/#{pi:activeDocumentBean.persistentIdentifier}/#{thumbnailPage:activeDocumentBean.currentThumbnailPage}/" />
 		<view-id value="/viewThumbs.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="thumbs2active">
-		<pattern
-			value="/!thumbs/#{pi:activeDocumentBean.persistentIdentifier}/#{thumbnailPage:activeDocumentBean.currentThumbnailPage}/" />
+		<pattern value="/!thumbs/#{pi:activeDocumentBean.persistentIdentifier}/#{thumbnailPage:activeDocumentBean.currentThumbnailPage}/" />
 		<view-id value="/viewThumbs.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('thumbs')}</action>
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="thumbs4">
-		<pattern
-			value="/thumbs/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/thumbs/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewThumbs.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.setLogid('')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
-	<!-- toc -->
+	<!-- TOC -->
 	<url-mapping id="toc2">
-		<pattern
-			value="/toc/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/" />
+		<pattern value="/toc/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/" />
 		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="toc3">
-		<pattern
-			value="/toc/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/toc/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="toc3active">
-		<pattern
-			value="/!toc/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/!toc/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{navigationHelper.setPreferredView('toc')}</action>
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="toc4">
-		<pattern
-			value="/toc/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/toc/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{tocCurrentPage:activeDocumentBean.tocCurrentPage}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewToc.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
-	<!-- fullscreen -->
+	<!-- FULLSCREEN -->
 	<url-mapping id="fullscreen4">
-		<pattern
-			value="/fullscreen/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/fullscreen/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewImageFullscreen.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="fullscreen3">
-		<pattern
-			value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<pattern value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewImageFullscreen.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 	<url-mapping id="fullscreen2">
-		<pattern
-			value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<pattern value="/fullscreen/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
 		<view-id value="/viewImageFullscreen.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-	
-	<!-- calendar -->
-    <url-mapping id="calendar1">
-        <pattern
-            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/" />
-        <view-id value="/viewCalendar.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="calendar2">
-        <pattern
-            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
-        <view-id value="/viewCalendar.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="calendar3">
-        <pattern
-            value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewCalendar.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="calendar3active">
-        <pattern
-            value="/!calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewCalendar.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-    <url-mapping id="calendar4">
-        <pattern
-            value="/calendar/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
-        <view-id value="/viewCalendar.xhtml" />
-        <action onPostback="false">#{activeDocumentBean.open}</action>
-    </url-mapping>
-	
-	<!-- download -->
-	   <url-mapping id="download1">
-        <pattern
-            value="/download/#{identifier:downloadBean.downloadIdentifier}/" />
-        <view-id value="/viewDownload.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{downloadBean.openDownloadAction()}</action>
-    </url-mapping>
-	
-	<url-mapping id="browseTopics">
-		<pattern value="/browseTopics/" />
-		<view-id value="/browse.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{browseBean.initializeCollection('MD_TOPIC', 'SORT_TOPIC')}</action>
-		<action onPostback="false">#{browseBean.populateCollection('MD_TOPIC')}</action>
-<!-- 		<action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
-<!-- 		<action onPostback="false">#{browseBean.collection.showAll()}</action> -->
+
+	<!-- CALENDAR -->
+	<url-mapping id="calendar1">
+		<pattern value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/" />
+		<view-id value="/viewCalendar.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
-	
-		<url-mapping id="browseHierarchy">
-		<pattern value="/browseHierarchy/" />
-		<view-id value="/browse.xhtml" />
-		<action onPostback="false">#{browseBean.initializeCollection('MD_HIERARCHY', 'MD_HIERARCHY')}</action>
-		<action onPostback="false">#{browseBean.populateCollection('MD_HIERARCHY')}</action>
-<!-- 		<action onPostback="false">#{browseBean.expandCollection(2)}</action> -->
-<!-- 		<action onPostback="false">#{browseBean.collection.showAll()}</action> -->
+	<url-mapping id="calendar2">
+		<pattern value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewCalendar.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="calendar3">
+		<pattern value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewCalendar.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="calendar3active">
+		<pattern value="/!calendar/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewCalendar.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="calendar4">
+		<pattern value="/calendar/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
+		<view-id value="/viewCalendar.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
-    <!-- TODO Use uniform URL patterns for pages that only logged in users may visit so that LoginFilter still works! -->
+	<!-- DOWNLOAD -->
+	<url-mapping id="download1">
+		<pattern value="/download/#{identifier:downloadBean.downloadIdentifier}/" />
+		<view-id value="/viewDownload.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{downloadBean.openDownloadAction()}</action>
+	</url-mapping>
+
+	<!-- TODO Use uniform URL patterns for pages that only logged in users may visit so that LoginFilter still works! -->
+	<!-- BOOKSHELVES -->
 	<url-mapping id="userMenuMyBookshelves">
 		<pattern value="/mybookshelves/" />
 		<view-id value="/userBackendBookshelves.xhtml" />
@@ -614,123 +562,125 @@
 		<view-id value="/userBackendViewBookshelf.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="userMenuEditBookshelf">
-        <pattern value="/editbookshelf/" />
-        <view-id value="/userBackendEditBookshelf.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="userMenuViewBookshelf1">
+	<url-mapping id="userMenuEditBookshelf">
+		<pattern value="/editbookshelf/" />
+		<view-id value="/userBackendEditBookshelf.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="userMenuViewBookshelf1">
 		<pattern value="/bookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
 		<view-id value="/userBackendViewBookshelf.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="userMenuEditBookshelf1">
-        <pattern value="/editbookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
-        <view-id value="/userBackendEditBookshelf.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="userBookshelfSendList">
+	<url-mapping id="userMenuEditBookshelf1">
+		<pattern value="/editbookshelf/#{identifier:bookshelfBean.currentBookshelfId}/" />
+		<view-id value="/userBackendEditBookshelf.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="userBookshelfSendList">
 		<pattern value="/userBookshelfSendList/" />
 		<view-id value="/userBookshelfSendList.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
 
+	<!-- MY SEARCHES -->
 	<url-mapping id="userMenuMySearches">
 		<pattern value="/mysearches/" />
 		<view-id value="/userBackendSearches.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
+	</url-mapping>	
 
-	<url-mapping id="searchList">
-		<pattern value="/searchList/" />
-		<view-id value="/searchList.xhtml" />
-	</url-mapping>
-	
+	<!-- CMS -->
 	<url-mapping id="cmsOpenPage">
-        <pattern value="/cms/#{page:cmsBean.currentPageId}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction}</action>
-    </url-mapping>
-    <url-mapping id="cmsOpenPageWithList">
-        <pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction}</action>
-    </url-mapping>
-    <url-mapping id="cmsOpenPageWithCollection">
-        <pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action obPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="cmsOpenPageWithSearch">
-        <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-    </url-mapping>
-<!--     <url-mapping id="cmsOpenPageWithSearchSimple"> -->
-<!--         <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/#{sort:cmsBean.currentPage.search.solrSortFields}/#{currentFacetString:cmsBean.currentPage.search.facetString}/#{dc:cmsBean.currentPage.search.collection}/" /> -->
-<!--         <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
-<!--         <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
-<!--         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
-<!--     </url-mapping> -->
-    <url-mapping id="cmsOpenPageWithSearch5">
-        <pattern value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-    </url-mapping>
-    <url-mapping id="cmsOpenPagePreview">
-        <pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction}</action>
-    </url-mapping>
-    <url-mapping id="cmsOpenPagePreviewWithCollection">
-        <pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    
-    <url-mapping id="adminCms">
-        <pattern value="/adminCms/" />
-        <view-id value="/resources/cms/adminCmsOverview.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminCmsOverview">
-        <pattern value="/adminCmsOverview/" />
-        <view-id value="/resources/cms/adminCmsOverview.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminCmsMedia">
-        <pattern value="/adminCmsMedia/" />
-        <view-id value="/resources/cms/adminCmsOverviewMedia.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminCmsSelectTemplate">
-        <pattern value="/adminCmsSelectTemplate/" />
-        <view-id value="/resources/cms/adminCmsSelectTemplate.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminCmsCreatePage">
-        <pattern value="/adminCmsCreatePage/" />
-        <view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminCmsMenuItems">
-        <pattern value="/adminCmsMenuItems/" />
-        <view-id value="/resources/cms/adminCmsMenuItems.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminCmsStaticPages">
-        <pattern value="/adminCmsStaticPages/" />
-        <view-id value="/resources/cms/adminCmsStaticPages.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
+	</url-mapping>
+	<url-mapping id="cmsOpenPageWithList">
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
+	</url-mapping>
+	<url-mapping id="cmsOpenPageWithCollection">
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action obPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="cmsOpenPageWithSearch">
+		<pattern
+			value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+	</url-mapping>
+	<!-- <url-mapping id="cmsOpenPageWithSearchSimple"> -->
+	<!-- <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/#{sort:cmsBean.currentPage.search.solrSortFields}/#{currentFacetString:cmsBean.currentPage.search.facetString}/#{dc:cmsBean.currentPage.search.collection}/" 
+		/> -->
+	<!-- <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+	<!-- <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+	<!-- <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
+	<!-- </url-mapping> -->
+	<url-mapping id="cmsOpenPageWithSearch5">
+		<pattern
+			value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+	</url-mapping>
+	<url-mapping id="cmsOpenPagePreview">
+		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
+	</url-mapping>
+	<url-mapping id="cmsOpenPagePreviewWithCollection">
+		<pattern value="/cmspreview/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
+		<view-id value="#{cmsBean.getCurrentPageUrl}" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
 
+	<!-- CMS ADMIN -->
+	<url-mapping id="adminCms">
+		<pattern value="/adminCms/" />
+		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsOverview">
+		<pattern value="/adminCmsOverview/" />
+		<view-id value="/resources/cms/adminCmsOverview.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsMedia">
+		<pattern value="/adminCmsMedia/" />
+		<view-id value="/resources/cms/adminCmsOverviewMedia.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsSelectTemplate">
+		<pattern value="/adminCmsSelectTemplate/" />
+		<view-id value="/resources/cms/adminCmsSelectTemplate.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsCreatePage">
+		<pattern value="/adminCmsCreatePage/" />
+		<view-id value="/resources/cms/adminCmsCreatePage.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsMenuItems">
+		<pattern value="/adminCmsMenuItems/" />
+		<view-id value="/resources/cms/adminCmsMenuItems.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminCmsStaticPages">
+		<pattern value="/adminCmsStaticPages/" />
+		<view-id value="/resources/cms/adminCmsStaticPages.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+
+	<!-- ADMIN -->
 	<url-mapping id="admin">
 		<pattern value="/admin/" />
 		<view-id value="/adminAllUsers.xhtml" />
@@ -756,44 +706,44 @@
 		<view-id value="/adminUserGroup.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-    <url-mapping id="adminAllIpRanges">
-        <pattern value="/adminAllIpRanges/" />
-        <view-id value="/adminIpRanges.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminIpRange">
-        <pattern value="/adminIpRange/" />
-        <view-id value="/adminIpRange.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminAllLicenseTypes">
-        <pattern value="/adminAllLicenseTypes/" />
-        <view-id value="/adminLicenseTypes.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminLicenseType">
-        <pattern value="/adminLicenseType/" />
-        <view-id value="/adminLicenseType.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminUserComments">
-        <pattern value="/adminUserComments/" />
-        <view-id value="/adminUserComments.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    <url-mapping id="adminContentUpload">
-        <pattern value="/adminContentUpload/" />
-        <view-id value="/adminContentUpload.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-    </url-mapping>
-    
-    <url-mapping id="error">
-        <pattern value="/error/" />
-        <view-id value="/error.xhtml" />
-    </url-mapping>
-    <url-mapping id="errorTest">
-        <pattern value="/errorTest/" />
-        <view-id value="/errorTest.xhtml" />
-    </url-mapping>
-    
+	<url-mapping id="adminAllIpRanges">
+		<pattern value="/adminAllIpRanges/" />
+		<view-id value="/adminIpRanges.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminIpRange">
+		<pattern value="/adminIpRange/" />
+		<view-id value="/adminIpRange.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminAllLicenseTypes">
+		<pattern value="/adminAllLicenseTypes/" />
+		<view-id value="/adminLicenseTypes.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminLicenseType">
+		<pattern value="/adminLicenseType/" />
+		<view-id value="/adminLicenseType.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminUserComments">
+		<pattern value="/adminUserComments/" />
+		<view-id value="/adminUserComments.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+	<url-mapping id="adminContentUpload">
+		<pattern value="/adminContentUpload/" />
+		<view-id value="/adminContentUpload.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+	</url-mapping>
+
+	<!-- ERROR -->
+	<url-mapping id="error">
+		<pattern value="/error/" />
+		<view-id value="/error.xhtml" />
+	</url-mapping>
+	<url-mapping id="errorTest">
+		<pattern value="/errorTest/" />
+		<view-id value="/errorTest.xhtml" />
+	</url-mapping>
 </pretty-config>
