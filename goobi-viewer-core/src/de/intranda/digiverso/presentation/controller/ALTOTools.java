@@ -73,7 +73,7 @@ public class ALTOTools {
 
 	/**
 	 *
-	 * @param altoDoc
+	 * @param alto
 	 * @return
 	 * @should throw IllegalArgumentException if altoDoc is null
 	 */
@@ -552,7 +552,7 @@ public class ALTOTools {
 
 	/**
 	 * @param eleWord
-	 * @param string
+	 * @param words
 	 * @return
 	 */
 	public static int getMatchALTOWord(Word eleWord, String[] words) {
@@ -611,7 +611,7 @@ public class ALTOTools {
 
 	/**
 	 *
-	 * @param eleWord
+	 * @param element
 	 * @return
 	 */
 	public static String getALTOCoords(GeometricData element) {

@@ -221,7 +221,16 @@
 		<delete dir="${dir.javadoc}" />
 		<mkdir dir="${dir.javadoc}" />
 		<!-- create javadocs -->
-		<javadoc destdir="${dir.javadoc}" sourcepath="${dir.src}" Author="false" version="true" Use="true" noindex="false" Windowtitle="Goobi viewer Javadoc References" Doctitle="Goobi viewer Javadoc References" bottom="Copyright, inranda GmbH" encoding="UTF8">
+		<javadoc destdir="${dir.javadoc}" 
+			 sourcepath="${dir.src}" 
+			 Author="false" 
+			 Version="true" 
+			 Use="true" 
+			 Windowtitle="Goobi viewer Javadoc References"
+			 Doctitle="Goobi viewer Javadoc References"
+			 noindex="false" 
+			 bottom="Copyright by intranda GmbH" 
+			 encoding="UTF8">
 			<classpath refid="classpath">
 			</classpath>
 			<tag name="should" description="Generate Test Cases plugin" enabled="false"/>
