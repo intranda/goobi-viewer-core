@@ -2,111 +2,20 @@
    View Fulltext
    style declarations for viewFulltext.xhtml 
    ==============================================================*/
-#view_fulltext_wrapp {
-    #fulltext-box {
-        width: 100%;
-        margin: 1rem auto;
-        padding: 0.5rem;
-        border: 1px solid @lightgray;        
-    }
-}
-
-// NER-Popovers
-.ner-person {
-    color: @personColor;
-}
-.ner-location {
-    color: @locationColor;
-}
-.ner-institution {
-    color: @corporationColor;
-}
-.ner-trigger,
-.ner-detail-trigger {
-    position: relative;
-    text-decoration: underline;
-    color: @blue;
-    cursor: pointer;
-}
-.ner-trigger {
-    .glyphicon {
-        margin-right: 0.1875rem;
-    }
-    .ner-popover-pointer {
-        display: none;
-        position: absolute;
-        bottom: -0.7rem;
-        left: 50%;
-        width: 0;
-        height: 0;
-        margin: 0 0 0 -0.5rem;
-        border-width: 0.5rem;
-        border-style: solid;
-        border-color: transparent transparent @gray transparent;
-    }
-}
-.ner-detail-trigger {
-    .ner-detail-loader {
-        display: none;
-        width: 0.75rem;
-        height: 0.75rem;
-        margin-left: 0.3125rem;
-        background-image: url("@{images}/ajax_preloader_ner.gif");
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-size: cover;
-    }
-}
-.ner-popover {
-    position: absolute;
-    width: 18.75rem;
-    border: 2px solid @gray;
-    background-color: @white;
-    z-index: 100;
-}
-.ner-popover-close {
-    position: absolute;
-    top: 0.3125rem;
-    right: 0.3125rem;
-    width: 0.625rem;
-    height: 0.625rem;
-    line-height: 0.625rem;
-    cursor: pointer;
-}
-.ner-popover-header {
-    padding: 0.625rem;
-    h4 {
-        margin: 0;
-    }
-}
-.ner-popover-body {
-    padding: 0.625rem 0;
-    .dl-horizontal {
-        margin: 0;
-        dt {
-            width: 40%;
-            padding-left: 0.625rem;
-            text-align: left;
-        }
-        dd {
-            margin-left: 40%;
-            padding: 0 0.625rem 0 0.3125rem;
-        }
-        .ner-popover-detail {
-            position: relative;
-            background-color: @lightgray;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) inset;
-        }
-        .ner-popover-detail-header {
-            padding: 0.625rem;
-            h4 {
-                margin: 0;
-            }
-        }
-        .ner-popover-detail-body {
-            padding: 0.625rem 0;
-        }
-    }
+/* VIEW FULLTEXT */
+/* BLOCK */
+.view-fulltext {
+	/* ELEMENT */
+	&__wrapper {}
+	&__box {
+		pre {
+			line-height: 10px;
+			padding: 10px;
+			border: 1px solid @middlegray;
+			border-radius: 0;
+			background-color: @lightgray;
+		}
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
