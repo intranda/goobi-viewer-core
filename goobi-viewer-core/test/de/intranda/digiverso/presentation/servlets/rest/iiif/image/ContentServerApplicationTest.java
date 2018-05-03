@@ -51,9 +51,11 @@ public class ContentServerApplicationTest {
         //    	Assert.assertTrue("Config file " + ContentServerConfiguration.getBasePathAsFile().getAbsolutePath() + "contentServerConfig.xml" + " is no file",
         //    			new File(ContentServerConfiguration.getBaseBathAsString(), "contentServerConfig.xml").isFile());
         File sampleFile = new File("stuff/images/multivolume_thumbnail.png");
-        sampleFileName = "file:" + sampleFile.getAbsolutePath();
+        sampleFileName = "file://" + sampleFile.getAbsolutePath();
         sampleFileName = sampleFileName.replaceAll("\\s", "%20");
         sampleFileName = sampleFileName.replace("\\", "/");
+        sampleFileName = new URI(sampleFileName).toString();
+        System.out.println("Sample file name = " + sampleFileName);
 
         requestURI = new URI("http://intranda/viewer/iiif");
 
