@@ -34,10 +34,11 @@ public class MediaHandler {
     }
     
     /**
+     * Returns the url to the media object for the given pi and filename
      * 
-     * @param mimeType
-     * @param pi
-     * @param filename
+     * @param mimeType  The mime type to use
+     * @param pi        The pi of the requested work
+     * @param filename  The media filename
      * @return  the url to the media file of the given pi and filename
      */
     public String getMediaUrl(String mimeType, String pi, String filename) {

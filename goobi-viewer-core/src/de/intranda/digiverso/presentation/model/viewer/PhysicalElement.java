@@ -733,10 +733,20 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return fileName;
     }
+    
+    /**
+     * Returns The first matching media filename for this page
+     * 
+     * @return  The first matching media filename for this page
+     */
+    public String getFilename() {
+        String format = getFileNames().keySet().stream().findFirst().orElse("");
+        return getFileNameForFormat(format);
+    }
 
-    public String getImageToPdfUrl() {
+    public String getImageToPdfUrl() throws IndexUnreachableException {
 
-        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getImageDeliveryBean().getCurrentDocumentIfExists().orElse(null), this);
+            return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
 
         //        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
         //        sb.append("?action=pdf")
