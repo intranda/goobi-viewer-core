@@ -6225,8 +6225,8 @@ div.olMapViewport {
 .reading-mode__navigation {
   display: -ms-grid;
   display: grid;
-  -ms-grid-columns: 1fr 4fr 1fr;
-      grid-template-columns: 1fr 4fr 1fr;
+  -ms-grid-columns: 1fr 2fr 1fr;
+      grid-template-columns: 1fr 2fr 1fr;
   -ms-flex-line-pack: center;
       align-content: center;
   height: 70px;
@@ -6268,6 +6268,7 @@ div.olMapViewport {
 }
 .reading-mode__nav.controls .image-controls__options {
   float: right;
+  margin-left: 75px;
 }
 .reading-mode__nav.controls .image-controls__option {
   width: 21px;
@@ -6297,7 +6298,7 @@ div.olMapViewport {
   visibility: hidden !important;
 }
 .reading-mode__nav.controls .image-controls__actions {
-  float: left;
+  float: right;
 }
 .reading-mode__nav.back {
   padding-right: 15px;
@@ -6380,6 +6381,24 @@ div.olMapViewport {
 }
 /* MODIFICATION */
 /* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: 1430px) {
+  .reading-mode__navigation {
+    -ms-grid-columns: 1fr 3fr 1fr;
+        grid-template-columns: 1fr 3fr 1fr;
+  }
+  .reading-mode__nav.controls .image-controls__options {
+    margin-left: 0;
+  }
+  .reading-mode__nav.controls .image-controls__actions {
+    float: left;
+  }
+}
+@media screen and (max-width: 1200px) {
+  .reading-mode__navigation {
+    -ms-grid-columns: 1fr 4fr 1fr;
+        grid-template-columns: 1fr 4fr 1fr;
+  }
+}
 /* BREAKPOINT FOR DESKTOP */
 @media screen and (max-width: 1070px) {
   .reading-mode__navigation {

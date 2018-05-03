@@ -21,7 +21,7 @@
     /* NAVIGATION */
     &__navigation {
         display: grid;
-        grid-template-columns: 1fr 4fr 1fr;
+        grid-template-columns: 1fr 2fr 1fr;
         align-content: center;
         height: 70px;
         background-color: @middlegray;
@@ -61,6 +61,7 @@
 	    		padding: 0;
 		    	&__options {
 		    		float: right;
+		    		margin-left: 75px;
 		    	}
 		    	&__option {
 		    		width: 21px;
@@ -86,7 +87,7 @@
 		    		}
 		    	}
 		    	&__actions {
-		    		float: left;
+		    		float: right;
 		    	}
 		    	&__action {}
 	    	}        	
@@ -178,7 +179,32 @@
 /* MODIFICATION */
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {} 
+@media screen and (max-width: 1430px) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 3fr 1fr;
+	    }
+	    &__nav {
+	    	&.controls {
+	    		.image-controls {
+	    			&__options {
+	    				margin-left: 0;
+	    			}
+	    			&__actions {
+	    				float: left;
+	    			}
+	    		}
+	    	}
+	    }
+	}
+}
+@media screen and (max-width: @largeBreakpoint) {
+	.reading-mode {
+		&__navigation {
+	        grid-template-columns: 1fr 4fr 1fr;
+	    }
+	}
+} 
 
 /* BREAKPOINT FOR DESKTOP */
 @media screen and (max-width: 1070px) {
