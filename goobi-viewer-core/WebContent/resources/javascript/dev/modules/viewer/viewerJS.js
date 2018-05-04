@@ -79,6 +79,13 @@ var viewerJS = ( function() {
         // enable BS tooltips
         $( '[data-toggle="tooltip"]' ).tooltip();
         
+        // hide tooltips after 3 seconds
+        $( '[data-toggle="tooltip"]' ).on( 'inserted.bs.tooltip', function () {
+        	setTimeout( function() {
+        		$( '[data-toggle="tooltip"]' ).tooltip( 'hide' );
+        	}, 3000 );
+        } );
+        
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
             var warningPopover = this.helper
