@@ -1633,6 +1633,8 @@ public class ViewManager implements Serializable {
 
     /**
      * Generates DC meta tags for the head of a HTML page.
+     * 
+     * @return String with tags
      */
     public String getDublinCoreMetaTags() {
         return MetadataTools.generateDublinCoreMetaTags(this.topDocument);
@@ -1640,7 +1642,7 @@ public class ViewManager implements Serializable {
 
     /**
      * 
-     * @return String with tags.
+     * @return String with tags
      */
     public String getHighwirePressMetaTags() {
         try {
