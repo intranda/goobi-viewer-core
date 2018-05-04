@@ -187,7 +187,7 @@ public enum PageType {
      * @param docStructType
      * @return
      */
-    public static PageType getPagetTypeForDocStructType(String docStructType) {
+    public static PageType getPageTypeForDocStructType(String docStructType) {
         // First choice: Use preferred target page type for this docstruct type, if configured
         String preferredPageTypeName = DataManager.getInstance().getConfiguration().getDocstructTargetPageType(docStructType);
         PageType preferredPageType = PageType.getByName(preferredPageTypeName);
@@ -235,7 +235,7 @@ public enum PageType {
             return PageType.viewOverview;
         }
         // Determine preferred target for the docstruct
-        PageType configuredPageType = PageType.getPagetTypeForDocStructType(docStructType);
+        PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
         if (configuredPageType != null && !pageResolverUrl) {
             return configuredPageType;
         }
