@@ -60,6 +60,7 @@ import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.calendar.CalendarView;
+import de.intranda.digiverso.presentation.model.metadata.MetadataTools;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
@@ -1634,70 +1635,7 @@ public class ViewManager implements Serializable {
      * Generates DC meta tags for the head of a HTML page.
      */
     public String getDublinCoreMetaTags() {
-        StringBuilder result = new StringBuilder(100);
-
-        String title = "-";
-        String creators = "-";
-        String publisher = "-";
-        String yearpublish = "-";
-        String placepublish = "-";
-        String date = null;
-        String identifier = null;
-        String rights = null;
-
-        if (this.topDocument.getMetadataValue("MD_TITLE") != null) {
-            title = topDocument.getMetadataValues("MD_TITLE").iterator().next();
-            result.append("\r\n<meta name=\"DC.title\" content=\"").append(title).append("\">");
-        }
-
-        if (this.topDocument.getMetadataValue("MD_CREATOR") != null) {
-            for (Object fieldValue : topDocument.getMetadataValues("MD_CREATOR")) {
-                String value = (String) fieldValue;
-                if (StringUtils.isEmpty(creators)) {
-                    creators = value;
-                } else {
-                    creators = new StringBuilder(creators).append(", ").append(value).toString();
-                }
-            }
-            result.append("\r\n<meta name=\"DC.creator\" content=\"").append(creators).append("\">");
-        }
-
-        if (this.topDocument.getMetadataValue("MD_PUBLISHER") != null) {
-            publisher = topDocument.getMetadataValue("MD_PUBLISHER");
-            result.append("\r\n<meta name=\"DC.publisher\" content=\"").append(publisher).append("\">");
-        }
-
-        if (this.topDocument.getMetadataValue("MD_YEARPUBLISH") != null) {
-            date = topDocument.getMetadataValue("MD_YEARPUBLISH");
-            result.append("\r\n<meta name=\"DC.date\" content=\"").append(date).append("\">");
-        }
-
-        if (this.topDocument.getMetadataValue(SolrConstants.URN) != null) {
-            identifier = this.topDocument.getMetadataValue(SolrConstants.URN);
-            result.append("\r\n<meta name=\"DC.identifier\" content=\"").append(identifier).append("\">");
-        }
-
-        String sourceString = new StringBuilder(creators).append(": ")
-                .append(title)
-                .append(", ")
-                .append(placepublish)
-                .append(": ")
-                .append(publisher)
-                .append(' ')
-                .append(yearpublish)
-                .append('.')
-                .toString();
-
-        result.append("\r\n<meta name=\"DC.source\" content=\"").append(sourceString).append("\">");
-
-        if (topDocument.getMetadataValue(SolrConstants.ACCESSCONDITION) != null) {
-            rights = this.topDocument.getMetadataValue(SolrConstants.ACCESSCONDITION);
-            if (!SolrConstants.OPEN_ACCESS_VALUE.equals(rights)) {
-                result.append("\r\n<meta name=\"DC.rights\" content=\"").append(rights).append("\">");
-            }
-        }
-
-        return result.toString();
+        return MetadataTools.generateDublinCoreMetaTags(this.topDocument);
     }
 
     /**
@@ -1705,53 +1643,12 @@ public class ViewManager implements Serializable {
      * @return String with tags.
      */
     public String getHighwirePressMetaTags() {
-        StringBuilder result = new StringBuilder(100);
-
-        // citation_title
-        if (this.topDocument.getMetadataValue("MD_TITLE") != null) {
-            String value = topDocument.getMetadataValue("MD_TITLE");
-            result.append("\r\n<meta name=\"citation_title\" content=\"").append(value).append("\">");
-        }
-        // citation_author
-        if (this.topDocument.getMetadataValue("MD_CREATOR") != null) {
-            for (Object fieldValue : topDocument.getMetadataValues("MD_CREATOR")) {
-                String value = (String) fieldValue;
-                result.append("\r\n<meta name=\"citation_author\" content=\"").append(value).append("\">");
-            }
-        }
-        // citation_publication_date
-        if (this.topDocument.getMetadataValue("MD_YEARPUBLISH") != null) {
-            String value = topDocument.getMetadataValue("MD_YEARPUBLISH");
-            result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(value).append("\">");
-        }
-        // citation_isbn
-        if (this.topDocument.getMetadataValue("MD_ISBN") != null) {
-            String value = this.topDocument.getMetadataValue("MD_ISBN");
-            result.append("\r\n<meta name=\"citation_isbn\" content=\"").append(value).append("\">");
-        }
-        // citation_issn
-        if (this.topDocument.getMetadataValue("MD_ISSN") != null) {
-            String value = this.topDocument.getMetadataValue("MD_ISSN");
-            result.append("\r\n<meta name=\"citation_issn\" content=\"").append(value).append("\">");
-        }
-        // citation_volume
-        if (this.topDocument.getMetadataValue(SolrConstants.CURRENTNO) != null) {
-            String value = this.topDocument.getMetadataValue(SolrConstants.CURRENTNO);
-            result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\">");
-        }
-        // TODO citation_pdf_url
         try {
-            if (isFilesOnly()) {
-                String value = "TODO";
-                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\">");
-            }
+            return MetadataTools.generateHighwirePressMetaTags(this.topDocument);
         } catch (IndexUnreachableException e) {
-           logger.error(e.getMessage(), e);
-        } catch (DAOException e) {
             logger.error(e.getMessage(), e);
+            return "";
         }
-
-        return result.toString();
     }
 
     public boolean isHasVersionHistory() throws PresentationException, IndexUnreachableException {

@@ -46,11 +46,13 @@ import de.intranda.digiverso.presentation.model.search.SearchFacets;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
-@Path("/search")
+@Path(SearchHitsNotificationResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
 public class SearchHitsNotificationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchHitsNotificationResource.class);
+    
+    public static final String RESOURCE_PATH = "/search";
 
     @Context
     private HttpServletRequest servletRequest;

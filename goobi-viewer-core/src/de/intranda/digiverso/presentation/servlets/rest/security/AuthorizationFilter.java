@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.servlets.rest.search.SearchHitsNotificationResource;
+import de.intranda.digiverso.presentation.servlets.rest.utils.SitemapResource;
 
 @Provider
 public class AuthorizationFilter implements ContainerRequestFilter {
@@ -67,7 +69,8 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         if (pathInfo == null) {
             return false;
         }
-        if (pathInfo.contains("/sitemap")) {
+        if (pathInfo.contains(SitemapResource.RESOURCE_PATH)
+                || pathInfo.contains(SearchHitsNotificationResource.RESOURCE_PATH + "/sendnotifications")) {
             if (token == null) {
                 logger.trace("No token");
                 return false;

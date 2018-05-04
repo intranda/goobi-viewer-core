@@ -40,11 +40,13 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 /**
  * Resource for outputting the current session info.
  */
-@Path("/sitemap")
+@Path(SitemapResource.RESOURCE_PATH)
 @ViewerRestServiceBinding
 public class SitemapResource {
 
     private static final Logger logger = LoggerFactory.getLogger(SitemapResource.class);
+
+    public static final String RESOURCE_PATH = "/sitemap";
 
     @Context
     private HttpServletRequest servletRequest;
@@ -64,7 +66,8 @@ public class SitemapResource {
     }
 
     /**
-     * @return
+     * @param firstPageOnly
+     * @return Short summary of files created
      */
     @GET
     @Path("/update/{firstPageOnly}")
@@ -74,7 +77,9 @@ public class SitemapResource {
     }
 
     /**
-     * @return
+     * @param outputPath Output path for sitemap files
+     * @param firstPageOnly
+     * @return Short summary of files created
      */
     @GET
     @Path("/update/{outputPath}/{firstPageOnly}")
