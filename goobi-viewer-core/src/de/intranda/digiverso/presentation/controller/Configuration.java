@@ -65,8 +65,10 @@ public final class Configuration extends AbstractConfiguration {
     public Configuration(String configFilePath) {
         // Load default config file
         try {
-            config = new XMLConfiguration(configFilePath);
+            config = new XMLConfiguration();
             config.setReloadingStrategy(new FileChangedReloadingStrategy());
+            config.setDelimiterParsingDisabled(true);
+            config.load(configFilePath);
             if (!config.getFile().exists()) {
                 logger.error("Default configuration file not found: {}", config.getFile().getAbsolutePath());
                 throw new ConfigurationException();
@@ -81,8 +83,10 @@ public final class Configuration extends AbstractConfiguration {
         try {
             File fileLocal = new File(getConfigLocalPath() + "config_viewer.xml");
             if (fileLocal.exists()) {
-                configLocal = new XMLConfiguration(fileLocal);
+                configLocal = new XMLConfiguration();
                 configLocal.setReloadingStrategy(new FileChangedReloadingStrategy());
+                configLocal.setDelimiterParsingDisabled(true);
+                configLocal.load(fileLocal);
                 logger.info("Local configuration file '{}' loaded.", fileLocal.getAbsolutePath());
             } else {
                 configLocal = new XMLConfiguration();
@@ -3094,11 +3098,19 @@ public final class Configuration extends AbstractConfiguration {
     public List<String> getIIIFMetadataFields() {
         return getLocalList("webapi.iiif.metadataFields.field", Collections.EMPTY_LIST);
     }
+    
+    public String getIIIFLogo() {
+        return getLocalString("webapi.iiif.logo", null);
+    }
 
     /**
      * @return
      */
     public String getIIIFNavDateField() {
         return getLocalString("webapi.iiif.navDateField", null);
+    }
+    
+    public String getIIIFAttribution() {
+        return getLocalString("webapi.iiif.attribution", "provided by Goobi viewer");
     }
 }

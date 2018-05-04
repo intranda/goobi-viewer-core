@@ -174,7 +174,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             partnerId = getMetadataValue(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
             sourceDocFormat = getMetadataValue(SolrConstants.SOURCEDOCFORMAT);
             fulltextAvailable = Boolean.valueOf(getMetadataValue(SolrConstants.FULLTEXTAVAILABLE));
-            label = getMetadataValue(SolrConstants.FULLTEXTAVAILABLE);
+            label = getMetadataValue(SolrConstants.LABEL);
             if (StringUtils.isEmpty(label)) {
                 label = getMetadataValue("MD_TITLE");
                 if (StringUtils.isEmpty(label)) {

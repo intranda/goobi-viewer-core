@@ -58,26 +58,15 @@ var viewerJS = ( function() {
         console.info( 'Current Page = ', _defaults.currentPage );
         console.info( 'Current Browser = ', _defaults.browser );
         
-        /*
-         * ! IE10 viewport hack for Surface/desktop Windows 8 bug Copyright 2014-2015
-         * Twitter, Inc. Licensed under MIT
-         * (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-         */
-
-        // See the Getting Started docs for more information:
-        // http://getbootstrap.com/getting-started/#support-ie10-width
-        ( function() {
-            'use strict';
-            
-            if ( navigator.userAgent.match( /IEMobile\/10\.0/ ) ) {
-                var msViewportStyle = document.createElement( 'style' )
-                msViewportStyle.appendChild( document.createTextNode( '@-ms-viewport{width:auto!important}' ) )
-                document.querySelector( 'head' ).appendChild( msViewportStyle )
-            }
-        } )();
-        
         // enable BS tooltips
         $( '[data-toggle="tooltip"]' ).tooltip();
+        
+        // hide tooltips after 3 seconds
+        $( '[data-toggle="tooltip"]' ).on( 'inserted.bs.tooltip', function () {
+        	setTimeout( function() {
+        		$( '[data-toggle="tooltip"]' ).tooltip( 'hide' );
+        	}, 3000 );
+        } );
         
         // render warning if local storage is not useable
         if ( !viewer.localStoragePossible ) {
@@ -305,7 +294,7 @@ var viewerJS = ( function() {
         } );
         
         // make sure only integer values may be entered in input fields of class
-        // 'input-integer'
+        // 'input-float'
         $( '.input-float' ).on( "keypress", function( event ) {
             console.log( event );
             switch ( event.which ) {
@@ -348,14 +337,6 @@ var viewerJS = ( function() {
                     createPageConfig.prevDescription.show();
                 } );
             };
-            // TODO: Für ZLB in der custom.js einbauen
-            // viewerJS.tinyConfig.textcolor_map = [ "FFFFFF", "ZLB-Weiß", "333333",
-            // "ZLB-Schwarz", "dedede", "ZLB-Hellgrau", "727c87", "ZLB-Mittelgrau",
-            // "9a9a9a", "ZLB-Dunkelgrau",
-            // "CD0000", "ZLB-Rot", "92406d", "ZLB-Lila", "6f2c40", "ZLB-Bordeaux",
-            // "ffa100", "ZLB-Orange", "669933", "ZLB-Grün", "3e5d1e", "ZLB-Dunkelgrün",
-            // "a9d0f5",
-            // "ZLB-Hellblau", "28779f", "ZLB-Blau" ];
         }
         
         if ( currentPage === 'overview' ) {

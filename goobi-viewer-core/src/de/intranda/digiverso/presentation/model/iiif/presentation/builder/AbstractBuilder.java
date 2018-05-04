@@ -67,9 +67,7 @@ public abstract class AbstractBuilder {
             SolrConstants.ISANCHOR, SolrConstants.NUMVOLUMES, SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.LOGID, SolrConstants.THUMBPAGENO, SolrConstants.IDDOC_PARENT, SolrConstants.NUMPAGES};
 
     
-    
-    protected static String ATTRIBUTION = "Provided by intranda GmbH";
-    
+        
     private final URI servletURI;
     private final URI requestURI;
     private final Optional<HttpServletRequest> request;
@@ -313,6 +311,17 @@ public abstract class AbstractBuilder {
             fields.add(navDateField);
         }
         return fields;
+    }
+
+    /**
+     * Gets the attribution text configured in webapi.iiif.attribution and returns all translations if any are found, or the 
+     * configured string itself otherwise
+     * 
+     * @return the configured attribution
+     */
+    protected IMetadataValue getAttribution() {
+        String message = DataManager.getInstance().getConfiguration().getIIIFAttribution();
+        return IMetadataValue.getTranslations(message);
     }
 
     

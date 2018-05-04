@@ -79,7 +79,7 @@ public class ThumbnailHandler {
         this.staticImagesPath = staticImagesPath;
     }
 
-    private URI getThumbnailPath(String filename) {
+    public URI getThumbnailPath(String filename) {
         URI uri;
         try {
             uri = new URI(staticImagesPath);

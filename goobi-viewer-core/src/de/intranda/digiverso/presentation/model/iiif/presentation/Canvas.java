@@ -22,7 +22,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.model.iiif.presentation.annotation.Annotation;
-import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.URLOnlySerializer;
+import de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ContentLinkSerializer;
 
 /**
  * @author Florian Alpers
@@ -90,7 +90,7 @@ public class Canvas extends AbstractPresentationModelElement implements IPresent
     /**
      * @return the otherContent
      */
-    @JsonSerialize(using=URLOnlySerializer.class)
+    @JsonSerialize(using=ContentLinkSerializer.class)
     public List<AnnotationList> getOtherContent() {
         return otherContent.isEmpty() ? null : otherContent;
     }

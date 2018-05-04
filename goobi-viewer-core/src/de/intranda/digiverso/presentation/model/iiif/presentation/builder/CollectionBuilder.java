@@ -219,7 +219,7 @@ public class CollectionBuilder extends AbstractBuilder {
         Collection collection = null;
         try {
             collection = new Collection(uri);
-            collection.setAttribution(new SimpleMetadataValue(ATTRIBUTION));
+            collection.setAttribution(getAttribution());
 
             if (baseElement != null) {
                 collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
