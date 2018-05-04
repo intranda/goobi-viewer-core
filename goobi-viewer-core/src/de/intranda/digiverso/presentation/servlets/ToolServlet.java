@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,14 +41,12 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.Sitemap;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
-import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 import de.intranda.viewer.cache.JobManager;
 import de.intranda.viewer.cache.JobManager.Status;
 import de.unigoettingen.sub.commons.util.CacheUtils;
@@ -77,8 +74,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
         boolean fromContentCache = false;
         boolean fromThumbnailCache = false;
         boolean fromPdfCache = false;
-        boolean firstPageOnly = false;
-        String outputPath = null;
 
         if (request.getParameterMap().size() > 0) {
             // Regular URLs
@@ -102,12 +97,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
                         case "fromPdfs":
                             fromPdfCache = Boolean.valueOf(values[0]);
                             break;
-                        case "firstPageOnly":
-                            firstPageOnly = Boolean.valueOf(values[0]);
-                            break;
-                        case "outputPath":
-                            outputPath = values[0];
-                            break;
                         default: // nothing
                     }
                 }
@@ -120,32 +109,6 @@ public class ToolServlet extends HttpServlet implements Serializable {
                 case "emptyCache":
                     int deleted = CacheUtils.deleteFromCache(identifier, fromContentCache, fromThumbnailCache, fromPdfCache);
                     response.getWriter().write(deleted + " cache elements belonging to '" + identifier + "' deleted.");
-                    break;
-                case "updateSitemap":
-                    Sitemap sitemap = new Sitemap();
-                    if (outputPath == null) {
-                        outputPath = getServletContext().getRealPath("/");
-                    }
-                    List<File> sitemapFiles = null;
-                    try {
-                        sitemapFiles = sitemap.generate(ServletUtils.getServletPathWithHostAsUrlFromRequest(request), outputPath, firstPageOnly);
-                    } catch (PresentationException e) {
-                        logger.debug("PresentationException thrown here: {}", e.getMessage());
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                        return;
-                    } catch (IndexUnreachableException e) {
-                        logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                        return;
-                    }
-                    if (sitemapFiles != null) {
-                        response.getWriter().write("Sitemap files created:\n");
-                        for (File file : sitemapFiles) {
-                            response.getWriter().write("- " + file.getName() + "\n");
-                        }
-                    } else {
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    }
                     break;
                 case "fillCache":
                     String answer = performCacheFillerAction(request.getParameterMap());
@@ -179,8 +142,8 @@ public class ToolServlet extends HttpServlet implements Serializable {
                     ServletOutputStream output = response.getOutputStream();
                     try {
                         String[] fields = { SolrConstants.OVERVIEWPAGE, SolrConstants.PI, SolrConstants.SOURCEDOCFORMAT };
-                        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(SolrConstants.ISWORK + ":true", Arrays.asList(
-                                fields));
+                        SolrDocumentList docs =
+                                DataManager.getInstance().getSearchIndex().search(SolrConstants.ISWORK + ":true", Arrays.asList(fields));
                         for (SolrDocument doc : docs) {
                             String overviewPageField = (String) doc.getFieldValue(SolrConstants.OVERVIEWPAGE);
                             if (overviewPageField == null) {
@@ -251,8 +214,9 @@ public class ToolServlet extends HttpServlet implements Serializable {
                 return "Failed to stop Cachefiller in time. Last status: " + cacheFiller.getCacheFillerStatus();
             }
         } else if (parameterMap.containsKey("status")) {
-            StringBuilder sbAnswer = new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus()).append("\n\n")
-                    .append(cacheFiller.getDetailedGeneratorStatus());
+            StringBuilder sbAnswer =
+                    new StringBuilder("Current Cachefiller status is ").append(cacheFiller.getCacheFillerStatus()).append("\n\n").append(
+                            cacheFiller.getDetailedGeneratorStatus());
             return sbAnswer.toString();
         } else if (parameterMap.containsKey("resetTrace")) {
             File traceFile = cacheFiller.getConfiguredTraceFile();
