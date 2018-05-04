@@ -15,12 +15,16 @@
  */
 package de.intranda.digiverso.presentation.model.metadata;
 
+import java.util.List;
+
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 public class MetadataTools {
@@ -107,10 +111,12 @@ public class MetadataTools {
     /**
      * 
      * @param structElement
+     * @param pages
      * @return String containing meta tags
      * @throws IndexUnreachableException
+     * @throws ConfigurationException 
      */
-    public static String generateHighwirePressMetaTags(StructElement structElement) throws IndexUnreachableException {
+    public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages) throws IndexUnreachableException, ConfigurationException {
         if (structElement == null) {
             return "";
         }
@@ -153,11 +159,13 @@ public class MetadataTools {
             String value = structElement.getMetadataValue(SolrConstants.CURRENTNO);
             result.append("\r\n<meta name=\"citation_volume\" content=\"").append(value).append("\">");
         }
-        // TODO citation_pdf_url
-        //            if (isFilesOnly()) {
-        String value = "TODO";
-        result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\">");
-        //            }
+        //  citation_pdf_url
+        if (pages != null && !pages.isEmpty()) {
+            for (PhysicalElement page : pages) {
+                String value = page.getUrl();
+                result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\">");
+            }
+        }
 
         return result.toString();
     }

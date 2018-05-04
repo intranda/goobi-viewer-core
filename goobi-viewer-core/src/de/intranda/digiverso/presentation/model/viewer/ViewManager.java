@@ -1646,8 +1646,14 @@ public class ViewManager implements Serializable {
      */
     public String getHighwirePressMetaTags() {
         try {
-            return MetadataTools.generateHighwirePressMetaTags(this.topDocument);
+            return MetadataTools.generateHighwirePressMetaTags(this.topDocument, isFilesOnly() ? getAllPages() : null);
         } catch (IndexUnreachableException e) {
+            logger.error(e.getMessage(), e);
+            return "";
+        } catch (ConfigurationException e) {
+            logger.error(e.getMessage(), e);
+            return "";
+        } catch (DAOException e) {
             logger.error(e.getMessage(), e);
             return "";
         }
