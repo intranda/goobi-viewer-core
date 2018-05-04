@@ -10,12 +10,12 @@
     <!-- component content -->
 	<composite:implementation>
         <div id="ePub" class="e-pub">
-            <h3><h:outputText value="#{msg.epub_fileList}" /></h3>
+            <h3><h:outputText value="#{msg.bornDigital_fileList}" /></h3>
             
             <!-- ACCESS DENIED -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessForJs}">
                 <p>
-                    <h:outputText value="#{msg.ePub_accessConditionText}" escape="false" />
+                    <h:outputText value="#{msg.bornDigital_accessConditionText}" escape="false" />
                 </p>
             </ui:fragment>
             
