@@ -58,21 +58,21 @@
                 <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
                     <ui:insert name="viewImage">
-                        <ui:include src="/resources/includes/image/image.xhtml" />        
+                        <ui:include src="/resources/includes/object/image.xhtml" />        
                     </ui:insert>
                 </h:panelGroup>
 
                 <!-- VIEW VIDEO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'video'}">
                     <ui:insert name="viewVideo">
-                        <ui:include src="/resources/includes/image/video.xhtml" />        
+                        <ui:include src="/resources/includes/object/video.xhtml" />        
                     </ui:insert>                    
                 </h:panelGroup>
 
                 <!-- VIEW AUDIO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'audio'}">
                     <ui:insert name="viewAudio">
-                        <ui:include src="/resources/includes/image/audio.xhtml" />        
+                        <ui:include src="/resources/includes/object/audio.xhtml" />        
                     </ui:insert>                    
                 </h:panelGroup>
                 
@@ -80,7 +80,7 @@
                 <!-- VIEW TEXT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'text'}">
                     <ui:insert name="viewText">
-                        <ui:include src="/resources/includes/image/text.xhtml" />        
+                        <ui:include src="/resources/includes/object/text.xhtml" />        
                     </ui:insert>
                 </h:panelGroup>
                 
@@ -94,7 +94,7 @@
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.activeDocument.lidoRecord}">
                     <!-- VIEW META MUSEAL -->
                     <ui:insert name="viewMetaMuseal">
-                        <ui:include src="/resources/includes/image/metaMuseal.xhtml" />
+                        <ui:include src="/resources/includes/object/metaMuseal.xhtml" />
                     </ui:insert>
                 </h:panelGroup>
 
@@ -106,7 +106,11 @@
                 </c:forEach>
 
                 <!-- USER COMMENTS -->
-                <viewerComponent:viewImageComments />
+                <ui:insert name="userComments">
+                    <ui:include src="/resources/includes/object/userComments.xhtml" />
+                </ui:insert>
+
+<!--                 <viewerComponent:viewImageComments /> -->
             </div>
             
             <h:panelGroup rendered="#{userBean.loggedIn}">
