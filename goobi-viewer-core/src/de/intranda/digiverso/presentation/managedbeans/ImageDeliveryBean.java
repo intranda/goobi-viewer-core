@@ -458,9 +458,11 @@ public class ImageDeliveryBean implements Serializable {
     }
 
     /**
+     * Returns the url path to the static images folder of the viewer theme (or the viewer itself if no theme is found
+     * 
      * @return the staticImagesURI
      */
-    private String getStaticImagesURI() {
+    public String getStaticImagesURI() {
         if (staticImagesURI == null) {
             init();
         }

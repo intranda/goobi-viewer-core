@@ -1057,14 +1057,24 @@
 		</fields>
         
         <iiif>
-        <!-- A list of all metadata fields which should be included within the IIIF Presentation response for manifests 
-        and ranges representing structural elements
-         -->
+            <!-- A list of all metadata fields which should be included within 
+                the IIIF Presentation response for manifests and ranges representing structural 
+                elements -->
             <metadataFields>
                 <field>MD_*</field>
             </metadataFields>
-            <!-- Solr field to use for IIIF Presentation navDate property, if any -->
+            <!-- Solr field to use for IIIF Presentation navDate property, 
+                if any -->
             <navDateField>MD_DATING</navDateField>
+            <!-- The String to provide as attribution in IIIF manifests. If it is a message key, all translations are
+            provided as attribution values -->
+            <attribution>iiif_attribution</attribution>
+            <!-- URL to an image which should be displayed as logo in IIIF manifests. if the url is a http(s) url, 
+            the url will be used as is. If it is an absolute file url, a contentServer url will be provided, displaying
+            that file. If it is just a filename or relative filepath, it will be assumed to be a file in the 
+            resources/themes/<theme>/images/ folder and linked appropriately 
+            If no logo is configured, the image footer will be used-->
+            <logo>dfgviewer_intranda.jpg</logo>
         </iiif>
 	</webapi>
 
