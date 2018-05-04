@@ -65,7 +65,16 @@ public class SitemapResource {
 
     /**
      * @return
-     * @should return session info correctly
+     */
+    @GET
+    @Path("/update/{firstPageOnly}")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String updateSitemap(@PathParam("dataRepository") boolean firstPageOnly) {
+        return updateSitemap(null, firstPageOnly);
+    }
+
+    /**
+     * @return
      */
     @GET
     @Path("/update/{outputPath}/{firstPageOnly}")
