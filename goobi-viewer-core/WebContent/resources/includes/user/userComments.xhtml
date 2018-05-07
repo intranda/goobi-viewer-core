@@ -78,7 +78,10 @@
                                 <!-- DELETE COMMENT -->
                                 <h:panelGroup rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
                                     <span class="user-comments__comment-content-options-delete">
-                                        <h:commandLink action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}" title="#{msg.userCommentDelete}">
+                                        <h:commandLink
+                                            onclick="if ( !confirm( '#{msg.userCommentDeleteText}' ) ) { return false; }"
+                                            action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}" 
+                                            title="#{msg.userCommentDelete}">
                                             <i class="fa fa-trash-o" aria-hidden="true"></i>
                                             <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                             <f:passThroughAttribute name="data-placement" value="bottom" />
@@ -117,22 +120,21 @@
                 </ui:fragment>                
             </h:form>
         </div>
-        
-        <script>
-        	$('[data-edit="comment"]').on('click', function() {        		
-        		$(this).parent().removeClass('in');
-        		$(this).parents('.user-comments__comment-content-options').find('.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save').addClass('in');
-        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text').removeClass('in');
-        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit').addClass('in');
-        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit textarea').focus();
-        	});
-        	
-        	$('[data-edit="cancel"]').on('click', function() {
-        		$(this).parents('.user-comments__comment-content-options').find('.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save').removeClass('in');
-        		$(this).parents('.user-comments__comment-content-options').find('.user-comments__comment-content-options-edit').addClass('in');
-        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text').addClass('in');
-        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit').removeClass('in');
-        	});
+
+        <script type="text/javascript">
+            $( document ).ready( function() {
+                viewerJS.userComments.init();
+
+                jsf.ajax.addOnEvent( function( data ) {
+                    var ajaxstatus = data.status;
+            
+                    switch ( ajaxstatus ) {
+                    case "success":
+                        viewerJS.userComments.init();
+                        break;
+                    }
+                } );
+            } );
         </script>
     </ui:fragment>
 </ui:composition>

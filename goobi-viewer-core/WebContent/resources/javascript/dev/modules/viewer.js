@@ -2745,101 +2745,6 @@ var viewerJS = ( function( viewer ) {
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = false;
-    var _defaults = {
-        commentCount: 0,
-        editBtnCount: 0,
-        deleteBtnCount: 0,
-        deleteModalCount: 0,
-        btnId: null,
-        commentText: null
-    };
-    
-    viewer.editComment = {
-        /**
-         * Method which initializes all required events to edit comments.
-         * 
-         * @method init
-         * @example
-         * 
-         * <pre>
-         * $( document ).ready( function() {
-         *     viewerJS.editComment.init();
-         * } );
-         * </pre>
-         */
-        init: function() {
-            if ( _debug ) {
-                console.log( '##############################' );
-                console.log( 'viewer.editComment.init' );
-                console.log( '##############################' );
-            }
-            
-            // clear texarea for new comments
-            if ( $( 'textarea[id*="newCommentInput"]' ).val() !== '' ) {
-                $( 'textarea[id*="newCommentInput"]' ).focus().val( '' );
-            }
-            
-            // eventlisteners
-            $( '.comment-edit' ).on( 'click', function() {
-                // hide add new comment field
-                $( '#newCommentField' ).fadeOut();
-                
-                // get button id
-                _defaults.btnId = $( this ).attr( 'id' ).replace( 'commentEditBtn-', '' );
-                
-                // show textfield to edit comment and hide comment
-                $( '#addComment' ).hide();
-                $( '#commentEditComment-' + _defaults.btnId ).prev().hide();
-                $( '#commentEditComment-' + _defaults.btnId ).show();
-                
-                // hide edit button
-                $( '.comment-edit' ).hide();
-            } );
-            
-            $( '.comment-abort' ).on( 'click', function() {
-                // show add new comment field
-                $( '#newCommentField' ).fadeIn();
-                
-                // show edit button and comment
-                $( '.comments-comment-text' ).show();
-                $( '.comment-edit' ).show();
-                $( '#addComment' ).show();
-                
-                // hide textfield to edit comment
-                $( this ).parent().hide();
-            } );
-            
-            // add counting ids to elements
-            $( '.comment-edit' ).each( function() {
-                $( this ).attr( 'id', 'commentEditBtn-' + _defaults.editBtnCount );
-                _defaults.editBtnCount++;
-            } );
-            
-            $( '.comments-comment-edit' ).each( function() {
-                $( this ).attr( 'id', 'commentEditComment-' + _defaults.commentCount );
-                _defaults.commentCount++;
-            } );
-            
-            $.each( $( '.comments-delete-btn' ), function() {
-                $( this ).attr( 'data-toggle', 'modal' ).attr( 'data-target', '#deleteCommentModal-' + _defaults.deleteBtnCount );
-                _defaults.deleteBtnCount++;
-            } );
-            
-            $.each( $( '.deleteCommentModal' ), function() {
-                $( this ).attr( 'id', 'deleteCommentModal-' + _defaults.deleteModalCount );
-                _defaults.deleteModalCount++;
-            } );
-        }
-    };
-    
-    return viewer;
-    
-} )( viewerJS || {}, jQuery );
-
-var viewerJS = ( function( viewer ) {
-    'use strict';
-    
     // default variables
     var _debug = false;
     
@@ -6631,6 +6536,67 @@ var viewerJS = ( function( viewer ) {
                 };
             }
         },
+    };
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
+    var _debug = true;
+    var _defaults = {
+        commentCount: 0,
+        editBtnCount: 0,
+        deleteBtnCount: 0,
+        deleteModalCount: 0,
+        btnId: null,
+        commentText: null
+    };
+    
+    viewer.userComments = {
+        /**
+         * Method which initializes all required events to edit comments.
+         * 
+         * @method init
+         * @example
+         * 
+         * <pre>
+         * $( document ).ready( function() {
+         *     viewerJS.userComments.init();
+         * } );
+         * </pre>
+         */
+        init: function() {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.userComments.init' );
+                console.log( '##############################' );
+            }
+            
+            // clear texarea for new comments
+            if ( $( '#userCommentAdd' ).val() !== '' ) {
+                $( '#userCommentAdd' ).focus().val( '' );
+            }
+            
+            // edit comment
+            $('[data-edit="comment"]').on('click', function() {        		
+        		$(this).parent().removeClass('in');
+        		$(this).parents('.user-comments__comment-content-options').find('.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save').addClass('in');
+        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text').removeClass('in');
+        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit').addClass('in');
+        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit textarea').focus();
+        	});
+        	
+        	// cancel edit
+            $('[data-edit="cancel"]').on('click', function() {
+        		$(this).parents('.user-comments__comment-content-options').find('.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save').removeClass('in');
+        		$(this).parents('.user-comments__comment-content-options').find('.user-comments__comment-content-options-edit').addClass('in');
+        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text').addClass('in');
+        		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit').removeClass('in');
+        	});
+        }
     };
     
     return viewer;
