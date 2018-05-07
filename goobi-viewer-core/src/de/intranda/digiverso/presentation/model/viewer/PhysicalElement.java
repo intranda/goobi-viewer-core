@@ -1082,7 +1082,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public List<Comment> getComments() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, true);
         Collections.sort(comments);
-        Collections.reverse(comments);
+//        Collections.reverse(comments);
         return comments;
     }
 

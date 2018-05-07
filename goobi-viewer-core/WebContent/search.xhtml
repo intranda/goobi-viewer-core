@@ -53,7 +53,7 @@
                         <!-- SEARCH STANDARD INPUT -->
                         <div class="search-standard__input">
                             <div class="search-standard__input-autocomplete">
-                                <p:autoComplete completeMethod="#{searchBean.autocomplete}" value="#{searchBean.searchString}" maxResults="50">
+                                <p:autoComplete id="pfAutocomplete" completeMethod="#{searchBean.autocomplete}" value="#{searchBean.searchString}" maxResults="50" autoHighlight="false">
                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                 </p:autoComplete>
                             </div>
@@ -90,7 +90,7 @@
                         <!-- SEARCH STANDARD ACTION -->
                         <div class="search-standard__action">
                             <h:commandLink styleClass="btn" value="#{msg.reset}" action="#{searchBean.resetSearchAction}" />
-                            <h:commandButton type="submit" styleClass="btn" action="#{searchBean.searchSimple}" value="#{msg.search}">
+                            <h:commandButton id="submitSearch" type="submit" styleClass="btn" action="#{searchBean.searchSimple}" value="#{msg.search}">
                                 <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
                             </h:commandButton>
                         </div>

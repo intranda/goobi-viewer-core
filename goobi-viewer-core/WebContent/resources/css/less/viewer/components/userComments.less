@@ -1,68 +1,195 @@
 /* ==============================================================
    User Comments
-   style declarations for viewImageComments.xhtml
+   style declarations for userComments.xhtml
    ==============================================================*/
-#viewImageComments {
-    margin-bottom: 1.3125rem;
-    h3 {}
-    a {}    
-    // add comment
-    .btn.comment-submit {
-        float: right;
-        margin: 0;
-    }    
-    // existing comments
-    .comments-elem {
-        float: left;
-        width: 100%;
-        .comments-gravatar {
-            float: left;
-            width: 10%;
-            img {
-                display: block;
-                margin: 1rem auto;
-                width: 50%;
-            }
-        }
-        .comments-content {
-            float: left;
-            width: 90%;
-            .comments-header {
-                font-weight: bold;
-                .comments-creator {}
-                .comments-date {}
-                .comments-last-change {
-                    font-weight: normal;
-                    font-style: italic;
-                    font-size: 0.75rem;
-                }
-                .comments-delete-btn {
-                    float: right;
-                    .glyphicon {}
-                }
-            }
-            .comments-comment {
-                .comments-comment-text {}
-                .comments-comment-edit {
-                    display: none;
-                    .form-group {
-                        margin: 0;
-                    }
-                    input {}
-                    .btn {
-                        float: right;
-                        margin: 0.4375rem 0 0 0.4375rem;
-                    }
-                }
-                .comments-edit-comment-btn {
-                    text-align: right;
-                    .btn {
-                        margin: 0.4375rem 0 0 0.4375rem;
-                    }
-                }
-            }
-        }
-    }
+/* USER COMMENTS */
+/* BLOCK */
+.user-comments {
+	margin-top: 30px;
+	/* ELEMENT */
+	&__message-login {
+		margin-bottom: 15px;
+		padding: 15px;
+		border: 1px solid @middlegray;
+		background-color: @lightgray;
+		text-align: center;
+		h3 {}
+		.btn {
+			margin-top: 15px;
+		}
+	}
+	&__comment {
+		display: grid;
+		grid-template-columns: 1fr 3fr;
+		grid-template-areas:
+			"image content"
+			"metadata content";
+		margin-bottom: 21px;
+		border: 1px solid @middlegray;
+	}
+	&__comment-image {
+		grid-area: image;
+		padding: 10px;
+		padding-bottom: 0;
+		text-align: center;
+		background-color: @lightgray;
+		img {
+			border-radius: 50%;
+			border: 5px solid @white;
+			z-index: 999;
+		}
+	}
+	&__comment-metadata {
+		grid-area: metadata;
+		position: relative;
+		padding: 10px;
+		padding-top: 20px;
+		text-align: center;
+		background-color: @lightgray;
+		span {
+			display: block;
+		}
+		&-creator {
+			font-weight: 700;
+		}
+		&-date {
+			font-family: monospace;
+			font-size: 12px;
+		}
+	}
+	&__comment-content {
+		position: relative;
+		grid-area: content;
+		&-options {
+			display: flex;
+    		justify-content: flex-end;
+			padding: 3px 5px;
+			border-bottom: 1px solid @middlegray;
+			background-color: @white;
+			span {
+				align-self: center;
+				margin-left: 10px;
+			}
+			a, button {
+				color: @black;
+				&:hover,
+				&:active,
+				&:focus {
+					color: @black;
+				}
+			}
+			&-last-change {
+				font-family: monospace;
+				font-size: 12px;
+			}
+			&-cancel,
+			&-edit,
+			&-save {
+				display: none;
+				&.in {
+					display: inline;					
+				}
+			}
+			&-cancel {}
+			&-edit {}
+			&-save {}
+			&-delete {}
+			&-text,
+			&-text-edit {
+				position: relative;
+				padding: 10px 15px;
+			}
+			&-text {
+				display: none;
+				&.in {
+					display: block;
+				}
+			}
+			&-text-edit {
+				display: none;
+				&.in {
+					display: block;
+				}
+				textarea {
+					width: 100%;
+					padding: 0;
+					border: none;
+					resize: vertical;
+					opacity: 0.4;
+					transition: all 0.3s ease-in;
+					&:focus {
+						padding: 10px;
+						border: 1px solid @middlegray;
+						opacity: 1;
+					}
+				}
+			}
+		}
+	}
+	&__comment-content-loader {
+		display: none;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-image: url("@{images}/ajax_preloader.gif");
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-color: rgba(255,255,255,0.75);
+        z-index: 10;
+	}
+	&__add-comment {
+		margin-top: 50px;
+		margin-bottom: 15px;
+		label {
+			display: block;
+			position: relative;
+			font-weight: normal;
+			span {
+				display: inline-block;
+				position: absolute;
+				bottom: -15px;
+				left: 0;
+				padding: 3px 10px;
+				color: @white;
+				border-radius: 4px;
+				border: 1px solid @middlegray;
+				background-color: @blue;
+				cursor: pointer;
+				z-index: 999;
+			}
+		}
+		&-add {
+			margin-bottom: 15px;
+			margin-left: 15px;
+			padding: 15px;
+			padding-top: 20px;
+			border: 1px solid @middlegray;
+			background-color: @lightgray;
+			textarea {
+				width: 100%;
+				height: 45px;
+				padding: 10px;
+				border: 1px solid @middlegray;
+				resize: none;
+				background-color: @white;
+				opacity: 0.4;
+				transition: all 0.3s ease-in;
+				&:focus {
+					height: 100px;
+					opacity: 1;
+				}
+			}
+		}
+		&-submit {
+			position: relative;
+			text-align: right;
+			.btn {
+				margin: 0;
+			}
+		}
+	}	
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
