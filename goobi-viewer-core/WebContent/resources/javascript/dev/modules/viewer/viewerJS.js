@@ -285,6 +285,13 @@ var viewerJS = ( function() {
             this.nerFacetting.init( nerFacettingConfig );
         }
         
+        // fire search query in autocomplete on enter
+        $( '#pfAutocomplete_input' ).on( 'keyup', function( event ) {
+        	if ( event.keyCode == 13 ) {
+        		$( '#submitSearch' ).click();
+        	}
+        });
+        
         // make sure only integer values may be entered in input fields of class
         // 'input-integer'
         $( '.input-integer' ).on( "keypress", function( event ) {
