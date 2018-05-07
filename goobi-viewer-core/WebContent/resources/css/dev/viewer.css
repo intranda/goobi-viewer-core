@@ -2358,16 +2358,18 @@ div.mce-fullscreen {
       grid-template-columns: 1fr 3fr;
   grid-template-areas: "image content" "metadata content";
   margin-bottom: 21px;
+  border: 1px solid #ccc;
 }
 .user-comments__comment-image {
   grid-area: image;
+  padding: 10px;
+  padding-bottom: 0;
+  text-align: center;
+  background-color: #eee;
 }
 .user-comments__comment-image img {
-  position: relative;
-  bottom: -20px;
-  left: 0;
   border-radius: 50%;
-  border: 10px solid #fff;
+  border: 5px solid #fff;
   z-index: 999;
 }
 .user-comments__comment-metadata {
@@ -2389,6 +2391,7 @@ div.mce-fullscreen {
   font-size: 12px;
 }
 .user-comments__comment-content {
+  position: relative;
   grid-area: content;
 }
 .user-comments__comment-content-options {
@@ -2437,33 +2440,6 @@ div.mce-fullscreen {
   position: relative;
   padding: 10px 15px;
 }
-.user-comments__comment-content-options-text:before,
-.user-comments__comment-content-options-text-edit:before,
-.user-comments__comment-content-options-text:after,
-.user-comments__comment-content-options-text-edit:after {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-width: 8px;
-  border-style: solid;
-  border-color: transparent;
-}
-.user-comments__comment-content-options-text:before,
-.user-comments__comment-content-options-text-edit:before {
-  top: 2px;
-  left: 3px;
-  border-bottom-color: #ccc;
-  transform: rotate(135deg);
-}
-.user-comments__comment-content-options-text:after,
-.user-comments__comment-content-options-text-edit:after {
-  top: -9px;
-  left: -9px;
-  border-bottom-color: #fff;
-  transform: rotate(-45deg);
-}
 .user-comments__comment-content-options-text {
   display: none;
 }
@@ -2488,6 +2464,19 @@ div.mce-fullscreen {
   padding: 10px;
   border: 1px solid #ccc;
   opacity: 1;
+}
+.user-comments__comment-content-loader {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: url("../../images/ajax_preloader.gif");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: rgba(255, 255, 255, 0.75);
+  z-index: 10;
 }
 .user-comments__add-comment {
   margin-top: 50px;

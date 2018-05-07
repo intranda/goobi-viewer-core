@@ -6552,14 +6552,9 @@ var viewerJS = ( function( viewer ) {
 var viewerJS = ( function( viewer ) {
     'use strict';
     
-    var _debug = true;
+    var _debug = false;
     var _defaults = {
-        commentCount: 0,
-        editBtnCount: 0,
-        deleteBtnCount: 0,
-        deleteModalCount: 0,
-        btnId: null,
-        commentText: null
+        commentEditLoader: '.user-comments__comment-content-loader'
     };
     
     viewer.userComments = {
@@ -6603,6 +6598,25 @@ var viewerJS = ( function( viewer ) {
         		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text').addClass('in');
         		$(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit').removeClass('in');
         	});
+            
+            // show/hide loader on AJAX calls
+            $('[data-edit="save"]').on('click', function() {
+            	window.currContent = $( this ).parents('.user-comments__comment-content');
+            	window.currContent.find( _defaults.commentEditLoader ).show();
+        	});
+            
+            if ( $( _defaults.commentEditLoader ).is(":visible") ) {
+            	jsf.ajax.addOnEvent( function( data ) {
+            		var ajaxstatus = data.status;
+            		
+            		switch ( ajaxstatus ) {    
+            		case "success":
+            			window.currContent.find( _defaults.commentEditLoader ).hide();
+            			break;
+            		}
+            	} );            	
+            }
+            
         }
     };
     

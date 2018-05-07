@@ -47,48 +47,56 @@
                         
                         <!-- COMMENT CONTENT -->
                         <div class="user-comments__comment-content">
+                            <!-- CONTENT LOADER -->
+                            <div class="user-comments__comment-content-loader"></div>
+                        
                             <!-- COMMENT OPTIONS -->
-                            <div class="user-comments__comment-content-options">
-                                <!-- LAST CHANGE -->
-                                <h:panelGroup rendered="#{comment.dateUpdated != null}" styleClass="user-comments__comment-content-options-last-change">
-                                    #{msg.lastEdited} #{navigationHelper.getLocalDate(comment.dateUpdated)}
-                                </h:panelGroup>
-                                
-                                <!-- EDIT COMMENT -->
-                                <ui:fragment rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
-                                    <span class="user-comments__comment-content-options-save">
-                                        <h:commandLink action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}" title="#{msg.userCommentSave}">
-                                            <i class="fa fa-floppy-o" aria-hidden="true"></i>
-                                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                            <f:passThroughAttribute name="data-placement" value="bottom" />
-                                        </h:commandLink>
-                                    </span>
-                                    <span class="user-comments__comment-content-options-cancel">
-                                        <button type="button" class="btn-clean" title="#{msg.userCommentEditCancel}" data-edit="cancel" data-toggle="tooltip" data-placement="bottom">
-                                            <i class="fa fa-ban" aria-hidden="true"></i>
-                                        </button>
-                                    </span>
-                                    <span class="user-comments__comment-content-options-edit in">
-                                        <button type="button" class="btn-clean" title="#{msg.userCommentEdit}" data-edit="comment" data-toggle="tooltip" data-placement="bottom">
-                                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                                        </button>
-                                    </span>
-                                </ui:fragment>
-                                
-                                <!-- DELETE COMMENT -->
-                                <h:panelGroup rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
-                                    <span class="user-comments__comment-content-options-delete">
-                                        <h:commandLink
-                                            onclick="if ( !confirm( '#{msg.userCommentDeleteText}' ) ) { return false; }"
-                                            action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}" 
-                                            title="#{msg.userCommentDelete}">
-                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                            <f:passThroughAttribute name="data-toggle" value="tooltip" />
-                                            <f:passThroughAttribute name="data-placement" value="bottom" />
-                                        </h:commandLink>
-                                    </span>
-                                </h:panelGroup>
-                            </div>
+                            <ui:fragment rendered="#{userBean.loggedIn or comment.dateUpdated != null}">
+                                <div class="user-comments__comment-content-options">
+                                    <!-- LAST CHANGE -->
+                                    <h:panelGroup rendered="#{comment.dateUpdated != null}" styleClass="user-comments__comment-content-options-last-change">
+                                        #{msg.lastEdited} #{navigationHelper.getLocalDate(comment.dateUpdated)}
+                                    </h:panelGroup>
+                                    
+                                    <!-- EDIT COMMENT -->
+                                    <ui:fragment rendered="#{userBean.user == comment.owner or userBean.user.superuser}">
+                                        <span class="user-comments__comment-content-options-save">
+                                            <h:commandLink action="#{activeDocumentBean.viewManager.currentPage.updateCommentAction(comment)}" title="#{msg.userCommentSave}">
+                                                <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                <f:passThroughAttribute name="data-placement" value="bottom" />
+                                                <f:passThroughAttribute name="data-edit" value="save" />
+                                                <f:ajax execute="userCommentEditableText" render="@form" />
+                                            </h:commandLink>
+                                        </span>
+                                        <span class="user-comments__comment-content-options-cancel">
+                                            <button type="button" class="btn-clean" title="#{msg.userCommentEditCancel}" data-edit="cancel" data-toggle="tooltip" data-placement="bottom">
+                                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                        <span class="user-comments__comment-content-options-edit in">
+                                            <button type="button" class="btn-clean" title="#{msg.userCommentEdit}" data-edit="comment" data-toggle="tooltip" data-placement="bottom">
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                            </button>
+                                        </span>
+                                    </ui:fragment>
+                                    
+                                    <!-- DELETE COMMENT -->
+                                    <ui:fragment rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
+                                        <span class="user-comments__comment-content-options-delete">
+                                            <h:commandLink
+                                                onclick="if ( !confirm( '#{msg.userCommentDeleteText}' ) ) { return false; }"
+                                                action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}" 
+                                                title="#{msg.userCommentDelete}">
+                                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
+                                                <f:passThroughAttribute name="data-placement" value="bottom" />
+                                                <f:ajax render="@form" />
+                                            </h:commandLink>
+                                        </span>
+                                    </ui:fragment>
+                                </div>
+                            </ui:fragment>
                             
                             <!-- COMMENT TEXT -->
                             <div class="user-comments__comment-content-options-text in">
@@ -97,7 +105,7 @@
                             
                             <!-- COMMENT TEXT EDIT -->
                             <div class="user-comments__comment-content-options-text-edit">
-                                <h:inputTextarea value="#{comment.text}" />
+                                <h:inputTextarea id="userCommentEditableText" value="#{comment.text}" />
                             </div>
                         </div>
                     </div>
@@ -113,8 +121,13 @@
                             <h:inputTextarea id="userCommentAdd" value="#{activeDocumentBean.viewManager.currentPage.currentComment.text}" />
                         </div>
                         <div class="user-comments__add-comment-submit">
-                            <h:commandButton rendered="#{activeDocumentBean.viewManager.currentPage.currentComment.id == null}"
-                                action="#{activeDocumentBean.viewManager.currentPage.createNewCommentAction(userBean.user)}" styleClass="btn" value="#{msg.addNoteText}" />
+                            <h:commandButton 
+                                rendered="#{activeDocumentBean.viewManager.currentPage.currentComment.id == null}"
+                                action="#{activeDocumentBean.viewManager.currentPage.createNewCommentAction(userBean.user)}" 
+                                styleClass="btn" 
+                                value="#{msg.addNoteText}">
+                                <f:ajax execute="userCommentAdd" render="@form" />
+                            </h:commandButton>
                         </div>
                     </div>                        
                 </ui:fragment>                
