@@ -1137,6 +1137,13 @@
 		<!-- Piwik site ID -->
 		<siteID>1</siteID>
 	</piwik>
+	
+	<sitemap>
+	   <!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
+       <sitelinksField>YEAR</sitelinksField>
+       <!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)-->	
+	   <sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
+	</sitemap>
 
 	<!-- Web API configuration -->
 	<webapi>

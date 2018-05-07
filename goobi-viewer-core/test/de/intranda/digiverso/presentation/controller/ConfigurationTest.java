@@ -2344,7 +2344,6 @@ public class ConfigurationTest {
      */
     @Test
     public void isDisplayAdditionalMetadataEnabled_shouldReturnCorrectValue() throws Exception {
-
         Assert.assertFalse(DataManager.getInstance().getConfiguration().isDisplayAdditionalMetadataEnabled());
     }
 
@@ -2383,5 +2382,23 @@ public class ConfigurationTest {
     @Test
     public void testIsDoublePageModeEnabled_shouldReturnCorrectValue() throws Exception {
         Assert.assertTrue(DataManager.getInstance().getConfiguration().isDoublePageModeEnabled());
+    }
+
+    /**
+     * @see Configuration#getSitelinksFilterQuery()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSitelinksFilterQuery_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("ISWORK:true", DataManager.getInstance().getConfiguration().getSitelinksFilterQuery());
+    }
+
+    /**
+     * @see Configuration#getSitelinksField()
+     * @verifies return correct value
+     */
+    @Test
+    public void getSitelinksField_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(SolrConstants._CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
     }
 }

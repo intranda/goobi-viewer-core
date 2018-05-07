@@ -736,6 +736,18 @@
 		<view-id value="/adminContentUpload.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+	
+    <url-mapping id="sitelinks">
+        <pattern value="/sitelinks/" />
+        <view-id value="/sitelinks.xhtml" />
+        <action onPostback="false">#{sitelinkBean.resetAction}</action>
+    </url-mapping>
+    
+    <url-mapping id="sitelinks1">
+        <pattern value="/sitelinks/#{sitelinkBean.value}/" />
+        <view-id value="/sitelinks.xhtml" />
+        <action onPostback="false">#{sitelinkBean.searchAction}</action>
+    </url-mapping>
 
 	<!-- ERROR -->
 	<url-mapping id="error">

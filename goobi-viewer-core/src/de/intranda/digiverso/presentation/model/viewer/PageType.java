@@ -202,10 +202,10 @@ public enum PageType {
         }
 
         if (preferredPageType != null) {
-            logger.trace("Found preferred page type: {}", preferredPageType.getName());
+            // logger.trace("Found preferred page type: {}", preferredPageType.getName());
             return preferredPageType;
         } else if (defaultPageType != null) {
-            logger.trace("Found default page type: {}", defaultPageType.getName());
+            // logger.trace("Found default page type: {}", defaultPageType.getName());
             return defaultPageType;
         }
 
