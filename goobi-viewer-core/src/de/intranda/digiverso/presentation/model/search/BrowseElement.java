@@ -1031,7 +1031,7 @@ public class BrowseElement implements Serializable {
      * @return
      */
     private String generateSidebarUrl(String type) {
-        PageType configuredPageType = PageType.getPagetTypeForDocStructType(docStructType);
+        PageType configuredPageType = PageType.getPageTypeForDocStructType(docStructType);
 
         StringBuilder sb = new StringBuilder();
         if (anchor) {

@@ -1187,8 +1187,10 @@ public class ViewManager implements Serializable {
     /**
      * Returns the PURL for the current page (either via the URN resolver or a pretty URL)
      *
-     * @return
+     * @return PURL for the current page
      * @throws IndexUnreachableException
+     * @should generate purl via urn correctly
+     * @should generate purl without urn correctly
      */
     public String getPersistentUrl(String urn) throws IndexUnreachableException {
         if (persistentUrl == null) {
@@ -1204,15 +1206,20 @@ public class ViewManager implements Serializable {
                     persistentUrl = url.toString();
                 }
             } else {
-                if (isHasPages()) {
-                    url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                    url.append('/').append(PageType.viewImage.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append(
-                            '/');
-                } else {
-                    url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-                    url.append('/').append(PageType.viewMetadata.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append(
-                            '/');
+                // Prefer configured target page type for the docstruct type
+                PageType pageType = null;
+                if (topDocument != null) {
+                    pageType = PageType.getPageTypeForDocStructType(topDocument.getDocStructType());
                 }
+                if (pageType == null) {
+                    if (isHasPages()) {
+                        pageType = PageType.viewImage;
+                    } else {
+                        pageType = PageType.viewMetadata;
+                    }
+                }
+                url.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
+                url.append('/').append(pageType.getName()).append('/').append(getPi()).append('/').append(currentImageOrder).append('/');
                 persistentUrl = url.toString();
             }
             logger.trace("PURL: {}", persistentUrl);

@@ -1288,9 +1288,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://sammlungen.uni-goettingen.de/viewer2/" />
-		<property name="solr.url" value="http://sammlungen.uni-goettingen.de/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fsammlungen.uni-goettingen.de%2Fviewer2%2Foai" />
+		<property name="server.url" value="https://sammlungen.uni-goettingen.de/viewer2/" />
+		<property name="solr.url" value="https://sammlungen.uni-goettingen.de/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fsammlungen.uni-goettingen.de%2Fviewer2%2Foai" />
 		<property name="theme" value="gaugsammlungen" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />

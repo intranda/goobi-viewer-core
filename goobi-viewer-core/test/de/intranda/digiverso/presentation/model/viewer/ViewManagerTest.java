@@ -15,16 +15,38 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
+import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.managedbeans.ContextMocker;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
+import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.EagerPageLoader;
 
 public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+
+        // Initialize the instance with a custom config file
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
+    }
 
     /**
      * @see ViewManager#getPage(int)
@@ -180,6 +202,41 @@ public class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         String url = viewManager.getPdfPartDownloadLink();
         String expect = "image/PPN517154005/00000014.tif$00000015.tif$00000016.tif/full/max/0/PPN517154005_13-15.pdf";
         Assert.assertTrue("expeted url to contain " + expect + " but was " + url, url.contains(expect));
-//                "?action=pdf&images=PPN517154005/00000014.tif$PPN517154005/00000015.tif$PPN517154005/00000016.tif&targetFileName=PPN517154005_13-15.pdf"));
+        //                "?action=pdf&images=PPN517154005/00000014.tif$PPN517154005/00000015.tif$PPN517154005/00000016.tif&targetFileName=PPN517154005_13-15.pdf"));
+    }
+
+    /**
+     * @see ViewManager#getPersistentUrl(String)
+     * @verifies generate purl via urn correctly
+     */
+    @Test
+    public void getPersistentUrl_shouldGeneratePurlViaUrnCorrectly() throws Exception {
+        StructElement se = new StructElement();
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        String purl = viewManager.getPersistentUrl("urn:nbn:foo:bar-1234");
+        Assert.assertEquals("urnResolver_valueurn:nbn:foo:bar-1234", purl);
+    }
+
+    /**
+     * @see ViewManager#getPersistentUrl(String)
+     * @verifies generate purl without urn correctly
+     */
+    @Test
+    public void getPersistentUrl_shouldGeneratePurlWithoutUrnCorrectly() throws Exception {
+        String pi = "PPN123";
+        String docstructType = "Catalogue";
+
+        StructElement se = new StructElement(123L);
+        se.setDocStructType(docstructType);
+        se.getMetadataFields().put(SolrConstants.PI_TOPSTRUCT, Collections.singletonList(pi));
+
+        ViewManager viewManager = new ViewManager(se, new EagerPageLoader(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
+        viewManager.setCurrentImageNo(1);
+        Assert.assertEquals(docstructType, viewManager.getTopDocument().getDocStructType());
+        Assert.assertEquals(pi, viewManager.getPi());
+        Assert.assertEquals(1, viewManager.getCurrentImageNo());
+
+        String purl = viewManager.getPersistentUrl(null);
+        Assert.assertEquals("/toc/PPN123/1/", purl);
     }
 }
