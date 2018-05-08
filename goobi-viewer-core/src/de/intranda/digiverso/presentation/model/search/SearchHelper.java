@@ -1722,7 +1722,6 @@ public final class SearchHelper {
 
                 // Identify any fields that only exist in page docs and enable the page search mode
                 boolean searchInFulltext = false;
-                boolean searchInNonDocstructMetadata = false;
                 for (SearchQueryItem item : group.getQueryItems()) {
                     if (item.getField() == null) {
                         continue;
@@ -1731,11 +1730,6 @@ public final class SearchHelper {
                         case SolrConstants.FULLTEXT:
                         case SearchQueryItem.ADVANCED_SEARCH_ALL_FIELDS:
                             searchInFulltext = true;
-                            break;
-                        default:
-                            if (!SolrConstants.DOCSTRCT.equals(item.getField())) {
-                                searchInNonDocstructMetadata = true;
-                            }
                             break;
                     }
                 }
@@ -1757,7 +1751,6 @@ public final class SearchHelper {
                         if (sbGroup.length() > 0) {
                             if (searchInFulltext) {
                                 // When also searching in page document fields, the operator must be 'OR'
-                                // With the exception of the only other field being DOCSTRCT
                                 sbGroup.append(" OR ");
                             } else {
                                 sbGroup.append(' ').append(group.getOperator().name()).append(' ');
