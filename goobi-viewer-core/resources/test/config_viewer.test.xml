@@ -309,7 +309,8 @@
 		</pageTypes>
 		
         <!-- docstructTargetPageTypes: Overrides the default target view URL for given docstruct types.
-             An optinal _DEFAULT configuration can be used for all docstruct types without an explicit configuration. -->
+             An optinal _DEFAULT configuration can be used for all docstruct types without an explicit configuration.
+             These targets are also used for PURL generation. -->
         <docstructTargetPageTypes>
             <Catalogue>toc</Catalogue>
         </docstructTargetPageTypes>
