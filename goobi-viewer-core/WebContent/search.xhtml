@@ -53,7 +53,7 @@
                         <!-- SEARCH STANDARD INPUT -->
                         <div class="search-standard__input">
                             <div class="search-standard__input-autocomplete">
-                                <p:autoComplete id="pfAutocomplete" completeMethod="#{searchBean.autocomplete}" value="#{searchBean.searchString}" maxResults="50" autoHighlight="false">
+                                <p:autoComplete id="pfAutocomplete" completeMethod="#{searchBean.autocomplete}" value="#{searchBean.searchString}" maxResults="15" minQueryLength="3" autoHighlight="false">
                                     <f:passThroughAttribute name="placeholder" value="#{msg.searchFieldDemoText}" />
                                 </p:autoComplete>
                             </div>

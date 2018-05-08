@@ -28,15 +28,12 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -180,7 +177,7 @@ public class ViewerResourceBundle extends ResourceBundle {
     /**
      * 
      * @param locale
-     * @return
+     * @return The resource bundle
      */
     private static ResourceBundle loadLocalResourceBundle(final Locale locale) {
         File file = new File(DataManager.getInstance().getConfiguration().getLocalRessourceBundleFile());
@@ -209,19 +206,21 @@ public class ViewerResourceBundle extends ResourceBundle {
     public static String getTranslation(final String key, Locale locale) {
         return getTranslation(key, locale, true);
     }
-    
+
     /**
      * 
      * @param text
      * @param locale
-     * @return
+     * @param useFallback If true, get default locale translation if there is none for the given locale
+     * @return Translated message key
      */
     public static String getTranslation(final String key, Locale locale, boolean useFallback) {
         //        logger.trace("Translation for: {}", key);
         checkAndLoadDefaultResourceBundles();
         locale = checkAndLoadResourceBundles(locale); // If locale is null, the return value will be the current locale
         String value = getTranslation(key, defaultBundles.get(locale), localBundles.get(locale));
-        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale) && !defaultLocale.equals(locale)) {
+        if (useFallback && StringUtils.isEmpty(value) && defaultLocale != null && defaultBundles.containsKey(defaultLocale)
+                && !defaultLocale.equals(locale)) {
             value = getTranslation(key, defaultBundles.get(defaultLocale), localBundles.get(defaultLocale));
         }
         if (value == null) {
@@ -237,7 +236,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * @param key Message key
      * @param fallbackBundle Fallback bundle if no value is found in preferredBundle
      * @param preferredBundle Check for a translation in this bundle first
-     * @return
+     * @return Translated message key
      */
     protected static String getTranslation(String key, ResourceBundle fallbackBundle, ResourceBundle preferredBundle) {
         if (key != null) {
@@ -245,9 +244,6 @@ public class ViewerResourceBundle extends ResourceBundle {
             if (key.endsWith("*")) {
                 key = key.substring(0, key.length() - 1);
             }
-            //            if (key.matches(".*(_LANG_\\w{2,3})$")) {
-            //                key = key.substring(0, key.lastIndexOf("_LANG_"));
-            //            }
 
             if (preferredBundle != null) {
                 String value = getTranslationFromBundle(key, preferredBundle);
@@ -279,7 +275,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * 
      * @param key
      * @param bundle
-     * @return
+     * @return Translated message key
      */
     private static String getTranslationFromBundle(String key, ResourceBundle bundle) {
         if (key == null) {
@@ -352,7 +348,7 @@ public class ViewerResourceBundle extends ResourceBundle {
      * Removes the "zzz" marker from the given string.
      * 
      * @param value
-     * @return
+     * @return Cleaned-up value
      */
     public static String cleanUpTranslation(String value) {
         if (value == null) {
@@ -391,7 +387,6 @@ public class ViewerResourceBundle extends ResourceBundle {
     }
 
     public static List<Locale> getAllLocales() {
-
         if (allLocales == null) {
             Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
             try (Stream<Path> messageFiles =
@@ -427,5 +422,4 @@ public class ViewerResourceBundle extends ResourceBundle {
 
         return allLocales;
     }
-
 }

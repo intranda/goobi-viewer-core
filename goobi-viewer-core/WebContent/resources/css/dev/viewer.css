@@ -4014,6 +4014,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* AUTOCOMPLETE PANEL */
 .ui-autocomplete-panel {
+  font-size: 12px;
   border: 1px solid #eee;
   border-radius: 0;
   box-shadow: none;
