@@ -25,6 +25,7 @@
 				    <h:outputText value=" " />
 				</ui:repeat>
 			</div>
+			<br />
 			<div id="hits">
                 <c:forEach var="hit" items="#{sitelinkBean.hits}" varStatus="status">
                     <a href="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}"> 
