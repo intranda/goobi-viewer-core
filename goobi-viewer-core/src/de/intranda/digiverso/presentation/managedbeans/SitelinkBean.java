@@ -26,6 +26,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -126,7 +127,8 @@ public class SitelinkBean implements Serializable {
             return "";
         }
 
-        String[] fields = { SolrConstants.PI, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.MIMETYPE };
+        String[] fields = { SolrConstants.PI, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.MIMETYPE,
+                SolrConstants.THUMBNAIL };
         String query = SearchHelper.buildFinalQuery(field + ":" + value + (filterQuery != null ? " AND " + filterQuery : ""), false);
         logger.trace("q: {}", query);
         //        hits = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null);
@@ -147,7 +149,9 @@ public class SitelinkBean implements Serializable {
                 }
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                PageType pageType = PageType.determinePageType(docStructType, null, false, false, false, false);
+                boolean hasImages =
+                        doc.containsKey(SolrConstants.THUMBNAIL) && !StringUtils.isEmpty((String) doc.getFieldValue(SolrConstants.THUMBNAIL));
+                PageType pageType = PageType.determinePageType(docStructType, null, false, hasImages, false, false);
                 hits.add(new StringPair(label, pageType.getName() + "/" + pi + "/1/"));
             }
         }
