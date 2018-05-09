@@ -2208,24 +2208,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getTranskribusUserName()
-     * @verifies return correct value
-     */
-    @Test
-    public void getTranskribusUserName_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("viewer@intranda.com", DataManager.getInstance().getConfiguration().getTranskribusUserName());
-    }
-
-    /**
-     * @see Configuration#getTranskribusPassword()
-     * @verifies return correct value
-     */
-    @Test
-    public void getTranskribusPassword_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("ChKjcmAdhQcshR3k", DataManager.getInstance().getConfiguration().getTranskribusPassword());
-    }
-
-    /**
      * @see Configuration#getTranskribusDefaultCollection()
      * @verifies return correct value
      */
