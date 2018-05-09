@@ -33,6 +33,6 @@ public class SitelinkBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     public void getAvailableValuesForField_shouldReturnAllExistingValuesForTheGivenField() throws Exception {
         SitelinkBean sb = new SitelinkBean();
         List<String> values = sb.getAvailableValuesForField("MD_YEARPUBLISH", SolrConstants.ISWORK + ":true");
-        Assert.assertEquals(30, values.size());
+        Assert.assertEquals(33, values.size());
     }
 }
