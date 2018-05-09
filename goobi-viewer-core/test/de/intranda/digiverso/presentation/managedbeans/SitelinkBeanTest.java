@@ -20,10 +20,11 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 
-public class SitelinkBeanTest {
-    
+public class SitelinkBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+
     /**
      * @see SitelinkBean#getAvailableValuesForField(String,String)
      * @verifies return all existing values for the given field
