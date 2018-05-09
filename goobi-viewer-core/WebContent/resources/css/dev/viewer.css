@@ -6932,11 +6932,11 @@ div[id*="-Modal"] .email-form .form-group {
   /* BACK */
 }
 .widget-bookshelf-list ul {
-  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ccc;
 }
 .widget-bookshelf-list__back {
   padding-top: 10px;
-  border-top: 1px solid #ccc;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
