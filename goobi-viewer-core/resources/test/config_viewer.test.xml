@@ -1016,8 +1016,8 @@
 	
 	<!-- Transkribus settings (enabled: default false) -->
     <transkribus enabled="true">
-        <userName>viewer@intranda.com</userName>
-        <password>ChKjcmAdhQcshR3k</password>
+        <userName></userName>
+        <password></password>
         <defaultCollection>intranda_viewer</defaultCollection>
         <!-- URL of the Transkribus REST API. This can be changed to the test API, if necessary. Default value is the production API URL. -->
         <restApiUrl>https://transkribus.eu/TrpServerTesting/rest/</restApiUrl>
