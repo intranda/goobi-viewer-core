@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.enterprise.context.SessionScoped;
@@ -49,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
+import de.intranda.digiverso.presentation.exceptions.AuthenticationException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -57,7 +57,6 @@ import de.intranda.digiverso.presentation.faces.validators.PasswordValidator;
 import de.intranda.digiverso.presentation.filters.LoginFilter;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
-import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
@@ -65,7 +64,6 @@ import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.Feedback;
 import de.intranda.digiverso.presentation.servlets.openid.OAuthServlet;
-import de.intranda.digiverso.presentation.servlets.rest.bookshelves.BookshelfResource;
 
 @Named
 @SessionScoped
@@ -139,8 +137,8 @@ public class UserBean implements Serializable {
                 }
                 return "user?faces-redirect=true";
             }
-            Messages.error(Helper.getTranslation("errSendEmail", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errSendEmail", null).replace("{0}",
+                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         } else {
             Messages.error("user_passwordMismatch");
         }
@@ -191,8 +189,8 @@ public class UserBean implements Serializable {
     public String login() throws IndexUnreachableException, PresentationException, DAOException {
         logger.trace("login");
         if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(password)) {
-            User user = User.auth(getEmail(), getPassword());
-            if (user != null) {
+            try {
+                User user = User.auth(getEmail(), getPassword());
                 if (user.isActive() && !user.isSuspended()) {
                     HttpServletRequest request = BeanUtils.getRequest();
                     DataManager.getInstance().getBookshelfManager().addSessionBookshelfToUser(user, request);
@@ -207,9 +205,9 @@ public class UserBean implements Serializable {
                     request.getSession(false).setAttribute("user", user);
                     SearchHelper.updateFilterQuerySuffix(request);
                     // logger.debug("User in session: {}", ((User) session.getAttribute("user")).getEmail());
-                    
+
                     if (StringUtils.isNotEmpty(redirectUrl)) {
-                        if("#".equals(redirectUrl)) {
+                        if ("#".equals(redirectUrl)) {
                             logger.trace("Stay on current page");
                             return "";
                         }
@@ -227,7 +225,7 @@ public class UserBean implements Serializable {
                 } else {
                     Messages.error("errLoginWrong"); // maybe a different error msg?
                 }
-            } else {
+            } catch (AuthenticationException e) {
                 Messages.error("errLoginWrong");
             }
         } else {
@@ -252,21 +250,30 @@ public class UserBean implements Serializable {
             OAuthClientRequest request = null;
             switch (openIdProvider.getName().toLowerCase()) {
                 case "google":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE).setResponseType(ResponseType.CODE.name()
-                            .toLowerCase()).setClientId(openIdProvider.getClientId()).setRedirectURI(BeanUtils
-                                    .getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL).setState(oAuthState).setScope(
-                                            "openid email").buildQueryMessage();
+                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
+                            .setResponseType(ResponseType.CODE.name().toLowerCase())
+                            .setClientId(openIdProvider.getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("openid email")
+                            .buildQueryMessage();
                     break;
                 case "facebook":
-                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK).setClientId(openIdProvider.getClientId())
-                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL).setState(oAuthState)
-                            .setScope("email").buildQueryMessage();
+                    request = OAuthClientRequest.authorizationProvider(OAuthProviderType.FACEBOOK)
+                            .setClientId(openIdProvider.getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("email")
+                            .buildQueryMessage();
                     break;
                 default:
                     // Other providers
-                    request = OAuthClientRequest.authorizationLocation(openIdProvider.getUrl()).setResponseType(ResponseType.CODE.name()
-                            .toLowerCase()).setClientId(openIdProvider.getClientId()).setRedirectURI(BeanUtils
-                                    .getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL).setState(oAuthState).setScope("email")
+                    request = OAuthClientRequest.authorizationLocation(openIdProvider.getUrl())
+                            .setResponseType(ResponseType.CODE.name().toLowerCase())
+                            .setClientId(openIdProvider.getClientId())
+                            .setRedirectURI(BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + OAuthServlet.URL)
+                            .setState(oAuthState)
+                            .setScope("email")
                             .buildQueryMessage();
                     break;
             }
@@ -311,7 +318,7 @@ public class UserBean implements Serializable {
         request.getSession(false).invalidate();
 
         if (StringUtils.isNotEmpty(redirectUrl)) {
-            if("#".equals(redirectUrl)) {
+            if ("#".equals(redirectUrl)) {
                 logger.trace("Stay on current page");
                 return "";
             }
@@ -322,7 +329,7 @@ public class UserBean implements Serializable {
 
             // Do not redirect to user backend pages because LoginFilter won't work here for some reason
             String servletPath = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
-            if (redirectUrl.length() < servletPath.length() ||  !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
+            if (redirectUrl.length() < servletPath.length() || !LoginFilter.isRestrictedUri(redirectUrl.substring(servletPath.length()))) {
                 return redirectUrl;
             }
         }
@@ -460,15 +467,19 @@ public class UserBean implements Serializable {
                 return false;
             }
             String baseUrl = navigationHelper.getApplicationUrl();
-            String activationUrl = new StringBuilder(baseUrl).append("user/activate/").append(user.getEmail()).append('/').append(user
-                    .getActivationKey()).append("/").toString();
+            String activationUrl = new StringBuilder(baseUrl).append("user/activate/")
+                    .append(user.getEmail())
+                    .append('/')
+                    .append(user.getActivationKey())
+                    .append("/")
+                    .toString();
             sb.append(Helper.getTranslation("user_activationEmailBody", null).replace("{0}", baseUrl).replace("{1}", activationUrl).replace("{2}",
                     DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
 
             // Send
             try {
-                if (Helper.postMail(Collections.singletonList(user.getEmail()), Helper.getTranslation("user_activationEmailSubject", null), sb
-                        .toString())) {
+                if (Helper.postMail(Collections.singletonList(user.getEmail()), Helper.getTranslation("user_activationEmailSubject", null),
+                        sb.toString())) {
                     logger.debug("Activation e-mail sent for: {}", user.getEmail());
                     return true;
                 }
@@ -496,17 +507,18 @@ public class UserBean implements Serializable {
             if (user.isActive()) {
                 user.setActivationKey(Helper.generateMD5(String.valueOf(System.currentTimeMillis())));
                 String requesterIp = "???";
-                if (FacesContext.getCurrentInstance().getExternalContext() != null && FacesContext.getCurrentInstance().getExternalContext()
-                        .getRequest() != null) {
+                if (FacesContext.getCurrentInstance().getExternalContext() != null
+                        && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
                     requesterIp = Helper.getIpAddress((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + user.getEmail() + "/" + user.getActivationKey() + "/";
 
                 if (DataManager.getInstance().getDao().updateUser(user)) {
                     try {
-                        if (Helper.postMail(Collections.singletonList(email), Helper.getTranslation("user_retrieveAccountConfirmationEmailSubject",
-                                null), Helper.getTranslation("user_retrieveAccountConfirmationEmailBody", null).replace("{0}", requesterIp).replace(
-                                        "{1}", resetUrl))) {
+                        if (Helper.postMail(Collections.singletonList(email),
+                                Helper.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
+                                Helper.getTranslation("user_retrieveAccountConfirmationEmailBody", null).replace("{0}", requesterIp).replace("{1}",
+                                        resetUrl))) {
                             email = null;
                             Messages.info("user_retrieveAccountConfirmationEmailMessage");
                             return "user?faces-redirect=true";
@@ -518,8 +530,8 @@ public class UserBean implements Serializable {
                         logger.error(e.getMessage(), e);
                     }
                 }
-                Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                        .getFeedbackEmailAddress()));
+                Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}",
+                        DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
                 return "userRetrieveAccount";
             }
 
@@ -552,8 +564,8 @@ public class UserBean implements Serializable {
                 user.setActivationKey(null);
                 try {
                     if (Helper.postMail(Collections.singletonList(email), Helper.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
-                            Helper.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword)) && DataManager
-                                    .getInstance().getDao().updateUser(user)) {
+                            Helper.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
+                            && DataManager.getInstance().getDao().updateUser(user)) {
                         email = null;
                         Messages.info("user_retrieveAccountPasswordResetMessage");
                         return "user?faces-redirect=true";
@@ -565,8 +577,8 @@ public class UserBean implements Serializable {
                     logger.error(e.getMessage(), e);
                 }
             }
-            Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("user_retrieveAccountError", null).replace("{0}",
+                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
             return "user?faces-redirect=true";
         }
 
@@ -656,22 +668,22 @@ public class UserBean implements Serializable {
 
     public String submitFeedbackAction() {
         try {
-            if (Helper.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()), feedback
-                    .getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
+            if (Helper.postMail(Collections.singletonList(DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()),
+                    feedback.getEmailSubject("feedbackEmailSubject"), feedback.getEmailBody("feedbackEmailBody"))) {
                 Messages.info("feedbackSubmitted");
             } else {
                 logger.error("{} could not send feedback.", feedback.getEmail());
-                Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                        .getFeedbackEmailAddress()));
+                Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}",
+                        DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
             }
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}",
+                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         } catch (MessagingException e) {
             logger.error(e.getMessage(), e);
-            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}", DataManager.getInstance().getConfiguration()
-                    .getFeedbackEmailAddress()));
+            Messages.error(Helper.getTranslation("errFeedbackSubmit", null).replace("{0}",
+                    DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
         }
         return "";
     }

@@ -1166,11 +1166,10 @@ public final class Configuration extends AbstractConfiguration {
     public String getMediaFolder() {
         return getLocalString("mediaFolder");
     }
-    
+
     public String getVocabulariesFolder() {
         return getLocalString("vocabularies", "vocabularies");
     }
-
 
     /**
      * 
@@ -1980,8 +1979,17 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    public boolean isHtmlHeadDCMetadata() {
-        return getLocalBoolean("metadata.htmlHeadDCMetadata", false);
+    public boolean isAddDublinCoreMetaTags() {
+        return getLocalBoolean("metadata.addDublinCoreMetaTags", false);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isAddHighwirePressMetaTags() {
+        return getLocalBoolean("metadata.addHighwirePressMetaTags", false);
     }
 
     /**
@@ -3083,13 +3091,13 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     public List<String> getRestrictedImageUrls() {
-        return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.EMPTY_LIST);
+        return getLocalList("viewer.externalContent.restrictedUrls.url", Collections.emptyList());
     }
-    
+
     public List<String> getIIIFMetadataFields() {
-        return getLocalList("webapi.iiif.metadataFields.field", Collections.EMPTY_LIST);
+        return getLocalList("webapi.iiif.metadataFields.field", Collections.emptyList());
     }
-    
+
     public String getIIIFLogo() {
         return getLocalString("webapi.iiif.logo", null);
     }
@@ -3100,8 +3108,24 @@ public final class Configuration extends AbstractConfiguration {
     public String getIIIFNavDateField() {
         return getLocalString("webapi.iiif.navDateField", null);
     }
-    
+
     public String getIIIFAttribution() {
         return getLocalString("webapi.iiif.attribution", "provided by Goobi viewer");
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public String getSitelinksField() {
+        return getLocalString("sitemap.sitelinksField");
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
+    public String getSitelinksFilterQuery() {
+        return getLocalString("sitemap.sitelinksFilterQuery");
     }
 }

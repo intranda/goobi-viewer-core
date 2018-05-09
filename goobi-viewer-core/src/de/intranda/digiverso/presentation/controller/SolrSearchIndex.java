@@ -59,7 +59,6 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
-import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.Tag;
 
 public final class SolrSearchIndex {
@@ -334,26 +333,26 @@ public final class SolrSearchIndex {
 
         return null;
     }
-    
-    /**
-    *   Returns all SolrDocuments matching the given query. If no documents were found, null is returned
-    *
-    * @param query
-    * @param fieldList
-    * @return
-    * @throws PresentationException
-    * @throws IndexUnreachableException
-    * @should return SolrDocumentList containing all hits, or null if no hits are found
-    */
-   public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
-       logger.trace("getDocs: {}", query);
-       SolrDocumentList hits = search(query, fieldList);
-       if (hits.getNumFound() > 0) {
-           return hits;
-       }
 
-       return null;
-   }
+    /**
+     * Returns all SolrDocuments matching the given query. If no documents were found, null is returned
+     *
+     * @param query
+     * @param fieldList
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should return SolrDocumentList containing all hits, or null if no hits are found
+     */
+    public SolrDocumentList getDocs(String query, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+        logger.trace("getDocs: {}", query);
+        SolrDocumentList hits = search(query, fieldList);
+        if (hits.getNumFound() > 0) {
+            return hits;
+        }
+
+        return null;
+    }
 
     /**
      *
@@ -389,7 +388,7 @@ public final class SolrSearchIndex {
         List<Tag> tags = new ArrayList<>();
 
         String query = new StringBuilder(fieldName).append(":*").append(querySuffix).toString();
-        logger.debug("generateFilteredTagCloud query: {}", query);
+        logger.trace("generateFilteredTagCloud query: {}", query);
         // Pattern p = Pattern.compile("\\w+");
         Pattern p = Pattern.compile(Helper.REGEX_WORDS);
         Set<String> stopWords = DataManager.getInstance().getConfiguration().getStopwords();
@@ -402,7 +401,7 @@ public final class SolrSearchIndex {
             solrQuery.setRows(DataManager.getInstance().getConfiguration().getTagCloudSampleSize(fieldName));
             solrQuery.addField(fieldName);
             QueryResponse resp = server.query(solrQuery);
-            logger.debug("query done");
+            logger.trace("query done");
             for (SolrDocument doc : resp.getResults()) {
                 Collection<Object> values = doc.getFieldValues(fieldName);
                 for (Object o : values) {
@@ -698,11 +697,10 @@ public final class SolrSearchIndex {
                 default:
                     if (isLanguageCodedField(fieldName)) {
                         break;
-                    } else {
-                        Map<String, List<String>> mdValues = getMetadataValuesForLanguage(doc, fieldName);
-                        List<IMetadataValue> values = getMultiLanguageMetadata(mdValues);
-                        ret.put(fieldName, values);
                     }
+                    Map<String, List<String>> mdValues = getMetadataValuesForLanguage(doc, fieldName);
+                    List<IMetadataValue> values = getMultiLanguageMetadata(mdValues);
+                    ret.put(fieldName, values);
             }
         }
 
@@ -736,9 +734,8 @@ public final class SolrSearchIndex {
     private static String getLanguage(String fieldName) {
         if (isLanguageCodedField(fieldName)) {
             return Pattern.compile(MULTILANGUAGE_FIELD_REGEX).matcher(fieldName).group(MULTILANGUAGE_FIELD_LANGUAGE_GROUP);
-        } else {
-            return "";
         }
+        return "";
     }
 
     /**
@@ -748,9 +745,8 @@ public final class SolrSearchIndex {
     private static String getBaseFieldName(String fieldName) {
         if (isLanguageCodedField(fieldName)) {
             return Pattern.compile(MULTILANGUAGE_FIELD_REGEX).matcher(fieldName).group(MULTILANGUAGE_FIELD_NAME_GROUP);
-        } else {
-            return fieldName;
         }
+        return fieldName;
     }
 
     /**
@@ -928,9 +924,6 @@ public final class SolrSearchIndex {
         solrQuery.setFacetLimit(-1); // no limit
         try {
             QueryResponse resp = server.query(solrQuery);
-            //            for (SolrDocument doc : resp.getResults()) {
-            //                logger.debug(doc.getFieldNames().toString());
-            //            }
             return resp;
         } catch (SolrServerException e) {
             if (e.getMessage().startsWith("Server refused connection")) {
@@ -1027,19 +1020,22 @@ public final class SolrSearchIndex {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * 
+     * @param fieldValue
+     * @return
+     */
     public static Integer getAsInt(Object fieldValue) {
         if (fieldValue == null) {
             return null;
         }
         if (fieldValue instanceof Integer) {
             return (Integer) fieldValue;
-        } else {
-            try {
-                return Integer.parseInt(fieldValue.toString());
-            } catch (NumberFormatException e) {
-                return null;
-            }
+        }
+        try {
+            return Integer.parseInt(fieldValue.toString());
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

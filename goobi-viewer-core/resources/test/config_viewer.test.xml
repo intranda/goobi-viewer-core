@@ -698,9 +698,11 @@
 			<luceneField>MD_SHELFMARK</luceneField>
 		</browsingMenu>
 
-		<!-- htmlHeadDCMetadata: render dc meta data to html head -->
-		<htmlHeadDCMetadata>true</htmlHeadDCMetadata>
-
+        <!-- addDublinCoreMetaTags: render dc metadata to html head -->
+        <addDublinCoreMetaTags>true</addDublinCoreMetaTags>
+        
+        <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
+        <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
 	</metadata>
 
 	<toc>
@@ -1045,6 +1047,13 @@
 		<!-- Piwik site ID -->
 		<siteID>siteID_value</siteID>
 	</piwik>
+	
+    <sitemap>
+       <!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
+       <sitelinksField>YEAR</sitelinksField>
+       <!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
+       <sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
+    </sitemap>
 
 	<!-- Web API configuration -->
 	<webapi>

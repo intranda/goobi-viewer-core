@@ -75,15 +75,12 @@ public class ConfigurationBean implements Serializable {
      * @return
      */
     public List<IModule> getModules() {
-        return DataManager.getInstance()
-                .getModules();
+        return DataManager.getInstance().getModules();
     }
 
     @Deprecated
     public String getContentServletUrl() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getContentServerWrapperUrl();
+        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
     }
 
     /**
@@ -95,14 +92,12 @@ public class ConfigurationBean implements Serializable {
     public Double getRelativeImageFooterHeight() {
         double height = 0;
 
-        if (!ContentServerConfiguration.getInstance()
-                .getWatermarkUse()) {
+        if (!ContentServerConfiguration.getInstance().getWatermarkUse()) {
             return height;
         }
 
         // Load Height of the Footer from the config_imageFooter.xml
-        String watermarkConfigFilePath = ContentServerConfiguration.getInstance()
-                .getWatermarkConfigFilePath();
+        String watermarkConfigFilePath = ContentServerConfiguration.getInstance().getWatermarkConfigFilePath();
 
         File fileConfigImageFooter = null;
         try {
@@ -121,8 +116,7 @@ public class ConfigurationBean implements Serializable {
 
             // iterate over all nodes and read nodes
             Node topmostelement = xmldoc.getDocumentElement(); // get uppermost
-            if (topmostelement.getNodeName()
-                    .equals("watermarks")) {
+            if (topmostelement.getNodeName().equals("watermarks")) {
                 Node child = topmostelement.getFirstChild();
                 while (child != null && !"watermark".equals(child.getNodeName())) {
                     child = child.getNextSibling();
@@ -131,8 +125,7 @@ public class ConfigurationBean implements Serializable {
                     topmostelement = child;
                 }
             }
-            if (!topmostelement.getNodeName()
-                    .equals("watermark")) {
+            if (!topmostelement.getNodeName().equals("watermark")) {
                 logger.error("Don't get correct xml response - topelement is NOT <watermark>");
             }
 
@@ -177,14 +170,12 @@ public class ConfigurationBean implements Serializable {
     public Integer getImageFooterHeight() {
         int height = 0;
 
-        if (!ContentServerConfiguration.getInstance()
-                .getWatermarkUse()) {
+        if (!ContentServerConfiguration.getInstance().getWatermarkUse()) {
             return height;
         }
 
         // Load Height of the Footer from the config_imageFooter.xml
-        String watermarkConfigFilePath = ContentServerConfiguration.getInstance()
-                .getWatermarkConfigFilePath();
+        String watermarkConfigFilePath = ContentServerConfiguration.getInstance().getWatermarkConfigFilePath();
         File fileConfigImageFooter = null;
         try {
             fileConfigImageFooter = new File(new URI(watermarkConfigFilePath));
@@ -202,8 +193,7 @@ public class ConfigurationBean implements Serializable {
 
             // iterate over all nodes and read nodes
             Node topmostelement = xmldoc.getDocumentElement(); // get uppermost
-            if (topmostelement.getNodeName()
-                    .equals("watermarks")) {
+            if (topmostelement.getNodeName().equals("watermarks")) {
                 Node child = topmostelement.getFirstChild();
                 while (child != null && !"watermark".equals(child.getNodeName())) {
                     child = child.getNextSibling();
@@ -212,8 +202,7 @@ public class ConfigurationBean implements Serializable {
                     topmostelement = child;
                 }
             }
-            if (!topmostelement.getNodeName()
-                    .equals("watermark")) {
+            if (!topmostelement.getNodeName().equals("watermark")) {
                 logger.error("Don't get correct xml response - topelement is NOT <watermark>");
             }
 
@@ -248,23 +237,17 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isShowSidebarEventMetadata() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isShowSidebarEventMetadata();
+        return DataManager.getInstance().getConfiguration().isShowSidebarEventMetadata();
     }
 
     @Deprecated
     public String getContentServerWrapperUrl() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getContentServerWrapperUrl();
+        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
     }
 
     @Deprecated
     public String getContentServerWrapperUrlWithoutLastSlash() {
-        String csWrapperUrl = DataManager.getInstance()
-                .getConfiguration()
-                .getContentServerWrapperUrl();
+        String csWrapperUrl = DataManager.getInstance().getConfiguration().getContentServerWrapperUrl();
         if (csWrapperUrl != null) {
             // delete the last /
             int endIndex = csWrapperUrl.lastIndexOf('/');
@@ -274,21 +257,15 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isBookshelvesEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isBookshelvesEnabled();
+        return DataManager.getInstance().getConfiguration().isBookshelvesEnabled();
     }
 
     public boolean isUserCommentsEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isUserCommentsEnabled();
+        return DataManager.getInstance().getConfiguration().isUserCommentsEnabled();
     }
 
     public static boolean isCmsEnabledStatic() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isCmsEnabled();
+        return DataManager.getInstance().getConfiguration().isCmsEnabled();
     }
 
     public boolean isCmsEnabled() {
@@ -296,33 +273,24 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isUseCustomNavBar() {
-        return isCmsEnabledStatic() && DataManager.getInstance()
-                .getConfiguration()
-                .useCustomNavBar();
+        return isCmsEnabledStatic() && DataManager.getInstance().getConfiguration().useCustomNavBar();
     }
 
     public boolean isMenuBrowsingVisibleInSearchList() {
-        return !DataManager.getInstance()
-                .getConfiguration()
-                .isDisableMenuBrowsingOnSearchList();
+        return !DataManager.getInstance().getConfiguration().isDisableMenuBrowsingOnSearchList();
     }
 
     public boolean useOpenLayers() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useOpenLayers();
+        return DataManager.getInstance().getConfiguration().useOpenLayers();
     }
 
     public boolean useOpenSeadragon() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useOpenSeadragon();
+        return DataManager.getInstance().getConfiguration().useOpenSeadragon();
     }
-    
+
     public boolean useTiles(String pageType, String mimeType) throws ConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
     }
-
 
     public int getFooterHeight(String pageType, String mimeType) throws ConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType(mimeType));
@@ -337,57 +305,39 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean useTiles() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useTiles();
+        return DataManager.getInstance().getConfiguration().useTiles();
     }
 
     public boolean useTilesFullscreen() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useTiles(PageType.viewFullscreen, null);
+        return DataManager.getInstance().getConfiguration().useTiles(PageType.viewFullscreen, null);
     }
 
     public boolean useTilesCrowd() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .useTiles(PageType.editContent, null);
+        return DataManager.getInstance().getConfiguration().useTiles(PageType.editContent, null);
     }
 
     public int getFooterHeight() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getFooterHeight();
+        return DataManager.getInstance().getConfiguration().getFooterHeight();
     }
 
     public int getFooterHeightFullscreen() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getFooterHeight(PageType.viewFullscreen, null);
+        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.viewFullscreen, null);
     }
 
     public int getFooterHeightCrowd() throws ConfigurationException {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getFooterHeight(PageType.editContent, null);
+        return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.editContent, null);
     }
 
     public boolean isRememberImageZoom() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isRememberImageZoom();
+        return DataManager.getInstance().getConfiguration().isRememberImageZoom();
     }
 
     public boolean isRememberImageRotation() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isRememberImageRotation();
+        return DataManager.getInstance().getConfiguration().isRememberImageRotation();
     }
 
     public boolean isDisplayStatistics() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayStatistics();
+        return DataManager.getInstance().getConfiguration().isDisplayStatistics();
     }
 
     /**
@@ -396,9 +346,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isDisplaySearchRssLinks() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplaySearchRssLinks();
+        return DataManager.getInstance().getConfiguration().isDisplaySearchRssLinks();
     }
 
     @Deprecated
@@ -407,9 +355,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean showThumbnailsInToc() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .showThumbnailsInToc();
+        return DataManager.getInstance().getConfiguration().showThumbnailsInToc();
     }
 
     /**
@@ -418,9 +364,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isAdvancedSearchEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isAdvancedSearchEnabled();
+        return DataManager.getInstance().getConfiguration().isAdvancedSearchEnabled();
     }
 
     /**
@@ -429,9 +373,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isTimelineSearchEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isTimelineSearchEnabled();
+        return DataManager.getInstance().getConfiguration().isTimelineSearchEnabled();
     }
 
     /**
@@ -440,99 +382,67 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isCalendarSearchEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isCalendarSearchEnabled();
+        return DataManager.getInstance().getConfiguration().isCalendarSearchEnabled();
     }
 
     public boolean isDisplayBreadcrumbs() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getDisplayBreadcrumbs();
+        return DataManager.getInstance().getConfiguration().getDisplayBreadcrumbs();
     }
 
     public boolean isDisplayMetadataPageLinkBlock() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getDisplayMetadataPageLinkBlock();
+        return DataManager.getInstance().getConfiguration().getDisplayMetadataPageLinkBlock();
     }
 
     public boolean isPagePdfEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isPagePdfEnabled();
+        return DataManager.getInstance().getConfiguration().isPagePdfEnabled();
     }
 
     public String getRssTitle() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getRssTitle();
+        return DataManager.getInstance().getConfiguration().getRssTitle();
     }
 
     public boolean isDisplayTagCloudStartpage() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayTagCloudStartpage();
+        return DataManager.getInstance().getConfiguration().isDisplayTagCloudStartpage();
     }
 
     public boolean isDisplaySearchResultNavigation() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplaySearchResultNavigation();
+        return DataManager.getInstance().getConfiguration().isDisplaySearchResultNavigation();
     }
 
     public boolean isDisplayStructType() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getDisplayStructType();
+        return DataManager.getInstance().getConfiguration().getDisplayStructType();
     }
 
     public boolean isDisplayCollectionBrowsing() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayCollectionBrowsing();
+        return DataManager.getInstance().getConfiguration().isDisplayCollectionBrowsing();
     }
 
     public boolean isDisplayUserNavigation() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayUserNavigation();
+        return DataManager.getInstance().getConfiguration().isDisplayUserNavigation();
     }
 
     public boolean isDisplayTagCloudNavigation() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayTagCloudNavigation();
+        return DataManager.getInstance().getConfiguration().isDisplayTagCloudNavigation();
     }
 
     public boolean isDisplayTitlePURL() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayTitlePURL();
+        return DataManager.getInstance().getConfiguration().isDisplayTitlePURL();
     }
 
     public boolean isSidebarTocVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarTocVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarTocVisible();
     }
 
     public boolean isDisplayEmptyTocInSidebar() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayEmptyTocInSidebar();
+        return DataManager.getInstance().getConfiguration().isDisplayEmptyTocInSidebar();
     }
 
     public boolean isSidebarTocPageNumbersVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getSidebarTocPageNumbersVisible();
+        return DataManager.getInstance().getConfiguration().getSidebarTocPageNumbersVisible();
     }
 
     public boolean isSidebarTocTreeView() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarTocTreeView();
+        return DataManager.getInstance().getConfiguration().isSidebarTocTreeView();
     }
 
     /**
@@ -540,9 +450,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarOverviewLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarOverviewLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible();
     }
 
     /**
@@ -550,9 +458,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarPageLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarPageLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarPageLinkVisible();
     }
 
     /**
@@ -560,9 +466,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarTocLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarTocLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarTocLinkVisible();
     }
 
     /**
@@ -570,9 +474,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarCalendarLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarCalendarLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarCalendarLinkVisible();
     }
 
     /**
@@ -580,9 +482,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarMetadataLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarMetadataLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarMetadataLinkVisible();
     }
 
     /**
@@ -590,9 +490,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarThumbsLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarThumbsLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarThumbsLinkVisible();
     }
 
     /**
@@ -600,9 +498,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarFulltextLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarFulltextLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarFulltextLinkVisible();
     }
 
     /**
@@ -610,9 +506,7 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarDfgLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarDfgLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarDfgLinkVisible();
     }
 
     /**
@@ -620,70 +514,48 @@ public class ConfigurationBean implements Serializable {
      * @should return correct value
      */
     public boolean isSidebarOpacLinkVisible() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSidebarOpacLinkVisible();
+        return DataManager.getInstance().getConfiguration().isSidebarOpacLinkVisible();
     }
 
     public boolean isTocTreeView(String docStructType) {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isTocTreeView(docStructType);
+        return DataManager.getInstance().getConfiguration().isTocTreeView(docStructType);
     }
 
     public int getSidebarTocLengthBeforeCut() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getSidebarTocLengthBeforeCut();
+        return DataManager.getInstance().getConfiguration().getSidebarTocLengthBeforeCut();
     }
 
     public int getImageViewHeight() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getViewImageHeight();
+        return DataManager.getInstance().getConfiguration().getViewImageHeight();
     }
 
     public int getImageViewWidth() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getViewImageWidth();
+        return DataManager.getInstance().getConfiguration().getViewImageWidth();
     }
 
     public int getFullscreenImageHeight() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getFullscreenImageHeight();
+        return DataManager.getInstance().getConfiguration().getFullscreenImageHeight();
     }
 
     public int getFullscreenImageWidth() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getFullscreenImageWidth();
+        return DataManager.getInstance().getConfiguration().getFullscreenImageWidth();
     }
 
     public boolean isDisplayTitleBreadcrumbs() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getDisplayTitleBreadcrumbs();
+        return DataManager.getInstance().getConfiguration().getDisplayTitleBreadcrumbs();
     }
 
     public int getTitleBreadcrumbsMaxTitleLength() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getTitleBreadcrumbsMaxTitleLength();
+        return DataManager.getInstance().getConfiguration().getTitleBreadcrumbsMaxTitleLength();
     }
 
     @Deprecated
     public int getBibdataBreadcrumbsMaxTitleLength() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getBibdataBreadcrumbsMaxTitleLength();
+        return DataManager.getInstance().getConfiguration().getBibdataBreadcrumbsMaxTitleLength();
     }
 
     public boolean isDisplayTimeMatrix() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDisplayTimeMatrix();
+        return DataManager.getInstance().getConfiguration().isDisplayTimeMatrix();
     }
 
     /**
@@ -693,9 +565,7 @@ public class ConfigurationBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public int getTimeMatrixStartYear() throws PresentationException, IndexUnreachableException {
-        String value = DataManager.getInstance()
-                .getConfiguration()
-                .getStartYearForTimeline();
+        String value = DataManager.getInstance().getConfiguration().getStartYearForTimeline();
         if ("MIN".equals(value)) {
             return SearchHelper.getMinMaxYears(null)[0];
         }
@@ -714,9 +584,7 @@ public class ConfigurationBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public int getTimeMatrixEndYear() throws PresentationException, IndexUnreachableException {
-        String value = DataManager.getInstance()
-                .getConfiguration()
-                .getEndYearForTimeline();
+        String value = DataManager.getInstance().getConfiguration().getEndYearForTimeline();
         if ("MAX".equals(value)) {
             return SearchHelper.getMinMaxYears(null)[1];
         }
@@ -729,27 +597,19 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isPiwikTracking() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isPiwikTrackingEnabled();
+        return DataManager.getInstance().getConfiguration().isPiwikTrackingEnabled();
     }
 
     public String getPiwikBaseURL() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getPiwikBaseURL();
+        return DataManager.getInstance().getConfiguration().getPiwikBaseURL();
     }
 
     public String getPiwikSiteID() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getPiwikSiteID();
+        return DataManager.getInstance().getConfiguration().getPiwikSiteID();
     }
 
     public String getAnchorThumbnailMode() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getAnchorThumbnailMode();
+        return DataManager.getInstance().getConfiguration().getAnchorThumbnailMode();
     }
 
     public List<String> getSortFields() {
@@ -757,8 +617,7 @@ public class ConfigurationBean implements Serializable {
                 .getConfiguration()
                 .getSortFields()
                 .stream()
-                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale()
-                        .getLanguage()))
+                .filter(field -> !isLanguageVersionOtherThan(field, BeanUtils.getLocale().getLanguage()))
                 .collect(Collectors.toList());
     }
 
@@ -772,27 +631,19 @@ public class ConfigurationBean implements Serializable {
     }
 
     public int getTocIndentation() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getTocIndentation();
+        return DataManager.getInstance().getConfiguration().getTocIndentation();
     }
 
     public int getSidebarTocIndentation() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getSidebarTocIndentation();
+        return DataManager.getInstance().getConfiguration().getSidebarTocIndentation();
     }
 
     public boolean isPageBrowseEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isPageBrowseEnabled();
+        return DataManager.getInstance().getConfiguration().isPageBrowseEnabled();
     }
 
     public boolean isPageBrowseStep1Visible() {
-        List<Integer> steps = DataManager.getInstance()
-                .getConfiguration()
-                .getPageBrowseSteps();
+        List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
         if (steps != null && steps.size() > 0 && steps.get(0) > 0) {
             return true;
         }
@@ -800,9 +651,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isPageBrowseStep2Visible() {
-        List<Integer> steps = DataManager.getInstance()
-                .getConfiguration()
-                .getPageBrowseSteps();
+        List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
         if (steps != null && steps.size() > 1 && steps.get(1) > 0) {
             return true;
         }
@@ -810,9 +659,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public boolean isPageBrowseStep3Visible() {
-        List<Integer> steps = DataManager.getInstance()
-                .getConfiguration()
-                .getPageBrowseSteps();
+        List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
         if (steps != null && steps.size() > 2 && steps.get(2) > 1) {
             return true;
         }
@@ -820,9 +667,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public int getPageBrowseStep1() {
-        List<Integer> steps = DataManager.getInstance()
-                .getConfiguration()
-                .getPageBrowseSteps();
+        List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
         if (steps != null && steps.size() > 0 && steps.get(0) > 1) {
             return steps.get(0);
         }
@@ -830,9 +675,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public int getPageBrowseStep2() {
-        List<Integer> steps = DataManager.getInstance()
-                .getConfiguration()
-                .getPageBrowseSteps();
+        List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
         if (steps != null && steps.size() > 1 && steps.get(1) > 1) {
             return steps.get(1);
         }
@@ -840,9 +683,7 @@ public class ConfigurationBean implements Serializable {
     }
 
     public int getPageBrowseStep3() {
-        List<Integer> steps = DataManager.getInstance()
-                .getConfiguration()
-                .getPageBrowseSteps();
+        List<Integer> steps = DataManager.getInstance().getConfiguration().getPageBrowseSteps();
         if (steps != null && steps.size() > 2 && steps.get(2) > 1) {
             return steps.get(2);
         }
@@ -850,45 +691,31 @@ public class ConfigurationBean implements Serializable {
     }
 
     public String getReCaptchaSiteKey() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getReCaptchaSiteKey();
+        return DataManager.getInstance().getConfiguration().getReCaptchaSiteKey();
     }
 
     public boolean isUseReCaptcha() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isUseReCaptcha();
+        return DataManager.getInstance().getConfiguration().isUseReCaptcha();
     }
 
     public boolean isTocEpubEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isTocEpubEnabled() && isGeneratePdfInTaskManager();
+        return DataManager.getInstance().getConfiguration().isTocEpubEnabled() && isGeneratePdfInTaskManager();
     }
 
     public boolean isGeneratePdfInTaskManager() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isGeneratePdfInTaskManager();
+        return DataManager.getInstance().getConfiguration().isGeneratePdfInTaskManager();
     }
 
     public boolean isDocHierarchyPdfEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDocHierarchyPdfEnabled();
+        return DataManager.getInstance().getConfiguration().isDocHierarchyPdfEnabled();
     }
 
     public boolean isShowSearchInItem() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSearchInItemEnabled();
+        return DataManager.getInstance().getConfiguration().isSearchInItemEnabled();
     }
 
     public String getDefaultBrowseIcon(String collection) {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getDefaultBrowseIcon(collection);
+        return DataManager.getInstance().getConfiguration().getDefaultBrowseIcon(collection);
     }
 
     /**
@@ -896,9 +723,7 @@ public class ConfigurationBean implements Serializable {
      * @return
      */
     public boolean isTranskribusEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isTranskribusEnabled();
+        return DataManager.getInstance().getConfiguration().isTranskribusEnabled();
     }
 
     /**
@@ -906,41 +731,27 @@ public class ConfigurationBean implements Serializable {
      * @return
      */
     public boolean isSearchExcelExportEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isSearchExcelExportEnabled();
+        return DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled();
     }
 
     public boolean isDoublePageModeEnabled() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .isDoublePageModeEnabled();
+        return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
     }
 
     public String getIiifApiUrl() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getIiifUrl();
+        return DataManager.getInstance().getConfiguration().getIiifUrl();
     }
 
     public String getIso639_1(String language) {
-        return DataManager.getInstance()
-                .getLanguageHelper()
-                .getLanguage(language)
-                .getIsoCodeOld();
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCodeOld();
     }
 
     public String getIso639_2B(String language) {
-        return DataManager.getInstance()
-                .getLanguageHelper()
-                .getLanguage(language)
-                .getIsoCode();
+        return DataManager.getInstance().getLanguageHelper().getLanguage(language).getIsoCode();
     }
 
     public String getTranslation(String language, String locale) {
-        Language lang = DataManager.getInstance()
-                .getLanguageHelper()
-                .getLanguage(language);
+        Language lang = DataManager.getInstance().getLanguageHelper().getLanguage(language);
         switch (locale.toLowerCase()) {
             case "de":
             case "ger":
@@ -953,11 +764,18 @@ public class ConfigurationBean implements Serializable {
                 return lang.getEnglishName();
         }
     }
-    
 
-    private ImageType getImageType(String mimeType) {
+    private static ImageType getImageType(String mimeType) {
         ImageType imageType = new ImageType(false);
         imageType.setFormat(ImageFileFormat.getImageFileFormatFromMimeType(mimeType));
         return imageType;
+    }
+
+    public boolean isAddDublinCoreMetaTags() {
+        return DataManager.getInstance().getConfiguration().isAddDublinCoreMetaTags();
+    }
+
+    public boolean isAddHighwirePressMetaTags() {
+        return DataManager.getInstance().getConfiguration().isAddHighwirePressMetaTags();
     }
 }

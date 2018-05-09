@@ -70,23 +70,23 @@ public class Sitemap {
      * @should only create full-text entries if full-text available
      * @should throw IOException if outputPath invalid
      */
-    public List<File> generate(String viewerRootUrl, String outputPath, boolean firstPageOnly) throws IOException, PresentationException,
-            IndexUnreachableException {
+    public List<File> generate(String viewerRootUrl, String outputPath, boolean firstPageOnly)
+            throws IOException, PresentationException, IndexUnreachableException {
         this.viewerRootUrl = viewerRootUrl;
         // Sitemap index root
         docIndex.setRootElement(new Element("sitemapindex", nsSitemap));
 
         // Create query that filters out blacklisted collections and any records that do not allow listing by default (ignore any individual agent's privileges for the sitemap).
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(SolrConstants.PI).append(":* AND NOT(").append(SolrConstants.DATEDELETED).append(":*)").append(SearchHelper.getAllSuffixes(
-                false));
+        sbQuery.append(SolrConstants.PI).append(":* AND NOT(").append(SolrConstants.DATEDELETED).append(":*)").append(
+                SearchHelper.getAllSuffixes(false));
         logger.debug("Sitemap query: {}", sbQuery.toString());
-        String[] fields = { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE,
-                SolrConstants.ISANCHOR };
+        String[] fields =
+                { SolrConstants.PI, SolrConstants.DATECREATED, SolrConstants.DATEUPDATED, SolrConstants.FULLTEXTAVAILABLE, SolrConstants.ISANCHOR };
         String[] pageFields = { SolrConstants.ORDER };
 
-        QueryResponse qr = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS, Collections
-                .singletonList(new StringPair(SolrConstants.DATECREATED, "asc")), null, null, Arrays.asList(fields), null);
+        QueryResponse qr = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
+                Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "asc")), null, null, Arrays.asList(fields), null, null);
         logger.debug("Found {} records.", qr.getResults().size());
         index = -1;
         long latestTimestampModified = 0;
@@ -117,46 +117,52 @@ public class Sitemap {
                 // Anchors
                 currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
                 increment(timestampModified);
-                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly",
-                        "0.5"));
+                currentDocSitemap.getRootElement()
+                        .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
                 increment(timestampModified);
             } else if (firstPageOnly) {
                 // First page only
                 currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewImage.getName(), "weekly", "0.5"));
                 increment(timestampModified);
-                if (solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) != null && (Boolean) solrDoc.getFieldValue(
-                        SolrConstants.FULLTEXTAVAILABLE)) {
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewFulltext.getName(), "weekly",
-                            "0.5"));
+                if (solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) != null
+                        && (Boolean) solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE)) {
+                    currentDocSitemap.getRootElement()
+                            .addContent(createUrlElement(pi, 1, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
                     increment(timestampModified);
                 }
-                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly",
-                        "0.5"));
+                currentDocSitemap.getRootElement()
+                        .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
                 increment(timestampModified);
                 currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
                 increment(timestampModified);
             } else {
                 // All pages
                 StringBuilder sbPagesQuery = new StringBuilder();
-                sbPagesQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).append(" AND ").append(SolrConstants.DOCTYPE).append(':')
+                sbPagesQuery.append(SolrConstants.PI_TOPSTRUCT)
+                        .append(':')
+                        .append(pi)
+                        .append(" AND ")
+                        .append(SolrConstants.DOCTYPE)
+                        .append(':')
                         .append(SolrConstants.DocType.PAGE);
+                //                logger.trace("Pages query: {}", sbPagesQuery.toString());
                 QueryResponse qrPages = DataManager.getInstance().getSearchIndex().search(sbPagesQuery.toString(), 0, SolrSearchIndex.MAX_HITS,
-                        Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null);
+                        Collections.singletonList(new StringPair(SolrConstants.ORDER, "asc")), null, null, Arrays.asList(pageFields), null, null);
                 logger.debug("Found {} pages for '{}'.", qrPages.getResults().size(), pi);
-                currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly",
-                        "0.5"));
+                currentDocSitemap.getRootElement()
+                        .addContent(createUrlElement(pi, 1, dateModified, PageType.viewMetadata.getName(), "weekly", "0.5"));
                 increment(timestampModified);
                 currentDocSitemap.getRootElement().addContent(createUrlElement(pi, 1, dateModified, PageType.viewToc.getName(), "weekly", "0.5"));
                 increment(timestampModified);
                 for (SolrDocument solrPageDoc : qrPages.getResults()) {
                     int order = (int) solrPageDoc.getFieldValue(SolrConstants.ORDER);
-                    currentDocSitemap.getRootElement().addContent(createUrlElement(pi, order + 1, dateModified, PageType.viewImage.getName(),
-                            "weekly", "0.5"));
+                    currentDocSitemap.getRootElement()
+                            .addContent(createUrlElement(pi, order + 1, dateModified, PageType.viewImage.getName(), "weekly", "0.5"));
                     increment(timestampModified);
-                    if (solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) != null && (Boolean) solrDoc.getFieldValue(
-                            SolrConstants.FULLTEXTAVAILABLE)) {
-                        currentDocSitemap.getRootElement().addContent(createUrlElement(pi, order + 1, dateModified, PageType.viewFulltext.getName(),
-                                "weekly", "0.5"));
+                    if (solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE) != null
+                            && (Boolean) solrDoc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE)) {
+                        currentDocSitemap.getRootElement()
+                                .addContent(createUrlElement(pi, order + 1, dateModified, PageType.viewFulltext.getName(), "weekly", "0.5"));
                         increment(timestampModified);
                     }
                 }
