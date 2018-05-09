@@ -408,9 +408,9 @@ public class BrowseElement implements Serializable {
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
 
         // Only topstructs should be openened with their overview page view (if they have one)
-        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
-            useOverviewPage = true;
-        }
+//        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
+//            useOverviewPage = true;
+//        }
 
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -1083,7 +1083,7 @@ public class BrowseElement implements Serializable {
                     .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                     .append('/');
         } else if (configuredPageType != null) {
-            logger.trace("Found configured page type: {}", configuredPageType.getName());
+            // logger.trace("Found configured page type: {}", configuredPageType.getName());
             sb.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext())
                     .append('/')
                     .append(configuredPageType.getName())

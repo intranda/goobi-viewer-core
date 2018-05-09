@@ -17,25 +17,33 @@ package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.search.SearchHit;
+import de.intranda.digiverso.presentation.model.viewer.PageType;
+import de.intranda.digiverso.presentation.model.viewer.StringPair;
 
 /**
  * SitelinkBean
@@ -50,7 +58,8 @@ public class SitelinkBean implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(SitelinkBean.class);
 
     private String value;
-    private List<SearchHit> hits;
+    //    private List<SearchHit> hits;
+    private List<StringPair> hits;
 
     /**
      * 
@@ -117,16 +126,40 @@ public class SitelinkBean implements Serializable {
             return "";
         }
 
-        String query = SearchHelper.buildFinalQuery(field + ":" + value + (filterQuery != null ? " AND " + filterQuery : ""), true);
+        String[] fields = { SolrConstants.PI, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.MIMETYPE };
+        String query = SearchHelper.buildFinalQuery(field + ":" + value + (filterQuery != null ? " AND " + filterQuery : ""), false);
         logger.trace("q: {}", query);
-        hits = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null);
+        //        hits = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null);
+        //        hits = SearchHelper.searchWithFulltext(query, 9, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null,
+        //                (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest());
+
+        SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));
+        if (docList != null && !docList.isEmpty()) {
+            hits = new ArrayList<>(docList.size());
+            for (SolrDocument doc : docList) {
+                String pi = (String) doc.getFieldValue(SolrConstants.PI);
+                String label = (String) doc.getFieldValue(SolrConstants.LABEL);
+                if (label == null) {
+                    label = (String) doc.getFieldValue(SolrConstants.TITLE);
+                    if (label == null) {
+                        label = pi;
+                    }
+                }
+                String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+                String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
+                PageType pageType = PageType.determinePageType(docStructType, null, false, false, false, false);
+                hits.add(new StringPair(label, pageType.getName() + "/" + pi + "/1/"));
+            }
+        }
+
+        // logger.trace("done");
         return "";
     }
-    
+
     public String resetAction() {
         value = null;
         hits = null;
-        
+
         return "";
     }
 
@@ -147,7 +180,7 @@ public class SitelinkBean implements Serializable {
     /**
      * @return the hits
      */
-    public List<SearchHit> getHits() {
+    public List<StringPair> getHits() {
         return hits;
     }
 }

@@ -28,8 +28,8 @@
 			<br />
 			<div id="hits">
                 <c:forEach var="hit" items="#{sitelinkBean.hits}" varStatus="status">
-                    <a href="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" title="#{msg[hit.browseElement.label]}"> 
-                        <h:outputText value="#{status.count}. #{hit.browseElement.label}" escape="false" />
+                    <a href="#{navigationHelper.applicationUrl}#{hit.two}" title="#{msg[hit.one]}"> 
+                        <h:outputText value="#{status.count}. #{hit.one}" escape="false" />
                     </a>
                     <br />
                 </c:forEach>

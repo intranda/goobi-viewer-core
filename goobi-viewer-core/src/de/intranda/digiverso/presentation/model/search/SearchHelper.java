@@ -145,8 +145,9 @@ public final class SearchHelper {
         Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
         logger.trace("hits found: {}; results returned: {}", resp.getResults().getNumFound(), resp.getResults().size());
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
+        int count = 0;
         for (SolrDocument doc : resp.getResults()) {
-            // logger.trace("result iddoc: {}", doc.getFieldValue(LuceneConstants.IDDOC));
+             logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             String fulltext = null;
             SolrDocument ownerDoc = null;
             if (doc.containsKey(SolrConstants.IDDOC_OWNER)) {
@@ -180,6 +181,8 @@ public final class SearchHelper {
             SearchHit hit =
                     SearchHit.createSearchHit(doc, ownerDoc, locale, fulltext, searchTerms, exportFields, true, ignoreFields, translateFields, null);
             ret.add(hit);
+            count++;
+            logger.trace("added hit {}", count);
         }
 
         return ret;
