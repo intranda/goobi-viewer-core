@@ -1058,21 +1058,6 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war" />
 	</target>
-	<target name="unisammlungen_gbv">
-		<property name="local.folder" value="resources/build/deploy_ubuntu" />
-		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="http://unisammlungsportal.gbv.de/viewer/" />
-		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Funisammlungsportal.gbv.de%2Fviewer%2Foai" />
-		<property name="theme" value="unisammlungen" />
-		<property name="ehcache.dirname" value="cache" />
-		<property name="contentserver.color.red" value="255" />
-		<property name="contentserver.color.green" value="255" />
-		<property name="contentserver.color.blue" value="0" />
-		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war" />
-	</target>
         <target name="wuw">
                 <property name="local.folder" value="resources/build/deploy_ubuntu" />
                 <property name="server.folder" value="/opt/digiverso/viewer/" />
@@ -1288,16 +1273,16 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config2/" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
-		<property name="server.url" value="https://sammlungen.uni-goettingen.de/viewer2/" />
+		<property name="server.url" value="https://sammlungen.uni-goettingen.de/" />
 		<property name="solr.url" value="https://sammlungen.uni-goettingen.de/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fsammlungen.uni-goettingen.de%2Fviewer2%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fsammlungen.uni-goettingen.de%2Foai" />
 		<property name="theme" value="gaugsammlungen" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
 		<property name="contentserver.color.blue" value="0" />
 		<property name="contentserver.color.alpha" value="255" />
-		<antcall target="war-internal" />
+		<antcall target="war" />
 	</target>
 	<target name="kuepo">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
