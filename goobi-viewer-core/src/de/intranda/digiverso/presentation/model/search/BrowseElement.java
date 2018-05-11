@@ -716,50 +716,7 @@ public class BrowseElement implements Serializable {
 
         return ret;
     }
-
-    /**
-     * Retrieves the URL part for the representative thumbnail of the first indexed volume for the given anchor identifier.
-     *
-     * @param anchorPi
-     * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     * @should build url part correctly
-     */
-    protected static String getFirstVolumeThumbnailPath(String anchorPi) throws PresentationException, IndexUnreachableException {
-        String ret = null;
-
-        String[] fields = { SolrConstants.PI, SolrConstants.DATAREPOSITORY, SolrConstants.THUMBNAIL };
-        SolrDocumentList docs =
-                DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI_PARENT).append(':').append(anchorPi).toString(),
-                        1, Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")), Arrays.asList(fields));
-        if (!docs.isEmpty()) {
-            ret = (String) docs.get(0).getFieldValue(SolrConstants.THUMBNAIL);
-            if (StringUtils.isNotEmpty(ret)) {
-                String dataRepository = (String) docs.get(0).getFieldValue(SolrConstants.DATAREPOSITORY);
-                if (StringUtils.isNotEmpty(dataRepository)) {
-                    StringBuilder sb = new StringBuilder();
-                    String dataRepositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
-                    sb.append("file:/")
-                            .append((StringUtils.isNotEmpty(dataRepositoriesHome) && dataRepositoriesHome.charAt(0) == '/') ? '/' : "")
-                            .append(dataRepositoriesHome)
-                            .append(dataRepository)
-                            .append('/')
-                            .append(DataManager.getInstance().getConfiguration().getMediaFolder())
-                            .append('/')
-                            .append(docs.get(0).getFieldValue(SolrConstants.PI))
-                            .append('/')
-                            .append(ret);
-                    ret = sb.toString();
-                } else {
-                    ret = new StringBuilder((String) docs.get(0).getFieldValue(SolrConstants.PI)).append('/').append(ret).toString();
-                }
-            }
-        }
-
-        return ret;
-    }
-
+    
     /**
      * @return the label
      */

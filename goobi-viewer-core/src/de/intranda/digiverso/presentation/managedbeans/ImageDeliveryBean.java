@@ -396,7 +396,7 @@ public class ImageDeliveryBean implements Serializable {
     public boolean isExternalUrl(String urlString) {
         try {
             URI uri = new URI(urlString);
-            if (uri.isAbsolute() && uri.getScheme().toLowerCase().startsWith("file")) {
+            if (uri.isAbsolute() && !uri.getScheme().toLowerCase().startsWith("file")) {
                 return !urlString.startsWith(getServletPath());
             } else {
                 return false;

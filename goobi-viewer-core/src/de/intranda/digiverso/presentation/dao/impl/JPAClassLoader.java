@@ -184,7 +184,8 @@ public class JPAClassLoader extends ClassLoader {
                     final File file = new File(System.getProperty("java.io.tmpdir") + "/viewer/" + PERSISTENCE_XML);
                     file.getParentFile().mkdirs();
                     FileTools.writeXmlFile(docMerged, file.getAbsolutePath());
-                    newUrl = new URL("file://" + file.getAbsolutePath());
+                    newUrl = file.toURI().toURL();
+//                    newUrl = new URL("file://" + file.getAbsolutePath());
                     logger.info("URL: " + newUrl);
                 } catch (JDOMException e) {
                     throw new IOException(e.toString());

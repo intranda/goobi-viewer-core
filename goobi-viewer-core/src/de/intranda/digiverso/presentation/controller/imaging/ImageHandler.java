@@ -193,7 +193,14 @@ public class ImageHandler {
      * @return
      */
     protected static boolean isInternalUrl(String fileUrl) {
-        return fileUrl.startsWith("file:/") || fileUrl.startsWith("/");
+        try {
+            URI uri = new URI(fileUrl);
+            return !uri.isAbsolute() || uri.getScheme().toLowerCase().equals("file");
+        } catch (URISyntaxException e) {
+            logger.error(e.toString(), e);
+            return false;
+        }
+//        return fileUrl.startsWith("file:/") || fileUrl.startsWith("/");
     }
 
 }

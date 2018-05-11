@@ -45,16 +45,6 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see BrowseElement#getFirstVolumeThumbnailPath(String)
-     * @verifies build url part correctly
-     */
-    @Test
-    public void getFirstVolumeThumbnailPath_shouldBuildUrlPartCorrectly() throws Exception {
-        String anchorPi = "ZDB026544598";
-        Assert.assertEquals("ZDB026544598_0001/00000001.tif", BrowseElement.getFirstVolumeThumbnailPath(anchorPi));
-    }
-
-    /**
      * @see BrowseElement#addAdditionalMetadataContainingSearchTerms(StructElement,Map,Locale)
      * @verifies add metadata fields that match search terms
      */

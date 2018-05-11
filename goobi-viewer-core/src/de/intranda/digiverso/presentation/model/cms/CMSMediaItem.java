@@ -20,6 +20,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +78,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
     @Column(name = "collection_field", nullable = true)
     private String collectionField = "DC";
-    
+
     @Column(name = "collection_name", nullable = true)
     private String collectionName = null;
 
@@ -274,19 +276,19 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public URI getLinkURI() {
         return getLinkURI(BeanUtils.getRequest());
     }
-    
+
     /**
      * @return the URI to this media item
      */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
-        
+
         if (StringUtils.isNotBlank(getLink())) {
             try {
-                URI uri = new URI(URLDecoder.decode(getLink(), "utf-8"));            
-                if(!uri.isAbsolute()) {                    
+                URI uri = new URI(URLDecoder.decode(getLink(), "utf-8"));
+                if (!uri.isAbsolute()) {
                     String viewerURL = "/";
-                    if(request != null) {
+                    if (request != null) {
                         viewerURL = request.getContextPath();
                     }
                     String urlString = (viewerURL + URLDecoder.decode(getLink(), "utf-8")).replace("//", "/");
@@ -445,36 +447,41 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
     }
-    
+
     /**
      * @return the collectionNField
      */
     public String getCollectionField() {
-        if(StringUtils.isBlank(collectionField)) {
+        if (StringUtils.isBlank(collectionField)) {
             return SolrConstants.DC;
         }
         return collectionField;
     }
-    
+
     /**
      * @param collectionField the collectionField to set
      */
     public void setCollectionField(String collectionField) {
         this.collectionField = collectionField;
     }
-    
-    public String getImageURI() {
-        StringBuilder imageUrlBuilder = new StringBuilder("file:/");
 
-        // Add an extra slash if not on Windows
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.indexOf("win") == -1) {
-            imageUrlBuilder.append('/');
-        }
-        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
-        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
-        imageUrlBuilder.append(getFileName());
-        return imageUrlBuilder.toString();
+    public String getImageURI() {
+        
+        Path path = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getCmsMediaFolder(), getFileName());
+        return path.toUri().toString();
+                
+                
+//        StringBuilder imageUrlBuilder = new StringBuilder("file:/");
+//
+//        // Add an extra slash if not on Windows
+//        String os = System.getProperty("os.name").toLowerCase();
+//        if (os.indexOf("win") == -1) {
+//            imageUrlBuilder.append('/');
+//        }
+//        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
+//        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
+//        imageUrlBuilder.append(getFileName());
+//        return imageUrlBuilder.toString();
     }
 
 }
