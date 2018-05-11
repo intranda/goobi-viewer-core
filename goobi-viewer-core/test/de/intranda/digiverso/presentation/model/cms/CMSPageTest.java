@@ -158,7 +158,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
         page.addContentItem(html);
         
         CMSMediaItem media = new CMSMediaItem();
-        String mediaFilename = "image.jpg";
+        String mediaFilename = "image 01.jpg";
         media.setFileName(mediaFilename);
         String imageId = "image";
         CMSContentItem image = new CMSContentItem(CMSContentItemType.MEDIA);
@@ -197,7 +197,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
         String contentServerUrl = DataManager.getInstance().getConfiguration().getIiifUrl();
 
         String filePath = media.getImageURI();
-        filePath = BeanUtils.escapeCriticalUrlChracters(filePath);
+        filePath = BeanUtils.escapeCriticalUrlChracters(filePath, true);
        
         String imageUrl = contentServerUrl + "image/-/"+filePath+"/full/max/0/default.jpg";
         Assert.assertEquals(imageUrl, page.getContent(imageId));
