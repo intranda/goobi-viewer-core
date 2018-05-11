@@ -17,6 +17,8 @@ package de.intranda.digiverso.presentation.controller.imaging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.regex.Pattern;
 
@@ -195,7 +197,9 @@ public class ImageHandler {
     protected static boolean isInternalUrl(String fileUrl) {
         try {
             URI uri = new URI(fileUrl);
-            return !uri.isAbsolute() || uri.getScheme().toLowerCase().equals("file");
+            Path path = Paths.get(uri.getPath());
+            String scheme = uri.getScheme();
+            return (!uri.isAbsolute() && Paths.get(uri.getPath()).isAbsolute()) || (uri.getScheme() != null && uri.getScheme().toLowerCase().equals("file"));
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
             return false;

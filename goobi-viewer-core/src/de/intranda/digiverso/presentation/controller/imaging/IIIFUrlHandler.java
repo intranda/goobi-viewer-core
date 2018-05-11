@@ -15,10 +15,14 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -34,6 +38,8 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
  */
 public class IIIFUrlHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(IIIFUrlHandler.class);
+    
     /**
      * Regex to match any calls to images via iiif (not image information!). This includes the following capturing groups:
      * <ul>
@@ -66,8 +72,17 @@ public class IIIFUrlHandler {
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
         if(ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
+            try {
+                URI uri = new URI(fileUrl);
+                if(StringUtils.isBlank(uri.getScheme())) {
+                    uri = new URI("file", fileUrl, null);
+                }
+                fileUrl = uri.toString();
+            } catch (URISyntaxException e) {
+                logger.warn("file url {} is not a valid url: {}", fileUrl, e.getMessage());
+            }
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true)).append("/");
+            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true));
             return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
         } else if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {
@@ -120,7 +135,7 @@ public class IIIFUrlHandler {
         url.append(size).append("/");
         url.append(rotation).append("/");
         url.append(quality).append(".");
-        url.append(format).append("/");
+        url.append(format);
         
         return url.toString();
     }
