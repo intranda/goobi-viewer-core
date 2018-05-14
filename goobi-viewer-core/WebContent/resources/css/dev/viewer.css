@@ -6057,6 +6057,10 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .view-object__access-denied {
   text-align: center;
+  overflow: hidden;
+}
+.view-object__access-denied img {
+  max-width: 100%;
 }
 .view-object__image-mobile {
   display: none !important;

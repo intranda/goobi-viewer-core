@@ -10,79 +10,69 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-    <!-- OPEN SEADRAGON -->
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
-    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
-
     <!-- IMAGE CONTAINER -->
-    <div id="imageContainer" class="view-object__image">
-        <!-- AJAX Loader -->
-        <div id="AJAXLoader" class="view-object__image-loader"></div>
-        
+    <div id="imageContainer" class="view-object__image">        
         <!-- MAP -->
         <div id="imageMap" class="view-object__image-map"></div>
-        
-        <script type="text/javascript" rel="nofollow">
-        	//<![CDATA[
-            var imageMap = $('#imageMap');
-            var configViewer = {
-            	global: {
-            		divId: 'imageMap',
-                	footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
-                	adaptContainerHeight: true,
-                	persistZoom: #{configurationBean.rememberImageZoom},
-                	persistRotation: #{configurationBean.rememberImageRotation},
-                	persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
-                },
-                image: {
-                	mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
-                    tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
-                    baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
-                    highlightCoords: [
-        				{
-                			name: "searchHighlighting",
-                			coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
-                			displayTooltip: false,
-                			pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
-                		}
-            		]
-            	}
-            };
-            
-        	var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-            var accessDeniedMessage = $('<div />').addClass('view-object__access-denied').html('#{msg.noImage_accessDenied}');
-            var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" )
-            
-        	$( document ).ready( function() {
-        		if ( access && openSeadragonVisible ) {
-        			viewImage.init( configViewer ).then( function( osViewer ) {} ).catch( function( error ) {
-        				console.error( 'viewObject.xhtml - viewImage.init: Error opening image' );
-        				imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
-        			} );
-        		} else if ( openSeadragonVisible ){
-        			imageMap.append( accessDeniedMessage );
-        		}
-        	} );
-        	//]]>   
-        </script>
     </div>
 
     <!-- MOBILE IMAGE VIEW -->
     <div id="imageContainerMobile" class="view-object__image-mobile"></div>
 
+    <!-- OPEN SEADRAGON -->
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
+    <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
     <script type="text/javascript">
-    	var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-    	var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
-    	var staticImage = '<img src="#{activeDocumentBean.viewManager.currentImageUrl}" alt="current image" class="img-responsive" />';
+  		//<![CDATA[
+    	var imageMap = $('#imageMap');
+        var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" );
+        var staticImage = $('<img />').attr('src', '#{activeDocumentBean.viewManager.currentImageUrl}').attr('alt', 'current object').addClass('img-responsive');
+        var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
+        var accessDeniedMessage = $('<div />').addClass('view-object__access-denied').html('#{msg.noImage_accessDenied}');
+        var configViewer = {
+        	global: {
+        		divId: 'imageMap',
+        		footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)},
+        		adaptContainerHeight: true,
+        		persistZoom: #{configurationBean.rememberImageZoom},
+        		persistRotation: #{configurationBean.rememberImageRotation},
+        		persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
+        	},
+        	image: {
+        		mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
+        		tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+        		baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}",
+        		highlightCoords: [
+        			{
+        				name: "searchHighlighting",
+        				coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
+        				displayTooltip: false,
+        				pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
+        			}
+        		]
+        	}
+        };
+        
+       	// desktop object view
+       	if ( access && openSeadragonVisible ) {
+           	viewImage.init( configViewer ).then( function( osViewer ) {} ).catch( function( error ) {
+           		console.error( 'viewObject.xhtml - viewImage.init: Error opening image' );
+           		imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
+           	} );
+        } else if ( openSeadragonVisible ) {
+       		imageMap.append( accessDeniedMessage );
+       	}
 
-    	if( $( "#imageContainerMobile" ).is( ":visible" ) ) {
-    		if ( access ) {
-    			$( "#imageContainerMobile" ).append( staticImage );
-    		}
-    		else {
-    			$( "#imageContainerMobile" ).append( accessDeniedMessage );
-    		}
-    	}
+       	// mobile object view
+       	if ( $( "#imageContainerMobile" ).is( ":visible" ) ) {
+       		if ( access ) {
+       			$( "#imageContainerMobile" ).append( staticImage );
+       		}
+       		else {
+       			$( "#imageContainerMobile" ).append( accessDeniedMessage );
+       		}
+       	}
+      	//]]>
     </script>
 </ui:composition>
