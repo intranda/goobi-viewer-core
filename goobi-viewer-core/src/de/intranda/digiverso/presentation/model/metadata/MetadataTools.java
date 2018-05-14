@@ -114,9 +114,10 @@ public class MetadataTools {
      * @param pages
      * @return String containing meta tags
      * @throws IndexUnreachableException
-     * @throws ConfigurationException 
+     * @throws ConfigurationException
      */
-    public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages) throws IndexUnreachableException, ConfigurationException {
+    public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages)
+            throws IndexUnreachableException, ConfigurationException {
         if (structElement == null) {
             return "";
         }
@@ -140,9 +141,17 @@ public class MetadataTools {
             }
         }
         // citation_publication_date
-        if (structElement.getMetadataValue("MD_YEARPUBLISH") != null) {
-            String value = structElement.getMetadataValue("MD_YEARPUBLISH");
-            result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(value).append("\">");
+        if (structElement.getMetadataValue(SolrConstants.YEARPUBLISH) != null) {
+            String value = structElement.getMetadataValue(SolrConstants.YEARPUBLISH);
+            List<String> normalizedValues = structElement.getMetadataValues(SolrConstants._CALENDAR_YEAR);
+            if (normalizedValues != null && !normalizedValues.isEmpty()) {
+                for (String normalizedValue : normalizedValues) {
+                    if (value.contains(normalizedValue)) {
+                        result.append("\r\n<meta name=\"citation_publication_date\" content=\"").append(normalizedValue).append("\">");
+                        break;
+                    }
+                }
+            }
         }
         // citation_isbn
         if (structElement.getMetadataValue("MD_ISBN") != null) {
