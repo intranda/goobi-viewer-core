@@ -59,13 +59,8 @@ var viewerJS = ( function() {
         console.info( 'Current Browser = ', _defaults.browser );
         
         // enable BS tooltips
-        $( '[data-toggle="tooltip"]' ).tooltip();
-        
-        // hide tooltips after 3 seconds
-        $( '[data-toggle="tooltip"]' ).on( 'inserted.bs.tooltip', function () {
-        	setTimeout( function() {
-        		$( '[data-toggle="tooltip"]' ).tooltip( 'hide' );
-        	}, 3000 );
+        $( '[data-toggle="tooltip"]' ).tooltip( {
+            trigger : 'hover'
         } );
         
         // render warning if local storage is not useable
