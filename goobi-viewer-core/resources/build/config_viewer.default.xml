@@ -951,7 +951,7 @@
 		</browsingMenu>
 
         <!-- addDublinCoreMetaTags: render dc metadata to html head -->
-        <addDublinCoreMetaTags>true</addDublinCoreMetaTags>
+        <addDublinCoreMetaTags>false</addDublinCoreMetaTags>
         
         <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
         <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
