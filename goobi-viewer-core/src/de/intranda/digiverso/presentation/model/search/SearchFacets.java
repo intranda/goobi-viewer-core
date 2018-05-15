@@ -137,7 +137,7 @@ public class SearchFacets {
                     sbQuery.append(" AND ");
                 }
                 String field = SearchHelper.facetifyField(facetItem.getField());
-                String escapedValue = facetItem.getEscapedValue();
+                String escapedValue = FacetItem.getEscapedValue(facetItem.getValue());
                 sbQuery.append(field).append(':').append(escapedValue);
                 logger.trace("Added facet: {}", field + ':' + escapedValue);
             }

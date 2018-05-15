@@ -52,6 +52,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
 
     private String field;
     private String value;
+    private String value2;
     private String link;
     private String label;
     private String translatedLabel;
@@ -64,26 +65,29 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @param link
      * @param hierarchical
      * @should split field and value correctly
+     * @should split field and value range correctly
      */
     public FacetItem(String link, boolean hierarchical) {
         int colonIndex = link.indexOf(':');
         if (colonIndex == -1) {
-            throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ")
-                    .append(link)
-                    .toString());
+            throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
         }
         this.link = link;
         this.hierarchial = hierarchical;
-        String[] linkSplit = { link.substring(0, colonIndex), link.substring(colonIndex + 1) };
-        if (linkSplit.length == 2) {
-            this.field = linkSplit[0];
-            //            if (LuceneConstants.DC.equals(field)) {
-            //                field = LuceneConstants.FACET_DC;
-            //            }
-            this.value = linkSplit[1];
-            if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1) {
-                value = value.substring(1, value.length() - 1);
-            }
+        String[] linkSplit = link.split(":");
+        switch (linkSplit.length) {
+            case 3:
+                this.value2 = linkSplit[2];
+                if (value2.startsWith("\"") && value2.endsWith("\"") && value2.length() > 1) {
+                    value2 = value2.substring(1, value2.length() - 1);
+                }
+            case 2:
+                this.field = linkSplit[0];
+                this.value = linkSplit[1];
+                if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1) {
+                    value = value.substring(1, value.length() - 1);
+                }
+                break;
         }
     }
 
@@ -167,25 +171,18 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             if (value.charAt(0) != 1) {
                 String label = value;
                 if (StringUtils.isEmpty(field)) {
-                    label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX)
-                            .toString();
+                    label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
                 }
                 String linkValue = value;
                 if (field.endsWith(SolrConstants._UNTOKENIZED)) {
-                    linkValue = new StringBuilder("\"").append(linkValue)
-                            .append('"')
-                            .toString();
+                    linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
                 }
-                String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':')
-                        .append(linkValue)
-                        .toString() : linkValue;
+                String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
                 retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null),
                         values.get(value), hierarchical));
             }
         }
-        switch (DataManager.getInstance()
-                .getConfiguration()
-                .getSortOrder(SearchHelper.defacetifyField(field))) {
+        switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
             case "numerical":
             case "numerical_asc":
                 Collections.sort(retList, FacetItem.NUMERIC_COMPARATOR);
@@ -232,8 +229,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             throw new IllegalArgumentException("values may not be null");
         }
 
-        List<FacetItem> retList = new ArrayList<>(values.keySet()
-                .size());
+        List<FacetItem> retList = new ArrayList<>(values.keySet().size());
 
         boolean numeric = true;
         for (String s : values.keySet()) {
@@ -287,9 +283,10 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * @should construct link correctly
      * @should escape values containing whitespaces
      * @should construct hierarchical link correctly
+     * @should construct range link correctly
      */
     public String getQueryEscapedLink() {
-        String escapedValue = getEscapedValue();
+        String escapedValue = getEscapedValue(value);
         if (hierarchial) {
             return new StringBuilder("(").append(field)
                     .append(':')
@@ -301,16 +298,24 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                     .append(".*)")
                     .toString();
         }
-        return new StringBuilder(field).append(':')
-                .append(escapedValue)
-                .toString();
+        if (value2 == null) {
+            logger.debug("value2 is null");
+            return new StringBuilder(field).append(':').append(escapedValue).toString();
+        }
+        String escapedValue2 = getEscapedValue(value2);
+        return new StringBuilder(field).append(":[").append(escapedValue).append(" TO ").append(escapedValue2).append(']').toString();
     }
 
     /**
      * 
+     * @param value
      * @return
      */
-    public String getEscapedValue() {
+    static String getEscapedValue(String value) {
+        if (StringUtils.isEmpty(value)) {
+            return value;
+        }
+
         String escapedValue = ClientUtils.escapeQueryChars(value);
         if (escapedValue.contains(" ") && !escapedValue.startsWith("\"") && !escapedValue.endsWith("\"")) {
             escapedValue = '"' + escapedValue + '"';
@@ -368,6 +373,20 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    /**
+     * @return the value2
+     */
+    public String getValue2() {
+        return value2;
+    }
+
+    /**
+     * @param value2 the value2 to set
+     */
+    public void setValue2(String value2) {
+        this.value2 = value2;
     }
 
     /**
@@ -437,8 +456,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
 
         @Override
         public int compare(FacetItem o1, FacetItem o2) {
-            int ret = o1.getLabel()
-                    .compareTo(o2.getLabel());
+            int ret = o1.getLabel().compareTo(o2.getLabel());
             return ret;
         }
 
@@ -453,8 +471,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 int i2 = Integer.parseInt(o2.getLabel());
                 return Integer.compare(i1, i2);
             } catch (NumberFormatException e) {
-                return o1.getLabel()
-                        .compareTo(o2.getLabel());
+                return o1.getLabel().compareTo(o2.getLabel());
             }
         }
 
