@@ -130,7 +130,6 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/poi-ooxml-schemas-3.15.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/prettyfaces-jsf2-3.3.4-20120314.162703-6.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/rome-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/rsslib4j-0.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/saxon-9.0.0.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/saxon-dom-9.0.0.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-api-1.7.21.jar"/>
