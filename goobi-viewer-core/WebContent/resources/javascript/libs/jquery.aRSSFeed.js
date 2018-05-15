@@ -40,6 +40,7 @@
                             else {
                                 oDate = new Date( item.updated );
                             }
+                            var time = oDate.toLocaleTimeString();
                             
                             sDate = weekDayNames[ oDate.getDay() ];
                             sDate += ", ";
@@ -49,7 +50,7 @@
                             sDate += " ";
                             sDate += oDate.getFullYear();
                             sDate += " ";
-                            sDate += oDate.toLocaleTimeString();
+                            sDate += time.substring(0, time.length - 3);
                             sCode += '<div class="rss-elem">';
                             sCode += '<dl>';
                             sCode += '<dt class="rss-elem-title">';
