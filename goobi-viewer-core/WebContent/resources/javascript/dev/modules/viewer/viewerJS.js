@@ -185,6 +185,11 @@ var viewerJS = ( function() {
             }
         }
         
+        // reset searchfield on focus
+        $( 'input[id*="searchField"]' ).on( 'focus', function() {
+        	$( this ).val( '' );
+        } );
+        
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {

@@ -14,7 +14,7 @@
     <composite:implementation>
         <h:panelGroup rendered="#{cc.attrs.widget.type == 'widgetSearchField' or cc.attrs.widget.type == null}">
             <div id="widgetSearchField" class="widget widget-searchfield #{cc.attrs.widget.cssClass}">
-                <h:form id="widgetSearchFieldForm" styleClass="form-inline">
+                <h:form id="widgetSearchFieldForm" styleClass="form-inline" prependId="false">
                     <h:panelGroup rendered="#{cc.attrs.widget.widgetMode == 'STANDARD' or cc.attrs.widget.widgetMode == 'FOLDOUT' or cc.attrs.widget.type == null}">
                         <div class="form-group">
                             <ui:fragment rendered="#{cc.attrs.widget.hasWidgetTitle}">
@@ -24,8 +24,11 @@
                                 <label class="sr-only" for="searchField">#{msg.search}</label>
                             </ui:fragment>
                             <div class="input-group">
-                                <h:inputText id="searchField" styleClass="form-control" onfocus="if(this.value==this.defaultValue)this.value=''" value="#{searchBean.searchString}">
-                                    <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}"></f:passThroughAttribute>
+                                <h:inputText 
+                                    id="searchField" 
+                                    styleClass="form-control" 
+                                    value="#{searchBean.searchString}">
+                                    <f:passThroughAttribute name="placeholder" value="#{cc.attrs.widget.hasWidgetTitle ? msg[cc.attrs.widget.widgetTitle] : msg.search}" />
                                 </h:inputText>
                                 <div class="input-group-addon">
                                     <ui:fragment rendered="#{!cc.attrs.widget.hasLinkedPages}">
