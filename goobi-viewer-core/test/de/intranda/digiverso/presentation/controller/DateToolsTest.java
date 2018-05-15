@@ -23,8 +23,8 @@ public class DateToolsTest {
         date.setHourOfDay(13);
         date.setMinuteOfHour(15);
         date.setSecondOfMinute(30);
-        Assert.assertEquals("10.07.1980 13:15:30", DateTools.getLocalDate(date.toDate(), "de"));
-        Assert.assertEquals("07/10/1980 1:15:30 PM", DateTools.getLocalDate(date.toDate(), "en"));
+        Assert.assertEquals("10.07.1980 13:15", DateTools.getLocalDate(date.toDate(), "de"));
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date.toDate(), "en"));
     }
 
     /**
@@ -40,7 +40,7 @@ public class DateToolsTest {
         date.setHourOfDay(13);
         date.setMinuteOfHour(15);
         date.setSecondOfMinute(30);
-        Assert.assertEquals("07/10/1980 1:15:30 PM", DateTools.getLocalDate(date.toDate(), "eu"));
+        Assert.assertEquals("07/10/1980 1:15 PM", DateTools.getLocalDate(date.toDate(), "eu"));
     }
 
     /**

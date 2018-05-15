@@ -51,6 +51,8 @@ public class DateTools {
     public static DateTimeFormatter formatterISO8601Time = DateTimeFormat.forPattern("HH:mm:ss");
     public static DateTimeFormatter formatterDEDateTime = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm:ss");
     public static DateTimeFormatter formatterENDateTime = DateTimeFormat.forPattern("MM/dd/yyyy h:mm:ss a");
+    public static DateTimeFormatter formatterDEDateTimeNoSeconds = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm");
+    public static DateTimeFormatter formatterENDateTimeNoSeconds = DateTimeFormat.forPattern("MM/dd/yyyy h:mm a");
     public static DateTimeFormatter formatterDEDate = DateTimeFormat.forPattern("dd.MM.yyyy");
     public static DateTimeFormatter formatterENDate = DateTimeFormat.forPattern("MM/dd/yyyy");
     public static DateTimeFormatter formatterCNDate = DateTimeFormat.forPattern("yyyy.MM.dd");
@@ -204,9 +206,9 @@ public class DateTools {
     public static String getLocalDate(Date date, String language) {
         switch (language) {
             case "de":
-                return formatterDEDateTime.print(date.getTime());
+                return formatterDEDateTimeNoSeconds.print(date.getTime());
             default:
-                return formatterENDateTime.print(date.getTime());
+                return formatterENDateTimeNoSeconds.print(date.getTime());
         }
     }
 
