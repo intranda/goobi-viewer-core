@@ -17,9 +17,14 @@ package de.intranda.digiverso.presentation.model.cms;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
+
+import de.intranda.digiverso.presentation.dao.PersistentEntity;
 
 /**
  * A class representing persistent configurations for a collection.
@@ -32,7 +37,13 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Entity
 @Table(name = "cms_collections")
-public class CMSCollection implements Comparable<CMSCollection>{
+public class CMSCollection implements PersistentEntity, Comparable<CMSCollection>{
+    
+    /** Unique database ID. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cms_collection_id")
+    private Long id;
     
     @Column(name = "solr_field")
     private final String solrField;
@@ -40,7 +51,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
     @Column(name = "solr_value")
     private final String solrFieldValue;
     
-    
+        
     /**
      * Default constructor, creating a Collection from the identifying fields {@link CMSCollection#solrField} and {@link CMSCollection#solrFieldValue}
      * 
@@ -102,6 +113,17 @@ public class CMSCollection implements Comparable<CMSCollection>{
             return false;
         }
     }
+
+
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.PersistentEntity#getId()
+     */
+    @Override
+    public Long getId() {
+        return this.id;
+    }
+    
     
 
 }
