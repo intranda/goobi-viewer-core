@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.filters;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Optional;
 
@@ -76,10 +77,10 @@ public class UrlRedirectFilter implements Filter {
             
                 if (currentPath.isPresent()) {
                     ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
-                    if (!currentPath.get().getPagePath().startsWith("cms") && currentPath.get().getCmsPage() != null) {
+                    if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
                         if(currentPath.get().getCmsPage().mayContainURLParameters() || StringUtils.isBlank(currentPath.get().getParameterPath().toString().replaceAll("/?\\d+/?", ""))) {
                             ViewerPath cmsPagePath = new ViewerPath(currentPath.get());
-                            cmsPagePath.setPagePath(Paths.get(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
+                            cmsPagePath.setPagePath(URI.create(currentPath.get().getCmsPage().getRelativeUrlPath(false)));
                             logger.debug("Forwarding " + currentPath.get().toString() + " to " + cmsPagePath.getCombinedUrl());
                             RequestDispatcher d = request.getRequestDispatcher(cmsPagePath.getCombinedUrl());
                             d.forward(request, response);

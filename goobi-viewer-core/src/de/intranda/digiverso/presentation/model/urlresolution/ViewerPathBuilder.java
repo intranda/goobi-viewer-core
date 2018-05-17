@@ -15,9 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.urlresolution;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -25,7 +23,6 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocpsoft.pretty.PrettyContext;
@@ -100,24 +97,26 @@ public class ViewerPathBuilder {
 //            serviceUrl = URLEncoder.encode(serviceUrl, "utf-8").replace("%2F", "/");
 //        } catch (UnsupportedEncodingException e) {
 //        }
-        final Path servicePath = Paths.get(serviceUrl);
+        
+        final URI servicePath = URI.create(serviceUrl);
+        String[] pathParts = serviceUrl.split("/");
         
         ViewerPath currentPath = new ViewerPath();
         currentPath.setApplicationUrl(applicationUrl);
         currentPath.setApplicationName(applicationName);
         
-        if(servicePath.startsWith("cms") && servicePath.getName(1).toString().matches("\\d+")) {
-            Long cmsPageId = Long.parseLong(servicePath.getName(1).toString());
+        if(serviceUrl.matches("cms/\\d+/.*")) {
+            Long cmsPageId = Long.parseLong(pathParts[1].toString());
             CMSPage page = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
             if(page != null) {
                 currentPath.setCmsPage(page);
             }
-            currentPath.setPagePath(servicePath.subpath(0, 2));
+            currentPath.setPagePath(URI.create(pathParts[0] + "/" + pathParts[1]));
             currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
         } else {
             Optional<PageType> pageType = getPageType(servicePath);
             if(pageType.isPresent()) {
-                currentPath.setPagePath(Paths.get(pageType.get().getName()));
+                currentPath.setPagePath(URI.create(pageType.get().getName()));
                 currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                 currentPath.setPageType(pageType.get());
                 if(pageType.get().isHandledWithCms()) {
@@ -130,7 +129,7 @@ public class ViewerPathBuilder {
             } else {
                 Optional<CMSPage> cmsPage = getCmsPage(servicePath);
                 if(cmsPage.isPresent()) {
-                    currentPath.setPagePath(Paths.get(cmsPage.get().getPersistentUrl()));
+                    currentPath.setPagePath(URI.create(cmsPage.get().getPersistentUrl()));
                     currentPath.setParameterPath(currentPath.getPagePath().relativize(servicePath));
                     currentPath.setCmsPage(cmsPage.get());
                 }
@@ -150,11 +149,11 @@ public class ViewerPathBuilder {
      * @return
      * @throws DAOException 
      */
-    public static Optional<CMSPage> getCmsPage(Path servicePath) throws DAOException {
+    public static Optional<CMSPage> getCmsPage(URI servicePath) throws DAOException {
         return DataManager.getInstance().getDao().getAllCMSPages().stream()
                 .filter(cmsPage -> StringUtils.isNotBlank(cmsPage.getPersistentUrl()))
 //                .peek(page -> System.out.println("Found page " + page.getPersistentUrl().replaceAll("^\\/|\\/$", "").trim()))
-                .filter(page -> servicePath.startsWith(page.getPersistentUrl().replaceAll("^\\/|\\/$", "").trim()))
+                .filter(page -> startsWith(servicePath, page.getPersistentUrl().replaceAll("^\\/|\\/$", "").trim()))
                 .sorted((page1, page2) -> Integer.compare(page2.getPersistentUrl().length(), page1.getPersistentUrl().length()))
                 .findFirst();
     }
@@ -165,7 +164,7 @@ public class ViewerPathBuilder {
      * @param servicePath
      * @return
      */
-    public static Optional<PageType> getPageType(final Path servicePath) {
+    public static Optional<PageType> getPageType(final URI servicePath) {
         Optional<PageType> pageNameOfType = Arrays.stream(PageType.values())
         .filter(type -> type.matches(servicePath))
         .sorted((type1, type2) -> Integer.compare(type1.getName().length(), type2.getName().length()))
@@ -173,5 +172,36 @@ public class ViewerPathBuilder {
         return pageNameOfType;
     }
 
+    /**
+     * Returns true if the first part of the uri, before any slashes, is equal to the given string
+     * 
+     * @param uri
+     * @param string
+     * @return
+     */
+    public static boolean startsWith(URI uri, String string) {
+        if(uri != null) {
+            String[] parts = uri.toString().split("/");
+            return parts.length > 0 && parts[0].equals(string);
+        } else {
+            return false;
+        }
+    }
+    
+    public static URI resolve(URI master, URI slave) {
+        return resolve(master, slave.toString());
+    }
+    
+    public static URI resolve(URI master, String slave) {
+        String base = master.toString();
+        if(base.endsWith("/")) {
+            base = base.substring(0, base.length()-1);
+        }
+        if(StringUtils.isBlank(master.toString())) {
+            return URI.create(slave);
+        }else {            
+            return URI.create(base + "/" + slave);
+        }
+    }
     
 }
