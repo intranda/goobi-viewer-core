@@ -52,7 +52,9 @@
                                 <ui:fragment rendered="#{record.title != ''}">
                                     <a title="#{record.title}" name="glossary#{counter.index}"></a>
                                     <div class="tpl-glossary__glossary-title">
-                                        <h:outputText value="#{record.title}" escape="false" />
+                                        <a href="#{request.contextPath}/search/-/SUPERFULLTEXT:(#{record.title}) OR FULLTEXT:(#{record.title})/1/-/-/">
+                                            <h:outputText value="#{record.title}" escape="false" />
+                                        </a>
                                     </div>
                                 </ui:fragment>
                             </dt>

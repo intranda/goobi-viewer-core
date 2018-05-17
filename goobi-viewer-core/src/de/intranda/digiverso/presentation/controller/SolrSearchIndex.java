@@ -799,6 +799,7 @@ public final class SolrSearchIndex {
                 logger.warn("Solr communication timeout; Query: {}", solrQuery.getQuery());
                 throw new IndexUnreachableException(e.getMessage());
             }
+            logger.error(e.getMessage(), e);
             throw new PresentationException(e.getMessage() + ": " + solrQuery.getQuery());
         } catch (RemoteSolrException e) {
             if (isQuerySyntaxError(e)) {
