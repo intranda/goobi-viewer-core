@@ -1208,7 +1208,22 @@ public final class SearchHelper {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
+    public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount) throws PresentationException, IndexUnreachableException {
+        return getFacetValues(query, facetFieldName, null, facetMinCount);
+    }
+
+    /**
+     * Returns a list of values for a given facet field and the given query.
+     *
+     * @param query
+     * @param facetFieldName
+     * @param facetMinCount
+     * @param facetPrefix   The facet field value must start with these characters. Ignored if null or blank
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static List<String> getFacetValues(String query, String facetFieldName, String facetPrefix, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
@@ -1218,7 +1233,7 @@ public final class SearchHelper {
         }
 
         QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
-                facetMinCount, false);
+                facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {

@@ -3128,4 +3128,12 @@ public final class Configuration extends AbstractConfiguration {
     public String getSitelinksFilterQuery() {
         return getLocalString("sitemap.sitelinksFilterQuery");
     }
+
+    /**
+     * 
+     */
+    public List<String> getConfiguredCollections() {
+        return getLocalList("collections.collection[@field]", Collections.EMPTY_LIST);
+        
+    }
 }

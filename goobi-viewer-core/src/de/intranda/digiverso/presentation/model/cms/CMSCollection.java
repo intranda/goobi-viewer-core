@@ -15,16 +15,29 @@
  */
 package de.intranda.digiverso.presentation.model.cms;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.annotations.PrivateOwned;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.dao.PersistentEntity;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 
 /**
  * A class representing persistent configurations for a collection.
@@ -37,7 +50,12 @@ import de.intranda.digiverso.presentation.dao.PersistentEntity;
  */
 @Entity
 @Table(name = "cms_collections")
-public class CMSCollection implements PersistentEntity, Comparable<CMSCollection>{
+public class CMSCollection implements Comparable<CMSCollection>{
+    
+    private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
+    
+    private static final String LABEL_TAG = "label";
+    private static final String DESCRIPTION_TAG = "description";
     
     /** Unique database ID. */
     @Id
@@ -46,12 +64,27 @@ public class CMSCollection implements PersistentEntity, Comparable<CMSCollection
     private Long id;
     
     @Column(name = "solr_field")
-    private final String solrField;
+    private String solrField;
     
     @Column(name = "solr_value")
-    private final String solrFieldValue;
+    private String solrFieldValue;
+    
+    /** Media item reference for media content items. */
+    @JoinColumn(name = "media_item_id")
+    private CMSMediaItem mediaItem;
+    
+    @Column(name = "collection_url")
+    private String collectionUrl;
+    
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @PrivateOwned
+    private List<Translation> translations = new ArrayList<>();
     
         
+    public CMSCollection() {
+        
+    }
+    
     /**
      * Default constructor, creating a Collection from the identifying fields {@link CMSCollection#solrField} and {@link CMSCollection#solrFieldValue}
      * 
@@ -68,7 +101,131 @@ public class CMSCollection implements PersistentEntity, Comparable<CMSCollection
         this.solrFieldValue = solrFieldValue;
     }
     
+    /**
+     * @return the mediaItem
+     */
+    public CMSMediaItem getMediaItem() {
+        return mediaItem;
+    }
     
+    /**
+     * @param mediaItem the mediaItem to set
+     */
+    public void setMediaItem(CMSMediaItem mediaItem) {
+        this.mediaItem = mediaItem;
+    }
+    
+    /**
+     * @return the collectionUri
+     */
+    public String getCollectionUrl() {
+        return collectionUrl;
+    }
+    
+    /**
+     * @param collectionUri the collectionUri to set
+     */
+    public void setCollectionUrl(String collectionUrl) {
+        this.collectionUrl = collectionUrl;
+    }
+    
+    /**
+     * Adds a translation for the collection label
+     * 
+     * @param label
+     */
+    public void addLabel(Translation label) {
+        label.setTag(LABEL_TAG);
+        translations.add(label);
+    }
+    
+    /**
+     * Adds a translation for the collection description
+     * 
+     * @param label
+     */
+    public void addDescription(Translation description) {
+        description.setTag(DESCRIPTION_TAG);
+        translations.add(description);
+    }
+    
+    /**
+     * returns all translations of this page with the tag {@link #LABEL_TAG}
+     * 
+     * @return  all labels for this collections
+     */
+    public List<Translation> getLabels() {
+        return translations.stream().filter(translation -> LABEL_TAG.equals(translation.getTag())).collect(Collectors.toList());
+    }
+    
+    /**
+     * returns all translations of this page with the tag {@link #DESCRIPTION_TAG}
+     * 
+     * @return  all descriptions for this collections
+     */
+    public List<Translation> getDescriptions() {
+        return translations.stream().filter(translation -> DESCRIPTION_TAG.equals(translation.getTag())).collect(Collectors.toList());
+    }
+    
+    /**
+     * get the label for the given {@code language}, or an empty string if no matching label exists
+     * the language should be the language code of a {@link Locale} and is case insensitive
+     * 
+     * @param language
+     * @return  The string value of the label of the given language, or an empty string
+     */
+    public String getLabel(String language) {
+        return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse(getSolrFieldValue());
+    }
+    
+    /**
+     * get the label for the given {@code locale}, or an empty string if no matching label exists
+     * 
+     * @param locale
+     * @return  The string value of the label of the given locale, or an empty string
+     */
+    public String getLabel(Locale locale) {
+        return getLabel(locale.getLanguage());
+    }
+    
+    /**
+     * get the label for the current locale (given by {@link BeanUtils#getLocale()}, or an empty string if no matching label exists
+     * 
+     * @return  The string value of the label of the current locale, or an empty string
+     */
+    public String getLabel() {
+        return getLabel(BeanUtils.getLocale());
+    }
+    
+    /**
+     * get the description for the given {@code language}, or an empty string if no matching description exists
+     * the language should be the language code of a {@link Locale} and is case insensitive
+     * 
+     * @param language
+     * @return  The string value of the description of the given language, or an empty string
+     */
+    public String getDescription(String language) {
+        return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse("");
+    }
+    
+    /**
+     * get the description for the given {@code locale}, or an empty string if no matching description exists
+     * 
+     * @param locale
+     * @return  The string value of the description of the given locale, or an empty string
+     */
+    public String getDescription(Locale locale) {
+        return getDescription(locale.getLanguage());
+    }
+    
+    /**
+     * get the description for the current locale (given by {@link BeanUtils#getLocale()}, or an empty string if no matching description exists
+     * 
+     * @return  The string value of the description of the current locale, or an empty string
+     */
+    public String getDescription() {
+        return getDescription(BeanUtils.getLocale());
+    }
     
     /**
      * @return the solrField. Guaranteed to hold a non-blank value
@@ -113,17 +270,32 @@ public class CMSCollection implements PersistentEntity, Comparable<CMSCollection
             return false;
         }
     }
-
-
-
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.dao.PersistentEntity#getId()
-     */
-    @Override
-    public Long getId() {
-        return this.id;
+    
+    public void populateLabels() {
+        List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
+        for (String language : languages) {
+            if(getLabels().stream().noneMatch(label -> label.getLanguage().equalsIgnoreCase(language))) {
+                addLabel(new Translation(language, ""));
+            }
+        }
     }
     
+    public void populateDescriptions() {
+        List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
+        for (String language : languages) {
+            if(getDescriptions().stream().noneMatch(description -> description.getLanguage().equalsIgnoreCase(language))) {
+                addDescription(new Translation(language, ""));
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getSolrField() + "/" + getSolrFieldValue();
+    }
     
 
 }

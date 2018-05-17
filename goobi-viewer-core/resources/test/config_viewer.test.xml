@@ -513,6 +513,8 @@
 				<pi>pi_value4</pi>
 			</selectedRecords>
 		</collection>
+        <collection field="MD_KNOWLEDGEFIELD"/>
+        <collection field="MD_HIERARCHICALFIELD"/>
 	</collections>
 
 	<metadata>

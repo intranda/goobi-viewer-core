@@ -906,7 +906,27 @@ public final class SolrSearchIndex {
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
      */
-    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+        return searchFacetsAndStatistics(query, facetFields, facetMinCount, null, getFieldStatistics);
+    }
+
+    
+    /**
+     * Returns facets for the given facet field list. No actual docs are returned since they aren't necessary.
+     *
+     * @param query The query to use.
+     * @param facetFields List of facet fields.
+     * @param facetMinCount
+     * @param facetPrefix   The facet field value must start with these characters. Ignored if null or blank
+     * @param getFieldStatistics If true, field statistics will be generated for every facet field.
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should generate facets correctly
+     * @should generate field statistics for every facet field if requested
+     * @should not return any docs
+     */
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, String facetPrefix, boolean getFieldStatistics)
             throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
@@ -921,6 +941,9 @@ public final class SolrSearchIndex {
             }
         }
         solrQuery.setFacetMinCount(facetMinCount);
+        if(StringUtils.isNotBlank(facetPrefix)) {            
+            solrQuery.setFacetPrefix(facetPrefix);
+        }
         solrQuery.setFacetLimit(-1); // no limit
         try {
             QueryResponse resp = server.query(solrQuery);

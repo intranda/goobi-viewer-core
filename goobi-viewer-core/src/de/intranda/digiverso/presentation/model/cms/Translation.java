@@ -20,9 +20,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import de.intranda.digiverso.presentation.dao.PersistentEntity;
 
 /**
  * A persistence object holding a translated String value
@@ -32,19 +32,97 @@ import de.intranda.digiverso.presentation.dao.PersistentEntity;
  */
 @Entity
 @Table(name = "translations")
-public class Translation implements PersistentEntity{
+public class Translation {
     
     /** Unique database ID. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cms_collection_id")
+    @Column(name = "translation_id")
     private Long id;
 
-    @Column("")
+    /** Reference to the owning {@link PersistentEntity}. */
+    @ManyToOne
+    @JoinColumn(name = "translation_owner_id")
+    private CMSCollection owner;
     
+    /** An additional optional field used to identify the purpose or categorization of a translation.
+     * Usefull if an object has more than one relationship with Translation entities and needs to
+     * distinguish them in some way
+     * **/
+    @Column(name="tag", nullable=true)
+    private String tag;
+    
+    @Column(name = "language")
+    private String language;
+    
+    @Column(name = "value")
+    private String value;
+    
+    public Translation() {
+        
+    }
+    
+    public Translation(String language, String value) {
+        this.language = language;
+        this.value = value;
+    }
+    
+    /**
+     * @return the language
+     */
+    public String getLanguage() {
+        return language;
+    }
+    
+    /**
+     * @param language the language to set
+     */
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+    
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
+    
+    /**
+     * @param value the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
+    /**
+     * @return the tag
+     */
+    public String getTag() {
+        return tag;
+    }
+    
+    /**
+     * @param tag the tag to set
+     */
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+    
+    /**
+     * @return the owner
+     */
+    public CMSCollection getOwner() {
+        return owner;
+    }
+
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
-    public Long getId() {
-        return id;
+    public String toString() {
+        return value;
     }
 
 }

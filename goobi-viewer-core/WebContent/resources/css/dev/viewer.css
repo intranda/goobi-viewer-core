@@ -9318,3 +9318,17 @@ img.cms-static-pages__page-language--complete {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Collections
+   style declarations for adminCmsCollections.xhtml
+   ==============================================================*/
+#cmsCollections .selectionGroup .selectionLabel {
+  width: 300px;
+}
+#cmsCollections .selectionGroup .selectionInput {
+  display: inline-block;
+  width: 400px;
+}
+#cmsCollections .selectionGroup .selectionInput input {
+  width: calc(100% - 37px);
+}
