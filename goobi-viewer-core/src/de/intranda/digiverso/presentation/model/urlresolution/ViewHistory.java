@@ -16,7 +16,7 @@
 package de.intranda.digiverso.presentation.model.urlresolution;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Optional;
 
@@ -120,9 +120,9 @@ public class ViewHistory {
      * @param path  The path to check
      * @return
      */
-    private static boolean isIgnoredView(Path path) {
+    private static boolean isIgnoredView(URI path) {
         for (PageType pageType : IGNORED_VIEWS) {
-            if(path.equals(Paths.get(pageType.getName()))) {
+            if(path.toString().equals(pageType.getName())) {
                 return true;
             }
         }

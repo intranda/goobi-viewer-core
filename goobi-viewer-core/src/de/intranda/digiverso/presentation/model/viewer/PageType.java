@@ -15,7 +15,7 @@
  */
 package de.intranda.digiverso.presentation.model.viewer;
 
-import java.nio.file.Path;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.model.urlresolution.ViewerPathBuilder;
 
 public enum PageType {
 
@@ -270,10 +271,10 @@ public enum PageType {
      * @return true if the given path starts with either the intrinsic or configured name of this pageType Leading and trailing slashes are ignored.
      *         PageType other is never matched
      */
-    public boolean matches(Path pagePath) {
+    public boolean matches(URI pagePath) {
         if (pagePath == null || StringUtils.isBlank(pagePath.toString())) {
             return false;
         }
-        return pagePath.startsWith(this.name()) || pagePath.startsWith(this.name) || pagePath.startsWith(getName());
+        return ViewerPathBuilder.startsWith(pagePath,this.name()) || ViewerPathBuilder.startsWith(pagePath, this.name) || ViewerPathBuilder.startsWith(pagePath, getName());
     }
 }
