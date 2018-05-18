@@ -61,7 +61,7 @@ public class BookshelfResource {
     private static final Logger logger = LoggerFactory.getLogger(BookshelfResource.class);
     private final boolean testing;
     private final UserBean userBean;
-    
+
     @Context
     private HttpServletRequest servletRequest;
 
@@ -69,15 +69,13 @@ public class BookshelfResource {
         this.testing = false;
         this.userBean = BeanUtils.getUserBean();
     }
-   
+
     public BookshelfResource(UserBean userBean, HttpServletRequest request) {
         this.testing = true;
         this.userBean = userBean;
         this.servletRequest = request;
     }
 
-    
-    
     /**
      * Returns the session stored bookshelf, creating a new empty one if needed
      * 
@@ -94,9 +92,8 @@ public class BookshelfResource {
         if (session != null) {
             Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
             return bookshelf;
-        } else {
-            throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
@@ -143,20 +140,19 @@ public class BookshelfResource {
                 //                servletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "Unable to create bookshelf item for pi = " + pi + " and logid = " + logId);
                 throw new RestApiException(errorMessage, e, HttpServletResponse.SC_BAD_REQUEST);
             }
-        } else {
-            throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
-            //            servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "No session available - request refused");
-            //            return null;
         }
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
+        //            servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "No session available - request refused");
+        //            return null;
     }
 
     /**
-     * Deletes the bookshelf item with the given pi from the session store bookshelf
-     * This operation returns an object with the property "success: false" if the operation failed (usually because the
-     * object wasn't in the bookshelf to begin with). Otherwise the return object contains "success: true"
+     * Deletes the bookshelf item with the given pi from the session store bookshelf This operation returns an object with the property "success:
+     * false" if the operation failed (usually because the object wasn't in the bookshelf to begin with). Otherwise the return object contains
+     * "success: true"
      * 
      * @param pi
-     * @return  an object containing the boolean property 'success', detailing wether the operation was successfull
+     * @return an object containing the boolean property 'success', detailing wether the operation was successfull
      * @throws DAOException
      * @throws IOException
      * @throws RestApiException
@@ -169,14 +165,14 @@ public class BookshelfResource {
     }
 
     /**
-     * Deletes the bookshelf item with the given pi, logid and page number from the session store bookshelf
-     * This operation returns an object with the property "success: false" if the operation failed (usually because the
-     * object wasn't in the bookshelf to begin with). Otherwise the return object contains "success: true"
+     * Deletes the bookshelf item with the given pi, logid and page number from the session store bookshelf This operation returns an object with the
+     * property "success: false" if the operation failed (usually because the object wasn't in the bookshelf to begin with). Otherwise the return
+     * object contains "success: true"
      * 
      * @param pi
      * @param logId
      * @param pageString
-     * @return  an object containing the boolean property 'success', detailing wether the operation was successfull
+     * @return an object containing the boolean property 'success', detailing wether the operation was successfull
      * @throws DAOException
      * @throws IOException
      * @throws RestApiException
@@ -184,8 +180,8 @@ public class BookshelfResource {
     @GET
     @Path("/session/delete/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString)
-            throws DAOException, IOException, RestApiException {
+    public SuccessMessage deleteFromSessionBookshelf(@PathParam("pi") String pi, @PathParam("logid") String logId,
+            @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
 
@@ -198,14 +194,13 @@ public class BookshelfResource {
                 logger.error(errorMessage);
                 throw new RestApiException(errorMessage, e, HttpServletResponse.SC_BAD_REQUEST);
             }
-        } else {
-            throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
-     * Deletes the entiry bookshelf from the session store. Always returns an object with the 
-     * property "success: true", unless an error occurs in which case an error status code and an error object is returned
+     * Deletes the entiry bookshelf from the session store. Always returns an object with the property "success: true", unless an error occurs in
+     * which case an error status code and an error object is returned
      * 
      * @return
      * @throws RestApiException
@@ -218,11 +213,10 @@ public class BookshelfResource {
         if (session != null) {
             DataManager.getInstance().getBookshelfManager().deleteBookshelf(session);
             return new SuccessMessage(true);
-        } else {
-            throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
-    
+
     /**
      * Returns "true" if the object with the given IP is in the session store bookshelf, "false" otherwise
      * 
@@ -262,7 +256,7 @@ public class BookshelfResource {
                 BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
                 boolean success = DataManager.getInstance().getBookshelfManager().isInBookshelf(item, session);
                 return success;
-            } catch(PresentationException e) {
+            } catch (PresentationException e) {
                 //no such document
                 return false;
             } catch (IndexUnreachableException e) {
@@ -270,14 +264,13 @@ public class BookshelfResource {
                 logger.error(errorMessage);
                 throw new RestApiException(errorMessage, e, HttpServletResponse.SC_BAD_REQUEST);
             }
-        } else {
-            throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
-    
+
     /**
-     * Counts the items contained in the session store bookshelf and returns the number as plain integer
-     * If no session store bookshelf exists, 0 is returned
+     * Counts the items contained in the session store bookshelf and returns the number as plain integer If no session store bookshelf exists, 0 is
+     * returned
      * 
      * @return
      * @throws RestApiException
@@ -290,9 +283,8 @@ public class BookshelfResource {
         if (session != null) {
             int count = DataManager.getInstance().getBookshelfManager().getBookshelf(session).map(bs -> bs.getItems().size()).orElse(0);
             return count;
-        } else {
-            throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
@@ -301,7 +293,7 @@ public class BookshelfResource {
      * @return
      * @throws DAOException
      * @throws IOException
-     * @throws RestApiException 
+     * @throws RestApiException
      */
     @GET
     @Path("/user/get/")
@@ -310,9 +302,8 @@ public class BookshelfResource {
         User user = getUser();
         if (user != null) {
             return DataManager.getInstance().getDao().getBookshelves(user);
-        } else {
-            throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
         }
+        throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
@@ -329,11 +320,15 @@ public class BookshelfResource {
     public List<Bookshelf> getAllSharedBookshelfs() throws DAOException, IOException, RestApiException {
         User user = getUser();
         if (user != null) {
-            return DataManager.getInstance().getDao().getAllBookshelves().stream().filter(bs -> !user.equals(bs.getOwner())).filter(bs -> isSharedTo(
-                    bs, user)).collect(Collectors.toList());
-        } else {
-            throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+            return DataManager.getInstance()
+                    .getDao()
+                    .getAllBookshelves()
+                    .stream()
+                    .filter(bs -> !user.equals(bs.getOwner()))
+                    .filter(bs -> isSharedTo(bs, user))
+                    .collect(Collectors.toList());
         }
+        throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
@@ -369,22 +364,20 @@ public class BookshelfResource {
         if (bookshelf.isPublic()) {
             logger.trace("Serving public bookshelf " + id);
             return bookshelf;
-        } else {
-            User user = getUser();
-            if (user != null) {
-                if (user.equals(bookshelf.getOwner())) {
-                    logger.trace("Serving bookshelf " + id + " owned by user " + user);
-                    return bookshelf;
-                } else if (isSharedTo(bookshelf, user)) {
-                    logger.trace("Serving bookshelf " + id + " shared to user " + user);
-                    return bookshelf;
-                } else {
-                    throw new RestApiException("User has no access to bookshelf " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
-                }
+        }
+        User user = getUser();
+        if (user != null) {
+            if (user.equals(bookshelf.getOwner())) {
+                logger.trace("Serving bookshelf " + id + " owned by user " + user);
+                return bookshelf;
+            } else if (isSharedTo(bookshelf, user)) {
+                logger.trace("Serving bookshelf " + id + " shared to user " + user);
+                return bookshelf;
             } else {
-                throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+                throw new RestApiException("User has no access to bookshelf " + id + " - request refused", HttpServletResponse.SC_FORBIDDEN);
             }
         }
+        throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
@@ -394,17 +387,16 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/set/name/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage setUserBookshelfName(@PathParam("id") Long id, @PathParam("name") String name) throws DAOException, IOException,
-            RestApiException {
+    public SuccessMessage setUserBookshelfName(@PathParam("id") Long id, @PathParam("name") String name)
+            throws DAOException, IOException, RestApiException {
         Optional<Bookshelf> o = getAllUserBookshelfs().stream().filter(bs -> bs.getId().equals(id)).findFirst();
 
         if (o.isPresent()) {
             o.get().setName(name);
             DataManager.getInstance().getDao().updateBookshelf(o.get());
             return new SuccessMessage(true);
-        } else {
-            throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
         }
+        throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
     }
 
     /**
@@ -429,9 +421,8 @@ public class BookshelfResource {
                 throw new RestApiException("Failed to create bookshelf item with pi '" + pi + "', logid '" + logId + "' and page number '"
                         + pageString + "': " + e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
             }
-        } else {
-            throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
         }
+        throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
     }
 
     /**
@@ -442,7 +433,8 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/add/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
+    public SuccessMessage addItemToUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi)
+            throws DAOException, IOException, RestApiException {
         return addItemToUserBookshelf(id, pi, null, null);
     }
 
@@ -468,9 +460,8 @@ public class BookshelfResource {
                 throw new RestApiException("Failed to create bookshelf item with pi '" + pi + "', logid '" + logId + "' and page number '"
                         + pageString + "': " + e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
             }
-        } else {
-            throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
         }
+        throw new RestApiException("No bookshelf with id '" + id + "' found for current user", HttpServletResponse.SC_NO_CONTENT);
     }
 
     /**
@@ -485,8 +476,8 @@ public class BookshelfResource {
     @GET
     @Path("/user/get/{id}/delete/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi) throws DAOException, IOException,
-            RestApiException {
+    public SuccessMessage deleteFromUserBookshelf(@PathParam("id") Long id, @PathParam("pi") String pi)
+            throws DAOException, IOException, RestApiException {
         return deleteFromUserBookshelf(id, pi, null, null);
     }
 
@@ -514,12 +505,10 @@ public class BookshelfResource {
                 bookshelf.setPublic(false);
                 boolean success = DataManager.getInstance().getDao().addBookshelf(bookshelf);
                 return new SuccessMessage(success);
-            } else {
-                throw new RestApiException("Bookshelf '" + name + "' already exists for the current user", HttpServletResponse.SC_BAD_REQUEST);
             }
-        } else {
-            throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+            throw new RestApiException("Bookshelf '" + name + "' already exists for the current user", HttpServletResponse.SC_BAD_REQUEST);
         }
+        throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
@@ -538,7 +527,7 @@ public class BookshelfResource {
         String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
         return addUserBookshelf(name);
     }
-    
+
     /**
      * Adds the current session bookshelf to the current user bookshelves under a newly generated name
      * 
@@ -555,7 +544,7 @@ public class BookshelfResource {
         String name = SessionStoreBookshelfManager.generateNewBookshelfName(getAllUserBookshelfs());
         return addUserBookshelfFromSession(name);
     }
-    
+
     /**
      * Adds the current session bookshelf to the current user bookshelves under the given name
      * 
@@ -568,33 +557,31 @@ public class BookshelfResource {
     @GET
     @Path("/user/addSessionBookshelf/{name}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public SuccessMessage addUserBookshelfFromSession(@PathParam("name")String bookshelfName) throws DAOException, IOException, RestApiException {
+    public SuccessMessage addUserBookshelfFromSession(@PathParam("name") String bookshelfName) throws DAOException, IOException, RestApiException {
         User user = getUser();
 
-        if (user != null) {            
-            
+        if (user != null) {
+
             Optional<Bookshelf> bookshelf = DataManager.getInstance().getBookshelfManager().getBookshelf(servletRequest.getSession());
-            if(bookshelf.isPresent()) {                
+            if (bookshelf.isPresent()) {
                 bookshelf.get().setName(bookshelfName);
                 boolean success = DataManager.getInstance().getDao().addBookshelf(bookshelf.get());
                 return new SuccessMessage(success);
-            } else {
-                return new SuccessMessage(false, "No session bookshelf found");
             }
-        } else {
-            throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+            return new SuccessMessage(false, "No session bookshelf found");
         }
+        throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**
-     * Deletes the current user's bookshelf with the given id. If no such bookshelf could be found a message with 'success:false'
-     * is returned, otherwise one with 'success:true'
+     * Deletes the current user's bookshelf with the given id. If no such bookshelf could be found a message with 'success:false' is returned,
+     * otherwise one with 'success:true'
      * 
-     * @param id    The bookshelf id
+     * @param id The bookshelf id
      * @return an object containing the boolean property 'success', detailing wether the operation was successfull
      * @throws DAOException
      * @throws IOException
-     * @throws RestApiException     if no current user was found
+     * @throws RestApiException if no current user was found
      */
     @GET
     @Path("/user/delete/{id}")
@@ -602,24 +589,19 @@ public class BookshelfResource {
     public SuccessMessage deleteUserBookshelf(@PathParam("id") Long id) throws DAOException, IOException, RestApiException {
         User user = getUser();
 
-        if (user != null) {     
+        if (user != null) {
             Optional<Bookshelf> bookshelf = getBookshelf(user, id);
-            if(bookshelf.isPresent()) {                
+            if (bookshelf.isPresent()) {
                 DataManager.getInstance().getDao().deleteBookshelf(bookshelf.get());
                 return new SuccessMessage(true);
-            } else {
-                return new SuccessMessage(false, "No bookshelf with id '" + id + "' found for user " + user);
             }
-        } else {
-            throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+            return new SuccessMessage(false, "No bookshelf with id '" + id + "' found for user " + user);
         }
+        throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
-
-
     /**
-     * Returns the bookshelf containing the object with the given pi, logid and page number 
-     * if is contained in any bookshelf of the current user
+     * Returns the bookshelf containing the object with the given pi, logid and page number if is contained in any bookshelf of the current user
      * Otherwise an json object with the property "success:false" is returned
      * 
      * @param pi
@@ -631,25 +613,25 @@ public class BookshelfResource {
     @GET
     @Path("/user/contains/{pi}/{page}/{logid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId, @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
+    public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi, @PathParam("logid") String logId,
+            @PathParam("page") String pageString) throws DAOException, IOException, RestApiException {
         List<Bookshelf> bookshelves = getAllUserBookshelfs();
-        if(bookshelves  != null) {
+        if (bookshelves != null) {
             try {
                 BookshelfItem item = new BookshelfItem(pi, logId, getPageOrder(pageString), testing);
-                List<Bookshelf> containingShelves= bookshelves.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
+                List<Bookshelf> containingShelves = bookshelves.stream().filter(bs -> bs.getItems().contains(item)).collect(Collectors.toList());
                 return containingShelves;
             } catch (IndexUnreachableException | PresentationException e) {
                 throw new RestApiException("Error retrieving bookshelves: " + e.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        } else {
-            return new ArrayList<Bookshelf>();
         }
+        
+        return new ArrayList<>();
     }
 
     /**
-     * Returns the bookshelf containing the object with the given pi 
-     * if is contained in any bookshelf of the current user
-     * Otherwise an json object with the property "success:false" is returned
+     * Returns the bookshelf containing the object with the given pi if is contained in any bookshelf of the current user Otherwise an json object
+     * with the property "success:false" is returned
      * 
      * @param pi
      * @return
@@ -663,15 +645,15 @@ public class BookshelfResource {
     public List<Bookshelf> getContainingUserBookshelves(@PathParam("pi") String pi) throws DAOException, IOException, RestApiException {
         return getContainingUserBookshelves(pi, null, null);
     }
- 
+
     /**
-     * Counts the items contained in the current user's bookshelf with the given id and returns the number as plain integer If no session store bookshelf exists, 0 is
-     * returned
+     * Counts the items contained in the current user's bookshelf with the given id and returns the number as plain integer If no session store
+     * bookshelf exists, 0 is returned
      * 
      * @return
      * @throws RestApiException
-     * @throws IOException 
-     * @throws DAOException 
+     * @throws IOException
+     * @throws DAOException
      */
     @GET
     @Path("/user/get/{id}/count")
@@ -704,19 +686,17 @@ public class BookshelfResource {
      * @return
      */
     private User getUser() {
-            if (userBean == null) {
-                logger.debug("Unable to get user: No UserBean found in session store.");
-                return null;
-            } else {
-                User user = userBean.getUser();
-                if (user == null) {
-                    logger.debug("Unable to get user: No user found in session store UserBean instance");
-                    return null;
-                } else {
-                    logger.debug("Found user " + user);
-                    return user;
-                }
-            }
+        if (userBean == null) {
+            logger.debug("Unable to get user: No UserBean found in session store.");
+            return null;
+        }
+        User user = userBean.getUser();
+        if (user == null) {
+            logger.debug("Unable to get user: No user found in session store UserBean instance");
+            return null;
+        }
+        logger.debug("Found user {}", user);
+        return user;
     }
 
     /**
@@ -727,34 +707,32 @@ public class BookshelfResource {
     private boolean isSharedTo(Bookshelf bookshelf, User user) {
         return bookshelf.getGroupShares().stream().anyMatch(group -> isInGroup(user, group));
     }
-    
 
     /**
      * @param user
      * @param name
      * @return
-     * @throws RestApiException 
-     * @throws IOException 
-     * @throws DAOException 
+     * @throws RestApiException
+     * @throws IOException
+     * @throws DAOException
      */
     private boolean userHasBookshelf(User user, String name) throws DAOException, IOException, RestApiException {
-        return getAllUserBookshelfs().stream()
-        .anyMatch(bs -> bs.getName() != null && bs.getName().equals(name));
+        return getAllUserBookshelfs().stream().anyMatch(bs -> bs.getName() != null && bs.getName().equals(name));
     }
-    
+
     /**
      * @param user
      * @param id
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
-    private Optional<Bookshelf> getBookshelf(User user, Long id) throws DAOException {
+    private static Optional<Bookshelf> getBookshelf(User user, Long id) throws DAOException {
         List<Bookshelf> bookshelves = DataManager.getInstance().getDao().getBookshelves(user);
-        if(bookshelves != null) {
+        if (bookshelves != null) {
             return bookshelves.stream().filter(bs -> bs.getId().equals(id)).findFirst();
-        } else {
-            return Optional.empty();
         }
+        
+        return Optional.empty();
     }
 
     /**
@@ -771,7 +749,6 @@ public class BookshelfResource {
             return false;
         }
     }
-
 
     //    @PUT
     //    @Path("/testPost")
