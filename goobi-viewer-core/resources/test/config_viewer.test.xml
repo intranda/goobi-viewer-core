@@ -13,7 +13,8 @@
 	<!-- viewerHome: root path of (usually) all viewer data -->
 	<viewerHome>resources/test/data/viewer/</viewerHome>
 	<!-- dataRepositoriesHome: root folder for data repositories -->
-	<dataRepositoriesHome>resources/test/data/viewer/data/</dataRepositoriesHome>
+	<dataRepositoriesHome>resources/test/data/viewer/data/
+	</dataRepositoriesHome>
 	<!-- indexedMetsFolder: contains indexed mets files (used by the METS resolver) -->
 	<indexedMetsFolder>indexed_mets</indexedMetsFolder>
 	<!-- indexedLidoFolder: contains indexed lido files (used by the LIDO resolver) -->
@@ -34,10 +35,10 @@
 	<fulltextFolder>fulltext</fulltextFolder>
 	<!-- wcFolder: contains TEI word coordinate files -->
 	<wcFolder>wc</wcFolder>
-    <!-- teiFolder: contains TEI metadata/fulltext files -->
-    <teiFolder>tei</teiFolder>
-    <!-- cmdiFolder: contains CMDI metadata/fulltext files -->
-    <cmdiFolder>cmdi</cmdiFolder>
+	<!-- teiFolder: contains TEI metadata/fulltext files -->
+	<teiFolder>tei</teiFolder>
+	<!-- cmdiFolder: contains CMDI metadata/fulltext files -->
+	<cmdiFolder>cmdi</cmdiFolder>
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
 	<hotfolder>hotfolder</hotfolder>
@@ -67,7 +68,7 @@
 		<!-- taskManager: Url of local taskManager for pdf-download -->
 		<taskManager>taskmanager_url/</taskManager>
 
-        <!-- solr: URL to the Solr index core -->
+		<!-- solr: URL to the Solr index core -->
 		<solr>solr_value/</solr>
 
 		<!-- contentServer: relative path to contentServer from the intranda viewer 
@@ -83,13 +84,13 @@
 		<!-- urnResolver: Resolver URL for URN-based PURLs displayed in the title 
 			widget, etc. Default is the current application URL + "/resolver?urn=" -->
 		<urnResolver>urnResolver_value</urnResolver>
-		
+
 		<rest>http://localhost:8080/viewer/rest/</rest>
-		
+
 		<download>http://localhost:8080/viewer/download/</download>
-		
+
 		<!-- contentRestApi: REST API URL for content files -->
-<!--         <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi> -->
+		<!-- <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi> -->
 	</urls>
 
 	<user>
@@ -134,6 +135,9 @@
 		<!-- unconditionalImageAccesMaxWidth: Access conditions are not applied 
 			to images below this width - Thumbnails -->
 		<unconditionalImageAccessMaxWidth>1</unconditionalImageAccessMaxWidth>
+		<!-- fullAccessForLocalhost: If true, users on localhost will be granted 
+			superuser access. Default is false. -->
+		<fullAccessForLocalhost>true</fullAccessForLocalhost>
 	</accessConditions>
 
 	<reCaptcha show="true">
@@ -158,9 +162,9 @@
 			pages in the image view (default is false) -->
 		<pagePdfEnabled>true</pagePdfEnabled>
 		<!-- Folder for generated download files -->
-        <downloadFolder>/opt/digiverso/viewer/download_pdf</downloadFolder>
-        
-        <docHierarchyPdfEnabled>true</docHierarchyPdfEnabled>
+		<downloadFolder>/opt/digiverso/viewer/download_pdf</downloadFolder>
+
+		<docHierarchyPdfEnabled>true</docHierarchyPdfEnabled>
 	</pdf>
 
 	<epub>
@@ -174,7 +178,7 @@
 			is displayed on the metadata page (default is true) -->
 		<metadataEpubEnabled>true</metadataEpubEnabled>
 		<!-- Folder for generated download files -->
-        <downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
+		<downloadFolder>/opt/digiverso/viewer/download_epub</downloadFolder>
 	</epub>
 
 	<viewer>
@@ -190,11 +194,11 @@
 			<pageBrowseStep>5</pageBrowseStep>
 			<pageBrowseStep>10</pageBrowseStep>
 		</pageBrowse>
-		
+
 		<doublePageMode>
 			<enabled>true</enabled>
 		</doublePageMode>
-		
+
 		<zoomImageView type="classic" tileImage="true"
 			footerHeight="50">
 			<useFor>
@@ -209,8 +213,8 @@
 			</tileSize>
 		</zoomImageView>
 
-		<zoomImageView type="openLayers"
-			tileImage="false" footerHeight="0">
+		<zoomImageView type="openLayers" tileImage="false"
+			footerHeight="0">
 			<useFor>
 				<view>editContent</view>
 				<view>editOcr</view>
@@ -236,16 +240,16 @@
 			zoomScale="3"> -->
 		<!-- </zoomImageView> -->
 
-        <externalContent>
-            <restrictedUrls>
-                <url>https?://exteral/restricted/.*</url>
-                <url>https?://exteral/.*\.tif</url>
-            </restrictedUrls>
-        </externalContent>
+		<externalContent>
+			<restrictedUrls>
+				<url>https?://exteral/restricted/.*</url>
+				<url>https?://exteral/.*\.tif</url>
+			</restrictedUrls>
+		</externalContent>
 
 		<rememberImageZoom>true</rememberImageZoom>
 		<rememberImageRotation>true</rememberImageRotation>
-		
+
 		<!-- image size settings for the "newspaper" preview view. previewWidth 
 			is the pixel-width of the preview image as delivered by the contentServer; 
 			previewHeightPercentage is the fraktion (in percent) of the image (from top 
@@ -307,28 +311,30 @@
 		<pageTypes>
 			<viewImage>viewImage_value</viewImage>
 		</pageTypes>
-		
-        <!-- docstructTargetPageTypes: Overrides the default target view URL for given docstruct types.
-             An optinal _DEFAULT configuration can be used for all docstruct types without an explicit configuration.
-             These targets are also used for PURL generation. -->
-        <docstructTargetPageTypes>
-            <Catalogue>toc</Catalogue>
-        </docstructTargetPageTypes>
-        
-        <!-- <fulltextPercentageWarningThreshold>: If a record's percentage of pages having full-Text/ALTO documents
-            falls below the configured value, a warning will be displayed for that record. -->
-        <fulltextPercentageWarningThreshold>99</fulltextPercentageWarningThreshold>
-        
-        <!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will 
-            also change the preferred language for record metadata. Default is false. -->
-        <useViewerLocaleAsRecordLanguage>true</useViewerLocaleAsRecordLanguage>
+
+		<!-- docstructTargetPageTypes: Overrides the default target view URL for 
+			given docstruct types. An optinal _DEFAULT configuration can be used for 
+			all docstruct types without an explicit configuration. These targets are 
+			also used for PURL generation. -->
+		<docstructTargetPageTypes>
+			<Catalogue>toc</Catalogue>
+		</docstructTargetPageTypes>
+
+		<!-- <fulltextPercentageWarningThreshold>: If a record's percentage of 
+			pages having full-Text/ALTO documents falls below the configured value, a 
+			warning will be displayed for that record. -->
+		<fulltextPercentageWarningThreshold>99
+		</fulltextPercentageWarningThreshold>
+
+		<!-- useViewerLocaleAsRecordLanguage: If true, changing the locale will 
+			also change the preferred language for record metadata. Default is false. -->
+		<useViewerLocaleAsRecordLanguage>true
+		</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
 		<theme subTheme="true" mainTheme="mainTheme_value"
-			discriminatorField="discriminatorField_value"
-			autoSwitch="true"
-			addFilterQuery="true"
-			filterQueryVisible="true">
+			discriminatorField="discriminatorField_value" autoSwitch="true"
+			addFilterQuery="true" filterQueryVisible="true">
 		</theme>
 	</viewer>
 
@@ -336,8 +342,9 @@
 		<!-- hitsPerPage: defines the number of elements that are shown in a search 
 			hitlist or when opening a collection -->
 		<hitsPerPage>15</hitsPerPage>
-        <!-- fulltextFragmentLength: Approximate length of the full-text fragment displayed in search hits. Default is 200. -->
-        <fulltextFragmentLength>50</fulltextFragmentLength>
+		<!-- fulltextFragmentLength: Approximate length of the full-text fragment 
+			displayed in search hits. Default is 200. -->
+		<fulltextFragmentLength>50</fulltextFragmentLength>
 		<!-- filters: Filter definitions for the regular search. Each definition 
 			will be rendered as a radio button. Syntax is "filter_" + Solr field name 
 			(so that individual labels can be added). -->
@@ -366,8 +373,10 @@
 			<luceneField>SORT_YEARPUBLISH</luceneField>
 		</sorting>
 		<drillDown>
-			<hierarchicalField initialElementNumber="4">FACET_DC</hierarchicalField>
-			<hierarchicalField sortOrder="numerical">FIELD3</hierarchicalField>
+			<hierarchicalField initialElementNumber="4">FACET_DC
+			</hierarchicalField>
+			<hierarchicalField sortOrder="numerical">FIELD3
+			</hierarchicalField>
 			<field sortOrder="numerical">FIELD1</field>
 			<field initialElementNumber="16">FIELD2</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 
@@ -418,41 +427,53 @@
 			the same entity will be grouped into one hit. Disable this if using a Solr 
 			schema that doesn't yet support GROUPFIELD. Default is true. -->
 		<groupDuplicateHits>false</groupDuplicateHits>
-        <!-- aggregateHits: If true, only topstructs will be returned as hits, with child docstructs and pages being retrieved in an extra search. Default is true. -->
-        <aggregateHits>false</aggregateHits>
-        <!-- displayAdditionalMetadata: Add relevant metadata fields and values to the search hits if they contain requested search terms. Default is enabled=true. -->
-        <displayAdditionalMetadata>
-            <enabled>false</enabled>
-            <!-- ignoreField: Fields that add no value to the search hits but take up space (e.g. PI_TOPSTRUCT, DOCSTRCT)
-                can be configured to not be added as additional metadata. This element can be repeated. -->
-            <ignoreField>ISANCHOR</ignoreField>
-            <ignoreField>ISWORK</ignoreField>
-            <ignoreField>PI_TOPSTRUCT</ignoreField>
-            <!-- translateField: Fields in this list will be highlighted with their translated value rather than raw. -->
-            <translateField>DC</translateField>
-            <translateField>DOCSTRCT</translateField>
-        </displayAdditionalMetadata>
-        <!-- staticQuerySuffix: Solr query suffix added to all search/list queries (e.g. for permanent filtering) -->
-        <staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
-        <!-- versioning -->
-        <versioning>
-            <!-- previousVersionIdentifierField' defines the Solr field that contains the identifier for the preceding version -->
-            <previousVersionIdentifierField>MD_PREVIOUS_VERSION</previousVersionIdentifierField>
-            <!-- nextVersionIdentifierField: defines the Solr field that contains the identifier for the succeeding version -->
-            <nextVersionIdentifierField>MD_NEXT_VERSION</nextVersionIdentifierField>
-            <!-- versionLabelField: Optional field containing the pre-definied version label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
-            <versionLabelField>MD_VERSIONLABEL</versionLabelField>
-        </versioning>
-        <!-- Search export settings -->
-        <export>
-            <excel>
-                <!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
-                <enabled>true</enabled>
-                <!-- field: Solr fields to put into the export sheet. One element per field. -->
-                <field>PI</field>
-                <field>LABEL</field>
-            </excel>
-        </export>
+		<!-- aggregateHits: If true, only topstructs will be returned as hits, 
+			with child docstructs and pages being retrieved in an extra search. Default 
+			is true. -->
+		<aggregateHits>false</aggregateHits>
+		<!-- displayAdditionalMetadata: Add relevant metadata fields and values 
+			to the search hits if they contain requested search terms. Default is enabled=true. -->
+		<displayAdditionalMetadata>
+			<enabled>false</enabled>
+			<!-- ignoreField: Fields that add no value to the search hits but take 
+				up space (e.g. PI_TOPSTRUCT, DOCSTRCT) can be configured to not be added 
+				as additional metadata. This element can be repeated. -->
+			<ignoreField>ISANCHOR</ignoreField>
+			<ignoreField>ISWORK</ignoreField>
+			<ignoreField>PI_TOPSTRUCT</ignoreField>
+			<!-- translateField: Fields in this list will be highlighted with their 
+				translated value rather than raw. -->
+			<translateField>DC</translateField>
+			<translateField>DOCSTRCT</translateField>
+		</displayAdditionalMetadata>
+		<!-- staticQuerySuffix: Solr query suffix added to all search/list queries 
+			(e.g. for permanent filtering) -->
+		<staticQuerySuffix>AND -BOOL_HIDE:true</staticQuerySuffix>
+		<!-- versioning -->
+		<versioning>
+			<!-- previousVersionIdentifierField' defines the Solr field that contains 
+				the identifier for the preceding version -->
+			<previousVersionIdentifierField>MD_PREVIOUS_VERSION
+			</previousVersionIdentifierField>
+			<!-- nextVersionIdentifierField: defines the Solr field that contains 
+				the identifier for the succeeding version -->
+			<nextVersionIdentifierField>MD_NEXT_VERSION
+			</nextVersionIdentifierField>
+			<!-- versionLabelField: Optional field containing the pre-definied version 
+				label; if no value found "PI (MD_YEARPUBLISH)" will be used -->
+			<versionLabelField>MD_VERSIONLABEL</versionLabelField>
+		</versioning>
+		<!-- Search export settings -->
+		<export>
+			<excel>
+				<!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
+				<enabled>true</enabled>
+				<!-- field: Solr fields to put into the export sheet. One element per 
+					field. -->
+				<field>PI</field>
+				<field>LABEL</field>
+			</excel>
+		</export>
 	</search>
 
 	<!-- ##### COLLECTION CONFIGURATION ##### -->
@@ -499,8 +520,9 @@
 				for that (sub-)collection shall be displayed (default is 0). -->
 			<displayNumberOfVolumesLevel>16</displayNumberOfVolumesLevel>
 
-			<!-- The highest level of the collection hierarchy which will be displayed in the displayed in advanced search 
-			0 is the first (lowest) level; a value of -1 means all levels are being displayed, this is also the default -->
+			<!-- The highest level of the collection hierarchy which will be displayed 
+				in the displayed in advanced search 0 is the first (lowest) level; a value 
+				of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>5</displayDepthForSearch>
 
 			<!-- selectedRecords: A list of record identifiers that represent a special 
@@ -666,8 +688,9 @@
 			<docStruct>Periodical</docStruct>
 		</docStructWhiteList>
 
-		<!-- DEPRECATED: museumDocstructTypes: docsturct types listed in this section will 
-			be displayed using the museum view. They must be whitelisted in the docStructWhiteList -->
+		<!-- DEPRECATED: museumDocstructTypes: docsturct types listed in this section 
+			will be displayed using the museum view. They must be whitelisted in the 
+			docStructWhiteList -->
 		<museumDocstructTypes>
 			<docStruct>museum_object</docStruct>
 		</museumDocstructTypes>
@@ -698,11 +721,11 @@
 			<luceneField>MD_SHELFMARK</luceneField>
 		</browsingMenu>
 
-        <!-- addDublinCoreMetaTags: render dc metadata to html head -->
-        <addDublinCoreMetaTags>true</addDublinCoreMetaTags>
-        
-        <!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
-        <addHighwirePressMetaTags>true</addHighwirePressMetaTags>
+		<!-- addDublinCoreMetaTags: render dc metadata to html head -->
+		<addDublinCoreMetaTags>true</addDublinCoreMetaTags>
+
+		<!-- addHighwirePressMetaTags: add Highwire Press tags to html head -->
+		<addHighwirePressMetaTags>true</addHighwirePressMetaTags>
 	</metadata>
 
 	<toc>
@@ -730,7 +753,7 @@
 			<template name="Periodical">
 				<field order="asc">CURRENTNOSORT</field>
 			</template>
-            <template name="CustomDocstruct" groupBy="GROUP">
+			<template name="CustomDocstruct" groupBy="GROUP">
 				<field order="desc">CURRENTNOSORT</field>
 				<field order="asc">SORT_TITLE</field>
 			</template>
@@ -739,41 +762,41 @@
 		<!-- labelConfig: Layout configuration for the label of TOC elements. The 
 			configuration is analogous to a metadata template. -->
 		<labelConfig>
-            <template name="_DEFAULT">
-                <metadata label="" value="{LABEL}{MD_CREATOR}">
-				    <param type="field" key="LABEL" />
-				    <param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
-                </metadata>
-            </template>
-            <template name="PeriodicalVolume">
-                <metadata label="" value="{CURRENTNO}{MD_TITLE}">
-                    <param type="field" key="CURRENTNO" prefix="Number_SPACE_" />
-                    <param type="field" key="MD_TITLE" prefix=":_SPACE_" />
-                </metadata>
-            </template>
+			<template name="_DEFAULT">
+				<metadata label="" value="{LABEL}{MD_CREATOR}">
+					<param type="field" key="LABEL" />
+					<param type="field" key="MD_CREATOR" prefix="_SPACE_/_SPACE_" />
+				</metadata>
+			</template>
+			<template name="PeriodicalVolume">
+				<metadata label="" value="{CURRENTNO}{MD_TITLE}">
+					<param type="field" key="CURRENTNO" prefix="Number_SPACE_" />
+					<param type="field" key="MD_TITLE" prefix=":_SPACE_" />
+				</metadata>
+			</template>
 		</labelConfig>
 
 		<!-- tocAnchorGroupElementsPerPage: Number of elements displayed per page 
 			in anchor/group TOCs. Values below 1 disable pagination. Default is 0. -->
 		<tocAnchorGroupElementsPerPage>10</tocAnchorGroupElementsPerPage>
-		
+
 		<!-- recordGroupIdentifierFields: Contains definitions of GROUPID_ fields 
-            used in the index. This is needed so the fields can be added to the whitelist 
-            of fields to return. -->
-        <recordGroupIdentifierFields>
-            <field>GROUPID_1</field>
-            <field>GROUPID_2</field>
-        </recordGroupIdentifierFields>
-        
-        <!-- ancestorIdentifierFields: Contains definitions of Solr fields that 
-           contain hierarchical parent document identifiers (such as PI_PARENT containing 
-           anchor identifiers. -->
-        <ancestorIdentifierFields listSiblingRecords="true">
-           <field>PI_PARENT</field>
-        </ancestorIdentifierFields>
-        
-        <!-- display as interactive tree view -->
-        <useTreeView showDocStructs="Monograph;Manuscript;MusicSupplies">true</useTreeView>
+			used in the index. This is needed so the fields can be added to the whitelist 
+			of fields to return. -->
+		<recordGroupIdentifierFields>
+			<field>GROUPID_1</field>
+			<field>GROUPID_2</field>
+		</recordGroupIdentifierFields>
+
+		<!-- ancestorIdentifierFields: Contains definitions of Solr fields that 
+			contain hierarchical parent document identifiers (such as PI_PARENT containing 
+			anchor identifiers. -->
+		<ancestorIdentifierFields listSiblingRecords="true">
+			<field>PI_PARENT</field>
+		</ancestorIdentifierFields>
+
+		<!-- display as interactive tree view -->
+		<useTreeView showDocStructs="Monograph;Manuscript;MusicSupplies">true</useTreeView>
 	</toc>
 
 	<tagclouds>
@@ -818,11 +841,11 @@
 		<page>
 			<visible>false</visible>
 		</page>
-		
-        <!-- calendar: if false, the calendar view link is hidden -->
-        <calendar>
-            <visible>false</visible>
-        </calendar>
+
+		<!-- calendar: if false, the calendar view link is hidden -->
+		<calendar>
+			<visible>false</visible>
+		</calendar>
 
 		<!-- toc: if false, the TOC link is hidden (This is the link to the TOC 
 			page in the work menu, not the sidebar TOC component!) -->
@@ -866,7 +889,7 @@
 		<sidebarToc>
 			<!-- visible: if false, the sidebar toc is hidden -->
 			<visible>false</visible>
-			
+
 			<!-- display sidebarToc if it only contains the root element -->
 			<visibleIfEmpty>false</visibleIfEmpty>
 
@@ -878,8 +901,8 @@
 				is cut and a "more" link is shown -->
 			<lengthBeforeCut>21</lengthBeforeCut>
 
-            <!-- display as interactive tree view -->
-            <useTreeView>false</useTreeView>
+			<!-- display as interactive tree view -->
+			<useTreeView>false</useTreeView>
 
 			<!-- level for initial collapse -->
 			<initialCollapseLevel>22</initialCollapseLevel>
@@ -1009,24 +1032,26 @@
 			<classification>classification3</classification>
 			<classification>classification4</classification>
 		</classifications>
-		
+
 		<mediaDisplayWidth>600</mediaDisplayWidth>
 		<mediaDisplayHeight>800</mediaDisplayHeight>
 	</cms>
-	
+
 	<!-- Transkribus settings (enabled: default false) -->
-    <transkribus enabled="true">
-        <userName></userName>
-        <password></password>
-        <defaultCollection>intranda_viewer</defaultCollection>
-        <!-- URL of the Transkribus REST API. This can be changed to the test API, if necessary. Default value is the production API URL. -->
-        <restApiUrl>https://transkribus.eu/TrpServerTesting/rest/</restApiUrl>
-        <!-- NOT IN USE: allowedDocumentTypes: Document types for which to allow Transkribus injection -->
-        <allowedDocumentTypes>
-            <docstruct>Monograph</docstruct>
-            <docstruct>Manuscript</docstruct>
-        </allowedDocumentTypes>
-    </transkribus>
+	<transkribus enabled="true">
+		<userName></userName>
+		<password></password>
+		<defaultCollection>intranda_viewer</defaultCollection>
+		<!-- URL of the Transkribus REST API. This can be changed to the test API, 
+			if necessary. Default value is the production API URL. -->
+		<restApiUrl>https://transkribus.eu/TrpServerTesting/rest/</restApiUrl>
+		<!-- NOT IN USE: allowedDocumentTypes: Document types for which to allow 
+			Transkribus injection -->
+		<allowedDocumentTypes>
+			<docstruct>Monograph</docstruct>
+			<docstruct>Manuscript</docstruct>
+		</allowedDocumentTypes>
+	</transkribus>
 
 	<!-- ##### CONTENT UPLOAD SETTINGS (CURRENTLY DISABLED) ##### -->
 	<content>
@@ -1047,13 +1072,15 @@
 		<!-- Piwik site ID -->
 		<siteID>siteID_value</siteID>
 	</piwik>
-	
-    <sitemap>
-       <!-- sitelinksField: Field for which the sitelinks page will list all available values (similar to term browsing) -->
-       <sitelinksField>YEAR</sitelinksField>
-       <!-- sitelinksFilterQuery: Solr query which will filter the results for each field value (e.g. only top-level dosctructs)--> 
-       <sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
-    </sitemap>
+
+	<sitemap>
+		<!-- sitelinksField: Field for which the sitelinks page will list all available 
+			values (similar to term browsing) -->
+		<sitelinksField>YEAR</sitelinksField>
+		<!-- sitelinksFilterQuery: Solr query which will filter the results for 
+			each field value (e.g. only top-level dosctructs) -->
+		<sitelinksFilterQuery>ISWORK:true</sitelinksFilterQuery>
+	</sitemap>
 
 	<!-- Web API configuration -->
 	<webapi>
@@ -1065,27 +1092,27 @@
 			<field jsonField="json1" luceneField="lucene1" multivalue="true" />
 			<field jsonField="json2" luceneField="lucene2" />
 		</fields>
-        
-        <iiif>
-            <!-- A list of all metadata fields which should be included within 
-                the IIIF Presentation response for manifests and ranges representing structural 
-                elements -->
-            <metadataFields>
-                <field>MD_*</field>
-            </metadataFields>
-            <!-- Solr field to use for IIIF Presentation navDate property, 
-                if any -->
-            <navDateField>MD_DATING</navDateField>
-            <!-- The String to provide as attribution in IIIF manifests. If it is a message key, all translations are
-            provided as attribution values -->
-            <attribution>iiif_attribution</attribution>
-            <!-- URL to an image which should be displayed as logo in IIIF manifests. if the url is a http(s) url, 
-            the url will be used as is. If it is an absolute file url, a contentServer url will be provided, displaying
-            that file. If it is just a filename or relative filepath, it will be assumed to be a file in the 
-            resources/themes/<theme>/images/ folder and linked appropriately 
-            If no logo is configured, the image footer will be used-->
-            <logo>dfgviewer_intranda.jpg</logo>
-        </iiif>
+
+		<iiif>
+			<!-- A list of all metadata fields which should be included within the 
+				IIIF Presentation response for manifests and ranges representing structural 
+				elements -->
+			<metadataFields>
+				<field>MD_*</field>
+			</metadataFields>
+			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
+			<navDateField>MD_DATING</navDateField>
+			<!-- The String to provide as attribution in IIIF manifests. If it is 
+				a message key, all translations are provided as attribution values -->
+			<attribution>iiif_attribution</attribution>
+			<!-- URL to an image which should be displayed as logo in IIIF manifests. 
+				if the url is a http(s) url, the url will be used as is. If it is an absolute 
+				file url, a contentServer url will be provided, displaying that file. If 
+				it is just a filename or relative filepath, it will be assumed to be a file 
+				in the resources/themes/<theme>/images/ folder and linked appropriately If 
+				no logo is configured, the image footer will be used -->
+			<logo>dfgviewer_intranda.jpg</logo>
+		</iiif>
 	</webapi>
 
 </config>

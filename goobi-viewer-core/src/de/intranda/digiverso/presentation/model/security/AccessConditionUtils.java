@@ -42,6 +42,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.IpRange;
 import de.intranda.digiverso.presentation.model.security.user.User;
@@ -181,8 +182,9 @@ public class AccessConditionUtils {
             try {
                 // Collect access conditions required by the page
                 Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(query[0], "*".equals(fileName) ? SolrSearchIndex.MAX_HITS
-                        : 1, null, Arrays.asList(new String[] { query[1], SolrConstants.ACCESSCONDITION }));
+                SolrDocumentList results =
+                        DataManager.getInstance().getSearchIndex().search(query[0], "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
+                                Arrays.asList(new String[] { query[1], SolrConstants.ACCESSCONDITION }));
                 if (results != null) {
                     for (SolrDocument doc : results) {
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -241,8 +243,8 @@ public class AccessConditionUtils {
             sbQuery.append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION }));
+                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null,
+                        Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
                 if (results != null) {
                     for (SolrDocument doc : results) {
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -266,16 +268,16 @@ public class AccessConditionUtils {
         return false;
     }
 
-    public static boolean checkContentFileAccessPermission(String identifier, HttpServletRequest request) throws IndexUnreachableException,
-            DAOException {
+    public static boolean checkContentFileAccessPermission(String identifier, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
         // logger.trace("checkContentFileAccessPermission({})", identifier);
         if (StringUtils.isNotEmpty(identifier)) {
             StringBuilder sbQuery = new StringBuilder();
             sbQuery.append(SolrConstants.PI).append(':').append(identifier);
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION }));
+                SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null,
+                        Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
                 if (results != null) {
                     for (SolrDocument doc : results) {
                         Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -316,8 +318,8 @@ public class AccessConditionUtils {
             sbQuery.append(SolrConstants.IMAGEURN).append(':').append(imageUrn.replace(":", "\\:"));
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
-                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null, Arrays.asList(new String[] {
-                        SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
+                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null,
+                        Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT }));
                 for (SolrDocument doc : hits) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
                     if (fieldsAccessConddition != null) {
@@ -456,8 +458,8 @@ public class AccessConditionUtils {
         // logger.debug("permissions key: " + key + ": " + permissions.get(key));
         if (permissions.containsKey(key)) {
             access = permissions.get(key);
-            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName, request
-                    .getSession().getId());
+            logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType, access, pi, contentFileName,
+                    request.getSession().getId());
         } else {
             // TODO check for all images and save to map
             Map<String, Boolean> accessMap = checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, request);
@@ -505,8 +507,8 @@ public class AccessConditionUtils {
             logger.debug("No required access conditions given, access granted.");
             return true;
         }
-        if (requiredAccessConditions.size() == 1 && (requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE) || requiredAccessConditions
-                .contains(SolrConstants.OPEN_ACCESS_VALUE.toLowerCase()))) {
+        if (requiredAccessConditions.size() == 1 && (requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE)
+                || requiredAccessConditions.contains(SolrConstants.OPEN_ACCESS_VALUE.toLowerCase()))) {
             return true;
         }
         // If no license types are configured or no privilege name is given, allow immediately
@@ -543,8 +545,10 @@ public class AccessConditionUtils {
         // Check IP range
         if (StringUtils.isNotEmpty(remoteAddress)) {
             if (Helper.ADDRESS_LOCALHOST_IPV6.equals(remoteAddress) || Helper.ADDRESS_LOCALHOST_IPV4.equals(remoteAddress)) {
-                logger.debug("Access granted to localhost");
-                return true;
+                if (DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                    logger.debug("Access granted to localhost");
+                    return true;
+                }
             }
             // Check whether the requested privilege is allowed to this IP range (for all access conditions)
             Map<String, Boolean> permissionMap = new HashMap<>(requiredAccessConditions.size());
