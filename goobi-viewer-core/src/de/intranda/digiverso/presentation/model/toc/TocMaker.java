@@ -655,7 +655,7 @@ public class TocMaker {
      */
     static IMetadataValue buildLabel(SolrDocument doc, String template) {
         IMetadataValue label = new MultiLanguageMetadataValue();
-        logger.trace("buildLabel: {}", template);
+        // logger.trace("buildLabel: {}", template);
         List<Metadata> labelConfigList = DataManager.getInstance().getConfiguration().getTocLabelConfiguration(template);
         if (labelConfigList != null && !labelConfigList.isEmpty()) {
             // Configurable label layout

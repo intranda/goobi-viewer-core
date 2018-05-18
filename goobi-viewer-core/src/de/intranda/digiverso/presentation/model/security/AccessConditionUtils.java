@@ -200,6 +200,12 @@ public class AccessConditionUtils {
                 }
 
                 User user = BeanUtils.getUserFromRequest(request);
+                if (user == null) {
+                    UserBean userBean = BeanUtils.getUserBean();
+                    if (userBean != null) {
+                        user = userBean.getUser();
+                    }
+                }
                 Map<String, Boolean> ret = new HashMap<>(requiredAccessConditions.size());
                 for (String pageFileName : requiredAccessConditions.keySet()) {
                     Set<String> pageAccessConditions = requiredAccessConditions.get(pageFileName);
@@ -258,6 +264,12 @@ public class AccessConditionUtils {
                 }
 
                 User user = BeanUtils.getUserFromRequest(request);
+                if (user == null) {
+                    UserBean userBean = BeanUtils.getUserBean();
+                    if (userBean != null) {
+                        user = userBean.getUser();
+                    }
+                }
                 return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
                         privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
@@ -291,6 +303,12 @@ public class AccessConditionUtils {
                 }
 
                 User user = BeanUtils.getUserFromRequest(request);
+                if (user == null) {
+                    UserBean userBean = BeanUtils.getUserBean();
+                    if (userBean != null) {
+                        user = userBean.getUser();
+                    }
+                }
                 return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
                         IPrivilegeHolder.PRIV_DOWNLOAD_ORIGINAL_CONTENT, user, Helper.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
@@ -331,6 +349,12 @@ public class AccessConditionUtils {
                 }
 
                 User user = BeanUtils.getUserFromRequest(request);
+                if (user == null) {
+                    UserBean userBean = BeanUtils.getUserBean();
+                    if (userBean != null) {
+                        user = userBean.getUser();
+                    }
+                }
                 return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions,
                         privilegeName, user, Helper.getIpAddress(request), sbQuery.toString());
             } catch (PresentationException e) {
@@ -355,6 +379,12 @@ public class AccessConditionUtils {
     public static boolean checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query, HttpServletRequest request)
             throws IndexUnreachableException, PresentationException, DAOException {
         User user = BeanUtils.getUserFromRequest(request);
+        if (user == null) {
+            UserBean userBean = BeanUtils.getUserBean();
+            if (userBean != null) {
+                user = userBean.getUser();
+            }
+        }
         return checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), requiredAccessConditions, privilegeName, user,
                 Helper.getIpAddress(request), query);
     }
@@ -549,14 +579,15 @@ public class AccessConditionUtils {
                     logger.debug("Access granted to localhost");
                     return true;
                 }
-            }
-            // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-            Map<String, Boolean> permissionMap = new HashMap<>(requiredAccessConditions.size());
-            for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
-                // logger.debug("ip range: " + ipRange.getSubnetMask());
-                if (ipRange.matchIp(remoteAddress) && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
-                    logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                    return true;
+            } else {
+                // Check whether the requested privilege is allowed to this IP range (for all access conditions)
+                Map<String, Boolean> permissionMap = new HashMap<>(requiredAccessConditions.size());
+                for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                    // logger.debug("ip range: " + ipRange.getSubnetMask());
+                    if (ipRange.matchIp(remoteAddress) && ipRange.canSatisfyAllAccessConditions(requiredAccessConditions, privilegeName, null)) {
+                        logger.debug("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                        return true;
+                    }
                 }
             }
         }
