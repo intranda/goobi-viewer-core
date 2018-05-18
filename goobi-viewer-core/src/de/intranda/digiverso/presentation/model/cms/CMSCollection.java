@@ -37,7 +37,11 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.org.apache.xml.internal.serializer.utils.Messages;
+
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import sun.misc.resources.Messages_zh_HK;
 
 /**
  * A class representing persistent configurations for a collection.
@@ -175,7 +179,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
      * @return  The string value of the label of the given language, or an empty string
      */
     public String getLabel(String language) {
-        return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse(getSolrFieldValue());
+        return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse(Helper.getTranslation(getSolrFieldValue(), null));
     }
     
     /**
@@ -205,7 +209,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
      * @return  The string value of the description of the given language, or an empty string
      */
     public String getDescription(String language) {
-        return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse("");
+        return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse(Helper.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
     }
     
     /**

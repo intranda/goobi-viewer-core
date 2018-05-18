@@ -34,7 +34,7 @@
                                 <label class="selectionLabel">#{msg.cms_collections_solrField}:</label>
                                 <h:selectOneMenu styleClass="selectionInput" id="input-solrField" value="#{cmsCollectionsBean.solrField}">
                                     <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}"></f:selectItems>
-                                    <f:ajax render="collectionList"></f:ajax>
+                                    <f:ajax render="@form"></f:ajax>
                                 </h:selectOneMenu>
                             </div>
 
@@ -44,7 +44,7 @@
                                     <h:inputText id="input-solrFieldValue" value="#{cmsCollectionsBean.solrFieldValue}"></h:inputText>
                                     <h:commandLink styleClass="btn" action="#{cmsCollectionsBean.addCollection()}">
                                         <i class="fa fa-plus"></i>
-                                        <f:ajax execute="@form" render="collectionList"></f:ajax>
+                                        <f:ajax execute="@form" render="@form"></f:ajax>
                                     </h:commandLink>
                                 </div>
                                 <script type="text/javascript">
@@ -69,10 +69,35 @@
                                 </script>
                             </div>
                             
-                            <ui:fragment id="collectionList">
+                            <ui:fragment class="collectionList">
+                            <ul class="collection_list">
                                 <ui:repeat var="collection" value="#{cmsCollectionsBean.collections}">
+                                    <li class="collection_list_item">
+                                        <label class="collection_list_item_entry">
+                                            #{collection.solrFieldValue}
+                                        </label>
+                                        <label class="collection_list_item_entry">
+                                            #{collection.label}
+                                        </label>
+                                        <label class="collection_list_item_entry">
+                                            #{collection.description}
+                                        </label>
+                                        <a href="#{collection.collectionUrl}" target="_blank" class="collection_list_item_entry">
+                                            #{collection.collectionUrl}
+                                        </a>
+                                        <img class="collection_list_item_entry" src="#{imageDelivery.thumbs.thumbnailUrl(collection.mediaItem,100,200)}">
+                                        </img>
+                                        <span class="collection_list_item_entry">
+                                            <h:commandLink value="#{cmsCollectionsBean."></h:commandLink>
+                                        </span>
+                                                                        
+                                    </li>
+                                    
+                                
+                                
                                 #{collection}
                                 </ui:repeat>
+                            </ul>
                             </ui:fragment>
                             
                             <div class="cms-collections__save">

@@ -121,6 +121,10 @@ public class CmsCollectionsBean implements Serializable {
         CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
         DataManager.getInstance().getDao().addCMSCollection(collection);
         updateCollections();
+        setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
     }
     
+    public void deleteCollection(CMSCollection collecton) {
+        
+    }
 }
