@@ -625,7 +625,7 @@ public class BookshelfResource {
                 throw new RestApiException("Error retrieving bookshelves: " + e.toString(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         }
-        
+
         return new ArrayList<>();
     }
 
@@ -687,15 +687,15 @@ public class BookshelfResource {
      */
     private User getUser() {
         if (userBean == null) {
-            logger.debug("Unable to get user: No UserBean found in session store.");
+            logger.trace("Unable to get user: No UserBean found in session store.");
             return null;
         }
         User user = userBean.getUser();
         if (user == null) {
-            logger.debug("Unable to get user: No user found in session store UserBean instance");
+            logger.trace("Unable to get user: No user found in session store UserBean instance");
             return null;
         }
-        logger.debug("Found user {}", user);
+        logger.trace("Found user {}", user);
         return user;
     }
 
@@ -731,7 +731,7 @@ public class BookshelfResource {
         if (bookshelves != null) {
             return bookshelves.stream().filter(bs -> bs.getId().equals(id)).findFirst();
         }
-        
+
         return Optional.empty();
     }
 
