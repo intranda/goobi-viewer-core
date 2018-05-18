@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.servlets.rest.iiif.image;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -93,7 +94,13 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             throw new PresentationException(e.getMessage());
         }
         if (StringUtils.isNotEmpty(dataRepository)) {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getDataRepositoriesHome()).append(dataRepository)
+            String repositoriesHome;
+            if(Paths.get(dataRepository).isAbsolute() || URI.create(dataRepository).isAbsolute()) {
+                repositoriesHome = "";
+            } else {
+                repositoriesHome = DataManager.getInstance().getConfiguration().getDataRepositoriesHome();
+            }
+            StringBuilder sb = new StringBuilder(repositoriesHome).append(dataRepository)
                     .append("/").append(DataManager.getInstance().getConfiguration().getMediaFolder());
             URI imageRepositoryPath;
             try {
