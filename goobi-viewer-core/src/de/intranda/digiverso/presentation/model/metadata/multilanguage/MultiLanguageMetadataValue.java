@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,26 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
                 List<String> langValues = (List<String>) metadataValuesForLanguage.get(language);
                 if (valueIndex < langValues.size()) {
                     this.values.put(language, langValues.get(valueIndex));
+                }
+            }
+        } else {
+            this.values = (Map<String, String>) metadataValuesForLanguage;
+        }
+
+    }
+    
+    @SuppressWarnings("unchecked")
+    public MultiLanguageMetadataValue(Map<String, ? extends Object> metadataValuesForLanguage, BinaryOperator<String> combiner)  {
+        if (metadataValuesForLanguage.isEmpty()) {
+            values = new HashMap<>();
+        } else if (metadataValuesForLanguage.values().iterator().next() instanceof List) {
+            this.values = new HashMap<>();
+            for (String language : metadataValuesForLanguage.keySet()) {
+                List<String> langValues = (List<String>) metadataValuesForLanguage.get(language);
+                try {                    
+                    this.values.put(language, langValues.stream().reduce((v1, v2) -> combiner.apply(v1, v2)).orElseThrow(() -> new NullPointerException()));
+                } catch(NullPointerException e) {
+                    //no value present. skip
                 }
             }
         } else {
@@ -283,6 +304,14 @@ public class MultiLanguageMetadataValue implements IMetadataValue {
             return value;
         }
 
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue#removeTranslation(java.lang.String)
+     */
+    @Override
+    public void removeTranslation(String locale) {
+        values.remove(locale);
     }
 
 }

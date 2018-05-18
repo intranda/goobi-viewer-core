@@ -59,6 +59,7 @@ import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.Tag;
 
 public final class SolrSearchIndex {
@@ -1091,6 +1092,33 @@ public final class SolrSearchIndex {
                     locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
                 }
                 Collection<Object> languageValues = doc.getFieldValues(languageField);
+                if (languageValues != null) {
+                    List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
+                    map.put(locale, values);
+                }
+            }
+        }
+        return map;
+    }
+    
+    /**
+     * @param doc The document containing the metadata
+     * @param key the metadata key without the '_LANG_...' suffix
+     * @return A map with keys for each language and lists of all found metadata values for this language. Metadata that match the given key but have
+     *         no language information are listed as language {@code _DEFAULT}
+     */
+    public static Map<String, List<String>> getMetadataValuesForLanguage(StructElement doc, String key) {
+        Map<String, List<String>> map = new HashMap<>();
+        if (doc != null) {
+            List<String> fieldNames = doc.getMetadataFields().keySet().stream().filter(field -> field.startsWith(key)).collect(Collectors.toList());
+            for (String languageField : fieldNames) {
+                String locale = null;
+                if (languageField.matches(key + "_LANG_\\w{2,3}")) {
+                    locale = languageField.substring(languageField.lastIndexOf("_LANG_") + 6).toLowerCase();
+                } else {
+                    locale = MultiLanguageMetadataValue.DEFAULT_LANGUAGE;
+                }
+                Collection<String> languageValues = doc.getMetadataValues(languageField);
                 if (languageValues != null) {
                     List<String> values = languageValues.stream().map(value -> String.valueOf(value)).collect(Collectors.toList());
                     map.put(locale, values);

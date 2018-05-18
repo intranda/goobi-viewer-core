@@ -177,4 +177,12 @@ public class SimpleMetadataValue implements IMetadataValue{
         return isEmpty();
 
     }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue#removeTranslation(java.lang.String)
+     */
+    @Override
+    public void removeTranslation(String locale) {
+        //noopes
+    }
 }
