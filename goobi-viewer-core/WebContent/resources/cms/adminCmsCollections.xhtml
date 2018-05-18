@@ -1,108 +1,213 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
-                xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-                template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
 
     <ui:define name="metadata">
         <f:metadata>
-            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
-            <f:event type="preRenderView" listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_collections,1)}" />
-            <f:event type="preRenderView" listener="#{adminBean.resetCurrentLicenseAction}" />
-            <f:event type="preRenderView" listener="#{cmsBean.init()}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_collections,1)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{adminBean.resetCurrentLicenseAction}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsBean.init()}" />
         </f:metadata>
     </ui:define>
-    
+
     <ui:define name="breadcrumbs">
         <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 
     <ui:define name="content">
-        <h:panelGroup id="cmsCollectionsAccessControl" rendered="#{configurationBean.cmsEnabled}">
+        <h:panelGroup
+            id="cmsCollectionsAccessControl"
+            rendered="#{configurationBean.cmsEnabled}">
             <div id="cmsCollections">
                 <h:panelGroup rendered="#{userBean.admin}">
                     <div class="cms-collections">
                         <h2>#{msg.cms_collections}</h2>
 
-                        <h:form id="cmsCollectionsForm" prependId="false">
-                            
-                            <div id="selectSolrField" class="selectionGroup">
+                        <h:form
+                            id="cmsCollectionsForm"
+                            prependId="false">
+
+                            <div
+                                id="selectSolrField"
+                                class="selectionGroup">
                                 <label class="selectionLabel">#{msg.cms_collections_solrField}:</label>
-                                <h:selectOneMenu styleClass="selectionInput" id="input-solrField" value="#{cmsCollectionsBean.solrField}">
+                                <h:selectOneMenu
+                                    styleClass="selectionInput"
+                                    id="input-solrField"
+                                    value="#{cmsCollectionsBean.solrField}">
                                     <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}"></f:selectItems>
                                     <f:ajax render="@form"></f:ajax>
                                 </h:selectOneMenu>
                             </div>
 
-                            <div id="selectSolrFieldValue" class="selectionGroup">
+                            <div
+                                id="selectSolrFieldValue"
+                                class="selectionGroup">
                                 <label class="selectionLabel">#{msg.cms_collections_solrFieldValue}:</label>
-                                <div class="selectionInput">                                
-                                    <h:inputText id="input-solrFieldValue" value="#{cmsCollectionsBean.solrFieldValue}"></h:inputText>
-                                    <h:commandLink styleClass="btn" action="#{cmsCollectionsBean.addCollection()}">
+                                <div class="selectionInput">
+                                    <h:inputText
+                                        id="input-solrFieldValue"
+                                        value="#{cmsCollectionsBean.solrFieldValue}"></h:inputText>
+                                    <h:commandLink
+                                        styleClass="btn"
+                                        action="#{cmsCollectionsBean.addCollection()}">
                                         <i class="fa fa-plus"></i>
-                                        <f:ajax execute="@form" render="@form"></f:ajax>
+                                        <f:ajax
+                                            execute="@form"
+                                            render="@form"></f:ajax>
                                     </h:commandLink>
                                 </div>
                                 <script type="text/javascript">
-                                    $('#input-solrFieldValue').autocomplete( {
-                                        source: function( request, response ) {
-                                            Q( $.ajax( {
-                                                url: "#{navigationHelper.applicationUrl}rest/contentAssist/collections/" + $('#input-solrField').val() + "/" + request.term + '/',
-                                                type: 'GET',
-                                                datatype: 'json',
-                                            } ) ).then( function( data ) {
-                                                response( data );
-                                            } )
-                                        },
-                                        appendTo: $('#input-solrFieldValue').parent(),
-                                        select: function( event, ui ) {
-                                            
-                                        }
-                                    } );
-                                    
-                                    $(document).ready(function() {
-                                    });
-                                </script>
+                                    $( '#input-solrFieldValue' )
+                                        .autocomplete( {
+                                            source: function( request, response ) {
+                                                Q( $
+                                                        .ajax( {
+                                                            url: "#{navigationHelper.applicationUrl}rest/contentAssist/collections/"
+                                                                    + $( '#input-solrField' ).val()
+                                                                    + "/"
+                                                                    + request.term
+                                                                    + '/',
+                                                            type: 'GET',
+                                                            datatype: 'json',
+                                                        } ) ).then( function(
+                                                        data ) {
+                                                    response( data );
+                                                } )
+                                            },
+                                            appendTo: $( '#input-solrFieldValue' )
+                                                    .parent(),
+                                            select: function( event, ui ) {
+                                                
+                                            }
+                                        } );
+                                
+                                $( document ).ready( function() {
+                                } );
+                            </script>                                                                                             
                             </div>
-                            
+
                             <ui:fragment class="collectionList">
-                            <ul class="collection_list">
-                                <ui:repeat var="collection" value="#{cmsCollectionsBean.collections}">
-                                    <li class="collection_list_item">
-                                        <label class="collection_list_item_entry">
-                                            #{collection.solrFieldValue}
-                                        </label>
-                                        <label class="collection_list_item_entry">
-                                            #{collection.label}
-                                        </label>
-                                        <label class="collection_list_item_entry">
-                                            #{collection.description}
-                                        </label>
-                                        <a href="#{collection.collectionUrl}" target="_blank" class="collection_list_item_entry">
-                                            #{collection.collectionUrl}
-                                        </a>
-                                        <img class="collection_list_item_entry" src="#{imageDelivery.thumbs.thumbnailUrl(collection.mediaItem,100,200)}">
-                                        </img>
-                                        <span class="collection_list_item_entry">
-                                            <h:commandLink value="#{cmsCollectionsBean."></h:commandLink>
-                                        </span>
-                                                                        
-                                    </li>
-                                    
-                                
-                                
-                                #{collection}
+                                <ul class="collection_list">
+                                    <ui:repeat
+                                        var="collection"
+                                        value="#{cmsCollectionsBean.collections}">
+                                        <li class="collection_list_item">
+                                            <label class="collection_list_item_entry"> #{collection.solrFieldValue} </label>
+                                            <label class="collection_list_item_entry"> #{collection.label} </label>
+                                            <label class="collection_list_item_entry"> #{collection.description} </label>
+                                            <span class="collection_list_item_entry">
+                                                <a
+                                                    href="#{collection.collectionUrl}"
+                                                    target="_blank"> #{collection.collectionUrl} </a>
+                                            </span>
+                                            <span  class="collection_list_item_entry">
+                                                <ui:fragment rendered="#{collection.hasMediaItem()}">
+                                                    <img
+                                                        src="#{imageDelivery.thumbs.thumbnailUrl(collection.mediaItem,100,200)}"> </img>
+                                                </ui:fragment>
+                                                <ui:fragment rendered="#{!collection.hasMediaItem()}">
+                                                    <img
+                                                        src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"> </img>
+                                                </ui:fragment>
+                                            </span>
+                                            <span class="collection_list_item_entry">
+                                                <h:commandLink
+                                                    href="#"
+                                                    action="#{cmsCollectionsBean.setCurrentCollection(collection)}"
+                                                    title="#{msg.cms_collection_delete}">
+                                                    <f:passThroughAttribute
+                                                        name="data-toggle"
+                                                        value="modal" />
+                                                    <f:passThroughAttribute
+                                                        name="data-target"
+                                                        value="#deleteCollectionModal" />
+                                                    <i
+                                                        class="fa fa-trash-o"
+                                                        aria-hidden="true"></i>
+                                                    <f:ajax render="@none" />
+                                                </h:commandLink>
+                                            </span>
+
+                                        </li>
                                 </ui:repeat>
-                            </ul>
+                                </ul>
                             </ui:fragment>
-                            
+
                             <div class="cms-collections__save">
-                                <h:commandButton styleClass="btn" id="saveCollections" value="#{msg.save}" action="#{cmsBean.saveCollections}" />
+                                <h:commandButton
+                                    styleClass="btn"
+                                    id="saveCollections"
+                                    value="#{msg.save}"
+                                    action="#{cmsBean.saveCollections}" />
                             </div>
+
+                            <!-- delete collection modal -->
+                            <div
+                                id="deleteCollectionModal"
+                                class="modal fade"
+                                tabindex="-1"
+                                role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h:commandLink
+                                                action="#{cmsCollectionsBean.setCurrentCollection(null)}"
+                                                styleClass="close">
+                                                <f:passThroughAttribute
+                                                    name="data-dismiss"
+                                                    value="modal" />
+                                                <span aria-hidden="true">
+                                                    <h:outputText
+                                                        value="&amp;times;"
+                                                        escape="false" />
+                                                </span>
+                                                <span class="sr-only">Close</span>
+                                                <f:ajax render="@none" />
+                                            </h:commandLink>
+                                            <h4 class="modal-title">#{msg.cms_deleteCollection_agree}</h4>
+                                        </div>
+                                        <div class="modal-body">#{msg.cms_deleteCollection_confirmation}</div>
+                                        <div class="modal-footer">
+                                            <h:commandLink
+                                                action="#{cmsCollectionsBean.setCurrentCollection(null)}"
+                                                value="#{msg.cancel}"
+                                                styleClass="btn">
+                                                <f:passThroughAttribute
+                                                    name="data-dismiss"
+                                                    value="modal" />
+                                                <f:ajax render="@none" />
+                                            </h:commandLink>
+                                            <h:commandLink
+                                                action="#{cmsCollectionsBean.deleteCollection(cmsCollectionsBean.currentCollection)}"
+                                                value="#{msg.cms_deleteColletion_agree}"
+                                                styleClass="btn">
+                                                <f:passThroughAttribute
+                                                    name="data-dismiss"
+                                                    value="modal" />
+                                                <f:ajax render="@form" />
+                                            </h:commandLink>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </h:form>
                     </div>
                 </h:panelGroup>
@@ -112,7 +217,7 @@
 
     <ui:define name="sidebar">
         <widgetComponent:widget_admin />
-    	<widgetComponent:widget_cms />
-    	<widgetComponent:widget_user />
+        <widgetComponent:widget_cms />
+        <widgetComponent:widget_user />
     </ui:define>
 </ui:composition>

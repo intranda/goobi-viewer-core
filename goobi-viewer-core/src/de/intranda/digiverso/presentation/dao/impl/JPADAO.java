@@ -3216,4 +3216,24 @@ public class JPADAO implements IDAO {
         q.setParameter("value", solrFieldValue);
         return (CMSCollection) getSingleResult(q).orElse(null);
     }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCMSCollection(de.intranda.digiverso.presentation.model.cms.CMSCollection)
+     */
+    @Override
+    public boolean deleteCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction()
+                    .begin();
+            CMSCollection u = em.getReference(CMSCollection.class, collection.getId());
+            em.remove(u);
+            em.getTransaction()
+                    .commit();
+            return true;
+        } finally {
+            em.close();
+        }
+    }
 }

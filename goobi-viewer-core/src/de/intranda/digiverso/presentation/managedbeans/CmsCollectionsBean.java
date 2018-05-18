@@ -115,6 +115,10 @@ public class CmsCollectionsBean implements Serializable {
     
     public void updateCollections() throws DAOException {
         this.collections = DataManager.getInstance().getDao().getCMSCollections(getSolrField());
+        //If a collection is selected that is no longer in the list, deselect it
+        if(this.currentCollection != null && !this.collections.contains(this.currentCollection)) {
+            this.currentCollection = null;
+        }
     }
     
     public void addCollection() throws DAOException {
@@ -124,7 +128,8 @@ public class CmsCollectionsBean implements Serializable {
         setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
     }
     
-    public void deleteCollection(CMSCollection collecton) {
-        
+    public void deleteCollection(CMSCollection collection) throws DAOException {
+        DataManager.getInstance().getDao().deleteCMSCollection(collection);
+        updateCollections();
     }
 }

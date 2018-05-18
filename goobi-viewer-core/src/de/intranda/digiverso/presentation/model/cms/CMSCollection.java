@@ -292,7 +292,18 @@ public class CMSCollection implements Comparable<CMSCollection>{
             }
         }
     }
+    
+    public boolean hasMediaItem() {
+        return getMediaItem() != null;
+    }
 
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
