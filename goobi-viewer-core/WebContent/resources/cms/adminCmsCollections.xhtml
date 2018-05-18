@@ -105,6 +105,14 @@
 
                             <ui:fragment class="collectionList">
                                 <ul class="collection_list">
+                                    <li class="collection_list_item">                            
+                                        <label class="collection_list_item_entry">#{msg.cms_collections_fieldValue}</label>
+                                        <label class="collection_list_item_entry">#{msg.cms_collections_label}</label>
+                                        <label class="collection_list_item_entry">#{msg.cms_collections_description}</label>
+                                        <label class="collection_list_item_entry">#{msg.cms_collections_link}</label>
+                                        <label class="collection_list_item_entry">#{msg.cms_collections_image}</label>
+                                        <label class="collection_list_item_entry">#{msg.cms_collections_actions}</label>
+                                    </li>
                                     <ui:repeat
                                         var="collection"
                                         value="#{cmsCollectionsBean.collections}">
@@ -129,7 +137,6 @@
                                             </span>
                                             <span class="collection_list_item_entry">
                                                 <h:commandLink
-                                                    href="#"
                                                     action="#{cmsCollectionsBean.setCurrentCollection(collection)}"
                                                     title="#{msg.cms_collection_delete}">
                                                     <f:passThroughAttribute
@@ -143,6 +150,13 @@
                                                         aria-hidden="true"></i>
                                                     <f:ajax render="@none" />
                                                 </h:commandLink>
+                                                <h:commandLink
+                                                    action="#{cmsCollectionsBean.editCollection(collection)}"
+                                                    title="#{msg.cms_collection_edit}">
+                                                    <i
+                                                        class="fa fa-pencil"
+                                                        aria-hidden="true"></i>
+                                                </h:commandLink>
                                             </span>
 
                                         </li>
@@ -155,7 +169,7 @@
                                     styleClass="btn"
                                     id="saveCollections"
                                     value="#{msg.save}"
-                                    action="#{cmsBean.saveCollections}" />
+                                    action="#{cmsCollectionsBean.saveCollections}" />
                             </div>
 
                             <!-- delete collection modal -->

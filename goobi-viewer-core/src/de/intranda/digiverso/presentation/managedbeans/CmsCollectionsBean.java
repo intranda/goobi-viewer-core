@@ -18,10 +18,13 @@ package de.intranda.digiverso.presentation.managedbeans;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +32,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
+import de.intranda.digiverso.presentation.model.cms.Translation;
 
 /**
  * Bean handling cms settings for collections
@@ -41,14 +45,14 @@ import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 public class CmsCollectionsBean implements Serializable {
 
     private static final long serialVersionUID = -2862611194397865986L;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
-    
+
     private CMSCollection currentCollection;
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
-    
+
     public CmsCollectionsBean() {
         try {
             updateCollections();
@@ -57,25 +61,36 @@ public class CmsCollectionsBean implements Serializable {
             collections = Collections.EMPTY_LIST;
         }
     }
-    
+
     /**
      * @return the currentCollection
      */
     public CMSCollection getCurrentCollection() {
         return currentCollection;
     }
+
     /**
      * @param currentCollection the currentCollection to set
      */
     public void setCurrentCollection(CMSCollection currentCollection) {
         this.currentCollection = currentCollection;
     }
+    
+    public Translation getCurrentLabel(String language) {
+        if(getCurrentCollection() != null) {
+            Translation t = getCurrentCollection().getLabelAsTranslation(language);
+            return t;
+        }
+        return null;
+    }
+
     /**
      * @return the solrField
      */
     public String getSolrField() {
         return solrField;
     }
+
     /**
      * @param solrField the solrField to set
      */
@@ -88,48 +103,85 @@ public class CmsCollectionsBean implements Serializable {
             collections = Collections.EMPTY_LIST;
         }
     }
+
     /**
      * @return the solrFieldValue
      */
     public String getSolrFieldValue() {
         return solrFieldValue;
     }
+
     /**
      * @param solrFieldValue the solrFieldValue to set
      */
     public void setSolrFieldValue(String solrFieldValue) {
         this.solrFieldValue = solrFieldValue;
     }
-    
+
     public List<String> getAllCollectionFields() {
         List<String> collections = DataManager.getInstance().getConfiguration().getConfiguredCollections();
         return collections;
     }
-    
+
     /**
      * @return the configuredColelctions
      */
     public List<CMSCollection> getCollections() {
         return collections;
     }
-    
+
     public void updateCollections() throws DAOException {
         this.collections = DataManager.getInstance().getDao().getCMSCollections(getSolrField());
         //If a collection is selected that is no longer in the list, deselect it
-        if(this.currentCollection != null && !this.collections.contains(this.currentCollection)) {
+        if (this.currentCollection != null && !this.collections.contains(this.currentCollection)) {
             this.currentCollection = null;
         }
     }
-    
+
     public void addCollection() throws DAOException {
         CMSCollection collection = new CMSCollection(getSolrField(), getSolrFieldValue());
         DataManager.getInstance().getDao().addCMSCollection(collection);
         updateCollections();
         setSolrFieldValue("");//empty solr field value to avoid creating the same collection again
     }
-    
+
     public void deleteCollection(CMSCollection collection) throws DAOException {
         DataManager.getInstance().getDao().deleteCMSCollection(collection);
         updateCollections();
+    }
+
+    public String editCollection(CMSCollection collection) {
+        setCurrentCollection(collection);
+        collection.populateDescriptions();
+        collection.populateLabels();
+        return "pretty:adminCmsEditCollection";
+    }
+
+    public String getCurrentLabel() {
+        String language = getLanguageParam();
+        return getCurrentCollection().getLabel(language);
+    }
+    
+    public void setCurrentLabel(String label) {
+        String language = getLanguageParam();
+        getCurrentCollection().setLabel(label, language);
+    }
+    
+    public void saveCurrentCollection() throws DAOException {
+        if(getCurrentCollection() != null) {
+            DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
+            updateCollections();
+        }
+    }
+
+
+    /**
+     * @return
+     */
+    private String getLanguageParam() {
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+        String lang = params.get("selectedLanguage");
+        return lang;
     }
 }

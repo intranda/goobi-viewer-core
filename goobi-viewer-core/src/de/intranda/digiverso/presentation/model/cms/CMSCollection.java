@@ -201,6 +201,21 @@ public class CMSCollection implements Comparable<CMSCollection>{
         return getLabel(BeanUtils.getLocale());
     }
     
+    
+    public Translation getLabelAsTranslation(String language) {
+        return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
+    }
+    
+
+    /**
+     * @param label
+     * @param language
+     * @return
+     */
+    public void setLabel(String value, String language) {
+        getLabels().stream().filter(label -> label.getLanguage().equalsIgnoreCase(language)).findFirst().ifPresent(label -> label.setValue(value));
+    }
+    
     /**
      * get the description for the given {@code language}, or an empty string if no matching description exists
      * the language should be the language code of a {@link Locale} and is case insensitive
@@ -311,6 +326,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
     public String toString() {
         return getSolrField() + "/" + getSolrFieldValue();
     }
+
     
 
 }

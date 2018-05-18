@@ -26,11 +26,15 @@
 			justify-content: space-between;
 			border: 2px solid grey;
 			margin: 10px;
+			label {
+				margin: 0;
+				padding: 5px;
+			}
 			.collection_list_item_entry {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-/* 				border-left: 1px solid grey; */
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				overflow: hidden;
 				border-right: 1px solid grey;
 				flex-grow: 1;
 	   			flex-basis: 0;
@@ -38,6 +42,10 @@
 				img {
 					width: 70px;
 					height: 50px;
+				}
+				a {
+					padding: 10px;
+					font-size: 24px;
 				}
 			}
 		}

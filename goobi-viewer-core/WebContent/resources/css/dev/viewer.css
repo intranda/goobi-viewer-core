@@ -9348,6 +9348,10 @@ img.cms-static-pages__page-language--complete {
   border: 2px solid grey;
   margin: 10px;
 }
+#cmsCollections .collection_list .collection_list_item label {
+  margin: 0;
+  padding: 5px;
+}
 #cmsCollections .collection_list .collection_list_item .collection_list_item_entry {
   display: -ms-flexbox;
   display: flex;
@@ -9355,7 +9359,7 @@ img.cms-static-pages__page-language--complete {
       justify-content: center;
   -ms-flex-align: center;
       align-items: center;
-  /* 				border-left: 1px solid grey; */
+  overflow: hidden;
   border-right: 1px solid grey;
   -ms-flex-positive: 1;
       flex-grow: 1;
@@ -9366,4 +9370,8 @@ img.cms-static-pages__page-language--complete {
 #cmsCollections .collection_list .collection_list_item .collection_list_item_entry img {
   width: 70px;
   height: 50px;
+}
+#cmsCollections .collection_list .collection_list_item .collection_list_item_entry a {
+  padding: 10px;
+  font-size: 24px;
 }
