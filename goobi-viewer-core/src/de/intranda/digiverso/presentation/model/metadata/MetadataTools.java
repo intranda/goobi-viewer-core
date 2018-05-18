@@ -171,6 +171,9 @@ public class MetadataTools {
         //  citation_pdf_url
         if (pages != null && !pages.isEmpty()) {
             for (PhysicalElement page : pages) {
+                if (page == null) {
+                    continue;
+                }
                 String value = page.getUrl();
                 result.append("\r\n<meta name=\"citation_pdf_url\" content=\"").append(value).append("\">");
             }

@@ -554,7 +554,9 @@ public class ViewManager implements Serializable {
         if (pageLoader != null) {
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
                 PhysicalElement page = pageLoader.getPage(i);
-                ret.add(page);
+                if (page != null) {
+                    ret.add(page);
+                }
             }
         }
 
