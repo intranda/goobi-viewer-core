@@ -22,12 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.sun.media.jfxmedia.logging.Logger;
-
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
-import de.intranda.digiverso.presentation.model.cms.CMSStaticPage;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
 /**
