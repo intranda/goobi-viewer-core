@@ -129,10 +129,10 @@ public class Helper {
 
     public static Namespace nsAlto = Namespace.getNamespace("alto", "http://www.loc.gov/standards/alto/ns-v2#");
     // TODO final namespaces
-    public static Namespace nsIntrandaViewerOverviewPage =
-            Namespace.getNamespace("iv_overviewpage", "http://www.intranda.com/digiverso/intrandaviewer/overviewpage");
-    public static Namespace nsIntrandaViewerCrowdsourcing =
-            Namespace.getNamespace("iv_crowdsourcing", "http://www.intranda.com/digiverso/intrandaviewer/crowdsourcing");
+    public static Namespace nsIntrandaViewerOverviewPage = Namespace.getNamespace("iv_overviewpage",
+            "http://www.intranda.com/digiverso/intrandaviewer/overviewpage");
+    public static Namespace nsIntrandaViewerCrowdsourcing = Namespace.getNamespace("iv_crowdsourcing",
+            "http://www.intranda.com/digiverso/intrandaviewer/crowdsourcing");
 
     /**
      * Translation method for Java code. (Re-)loads resource bundles if necessary.
@@ -251,10 +251,10 @@ public class Helper {
      * @throws MessagingException
      */
     public static boolean postMail(List<String> recipients, String subject, String body) throws UnsupportedEncodingException, MessagingException {
-        return Helper.postMail(recipients, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(),
-                DataManager.getInstance().getConfiguration().getSmtpUser(), DataManager.getInstance().getConfiguration().getSmtpPassword(),
-                DataManager.getInstance().getConfiguration().getSmtpSenderAddress(), DataManager.getInstance().getConfiguration().getSmtpSenderName(),
-                DataManager.getInstance().getConfiguration().getSmtpSecurity());
+        return Helper.postMail(recipients, subject, body, DataManager.getInstance().getConfiguration().getSmtpServer(), DataManager.getInstance()
+                .getConfiguration().getSmtpUser(), DataManager.getInstance().getConfiguration().getSmtpPassword(), DataManager.getInstance()
+                        .getConfiguration().getSmtpSenderAddress(), DataManager.getInstance().getConfiguration().getSmtpSenderName(), DataManager
+                                .getInstance().getConfiguration().getSmtpSecurity());
     }
 
     /**
@@ -273,8 +273,8 @@ public class Helper {
      * @throws UnsupportedEncodingException
      */
     private static boolean postMail(List<String> recipients, String subject, String body, String smtpServer, final String smtpUser,
-            final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity)
-            throws MessagingException, UnsupportedEncodingException {
+            final String smtpPassword, String smtpSenderAddress, String smtpSenderName, String smtpSecurity) throws MessagingException,
+            UnsupportedEncodingException {
         if (recipients == null) {
             throw new IllegalArgumentException("recipients may not be null");
         }
@@ -488,8 +488,8 @@ public class Helper {
         logger.info("Preparing to re-index record: {}", recordXmlFile.getAbsolutePath());
         StringBuilder sbNamingScheme = new StringBuilder(pi);
         // TODO remove crowdsourcing constants
-        File fulltextDir =
-                new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_FULLTEXT_CROWDSOURCING);
+        File fulltextDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString()
+                + SUFFIX_FULLTEXT_CROWDSOURCING);
         File altoDir = new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + SUFFIX_ALTO_CROWDSOURCING);
 
         // If the same record is already being indexed, use an alternative naming scheme
@@ -531,8 +531,8 @@ public class Helper {
 
         // Finally, copy the record XML file to the hotfolder
         try {
-            FileUtils.copyFile(recordXmlFile,
-                    new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString() + ".xml"));
+            FileUtils.copyFile(recordXmlFile, new File(DataManager.getInstance().getConfiguration().getHotfolder(), sbNamingScheme.toString()
+                    + ".xml"));
             return true;
         } catch (IOException e) {
             logger.error(e.getMessage());
@@ -552,8 +552,8 @@ public class Helper {
      * @throws IndexUnreachableException
      * @throws IOException
      */
-    public static synchronized boolean reIndexPage(String pi, int page, String recordType)
-            throws DAOException, PresentationException, IndexUnreachableException, IOException {
+    public static synchronized boolean reIndexPage(String pi, int page, String recordType) throws DAOException, PresentationException,
+            IndexUnreachableException, IOException {
         logger.trace("reIndexPage: {}/{}", pi, page);
         if (StringUtils.isEmpty(pi)) {
             throw new IllegalArgumentException("pi may not be null or empty");
@@ -564,9 +564,9 @@ public class Helper {
 
         String dataRepository = DataManager.getInstance().getSearchIndex().findDataRepository(pi);
 
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(
-                SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND " + SolrConstants.ORDER + ':' + page, Arrays.asList(
-                        new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO, SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI_TOPSTRUCT + ':' + pi + " AND "
+                + SolrConstants.ORDER + ':' + page, Arrays.asList(new String[] { SolrConstants.IDDOC, SolrConstants.FILENAME_ALTO,
+                        SolrConstants.FILENAME_FULLTEXT, SolrConstants.UGCTERMS }));
 
         if (doc == null) {
             logger.error("No Solr document found for {}/{}", pi, page);
@@ -628,11 +628,8 @@ public class Helper {
     private static int simplePOSTRequest(String url, HttpEntity entity) {
         logger.debug(url);
 
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
-                .build();
+        RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT).setConnectTimeout(HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(HTTP_TIMEOUT).build();
         try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpPost post = new HttpPost(url);
             Charset.forName(DEFAULT_ENCODING);
@@ -659,12 +656,8 @@ public class Helper {
      * @should build url correctly
      */
     public static String buildFullTextUrl(String dataRepository, String filePath) {
-        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
-                .append(StringUtils.isEmpty(dataRepository) ? '-' : dataRepository)
-                .append('/')
-                .append(filePath)
-                .append('/')
-                .toString();
+        return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/").append(StringUtils.isEmpty(
+                dataRepository) ? '-' : dataRepository).append('/').append(filePath).append('/').toString();
     }
 
     /**
@@ -676,11 +669,8 @@ public class Helper {
      * @throws HTTPException
      */
     public static String getWebContentGET(String urlString) throws ClientProtocolException, IOException, HTTPException {
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
-                .build();
+        RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT).setConnectTimeout(HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(HTTP_TIMEOUT).build();
         try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpGet get = new HttpGet(urlString);
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
@@ -706,8 +696,8 @@ public class Helper {
      * @throws IOException
      * @throws HTTPException
      */
-    public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies)
-            throws ClientProtocolException, IOException, HTTPException {
+    public static String getWebContentPOST(String url, Map<String, String> params, Map<String, String> cookies) throws ClientProtocolException,
+            IOException, HTTPException {
         if (url == null) {
             throw new IllegalArgumentException("url may not be null");
         }
@@ -737,11 +727,8 @@ public class Helper {
             context.setCookieStore(cookieStore);
         }
 
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
-                .setSocketTimeout(HTTP_TIMEOUT)
-                .setConnectTimeout(HTTP_TIMEOUT)
-                .setConnectionRequestTimeout(HTTP_TIMEOUT)
-                .build();
+        RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(HTTP_TIMEOUT).setConnectTimeout(HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(HTTP_TIMEOUT).build();
         try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
             HttpPost post = new HttpPost(url);
             Charset.forName(DEFAULT_ENCODING);
@@ -901,7 +888,7 @@ public class Helper {
     }
 
     /**
-     * Loads full-text via the REST service. ALTO is preferred, with a plain text fallback.
+     * Loads plain full-text via the REST service. ALTO is preferred (and converted to plain text, with a plain text fallback.
      * 
      * @param pi
      * @param dataRepository
@@ -917,45 +904,62 @@ public class Helper {
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
-    public static String loadFulltext(String pi, String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
+    public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
             throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
-        String ret = null;
-
         if (altoFilePath != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, altoFilePath,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-                logger.debug("Access denied for ALTO file {}", altoFilePath);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-
             // ALTO file
-            String url = Helper.buildFullTextUrl(dataRepository, altoFilePath);
-            try {
-                String alto = Helper.getWebContentGET(url);
-                ret = ALTOTools.getFullText(alto);
-            } catch (HTTPException e) {
-                logger.error("Could not retrieve file from {}", url);
-                logger.error(e.getMessage());
+            String alto = loadFulltext(dataRepository, altoFilePath, request);
+            if (alto != null) {
+                return ALTOTools.getFullText(alto);
+
             }
         }
-
-        if (ret == null && fulltextFilePath != null) {
+        if (fulltextFilePath != null) {
             // Plain full-text file
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, fulltextFilePath,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-                logger.debug("Access denied for ALTO file {}", altoFilePath);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
-            String url = Helper.buildFullTextUrl(dataRepository, fulltextFilePath);
-            try {
-                ret = Helper.getWebContentGET(url);
-            } catch (HTTPException e) {
-                logger.error("Could not retrieve file from {}", url);
-                logger.error(e.getMessage());
+            String fulltext = loadFulltext(dataRepository, fulltextFilePath, request);
+            if (fulltext != null) {
+                return fulltext;
             }
         }
 
-        return ret;
+        return null;
+    }
+
+    /**
+     * Loads given text file path as a string, if the client has full-text access permission.
+     * 
+     * @param pi
+     * @param dataRepository
+     * @param filePath
+     * @param request
+     * @return
+     * @throws AccessDeniedException
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should return file content correctly
+     */
+    public static String loadFulltext(String dataRepository, String filePath, HttpServletRequest request) throws AccessDeniedException,
+            FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+        if (filePath == null) {
+            return null;
+        }
+
+        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, filePath,
+                IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+            logger.debug("Access denied for text file {}", filePath);
+            throw new AccessDeniedException("fulltextAccessDenied");
+        }
+        String url = Helper.buildFullTextUrl(dataRepository, filePath);
+        try {
+            return Helper.getWebContentGET(url);
+        } catch (HTTPException e) {
+            logger.error("Could not retrieve file from {}", url);
+            logger.error(e.getMessage());
+        }
+
+        return null;
     }
 
     public static String encodeUrl(String string) {
@@ -984,17 +988,17 @@ public class Helper {
         //            return string;
         //        }
     }
-    
+
     /**
      * Finds the first String matching a regex within another string and return it as an {@link Optional}
      * 
-     * @param text      The String in which to search
-     * @param regex     The regex to search for
-     * @return  An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
+     * @param text The String in which to search
+     * @param regex The regex to search for
+     * @return An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
      */
     public static Optional<String> findFirstMatch(String text, String regex, int group) {
         Matcher matcher = Pattern.compile(regex).matcher(text);
-        if(matcher.find()) {
+        if (matcher.find()) {
             return Optional.of(matcher.group(group));
         } else {
             return Optional.empty();
