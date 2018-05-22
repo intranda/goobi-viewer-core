@@ -2383,4 +2383,13 @@ public class ConfigurationTest {
     public void getSitelinksField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(SolrConstants._CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
     }
+
+    /**
+     * @see Configuration#isFullAccessForLocalhost()
+     * @verifies return correct value
+     */
+    @Test
+    public void isFullAccessForLocalhost_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+    }
 }

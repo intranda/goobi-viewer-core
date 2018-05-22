@@ -67,7 +67,7 @@ public final class Configuration extends AbstractConfiguration {
         try {
             config = new XMLConfiguration();
             config.setReloadingStrategy(new FileChangedReloadingStrategy());
-//            config.setDelimiterParsingDisabled(true);
+            //            config.setDelimiterParsingDisabled(true);
             config.load(configFilePath);
             if (!config.getFile().exists()) {
                 logger.error("Default configuration file not found: {}", config.getFile().getAbsolutePath());
@@ -85,7 +85,7 @@ public final class Configuration extends AbstractConfiguration {
             if (fileLocal.exists()) {
                 configLocal = new XMLConfiguration();
                 configLocal.setReloadingStrategy(new FileChangedReloadingStrategy());
-//                configLocal.setDelimiterParsingDisabled(true);
+                //                configLocal.setDelimiterParsingDisabled(true);
                 configLocal.load(fileLocal);
                 logger.info("Local configuration file '{}' loaded.", fileLocal.getAbsolutePath());
             } else {
@@ -1797,6 +1797,15 @@ public final class Configuration extends AbstractConfiguration {
      */
     public int getUnconditionalImageAccessMaxWidth() {
         return getLocalInt("accessConditions.unconditionalImageAccessMaxWidth", 120);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return correct value
+     */
+    public boolean isFullAccessForLocalhost() {
+        return getLocalBoolean("accessConditions.fullAccessForLocalhost", false);
     }
 
     /**

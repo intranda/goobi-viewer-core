@@ -407,6 +407,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             throws PresentationException, IndexUnreachableException, DAOException {
         // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
+            logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;
         }
 

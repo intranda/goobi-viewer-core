@@ -41,12 +41,23 @@ public class IIIFPresentationResponseFilter implements ContainerResponseFilter {
      */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
+
         Object responseObject = response.getEntity();
         if (responseObject != null && responseObject instanceof AbstractPresentationModelElement) {
             AbstractPresentationModelElement element = (AbstractPresentationModelElement) responseObject;
+            setResponseCharset(response, "UTF-8");
             element.setContext(CONTEXT);
         }
         
+    }
+
+    /**
+     * @param response
+     */
+    public void setResponseCharset(ContainerResponseContext response, String charset) {
+        String contentType = response.getHeaderString("Content-Type") + ";charset=" + charset;
+        response.getHeaders().remove("Content-Type");
+        response.getHeaders().add("Content-Type", contentType);
     }
 
 }
