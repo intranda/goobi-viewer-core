@@ -74,6 +74,18 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
         }
         this.link = link;
         this.hierarchial = hierarchical;
+        parseLink(link);
+    }
+
+    /**
+     * Extracts field name and value(s) from the given link string.
+     * 
+     * @param link
+     */
+    private void parseLink(String link) {
+        if (link == null) {
+            return;
+        }
         String[] linkSplit = link.split(":");
         switch (linkSplit.length) {
             case 3:
@@ -178,8 +190,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                     linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
                 }
                 String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
-                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null),
-                        values.get(value), hierarchical));
+                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null), values
+                        .get(value), hierarchical));
             }
         }
         switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
@@ -288,15 +300,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public String getQueryEscapedLink() {
         String escapedValue = getEscapedValue(value);
         if (hierarchial) {
-            return new StringBuilder("(").append(field)
-                    .append(':')
-                    .append(escapedValue)
-                    .append(" OR ")
-                    .append(field)
-                    .append(':')
-                    .append(escapedValue)
-                    .append(".*)")
-                    .toString();
+            return new StringBuilder("(").append(field).append(':').append(escapedValue).append(" OR ").append(field).append(':').append(escapedValue)
+                    .append(".*)").toString();
         }
         if (value2 == null) {
             logger.debug("value2 is null");
@@ -401,6 +406,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      */
     public void setLink(String link) {
         this.link = link;
+        parseLink(link);
     }
 
     /**

@@ -297,4 +297,34 @@ public class SearchFacetsTest {
         SearchFacets facets = new SearchFacets();
         Assert.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE", "en"));
     }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
+     * @verifies update facet item correctly
+     */
+    @Test
+    public void updateFacetItem_shouldUpdateFacetItemCorrectly() throws Exception {
+        List<FacetItem> items = new ArrayList<>(2);
+        items.add(new FacetItem("FIELD1:foo", false));
+        items.add(new FacetItem("FIELD2:bar", false));
+        SearchFacets.updateFacetItem("FIELD2", "foo:bar", items, false);
+        Assert.assertEquals(2, items.size());
+        Assert.assertEquals("FIELD2", items.get(1).getField());
+        Assert.assertEquals("foo", items.get(1).getValue());
+        Assert.assertEquals("bar", items.get(1).getValue2());
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
+     * @verifies add new item correcty
+     */
+    @Test
+    public void updateFacetItem_shouldAddNewItemCorrecty() throws Exception {
+        List<FacetItem> items = new ArrayList<>(2);
+        items.add(new FacetItem("FIELD1:foo", false));
+        SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
+        Assert.assertEquals(2, items.size());
+        Assert.assertEquals("FIELD2", items.get(1).getField());
+        Assert.assertEquals("bar", items.get(1).getValue());
+    }
 }

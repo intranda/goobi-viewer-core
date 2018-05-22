@@ -487,6 +487,44 @@ public class SearchFacets {
     }
 
     /**
+     * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
+     * 
+     * @param field
+     * @param updateValue
+     * @param facetItems
+     * @param hiearchical
+     * @should update facet item correctly
+     * @should add new item correcty
+     */
+    static void updateFacetItem(String field, String updateValue, List<FacetItem> facetItems, boolean hiearchical) {
+        if (facetItems == null) {
+            facetItems = new ArrayList<>();
+        }
+
+        if (StringUtils.isNotEmpty(updateValue) && !"-".equals(updateValue)) {
+            try {
+                updateValue = URLDecoder.decode(updateValue, "utf-8");
+                updateValue = BeanUtils.unescapeCriticalUrlChracters(updateValue);
+            } catch (UnsupportedEncodingException e) {
+            }
+
+            FacetItem fieldItem = null;
+            for (FacetItem item : facetItems) {
+                if (item.getField().equals(field)) {
+                    fieldItem = item;
+                    break;
+                }
+            }
+            if (fieldItem == null) {
+                fieldItem = new FacetItem(field + ":" + updateValue, hiearchical);
+                facetItems.add(fieldItem);
+            }
+            fieldItem.setLink(field + ":" + updateValue);
+            logger.trace("Facet item updated: {}", fieldItem.getLink());
+        }
+    }
+
+    /**
      * 
      */
     public void resetCurrentFacetString() {
