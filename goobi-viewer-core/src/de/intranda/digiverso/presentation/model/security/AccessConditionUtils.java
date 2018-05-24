@@ -175,10 +175,10 @@ public class AccessConditionUtils {
      */
     protected static Map<String, Boolean> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
             HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {}, {})", identifier, fileName, privilegeName,
-        // request.getAttributeNames().toString());
+        logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName);
         if (StringUtils.isNotEmpty(identifier)) {
             String[] query = generateAccessCheckQuery(identifier, fileName);
+            logger.trace("query: {}", query[0]);
             try {
                 // Collect access conditions required by the page
                 Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
@@ -192,7 +192,7 @@ public class AccessConditionUtils {
                             Set<String> pageAccessConditions = new HashSet<>();
                             for (Object accessCondition : fieldsAccessConddition) {
                                 pageAccessConditions.add(accessCondition.toString());
-                                // logger.debug(accessCondition.toString());
+                                logger.trace(accessCondition.toString());
                             }
                             requiredAccessConditions.put(fileName, pageAccessConditions);
                         }
@@ -456,7 +456,7 @@ public class AccessConditionUtils {
     @SuppressWarnings("unchecked")
     public static boolean checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpServletRequest request, String pi, String contentFileName,
             String privilegeType) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap");
+        logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType);
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
@@ -531,7 +531,7 @@ public class AccessConditionUtils {
      */
     public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
             User user, String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
-        // logger.trace("checkAccessPermission({},{},{})", allLicenseTypes, requiredAccessConditions, privilegeName);
+        logger.trace("checkAccessPermission({},{},{})", allLicenseTypes, requiredAccessConditions, privilegeName);
         // If OPENACCESS is the only condition, allow immediately
         if (requiredAccessConditions.isEmpty()) {
             logger.debug("No required access conditions given, access granted.");
