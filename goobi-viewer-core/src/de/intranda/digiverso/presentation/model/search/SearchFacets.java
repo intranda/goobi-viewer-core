@@ -107,8 +107,15 @@ public class SearchFacets {
                     }
                 }
                 String field = SearchHelper.facetifyField(facetItem.getField());
-                sbQuery.append('(').append(field).append(':').append("\"" + facetItem.getValue() + "\"").append(" OR ").append(field).append(':')
-                        .append(facetItem.getValue()).append(".*)");
+                sbQuery.append('(')
+                        .append(field)
+                        .append(':')
+                        .append("\"" + facetItem.getValue() + "\"")
+                        .append(" OR ")
+                        .append(field)
+                        .append(':')
+                        .append(facetItem.getValue())
+                        .append(".*)");
                 count++;
             }
 
@@ -136,10 +143,8 @@ public class SearchFacets {
                 if (sbQuery.length() > 0) {
                     sbQuery.append(" AND ");
                 }
-                String field = SearchHelper.facetifyField(facetItem.getField());
-                String escapedValue = FacetItem.getEscapedValue(facetItem.getValue());
-                sbQuery.append(field).append(':').append(escapedValue);
-                logger.trace("Added facet: {}", field + ':' + escapedValue);
+                sbQuery.append(facetItem.getQueryEscapedLink());
+                logger.trace("Added facet: {}", facetItem.getQueryEscapedLink());
             }
 
             return sbQuery.toString();
@@ -253,8 +258,8 @@ public class SearchFacets {
         if (facetItems != null) {
             // Remove currently used facets
             facetItems.removeAll(currentFacets);
-            if (!isDrillDownExpanded(field) && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(
-                    field)) {
+            if (!isDrillDownExpanded(field)
+                    && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field)) {
                 return facetItems.subList(0, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field));
             }
             // logger.trace("facet items {}: {}", field, facetItems.size());
@@ -282,8 +287,8 @@ public class SearchFacets {
         if (facetItems != null) {
             // Remove currently used facets
             facetItems.removeAll(currentHierarchicalFacets);
-            if (!isDrillDownExpanded(field) && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(
-                    field)) {
+            if (!isDrillDownExpanded(field)
+                    && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field)) {
                 return facetItems.subList(0, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field));
             }
             // logger.trace("facet items {}: {}", field, facetItems.size());
@@ -346,8 +351,8 @@ public class SearchFacets {
         if (facetItems == null) {
             facetItems = availableHierarchicalFacets.get(field);
         }
-        if (facetItems != null && !isDrillDownExpanded(field) && facetItems.size() > DataManager.getInstance().getConfiguration()
-                .getInitialDrillDownElementNumber(field)) {
+        if (facetItems != null && !isDrillDownExpanded(field)
+                && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field)) {
             return true;
         }
 
