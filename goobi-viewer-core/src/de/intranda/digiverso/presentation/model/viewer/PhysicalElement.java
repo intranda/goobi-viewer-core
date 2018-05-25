@@ -481,8 +481,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Returns the filename alone, if {@link PhysicalElement#getFilePath()} is a local file, or the entire
-     * filepath otherwise
+     * Returns the filename alone, if {@link PhysicalElement#getFilePath()} is a local file, or the entire filepath otherwise
      */
     public String getFileName() {
         if (StringUtils.isEmpty(fileName)) {
@@ -611,11 +610,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      */
     String loadFullText() throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
         if (fullText == null && fulltextFileName != null) {
-            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
-                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-                logger.debug("Access denied for full-text file {}", fulltextFileName);
-                throw new AccessDeniedException("fulltextAccessDenied");
-            }
+            //            if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), fulltextFileName,
+            //                    IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
+            //                logger.debug("Access denied for full-text file {}", fulltextFileName);
+            //                throw new AccessDeniedException("fulltextAccessDenied");
+            //            }
             logger.trace("Loading full-text for page {}", fulltextFileName);
             String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
             try {
@@ -623,6 +622,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
             } catch (HTTPException e) {
                 logger.error("Could not retrieve file from {}", url);
                 logger.error(e.getMessage());
+                if (e.getCode() == 403) {
+                    logger.debug("Access denied for full-text file {}", fulltextFileName);
+                    throw new AccessDeniedException("fulltextAccessDenied");
+                }
             }
         }
 
@@ -733,11 +736,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
         return fileName;
     }
-    
+
     /**
      * Returns The first matching media filename for this page
      * 
-     * @return  The first matching media filename for this page
+     * @return The first matching media filename for this page
      */
     public String getFilename() {
         String format = getFileNames().keySet().stream().findFirst().orElse("");
@@ -746,7 +749,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     public String getImageToPdfUrl() throws IndexUnreachableException {
 
-            return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
+        return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
 
         //        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
         //        sb.append("?action=pdf")
@@ -1082,7 +1085,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public List<Comment> getComments() throws DAOException {
         List<Comment> comments = DataManager.getInstance().getDao().getCommentsForPage(pi, order, true);
         Collections.sort(comments);
-//        Collections.reverse(comments);
+        //        Collections.reverse(comments);
         return comments;
     }
 
@@ -1206,19 +1209,18 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Gets the filename but with its extension replaced by the given extension
-     * If the extension is an empty String, the filename without any extension is returned
-     * If the extension is null, {@link PhysicalElement#getFileName()} is returned
+     * Gets the filename but with its extension replaced by the given extension If the extension is an empty String, the filename without any
+     * extension is returned If the extension is null, {@link PhysicalElement#getFileName()} is returned
      * 
      * @param string
      * @return
      */
     public String getFileName(String extension) {
-        if(extension == null) {
+        if (extension == null) {
             return getFileName();
-        } else {            
+        } else {
             String baseName = FilenameUtils.removeExtension(getFileName());
-            return baseName +  (StringUtils.isNotBlank(extension) ? "." + extension : "");
+            return baseName + (StringUtils.isNotBlank(extension) ? "." + extension : "");
         }
     }
 

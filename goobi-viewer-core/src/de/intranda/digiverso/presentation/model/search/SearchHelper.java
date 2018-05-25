@@ -229,7 +229,7 @@ public final class SearchHelper {
             SearchHit hit = SearchHit.createSearchHit(doc, null, locale, null, searchTerms, exportFields, true, ignoreFields, translateFields, null);
             ret.add(hit);
             hit.addOverviewPageChild();
-            hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null, BeanUtils.getRequest());
+            hit.addFulltextChild(doc, locale != null ? locale.getLanguage() : null);
             logger.trace("Added search hit {}", hit.getBrowseElement().getLabel());
             // Collect Solr docs of child hits 
             String pi = (String) doc.getFieldValue(SolrConstants.PI);

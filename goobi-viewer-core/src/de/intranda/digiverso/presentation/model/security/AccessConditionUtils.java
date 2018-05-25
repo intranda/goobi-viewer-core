@@ -192,7 +192,7 @@ public class AccessConditionUtils {
                             Set<String> pageAccessConditions = new HashSet<>();
                             for (Object accessCondition : fieldsAccessConddition) {
                                 pageAccessConditions.add(accessCondition.toString());
-                                logger.trace(accessCondition.toString());
+                                // logger.trace(accessCondition.toString());
                             }
                             requiredAccessConditions.put(fileName, pageAccessConditions);
                         }

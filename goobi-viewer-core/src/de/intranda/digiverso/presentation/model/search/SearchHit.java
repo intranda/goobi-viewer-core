@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.jdom2.JDOMException;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.TEITools;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -303,11 +305,10 @@ public class SearchHit implements Comparable<SearchHit> {
      * 
      * @param doc
      * @param language
-     * @param request
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public void addFulltextChild(SolrDocument doc, String language, HttpServletRequest request) throws IndexUnreachableException, DAOException {
+    public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -320,10 +321,11 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         if (language == null) {
-            language = "EN";
+            language = "en";
         }
-        language = language.toUpperCase();
-        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language);
+
+        // Check whether TEI is available at all
+        String teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI + SolrConstants._LANG_ + language.toUpperCase());
         if (StringUtils.isEmpty(teiFilename)) {
             teiFilename = (String) doc.getFirstValue(SolrConstants.FILENAME_TEI);
         }
@@ -332,30 +334,36 @@ public class SearchHit implements Comparable<SearchHit> {
         }
 
         try {
-            String teiPath = new StringBuilder(DataManager.getInstance().getConfiguration().getTeiFolder()).append('/')
-                    .append((String) doc.getFieldValue(SolrConstants.PI))
-                    .append('/')
-                    .append(teiFilename)
-                    .toString();
-            logger.trace("teiPath: {}", teiPath);
-            String fulltext = Helper.loadFulltext(browseElement.getDataRepository(), teiPath, request);
-            List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
-                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true);
-            SearchHit hit = new SearchHit(HitType.PAGE,
-                    new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, true, locale, null), searchTerms, locale);
-            int count = 0;
-            for (String fragment : fulltextFragments) {
-                hit.getChildren().add(new SearchHit(HitType.PAGE, new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, true, locale, null),
-                        searchTerms, locale));
-                count++;
+            String fulltext = Helper.loadTei((String) doc.getFieldValue(SolrConstants.PI), language);
+            if (fulltext != null) {
+                fulltext = TEITools.getTeiFulltext(fulltext);
+                fulltext = Jsoup.parse(fulltext).text();
             }
+            // logger.trace(fulltext);
+            List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
+                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false);
 
-            int oldCount = hit.getHitTypeCounts().get(HitType.PAGE) != null ? hit.getHitTypeCounts().get(HitType.PAGE) : 0;
-            hit.getHitTypeCounts().put(HitType.PAGE, oldCount + count);
+            int count = 0;
+            if (fulltextFragments != null) {
+                SearchHit hit = new SearchHit(HitType.PAGE,
+                        new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, false, locale, null), searchTerms,
+                        locale);
+                for (String fragment : fulltextFragments) {
+                    hit.getChildren().add(new SearchHit(HitType.PAGE,
+                            new BrowseElement(browseElement.getPi(), 1, "TEI", fragment, false, locale, null), searchTerms, locale));
+                    count++;
+                }
+                children.add(hit);
+                // logger.trace("Added {} fragments", count);
+                int oldCount = hit.getHitTypeCounts().get(HitType.PAGE) != null ? hit.getHitTypeCounts().get(HitType.PAGE) : 0;
+                hitTypeCounts.put(HitType.PAGE, oldCount + count);
+            }
         } catch (AccessDeniedException e) {
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (JDOMException e) {
             logger.error(e.getMessage(), e);
         }
     }

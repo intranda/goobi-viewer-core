@@ -97,8 +97,6 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
-import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
-import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.modules.IModule;
 
 /**
@@ -960,17 +958,51 @@ public class Helper {
             return null;
         }
 
-        if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(request, filePath,
-                IPrivilegeHolder.PRIV_VIEW_FULLTEXT)) {
-            logger.debug("Access denied for text file {}", filePath);
-            throw new AccessDeniedException("fulltextAccessDenied");
-        }
         String url = Helper.buildFullTextUrl(dataRepository, filePath);
         try {
             return Helper.getWebContentGET(url);
         } catch (HTTPException e) {
             logger.error("Could not retrieve file from {}", url);
             logger.error(e.getMessage());
+            if (e.getCode() == 403) {
+                logger.debug("Access denied for text file {}", filePath);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param language
+     * @return
+     * @throws AccessDeniedException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static String loadTei(String pi, String language) throws AccessDeniedException, FileNotFoundException, IOException {
+        logger.trace("loadTei: {}/{}", pi, language);
+        if (pi == null) {
+            return null;
+        }
+
+        String url = new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("tei/")
+                .append(pi)
+                .append('/')
+                .append(language)
+                .append('/')
+                .toString();
+        try {
+            return Helper.getWebContentGET(url);
+        } catch (HTTPException e) {
+            logger.error("Could not retrieve file from {}", url);
+            logger.error(e.getMessage());
+            if (e.getCode() == 403) {
+                logger.debug("Access denied for TEI file {}/{}", pi, language);
+                throw new AccessDeniedException("fulltextAccessDenied");
+            }
         }
 
         return null;

@@ -335,7 +335,7 @@ public class ViewerResourceBundle extends ResourceBundle {
         // Remove leading _LANG_XX
         if (key.contains(SolrConstants._LANG_)) {
             String newKey = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
-            logger.trace("newKey: {}", newKey);
+            // logger.trace("newKey: {}", newKey);
             if (bundle.containsKey(newKey)) {
                 return bundle.getString(newKey);
             }

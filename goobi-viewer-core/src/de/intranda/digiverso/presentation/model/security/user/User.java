@@ -965,6 +965,6 @@ public class User implements ILicensee, HttpSessionBindingListener {
     }
 
     public static void main(String[] args) {
-        System.out.println(BCrypt.hashpw("password", BCrypt.gensalt()));
+        System.out.println(BCrypt.hashpw("halbgeviertstrich", BCrypt.gensalt()));
     }
 }

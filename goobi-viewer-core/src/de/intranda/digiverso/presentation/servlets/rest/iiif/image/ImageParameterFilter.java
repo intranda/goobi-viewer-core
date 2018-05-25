@@ -58,7 +58,7 @@ public class ImageParameterFilter implements ContainerRequestFilter {
             return;
         }
         String requestPath = uri.substring(uri.indexOf("image/") + 6);
-        logger.trace("Filtering request " + requestPath);
+        // logger.trace("Filtering request {}", requestPath);
         StrTokenizer tokenizer = new StrTokenizer(requestPath, "/");
         List<String> pathSegments = tokenizer.getTokenList();
         String pi = pathSegments.get(0);
