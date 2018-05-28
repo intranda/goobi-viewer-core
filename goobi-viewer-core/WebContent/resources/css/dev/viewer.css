@@ -9375,3 +9375,78 @@ img.cms-static-pages__page-language--complete {
   padding: 10px;
   font-size: 24px;
 }
+#cmsEditCollection .edit_collection_table {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  -ms-flex-align: start;
+      align-items: flex-start;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  -ms-flex-align: center;
+      align-items: center;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row .edit_collection_label {
+  width: 200px;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: row;
+      flex-direction: row;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 10px 0;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table img {
+  padding: 0 10px;
+  width: 200px;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table input {
+  margin: 0 10px;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table .edit_language_column {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  padding: 0 10px;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table .edit_language_column .edit_language_label {
+  height: 24px;
+}
+#cmsEditCollection #selectImageModal .modal-dialog {
+  width: 632px;
+}
+#cmsEditCollection #selectImageModal .modal-dialog .modal-body .select_image_panel {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+#cmsEditCollection #selectImageModal .modal-dialog .modal-body .select_image_panel .select_image_item {
+  padding: 25px;
+}
+#cmsEditCollection #selectImageModal .modal-dialog .modal-body .select_image_panel .select_image_item.selected {
+  background-color: #69a7ef;
+}
+#cmsEditCollection #selectImageModal .modal-dialog .modal-body .select_image_panel .select_image_item img {
+  display: block !important;
+  width: 150px;
+  height: 150px;
+}

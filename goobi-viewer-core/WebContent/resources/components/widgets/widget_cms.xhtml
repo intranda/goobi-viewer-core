@@ -25,6 +25,9 @@
 						<li class="#{navigationHelper.currentPage == 'adminCmsStaticPages' ? 'active' : ''}">
 							<h:commandLink action="pretty:adminCmsStaticPages" value="#{msg.cms_staticPages}" />
 						</li>
+                        <li class="#{navigationHelper.currentPage == 'adminCmsCollections' ? 'active' : ''}">
+                            <h:commandLink action="pretty:adminCmsCollections" value="#{msg.cms_collections}" />
+                        </li>
 						<li class="#{navigationHelper.currentPage == 'adminCmsMedia' ? 'active' : ''}">
 							<h:commandLink action="pretty:adminCmsMedia" value="#{msg.cms_overviewMedia}" />
 						</li>

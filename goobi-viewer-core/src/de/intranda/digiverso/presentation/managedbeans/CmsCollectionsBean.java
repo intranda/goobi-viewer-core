@@ -32,6 +32,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
+import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.Translation;
 
 /**
@@ -52,6 +53,7 @@ public class CmsCollectionsBean implements Serializable {
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
     private List<CMSCollection> collections;
+    private CMSMediaItem selectedMediaItem = null;
 
     public CmsCollectionsBean() {
         try {
@@ -74,14 +76,6 @@ public class CmsCollectionsBean implements Serializable {
      */
     public void setCurrentCollection(CMSCollection currentCollection) {
         this.currentCollection = currentCollection;
-    }
-    
-    public Translation getCurrentLabel(String language) {
-        if(getCurrentCollection() != null) {
-            Translation t = getCurrentCollection().getLabelAsTranslation(language);
-            return t;
-        }
-        return null;
     }
 
     /**
@@ -157,14 +151,12 @@ public class CmsCollectionsBean implements Serializable {
         return "pretty:adminCmsEditCollection";
     }
 
-    public String getCurrentLabel() {
-        String language = getLanguageParam();
-        return getCurrentCollection().getLabel(language);
+    public Translation getCurrentLabel(String language) {
+        return getCurrentCollection().getLabelAsTranslation(language);
     }
     
-    public void setCurrentLabel(String label) {
-        String language = getLanguageParam();
-        getCurrentCollection().setLabel(label, language);
+    public Translation getCurrentDescription(String language) {
+        return getCurrentCollection().getDescriptionAsTranslation(language);
     }
     
     public void saveCurrentCollection() throws DAOException {
@@ -174,14 +166,26 @@ public class CmsCollectionsBean implements Serializable {
         }
     }
 
-
     /**
-     * @return
+     * @return the selectedMediaItem
      */
-    private String getLanguageParam() {
-        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-
-        String lang = params.get("selectedLanguage");
-        return lang;
+    public CMSMediaItem getSelectedMediaItem() {
+        return selectedMediaItem;
     }
+    
+    /**
+     * @param selectedMediaItem the selectedMediaItem to set
+     */
+    public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
+        this.selectedMediaItem = selectedMediaItem;
+    }
+    
+    public boolean isSelectedMediaItem(CMSMediaItem item) {
+        if(selectedMediaItem == null && item == null) {
+            return true;
+        } else {            
+            return item != null && item.equals(selectedMediaItem);
+        }
+    }
+    
 }

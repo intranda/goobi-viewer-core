@@ -16,7 +16,7 @@
                 listener="#{navigationHelper.setCurrentPageAdmin('adminCmsCollections')}" />
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_collection_edit,2)}" />
+                listener="#{navigationHelper.addStaticLinkToBreadcrumb(msg.cms_collections,1)}" />
             <f:event
                 type="preRenderView"
                 listener="#{adminBean.resetCurrentLicenseAction}" />
@@ -35,6 +35,12 @@
             id="cmsCollectionsAccessControl"
             rendered="#{configurationBean.cmsEnabled}">
             <div id="cmsEditCollection">
+            
+            <h:commandLink id="returnToCollections" action="pretty:adminCmsCollections">
+                <i class="fa fa-sign-out fa-flip-horizontal"></i>
+                <f:ajax render="@none" />
+            </h:commandLink>
+            
                 <h:panelGroup rendered="#{userBean.admin}">
                     <div class="cms-collections">
                         <h2>#{cmsCollectionsBean.currentCollection.solrFieldValue}</h2>
@@ -44,12 +50,17 @@
                             prependId="false">
 
                             <div class="edit_collection_table">
-                                <div id="editLabel" class="edit_collection_row">
+
+                                <div
+                                    id="editLabel"
+                                    class="edit_collection_row">
                                     <div class="edit_collection_label">
                                         <label>#{msg.cms_collections_label}</label>
                                     </div>
                                     <div class="edit_language_table">
-                                        <ui:repeat value="#{navigationHelper.supportedLanguages}" var="language">
+                                        <ui:repeat
+                                            value="#{navigationHelper.supportedLanguages}"
+                                            var="language">
                                             <div class="edit_language_column">
                                                 <div id="edit_language_label">
                                                     <label>#{language}</label>
@@ -62,16 +73,134 @@
                                         </ui:repeat>
                                     </div>
                                 </div>
-                            </div>
-                                <div class="cms-edit-collection__save">
-                                    <h:commandButton
-                                        styleClass="btn"
-                                        id="saveCollection"
-                                        value="#{msg.save}"
-                                        action="#{cmsCollectionsBean.saveCurrentCollection()}">
-<!--                                         <f:ajax render="@none" execute="@form"></f:ajax>  -->
-                                     </h:commandButton>
+
+                                <div
+                                    id="editDescription"
+                                    class="edit_collection_row">
+                                    <div class="edit_collection_label">
+                                        <label>#{msg.cms_collections_description}</label>
+                                    </div>
+                                    <div class="edit_language_table">
+                                        <ui:repeat
+                                            value="#{navigationHelper.supportedLanguages}"
+                                            var="language">
+                                            <div class="edit_language_column">
+                                                <div id="edit_language_label">
+                                                    <label>#{language}</label>
+                                                </div>
+                                                <div id="edit_language_value">
+                                                    <h:inputTextarea value="#{cmsCollectionsBean.getCurrentDescription(language).value}">
+                                                    </h:inputTextarea>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                    </div>
                                 </div>
+
+                                <div
+                                    id="editLink"
+                                    class="edit_collection_row">
+                                    <div class="edit_collection_label">
+                                        <label>#{msg.cms_collections_link}</label>
+                                    </div>
+                                    <div class="edit_language_table">
+                                        <h:inputText value="#{cmsCollectionsBean.currentCollection.collectionUrl}"></h:inputText>
+                                    </div>
+                                </div>
+
+                                <div
+                                    id="editImage"
+                                    class="edit_collection_row">
+                                    <div class="edit_collection_label">
+                                        <label>#{msg.cms_collections_image}</label>
+                                    </div>
+                                    <div class="edit_language_table">
+                                        <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasMediaItem()}">
+                                            <img src="#{cmsCollectionsBean.currentCollection.mediaItem.iconURI}"></img>
+                                        </ui:fragment>
+                                        <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasMediaItem()}">
+                                            <img
+                                                src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}">
+                                            </img>
+                                        </ui:fragment>
+
+                                        <a data-toggle="modal" data-target="#selectImageModal">
+                                            #{msg.cms_collections_changeImage}
+                                        </a>
+
+                                    </div>
+                                </div>
+                                
+                                <!-- select image modal -->
+                            <div
+                                id="selectImageModal"
+                                class="modal fade"
+                                tabindex="-1"
+                                role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <a class="close" data-dismiss="modal" >
+                                             <span aria-hidden="true">
+                                                    <h:outputText
+                                                        value="&amp;times;"
+                                                        escape="false" />
+                                              </span>
+                                              <span class="sr-only">Close</span>
+                                        </a>
+                                            <h4 class="modal-title">#{msg.cms_collections_selectMediaItem}</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h:panelGroup layout="block" id="images" styleClass="select_image_panel">
+                                                <h:commandLink action="#{cmsCollectionsBean.setSelectedMediaItem(null)}">
+                                                        <div class="select_image_item #{cmsCollectionsBean.isSelectedMediaItem(null) ? 'selected' : ''}">
+                                                             <img
+                                                        src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"> </img>
+
+                                                            <label>#{msg.cms_collections_noImage}</label>
+                                                            <f:ajax render="images"></f:ajax>
+                                                         </div>
+                                                    </h:commandLink>
+                                                <ui:repeat var="mediaItem" value="#{cmsMediaBean.mediaItems}">
+                                                    <h:commandLink action="#{cmsCollectionsBean.setSelectedMediaItem(mediaItem)}">
+                                                        <div class="select_image_item #{cmsCollectionsBean.isSelectedMediaItem(mediaItem) ? 'selected' : ''}">
+                                                            <img src="#{imageDelivery.thumbs.getSquareThumbnailUrl(mediaItem, 150)}"></img>
+                                                            <label>#{mediaItem.name}</label>
+                                                            <f:ajax render="images"></f:ajax>
+                                                         </div>
+                                                    </h:commandLink>
+                                                </ui:repeat>
+                                            </h:panelGroup>
+                                        </div>
+                                        <div class="modal-footer">
+                                           
+                                            <a class="btn" data-dismiss="modal" >
+                                             #{msg.cancel}
+                                            </a>
+                                            <h:commandLink
+                                                action="#{cmsCollectionsBean.currentCollection.setMediaItem(cmsCollectionsBean.selectedMediaItem)}"
+                                                value="#{msg.cms_selectMediaItem_agree}"
+                                                styleClass="btn">
+                                                <f:passThroughAttribute
+                                                    name="data-dismiss"
+                                                    value="modal" />
+                                                <f:ajax render="@form" />
+                                            </h:commandLink>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            </div>
+                            <div class="cms-edit-collection__save">
+                                <h:commandButton
+                                    styleClass="btn"
+                                    id="saveCollection"
+                                    value="#{msg.save}"
+                                    action="#{cmsCollectionsBean.saveCurrentCollection()}">
+                                    <!--                                         <f:ajax render="@none" execute="@form"></f:ajax>  -->
+                                </h:commandButton>
+                            </div>
                         </h:form>
                     </div>
                 </h:panelGroup>

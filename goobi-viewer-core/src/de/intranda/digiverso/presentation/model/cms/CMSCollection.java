@@ -31,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -41,6 +42,7 @@ import com.sun.org.apache.xml.internal.serializer.utils.Messages;
 
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import sun.misc.resources.Messages_zh_HK;
 
 /**
@@ -54,7 +56,7 @@ import sun.misc.resources.Messages_zh_HK;
  */
 @Entity
 @Table(name = "cms_collections")
-public class CMSCollection implements Comparable<CMSCollection>{
+public class CMSCollection implements Comparable<CMSCollection>, BrowseElementInfo{
     
     private static final Logger logger = LoggerFactory.getLogger(CMSCollection.class);
     
@@ -118,7 +120,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
     public void setMediaItem(CMSMediaItem mediaItem) {
         this.mediaItem = mediaItem;
     }
-    
+
     /**
      * @return the collectionUri
      */
@@ -140,6 +142,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
      */
     public void addLabel(Translation label) {
         label.setTag(LABEL_TAG);
+        label.setOwner(this);
         translations.add(label);
     }
     
@@ -150,6 +153,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
      */
     public void addDescription(Translation description) {
         description.setTag(DESCRIPTION_TAG);
+        description.setOwner(this);
         translations.add(description);
     }
     
@@ -179,7 +183,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
      * @return  The string value of the label of the given language, or an empty string
      */
     public String getLabel(String language) {
-        return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse(Helper.getTranslation(getSolrFieldValue(), null));
+        return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).filter(translation -> StringUtils.isNotBlank(translation.getValue())).findFirst().map(translation -> translation.getValue()).orElse(Helper.getTranslation(getSolrFieldValue(), null));
     }
     
     /**
@@ -206,6 +210,11 @@ public class CMSCollection implements Comparable<CMSCollection>{
         return getLabels().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
     }
     
+    public Translation getDescriptionAsTranslation(String language) {
+        return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().orElse(null);
+    }
+    
+    
 
     /**
      * @param label
@@ -224,7 +233,7 @@ public class CMSCollection implements Comparable<CMSCollection>{
      * @return  The string value of the description of the given language, or an empty string
      */
     public String getDescription(String language) {
-        return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).findFirst().map(translation -> translation.getValue()).orElse(Helper.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
+        return getDescriptions().stream().filter(translation -> language.equalsIgnoreCase(translation.getLanguage())).filter(translation -> StringUtils.isNotBlank(translation.getValue())).findFirst().map(translation -> translation.getValue()).orElse(Helper.getTranslation(getSolrFieldValue() + "_DESCRIPTION", null));
     }
     
     /**
@@ -245,6 +254,11 @@ public class CMSCollection implements Comparable<CMSCollection>{
     public String getDescription() {
         return getDescription(BeanUtils.getLocale());
     }
+    
+    public void setDescription(String value, String language) {
+        getDescriptions().stream().filter(label -> label.getLanguage().equalsIgnoreCase(language)).findFirst().ifPresent(desc -> desc.setValue(value));
+    }
+    
     
     /**
      * @return the solrField. Guaranteed to hold a non-blank value
@@ -318,13 +332,34 @@ public class CMSCollection implements Comparable<CMSCollection>{
     public Long getId() {
         return id;
     }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+
     @Override
     public String toString() {
         return getSolrField() + "/" + getSolrFieldValue();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getName()
+     */
+    @Override
+    public String getName() {
+        return getLabel();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getLinkURI(javax.servlet.http.HttpServletRequest)
+     */
+    @Override
+    public URI getLinkURI(HttpServletRequest request) {
+        return URI.create(getCollectionUrl());
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getIconURI()
+     */
+    @Override
+    public URI getIconURI() {
+        return getMediaItem().getIconURI();
     }
 
     

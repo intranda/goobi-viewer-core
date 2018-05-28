@@ -31,6 +31,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 
@@ -174,6 +175,7 @@ public class CollectionView {
             if (loadDescriptions) {
                 try {
                     this.visibleCollectionList = associateWithCMSMediaItems(this.visibleCollectionList);
+                    this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
                 } catch (PresentationException | DAOException e) {
                     logger.error("Failed to associate collections with media items: " + e.getMessage());
                 }
@@ -206,6 +208,26 @@ public class CollectionView {
         }
         return collections;
     }
+    
+    private static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField) throws DAOException,
+    PresentationException {
+List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
+if (cmsCollections != null) {
+    for (CMSCollection cmsCollection : cmsCollections) {
+        String collectionName = cmsCollection.getSolrFieldValue();
+        if (StringUtils.isBlank(collectionName)) {
+            continue;
+        }
+        HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
+        int index = collections.indexOf(searchItem);
+        if (index > -1) {
+            HierarchicalBrowseDcElement element = collections.get(index);
+            element.setInfo(cmsCollection);
+        }
+    }
+}
+return collections;
+}
 
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
         logger.trace("getVisibleDcElements");

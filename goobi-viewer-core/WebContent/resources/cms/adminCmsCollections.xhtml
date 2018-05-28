@@ -128,7 +128,7 @@
                                             <span  class="collection_list_item_entry">
                                                 <ui:fragment rendered="#{collection.hasMediaItem()}">
                                                     <img
-                                                        src="#{imageDelivery.thumbs.thumbnailUrl(collection.mediaItem,100,200)}"> </img>
+                                                        src="#{imageDelivery.thumbs.getThumbnailUrl(collection.mediaItem,100,200)}"> </img>
                                                 </ui:fragment>
                                                 <ui:fragment rendered="#{!collection.hasMediaItem()}">
                                                     <img

@@ -115,6 +115,13 @@ public class Translation {
     public CMSCollection getOwner() {
         return owner;
     }
+    
+    /**
+     * @param owner the owner to set
+     */
+    public void setOwner(CMSCollection owner) {
+        this.owner = owner;
+    }
 
     
     /* (non-Javadoc)

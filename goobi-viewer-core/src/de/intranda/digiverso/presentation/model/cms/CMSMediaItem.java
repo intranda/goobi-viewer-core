@@ -367,6 +367,12 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public String getDescription() {
         return getCurrentLanguageMetadata().getDescription();
     }
+    
+    @Override
+    public String getName() {
+        return getCurrentLanguageMetadata().getName();
+    }
+
 
     /**
      * @return the size

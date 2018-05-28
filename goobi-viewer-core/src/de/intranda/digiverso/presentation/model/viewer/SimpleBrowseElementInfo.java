@@ -94,4 +94,12 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
         }
     }
 
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getName()
+     */
+    @Override
+    public String getName() {
+        return collectionName;
+    }
+
 }
