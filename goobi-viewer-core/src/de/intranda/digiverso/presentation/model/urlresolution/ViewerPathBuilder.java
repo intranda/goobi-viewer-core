@@ -173,7 +173,8 @@ public class ViewerPathBuilder {
     }
 
     /**
-     * Returns true if the first part of the uri, before any slashes, is equal to the given string
+     * Returns true if the first parts of the uri (separated by '/') are equal to all parts of the given string (separated by '/'). 
+     * If the string has more parts than the uri, false is returned
      * 
      * @param uri
      * @param string
@@ -181,8 +182,19 @@ public class ViewerPathBuilder {
      */
     public static boolean startsWith(URI uri, String string) {
         if(uri != null) {
-            String[] parts = uri.toString().split("/");
-            return parts.length > 0 && parts[0].equals(string);
+            String[] uriParts = uri.toString().split("/");
+            String[] stringParts = string.toString().split("/");
+            if(uriParts.length < stringParts.length) {
+                //no match if the uri contains less path parts than the string to match
+                return false;
+            }
+            boolean match = true;
+            for (int i = 0; i < stringParts.length; i++) {
+                if(!stringParts[i].equals(uriParts[i])) {
+                    match = false;
+                }
+            }
+            return match;
         } else {
             return false;
         }
