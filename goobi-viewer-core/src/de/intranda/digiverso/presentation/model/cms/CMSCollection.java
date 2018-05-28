@@ -368,7 +368,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
-        return URI.create(getCollectionUrl());
+        if(getCollectionUrl() != null) {            
+            return URI.create(getCollectionUrl());
+        } else {
+            return null;
+        }
     }
 
     /* (non-Javadoc)

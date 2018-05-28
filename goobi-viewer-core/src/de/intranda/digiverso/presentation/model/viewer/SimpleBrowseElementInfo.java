@@ -70,7 +70,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
         this.iconURI = iconURI;
     }
 
-    private static URI createIconURI(String collectionName) {
+    protected static URI createIconURI(String collectionName) {
         String icon = DataManager.getInstance()
                 .getConfiguration()
                 .getDefaultBrowseIcon(collectionName);
