@@ -1092,9 +1092,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.folder" value="/opt/digiverso/viewer/" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
-		<property name="server.url" value="http://digital.zlb.de/viewer/" />
+		<property name="server.url" value="https://digital.zlb.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8081/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigital.zlb.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="https%3A%2F%2Fdigital.zlb.de%2Fviewer%2Foai" />
 		<property name="theme" value="zlb2" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="114" />
