@@ -585,6 +585,12 @@ public class User implements ILicensee, HttpSessionBindingListener {
         // nothing
     }
 
+    /**
+     * Generates and returns a Gravatar url for the user's e-mail address.
+     * 
+     * @param size
+     * @return Gravatar URL
+     */
     public String getGravatarUrl(int size) {
         if (useGravatar && StringUtils.isNotEmpty(email)) {
             Gravatar gravatar = new Gravatar();
@@ -592,9 +598,10 @@ public class User implements ILicensee, HttpSessionBindingListener {
             gravatar.setRating(GravatarRating.GENERAL_AUDIENCES);
             gravatar.setDefaultImage(GravatarDefaultImage.GRAVATAR_ICON);
             String url = gravatar.getUrl(email);
+            if (url != null) {
+                url = url.replace("http:", ":");
+            }
             return url;
-            //        return url.substring(0, url.length() - 3) + Helper.getNavigationHelper().getApplicationUrl().replace(":", "%3A").replace("/", "%2F")
-            //                + "resources%2Fcrowdsourcing%2Fimg%2Fprofile-small.png";
         }
 
         return null;
