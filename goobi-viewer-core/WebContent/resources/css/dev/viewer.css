@@ -3957,6 +3957,35 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Sitelinks
+   style declarations for sitelinks.xhtml
+   ==============================================================*/
+/* SITELINKS */
+/* BLOCK */
+.sitelinks {
+  /* ELEMENT */
+}
+.sitelinks__tags {
+  margin-bottom: 20px;
+}
+.sitelinks__tags a {
+  display: inline-block;
+  padding: 3px;
+}
+.sitelinks__hits ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sitelinks__hits a {
+  display: inline-block;
+  padding: 3px 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* SEARCH VIEWS */
 /* ==============================================================
    Search Standard
