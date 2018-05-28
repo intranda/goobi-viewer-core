@@ -6314,10 +6314,11 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .reading-mode__nav.back {
   padding-right: 15px;
+  text-align: right;
 }
 .reading-mode__nav.back a {
-  display: -ms-flexbox;
-  display: flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -ms-flex-pack: end;
       justify-content: flex-end;
   -ms-flex-align: center;
@@ -6330,6 +6331,7 @@ div[id*="-Modal"] .email-form .form-group {
 .reading-mode__nav.back a:focus {
   color: #6f6f6f;
   text-decoration: none;
+  outline: none;
 }
 .reading-mode__nav.back a .fa {
   position: relative;
