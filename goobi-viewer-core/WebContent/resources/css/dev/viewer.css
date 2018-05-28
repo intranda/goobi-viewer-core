@@ -2159,6 +2159,10 @@ div.mce-fullscreen {
   text-decoration: none;
   color: #6f6f6f;
 }
+.image-controls__action a,
+.image-controls__action button {
+  cursor: pointer;
+}
 .image-controls__action [class*="image-"] {
   position: relative;
   top: 3px;
