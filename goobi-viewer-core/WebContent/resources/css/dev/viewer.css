@@ -9330,7 +9330,11 @@ img.cms-static-pages__page-language--complete {
   width: 400px;
 }
 #cmsCollections .selectionGroup .selectionInput input {
-  width: calc(100% - 37px);
+  display: inline;
+  width: calc(100% - 50px);
+}
+#cmsCollections .selectionGroup .selectionInput a {
+  margin-left: 7px;
 }
 #cmsCollections .collection_list {
   display: -ms-flexbox;
@@ -9368,8 +9372,7 @@ img.cms-static-pages__page-language--complete {
   min-width: 80px;
 }
 #cmsCollections .collection_list .collection_list_item .collection_list_item_entry img {
-  width: 70px;
-  height: 50px;
+  height: 80px;
 }
 #cmsCollections .collection_list .collection_list_item .collection_list_item_entry a {
   padding: 10px;
@@ -9411,7 +9414,7 @@ img.cms-static-pages__page-language--complete {
 }
 #cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table img {
   padding: 0 10px;
-  width: 200px;
+  height: 150px;
 }
 #cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table input {
   margin: 0 10px;
@@ -9429,6 +9432,9 @@ img.cms-static-pages__page-language--complete {
 }
 #cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table .edit_language_column .edit_language_label {
   height: 24px;
+}
+#cmsEditCollection .edit_collection_table .edit_collection_row .edit_language_table #labelPI {
+  margin-left: 40px;
 }
 #cmsEditCollection #selectImageModal .modal-dialog {
   width: 632px;

@@ -62,6 +62,7 @@
                                 <label class="selectionLabel">#{msg.cms_collections_solrFieldValue}:</label>
                                 <div class="selectionInput">
                                     <h:inputText
+                                        styleClass="form-control"
                                         id="input-solrFieldValue"
                                         value="#{cmsCollectionsBean.solrFieldValue}"></h:inputText>
                                     <h:commandLink
@@ -126,11 +127,17 @@
                                                     target="_blank"> #{collection.collectionUrl} </a>
                                             </span>
                                             <span  class="collection_list_item_entry">
-                                                <ui:fragment rendered="#{collection.hasMediaItem()}">
-                                                    <img
-                                                        src="#{imageDelivery.thumbs.getThumbnailUrl(collection.mediaItem,100,200)}"> </img>
+                                                <ui:fragment rendered="#{collection.hasImage()}">
+                                                    <ui:fragment rendered="#{collection.hasRepresentativeWork()}">
+                                                        <img
+                                                            src="#{imageDelivery.thumbs.getThumbnailUrl(collection.representativeWork,100,100)}"> </img>
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{!collection.hasRepresentativeWork()}">
+                                                        <img
+                                                            src="#{imageDelivery.thumbs.getThumbnailUrl(collection.mediaItem,100,100)}"> </img>
+                                                    </ui:fragment>
                                                 </ui:fragment>
-                                                <ui:fragment rendered="#{!collection.hasMediaItem()}">
+                                                <ui:fragment rendered="#{!collection.hasImage()}">
                                                     <img
                                                         src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"> </img>
                                                 </ui:fragment>
@@ -164,13 +171,13 @@
                                 </ul>
                             </ui:fragment>
 
-                            <div class="cms-collections__save">
-                                <h:commandButton
-                                    styleClass="btn"
-                                    id="saveCollections"
-                                    value="#{msg.save}"
-                                    action="#{cmsCollectionsBean.saveCollections}" />
-                            </div>
+<!--                             <div class="cms-collections__save"> -->
+<!--                                 <h:commandButton -->
+<!--                                     styleClass="btn" -->
+<!--                                     id="saveCollections" -->
+<!--                                     value="#{msg.save}" -->
+<!--                                     action="#{cmsCollectionsBean.saveCollections}" /> -->
+<!--                             </div> -->
 
                             <!-- delete collection modal -->
                             <div

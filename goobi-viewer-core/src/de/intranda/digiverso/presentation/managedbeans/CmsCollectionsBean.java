@@ -25,15 +25,21 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.Translation;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * Bean handling cms settings for collections
@@ -48,6 +54,7 @@ public class CmsCollectionsBean implements Serializable {
     private static final long serialVersionUID = -2862611194397865986L;
 
     private static final Logger logger = LoggerFactory.getLogger(CmsCollectionsBean.class);
+    private static final int MAX_IMAGES_PER_PAGE = 36;
 
     private CMSCollection currentCollection;
     private String solrField = SolrConstants.DC;
@@ -126,6 +133,7 @@ public class CmsCollectionsBean implements Serializable {
 
     public void updateCollections() throws DAOException {
         this.collections = DataManager.getInstance().getDao().getCMSCollections(getSolrField());
+        this.collections.sort((c1,c2) -> Long.compare(c2.getId(), c1.getId()));
         //If a collection is selected that is no longer in the list, deselect it
         if (this.currentCollection != null && !this.collections.contains(this.currentCollection)) {
             this.currentCollection = null;
@@ -154,13 +162,13 @@ public class CmsCollectionsBean implements Serializable {
     public Translation getCurrentLabel(String language) {
         return getCurrentCollection().getLabelAsTranslation(language);
     }
-    
+
     public Translation getCurrentDescription(String language) {
         return getCurrentCollection().getDescriptionAsTranslation(language);
     }
-    
+
     public void saveCurrentCollection() throws DAOException {
-        if(getCurrentCollection() != null) {
+        if (getCurrentCollection() != null) {
             DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
             updateCollections();
         }
@@ -172,20 +180,21 @@ public class CmsCollectionsBean implements Serializable {
     public CMSMediaItem getSelectedMediaItem() {
         return selectedMediaItem;
     }
-    
+
     /**
      * @param selectedMediaItem the selectedMediaItem to set
      */
     public void setSelectedMediaItem(CMSMediaItem selectedMediaItem) {
         this.selectedMediaItem = selectedMediaItem;
     }
-    
+
     public boolean isSelectedMediaItem(CMSMediaItem item) {
-        if(selectedMediaItem == null && item == null) {
+        if (selectedMediaItem == null && item == null) {
             return true;
-        } else {            
+        } else {
             return item != null && item.equals(selectedMediaItem);
         }
     }
-    
+
+
 }

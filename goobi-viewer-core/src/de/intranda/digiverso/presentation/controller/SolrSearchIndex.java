@@ -373,6 +373,26 @@ public final class SolrSearchIndex {
 
         return ret;
     }
+    
+    /**
+    *
+    * @param iddoc
+    * @return
+    * @throws IndexUnreachableException
+    * @throws PresentationException
+    * @should return correct doc
+    */
+   public SolrDocument getDocumentByPI(String pi) throws IndexUnreachableException, PresentationException {
+       // logger.trace("getDocumentByIddoc: {}", iddoc);
+       SolrDocument ret = null;
+       SolrDocumentList hits =
+               search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 0, 1, null, null, null).getResults();
+       if (hits != null && hits.size() > 0) {
+           ret = hits.get(0);
+       }
+
+       return ret;
+   }
 
     /**
      * Returns a list of Tags created from the terms for the given field name. This method uses the slower doc search instead of term search, but can

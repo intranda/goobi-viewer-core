@@ -104,7 +104,7 @@
                                         <label>#{msg.cms_collections_link}</label>
                                     </div>
                                     <div class="edit_language_table">
-                                        <h:inputText value="#{cmsCollectionsBean.currentCollection.collectionUrl}"></h:inputText>
+                                        <h:inputText styleClass="form-control" value="#{cmsCollectionsBean.currentCollection.collectionUrl}"></h:inputText>
                                     </div>
                                 </div>
 
@@ -115,10 +115,10 @@
                                         <label>#{msg.cms_collections_image}</label>
                                     </div>
                                     <div class="edit_language_table">
-                                        <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasMediaItem()}">
-                                            <img src="#{cmsCollectionsBean.currentCollection.mediaItem.iconURI}"></img>
+                                        <ui:fragment rendered="#{cmsCollectionsBean.currentCollection.hasImage()}">
+                                            <img src="#{cmsCollectionsBean.currentCollection.iconURI}"></img>
                                         </ui:fragment>
-                                        <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasMediaItem()}">
+                                        <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
                                             <img
                                                 src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}">
                                             </img>
@@ -127,6 +127,10 @@
                                         <a data-toggle="modal" data-target="#selectImageModal">
                                             #{msg.cms_collections_changeImage}
                                         </a>
+                                                                                
+                                        <label id="labelPI">#{msg.cms_collections_set_representative}</label>
+                                        
+                                        <h:inputText styleClass="form-control" validator="piInSolrValidator" value="#{cmsCollectionsBean.currentCollection.representativeWorkPI}"></h:inputText>
 
                                     </div>
                                 </div>

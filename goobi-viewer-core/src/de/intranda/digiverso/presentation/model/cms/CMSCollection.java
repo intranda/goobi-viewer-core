@@ -34,16 +34,20 @@ import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.common.SolrDocument;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.org.apache.xml.internal.serializer.utils.Messages;
-
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
-import sun.misc.resources.Messages_zh_HK;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * A class representing persistent configurations for a collection.
@@ -78,6 +82,9 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     /** Media item reference for media content items. */
     @JoinColumn(name = "media_item_id")
     private CMSMediaItem mediaItem;
+    
+    @Column(name = "representative_work_pi")
+    private String representativeWorkPI = "";
     
     @Column(name = "collection_url")
     private String collectionUrl;
@@ -325,6 +332,16 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
     public boolean hasMediaItem() {
         return getMediaItem() != null;
     }
+    
+    public boolean hasRepresentativeWork() {
+        return StringUtils.isNotBlank(getRepresentativeWorkPI());
+    }
+    
+    public boolean hasImage() {
+        return hasRepresentativeWork() || hasMediaItem();
+    }
+    
+    
 
     /**
      * @return the id
@@ -359,9 +376,41 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     @Override
     public URI getIconURI() {
+        if(hasRepresentativeWork()) {
+            try {
+                return URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(getRepresentativeWork()));
+            } catch (IndexUnreachableException | PresentationException e) {
+                logger.error(e.toString(), e);
+            }
+        }
         return getMediaItem().getIconURI();
     }
 
+    /**
+     * @return
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
+     */
+    public StructElement getRepresentativeWork() throws IndexUnreachableException, PresentationException {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(getRepresentativeWorkPI());
+        return new StructElement(Long.parseLong((String)doc.getFieldValue(SolrConstants.IDDOC)), doc);
+    }
+
+    /**
+     * @return the representativeWorkPI
+     */
+    public String getRepresentativeWorkPI() {
+        return representativeWorkPI;
+    }
     
+    /**
+     * 
+     * @param representativeWorkPI the representativeWorkPI to set
+     */
+    public void setRepresentativeWorkPI(String representativeWorkPI) {
+        this.representativeWorkPI = representativeWorkPI;
+    }
+    
+
 
 }
