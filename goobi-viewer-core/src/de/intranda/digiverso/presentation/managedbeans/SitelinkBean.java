@@ -19,14 +19,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -37,12 +36,10 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
-import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
 
@@ -127,8 +124,9 @@ public class SitelinkBean implements Serializable {
             return "";
         }
 
-        String[] fields = { SolrConstants.PI, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.MIMETYPE,
-                SolrConstants.THUMBNAIL };
+        String[] fields = { SolrConstants.PI, SolrConstants.PI_PARENT, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT,
+                SolrConstants.MIMETYPE, SolrConstants.CURRENTNO };
+        String[] anchorFields = { SolrConstants.LABEL, SolrConstants.TITLE };
         String query = SearchHelper.buildFinalQuery(field + ":" + value + (filterQuery != null ? " AND " + filterQuery : ""), false);
         logger.trace("q: {}", query);
         //        hits = SearchHelper.searchWithAggregation(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null, null);
@@ -138,21 +136,40 @@ public class SitelinkBean implements Serializable {
         SolrDocumentList docList = DataManager.getInstance().getSearchIndex().search(query, Arrays.asList(fields));
         if (docList != null && !docList.isEmpty()) {
             hits = new ArrayList<>(docList.size());
+            Map<String, String> anchorTitle = new HashMap<>();
             for (SolrDocument doc : docList) {
+                StringBuilder sbLabel = new StringBuilder();
+                String anchorPi = (String) doc.getFieldValue(SolrConstants.PI_PARENT);
+                if (anchorPi != null) {
+                    SolrDocumentList anchorDocList =
+                            DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":" + anchorPi, Arrays.asList(anchorFields));
+                    if (!anchorDocList.isEmpty()) {
+                        SolrDocument anchorDoc = anchorDocList.get(0);
+                        sbLabel.append(anchorDoc.getFieldValue(SolrConstants.LABEL));
+                    }
+                }
+
                 String pi = (String) doc.getFieldValue(SolrConstants.PI);
                 String label = (String) doc.getFieldValue(SolrConstants.LABEL);
                 if (label == null) {
-                    label = (String) doc.getFieldValue(SolrConstants.TITLE);
+                    label = (String) doc.getFieldValue(SolrConstants.CURRENTNO);
                     if (label == null) {
-                        label = pi;
+                        label = (String) doc.getFieldValue(SolrConstants.TITLE);
+
+                        if (label == null) {
+                            label = pi;
+                        }
                     }
                 }
+                if (sbLabel.length() > 0) {
+                    sbLabel.append(": ");
+                }
+                sbLabel.append(label);
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                // String thumbnail = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
                 boolean hasImages = "image".equals(mimeType);
                 PageType pageType = PageType.determinePageType(docStructType, null, false, hasImages, false, false);
-                hits.add(new StringPair(label, pageType.getName() + "/" + pi + "/1/"));
+                hits.add(new StringPair(sbLabel.toString(), pageType.getName() + "/" + pi + "/1/"));
             }
         }
 
