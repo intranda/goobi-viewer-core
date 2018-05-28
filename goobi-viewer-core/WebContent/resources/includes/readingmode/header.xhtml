@@ -29,7 +29,7 @@
         </div>
         <!-- GO BACK -->
         <div class="reading-mode__nav back">
-            <h:outputLink value="#{activeDocumentBean.imageUrl}" title="#{msg.readingMode_leave}">
+            <h:outputLink value="#{request.contextPath}#{navigationHelper.previousViewUrl}" title="#{msg.readingMode_leave}">
                 <i class="fa fa-sign-out" aria-hidden="true"></i>
                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                 <f:passThroughAttribute name="data-placement" value="bottom" />
