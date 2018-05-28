@@ -149,8 +149,8 @@ public class SitelinkBean implements Serializable {
                 }
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
-                boolean hasImages =
-                        doc.containsKey(SolrConstants.THUMBNAIL) && !StringUtils.isEmpty((String) doc.getFieldValue(SolrConstants.THUMBNAIL));
+                // String thumbnail = (String) doc.getFieldValue(SolrConstants.THUMBNAIL);
+                boolean hasImages = "image".equals(mimeType);
                 PageType pageType = PageType.determinePageType(docStructType, null, false, hasImages, false, false);
                 hits.add(new StringPair(label, pageType.getName() + "/" + pi + "/1/"));
             }
