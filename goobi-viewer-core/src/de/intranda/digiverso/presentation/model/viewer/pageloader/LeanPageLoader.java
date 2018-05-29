@@ -173,7 +173,7 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
                     SelectItem full = new SelectItem();
                     full.setLabel(order + ":" + orderLabel);
-                    full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
+                    full.setValue(order);//urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
                     dropdownFulltext.add(full);
                 }
             }
