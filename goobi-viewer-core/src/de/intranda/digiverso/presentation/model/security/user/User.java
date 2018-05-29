@@ -599,7 +599,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
             gravatar.setDefaultImage(GravatarDefaultImage.GRAVATAR_ICON);
             String url = gravatar.getUrl(email);
             if (url != null) {
-                url = url.replace("http:", ":");
+                url = url.replace("http:", "");
             }
             return url;
         }
