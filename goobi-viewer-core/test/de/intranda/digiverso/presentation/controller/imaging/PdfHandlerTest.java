@@ -61,6 +61,6 @@ public class PdfHandlerTest {
     Optional<String> label = Optional.ofNullable("output-filename.pdf");
     
     String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
-    Assert.assertEquals("http://localhost:8080/viewer/rest/pdf/mets/1234.xml/LOG_0003/outputfilenamepdf.pdf?watermarkText=watermark text&watermarkId=footerId", url);
+    Assert.assertEquals("http://localhost:8080/viewer/rest/pdf/mets/1234.xml/LOG_0003/outputfilenamepdf.pdf?watermarkText=watermark+text&watermarkId=footerId", url);
     }
 }
