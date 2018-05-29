@@ -245,7 +245,12 @@ public class TOCElement implements Serializable {
      * @return the label
      */
     public String getLabel() {
-        return label.getValue().orElse("");
+        Locale locale = BeanUtils.getLocale();
+        if(locale != null) {
+            return getLabel(locale);
+        } else {            
+            return label.getValue().orElse("");
+        }
     }
     
     /**

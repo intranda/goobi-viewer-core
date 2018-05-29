@@ -681,14 +681,17 @@ public class TocMaker {
                     if (StringUtils.isEmpty(value.toString())) {
                         // Docstruct fallback should always be translated
                         String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
-                        value.setValue(Helper.getTranslation(docstruct, null));
+                        value = IMetadataValue.getTranslations(docstruct);
+//                        value.setValue(Helper.getTranslation(docstruct, null));
                     }
                 }
-                // Translate parameter value, if so configured
-                if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType())) {
-                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
+                // Translate parameter value, if so configured and not already translated
+                if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType()) && !(value instanceof MultiLanguageMetadataValue)) {
+//                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
+                    value = IMetadataValue.getTranslations(value.getValue().orElse(""));
                 } else if (MetadataParameterType.MESSAGES_KEY.equals(param.getType())) {
-                    value.setValue(Helper.getTranslation(param.getKey(), BeanUtils.getLocale()));
+//                    value.setValue(Helper.getTranslation(param.getKey(), BeanUtils.getLocale()));
+                    value = IMetadataValue.getTranslations(param.getKey());
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
                 // logger.trace("placeholder: {}", placeholder);
@@ -708,9 +711,13 @@ public class TocMaker {
                         label.setValue(langValue, language);
                     }
                 } else {
-                    for (String language : label.getLanguages()) {
-                        String langValue =
-                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
+                    Set<String> languages = new HashSet<>(value.getLanguages());
+                    languages.addAll(label.getLanguages());
+                    for (String language : languages) {
+                        String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
+                        langValue = langValue.replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
+//                        String langValue =
+//                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
                         label.setValue(langValue, language);
                     }
                 }

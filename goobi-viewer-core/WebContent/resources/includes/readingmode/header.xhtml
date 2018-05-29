@@ -15,7 +15,7 @@
         <!-- LOGO -->
         <div class="reading-mode__nav logo">
             <a href="#{request.contextPath}/">
-                <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/goobi_logo.png" alt="Goobi Logo" />
+                <img src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/template/readingmode_logo.png" alt="Readingmode Logo" />
                 <span>Goobi Viewer</span>
             </a>
         </div>
@@ -29,7 +29,7 @@
         </div>
         <!-- GO BACK -->
         <div class="reading-mode__nav back">
-            <h:outputLink value="#{activeDocumentBean.imageUrl}" title="#{msg.readingMode_leave}">
+            <h:outputLink value="#{request.contextPath}#{navigationHelper.previousViewUrl}" title="#{msg.readingMode_leave}">
                 <i class="fa fa-sign-out" aria-hidden="true"></i>
                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                 <f:passThroughAttribute name="data-placement" value="bottom" />

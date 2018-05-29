@@ -998,7 +998,11 @@ public class ViewManager implements Serializable {
      * @throws DAOException
      */
     public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
-        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), getCurrentPage());
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
+            return null;
+        }
+        return imageDelivery.getPdf().getPdfUrl(getTopDocument(), currentPage);
     }
 
     /**

@@ -2159,6 +2159,10 @@ div.mce-fullscreen {
   text-decoration: none;
   color: #6f6f6f;
 }
+.image-controls__action a,
+.image-controls__action button {
+  cursor: pointer;
+}
 .image-controls__action [class*="image-"] {
   position: relative;
   top: 3px;
@@ -3948,6 +3952,35 @@ div[id*="-Modal"] .email-form .form-group {
   height: 165px;
   border: none;
   border-top: 1px solid #ccc;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Sitelinks
+   style declarations for sitelinks.xhtml
+   ==============================================================*/
+/* SITELINKS */
+/* BLOCK */
+.sitelinks {
+  /* ELEMENT */
+}
+.sitelinks__tags {
+  margin-bottom: 20px;
+}
+.sitelinks__tags a {
+  display: inline-block;
+  padding: 3px;
+}
+.sitelinks__hits ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sitelinks__hits a {
+  display: inline-block;
+  padding: 3px 0;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -6310,10 +6343,11 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .reading-mode__nav.back {
   padding-right: 15px;
+  text-align: right;
 }
 .reading-mode__nav.back a {
-  display: -ms-flexbox;
-  display: flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -ms-flex-pack: end;
       justify-content: flex-end;
   -ms-flex-align: center;
@@ -6326,6 +6360,7 @@ div[id*="-Modal"] .email-form .form-group {
 .reading-mode__nav.back a:focus {
   color: #6f6f6f;
   text-decoration: none;
+  outline: none;
 }
 .reading-mode__nav.back a .fa {
   position: relative;

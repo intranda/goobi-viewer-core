@@ -434,9 +434,11 @@ public class ImageDeliveryBean implements Serializable {
     public boolean isCmsUrl(String url) {
         URI uri;
         try {
-            url = Helper.decodeUrl(url);
+//            url = Helper.decodeUrl(url);
             uri = new URI(url);
-            Path path = Paths.get(uri.getPath());
+            String s = uri.getPath();
+            s = Helper.decodeUrl(url);
+            Path path = Paths.get(s);
             if (path.isAbsolute()) {
                 path = path.normalize();
                 return path.startsWith(getCmsMediaPath());
