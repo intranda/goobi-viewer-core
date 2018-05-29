@@ -18,7 +18,9 @@ package de.intranda.digiverso.presentation.model.search;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,10 +31,14 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.viewer.BrowseTerm.BrowseTermTranslatedComparator;
 
 /**
  * Current faceting settings for a search.
@@ -49,7 +55,12 @@ public class SearchFacets {
     private final List<FacetItem> currentFacets = new ArrayList<>();
     /** List representation of all active collection facets. */
     protected final List<FacetItem> currentHierarchicalFacets = new ArrayList<>();
+
     private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
+
+    private final Map<String, String> bottomValues = new HashMap<>();
+
+    private final Map<String, String> topValues = new HashMap<>();
 
     public void resetAvailableFacets() {
         availableFacets.clear();
@@ -496,12 +507,23 @@ public class SearchFacets {
      * 
      * @param field
      * @param updateValue
+     * @param hierarchical
+     */
+    public void updateFacetItem(String field, String updateValue, boolean hierarchical) {
+        updateFacetItem(field, updateValue, currentFacets, hierarchical);
+    }
+
+    /**
+     * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
+     * 
+     * @param field
+     * @param updateValue
      * @param facetItems
-     * @param hiearchical
+     * @param hierarchical
      * @should update facet item correctly
      * @should add new item correcty
      */
-    static void updateFacetItem(String field, String updateValue, List<FacetItem> facetItems, boolean hiearchical) {
+    static void updateFacetItem(String field, String updateValue, List<FacetItem> facetItems, boolean hierarchical) {
         if (facetItems == null) {
             facetItems = new ArrayList<>();
         }
@@ -521,11 +543,59 @@ public class SearchFacets {
                 }
             }
             if (fieldItem == null) {
-                fieldItem = new FacetItem(field + ":" + updateValue, hiearchical);
+                fieldItem = new FacetItem(field + ":" + updateValue, hierarchical);
                 facetItems.add(fieldItem);
             }
             fieldItem.setLink(field + ":" + updateValue);
             logger.trace("Facet item updated: {}", fieldItem.getLink());
+        }
+    }
+
+    /**
+     * 
+     * @param field
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getBottomRangeValue(String field) throws PresentationException, IndexUnreachableException {
+        if (!bottomValues.containsKey(field)) {
+            populateTopBottomValuesForField(field);
+        }
+        return bottomValues.get(field);
+    }
+
+    /**
+     * 
+     * @param field
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getTopRangeValue(String field) throws PresentationException, IndexUnreachableException {
+        if (!topValues.containsKey(field)) {
+            populateTopBottomValuesForField(field);
+        }
+        return topValues.get(field);
+    }
+
+    /**
+     * 
+     * @param field
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should populate values correctly
+     */
+    void populateTopBottomValuesForField(String field) throws PresentationException, IndexUnreachableException {
+        if (field == null) {
+            return;
+        }
+        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
+        Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
+        if (!values.isEmpty()) {
+            logger.trace(values.toString());
+            bottomValues.put(field, values.get(0));
+            topValues.put(field, values.get(values.size() - 1));
         }
     }
 

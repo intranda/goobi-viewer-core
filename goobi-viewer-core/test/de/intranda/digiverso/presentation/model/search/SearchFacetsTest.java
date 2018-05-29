@@ -24,15 +24,17 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 
-public class SearchFacetsTest {
+public class SearchFacetsTest extends AbstractSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
     }
@@ -326,5 +328,17 @@ public class SearchFacetsTest {
         Assert.assertEquals(2, items.size());
         Assert.assertEquals("FIELD2", items.get(1).getField());
         Assert.assertEquals("bar", items.get(1).getValue());
+    }
+
+    /**
+     * @see SearchFacets#populateTopBottomValuesForField(String)
+     * @verifies populate values correctly
+     */
+    @Test
+    public void populateTopBottomValuesForField_shouldPopulateValuesCorrectly() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        facets.populateTopBottomValuesForField(SolrConstants._CALENDAR_YEAR);
+        Assert.assertEquals("201", facets.getBottomRangeValue(SolrConstants._CALENDAR_YEAR));
+        Assert.assertEquals("1995", facets.getTopRangeValue(SolrConstants._CALENDAR_YEAR));
     }
 }
