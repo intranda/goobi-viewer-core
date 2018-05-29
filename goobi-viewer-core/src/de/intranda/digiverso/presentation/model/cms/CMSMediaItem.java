@@ -285,7 +285,7 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
         if (StringUtils.isNotBlank(getLink())) {
             try {
-                URI uri = new URI(URLDecoder.decode(getLink(), "utf-8"));
+                URI uri = new URI(getLink());
                 if (!uri.isAbsolute()) {
                     String viewerURL = "/";
                     if (request != null) {
