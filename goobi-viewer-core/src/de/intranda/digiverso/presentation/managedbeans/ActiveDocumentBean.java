@@ -241,20 +241,6 @@ public class ActiveDocumentBean implements Serializable {
 
             if (viewManager != null && viewManager.getCurrentDocument() != null) {
                 doublePageMode = viewManager.isDoublePageMode();
-                if (!viewManager.getCurrentDocument().isExists()) {
-                    logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
-                            viewManager.getPi(), topDocumentIddoc);
-                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(viewManager.getPi());
-                    if (topDocumentIddoc == 0) {
-                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
-                                viewManager.getPi());
-                        throw new RecordNotFoundException(lastReceivedIdentifier);
-                    }
-                    viewManager = null;
-                } else if (viewManager.getCurrentDocument().isDeleted()) {
-                    logger.debug("Record '{}' is deleted and only available as a trace document.", viewManager.getPi());
-                    throw new RecordDeletedException(viewManager.getPi());
-                }
             }
 
             // Do these steps only if a new document has been loaded
@@ -272,6 +258,23 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 StructElement topDocument = new StructElement(topDocumentIddoc);
+
+                // Exit here if record is not found or has been deleted
+                if (!topDocument.isExists()) {
+                    logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
+                            topDocument.getPi(), topDocumentIddoc);
+                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topDocument.getPi());
+                    if (topDocumentIddoc == 0) {
+                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
+                                viewManager.getPi());
+                        reset();
+                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                    }
+                } else if (topDocument.isDeleted()) {
+                    logger.debug("Record '{}' is deleted and only available as a trace document.", topDocument.getPi());
+                    reset();
+                    throw new RecordDeletedException(topDocument.getPi());
+                }
 
                 // Do not open records who may not be listed for the current user
                 List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
