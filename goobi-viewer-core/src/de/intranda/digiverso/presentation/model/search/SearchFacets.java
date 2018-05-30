@@ -527,7 +527,7 @@ public class SearchFacets {
     public String updateFacetItem(String field, boolean hierarchical) {
         updateFacetItem(field, tempValue, currentFacets, hierarchical);
 
-        return "pretty:search5";
+        return "pretty:search6"; // TODO advanced search
     }
 
     /**
