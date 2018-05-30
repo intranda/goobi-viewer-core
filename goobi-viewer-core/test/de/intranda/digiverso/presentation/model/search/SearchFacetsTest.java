@@ -318,10 +318,10 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchFacets#updateFacetItem(String,String,List,boolean)
-     * @verifies add new item correcty
+     * @verifies add new item correctly
      */
     @Test
-    public void updateFacetItem_shouldAddNewItemCorrecty() throws Exception {
+    public void updateFacetItem_shouldAddNewItemCorrectly() throws Exception {
         List<FacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
@@ -331,14 +331,15 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SearchFacets#populateTopBottomValuesForField(String)
+     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
      * @verifies populate values correctly
      */
     @Test
-    public void populateTopBottomValuesForField_shouldPopulateValuesCorrectly() throws Exception {
+    public void populateAbsoluteMinMaxValuesForField_shouldPopulateValuesCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.populateTopBottomValuesForField(SolrConstants._CALENDAR_YEAR);
-        Assert.assertEquals("201", facets.getBottomRangeValue(SolrConstants._CALENDAR_YEAR));
-        Assert.assertEquals("1995", facets.getTopRangeValue(SolrConstants._CALENDAR_YEAR));
+        facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR);
+        Assert.assertEquals("201", facets.getAbsoluteMinRangeValue(SolrConstants._CALENDAR_YEAR));
+        Assert.assertEquals("1995", facets.getAbsoluteMaxRangeValue(SolrConstants._CALENDAR_YEAR));
+
     }
 }

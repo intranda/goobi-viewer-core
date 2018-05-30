@@ -38,7 +38,6 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.model.viewer.BrowseTerm.BrowseTermTranslatedComparator;
 
 /**
  * Current faceting settings for a search.
@@ -58,9 +57,9 @@ public class SearchFacets {
 
     private final Map<String, Boolean> drillDownExpanded = new HashMap<>();
 
-    private final Map<String, String> bottomValues = new HashMap<>();
+    private final Map<String, String> minValues = new HashMap<>();
 
-    private final Map<String, String> topValues = new HashMap<>();
+    private final Map<String, String> maxValues = new HashMap<>();
 
     public void resetAvailableFacets() {
         availableFacets.clear();
@@ -521,7 +520,7 @@ public class SearchFacets {
      * @param facetItems
      * @param hierarchical
      * @should update facet item correctly
-     * @should add new item correcty
+     * @should add new item correctly
      */
     static void updateFacetItem(String field, String updateValue, List<FacetItem> facetItems, boolean hierarchical) {
         if (facetItems == null) {
@@ -555,38 +554,75 @@ public class SearchFacets {
      * 
      * @param field
      * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
      */
-    public String getBottomRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        if (!bottomValues.containsKey(field)) {
-            populateTopBottomValuesForField(field);
+    public String getCurrentMinRangeValue(String field) {
+        for (FacetItem item : currentFacets) {
+            if (item.getField().equals(field)) {
+                return item.getValue();
+            }
         }
-        return bottomValues.get(field);
+
+        return null;
     }
 
     /**
      * 
      * @param field
      * @return
-     * @throws PresentationException
-     * @throws IndexUnreachableException
      */
-    public String getTopRangeValue(String field) throws PresentationException, IndexUnreachableException {
-        if (!topValues.containsKey(field)) {
-            populateTopBottomValuesForField(field);
+    public String getCurrentMaxRangeValue(String field) {
+        for (FacetItem item : currentFacets) {
+            if (item.getField().equals(field)) {
+                if (item.getValue2() != null) {
+                    return item.getValue2();
+                }
+                return item.getValue();
+            }
         }
-        return topValues.get(field);
+
+        return null;
     }
 
     /**
+     * Returns the minimum value for the given field available in the search index.
+     * 
+     * @param field
+     * @return Smallest available value
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getAbsoluteMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
+        if (!minValues.containsKey(field)) {
+            populateAbsoluteMinMaxValuesForField(field);
+        }
+        return minValues.get(field);
+    }
+
+    /**
+     * Returns the maximum value for the given field available in the search index.
+     * 
+     * @param field
+     * @return Largest available value
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public String getAbsoluteMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
+        if (!maxValues.containsKey(field)) {
+            populateAbsoluteMinMaxValuesForField(field);
+        }
+        return maxValues.get(field);
+    }
+
+    /**
+     * Adds the min and max values from the search index for the given field to the bottomValues map. Min and max values are determined via an
+     * alphanumeric comparator.
      * 
      * @param field
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should populate values correctly
      */
-    void populateTopBottomValuesForField(String field) throws PresentationException, IndexUnreachableException {
+    void populateAbsoluteMinMaxValuesForField(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
             return;
         }
@@ -594,8 +630,8 @@ public class SearchFacets {
         Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
         if (!values.isEmpty()) {
             logger.trace(values.toString());
-            bottomValues.put(field, values.get(0));
-            topValues.put(field, values.get(values.size() - 1));
+            minValues.put(field, values.get(0));
+            maxValues.put(field, values.get(values.size() - 1));
         }
     }
 
