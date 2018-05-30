@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.slf4j.Logger;
@@ -82,24 +80,24 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * 
      * @param link
      */
-    private void parseLink(String link) {
+    void parseLink(String link) {
         if (link == null) {
             return;
         }
-        String[] linkSplit = link.split(":");
-        switch (linkSplit.length) {
-            case 3:
-                this.value2 = linkSplit[2];
-                if (value2.startsWith("\"") && value2.endsWith("\"") && value2.length() > 1) {
-                    value2 = value2.substring(1, value2.length() - 1);
-                }
-            case 2:
-                this.field = linkSplit[0];
-                this.value = linkSplit[1];
-                if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 1) {
-                    value = value.substring(1, value.length() - 1);
-                }
-                break;
+
+        int colonIndex = link.indexOf(':');
+        if (colonIndex == -1) {
+            return;
+        }
+
+        this.field = link.substring(0, colonIndex);
+
+        String fullValue = link.substring(colonIndex + 1);
+        if (fullValue.startsWith("[") && fullValue.endsWith("]") && fullValue.contains(" TO ")) {
+            this.value = fullValue.substring(1, fullValue.indexOf(" TO "));
+            this.value2 = fullValue.substring(fullValue.indexOf(" TO ") + 4, fullValue.length() - 1);
+        } else {
+            value = fullValue;
         }
     }
 
@@ -114,6 +112,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     private FacetItem(String field, String link, String label, String translatedLabel, long count, boolean hierarchical) {
         this.field = field;
         this.link = link.trim();
+        parseLink(link);
         this.label = label;
         this.translatedLabel = translatedLabel;
         this.count = count;
@@ -190,8 +189,8 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                     linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
                 }
                 String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
-                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null), values
-                        .get(value), hierarchical));
+                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null),
+                        values.get(value), hierarchical));
             }
         }
         switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
@@ -300,8 +299,15 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public String getQueryEscapedLink() {
         String escapedValue = getEscapedValue(value);
         if (hierarchial) {
-            return new StringBuilder("(").append(field).append(':').append(escapedValue).append(" OR ").append(field).append(':').append(escapedValue)
-                    .append(".*)").toString();
+            return new StringBuilder("(").append(field)
+                    .append(':')
+                    .append(escapedValue)
+                    .append(" OR ")
+                    .append(field)
+                    .append(':')
+                    .append(escapedValue)
+                    .append(".*)")
+                    .toString();
         }
         if (value2 == null) {
             logger.debug("value2 is null");

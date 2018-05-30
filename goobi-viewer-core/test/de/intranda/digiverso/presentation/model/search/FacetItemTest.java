@@ -45,7 +45,6 @@ public class FacetItemTest {
         Assert.assertEquals("FIELD", item.getField());
         Assert.assertEquals("value:1:2:3", item.getValue());
     }
-    
 
     /**
      * @see FacetItem#FacetItem(String,boolean)
@@ -53,9 +52,10 @@ public class FacetItemTest {
      */
     @Test
     public void FacetItem_shouldSplitFieldAndValueRangeCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:value:1:2:3", false);
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
         Assert.assertEquals("FIELD", item.getField());
-        Assert.assertEquals("value:1:2:3", item.getValue());
+        Assert.assertEquals("foo", item.getValue());
+        Assert.assertEquals("bar", item.getValue2());
     }
 
     /**
@@ -94,7 +94,7 @@ public class FacetItemTest {
      */
     @Test
     public void getQueryEscapedLink_shouldConstructRangeLinkCorrectly() throws Exception {
-        FacetItem item = new FacetItem("FIELD:foo:bar", false);
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
         Assert.assertEquals("FIELD:[foo TO bar]", item.getQueryEscapedLink());
     }
 

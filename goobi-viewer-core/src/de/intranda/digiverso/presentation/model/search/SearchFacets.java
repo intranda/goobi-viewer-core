@@ -61,6 +61,8 @@ public class SearchFacets {
 
     private final Map<String, String> maxValues = new HashMap<>();
 
+    private String tempValue;
+
     public void resetAvailableFacets() {
         availableFacets.clear();
         availableHierarchicalFacets.clear();
@@ -158,6 +160,21 @@ public class SearchFacets {
             }
 
             return sbQuery.toString();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the first FacetItem objects in <code>currentFacets</code> where the field name matches the given field name.
+     *
+     * @param field The field name to match.
+     * @return
+     */
+    public FacetItem getCurrentFacetForField(String field) {
+        List<FacetItem> ret = getCurrentFacetsForField(field);
+        if (!ret.isEmpty()) {
+            return ret.get(0);
         }
 
         return null;
@@ -505,11 +522,12 @@ public class SearchFacets {
      * Updates existing facet item for the given field with a new value. If no item for that field yet exist, a new one is added.
      * 
      * @param field
-     * @param updateValue
      * @param hierarchical
      */
-    public void updateFacetItem(String field, String updateValue, boolean hierarchical) {
-        updateFacetItem(field, updateValue, currentFacets, hierarchical);
+    public String updateFacetItem(String field, boolean hierarchical) {
+        updateFacetItem(field, tempValue, currentFacets, hierarchical);
+
+        return "pretty:search5";
     }
 
     /**
@@ -560,6 +578,7 @@ public class SearchFacets {
     public String getCurrentMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         for (FacetItem item : currentFacets) {
             if (item.getField().equals(field)) {
+                logger.trace("currentMinRangeValue: {}", item.getValue());
                 return item.getValue();
             }
         }
@@ -578,6 +597,7 @@ public class SearchFacets {
         for (FacetItem item : currentFacets) {
             if (item.getField().equals(field)) {
                 if (item.getValue2() != null) {
+                    logger.trace("currentMaxRangeValue: {}", item.getValue());
                     return item.getValue2();
                 }
             }
@@ -629,9 +649,22 @@ public class SearchFacets {
         if (field == null) {
             return;
         }
-        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
-        Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
+        //        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
+        List<String> values = null;
+        if (availableFacets.get(field) != null) {
+            values = new ArrayList<>(availableFacets.get(field).size());
+            for (FacetItem facetItem : availableFacets.get(field)) {
+                if (facetItem.getValue() == null) {
+                    continue;
+                }
+                values.add(facetItem.getValue());
+            }
+        } else {
+            logger.trace("No facets found for field {}", field);
+            values = Collections.emptyList();
+        }
         if (!values.isEmpty()) {
+            Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
             minValues.put(field, values.get(0));
             maxValues.put(field, values.get(values.size() - 1));
             logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));
@@ -790,6 +823,20 @@ public class SearchFacets {
      */
     public List<FacetItem> getCurrentHierarchicalFacets() {
         return currentHierarchicalFacets;
+    }
+
+    /**
+     * @return the tempValue
+     */
+    public String getTempValue() {
+        return tempValue;
+    }
+
+    /**
+     * @param tempValue the tempValue to set
+     */
+    public void setTempValue(String tempValue) {
+        this.tempValue = tempValue;
     }
 
     /**
