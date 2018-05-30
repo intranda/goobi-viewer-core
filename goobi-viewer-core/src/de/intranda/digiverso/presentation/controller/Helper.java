@@ -970,8 +970,12 @@ public class Helper {
 
     public static String decodeUrl(String string) {
         //    string = string.replace("%", "\\u");
+        String encodedString = string;
         try {
-            string = URLDecoder.decode(string, "utf-8");
+            do {                
+                string = encodedString;
+                encodedString = URLDecoder.decode(string, "utf-8");
+            }while (!encodedString.equals(string));
             return BeanUtils.unescapeCriticalUrlChracters(string);
         } catch (UnsupportedEncodingException e) {
             return string;

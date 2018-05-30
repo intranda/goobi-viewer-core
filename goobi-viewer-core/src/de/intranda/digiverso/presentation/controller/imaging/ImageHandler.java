@@ -15,8 +15,10 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -196,15 +198,62 @@ public class ImageHandler {
      */
     protected static boolean isInternalUrl(String fileUrl) {
         try {
-            URI uri = new URI(fileUrl);
-            Path path = Paths.get(uri.getPath());
-            String scheme = uri.getScheme();
-            return (!uri.isAbsolute() && Paths.get(uri.getPath()).isAbsolute()) || (uri.getScheme() != null && uri.getScheme().toLowerCase().equals("file"));
-        } catch (URISyntaxException e) {
+            URI uri = toURI(fileUrl);
+            Path path = getPath(uri);
+            return (!uri.isAbsolute() && path.isAbsolute()) || (uri.getScheme() != null && uri.getScheme().toLowerCase().equals("file"));
+        } catch (URISyntaxException  e) {
             logger.error(e.toString(), e);
             return false;
         }
 //        return fileUrl.startsWith("file:/") || fileUrl.startsWith("/");
+    }
+
+    /**
+     * Constructs a {@link URI} from the given {@link URL} using {@link URI#URI(String, String, String, int, String, String, String)}
+     * 
+     * @param urlExternal
+     * @return  An uri constructed from the parts of the given url
+     * @throws URISyntaxException if {@link URI#URI(String, String, String, int, String, String, String)} throws this exception
+     */
+    public static URI toURI(URL url) throws URISyntaxException {
+        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+        return uri;
+    }
+    
+    /**
+     * tries to construct an {@link URI} from a String using {@link URL#URL(String)} and then {@link #toURI(URL)}. 
+     * Failing that (usually if the given String contains no scheme part), an URI is constructed directly using {@link URI#URI(String, String, String, String)}
+     * 
+     * @param urlString     The string to interpret as an URI. May be absolute or relative (no scheme) and
+     * may contain characters illegal for an URI in the path segment (which are then URL-encoded)
+     * @return A URI constructed from the input string
+     * @throws URISyntaxException   If  {@link #toURI(URL)} or {@link URI#URI(String, String, String, String)} throws this exception
+     */
+    public static URI toURI(String urlString) throws URISyntaxException {
+        try{
+            URL url = new URL(urlString);
+            return toURI(url);
+        } catch(MalformedURLException e) {
+            //missing scheme - construct uri directly
+            String fragment = null;
+            if(urlString.contains("#")) {
+                fragment = urlString.substring(urlString.indexOf("#")+1);
+                urlString = urlString.substring(0, urlString.indexOf("#"));
+            }
+            return new URI(null, null, urlString, fragment);
+        }
+    }
+    
+    /**
+     * returns the path part of an {@link URI} as {@link Path}.
+     * Any characters encoded for the URI are decoded in the Path
+     * 
+     * @param   uri
+     * @return  The path of the uri
+     */
+    public static Path getPath(URI uri) {
+        Path path = Paths.get(uri.getPath());
+        return path;
     }
 
 }
