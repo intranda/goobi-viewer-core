@@ -553,34 +553,37 @@ public class SearchFacets {
     /**
      * 
      * @param field
-     * @return
+     * @return Current min value, if facet in use; otherwise absolute min value for that field
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public String getCurrentMinRangeValue(String field) {
+    public String getCurrentMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         for (FacetItem item : currentFacets) {
             if (item.getField().equals(field)) {
                 return item.getValue();
             }
         }
 
-        return null;
+        return getAbsoluteMinRangeValue(field);
     }
 
     /**
      * 
      * @param field
-     * @return
+     * @return Current max value, if facet in use; otherwise absolute max value for that field
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
-    public String getCurrentMaxRangeValue(String field) {
+    public String getCurrentMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         for (FacetItem item : currentFacets) {
             if (item.getField().equals(field)) {
                 if (item.getValue2() != null) {
                     return item.getValue2();
                 }
-                return item.getValue();
             }
         }
 
-        return null;
+        return getAbsoluteMaxRangeValue(field);
     }
 
     /**
@@ -629,9 +632,9 @@ public class SearchFacets {
         List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
         Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
         if (!values.isEmpty()) {
-            logger.trace(values.toString());
             minValues.put(field, values.get(0));
             maxValues.put(field, values.get(values.size() - 1));
+            logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));
         }
     }
 
