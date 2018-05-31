@@ -147,7 +147,7 @@ public final class SearchHelper {
         List<SearchHit> ret = new ArrayList<>(resp.getResults().size());
         int count = 0;
         for (SolrDocument doc : resp.getResults()) {
-             logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
+            logger.trace("result iddoc: {}", doc.getFieldValue(SolrConstants.IDDOC));
             String fulltext = null;
             SolrDocument ownerDoc = null;
             if (doc.containsKey(SolrConstants.IDDOC_OWNER)) {
@@ -1249,7 +1249,11 @@ public final class SearchHelper {
         Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(bmfc.getField()).append(':');
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            sbQuery.append(bmfc.getSortField()).append(':');
+        } else {
+            sbQuery.append(bmfc.getField()).append(':');
+        }
         if (StringUtils.isEmpty(startsWith)) {
             sbQuery.append("[* TO *]");
         } else {
