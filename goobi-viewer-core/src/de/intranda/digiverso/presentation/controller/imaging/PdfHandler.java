@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,7 +86,7 @@ public class PdfHandler {
 
         if (this.watermarkHandler != null) {
             this.watermarkHandler.getWatermarkTextIfExists(pages[0])
-                    .ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
+                    .ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(encode(text)));
             this.watermarkHandler.getFooterIdIfExists(doc)
                     .ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
         }
@@ -158,10 +160,22 @@ public class PdfHandler {
         divId.ifPresent(id -> sb.append(id).append("/"));
         sb.append(filename);
 
-            watermarkText.ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(text));
+            watermarkText.ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(encode(text)));
             watermarkId.ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
 
         return sb.toString();
+    }
+
+    /**
+     * @param text
+     * @return
+     */
+    private Object encode(String text) {
+        try {
+            return URLEncoder.encode(text, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            return text;
+        }
     }
 
 }

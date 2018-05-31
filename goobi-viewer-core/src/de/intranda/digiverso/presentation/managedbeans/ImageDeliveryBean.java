@@ -435,8 +435,8 @@ public class ImageDeliveryBean implements Serializable {
         URI uri;
         try {
             url = Helper.decodeUrl(url);
-            uri = new URI(url);
-            Path path = Paths.get(uri.getPath());
+            uri = ImageHandler.toURI(url);
+            Path path = ImageHandler.getPath(uri);
             if (path.isAbsolute()) {
                 path = path.normalize();
                 return path.startsWith(getCmsMediaPath());

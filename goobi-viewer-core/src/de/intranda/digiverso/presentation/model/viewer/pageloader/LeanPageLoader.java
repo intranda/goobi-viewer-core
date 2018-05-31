@@ -111,9 +111,13 @@ public class LeanPageLoader implements IPageLoader, Serializable {
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
             }
+            return currentPage;
+        } else if(pageOrder == currentPageNumber) {
+;            return currentPage;
+        } else {
+            return null;
         }
 
-        return currentPage;
     }
 
     /**
@@ -173,7 +177,7 @@ public class LeanPageLoader implements IPageLoader, Serializable {
                 if (dropdownFulltext != null && !(recordBelowFulltextThreshold && !fulltextAvailable)) {
                     SelectItem full = new SelectItem();
                     full.setLabel(order + ":" + orderLabel);
-                    full.setValue(urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
+                    full.setValue(order);//urlRoot + "/" + PageType.viewFulltext.getName() + sbPurlPart.toString());
                     dropdownFulltext.add(full);
                 }
             }

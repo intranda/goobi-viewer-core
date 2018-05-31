@@ -125,14 +125,15 @@ public final class CMSTemplateManager {
         try {
             boolean absolutetemplateFolderUrl = false;
             String templateFolderUrl = "resources/themes/" + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
+            String templateFolder = templateFolderUrl;
             if (StringUtils.isNotEmpty(themeRootPath)) {
                 if (!themeRootPath.endsWith("/")) {
                     themeRootPath += '/';
                 }
-                templateFolderUrl = themeRootPath + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
+                templateFolder = themeRootPath + DataManager.getInstance().getConfiguration().getTheme() + TEMPLATE_BASE_PATH;
                 absolutetemplateFolderUrl = true;
             }
-            Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, servletContext, templateFolderUrl, absolutetemplateFolderUrl);
+            Optional<URL> themeFolderUrl = getThemeFolderUrl(filesystemPath, servletContext, templateFolder, absolutetemplateFolderUrl);
             themeFolderPath = themeFolderUrl.map(url -> toURI(url));
             boolean templatesFound = false;
             if (themeFolderPath.isPresent()) {

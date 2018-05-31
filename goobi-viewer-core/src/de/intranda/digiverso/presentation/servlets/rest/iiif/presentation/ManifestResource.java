@@ -317,6 +317,45 @@ public class ManifestResource extends AbstractResource {
     }
     
     /**
+     * Creates an annotation list for a annotations of the given {@link AnnotationType type} not bound to a page
+     * 
+     * @param pi            The pi of the containing work
+     * @param typeName      The name of the {@link AnnotationType} for which annotations should be returned
+     * @return  A IIIF AnnotationList
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws URISyntaxException
+     * @throws ConfigurationException
+     * @throws DAOException
+     * @throws ContentNotFoundException If there is no work with the given pi or it doesn't have a page with the given order
+     * @throws IllegalRequestException  If there is no annotation type of the given name
+     * @throws IOException 
+     */
+    @GET
+    @Path("/{pi}/list/{type}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public AnnotationList getOtherContent(@PathParam("pi") String pi, @PathParam("type") String typeName) throws PresentationException,
+            IndexUnreachableException, URISyntaxException, ConfigurationException, DAOException, ContentNotFoundException, IllegalRequestException, IOException {
+            AnnotationType type = AnnotationType.valueOf(typeName.toUpperCase());
+            Layer layer;
+            if(AnnotationType.TEI.equals(type)) {
+                layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.PAINTING, (id, repo) -> ContentResource.getTEIFiles(id, repo), (id, lang) -> ContentResource.getTEIURI(id, lang));
+            } else if(AnnotationType.CMDI.equals(type)) {
+                layer = getLayerBuilder().createAnnotationLayer(pi, type, Motivation.DESCRIBING, (id, repo) -> ContentResource.getCMDIFiles(id, repo), (id, lang) -> ContentResource.getCMDIURI(id, lang));
+            } else {
+                throw new IllegalRequestException("No global annotations for type: " + typeName);
+            }
+            Optional<AnnotationList> annoList = layer.getOtherContent().stream().findFirst();
+            if(annoList.isPresent()) {
+                layer.setLabel(IMetadataValue.getTranslations(type.name()));
+                annoList.get().addWithin(layer);
+                return annoList.get();
+            } else {
+                throw new ContentNotFoundException("No annotations found for " + pi + "/" + type);
+            }
+    }
+    
+    /**
      * Creates a layer containing all annnotations of the given {@link AnnotationType type} for the work with the given pi. 
      * The annotations are groupd into annotation lists by page, if they belong to a page. Otherwise they are grouped in a single annotation list
      * 

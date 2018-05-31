@@ -13,36 +13,28 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.controller.imaging;
+package de.intranda.digiverso.presentation.model.urlresolution;
 
 import static org.junit.Assert.*;
 
-import java.util.Optional;
+import java.net.URI;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.intranda.digiverso.presentation.controller.Configuration;
-import de.intranda.digiverso.presentation.controller.DataManager;
-
 /**
  * @author Florian Alpers
  *
  */
-public class PdfHandlerTest {
-    
-    PdfHandler handler;
+public class ViewerPathBuilderTest {
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
-        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-        Configuration configuration = DataManager.getInstance().getConfiguration();
-        handler = new PdfHandler(new WatermarkHandler(configuration, "http://localhost:8080/viewer/"), configuration);
     }
 
     /**
@@ -53,14 +45,23 @@ public class PdfHandlerTest {
     }
 
     @Test
-    public void test() {
-       String pi = "1234";
-    Optional<String> divId = Optional.ofNullable("LOG_0003");
-    Optional<String> watermarkId = Optional.ofNullable("footerId");
-    Optional<String> watermarkText = Optional.ofNullable("watermark text");
-    Optional<String> label = Optional.ofNullable("output-filename.pdf");
-    
-    String url = handler.getPdfUrl(pi, divId, watermarkId, watermarkText, label);
-    Assert.assertEquals("http://localhost:8080/viewer/rest/pdf/mets/1234.xml/LOG_0003/outputfilenamepdf.pdf?watermarkText=watermark+text&watermarkId=footerId", url);
+    public void testStartsWith() {
+        String url1 = "a";
+        String url2 = "a/b";
+        String url3 = "a/b/c";
+        String url4 = "f";
+        String url5 = "b/a";
+        String url6 = "a/bc";
+        
+        URI uri = URI.create("a/b/cdef");
+        
+        Assert.assertTrue(ViewerPathBuilder.startsWith(uri, url1));
+        Assert.assertTrue(ViewerPathBuilder.startsWith(uri, url2));
+        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url3));
+        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url4));
+        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url5));
+        Assert.assertFalse(ViewerPathBuilder.startsWith(uri, url6));
+        
     }
+
 }

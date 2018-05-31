@@ -2392,4 +2392,13 @@ public class ConfigurationTest {
         Assert.assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
         Assert.assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
     }
+
+    /**
+     * @see Configuration#isFullAccessForLocalhost()
+     * @verifies return correct value
+     */
+    @Test
+    public void isFullAccessForLocalhost_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals(true, DataManager.getInstance().getConfiguration().isFullAccessForLocalhost());
+    }
 }

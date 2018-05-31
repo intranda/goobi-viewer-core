@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.model.cms.itemfunctionality;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -270,13 +271,13 @@ public class SearchFunctionality implements Functionality {
         return baseUrl;
     }
 
-    private Path getParameterPath() {
-        Path path = Paths.get("");
-        path = path.resolve(getCollection());
-        path = path.resolve(getQueryString());
-        path = path.resolve(Integer.toString(getPageNo()));
-        path = path.resolve(getSolrSortFields());
-        path = path.resolve(getFacetString());
+    private URI getParameterPath() {
+        URI path = URI.create("");
+        path = ViewerPathBuilder.resolve(path,getCollection());
+        path = ViewerPathBuilder.resolve(path,getQueryString());
+        path = ViewerPathBuilder.resolve(path,Integer.toString(getPageNo()));
+        path = ViewerPathBuilder.resolve(path,getSolrSortFields());
+        path = ViewerPathBuilder.resolve(path,getFacetString());
         return path;
     }
     

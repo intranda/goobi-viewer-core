@@ -111,8 +111,9 @@
 
 	<accessConditions>
 		<!-- unconditionalImageAccesMaxWidth: Access conditions are not applied to images below this width - Thumbnails -->
-		<unconditionalImageAccessMaxWidth>150
-		</unconditionalImageAccessMaxWidth>
+		<unconditionalImageAccessMaxWidth>150</unconditionalImageAccessMaxWidth>
+		<!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
+		<fullAccessForLocalhost>false</fullAccessForLocalhost>
 	</accessConditions>
 
 	<reCaptcha show="true">
