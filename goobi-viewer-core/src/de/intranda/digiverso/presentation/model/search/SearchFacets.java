@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.model.search;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.AlphanumCollatorComparator;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -60,6 +58,8 @@ public class SearchFacets {
     private final Map<String, String> minValues = new HashMap<>();
 
     private final Map<String, String> maxValues = new HashMap<>();
+
+    private final Map<String, List<Integer>> valueRanges = new HashMap<>();
 
     private String tempValue;
 
@@ -637,6 +637,20 @@ public class SearchFacets {
     }
 
     /**
+     * 
+     * @param field
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<Integer> getValueRange(String field) throws PresentationException, IndexUnreachableException {
+        if (!maxValues.containsKey(field)) {
+            populateAbsoluteMinMaxValuesForField(field);
+        }
+        return valueRanges.get(field);
+    }
+
+    /**
      * Adds the min and max values from the search index for the given field to the bottomValues map. Min and max values are determined via an
      * alphanumeric comparator.
      * 
@@ -644,7 +658,7 @@ public class SearchFacets {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should populate values correctly
-     * @should populate numeric values correctly
+     * @should add all values to list
      */
     void populateAbsoluteMinMaxValuesForField(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
@@ -659,11 +673,13 @@ public class SearchFacets {
         //        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
         List<Integer> values = null;
         if (availableFacets.get(field) != null) {
+
             values = new ArrayList<>(availableFacets.get(field).size());
             for (FacetItem facetItem : availableFacets.get(field)) {
                 if (facetItem.getValue() == null) {
                     continue;
                 }
+
                 values.add(Integer.valueOf(facetItem.getValue()));
 
             }
@@ -674,6 +690,7 @@ public class SearchFacets {
         if (!values.isEmpty()) {
             Collections.sort(values);
             // Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
+            valueRanges.put(field, values);
             minValues.put(field, String.valueOf(values.get(0)));
             maxValues.put(field, String.valueOf(values.get(values.size() - 1)));
             logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));

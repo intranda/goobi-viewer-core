@@ -337,16 +337,38 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void populateAbsoluteMinMaxValuesForField_shouldPopulateValuesCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        List<FacetItem> facetItems = new ArrayList(4);
+        List<FacetItem> facetItems = new ArrayList<>(4);
         facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-20", false));
         facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-10", false));
         facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":10", false));
         facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":2018", false));
-
         facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
+        
         facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR);
         Assert.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants._CALENDAR_YEAR));
         Assert.assertEquals("2018", facets.getAbsoluteMaxRangeValue(SolrConstants._CALENDAR_YEAR));
 
+    }
+
+
+    /**
+     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
+     * @verifies add all values to list
+     */
+    @Test
+    public void populateAbsoluteMinMaxValuesForField_shouldAddAllValuesToList() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        List<FacetItem> facetItems = new ArrayList<>(4);
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":2018", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-20", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-10", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":10", false));
+        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
+        
+        facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR);
+        List<Integer> values = facets.getValueRange(SolrConstants._CALENDAR_YEAR);
+        Assert.assertNotNull(values);
+        Assert.assertEquals(4, values.size());
+        Assert.assertArrayEquals(new Integer[]{-20,  -10, 10, 2018}, values.toArray());
     }
 }
