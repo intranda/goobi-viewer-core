@@ -76,32 +76,6 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
-     * Extracts field name and value(s) from the given link string.
-     * 
-     * @param link
-     */
-    void parseLink(String link) {
-        if (link == null) {
-            return;
-        }
-
-        int colonIndex = link.indexOf(':');
-        if (colonIndex == -1) {
-            return;
-        }
-
-        this.field = link.substring(0, colonIndex);
-
-        String fullValue = link.substring(colonIndex + 1);
-        if (fullValue.startsWith("[") && fullValue.endsWith("]") && fullValue.contains(" TO ")) {
-            this.value = fullValue.substring(1, fullValue.indexOf(" TO "));
-            this.value2 = fullValue.substring(fullValue.indexOf(" TO ") + 4, fullValue.length() - 1);
-        } else {
-            value = fullValue;
-        }
-    }
-
-    /**
      *
      * @param link {@link String}
      * @param label {@link String}
@@ -167,6 +141,32 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public int compareTo(FacetItem facetItem) {
         //                return facetItem.getTranslatedLabel().toLowerCase().compareTo(translatedLabel.toLowerCase());
         return count > facetItem.getCount() ? +1 : count < facetItem.getCount() ? -1 : 0;
+    }
+
+    /**
+     * Extracts field name and value(s) from the given link string.
+     * 
+     * @param link
+     */
+    void parseLink(String link) {
+        if (link == null) {
+            return;
+        }
+
+        int colonIndex = link.indexOf(':');
+        if (colonIndex == -1) {
+            return;
+        }
+
+        this.field = link.substring(0, colonIndex);
+
+        String fullValue = link.substring(colonIndex + 1);
+        if (fullValue.startsWith("[") && fullValue.endsWith("]") && fullValue.contains(" TO ")) {
+            this.value = fullValue.substring(1, fullValue.indexOf(" TO "));
+            this.value2 = fullValue.substring(fullValue.indexOf(" TO ") + 4, fullValue.length() - 1);
+        } else {
+            value = fullValue;
+        }
     }
 
     /**

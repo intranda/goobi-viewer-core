@@ -644,29 +644,38 @@ public class SearchFacets {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should populate values correctly
+     * @should populate numeric values correctly
      */
     void populateAbsoluteMinMaxValuesForField(String field) throws PresentationException, IndexUnreachableException {
         if (field == null) {
             return;
         }
+
+        if (!SolrConstants._CALENDAR_YEAR.equals(field) && !field.startsWith("MDNUM_")) {
+            logger.info("{} is not an integer type field, cannot use with a range query");
+            return;
+        }
+
         //        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
-        List<String> values = null;
+        List<Integer> values = null;
         if (availableFacets.get(field) != null) {
             values = new ArrayList<>(availableFacets.get(field).size());
             for (FacetItem facetItem : availableFacets.get(field)) {
                 if (facetItem.getValue() == null) {
                     continue;
                 }
-                values.add(facetItem.getValue());
+                values.add(Integer.valueOf(facetItem.getValue()));
+
             }
         } else {
             logger.trace("No facets found for field {}", field);
             values = Collections.emptyList();
         }
         if (!values.isEmpty()) {
-            Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
-            minValues.put(field, values.get(0));
-            maxValues.put(field, values.get(values.size() - 1));
+            Collections.sort(values);
+            // Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
+            minValues.put(field, String.valueOf(values.get(0)));
+            maxValues.put(field, String.valueOf(values.get(values.size() - 1)));
             logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));
         }
     }

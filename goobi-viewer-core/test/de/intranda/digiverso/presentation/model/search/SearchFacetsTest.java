@@ -233,7 +233,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;FIELD3:c:d");
+        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;FIELD3:[c TO d]");
         Assert.assertEquals("FIELD1:a AND FIELD2:b AND FIELD3:[c TO d]", facets.generateFacetFilterQuery());
     }
 
@@ -309,7 +309,7 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         List<FacetItem> items = new ArrayList<>(2);
         items.add(new FacetItem("FIELD1:foo", false));
         items.add(new FacetItem("FIELD2:bar", false));
-        SearchFacets.updateFacetItem("FIELD2", "foo:bar", items, false);
+        SearchFacets.updateFacetItem("FIELD2", "[foo TO bar]", items, false);
         Assert.assertEquals(2, items.size());
         Assert.assertEquals("FIELD2", items.get(1).getField());
         Assert.assertEquals("foo", items.get(1).getValue());
@@ -337,9 +337,16 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
     @Test
     public void populateAbsoluteMinMaxValuesForField_shouldPopulateValuesCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
+        List<FacetItem> facetItems = new ArrayList(4);
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-20", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-10", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":10", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":2018", false));
+
+        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
         facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR);
-        Assert.assertEquals("201", facets.getAbsoluteMinRangeValue(SolrConstants._CALENDAR_YEAR));
-        Assert.assertEquals("1995", facets.getAbsoluteMaxRangeValue(SolrConstants._CALENDAR_YEAR));
+        Assert.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants._CALENDAR_YEAR));
+        Assert.assertEquals("2018", facets.getAbsoluteMaxRangeValue(SolrConstants._CALENDAR_YEAR));
 
     }
 }
