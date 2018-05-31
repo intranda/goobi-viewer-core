@@ -2,56 +2,89 @@
    CMS Collections
    style declarations for adminCmsCollections.xhtml
    ==============================================================*/
-#cmsCollections{
-
-	.selectionGroup {
-		.selectionLabel {
-			width: 300px;
-		}
-		.selectionInput {
-			display: inline-block;
-			width: 400px;
-			input {
-				display: inline;
-				width: calc(~"100% - 50px");
-			}
-			a {
-				margin-left:7px;
-			}
-		}
+/* CMS COLLECTIONS */
+/* BLOCK */
+.cms-collections {
+	/* ELEMENT */
+	&__selection {
+		display: grid;
+	    grid-template-columns: 1fr 3fr;
+	    grid-gap: 15px;
+	    align-items: center;
+	    margin-bottom: 15px;
 	}
-	
-	.collection_list {
+	&__selection-label {
+		label {}
+	}
+	&__selection-control {
 		display: flex;
-		flex-direction: column;
-		.collection_list_item {
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-			border: 2px solid grey;
-			margin: 10px;
-			label {
-				margin: 0;
-				padding: 5px;
+    	align-items: center;
+		.custom-control--select {
+			margin-right: 24px;
+			select {}
+		}
+		.ui-widget {
+			font-family: @fontFamily;
+		    font-size: 0.9rem;
+		    border-color: @middlegray;
+		}
+		.ui-state-focus {
+			border-color: @lightgray;
+			border-right-color: @middlegray;
+			border-left-color: @middlegray;
+			background-image: none;
+			background-color: @lightgray;
+		}
+		input {}
+		a {
+			display: block;
+    		padding: 6px;
+    		color: @black;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+				color: @black;
 			}
-			.collection_list_item_entry {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				overflow: hidden;
-				border-right: 1px solid grey;
-				flex-grow: 1;
-	   			flex-basis: 0;
-				min-width: 80px;
-				img {
-					height: 80px;
+		}
+	}
+	&__table {
+		margin: 15px 0;
+		table {}
+		thead {}
+		tbody {}
+		tr {}
+		th {}
+		td {
+			img {}
+			a {
+				color: @black;
+				&:hover,
+				&:active,
+				&:focus {
+					text-decoration: none;
+					color: @black;
 				}
+			}
+			&.actions {
+				text-align: right;
 				a {
-					padding: 10px;
-					font-size: 24px;
+					display: inline-block;
+					padding: 0 5px;
 				}
 			}
 		}
 	}
-
 }
+
+// BREAKPOINT FOR LARGE DESKTOPS
+@media screen and (max-width: @largeBreakpoint) {}
+
+// BREAKPOINT FOR DESKTOP
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// BREAKPOINT FOR TABLETS
+@media screen and (max-width: @smallBreakpoint) {}
+
+// BREAKPOINT FOR SMARTPHONES
+@media screen and (max-width: @xSmallBreakpoint) {}
