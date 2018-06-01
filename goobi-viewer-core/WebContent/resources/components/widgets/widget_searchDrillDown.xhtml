@@ -99,7 +99,8 @@
                                         <!-- AVAILABLE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                             <li>
-                                                <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}"
+                                                <!-- Skip YEAR (reserved for a slider widget) -->
+                                                <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet) and facet.field != 'YEAR'}"
                                                     value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetString}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                 #{msg[facet.label]} (#{facet.count})
                                             </h:outputLink>
