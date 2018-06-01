@@ -373,6 +373,20 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     }
 
     /**
+     * 
+     * @return Range of value - value2; just value if value2 empty
+     * @should build full value correctly
+     */
+    public String getFullValue() {
+        StringBuilder sb = new StringBuilder(value);
+        if (StringUtils.isNotEmpty(value2)) {
+            sb.append(" - ").append(value2);
+        }
+        
+        return sb.toString();
+    }
+
+    /**
      * @return the value
      */
     public String getValue() {

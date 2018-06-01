@@ -32,7 +32,7 @@
                                             <li class="active">
                                                 <h:commandLink action="#{searchBean.removeHierarchicalFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                     <div class="row">
-                                                        <div class="col-xs-11">#{msg[facet.value]}</div>
+                                                        <div class="col-xs-11">#{msg[facet.fullValue]}</div>
                                                         <div class="col-xs-1">
                                                             <i class="fa fa-times" aria-hidden="true"></i>
                                                         </div>
@@ -85,7 +85,7 @@
                                             <li class="active">
                                                 <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}" title="#{msg.removeFacet}">
                                                     <div class="row">
-                                                        <div class="col-xs-11">#{msg[facet.value]}</div>
+                                                        <div class="col-xs-11">#{msg[facet.fullValue]}</div>
                                                         <div class="col-xs-1">
                                                             <i class="fa fa-times" aria-hidden="true"></i>
                                                         </div>
@@ -99,7 +99,8 @@
                                         <!-- AVAILABLE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
                                             <li>
-                                                <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}"
+                                                <!-- Skip YEAR (reserved for a slider widget) -->
+                                                <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet) and facet.field != 'YEAR'}"
                                                     value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetString}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
                                                 #{msg[facet.label]} (#{facet.count})
                                             </h:outputLink>

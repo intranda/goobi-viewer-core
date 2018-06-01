@@ -125,4 +125,16 @@ public class FacetItemTest {
             Assert.assertEquals("Volume", items.get(0).getLabel());
         }
     }
+
+    /**
+     * @see FacetItem#getFullValue()
+     * @verifies build full value correctly
+     */
+    @Test
+    public void getFullValue_shouldBuildFullValueCorrectly() throws Exception {
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        Assert.assertEquals("foo", item.getValue());
+        Assert.assertEquals("bar", item.getValue2());
+        Assert.assertEquals("foo - bar", item.getFullValue());
+    }
 }
