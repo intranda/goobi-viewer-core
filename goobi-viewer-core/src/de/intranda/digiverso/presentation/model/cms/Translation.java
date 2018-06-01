@@ -49,7 +49,7 @@ public class Translation {
      * Usefull if an object has more than one relationship with Translation entities and needs to
      * distinguish them in some way
      * **/
-    @Column(name="tag", nullable=true)
+    @Column(name="tag", nullable=true, columnDefinition = "LONGTEXT")
     private String tag;
     
     @Column(name = "language")
