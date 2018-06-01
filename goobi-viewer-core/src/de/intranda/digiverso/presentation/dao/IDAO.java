@@ -367,5 +367,8 @@ public interface IDAO {
     public boolean updateCMSCollection(CMSCollection collection) throws DAOException;
     public boolean deleteCMSCollection(CMSCollection collection) throws DAOException;
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
+    /** Update the given collection from the database */
+    void refreshCMSCollection(CMSCollection collection) throws DAOException;
+
 
 }

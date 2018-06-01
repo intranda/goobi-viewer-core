@@ -21,7 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -61,6 +65,7 @@ public class CmsCollectionsBean implements Serializable {
     private String solrFieldValue;
     private List<CMSCollection> collections;
     private CMSMediaItem selectedMediaItem = null;
+    private boolean piValid = true;
 
     public CmsCollectionsBean() {
         try {
@@ -133,7 +138,7 @@ public class CmsCollectionsBean implements Serializable {
 
     public void updateCollections() throws DAOException {
         this.collections = DataManager.getInstance().getDao().getCMSCollections(getSolrField());
-        this.collections.sort((c1,c2) -> Long.compare(c2.getId(), c1.getId()));
+        this.collections.sort((c1, c2) -> Long.compare(c2.getId(), c1.getId()));
         //If a collection is selected that is no longer in the list, deselect it
         if (this.currentCollection != null && !this.collections.contains(this.currentCollection)) {
             this.currentCollection = null;
@@ -167,11 +172,19 @@ public class CmsCollectionsBean implements Serializable {
         return getCurrentCollection().getDescriptionAsTranslation(language);
     }
 
-    public void saveCurrentCollection() throws DAOException {
+    public String saveCurrentCollection() throws DAOException {
         if (getCurrentCollection() != null) {
             DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
             updateCollections();
         }
+        return "pretty:adminCmsCollections";
+    }
+
+    public String resetCurrentCollection() throws DAOException {
+        if (getCurrentCollection() != null) {
+            DataManager.getInstance().getDao().refreshCMSCollection(getCurrentCollection());
+        }
+        return "pretty:adminCmsCollections";
     }
 
     /**
@@ -195,6 +208,54 @@ public class CmsCollectionsBean implements Serializable {
             return item != null && item.equals(selectedMediaItem);
         }
     }
+    
+    /**
+     * Checks the current collection for validity. Currently only checks if a possibly entered PI exists in the solr
+     * 
+     * @return  false only if a current collection is selected and it has a non-black {@link CMSCollecion#getRepresentativeWorkPI()} 
+     * which does not denote a work found in the solr index
+     */
+    public boolean isCurrentCollectionValid() {
+        if(getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
+            return piValid;
+        } else {
+            return true;
+        }
+    }
 
+    public void validatePI(FacesContext context, UIComponent comp, Object value) throws ValidatorException{
+        if (getCurrentCollection() != null && StringUtils.isNotBlank(getCurrentCollection().getRepresentativeWorkPI())) {
+            try {
+                if (!validatePi((String) value)) {
+                    FacesMessage msg = new FacesMessage(Helper.getTranslation("pi_errNotFound", null), "");
+                    msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                    piValid = false;
+                    throw new ValidatorException(msg);
+                }
+            } catch (IndexUnreachableException | PresentationException e) {
+                FacesMessage msg = new FacesMessage(Helper.getTranslation("pi_validationError", null), "");
+                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                piValid = true; //if the error is in reaching the index, allow saving regardless
+                throw new ValidatorException(msg);
+            }
+        }
+        piValid = true;
+    }
+
+    /**
+     * Checks if the given pi matches a known PI in the solr index. If the pi is empty, true is returned to allow not setting any pi
+     * 
+     * @return false if no current collection is set, the pi does not match any known work
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static boolean validatePi(String pi) throws IndexUnreachableException, PresentationException {
+        if (StringUtils.isNotBlank(pi)) {
+            SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+            return doc != null;
+        } else {
+            return true;
+        }
+    }
 
 }

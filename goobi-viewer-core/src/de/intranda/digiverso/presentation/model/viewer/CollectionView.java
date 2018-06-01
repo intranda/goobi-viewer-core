@@ -173,13 +173,20 @@ public class CollectionView {
                 this.visibleCollectionList.remove(0);
             }
             if (loadDescriptions) {
-                try {
-                    this.visibleCollectionList = associateWithCMSMediaItems(this.visibleCollectionList);
-                    this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
-                } catch (PresentationException | DAOException e) {
-                    logger.error("Failed to associate collections with media items: " + e.getMessage());
-                }
+                associateElementsWithCMSData();
             }
+        }
+    }
+
+    /**
+     * 
+     */
+    public void associateElementsWithCMSData() {
+        try {
+            this.visibleCollectionList = associateWithCMSMediaItems(this.visibleCollectionList);
+            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
+        } catch (PresentationException | DAOException e) {
+            logger.error("Failed to associate collections with media items: " + e.getMessage());
         }
     }
 
@@ -289,6 +296,7 @@ return collections;
         if (elementIndex > -1) {
             visibleCollectionList.addAll(elementIndex + 1, element.getChildrenAndVisibleDescendants());
             element.setShowSubElements(true);
+            associateElementsWithCMSData();
         }
     }
 
@@ -309,6 +317,7 @@ return collections;
                 showChildren(element);
                 this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting(
                         field), getTopVisibleElement());
+                associateElementsWithCMSData();
             }
         }
         return "";
@@ -515,6 +524,7 @@ return collections;
             }
             this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
                     getTopVisibleElement());
+            associateElementsWithCMSData();
         }
     }
 

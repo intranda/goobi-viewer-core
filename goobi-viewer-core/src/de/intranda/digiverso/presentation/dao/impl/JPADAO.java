@@ -3211,10 +3211,16 @@ public class JPADAO implements IDAO {
     @Override
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException {
         preQuery();
-        Query q = em.createNativeQuery("SELECT o FROM CMSCollection o WHERE o.solrField = :field AND o.solrFieldValue = :value");
+        Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field AND c.solrFieldValue = :value");
         q.setParameter("field", solrField);
         q.setParameter("value", solrFieldValue);
         return (CMSCollection) getSingleResult(q).orElse(null);
+    }
+    
+    @Override
+    public void refreshCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        this.em.refresh(collection);
     }
 
     /* (non-Javadoc)
