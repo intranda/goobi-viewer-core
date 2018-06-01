@@ -75,7 +75,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getBrowsingMenuFields_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
+        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
     }
 
     /**

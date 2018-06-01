@@ -16,7 +16,7 @@
 						<h3>#{msg.browseTitle}</h3>
 						
 						<ul>
-							<ui:repeat value="#{browseBean.browsingMenuItems}" var="item">
+							<ui:repeat value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}" var="item">
 								<h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
 									<li class="#{navigationHelper.currentPage == 'searchTermList' ? 'active' : ''}">
 										<h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
@@ -46,7 +46,7 @@
 						
 						<div id="browseCollapse" class="collapse">
 							<ul>
-								<ui:repeat value="#{browseBean.browsingMenuItems}" var="item">
+								<ui:repeat value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}" var="item">
 									<h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
 										<li class="active">
 											<h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">

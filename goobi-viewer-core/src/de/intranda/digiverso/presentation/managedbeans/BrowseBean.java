@@ -531,9 +531,23 @@ public class BrowseBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isBrowsingMenuEnabled();
     }
 
-    public List<String> getBrowsingMenuItems() {
+    /**
+     * 
+     * @param language
+     * @return List of browsing menu items
+     * @should skip items for language-specific fields if no language was given
+     * @should skip items for language-specific fields if they don't match given language
+     */
+    public List<String> getBrowsingMenuItems(String language) {
+        if (language != null) {
+            language = language.toUpperCase();
+        }
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
+            if (bmfc.getField().contains(SolrConstants._LANG_) && (language == null || !bmfc.getField().contains(SolrConstants._LANG_ + language))) {
+                logger.trace("Skipped {}", bmfc.getField());
+                continue;
+            }
             ret.add(bmfc.getField());
         }
         return ret;
