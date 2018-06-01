@@ -114,7 +114,7 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-api-2.8.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-core-2.8.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-slf4j-impl-2.8.2.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mariadb-java-client-2.1.2.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mariadb-java-client-2.2.5.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/metadata-extractor-2.8.1.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mets-1.10.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mods_3-5.jar"/>
