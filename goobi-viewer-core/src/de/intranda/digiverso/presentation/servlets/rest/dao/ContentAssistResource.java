@@ -54,7 +54,9 @@ public class ContentAssistResource {
     @Path("/collections/{solrField}/{input}")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<String> getCollections(@PathParam("solrField") String solrField, @PathParam("input") String inputString) throws DAOException, IndexUnreachableException, PresentationException {
-//	    SearchHelper.findAllCollectionsFromField(solrField, solrField, true, true, true, true);
+	    if("-".equals(inputString)) {
+	        inputString = "";
+	    }
 	    String query = "DOCTYPE:DOCSTRCT AND (ISANCHOR:true OR ISWORK:true)";
 	    List<String> facets = SearchHelper.getFacetValues(query, solrField, inputString, 0);
 	    

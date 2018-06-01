@@ -78,8 +78,9 @@
                                     		response( data );
                                     	} );
                                     },
-                                    appendTo: $( '#SolrFieldInput' ).parent()
-                                } );
+                                    appendTo: $( '#SolrFieldInput' ).parent(),
+                                    minLength: 0
+                                } ).bind('focus', function(){ $(this).autocomplete("search", "-") } );
                             </script>
                         </div>
                     </div>
