@@ -713,9 +713,9 @@
 
 			<!-- luceneField: defines index fields that are available for browsing. 
 				Only untokenized fields should be used. -->
-			<luceneField sortField="SORT_AUTHOR">MD_AUTHOR_UNTOKENIZED
-			</luceneField>
-			<luceneField sortField="SORT_TITLE">MD_TITLE_UNTOKENIZED</luceneField>
+			<luceneField sortField="SORT_AUTHOR">MD_AUTHOR_UNTOKENIZED</luceneField>
+			<luceneField sortField="SORT_TITLE">MD_TITLE_LANG_DE_UNTOKENIZED</luceneField>
+			<luceneField sortField="SORT_TITLE">MD_TITLE_LANG_EN_UNTOKENIZED</luceneField>
 			<!-- TODO: describe in the manual -->
 			<!-- <luceneField sortField="SORT_TITLE" docstructFilters="Monograph;Volume;PeriodicalVolume">MD_TITLE_UNTOKENIZED</luceneField> -->
 			<luceneField>MD_SHELFMARK</luceneField>
