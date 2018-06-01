@@ -149,6 +149,7 @@ public class MetadataElement {
     private String url = null;
     private List<Metadata> metadataList = new ArrayList<>();
     private List<Metadata> sidebarMetadataList = null;
+    private List<MetadataType> metadataTypes;
     /** True if this ISWORK=true or ISANCHOR=true. */
     private final boolean topElement;
     private final boolean anchor;
@@ -163,8 +164,8 @@ public class MetadataElement {
      * @throws IndexUnreachableException
      * @throws DAOException
      */
-    public MetadataElement(StructElement se, Locale sessionLocale, String selectedRecordLanguage) throws PresentationException,
-            IndexUnreachableException, DAOException {
+    public MetadataElement(StructElement se, Locale sessionLocale, String selectedRecordLanguage)
+            throws PresentationException, IndexUnreachableException, DAOException {
         if (se == null) {
             logger.error("StructElement not defined!");
             throw new PresentationException("errMetaRead");
@@ -213,10 +214,11 @@ public class MetadataElement {
                     if (metadata.getLabel().equals(SolrConstants.URN) || metadata.getLabel().equals(SolrConstants.IMAGEURN_OAI)) {
                         // TODO remove bean retrieval
                         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-                        if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null && adb.getViewManager()
-                                .getCurrentPage().getUrn() != null && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
-                            Metadata newMetadata = new Metadata(metadata.getLabel(), metadata.getMasterValue(), adb.getViewManager().getCurrentPage()
-                                    .getUrn());
+                        if (adb != null && adb.getViewManager() != null && adb.getViewManager().getCurrentPage() != null
+                                && adb.getViewManager().getCurrentPage().getUrn() != null
+                                && !adb.getViewManager().getCurrentPage().getUrn().equals("")) {
+                            Metadata newMetadata =
+                                    new Metadata(metadata.getLabel(), metadata.getMasterValue(), adb.getViewManager().getCurrentPage().getUrn());
                             sidebarMetadataList.add(newMetadata);
                         }
                     } else {
@@ -253,18 +255,18 @@ public class MetadataElement {
      * @return
      */
     public List<MetadataType> getMetadataTypes() {
-        List<MetadataType> ret = new ArrayList<>();
-
-        for (Metadata md : getMetadataList()) {
-            MetadataType mdt = new MetadataType(md.getType());
-            if (!ret.contains(mdt)) {
-                ret.add(mdt);
+        if (metadataTypes == null) {
+            metadataTypes = new ArrayList<>();
+            for (Metadata md : getMetadataList()) {
+                MetadataType mdt = new MetadataType(md.getType());
+                if (!metadataTypes.contains(mdt)) {
+                    metadataTypes.add(mdt);
+                }
             }
+            Collections.sort(metadataTypes);
         }
 
-        Collections.sort(ret);
-
-        return ret;
+        return metadataTypes;
     }
 
     /**
