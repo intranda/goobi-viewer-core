@@ -167,7 +167,7 @@ public class CollectionView {
             }
             this.visibleCollectionList = sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
                     getTopVisibleElement());
-            if (!isDisplayParentCollections() && StringUtils.isNotBlank(topVisibleElement)) {
+            if (!isDisplayParentCollections() && StringUtils.isNotBlank(topVisibleElement) && ! this.visibleCollectionList.isEmpty()) {
                 //if parent elements should be hidden, remove topElement from the list
                 //This cannot be done earlier because it breaks sortDcList...
                 this.visibleCollectionList.remove(0);

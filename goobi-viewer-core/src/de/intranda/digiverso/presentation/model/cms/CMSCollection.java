@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -45,7 +46,8 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
-import de.intranda.digiverso.presentation.messages.Messages;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
@@ -368,7 +370,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
-        if(getCollectionUrl() != null) {            
+        if(StringUtils.isNotBlank(getCollectionUrl())) {            
             return URI.create(getCollectionUrl());
         } else {
             return null;
@@ -413,6 +415,20 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     public void setRepresentativeWorkPI(String representativeWorkPI) {
         this.representativeWorkPI = representativeWorkPI;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getTranslationsForName()
+     */
+    @Override
+    public IMetadataValue getTranslationsForName() {
+        Map<String, String> labels = getLabels().stream().filter(l -> StringUtils.isNotBlank(l.getValue())).collect(Collectors.toMap(l -> l.getLanguage(), l -> l.getValue()));
+        if(labels.isEmpty()) {
+            return IMetadataValue.getTranslations(getSolrField());
+        } else {
+            IMetadataValue value = new MultiLanguageMetadataValue(labels);
+            return value;
+        }
     }
     
 

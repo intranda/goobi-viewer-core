@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
+
 public interface BrowseElementInfo {
 
     public String getDescription();
@@ -30,5 +32,9 @@ public interface BrowseElementInfo {
     default boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());
     }
+    /**
+     * @return
+     */
+    public IMetadataValue getTranslationsForName();
     
 }
