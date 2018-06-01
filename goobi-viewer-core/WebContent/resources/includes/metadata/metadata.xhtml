@@ -1,119 +1,130 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html" 
-    xmlns:f="http://xmlns.jcp.org/jsf/core" 
-    xmlns:jsf="http://xmlns.jcp.org/jsf" 
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner" 
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
-    <h2>#{msg.bibData}</h2>
+	<h2>#{msg.bibData}</h2>
 
-    <viewerComponent:changeRecordLocale />
+	<viewerComponent:changeRecordLocale />
 
-    <div id="metadataElementWrapper">
-        <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
-            <div class="metadata-element-box level-#{status.index}">
-                <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
-                    <h:panelGroup rendered="#{!metadata.blank}">
-                        <div class="metadata-element">
-                            <dl class="dl-horizontal">
-                                <dt title="#{msg[metadata.label]}">
-                                    <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                </dt>
-                                <h:panelGroup rendered="#{metadata.group}">
-                                    <dd>
-                                        <ui:repeat value="#{metadata.values}" var="val">
-                                            <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                <f:param value="#{val.getParamLabelWithColon(0)}" />
-                                                <f:param value="#{val.getComboValueShort(0)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(1)}" />
-                                                <f:param value="#{val.getComboValueShort(1)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(2)}" />
-                                                <f:param value="#{val.getComboValueShort(2)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(3)}" />
-                                                <f:param value="#{val.getComboValueShort(3)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(4)}" />
-                                                <f:param value="#{val.getComboValueShort(4)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(5)}" />
-                                                <f:param value="#{val.getComboValueShort(5)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(6)}" />
-                                                <f:param value="#{val.getComboValueShort(6)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(7)}" />
-                                                <f:param value="#{val.getComboValueShort(7)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(8)}" />
-                                                <f:param value="#{val.getComboValueShort(8)}" />
-                                                <f:param value="#{val.getParamLabelWithColon(9)}" />
-                                                <f:param value="#{val.getComboValueShort(9)}" />
-                                            </h:outputFormat>
+	<div id="metadataElementWrapper">
+		<ui:repeat value="#{metadataBean.metadataElementList}"
+			var="metadataElement" varStatus="status">
+			<ui:repeat var="type" value="#{metadataElement.metadataTypes}">
+				<h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}" value="#{type.tabName}" />
+				<div class="metadata-element-box level-#{status.index}">
+					<ui:repeat value="#{metadataElement.metadataList}" var="metadata">
+						<h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
+							<div class="metadata-element">
+								<dl class="dl-horizontal">
+									<dt title="#{msg[metadata.label]}">
+										<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+									</dt>
+									<!-- grouped="true" -->
+									<h:panelGroup rendered="#{metadata.group}">
+										<dd>
+											<ui:repeat value="#{metadata.values}" var="val">
+												<h:outputFormat value="#{msg[val.masterValue]}"
+													escape="false">
+													<f:param value="#{val.getParamLabelWithColon(0)}" />
+													<f:param value="#{val.getComboValueShort(0)}" />
+													<f:param value="#{val.getParamLabelWithColon(1)}" />
+													<f:param value="#{val.getComboValueShort(1)}" />
+													<f:param value="#{val.getParamLabelWithColon(2)}" />
+													<f:param value="#{val.getComboValueShort(2)}" />
+													<f:param value="#{val.getParamLabelWithColon(3)}" />
+													<f:param value="#{val.getComboValueShort(3)}" />
+													<f:param value="#{val.getParamLabelWithColon(4)}" />
+													<f:param value="#{val.getComboValueShort(4)}" />
+													<f:param value="#{val.getParamLabelWithColon(5)}" />
+													<f:param value="#{val.getComboValueShort(5)}" />
+													<f:param value="#{val.getParamLabelWithColon(6)}" />
+													<f:param value="#{val.getComboValueShort(6)}" />
+													<f:param value="#{val.getParamLabelWithColon(7)}" />
+													<f:param value="#{val.getComboValueShort(7)}" />
+													<f:param value="#{val.getParamLabelWithColon(8)}" />
+													<f:param value="#{val.getComboValueShort(8)}" />
+													<f:param value="#{val.getParamLabelWithColon(9)}" />
+													<f:param value="#{val.getComboValueShort(9)}" />
+												</h:outputFormat>
 
-                                            <!-- NORMDATA -->
-                                            <viewerComponent:normdata />
-                                            <br />
-                                        </ui:repeat>
-                                    </dd>
-                                </h:panelGroup>
+												<!-- NORMDATA -->
+												<viewerComponent:normdata />
+												<br />
+											</ui:repeat>
+										</dd>
+									</h:panelGroup>
 
-                                <h:panelGroup rendered="#{!metadata.group}">
-                                    <dd>
-                                        <ui:repeat value="#{metadata.values}" var="val">
-                                            <span class="metadata-value">
-                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <f:param value="#{val.getComboValueShort(0)}" />
-                                                    <f:param value="#{val.getComboValueShort(1)}" />
-                                                    <f:param value="#{val.getComboValueShort(2)}" />
-                                                    <f:param value="#{val.getComboValueShort(3)}" />
-                                                    <f:param value="#{val.getComboValueShort(4)}" />
-                                                    <f:param value="#{val.getComboValueShort(5)}" />
-                                                    <f:param value="#{val.getComboValueShort(6)}" />
-                                                    <f:param value="#{val.getComboValueShort(7)}" />
-                                                    <f:param value="#{val.getComboValueShort(8)}" />
-                                                    <f:param value="#{val.getComboValueShort(9)}" />
-                                                </h:outputFormat>
-                                            </span>
-                                        </ui:repeat>
-                                    </dd>
-                                </h:panelGroup>
-                            </dl>
-                        </div>
-                    </h:panelGroup>
-                </ui:repeat>
-            </div>
-        </ui:repeat>
+									<!-- grouped="false" -->
+									<h:panelGroup rendered="#{!metadata.group}">
+										<dd>
+											<ui:repeat value="#{metadata.values}" var="val">
+												<span class="metadata-value"> <h:outputFormat
+														value="#{msg[val.masterValue]}" escape="false">
+														<f:param value="#{val.getComboValueShort(0)}" />
+														<f:param value="#{val.getComboValueShort(1)}" />
+														<f:param value="#{val.getComboValueShort(2)}" />
+														<f:param value="#{val.getComboValueShort(3)}" />
+														<f:param value="#{val.getComboValueShort(4)}" />
+														<f:param value="#{val.getComboValueShort(5)}" />
+														<f:param value="#{val.getComboValueShort(6)}" />
+														<f:param value="#{val.getComboValueShort(7)}" />
+														<f:param value="#{val.getComboValueShort(8)}" />
+														<f:param value="#{val.getComboValueShort(9)}" />
+													</h:outputFormat>
+												</span>
+											</ui:repeat>
+										</dd>
+									</h:panelGroup>
+								</dl>
+							</div>
+						</h:panelGroup>
+					</ui:repeat>
+				</div>
+			</ui:repeat>
+		</ui:repeat>
 
-        <c:forEach items="#{metadataBean.events}" var="event">
-            <div class="metadata-event-box">
-                <ui:repeat value="#{event.metadata}" var="metadata">
-                    <h:panelGroup rendered="#{!metadata.blank}">
-                        <div class="metadata-event">
-                            <dl class="dl-horizontal">
-                                <dt title="#{msg[metadata.label]}">
-                                    <h:outputText value="#{msg[metadata.label]}:" escape="false" />
-                                </dt>
-                                <h:panelGroup>
-                                    <dd>
-                                        <ui:repeat value="#{metadata.values}" var="val">
-                                            <span class="metadata-value">
-                                                <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
-                                                    <f:param value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
-                                                    <f:param value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
-                                                    <f:param value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />
-                                                    <f:param value="#{val.paramValues[3] != null ? val.paramValues[3] : ''}" />
-                                                </h:outputFormat>
-                                            </span>
-                                        </ui:repeat>
-                                    </dd>
-                                </h:panelGroup>
-                            </dl>
-                        </div>
-                    </h:panelGroup>
-                </ui:repeat>
-            </div>
-        </c:forEach>
-    </div>
+		<c:forEach items="#{metadataBean.events}" var="event">
+			<div class="metadata-event-box">
+				<ui:repeat value="#{event.metadata}" var="metadata">
+					<h:panelGroup rendered="#{!metadata.blank}">
+						<div class="metadata-event">
+							<dl class="dl-horizontal">
+								<dt title="#{msg[metadata.label]}">
+									<h:outputText value="#{msg[metadata.label]}:" escape="false" />
+								</dt>
+								<h:panelGroup>
+									<dd>
+										<ui:repeat value="#{metadata.values}" var="val">
+											<span class="metadata-value"> <h:outputFormat
+													value="#{msg[val.masterValue]}" escape="false">
+													<f:param
+														value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
+													<f:param
+														value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />
+													<f:param
+														value="#{val.paramValues[2] != null ? val.paramValues[2] : ''}" />
+													<f:param
+														value="#{val.paramValues[3] != null ? val.paramValues[3] : ''}" />
+												</h:outputFormat>
+											</span>
+										</ui:repeat>
+									</dd>
+								</h:panelGroup>
+							</dl>
+						</div>
+					</h:panelGroup>
+				</ui:repeat>
+			</div>
+		</c:forEach>
+	</div>
 
-    <div class="clearfix"></div>
+	<div class="clearfix"></div>
 </ui:composition>

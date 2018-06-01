@@ -24,15 +24,17 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 
-public class SearchFacetsTest {
+public class SearchFacetsTest extends AbstractSolrEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        AbstractSolrEnabledTest.setUpClass();
         // Initialize the instance with a custom config file
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
     }
@@ -231,8 +233,8 @@ public class SearchFacetsTest {
     @Test
     public void generateFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
-        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;FIELD3:c");
-        Assert.assertEquals("FIELD1:a AND FIELD2:b AND FIELD3:c", facets.generateFacetFilterQuery());
+        facets.setCurrentFacetString("FIELD1:a;;FIELD2:b;;FIELD3:[c TO d]");
+        Assert.assertEquals("FIELD1:a AND FIELD2:b AND FIELD3:[c TO d]", facets.generateFacetFilterQuery());
     }
 
     /**
@@ -253,8 +255,8 @@ public class SearchFacetsTest {
     public void generateHierarchicalFacetFilterQuery_shouldGenerateQueryCorrectly() throws Exception {
         SearchFacets facets = new SearchFacets();
         facets.setCurrentHierarchicalFacetString("DC:a;;DC:aa;;");
-        Assert.assertEquals("(FACET_DC:\"a\" OR FACET_DC:a.*) AND (FACET_DC:\"aa\" OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(
-                0));
+        Assert.assertEquals("(FACET_DC:\"a\" OR FACET_DC:a.*) AND (FACET_DC:\"aa\" OR FACET_DC:aa.*)",
+                facets.generateHierarchicalFacetFilterQuery(0));
         Assert.assertEquals("(FACET_DC:\"a\" OR FACET_DC:a.*) OR (FACET_DC:\"aa\" OR FACET_DC:aa.*)", facets.generateHierarchicalFacetFilterQuery(1));
     }
 
@@ -296,5 +298,77 @@ public class SearchFacetsTest {
     public void isHasWrongLanguageCode_shouldReturnFalseIfNoLanguageCode() throws Exception {
         SearchFacets facets = new SearchFacets();
         Assert.assertFalse(facets.isHasWrongLanguageCode("MD_TITLE", "en"));
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
+     * @verifies update facet item correctly
+     */
+    @Test
+    public void updateFacetItem_shouldUpdateFacetItemCorrectly() throws Exception {
+        List<FacetItem> items = new ArrayList<>(2);
+        items.add(new FacetItem("FIELD1:foo", false));
+        items.add(new FacetItem("FIELD2:bar", false));
+        SearchFacets.updateFacetItem("FIELD2", "[foo TO bar]", items, false);
+        Assert.assertEquals(2, items.size());
+        Assert.assertEquals("FIELD2", items.get(1).getField());
+        Assert.assertEquals("foo", items.get(1).getValue());
+        Assert.assertEquals("bar", items.get(1).getValue2());
+    }
+
+    /**
+     * @see SearchFacets#updateFacetItem(String,String,List,boolean)
+     * @verifies add new item correctly
+     */
+    @Test
+    public void updateFacetItem_shouldAddNewItemCorrectly() throws Exception {
+        List<FacetItem> items = new ArrayList<>(2);
+        items.add(new FacetItem("FIELD1:foo", false));
+        SearchFacets.updateFacetItem("FIELD2", "bar", items, false);
+        Assert.assertEquals(2, items.size());
+        Assert.assertEquals("FIELD2", items.get(1).getField());
+        Assert.assertEquals("bar", items.get(1).getValue());
+    }
+
+    /**
+     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
+     * @verifies populate values correctly
+     */
+    @Test
+    public void populateAbsoluteMinMaxValuesForField_shouldPopulateValuesCorrectly() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        List<FacetItem> facetItems = new ArrayList<>(4);
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-20", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-10", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":10", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":2018", false));
+        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
+        
+        facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR);
+        Assert.assertEquals("-20", facets.getAbsoluteMinRangeValue(SolrConstants._CALENDAR_YEAR));
+        Assert.assertEquals("2018", facets.getAbsoluteMaxRangeValue(SolrConstants._CALENDAR_YEAR));
+
+    }
+
+
+    /**
+     * @see SearchFacets#populateAbsoluteMinMaxValuesForField(String)
+     * @verifies add all values to list
+     */
+    @Test
+    public void populateAbsoluteMinMaxValuesForField_shouldAddAllValuesToList() throws Exception {
+        SearchFacets facets = new SearchFacets();
+        List<FacetItem> facetItems = new ArrayList<>(4);
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":2018", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-20", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-10", false));
+        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":10", false));
+        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
+        
+        facets.populateAbsoluteMinMaxValuesForField(SolrConstants._CALENDAR_YEAR);
+        List<Integer> values = facets.getValueRange(SolrConstants._CALENDAR_YEAR);
+        Assert.assertNotNull(values);
+        Assert.assertEquals(4, values.size());
+        Assert.assertArrayEquals(new Integer[]{-20,  -10, 10, 2018}, values.toArray());
     }
 }

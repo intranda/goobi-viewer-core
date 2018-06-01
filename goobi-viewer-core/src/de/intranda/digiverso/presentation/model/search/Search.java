@@ -276,7 +276,7 @@ public class Search implements Serializable {
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (hierarchicalFacetFields.contains(fieldName)) {
                     facets.getAvailableHierarchicalFacets()
-                            .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
+                            .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, true));
                 } else {
                     facets.getAvailableFacets()
                             .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));

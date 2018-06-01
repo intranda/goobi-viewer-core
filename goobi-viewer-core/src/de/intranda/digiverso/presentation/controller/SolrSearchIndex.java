@@ -978,7 +978,7 @@ public final class SolrSearchIndex {
                 logger.warn("Solr communication timeout; Query: {}", solrQuery.getQuery());
                 throw new IndexUnreachableException(e.getMessage());
             }
-            logger.error("Bad query: {}", solrQuery.getQuery());
+            logger.error("Could not execute query: {}", solrQuery.getQuery());
             logger.error(e.getMessage());
             throw new PresentationException(e.getMessage());
         } catch (RemoteSolrException e) {

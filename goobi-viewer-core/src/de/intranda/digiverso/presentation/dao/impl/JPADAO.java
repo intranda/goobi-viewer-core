@@ -72,9 +72,8 @@ public class JPADAO implements IDAO {
     private static final Logger logger = LoggerFactory.getLogger(JPADAO.class);
     private static final String DEFAULT_PERSISTENCE_UNIT_NAME = "intranda_viewer_tomcat";
     private static final String MULTIKEY_SEPARATOR = "_";
-    
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(); 
 
+    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private final EntityManagerFactory factory;
     private EntityManager em;
@@ -125,13 +124,11 @@ public class JPADAO implements IDAO {
     private void createDiscriminatorRow() throws DAOException {
         try {
             preQuery();
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             Query q = em.createQuery("UPDATE CMSSidebarElement element SET element.widgetType = '" + CMSSidebarElement.class.getSimpleName()
                     + "' WHERE element.widgetType IS NULL");
             q.executeUpdate();
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } catch (DAOException e) {
             throw new DAOException(e.getMessage());
         }
@@ -193,10 +190,7 @@ public class JPADAO implements IDAO {
                     if (keyPartCount > 0) {
                         sbQuery.append(" OR ");
                     }
-                    sbQuery.append("UPPER(o.")
-                            .append(keyPart)
-                            .append(") LIKE :")
-                            .append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
+                    sbQuery.append("UPPER(o.").append(keyPart).append(") LIKE :").append(key.replaceAll(MULTIKEY_SEPARATOR, ""));
                     keyPartCount++;
                 }
                 sbQuery.append(" ) ");
@@ -204,8 +198,7 @@ public class JPADAO implements IDAO {
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
@@ -213,8 +206,7 @@ public class JPADAO implements IDAO {
         logger.trace(sbQuery.toString());
         Query q = em.createQuery(sbQuery.toString());
         for (String key : filterKeys) {
-            q.setParameter(key.replaceAll(MULTIKEY_SEPARATOR, ""), "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key.replaceAll(MULTIKEY_SEPARATOR, ""), "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -264,8 +256,7 @@ public class JPADAO implements IDAO {
             return null;
         } catch (NonUniqueResultException e) {
             logger.warn(e.getMessage());
-            return (User) q.getResultList()
-                    .get(0);
+            return (User) q.getResultList().get(0);
         }
     }
 
@@ -301,8 +292,7 @@ public class JPADAO implements IDAO {
         preQuery();
         Query q = em.createQuery("SELECT u FROM User u WHERE UPPER(u.nickName) = :nickname");
         if (nickname != null) {
-            q.setParameter("nickname", nickname.trim()
-                    .toUpperCase());
+            q.setParameter("nickname", nickname.trim().toUpperCase());
         }
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         try {
@@ -329,11 +319,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(user);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -350,11 +338,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(user);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
             if (this.em.contains(user)) {
                 this.em.refresh(user);
@@ -375,12 +361,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             User u = em.getReference(User.class, user.getId());
             em.remove(u);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -425,24 +409,19 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
         Query q = em.createQuery(sbQuery.toString());
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -519,11 +498,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(userGroup);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -543,11 +520,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(userGroup);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
             if (this.em.contains(userGroup)) {
                 this.em.refresh(userGroup);
@@ -568,13 +543,11 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             UserGroup o = em.getReference(UserGroup.class, userGroup.getId());
             em.remove(o);
             try {
-                em.getTransaction()
-                        .commit();
+                em.getTransaction().commit();
                 return true;
             } catch (RollbackException e) {
                 return false;
@@ -678,11 +651,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(bookshelf);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -699,11 +670,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(bookshelf);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             // Refresh the object from the DB so that any new items have IDs
             if (this.em.contains(bookshelf)) {
                 this.em.refresh(bookshelf);
@@ -724,12 +693,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             Bookshelf o = em.getReference(Bookshelf.class, bookshelf.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } catch (RollbackException e) {
             return false;
@@ -773,24 +740,19 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
         Query q = em.createQuery(sbQuery.toString());
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -852,11 +814,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(role);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -873,11 +833,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(role);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -894,12 +852,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             Role o = em.getReference(Role.class, role.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -979,11 +935,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(userRole);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -1000,11 +954,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(userRole);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1021,12 +973,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             UserRole o = em.getReference(UserRole.class, userRole.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1089,24 +1039,19 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
         Query q = em.createQuery(sbQuery.toString());
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1168,11 +1113,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(licenseType);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -1189,11 +1132,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(licenseType);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1210,13 +1151,11 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             LicenseType o = em.getReference(LicenseType.class, licenseType.getId());
             em.remove(o);
             try {
-                em.getTransaction()
-                        .commit();
+                em.getTransaction().commit();
                 return true;
             } catch (RollbackException e) {
                 return false;
@@ -1261,24 +1200,19 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
         Query q = em.createQuery(sbQuery.toString());
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1340,11 +1274,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(ipRange);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -1361,11 +1293,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(ipRange);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             // Refresh the object from the DB so that any new licenses etc. have IDs
             if (this.em.contains(ipRange)) {
                 this.em.refresh(ipRange);
@@ -1386,12 +1316,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             IpRange o = em.getReference(IpRange.class, ipRange.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1431,24 +1359,19 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
         Query q = em.createQuery(sbQuery.toString());
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1501,11 +1424,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(comment);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -1520,11 +1441,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(comment);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1539,24 +1458,22 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             Comment o = em.getReference(Comment.class, comment.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
         }
     }
-    
+
     /**
      * Gets all page numbers (order) within a work with the given pi which contain comments
      * 
      * @param pi
      * @return
-     * @throws DAOException 
+     * @throws DAOException
      */
     @Override
     public List<Integer> getPagesWithComments(String pi) throws DAOException {
@@ -1608,10 +1525,7 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
@@ -1620,21 +1534,17 @@ public class JPADAO implements IDAO {
             q.setParameter("owner", owner);
         }
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
 
-        Object o = q.getResultList()
-                .get(0);
+        Object o = q.getResultList().get(0);
         // MySQL
         if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList()
-                    .get(0)).longValue();
+            return ((BigInteger) q.getResultList().get(0)).longValue();
         }
         // H2
-        return (long) q.getResultList()
-                .get(0);
+        return (long) q.getResultList().get(0);
     }
 
     /**
@@ -1667,16 +1577,12 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
@@ -1686,8 +1592,7 @@ public class JPADAO implements IDAO {
             q.setParameter("owner", owner);
         }
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -1736,11 +1641,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(search);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -1755,11 +1658,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(search);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1774,12 +1675,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             Search o = em.getReference(Search.class, search.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1867,11 +1766,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(overviewPage);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -1889,11 +1786,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(overviewPage);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             logger.debug("New ID: {}", overviewPage.getId());
             return true;
         } finally {
@@ -1912,12 +1807,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             OverviewPage o = em.getReference(OverviewPage.class, overviewPage.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -1935,8 +1828,7 @@ public class JPADAO implements IDAO {
             sbQuery.append(" WHERE o.dateUpdated >= :fromDate");
         }
         if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ")
-                    .append("o.dateUpdated <= :toDate");
+            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
         }
         Query q = em.createQuery(sbQuery.toString());
         if (fromDate != null) {
@@ -1946,16 +1838,13 @@ public class JPADAO implements IDAO {
             q.setParameter("toDate", toDate);
         }
 
-        Object o = q.getResultList()
-                .get(0);
+        Object o = q.getResultList().get(0);
         // MySQL
         if (o instanceof BigInteger) {
-            return ((BigInteger) q.getResultList()
-                    .get(0)).longValue();
+            return ((BigInteger) q.getResultList().get(0)).longValue();
         }
         // H2
-        return (long) q.getResultList()
-                .get(0);
+        return (long) q.getResultList().get(0);
     }
 
     /**
@@ -1972,8 +1861,7 @@ public class JPADAO implements IDAO {
             sbQuery.append(" WHERE o.dateUpdated >= :fromDate");
         }
         if (toDate != null) {
-            sbQuery.append(fromDate == null ? " WHERE " : " AND ")
-                    .append("o.dateUpdated <= :toDate");
+            sbQuery.append(fromDate == null ? " WHERE " : " AND ").append("o.dateUpdated <= :toDate");
         }
         sbQuery.append(" ORDER BY o.dateUpdated DESC");
         Query q = em.createQuery(sbQuery.toString());
@@ -2076,11 +1964,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(update);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -2097,12 +1983,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             OverviewPageUpdate o = em.getReference(OverviewPageUpdate.class, update.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2215,11 +2099,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(downloadJob);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -2236,11 +2118,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(downloadJob);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2256,12 +2136,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             DownloadJob o = em.getReference(DownloadJob.class, downloadJob.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2291,8 +2169,7 @@ public class JPADAO implements IDAO {
         Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
         q.setParameter("pageName", pageName);
         q.setHint("javax.persistence.cache.storeMode", "REFRESH");
-        if (!q.getResultList()
-                .isEmpty()) {
+        if (!q.getResultList().isEmpty()) {
             return (CMSPage) q.getSingleResult();
         }
 
@@ -2327,24 +2204,19 @@ public class JPADAO implements IDAO {
                 if (count > 0) {
                     sbQuery.append(" AND ");
                 }
-                sbQuery.append("UPPER(o.")
-                        .append(key)
-                        .append(") LIKE :")
-                        .append(key);
+                sbQuery.append("UPPER(o.").append(key).append(") LIKE :").append(key);
                 count++;
             }
         }
         if (StringUtils.isNotEmpty(sortField)) {
-            sbQuery.append(" ORDER BY o.")
-                    .append(sortField);
+            sbQuery.append(" ORDER BY o.").append(sortField);
             if (descending) {
                 sbQuery.append(" DESC");
             }
         }
         Query q = em.createQuery(sbQuery.toString());
         for (String key : filterKeys) {
-            q.setParameter(key, "%" + filters.get(key)
-                    .toUpperCase() + "%");
+            q.setParameter(key, "%" + filters.get(key).toUpperCase() + "%");
         }
         q.setFirstResult(first);
         q.setMaxResults(pageSize);
@@ -2364,9 +2236,7 @@ public class JPADAO implements IDAO {
     public List<CMSPage> getCMSPagesByClassification(String pageClassification) throws DAOException {
         preQuery();
         StringBuilder sbQuery = new StringBuilder(70);
-        sbQuery.append("SELECT o from CMSPage o WHERE '")
-                .append(pageClassification)
-                .append("' MEMBER OF o.classifications");
+        sbQuery.append("SELECT o from CMSPage o WHERE '").append(pageClassification).append("' MEMBER OF o.classifications");
         Query q = em.createQuery(sbQuery.toString());
         // q.setHint("javax.persistence.cache.storeMode", "REFRESH");
         return q.getResultList();
@@ -2420,7 +2290,6 @@ public class JPADAO implements IDAO {
                     em.refresh(o);
                 } catch (IllegalArgumentException e) {
                     logger.error(e.toString());
-
                 }
             }
             return o;
@@ -2449,11 +2318,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(page);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return updateCMSPageFromDatabase(page.getId());
         } finally {
             em.close();
@@ -2470,11 +2337,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(page);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return updateCMSPageFromDatabase(page.getId());
         } finally {
             em.close();
@@ -2496,10 +2361,10 @@ public class JPADAO implements IDAO {
         } catch (IllegalArgumentException e) {
             logger.error("CMSPage with id " + id + " has an ivalid type, or is not persisted");
             return false;
-        } catch(EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             logger.debug("CMSPage with id " + id + " not found in database");
             //remove from em as well
-            if(o != null) {                
+            if (o != null) {
                 em.remove(o);
             }
             return false;
@@ -2516,12 +2381,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             CMSPage o = em.getReference(CMSPage.class, page.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return !updateCMSPageFromDatabase(o.getId());
         } catch (RollbackException e) {
             return false;
@@ -2583,14 +2446,11 @@ public class JPADAO implements IDAO {
     @Override
     public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException {
         preQuery();
-        // TODO metadata object cascading does not work
-        //        EntityManager em = factory.createEntityManager();
+        EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(item);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2605,13 +2465,11 @@ public class JPADAO implements IDAO {
     @Override
     public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException {
         preQuery();
-        //        EntityManager em = factory.createEntityManager();
+        EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(item);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2629,12 +2487,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             CMSMediaItem o = em.getReference(CMSMediaItem.class, item.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } catch (RollbackException e) {
             return false;
@@ -2653,8 +2509,7 @@ public class JPADAO implements IDAO {
         for (Object o : q.getResultList()) {
             if (o instanceof CMSContentItem) {
                 try {
-                    CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion()
-                            .getOwnerPage();
+                    CMSPage page = ((CMSContentItem) o).getOwnerPageLanguageVersion().getOwnerPage();
                     if (!ownerList.contains(page)) {
                         ownerList.add(page);
                     }
@@ -2708,11 +2563,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(item);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2729,11 +2582,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(item);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2750,12 +2601,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             CMSNavigationItem o = em.getReference(CMSNavigationItem.class, item.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } catch (RollbackException e) {
             return false;
@@ -2797,11 +2646,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(job);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2817,11 +2664,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(job);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -2837,12 +2682,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             TranskribusJob o = em.getReference(TranskribusJob.class, job.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } catch (RollbackException e) {
             return false;
@@ -2953,8 +2796,7 @@ public class JPADAO implements IDAO {
      */
     private long getRowCount(String className, Map<String, String> filters) throws DAOException {
         preQuery();
-        StringBuilder sbQuery = new StringBuilder("SELECT count(o) FROM ").append(className)
-                .append(" o");
+        StringBuilder sbQuery = new StringBuilder("SELECT count(o) FROM ").append(className).append(" o");
         StringBuilder sbFilterQuery = null;
         if (filters != null && !filters.isEmpty()) {
             sbFilterQuery = new StringBuilder();
@@ -2974,11 +2816,7 @@ public class JPADAO implements IDAO {
                     if (keyPartCount > 0) {
                         sbFilterQuery.append(" OR ");
                     }
-                    sbFilterQuery.append("(o.")
-                            .append(keyPart)
-                            .append(") LIKE '%")
-                            .append(filters.get(key))
-                            .append("%'");
+                    sbFilterQuery.append("(o.").append(keyPart).append(") LIKE '%").append(filters.get(key)).append("%'");
                     keyPartCount++;
                 }
                 sbFilterQuery.append(" ) ");
@@ -3035,11 +2873,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(page);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -3053,11 +2889,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(page);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -3071,12 +2905,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             CMSStaticPage o = em.getReference(CMSStaticPage.class, page.getId());
             em.remove(o);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } catch (RollbackException e) {
             return false;

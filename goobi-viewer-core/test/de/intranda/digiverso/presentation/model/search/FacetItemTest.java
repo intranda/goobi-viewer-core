@@ -47,6 +47,18 @@ public class FacetItemTest {
     }
 
     /**
+     * @see FacetItem#FacetItem(String,boolean)
+     * @verifies split field and value range correctly
+     */
+    @Test
+    public void FacetItem_shouldSplitFieldAndValueRangeCorrectly() throws Exception {
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        Assert.assertEquals("FIELD", item.getField());
+        Assert.assertEquals("foo", item.getValue());
+        Assert.assertEquals("bar", item.getValue2());
+    }
+
+    /**
      * @see FacetItem#getQueryEscapedLink()
      * @verifies construct link correctly
      */
@@ -74,6 +86,16 @@ public class FacetItemTest {
     public void getQueryEscapedLink_shouldConstructHierarchicalLinkCorrectly() throws Exception {
         FacetItem item = new FacetItem("FIELD:value", true);
         Assert.assertEquals("(FIELD:value OR FIELD:value.*)", item.getQueryEscapedLink());
+    }
+
+    /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies construct range link correctly
+     */
+    @Test
+    public void getQueryEscapedLink_shouldConstructRangeLinkCorrectly() throws Exception {
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        Assert.assertEquals("FIELD:[foo TO bar]", item.getQueryEscapedLink());
     }
 
     /**
