@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -1063,6 +1064,9 @@ public class SearchBean implements Serializable {
     public void setSortString(String sortString) {
         if ("-".equals(sortString)) {
             this.sortString = "";
+        } else if (sortString != null && "RANDOM".equals(sortString.toUpperCase())) {
+            Random random = new Random();
+            this.sortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
         } else {
             this.sortString = sortString;
         }
