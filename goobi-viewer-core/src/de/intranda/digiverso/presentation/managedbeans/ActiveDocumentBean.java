@@ -43,6 +43,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -60,6 +61,8 @@ import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.toc.TOC;
@@ -1190,7 +1193,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public void downloadTOCAction() throws IOException {
-
         try {
 
             String fileNameRaw = getToc().getTocElements().get(0).getLabel();
@@ -1212,4 +1214,59 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @param identifierField Index field containing related item identifiers
+     * @return List of related items as SearchHit objects.
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<SearchHit> getRelatedItems(String identifierField) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("getRelatedItems: {}", identifierField);
+        if (identifierField == null) {
+            return null;
+        }
+        if (viewManager == null) {
+            return null;
+        }
+        String query = getRelatedItemsQueryString(identifierField);
+        if (query == null) {
+            return null;
+        }
+
+        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
+                navigationHelper.getLocale(), BeanUtils.getRequest());
+
+        logger.trace("{} related items found", ret.size());
+        return ret;
+    }
+
+    /**
+     * Returns a query string containing all values of the given identifier field.
+     * 
+     * @param identifierField Index field containing related item identifiers
+     * @return Query string of the pattern "PI:(a OR b OR c)"
+     * @should construct query correctly
+     */
+    public String getRelatedItemsQueryString(String identifierField) {
+        logger.trace("getRelatedItemsQueryString: {}", identifierField);
+        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        if (relatedItemIdentifiers.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder sbQuery = new StringBuilder(SolrConstants.PI).append(":(");
+        int initLength = sbQuery.length();
+        for (String identifier : relatedItemIdentifiers) {
+            if (sbQuery.length() > initLength) {
+                sbQuery.append(" OR ");
+            }
+            sbQuery.append(identifier);
+        }
+        sbQuery.append(')');
+
+        return sbQuery.toString();
+    }
 }

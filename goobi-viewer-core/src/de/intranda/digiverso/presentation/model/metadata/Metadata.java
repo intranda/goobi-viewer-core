@@ -638,7 +638,7 @@ public class Metadata implements Serializable {
             if (md.getLabel().contains(SolrConstants._LANG_)) {
                 String lang = md.getLabel().substring(md.getLabel().length() - 2);
                 String rawFieldName = md.getLabel().substring(0, md.getLabel().length() - 8);
-                logger.trace("{}, {}", md.getLabel(), lang);
+                // logger.trace("{}, {}", md.getLabel(), lang);
                 if (languageCode.equals(lang)) {
                     addedLanguageSpecificFields.add(rawFieldName);
                 } else {

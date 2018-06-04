@@ -297,7 +297,6 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
             // Fall back to translations without the language part
             key = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
-            logger.trace("newKey: {}", key);
         }
 
         return getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
