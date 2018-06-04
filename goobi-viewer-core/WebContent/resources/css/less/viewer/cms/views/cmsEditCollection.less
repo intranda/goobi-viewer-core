@@ -1,0 +1,127 @@
+/* ==============================================================
+   CMS Edit Collections
+   style declarations for adminCmsEditCollections.xhtml
+   ==============================================================*/
+/* CMS EDIT COLLECTIONS */
+/* BLOCK */
+.cms-edit-collection {
+	/* ELEMENT */
+	h2 {}
+	&__translation {
+		display: grid;
+	    grid-template-columns: 1fr 1fr;
+	    grid-gap: 15px;
+	    align-items: center;
+	    margin-bottom: 15px;
+	}
+	&__text {
+		margin-bottom: 15px;
+		&.name {}
+		&.description {}
+		&.link,
+		&.image,
+		&.pi {
+			display: grid;
+		    grid-template-columns: 1fr 2fr;
+		    grid-gap: 15px;
+		    align-items: center;
+		    margin-bottom: 15px;
+		}
+		&.link {}
+		&.image {
+			align-items: start;
+		}
+		&.pi {}
+	}
+	&__text-label {}
+	&__text-translation {
+		textarea {
+			width: 100%;
+			min-height: 100px;
+			resize: vertical;
+		}
+	}
+	&__text-control {}
+	&__text-image {
+		position: relative;
+	}
+	&__text-image-thumbnail {
+		min-height: 40px;
+	}
+	&__text-image-change {
+		position: absolute;
+		width: 100%;
+		bottom: 0;
+		padding: 10px;
+		text-align: center;
+		background-color: rgba(255,255,255,0.85);
+		z-index: 10;
+		a {
+			color: @black;
+			cursor: pointer;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+				color: @black;
+			}
+		}
+	}
+	&__actions {
+		padding: 10px 0;
+		text-align: right;
+		.btn {
+			margin: 0 0 0 5px;
+		}
+	}
+	/* MODAL */
+	&__modal-images {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-gap: 10px;
+	}
+	&__modal-image {
+		span {
+			&.selected {
+				display: block;
+				background-color: @lightgray;
+			}			
+		}
+		a {
+			display: block;
+			text-align: center;
+			color: @black;
+			&:hover,
+			&:active,
+			&:focus {
+				text-decoration: none;
+				color: @black;
+			}
+		}		
+		img {
+			margin: 0 auto;
+		}
+		figcaption {
+			padding: 5px;
+		}
+	}
+}
+
+// BREAKPOINT FOR LARGE DESKTOPS
+@media screen and (max-width: @largeBreakpoint) {}
+
+// BREAKPOINT FOR DESKTOP
+@media screen and (max-width: @mediumBreakpoint) {}
+
+// BREAKPOINT FOR TABLETS
+@media screen and (max-width: @smallBreakpoint) {}
+
+// BREAKPOINT FOR SMARTPHONES
+@media screen and (max-width: @xSmallBreakpoint) {
+	.cms-edit-collection {
+		/* ELEMENT */
+		&__translation {
+		    grid-template-columns: 1fr;
+		}
+	}
+}

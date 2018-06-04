@@ -48,6 +48,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
@@ -366,6 +367,12 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public String getDescription() {
         return getCurrentLanguageMetadata().getDescription();
     }
+    
+    @Override
+    public String getName() {
+        return getCurrentLanguageMetadata().getName();
+    }
+
 
     /**
      * @return the size
@@ -481,6 +488,14 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 //        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
 //        imageUrlBuilder.append(getFileName());
 //        return imageUrlBuilder.toString();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getTranslationsForName()
+     */
+    @Override
+    public IMetadataValue getTranslationsForName() {
+        return IMetadataValue.getTranslations(getName());
     }
 
 }

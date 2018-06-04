@@ -19,6 +19,8 @@
         <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElement</class>
         <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithQuery</class>
         <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithSearch</class>
+        <class>de.intranda.digiverso.presentation.model.cms.CMSCollection</class>
+        <class>de.intranda.digiverso.presentation.model.cms.Translation</class>
         <class>de.intranda.digiverso.presentation.model.download.DownloadJob</class>
         <class>de.intranda.digiverso.presentation.model.download.EPUBDownloadJob</class>
         <class>de.intranda.digiverso.presentation.model.download.PDFDownloadJob</class>
@@ -65,6 +67,8 @@
         <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElement</class>
         <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithQuery</class>
         <class>de.intranda.digiverso.presentation.model.cms.CMSSidebarElementWithSearch</class>
+        <class>de.intranda.digiverso.presentation.model.cms.CMSCollection</class>
+        <class>de.intranda.digiverso.presentation.model.cms.Translation</class>
 		<class>de.intranda.digiverso.presentation.model.download.DownloadJob</class>
 		<class>de.intranda.digiverso.presentation.model.download.EPUBDownloadJob</class>
 		<class>de.intranda.digiverso.presentation.model.download.PDFDownloadJob</class>

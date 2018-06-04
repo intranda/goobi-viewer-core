@@ -679,6 +679,16 @@
 		<view-id value="/resources/cms/adminCmsStaticPages.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
+    <url-mapping id="adminCmsCollections">
+        <pattern value="/adminCmsCollections/" />
+        <view-id value="/resources/cms/adminCmsCollections.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
+    <url-mapping id="adminCmsEditCollection">
+        <pattern value="/adminCmsCollections/edit/" />
+        <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+    </url-mapping>
 
 	<!-- ADMIN -->
 	<url-mapping id="admin">

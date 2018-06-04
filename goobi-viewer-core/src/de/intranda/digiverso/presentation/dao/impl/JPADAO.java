@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Persistence;
@@ -46,6 +45,7 @@ import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
+import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
@@ -2985,5 +2985,93 @@ public class JPADAO implements IDAO {
     public void detach(Object object) throws DAOException {
         preQuery();
         em.detach(object);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSCollections(java.lang.String)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<CMSCollection> getCMSCollections(String solrField) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
+        q.setParameter("field", solrField);
+        return q.getResultList();
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#addCMSCollection(de.intranda.digiverso.presentation.model.cms.CMSCollection)
+     */
+    @Override
+    public boolean addCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction()
+                    .begin();
+            em.persist(collection);
+            em.getTransaction()
+                    .commit();
+        } finally {
+            em.close();
+        }
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#updateCMSCollection(de.intranda.digiverso.presentation.model.cms.CMSCollection)
+     */
+    @Override
+    public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction()
+                    .begin();
+            em.merge(collection);
+            em.getTransaction()
+                    .commit();
+            return true;
+        } finally {
+            em.close();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#getCMSCollection(java.lang.String, java.lang.String)
+     */
+    @Override
+    public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException {
+        preQuery();
+        Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field AND c.solrFieldValue = :value");
+        q.setParameter("field", solrField);
+        q.setParameter("value", solrFieldValue);
+        return (CMSCollection) getSingleResult(q).orElse(null);
+    }
+    
+    @Override
+    public void refreshCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        this.em.refresh(collection);
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.dao.IDAO#deleteCMSCollection(de.intranda.digiverso.presentation.model.cms.CMSCollection)
+     */
+    @Override
+    public boolean deleteCMSCollection(CMSCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = factory.createEntityManager();
+        try {
+            em.getTransaction()
+                    .begin();
+            CMSCollection u = em.getReference(CMSCollection.class, collection.getId());
+            em.remove(u);
+            em.getTransaction()
+                    .commit();
+            return true;
+        } finally {
+            em.close();
+        }
     }
 }
