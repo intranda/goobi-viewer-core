@@ -614,12 +614,15 @@ public class Metadata implements Serializable {
     }
 
     /**
+     * Returns a metadata list that contains the fields of the given metadata list minus any language-specific fields that do not match the given
+     * language.
      * 
      * @param metadataList
      * @param recordLanguage
-     * @return
+     * @return Metadata list without any fields with non-matching language; original list if no language is given
      * @should return language-specific version of a field
      * @should return generic version if no language specific version is found
+     * @should preserve metadata field order
      */
     public static List<Metadata> filterMetadataByLanguage(List<Metadata> metadataList, String recordLanguage) {
         // logger.trace("filterMetadataByLanguage: {}", recordLanguage);
@@ -627,32 +630,30 @@ public class Metadata implements Serializable {
             return metadataList;
         }
 
-        List<Metadata> ret = new ArrayList<>(metadataList.size());
-        // Fields that have no language code; will be addded to ret in case no language specific version is found
-        List<Metadata> backupList = new ArrayList<>(metadataList.size());
-        // Fields that have already been added to ret and can be skipped
-        Set<String> addedFields = new HashSet<>();
+        List<Metadata> ret = new ArrayList<>(metadataList);
+        Set<String> addedLanguageSpecificFields = new HashSet<>();
+        Set<Metadata> toRemove = new HashSet<>();
         String languageCode = recordLanguage.toUpperCase();
         for (Metadata md : metadataList) {
-            if (md.getLabel().contains("_LANG_")) {
+            if (md.getLabel().contains(SolrConstants._LANG_)) {
                 String lang = md.getLabel().substring(md.getLabel().length() - 2);
+                String rawFieldName = md.getLabel().substring(0, md.getLabel().length() - 8);
                 logger.trace("{}, {}", md.getLabel(), lang);
                 if (languageCode.equals(lang)) {
-                    ret.add(md);
-                    addedFields.add(md.getLabel().substring(0, md.getLabel().length() - 8));
-                }
-            } else if (!addedFields.contains(md.getLabel())) {
-                backupList.add(md);
-            }
-        }
-        // Add non-language fields
-        if (!backupList.isEmpty()) {
-            for (Metadata md : backupList) {
-                if (!addedFields.contains(md.getLabel())) {
-                    ret.add(md);
+                    addedLanguageSpecificFields.add(rawFieldName);
+                } else {
+                    // Mark wrong language versions for removal
+                    toRemove.add(md);
                 }
             }
         }
+        // Mark non-language versions for removal, if a language-specific version has been found
+        for (Metadata md : ret) {
+            if (addedLanguageSpecificFields.contains(md.getLabel())) {
+                toRemove.add(md);
+            }
+        }
+        ret.removeAll(toRemove);
 
         return ret;
     }
