@@ -394,10 +394,19 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
      */
     @Override
     public URI getIconURI() {
-        if (getFileName() != null) {
 
             int height = DataManager.getInstance().getConfiguration().getCmsMediaDisplayHeight();
             int width = DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth();
+            return getIconURI(width, height);
+    }
+    
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#getIconURI(int, int)
+     */
+    @Override
+    public URI getIconURI(int width, int height) {
+        if (getFileName() != null) {
 
             String uriString = CmsMediaBean.getMediaUrl(this, Integer.toString(width), Integer.toString(height));
             try {
@@ -497,5 +506,6 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public IMetadataValue getTranslationsForName() {
         return IMetadataValue.getTranslations(getName());
     }
+
 
 }
