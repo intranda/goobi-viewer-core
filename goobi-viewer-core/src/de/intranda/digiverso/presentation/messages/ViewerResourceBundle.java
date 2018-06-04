@@ -288,6 +288,29 @@ public class ViewerResourceBundle extends ResourceBundle {
         if (bundle.containsKey(key)) {
             return bundle.getString(key);
         }
+
+        // Remove leading _LANG_XX
+        if (key.contains(SolrConstants._LANG_)) {
+            String translation = getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
+            if (translation != null) {
+                return translation;
+            }
+            // Fall back to translations without the language part
+            key = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
+            logger.trace("newKey: {}", key);
+        }
+
+        return getTranslationFromBundleUsingCleanedUpKeys(key, bundle);
+
+    }
+
+    /**
+     * 
+     * @param key
+     * @param bundle
+     * @return
+     */
+    private static String getTranslationFromBundleUsingCleanedUpKeys(String key, ResourceBundle bundle) {
         // Remove trailing _DD (collection names for drill-down)
         if (key.endsWith(SolrConstants._DRILLDOWN_SUFFIX)) {
             String newKey = key.replace(SolrConstants._DRILLDOWN_SUFFIX, "");
@@ -328,14 +351,6 @@ public class ViewerResourceBundle extends ResourceBundle {
             if (bundle.containsKey("MD_" + newKey)) {
                 return bundle.getString("MD_" + newKey);
             }
-            if (bundle.containsKey(newKey)) {
-                return bundle.getString(newKey);
-            }
-        }
-        // Remove leading _LANG_XX
-        if (key.contains(SolrConstants._LANG_)) {
-            String newKey = key.replaceAll(SolrConstants._LANG_ + "[A-Z][A-Z]", "");
-            logger.trace("newKey: {}", newKey);
             if (bundle.containsKey(newKey)) {
                 return bundle.getString(newKey);
             }
