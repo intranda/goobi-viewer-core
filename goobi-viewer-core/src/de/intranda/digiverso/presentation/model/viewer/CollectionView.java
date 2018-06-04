@@ -114,14 +114,21 @@ public class CollectionView {
      * @return
      */
     private boolean shouldOpenInOwnWindow(String collectionName) {
-        if (StringUtils.isBlank(getBaseElementName()) && calculateLevel(collectionName) < getBaseLevels()) {
+        if(StringUtils.isNotBlank(collectionName) && collectionName.equals(getTopVisibleElement())) {
+            //if this is the current top element, open in search
+            return false;
+        }else if (StringUtils.isBlank(getBaseElementName()) && calculateLevel(collectionName) < getBaseLevels()) {
+            //If we are beneath the base level, open in collection view
             return true;
         } else if (collectionName.equals(getBaseElementName())) {
+            //If this is the base element of the entiry collection view, open in collection view (TODO: is that correct?)
             return true;
         } else if (collectionName.startsWith(getBaseElementName() + BrowseDcElement.split) && calculateLevel(collectionName) - calculateLevel(
                 getBaseElementName()) <= getBaseLevels()) {
+            //If this is a subcollection of the base element and less than base levels beneath the base element, open in collection view (same as second 'if' but for views with a base element
             return true;
         } else if (getBaseElementName() != null && getBaseElementName().startsWith(collectionName + BrowseDcElement.split)) {
+            //If this is a parent of the base collection, open in collection view (effectively going upwards in the view hierarchy
             return true;
         } else {
             return false;

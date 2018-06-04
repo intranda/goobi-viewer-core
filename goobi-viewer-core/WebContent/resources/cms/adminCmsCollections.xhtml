@@ -110,17 +110,17 @@
                                             <a href="#{collection.collectionUrl}" target="_blank">#{collection.collectionUrl}</a>
                                         </td>
                                         <td>
-                                            <ui:fragment rendered="#{collection.hasImage()}">
-                                                <ui:fragment rendered="#{collection.hasRepresentativeWork()}">
-                                                    <img src="#{imageDelivery.thumbs.getThumbnailUrl(collection.representativeWork,100,100)}" class="img-responsive" alt="" />
-                                                </ui:fragment>
-                                                <ui:fragment rendered="#{!collection.hasRepresentativeWork()}">
-                                                    <img src="#{imageDelivery.thumbs.getThumbnailUrl(collection.mediaItem,100,100)}" class="img-responsive" alt="" />
-                                                </ui:fragment>
-                                            </ui:fragment>
-                                            <ui:fragment rendered="#{!collection.hasImage()}">
-                                                <img src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}" class="img-responsive" alt="" />
-                                            </ui:fragment>
+                                                    <img src="#{collection.getIconURI()}" class="img-responsive" alt="" />
+<!--                                             <ui:fragment rendered="#{collection.hasImage()}"> -->
+<!--                                                 <ui:fragment rendered="#{collection.hasRepresentativeWork()}"> -->
+<!--                                                 </ui:fragment> -->
+<!--                                                 <ui:fragment rendered="#{!collection.hasRepresentativeWork()}"> -->
+<!--                                                     <img src="#{imageDelivery.thumbs.getThumbnailUrl(collection.mediaItem,100,100)}" class="img-responsive" alt="" /> -->
+<!--                                                 </ui:fragment> -->
+<!--                                             </ui:fragment> -->
+<!--                                             <ui:fragment rendered="#{!collection.hasImage()}"> -->
+<!--                                                 <img src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}" class="img-responsive" alt="" /> -->
+<!--                                             </ui:fragment> -->
                                         </td>
                                         <td class="actions">
                                             <h:commandLink action="#{cmsCollectionsBean.editCollection(collection)}" title="#{msg.cms_collection_edit}">
