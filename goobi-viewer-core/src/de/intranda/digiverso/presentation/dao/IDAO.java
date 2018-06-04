@@ -23,6 +23,7 @@ import java.util.Optional;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
+import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.cms.CMSNavigationItem;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -355,5 +356,19 @@ public interface IDAO {
      * @throws DAOException 
      */
     List<Integer> getPagesWithComments(String pi) throws DAOException;
+
+    /**
+     * @param solrField
+     * @return 
+     * @throws DAOException 
+     */
+    public List<CMSCollection> getCMSCollections(String solrField) throws DAOException;
+    public boolean addCMSCollection(CMSCollection collection) throws DAOException;
+    public boolean updateCMSCollection(CMSCollection collection) throws DAOException;
+    public boolean deleteCMSCollection(CMSCollection collection) throws DAOException;
+    public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
+    /** Update the given collection from the database */
+    void refreshCMSCollection(CMSCollection collection) throws DAOException;
+
 
 }

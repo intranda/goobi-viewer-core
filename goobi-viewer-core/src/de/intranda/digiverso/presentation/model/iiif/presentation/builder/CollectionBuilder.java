@@ -121,6 +121,12 @@ public class CollectionBuilder extends AbstractBuilder {
 
         Collection collection;
         if (baseElement != null) {
+            /*
+             * First make sure that the base Element is contained within visibleElements, then recalculate the visibleElements to
+             * get CMS-Information for the base Element and its children
+             */
+            collectionView.setDisplayParentCollections(true); 
+            collectionView.calculateVisibleDcElements(true);
             collection = createCollection(collectionView, baseElement, getCollectionURI(collectionField, baseElement.getName()));
             
             String parentName = null;
@@ -222,7 +228,8 @@ public class CollectionBuilder extends AbstractBuilder {
             collection.setAttribution(getAttribution());
 
             if (baseElement != null) {
-                collection.setLabel(IMetadataValue.getTranslations(baseElement.getName()));
+                
+                collection.setLabel(baseElement.getInfo().getTranslationsForName());
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if(thumbURI != null) {                    

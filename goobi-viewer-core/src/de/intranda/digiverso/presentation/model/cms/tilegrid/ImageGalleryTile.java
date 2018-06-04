@@ -34,6 +34,8 @@ public interface ImageGalleryTile {
     public String getName(String language);
 
     public URI getIconURI();
+    
+    public URI getIconURI(int width, int height);
 
     public URI getLinkURI(HttpServletRequest request);
 

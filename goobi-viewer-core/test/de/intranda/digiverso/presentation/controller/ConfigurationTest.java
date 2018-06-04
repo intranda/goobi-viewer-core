@@ -2383,6 +2383,15 @@ public class ConfigurationTest {
     public void getSitelinksField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(SolrConstants._CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
     }
+    
+    @Test
+    public void getGetConfiguredCollections() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollections();
+        Assert.assertEquals(fields.size(), 3);
+        Assert.assertTrue(fields.contains("DC"));
+        Assert.assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
+        Assert.assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
+    }
 
     /**
      * @see Configuration#isFullAccessForLocalhost()

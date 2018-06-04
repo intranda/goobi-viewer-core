@@ -453,7 +453,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item, fit into a box of the default width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height
      * 
      * @param item
      * @param width
@@ -465,7 +465,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item, fit into a box of the default width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height
      * 
      * @param item
      * @param width
@@ -478,7 +478,7 @@ public class ThumbnailHandler {
 
 
     /**
-     * Return the url to the image of the given media item, fit into a box of the given width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the given width and height
      * 
      * @param item
      * @param width
@@ -499,7 +499,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item, fit into a box of the given width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the given width and height
      * 
      * @param item
      * @param width
@@ -511,7 +511,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the given size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
@@ -531,7 +531,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the given size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
@@ -543,7 +543,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the default size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
@@ -554,7 +554,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the default size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item

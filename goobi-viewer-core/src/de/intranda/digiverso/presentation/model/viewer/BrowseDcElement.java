@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.model.viewer;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Comparator;
 
 import org.apache.commons.lang.StringUtils;
@@ -54,7 +55,7 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
             this.sortField = this.sortField.intern();
         }
         this.displayNumberOfVolumesLevel = DataManager.getInstance().getConfiguration().getCollectionDisplayNumberOfVolumesLevel(field);
-        this.info = new SimpleBrowseElementInfo(field);
+        this.info = new SimpleBrowseElementInfo(name);
     }
     
     /**
@@ -118,6 +119,14 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
     public String getName() {
         return name;
     }
+    
+    public String getLabel() {
+        if(getInfo() != null) {
+            return getInfo().getName();
+        } else {
+            return name;
+        }
+    }
 
     /**
      * Returns the message key for the collection description.
@@ -125,7 +134,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @return
      */
     public String getDescription() {
-        return new StringBuilder(name).append("_DESCRIPTION").toString();
+        if(getInfo() != null) {
+            return getInfo().getDescription();
+        } else {            
+            return new StringBuilder(name).append("_DESCRIPTION").toString();
+        }
     }
 
     /**
@@ -134,7 +147,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
      * @return
      */
     public String getRepresentant() {
-        return new StringBuilder(name).append("_REPRESENTANT").toString();
+        if(getInfo() != null && getInfo().getIconURI() != null) {
+            return getInfo().getIconURI().toString();
+        } else {            
+            return new StringBuilder(name).append("_REPRESENTANT").toString();
+        }
     }
 
     /**
@@ -264,8 +281,21 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, Serializabl
         }
 
     }
+
     
     public boolean hasCMSDescription() {
     	return !(this.info instanceof SimpleBrowseElementInfo);
+    }
+    
+    public boolean hasIcon() {
+        return getInfo() != null && getInfo().getIconURI() != null;
+    }
+    
+    public URI getIcon() {
+        if(getInfo() != null) {
+            return getInfo().getIconURI();
+        } else {
+            return null;
+        }
     }
 }
