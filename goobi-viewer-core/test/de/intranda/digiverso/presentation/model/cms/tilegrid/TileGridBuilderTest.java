@@ -88,7 +88,7 @@ public class TileGridBuilderTest {
         for (int i = 0; i < 20; i++) {
             TileGrid grid = new TileGridBuilder(null).size(2).reserveForHighPriority(1).tags("tag1").build(items);
             Assert.assertEquals(2, grid.getItems().size());
-            Assert.assertTrue(contains(grid.getItems(), item1));
+            Assert.assertTrue("Grid does not contain " + item1, contains(grid.getItems(), item1));
             Assert.assertTrue("Grid does not contain item 3 or 4: " + grid, contains(grid.getItems(), item3) || contains(grid.getItems(), item4));
         }
     }
@@ -100,7 +100,7 @@ public class TileGridBuilderTest {
      */
     private static boolean contains(List<Tile> items, CMSMediaItem mediaItem) {
         for (Tile tile : items) {
-            if (tile.getName().equals(mediaItem.getIconURI().toString())) {
+            if (tile.getName().equals(mediaItem.getIconURI(0,0).toString())) {
                 return true;
             }
         }
