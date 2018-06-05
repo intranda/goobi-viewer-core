@@ -17,6 +17,7 @@ package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1348,6 +1349,37 @@ public class CmsBean implements Serializable {
             logger.error("Error loading glossary files", e);
             return Collections.emptyList();
         }
+    }
+    
+    public String getRepresentativeImageForQuery(CMSPage page) throws PresentationException, IndexUnreachableException {
+        int width = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+        int height = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+        return getRepresentativeImageForQuery(page, width, height);
+    }
+    
+    public String getRepresentativeImageForQuery(CMSContentItem item) throws PresentationException, IndexUnreachableException {
+        int width = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+        int height = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+        return getRepresentativeImageForQuery(item, width, height);
+    }
+
+    
+    public String getRepresentativeImageForQuery(CMSPage page, int width, int height) throws PresentationException, IndexUnreachableException {
+        CMSContentItem contentItem = page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.SOLRQUERY.equals(item.getType())).findAny().orElseThrow(() -> new IllegalStateException("The page does not contain content items of type '" + CMSContentItemType.SOLRQUERY + "'"));
+        return getRepresentativeImageForQuery(contentItem, width, height);
+    }
+
+    
+    public String getRepresentativeImageForQuery(CMSContentItem item, int width, int height) throws PresentationException, IndexUnreachableException {
+       if(StringUtils.isBlank(item.getSolrQuery())) {
+           throw new IllegalStateException("Item " + item + " does not define a solr query");
+       }
+       SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(item.getSolrQuery(), DataManager.getInstance().getConfiguration().getIIIFMetadataFields());
+       if(doc != null) {           
+           return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
+       } else {
+           throw new PresentationException("No document matching query '" + item.getSolrQuery() + "' found");
+       }
     }
 
 }
