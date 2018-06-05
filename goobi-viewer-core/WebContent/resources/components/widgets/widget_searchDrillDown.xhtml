@@ -45,17 +45,18 @@
 
                                         <!-- AVAILABLE HIERARCHICAL FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getLimitedHierarchicalFacetListForField(field.key)}" var="facet">
-                                            <li>
-                                                <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}"
-                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
-                                                #{msg[facet.label]} (#{facet.count})
-                                            </h:outputLink>
-                                            </li>
+                                            <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet)}">
+                                                <li>
+                                                    <h:outputLink value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetPrefix}#{facet.urlEscapedLink}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetString}/">
+                                                        #{msg[facet.label]} (#{facet.count})
+                                                    </h:outputLink>
+                                                </li>
+                                            </ui:fragment>
                                         </ui:repeat>
                                     </ul>
 
                                     <!-- COLLAPSE HIERARCHICAL DRILLDOWN -->
-                                    <ui:fragment rendered="#{!searchBean.facets.isDisplayDrillDownExpandLink(facetField)}">
+                                    <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(facetField)}">
                                         <div class="widget-search-drilldown__collapse">
                                             <h:commandLink rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(field.key)}"
                                                 action="#{searchBean.facets.expandDrillDown(field.key)}" title="#{msg.slideDown}">
@@ -80,7 +81,10 @@
                             <h:panelGroup id="drillDownPanelGroup_#{status.index}"
                                 rendered="#{!searchBean.facets.isHasWrongLanguageCode(field.key, navigationHelper.localeString) and searchBean.facets.getAvailableFacetsListSizeForField(field.key) > 1 or searchBean.facets.getCurrentFacetsSizeForField(field.key) > 0}">
                                 <div class="widget widget-search-drilldown__groups">
-                                    <h3>#{msg[field.key.concat('_DD')]}</h3>
+                                    <ui:fragment rendered="#{field.key != 'YEAR'}">
+                                        <h3>#{msg[field.key.concat('_DD')]}</h3>
+                                    </ui:fragment>
+                                    
                                     <ul>
                                         <!-- ACTIVE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getCurrentFacetsForField(field.key)}" var="facet">
@@ -100,18 +104,19 @@
 
                                         <!-- AVAILABLE FACETS -->
                                         <ui:repeat value="#{searchBean.facets.getLimitedFacetListForField(field.key)}" var="facet">
-                                            <li>
-                                                <!-- Skip YEAR (reserved for a slider widget) -->
-                                                <h:outputLink rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet) and facet.field != 'YEAR'}"
-                                                    value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetString}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
-                                                #{msg[facet.label]} (#{facet.count})
-                                            </h:outputLink>
-                                            </li>
+                                            <ui:fragment rendered="#{!searchBean.facets.isFacetCurrentlyUsed(facet) and facet.field != 'YEAR'}">
+                                                <li>
+                                                    <!-- Skip YEAR (reserved for a slider widget) -->
+                                                    <h:outputLink value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType)}/#{searchBean.facets.currentHierarchicalFacetString}/#{searchBean.exactSearchString}/#{searchBean.currentPage}/#{searchBean.sortString}/#{searchBean.facets.currentFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        #{msg[facet.label]} (#{facet.count})
+                                                    </h:outputLink>
+                                                </li>
+                                            </ui:fragment>
                                         </ui:repeat>
                                     </ul>
 
                                     <!-- COLLAPSE DRILLDOWN -->
-                                    <ui:fragment rendered="#{!searchBean.facets.isDisplayDrillDownExpandLink(facetField)}">
+                                    <ui:fragment rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(facetField)}">
                                         <div class="widget-search-drilldown__collapse">
                                             <h:commandLink rendered="#{searchBean.facets.isDisplayDrillDownExpandLink(field.key)}"
                                                 action="#{searchBean.facets.expandDrillDown(field.key)}" title="#{msg.slideDown}">

@@ -2701,6 +2701,14 @@ public final class Configuration extends AbstractConfiguration {
     public String getEndYearForTimeline() {
         return this.getLocalString("search.timeline.endyear", "2014");
     }
+    
+    /**
+     * @return
+     * @should return correct value
+     */
+    public String getTimelineHits() {
+        return this.getLocalString("search.timeline.hits", "108");
+    }
 
     /**
      * @return
