@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -177,7 +178,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
     public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale) {
         List<FacetItem> retList = new ArrayList<>();
         List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
-        List<FacetItem> priorityRetList = new ArrayList<>(priorityValues.size());
+        Map<String, FacetItem> priorityValueMap = new HashMap<>(priorityValues.size());
         for (String value : values.keySet()) {
             // Skip reversed values
             if (value.charAt(0) == 1) {
@@ -195,7 +196,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
             FacetItem facetItem =
                     new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, locale), values.get(value), hierarchical);
             if (!priorityValues.isEmpty() && priorityValues.contains(value)) {
-                priorityRetList.add(facetItem);
+                priorityValueMap.put(value, facetItem);
             } else {
                 retList.add(facetItem);
             }
@@ -223,8 +224,15 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
 
         }
         // Add priority values at the beginning
-        if (!priorityRetList.isEmpty()) {
-            retList.addAll(0, priorityRetList);
+        if (!priorityValueMap.isEmpty()) {
+            List<FacetItem> regularValues = new ArrayList<>(retList);
+            retList.clear();
+            for (String val : priorityValues) {
+                if (priorityValueMap.containsKey(val)) {
+                    retList.add(priorityValueMap.get(val));
+                }
+            }
+            retList.addAll(regularValues);
         }
         // logger.debug("filters: " + retList.size());
         return retList;
