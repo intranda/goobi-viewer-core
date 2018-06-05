@@ -7,6 +7,6 @@
     <content>
         <item id="A1" label="Beschreibender Text" type="HTML"/>
         <item id="image01" label="Bild zum beschreibenden Text" type="MEDIA" />
-        <item id="list01" label="Aktuelles-Elemente" type="PAGELIST" mandatory="true"></item>
+        <item id="list01" label="Aktuelle-Elemente" type="PAGELIST" mandatory="true" />
     </content>
 </cms_page_template>
