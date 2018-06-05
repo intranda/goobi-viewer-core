@@ -919,7 +919,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getTitleBarLabel() throws IndexUnreachableException {
-        return getTitleBarLabel(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+        Locale locale = BeanUtils.getLocale();
+        if(locale != null) {
+            return getTitleBarLabel(locale.getLanguage());
+        } else {            
+            return getTitleBarLabel(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+        }
     }
 
     /**
