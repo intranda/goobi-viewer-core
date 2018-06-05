@@ -1703,7 +1703,7 @@ public final class Configuration extends AbstractConfiguration {
             }
         }
 
-        return getLocalInt("search.drillDown.initialElementNumber", 20);
+        return getLocalInt("search.drillDown.initialElementNumber", 0);
     }
 
     /**

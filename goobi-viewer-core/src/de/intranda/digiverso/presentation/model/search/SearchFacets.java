@@ -378,8 +378,9 @@ public class SearchFacets {
         if (facetItems == null) {
             facetItems = availableHierarchicalFacets.get(field);
         }
+        int expandSize = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
         if (facetItems != null && !isDrillDownExpanded(field)
-                && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field)) {
+                && expandSize > 0 && facetItems.size() > expandSize) {
             return true;
         }
 
