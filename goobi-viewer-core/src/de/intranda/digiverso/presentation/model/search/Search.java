@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -207,13 +208,13 @@ public class Search implements Serializable {
      * @param hitsPerPage
      * @param advancedSearchGroupOperator
      * @param advancedQueryGroups
-     * @param language Selected language (usually current locale)
+     * @param locale Selected locale
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator,
-            List<SearchQueryGroup> advancedQueryGroups, String language) throws PresentationException, IndexUnreachableException, DAOException {
+            List<SearchQueryGroup> advancedQueryGroups, Locale locale) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("execute");
         if (facets == null) {
             throw new IllegalArgumentException("facets may not be null");
@@ -258,8 +259,9 @@ public class Search implements Serializable {
         }
         if (hitsCount > 0 && resp != null) {
             // Collect available facets
-            if (language != null) {
-                language = language.toUpperCase();
+            String language = null;
+            if (locale != null) {
+                language = locale.getLanguage().toUpperCase();
             }
             for (FacetField facetField : resp.getFacetFields()) {
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
@@ -281,9 +283,9 @@ public class Search implements Serializable {
                 // Use non-FACET_ field names outside of the actual faceting query
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
                 if (hierarchicalFacetFields.contains(fieldName)) {
-                    facets.getAvailableHierarchicalFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, true));
+                    facets.getAvailableHierarchicalFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, true, locale));
                 } else {
-                    facets.getAvailableFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
+                    facets.getAvailableFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false, locale));
                 }
             }
 

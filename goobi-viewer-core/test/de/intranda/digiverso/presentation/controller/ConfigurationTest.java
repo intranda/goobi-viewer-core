@@ -15,6 +15,8 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -1611,6 +1613,42 @@ public class ConfigurationTest {
         Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD1"));
         Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD2"));
         Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(null));
+    }
+
+    /**
+     * @see Configuration#getInitialDrillDownElementNumber(String)
+     * @verifies return default value if field not found
+     */
+    @Test
+    public void getInitialDrillDownElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
+        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("NOSUCHFIELD"));
+    }
+
+    /**
+     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @verifies return return all configured elements for regular fields
+     */
+    @Test
+    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("FIELD2");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("val1", result.get(0));
+        Assert.assertEquals("val2", result.get(1));
+        Assert.assertEquals("val3", result.get(2));
+    }
+
+    /**
+     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @verifies return return all configured elements for hierarchical fields
+     */
+    @Test
+    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("FACET_DC");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("collection2", result.get(0));
+        Assert.assertEquals("collection1", result.get(1));
     }
 
     @Test

@@ -603,7 +603,7 @@ public class SearchBean implements Serializable {
             currentSearch.setExpandQuery(expandQuery);
         }
 
-        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, advancedQueryGroups, navigationHelper.getLocaleString());
+        currentSearch.execute(facets, searchTerms, hitsPerPage, advancedSearchGroupOperator, advancedQueryGroups, navigationHelper.getLocale());
     }
 
     /**
@@ -1221,7 +1221,7 @@ public class SearchBean implements Serializable {
             // logger.trace("Hits count = {}", currentSearch.getHitsCount());
             return currentSearch.getHitsCount();
         }
-        logger.warn("No Search object available");
+        // logger.warn("No Search object available");
 
         return 0;
     }

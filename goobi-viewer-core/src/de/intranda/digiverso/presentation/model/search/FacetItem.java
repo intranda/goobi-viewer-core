@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 
@@ -173,24 +172,32 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
      * Constructs Lucene queries for the drill-down. Always sorted by the label translation.
      *
      * @return {@link ArrayList} of {@link FacetItem}
+     * @should add priority values first
      */
-    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical) {
+    public static List<FacetItem> generateFilterLinkList(String field, Map<String, Long> values, boolean hierarchical, Locale locale) {
         List<FacetItem> retList = new ArrayList<>();
-        NavigationHelper nh = BeanUtils.getNavigationHelper();
+        List<String> priorityValues = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField(field);
+        List<FacetItem> priorityRetList = new ArrayList<>(priorityValues.size());
         for (String value : values.keySet()) {
             // Skip reversed values
-            if (value.charAt(0) != 1) {
-                String label = value;
-                if (StringUtils.isEmpty(field)) {
-                    label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
-                }
-                String linkValue = value;
-                if (field.endsWith(SolrConstants._UNTOKENIZED)) {
-                    linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
-                }
-                String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
-                retList.add(new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, nh != null ? nh.getLocale() : null),
-                        values.get(value), hierarchical));
+            if (value.charAt(0) == 1) {
+                continue;
+            }
+            String label = value;
+            if (StringUtils.isEmpty(field)) {
+                label = new StringBuilder(value).append(SolrConstants._DRILLDOWN_SUFFIX).toString();
+            }
+            String linkValue = value;
+            if (field.endsWith(SolrConstants._UNTOKENIZED)) {
+                linkValue = new StringBuilder("\"").append(linkValue).append('"').toString();
+            }
+            String link = StringUtils.isNotEmpty(field) ? new StringBuilder(field).append(':').append(linkValue).toString() : linkValue;
+            FacetItem facetItem =
+                    new FacetItem(field, link, Helper.intern(label), Helper.getTranslation(label, locale), values.get(value), hierarchical);
+            if (!priorityValues.isEmpty() && priorityValues.contains(value)) {
+                priorityRetList.add(facetItem);
+            } else {
+                retList.add(facetItem);
             }
         }
         switch (DataManager.getInstance().getConfiguration().getSortOrder(SearchHelper.defacetifyField(field))) {
@@ -214,6 +221,10 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
                 Collections.sort(retList); // sort by count
                 Collections.reverse(retList);
 
+        }
+        // Add priority values at the beginning
+        if (!priorityRetList.isEmpty()) {
+            retList.addAll(0, priorityRetList);
         }
         // logger.debug("filters: " + retList.size());
         return retList;
@@ -382,7 +393,7 @@ public class FacetItem implements Comparable<FacetItem>, Serializable {
         if (StringUtils.isNotEmpty(value2)) {
             sb.append(" - ").append(value2);
         }
-        
+
         return sb.toString();
     }
 

@@ -289,7 +289,7 @@ public class SearchFacets {
                     && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field)) {
                 return facetItems.subList(0, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field));
             }
-            // logger.trace("facet items {}: {}", field, facetItems.size());
+             logger.trace("facet items {}: {}", field, facetItems.size());
             return facetItems;
         }
 
