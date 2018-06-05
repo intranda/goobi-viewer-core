@@ -1610,7 +1610,6 @@ public class ConfigurationTest {
     @Test
     public void getInitialDrillDownElementNumber_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(SolrConstants.DC));
-        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD1"));
         Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD2"));
         Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(null));
     }
@@ -1621,7 +1620,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getInitialDrillDownElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
-        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("NOSUCHFIELD"));
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD1"));
     }
 
     /**

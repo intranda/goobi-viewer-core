@@ -285,11 +285,11 @@ public class SearchFacets {
         if (facetItems != null) {
             // Remove currently used facets
             facetItems.removeAll(currentFacets);
-            if (!isDrillDownExpanded(field)
-                    && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field)) {
-                return facetItems.subList(0, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field));
+            int initial = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
+            if (!isDrillDownExpanded(field) && initial != -1 && facetItems.size() > initial) {
+                return facetItems.subList(0, initial);
             }
-             logger.trace("facet items {}: {}", field, facetItems.size());
+            logger.trace("facet items {}: {}", field, facetItems.size());
             return facetItems;
         }
 
@@ -314,9 +314,9 @@ public class SearchFacets {
         if (facetItems != null) {
             // Remove currently used facets
             facetItems.removeAll(currentHierarchicalFacets);
-            if (!isDrillDownExpanded(field)
-                    && facetItems.size() > DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field)) {
-                return facetItems.subList(0, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field));
+            int initial = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
+            if (!isDrillDownExpanded(field) && initial != -1 && facetItems.size() > initial) {
+                return facetItems.subList(0, initial);
             }
             // logger.trace("facet items {}: {}", field, facetItems.size());
             return facetItems;
@@ -379,8 +379,7 @@ public class SearchFacets {
             facetItems = availableHierarchicalFacets.get(field);
         }
         int expandSize = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
-        if (facetItems != null && !isDrillDownExpanded(field)
-                && expandSize > 0 && facetItems.size() > expandSize) {
+        if (facetItems != null && !isDrillDownExpanded(field) && expandSize > 0 && facetItems.size() > expandSize) {
             return true;
         }
 
