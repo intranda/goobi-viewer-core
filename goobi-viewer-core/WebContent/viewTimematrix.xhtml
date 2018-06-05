@@ -47,7 +47,7 @@
 	                startDate: $( '#timematrixSelectionRangeInput1' ).val(),
 	                rangeInput1: $( '#timematrixSelectionRangeInput2' ),
 		            endDate: $( '#timematrixSelectionRangeInput2' ).val(),
-		            count: 108,
+		            count: #{configurationBean.timeMatrixHits},
 		            $tmCanvas: $( '#timematrixCanvas' ),
 		            $tmCanvasPos: $( '#timematrixCanvas' ).position(),
 	                lang: {

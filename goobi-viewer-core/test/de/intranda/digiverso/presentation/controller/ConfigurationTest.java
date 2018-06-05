@@ -1812,6 +1812,15 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getTimelineHits()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTimelineHits_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("120", DataManager.getInstance().getConfiguration().getTimelineHits());
+    }
+
+    /**
      * @see Configuration#isDisplayTimeMatrix()
      * @verifies return correct value
      */
@@ -2383,7 +2392,7 @@ public class ConfigurationTest {
     public void getSitelinksField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(SolrConstants._CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
     }
-    
+
     @Test
     public void getGetConfiguredCollections() {
         List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollections();

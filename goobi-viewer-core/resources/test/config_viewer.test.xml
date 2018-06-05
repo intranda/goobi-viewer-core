@@ -409,6 +409,9 @@
 				genommen, bei MAX das groesste Verfuegbare als Endjahr -->
 			<startyear>1861</startyear>
 			<endyear>1865</endyear>
+            <!-- hits: Hits to fetch for the time matrix. The value 'MAX' will be the 
+                maximum number defined in SolrSearchIndex.MAX_HITS. Default is 108. -->
+            <hits>120</hits>
 		</timeline>
 		<calendar>
 			<!-- Enables the calendar search (default is true) -->
