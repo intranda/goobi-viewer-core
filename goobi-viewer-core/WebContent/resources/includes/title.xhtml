@@ -51,7 +51,8 @@
                                         <h:panelGroup rendered="#{activeDocumentBean.accessPermissionPdf}">
                                             <h:panelGroup rendered="#{!configurationBean.generatePdfInTaskManager}">
                                                 <li>
-                                                    <a href="#{activeDocumentBean.viewManager.pdfDownloadLink}" data-toggle="tooltip" data-placement="top" title="#{msg.pdfDownloadTitle}">
+                                                    <a href="#{activeDocumentBean.viewManager.pdfDownloadLink}" data-toggle="tooltip" data-placement="top" title="#{msg.pdfDownloadTitle}"
+                                                        target="_blank">
                                                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>                                                
                                                     </a>
                                                 </li>
