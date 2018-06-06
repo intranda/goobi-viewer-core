@@ -19,7 +19,7 @@
             <ui:repeat var="type" value="#{metadataElement.metadataTypes}">
                 <div class="metadata-element-box level-#{status.index}">
                     <h3>
-                        <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}" value="#{type.tabName}" />
+                        <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}" value="#{msg[type.tabName]}" />
                     </h3>
                     <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
                         <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
