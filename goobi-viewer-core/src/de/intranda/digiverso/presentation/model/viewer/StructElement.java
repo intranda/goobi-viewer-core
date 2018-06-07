@@ -419,13 +419,19 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      *
      * @param width
      * @param height
-     * @param rotation
-     * @param thumbnail
-     * @param ignoreWatermark
+     * @param rotation  ignored
+     * @param thumbnail ignored
+     * @param ignoreWatermark   ignored
      * @return
      * @should construct url correctly
+     * @deprecated  use {@link #getImageUrl(int, int)} instead
      */
+    @Deprecated
     public String getImageUrl(int width, int height, int rotation, boolean thumbnail, boolean ignoreWatermark) {
+        return getImageUrl(width, height);
+    }
+        
+    public String getImageUrl(int width, int height) {
         String filename = getMetadataValue(SolrConstants.THUMBNAIL);
         if (filename != null) {
             return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, width, height);

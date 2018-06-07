@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.util.ClientUtils;
+import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +84,7 @@ import de.intranda.digiverso.presentation.model.viewer.BrowsingMenuFieldConfig;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StringPair;
+import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
 /**
  * SearchBean
@@ -1947,5 +1949,11 @@ public class SearchBean implements Serializable {
         }
 
         return 0;
+    }
+    
+    public StructElement getStructElement(String pi) throws IndexUnreachableException, PresentationException {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+        return struct;
     }
 }
