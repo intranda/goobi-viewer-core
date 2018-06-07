@@ -1,0 +1,86 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite" 
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets" 
+    xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/mnha/components">
+
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface />
+
+    <!-- COMPONENT CONTENT -->
+    <composite:implementation>
+        <div class="widget-chronology-slider">
+            <!-- LABEL -->
+            <div class="widget-chronology-slider__item chronology-slider-label">
+                #{msg.widgetChronology_label}:
+            </div>
+            
+            <!-- START/END YEAR -->
+            <div class="widget-chronology-slider__item chronology-slider-start">#{searchBean.facets.getCurrentMinRangeValue("YEAR")}</div>
+            <div class="widget-chronology-slider__item chronology-slider-end">#{searchBean.facets.getCurrentMaxRangeValue("YEAR")}</div>
+            
+            <!-- RANGE SLIDER -->
+            <div class="widget-chronology-slider__item chronology-slider">
+                <div id="chronoSlider"></div>
+            </div>
+            
+            <!-- HIDDEN FORM TO UPDATE SEARCHHITS -->
+            <h:form id="chronologySliderForm" prependId="false" styleClass="hidden">
+                <h:inputHidden id="chronologySliderInput" value="#{searchBean.facets.tempValue}" />
+                <h:commandButton action="#{searchBean.facets.updateFacetItem('YEAR', false)}" />
+            </h:form>
+    
+            <script type="text/javascript">
+          		//<![CDATA[
+            	var firstHandlePos;
+          		var lastHandlePos;
+            	var yearList = #{searchBean.facets.getValueRange("YEAR")};
+            
+            	$( "#chronoSlider" ).slider({
+            		range: true,
+    				min: 0,
+            		max: yearList.length - 1,
+    				values: [ yearList.indexOf(#{searchBean.facets.getCurrentMinRangeValue("YEAR")}), yearList.indexOf(#{searchBean.facets.getCurrentMaxRangeValue("YEAR")}) ],
+            		slide: function( event, ui ) {
+            			$( '.chronology-slider-start' ).html( yearList[ ui.values[ 0 ] ] );
+            			$( '.chronology-slider-end' ).html( yearList[ ui.values[ 1 ] ] );
+    
+            			// set handler position
+            			if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
+                    		$( "#chronoSlider .ui-slider-handle:first" ).css('margin-right', '-10px');
+                    		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');
+                    	}
+            			else {
+            				$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
+            			}
+            		},
+            		stop: function( event, ui ) {
+            			var startDate = parseInt( $( '.chronology-slider-start' ).text() );
+            			var endDate = parseInt( $( '.chronology-slider-end' ).text() );
+            			
+            			// set query to hidden input
+            			$( '[id*="chronologySliderInput"]' ).val( '[' + startDate + ' TO ' + endDate + ']' );
+            			
+            			// submit form
+            			$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+            		},
+            	});
+            	
+            	// set handler position
+            	firstHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:first" ).css('left') );
+            	lastHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:last" ).css('left') );
+            	
+            	$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
+            	
+            	if ( firstHandlePos == lastHandlePos ) {
+            		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');	
+            	}
+            	//]]>
+            </script>
+        </div>
+    </composite:implementation>
+</ui:composition>

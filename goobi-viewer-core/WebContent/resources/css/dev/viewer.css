@@ -6990,6 +6990,80 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
+   Widget Chronology
+   style declarations for widget_chronology.xhtml
+   ==============================================================*/
+/* WIDGET CHRONOLOGY */
+/* BLOCK */
+.widget-chronology-slider {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+  margin-bottom: 1.3125rem;
+  padding: 0 10px;
+  font-size: 1.125rem;
+  color: #1a1a1a;
+  /* ELEMENT */
+}
+.widget-chronology-slider__item.chronology-slider-label {
+  -ms-grid-column: span 2;
+      grid-column: span 2;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  padding-bottom: 10px;
+}
+.widget-chronology-slider__item.chronology-slider-start,
+.widget-chronology-slider__item.chronology-slider-end {
+  font-size: 0.875rem;
+}
+.widget-chronology-slider__item.chronology-slider-end {
+  text-align: right;
+}
+.widget-chronology-slider__item.chronology-slider {
+  -ms-grid-column: span 2;
+      grid-column: span 2;
+  padding: 10px 0;
+}
+#chronoSlider {
+  height: 10px;
+  border-radius: 5px;
+  border-color: #ccc;
+  background-image: none;
+  background-color: #ccc;
+}
+#chronoSlider .ui-slider-range,
+#chronoSlider .ui-slider-handle {
+  border-radius: 4px;
+  border-color: #507ebf;
+  background-image: none;
+  background-color: #507ebf;
+}
+#chronoSlider .ui-slider-range:focus,
+#chronoSlider .ui-slider-handle:focus {
+  outline: none;
+}
+#chronoSlider .ui-slider-handle {
+  width: 10px;
+  height: 8px;
+  top: 0;
+  margin: 0;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: 768px) {
+  .topbar-search {
+    /* ELEMENT */
+  }
+  .topbar-search__item.chronology {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    Widget CMS
    style declarations for widget_cms.xhtml
    ==============================================================*/
