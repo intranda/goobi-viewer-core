@@ -1298,11 +1298,12 @@
 			<!-- A list of all metadata fields which should be included within 
 			     the IIIF Presentation response for manifests and ranges representing structural elements -->
 			<metadataFields>
-				<field>MD_*</field>
+                <field>MD_TITLE</field>
+                <field>MD_CREATOR</field>
 			</metadataFields>
 
 			<!-- Solr field to use for IIIF Presentation navDate property, if any -->
-			<navDateField>MD_DATING</navDateField>
+			<navDateField>YEAR</navDateField>
 
 			<!-- The String to provide as attribution in IIIF manifests. If it is a message key, all translations are
 			     provided as attribution values -->
