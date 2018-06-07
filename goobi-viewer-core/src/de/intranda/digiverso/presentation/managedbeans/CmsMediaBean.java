@@ -246,7 +246,7 @@ public class CmsMediaBean implements Serializable {
         if (!folder.isDirectory() && !folder.mkdir()) {
             throw new IOException("Unable to create directory " + folder);
         }
-        fileName = fileName.replaceAll("\\s", "_");
+//        fileName = fileName.replaceAll("\\s", "_");
         File file = new File(folder, fileName);
         int counter = 1;
         File newFile = file;

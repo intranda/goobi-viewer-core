@@ -15,10 +15,13 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -38,6 +41,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
+import net.sf.saxon.functions.EscapeURI;
 
 /**
  * Provides urls to download pdfs, images and image footer
@@ -220,7 +224,12 @@ public class ImageHandler {
         if(!path.startsWith("/")) {
             path = "/" + path;
         }
-        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+        URI uri;
+        try {
+            uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), URLDecoder.decode(url.getPath(), "utf-8"), url.getQuery(), url.getRef());
+        } catch (UnsupportedEncodingException e) {
+            uri = URI.create(path);
+        }
         return uri;
     }
     
