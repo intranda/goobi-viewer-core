@@ -82,7 +82,7 @@ public class IIIFUrlHandler {
                 logger.warn("file url {} is not a valid url: {}", fileUrl, e.getMessage());
             }
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true));
+            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, false));
             return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
         } else if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {
