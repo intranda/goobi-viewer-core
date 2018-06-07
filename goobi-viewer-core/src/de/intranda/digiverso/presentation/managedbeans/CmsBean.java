@@ -17,7 +17,6 @@ package de.intranda.digiverso.presentation.managedbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -932,7 +931,9 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @deprecated Use removeFacetAction()
      */
+    @Deprecated
     public String removeHierarchicalFacetAction(String facetQuery) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("removeHierarchicalFacetAction: {}", facetQuery);
         CMSPage currentPage = getCurrentPage();
@@ -943,7 +944,7 @@ public class CmsBean implements Serializable {
             }
         }
         if (searchBean != null) {
-            searchBean.removeHierarchicalFacetAction(facetQuery);
+            searchBean.removeFacetAction(facetQuery);
         }
 
         return "pretty:cmsOpenPageWithSearch2";

@@ -15,7 +15,6 @@
  */
 package de.intranda.digiverso.presentation.managedbeans;
 
-import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -111,7 +110,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() throws Exception {
         SearchBean searchBean = new SearchBean();
-        searchBean.getFacets().setCurrentHierarchicalFacetString("DC:col");
+        searchBean.getFacets().setCurrentFacetString("DC:col");
 
         searchBean.resetAdvancedSearchParameters(1, 1);
         Assert.assertEquals(1, searchBean.getAdvancedQueryGroups().size());
@@ -155,7 +154,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryItem item = group.getQueryItems().get(0);
         Assert.assertNull(item.getField());
 
-        sb.getFacets().setCurrentHierarchicalFacetString("DC:a");
+        sb.getFacets().setCurrentFacetString("DC:a");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertEquals("a", item.getValue());
@@ -175,11 +174,11 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchQueryItem item = group.getQueryItems().get(0);
         Assert.assertNull(item.getField());
 
-        sb.getFacets().setCurrentHierarchicalFacetString("DC:a");
+        sb.getFacets().setCurrentFacetString("DC:a");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertEquals(SolrConstants.DC, item.getField());
         Assert.assertEquals("a", item.getValue());
-        sb.getFacets().setCurrentHierarchicalFacetString("-");
+        sb.getFacets().setCurrentFacetString("-");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertNull(item.getField());
         Assert.assertNull(item.getValue());
@@ -202,9 +201,9 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertNull(item2.getField());
 
         item1.setField(SolrConstants.DC);
-        sb.getFacets().setCurrentHierarchicalFacetString("DC:a;;DC:b");
+        sb.getFacets().setCurrentFacetString("DC:a;;DC:b");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
-        Assert.assertEquals(2, sb.getFacets().getCurrentHierarchicalFacets().size());
+        Assert.assertEquals(2, sb.getFacets().getCurrentFacets().size());
         Assert.assertEquals(SolrConstants.DC, item1.getField());
         Assert.assertEquals("a", item1.getValue());
         Assert.assertEquals(SolrConstants.DC, item2.getField());
@@ -227,7 +226,7 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         item1.setField("MD_TITLE");
         item1.setValue("text");
-        sb.getFacets().setCurrentHierarchicalFacetString("DC:a;;DC:b");
+        sb.getFacets().setCurrentFacetString("DC:a;;DC:b");
         sb.mirrorAdvancedSearchCurrentHierarchicalFacets();
         Assert.assertEquals("MD_TITLE", item1.getField());
         Assert.assertEquals("text", item1.getValue());

@@ -373,11 +373,9 @@
 			<luceneField>SORT_YEARPUBLISH</luceneField>
 		</sorting>
 		<drillDown>
-			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">FACET_DC
-			</hierarchicalField>
-			<hierarchicalField sortOrder="numerical">FIELD3
-			</hierarchicalField>
+			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
 			<field sortOrder="numerical">FIELD1</field>
+			<hierarchicalField sortOrder="numerical">FIELD3</hierarchicalField>
 			<field initialElementNumber="16" priorityValues="val1;val2;val3">FIELD2</field>
 			<!-- initialElementNumber: sets the initial number of drill-down elements 
 				to be displayed (any field including DC). Default is 20. -->

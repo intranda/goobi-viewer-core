@@ -659,14 +659,20 @@ public class SearchBean implements Serializable {
 
     public List<String> autocomplete(String suggest) throws IndexUnreachableException {
         logger.trace("autocomplete: {}", suggest);
-        List<String> result = SearchHelper.searchAutosuggestion(suggest, facets.getCurrentHierarchicalFacets(), facets.getCurrentFacets());
+        List<String> result = SearchHelper.searchAutosuggestion(suggest, facets.getCurrentFacets());
         Collections.sort(result);
 
         return result;
     }
 
     public boolean isSearchInDcFlag() {
-        return !facets.getCurrentHierarchicalFacets().isEmpty();
+        for (FacetItem item : facets.getCurrentFacets()) {
+            if (item.getField().equals(SolrConstants.DC)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -1095,13 +1101,16 @@ public class SearchBean implements Serializable {
      * @should not replace query items already in use
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
-        logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets: {}", facets.getCurrentCollection());
-        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
+        logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
+        if (!facets.getCurrentFacets().isEmpty()) {
             if (!advancedQueryGroups.isEmpty()) {
                 SearchQueryGroup queryGroup = advancedQueryGroups.get(0);
                 if (!queryGroup.getQueryItems().isEmpty()) {
                     int index = 0;
-                    for (FacetItem facetItem : facets.getCurrentHierarchicalFacets()) {
+                    for (FacetItem facetItem : facets.getCurrentFacets()) {
+                        if (!facetItem.isHierarchial()) {
+                            continue;
+                        }
                         if (index < queryGroup.getQueryItems().size()) {
                             // Fill existing search query items
                             SearchQueryItem item = queryGroup.getQueryItems().get(index);
@@ -1112,13 +1121,13 @@ public class SearchBean implements Serializable {
                                 item = queryGroup.getQueryItems().get(index);
                             }
                             item.setField(facetItem.getField());
-                            item.setOperator(facetItem.isHierarchial() ? SearchItemOperator.IS : SearchItemOperator.AND);
+                            item.setOperator(SearchItemOperator.IS);
                             item.setValue(facetItem.getValue());
                         } else {
                             // If no search field is set up for collection search, add new field containing the currently selected collection
                             SearchQueryItem item = new SearchQueryItem(BeanUtils.getLocale());
                             item.setField(facetItem.getField());
-                            item.setOperator(facetItem.isHierarchial() ? SearchItemOperator.IS : SearchItemOperator.AND);
+                            item.setOperator(SearchItemOperator.IS);
                             item.setValue(facetItem.getValue());
                             queryGroup.getQueryItems().add(item);
                         }
@@ -1151,27 +1160,6 @@ public class SearchBean implements Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * 
-     * @param facetQuery
-     * @return
-     * @should remove facet correctly
-     */
-    public String removeHierarchicalFacetAction(String facetQuery) {
-        String ret = facets.removeHierarchicalFacetAction(facetQuery,
-                activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED ? "pretty:searchAdvanced5" : "pretty:newSearch5");
-
-        //redirect to current cms page if this action takes place on a cms page
-        Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
-        if (oPath.isPresent() && oPath.get().isCmsPage()) {
-            SearchFunctionality search = oPath.get().getCmsPage().getSearch();
-            search.redirectToSearchUrl();
-            return "";
-        }
-
-        return ret;
     }
 
     /**
@@ -1416,12 +1404,12 @@ public class SearchBean implements Serializable {
      * This is used for flipping search result pages (so that the breadcrumb always has the last visited result page as its URL).
      */
     public void updateBreadcrumbsForSearchHits() {
-        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
-            updateBreadcrumbsWithCurrentUrl(facets.getCurrentHierarchicalFacets().get(0).getValue().replace("*", ""),
-                    NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
-        } else {
-            updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
-        }
+        //        if (!facets.getCurrentHierarchicalFacets().isEmpty()) {
+        //            updateBreadcrumbsWithCurrentUrl(facets.getCurrentHierarchicalFacets().get(0).getValue().replace("*", ""),
+        //                    NavigationHelper.WEIGHT_ACTIVE_COLLECTION);
+        //        } else {
+        updateBreadcrumbsWithCurrentUrl("searchHitNavigation", NavigationHelper.WEIGHT_SEARCH_RESULTS);
+        //        }
     }
 
     /**
@@ -1950,7 +1938,7 @@ public class SearchBean implements Serializable {
 
         return 0;
     }
-    
+
     public StructElement getStructElement(String pi) throws IndexUnreachableException, PresentationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);

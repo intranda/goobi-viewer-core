@@ -282,11 +282,8 @@ public class Search implements Serializable {
                 }
                 // Use non-FACET_ field names outside of the actual faceting query
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
-                if (hierarchicalFacetFields.contains(fieldName)) {
-                    facets.getAvailableHierarchicalFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, true, locale));
-                } else {
-                    facets.getAvailableFacets().put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false, locale));
-                }
+                facets.getAvailableFacets().put(fieldName,
+                        FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale));
             }
 
             int lastPage = getLastPage(hitsPerPage);
