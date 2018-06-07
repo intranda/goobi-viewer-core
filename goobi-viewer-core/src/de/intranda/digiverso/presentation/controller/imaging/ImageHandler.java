@@ -21,7 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -41,7 +40,6 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource;
 import de.unigoettingen.sub.commons.util.datasource.media.PageSource.IllegalPathSyntaxException;
-import net.sf.saxon.functions.EscapeURI;
 
 /**
  * Provides urls to download pdfs, images and image footer
@@ -111,16 +109,16 @@ public class ImageHandler {
     /**
      * 
      * @param page
-     * @return  The image information for the image file of the given page
+     * @return The image information for the image file of the given page
      * @throws IllegalPathSyntaxException
      * @throws ContentLibException
      * @throws URISyntaxException
      */
     public ImageInformation getImageInformation(PhysicalElement page) throws IllegalPathSyntaxException, ContentLibException, URISyntaxException {
         String path = page.getFilepath();
-        
+
         String url;
-        if(isExternalUrl(path)) {
+        if (isExternalUrl(path)) {
             url = path;
         } else {
             url = page.getPi() + "/" + page.getFilepath();
@@ -138,14 +136,13 @@ public class ImageHandler {
      * @throws ContentLibException
      */
     public ImageInformation getImageInformation(String url) throws IllegalPathSyntaxException, URISyntaxException, ContentLibException {
-        if(url.endsWith("info.json")) {
+        if (url.endsWith("info.json")) {
             url = url.replace("info.json", "full/max/0/default.jpg");
         }
-        PageSource imageSource = new PageSource(0, url, Collections.EMPTY_MAP);
+        PageSource imageSource = new PageSource(0, url, Collections.emptyMap());
         ImageInformation info = new ImageInformation(imageSource.getImageUri(), new URI(""));
         return info;
     }
-
 
     /**
      * @param path
@@ -183,7 +180,8 @@ public class ImageHandler {
      * @return true if the path is an external url which has restricted access and must therefore be delivered via the contenetServer
      */
     public static boolean isRestrictedUrl(String path) {
-        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream().anyMatch(regex -> Pattern.compile(regex).matcher(path).matches());
+        return DataManager.getInstance().getConfiguration().getRestrictedImageUrls().stream().anyMatch(
+                regex -> Pattern.compile(regex).matcher(path).matches());
     }
 
     protected static ImageType getImageType(ImageInformation info) {
@@ -191,9 +189,8 @@ public class ImageHandler {
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
         if (iff != null) {
             return new ImageType(iff);
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -205,71 +202,71 @@ public class ImageHandler {
             URI uri = toURI(fileUrl);
             Path path = getPath(uri);
             return (!uri.isAbsolute() && path.isAbsolute()) || (uri.getScheme() != null && uri.getScheme().toLowerCase().equals("file"));
-        } catch (URISyntaxException  e) {
+        } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
             return false;
         }
-//        return fileUrl.startsWith("file:/") || fileUrl.startsWith("/");
+        //        return fileUrl.startsWith("file:/") || fileUrl.startsWith("/");
     }
 
     /**
      * Constructs a {@link URI} from the given {@link URL} using {@link URI#URI(String, String, String, int, String, String, String)}
      * 
      * @param urlExternal
-     * @return  An uri constructed from the parts of the given url
+     * @return An uri constructed from the parts of the given url
      * @throws URISyntaxException if {@link URI#URI(String, String, String, int, String, String, String)} throws this exception
      */
     public static URI toURI(URL url) throws URISyntaxException {
         String path = url.getPath();
-        if(!path.startsWith("/")) {
+        if (!path.startsWith("/")) {
             path = "/" + path;
         }
         URI uri;
         try {
-            uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), URLDecoder.decode(url.getPath(), "utf-8"), url.getQuery(), url.getRef());
+            uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), URLDecoder.decode(url.getPath(), "utf-8"),
+                    url.getQuery(), url.getRef());
         } catch (UnsupportedEncodingException e) {
             uri = URI.create(path);
         }
         return uri;
     }
-    
+
     /**
-     * tries to construct an {@link URI} from a String using {@link URL#URL(String)} and then {@link #toURI(URL)}. 
-     * Failing that (usually if the given String contains no scheme part), an URI is constructed directly using {@link URI#URI(String, String, String, String)}
+     * tries to construct an {@link URI} from a String using {@link URL#URL(String)} and then {@link #toURI(URL)}. Failing that (usually if the given
+     * String contains no scheme part), an URI is constructed directly using {@link URI#URI(String, String, String, String)}
      * 
-     * @param urlString     The string to interpret as an URI. May be absolute or relative (no scheme) and
-     * may contain characters illegal for an URI in the path segment (which are then URL-encoded)
+     * @param urlString The string to interpret as an URI. May be absolute or relative (no scheme) and may contain characters illegal for an URI in
+     *            the path segment (which are then URL-encoded)
      * @return A URI constructed from the input string
-     * @throws URISyntaxException   If  {@link #toURI(URL)} or {@link URI#URI(String, String, String, String)} throws this exception
+     * @throws URISyntaxException If {@link #toURI(URL)} or {@link URI#URI(String, String, String, String)} throws this exception
      */
     public static URI toURI(String urlString) throws URISyntaxException {
-        try{
+        try {
             URL url = new URL(urlString);
             return toURI(url);
-        } catch(MalformedURLException e) {
+        } catch (MalformedURLException e) {
             //missing scheme - construct uri directly
             String fragment = null;
-            if(urlString.contains("#")) {
-                fragment = urlString.substring(urlString.indexOf("#")+1);
+            if (urlString.contains("#")) {
+                fragment = urlString.substring(urlString.indexOf("#") + 1);
                 urlString = urlString.substring(0, urlString.indexOf("#"));
             }
             return new URI(null, null, urlString, fragment);
         }
     }
-    
+
     /**
-     * returns the path part of an {@link URI} as {@link Path}.
-     * Any characters encoded for the URI are decoded in the Path
+     * returns the path part of an {@link URI} as {@link Path}. Any characters encoded for the URI are decoded in the Path
      * 
-     * @param   uri
-     * @return  The path of the uri
+     * @param uri
+     * @return The path of the uri
      */
     public static Path getPath(URI uri) {
         String pathString = uri.getPath();
-        if(pathString.contains(":") && pathString.startsWith("/")) {
+        if (pathString.contains(":") && pathString.startsWith("/")) {
             pathString = pathString.substring(1);
         }
-        Path path = Paths.get(uri.getPath());
+        Path path = Paths.get(pathString);
         return path;
     }
 
