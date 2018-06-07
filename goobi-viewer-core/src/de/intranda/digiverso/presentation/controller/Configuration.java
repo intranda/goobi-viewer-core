@@ -37,6 +37,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.apache.commons.configuration.tree.ConfigurationNode;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -1647,6 +1648,32 @@ public final class Configuration extends AbstractConfiguration {
 
         logger.trace("Tree view for {} not allowed", docStructType);
         return false;
+    }
+
+    /**
+     * Returns the names of all configured drill-down fields in the order they appear in the list, no matter whether they're regular or hierarchical.
+     * 
+     * @return List of regular and hierarchical fields in the order in which they appear in the config file
+     * @should return correct order
+     */
+    public List<String> getAllDrillDownFields() {
+        HierarchicalConfiguration drillDown = getLocalConfigurationAt("search.drillDown");
+        List<ConfigurationNode> nodes = drillDown.getRootNode().getChildren();
+        if (!nodes.isEmpty()) {
+            List<String> ret = new ArrayList<>(nodes.size());
+            for (ConfigurationNode node : nodes) {
+                switch (node.getName()) {
+                    case "field":
+                    case "hierarchicalField":
+                        ret.add((String) node.getValue());
+                        break;
+                }
+            }
+
+            return ret;
+        }
+
+        return Collections.emptyList();
     }
 
     /**

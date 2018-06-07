@@ -1208,7 +1208,8 @@ public final class SearchHelper {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount) throws PresentationException, IndexUnreachableException {
+    public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
+            throws PresentationException, IndexUnreachableException {
         return getFacetValues(query, facetFieldName, null, facetMinCount);
     }
 
@@ -1218,7 +1219,7 @@ public final class SearchHelper {
      * @param query
      * @param facetFieldName
      * @param facetMinCount
-     * @param facetPrefix   The facet field value must start with these characters. Ignored if null or blank
+     * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
@@ -1565,28 +1566,6 @@ public final class SearchHelper {
         }
 
         return params;
-    }
-
-    @Deprecated
-    public static List<String> generateFacetFields() {
-        List<String> facetFields = new ArrayList<>();
-        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
-            facetFields.add(SolrConstants.GROUPFIELD);
-        }
-        for (String field : DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields()) {
-            if (!facetFields.contains(field)) {
-                facetFields.add(field);
-            }
-        }
-        for (String field : DataManager.getInstance().getConfiguration().getDrillDownFields()) {
-            if (SolrConstants.DC.equals(field) && !facetFields.contains(SolrConstants.FACET_DC)) {
-                facetFields.add(SolrConstants.FACET_DC);
-            } else if (!facetFields.contains(field)) {
-                facetFields.add(field);
-            }
-        }
-
-        return facetFields;
     }
 
     /**

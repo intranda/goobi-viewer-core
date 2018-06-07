@@ -252,22 +252,6 @@ public class SearchFacets {
     }
 
     /**
-     *
-     * @return Size of <code>currentFacets</code>.
-     */
-    public int getCurrentFacetsSizeForField(String field) {
-        return getCurrentFacetsForField(field).size();
-    }
-
-    /**
-     *
-     * @return Size of <code>currentFacets</code>.
-     */
-    public int getCurrentHierarchicalFacetsSizeForField(String field) {
-        return getCurrentHierarchicalFacetsForField(field).size();
-    }
-
-    /**
      * Returns a collapsed sublist of the available facet elements for the given field.
      *
      * @param field
@@ -282,6 +266,9 @@ public class SearchFacets {
      */
     public List<FacetItem> getLimitedFacetListForField(String field) {
         List<FacetItem> facetItems = availableFacets.get(field);
+        if (facetItems == null) {
+            facetItems = availableHierarchicalFacets.get(field);
+        }
         if (facetItems != null) {
             // Remove currently used facets
             facetItems.removeAll(currentFacets);
@@ -290,35 +277,6 @@ public class SearchFacets {
                 return facetItems.subList(0, initial);
             }
             logger.trace("facet items {}: {}", field, facetItems.size());
-            return facetItems;
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a collapsed sublist of the available facet elements for the given field.
-     *
-     * @param field
-     * @return
-     * @should return full DC facet list if expanded
-     * @should return full DC facet list if list size less than default
-     * @should return reduced DC facet list if list size larger than default
-     * @should return full facet list if expanded
-     * @should return full facet list if list size less than default
-     * @should return reduced facet list if list size larger than default
-     * @should not contain currently used facets
-     */
-    public List<FacetItem> getLimitedHierarchicalFacetListForField(String field) {
-        List<FacetItem> facetItems = availableHierarchicalFacets.get(field);
-        if (facetItems != null) {
-            // Remove currently used facets
-            facetItems.removeAll(currentHierarchicalFacets);
-            int initial = DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(field);
-            if (!isDrillDownExpanded(field) && initial != -1 && facetItems.size() > initial) {
-                return facetItems.subList(0, initial);
-            }
-            // logger.trace("facet items {}: {}", field, facetItems.size());
             return facetItems;
         }
 
@@ -821,6 +779,25 @@ public class SearchFacets {
      */
     public boolean isDrillDownCollapsed(String field) {
         return !isDrillDownExpanded(field);
+    }
+
+    /**
+     * 
+     * @return
+     * @should return all facet items in correct order
+     */
+    public Map<String, List<FacetItem>> getAllAvailableFacets() {
+        Map<String, List<FacetItem>> ret = new LinkedHashMap<>();
+
+        for (String field : DataManager.getInstance().getConfiguration().getAllDrillDownFields()) {
+            if (availableFacets.containsKey(field)) {
+                ret.put(field, availableFacets.get(field));
+            } else if (availableHierarchicalFacets.containsKey(field)) {
+                ret.put(field, availableHierarchicalFacets.get(field));
+            }
+        }
+
+        return ret;
     }
 
     /**

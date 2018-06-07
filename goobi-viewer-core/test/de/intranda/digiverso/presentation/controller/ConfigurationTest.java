@@ -15,8 +15,6 @@
  */
 package de.intranda.digiverso.presentation.controller;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -1583,6 +1581,20 @@ public class ConfigurationTest {
     @Test
     public void getCalendarDocStructTypes_shouldReturnAllConfiguredElements() throws Exception {
         Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getCalendarDocStructTypes().size());
+    }
+
+    /**
+     * @see Configuration#getAllDrillDownFields()
+     * @verifies return correct order
+     */
+    @Test
+    public void getAllDrillDownFields_shouldReturnCorrectOrder() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+        Assert.assertEquals(4, result.size());
+        Assert.assertEquals("FACET_DC", result.get(0));
+        Assert.assertEquals("FIELD3", result.get(1));
+        Assert.assertEquals("FIELD1", result.get(2));
+        Assert.assertEquals("FIELD2", result.get(3));
     }
 
     /**
