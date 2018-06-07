@@ -372,22 +372,4 @@ public class SearchFacetsTest extends AbstractSolrEnabledTest {
         Assert.assertEquals(4, values.size());
         Assert.assertArrayEquals(new Integer[]{-20,  -10, 10, 2018}, values.toArray());
     }
-
-    /**
-     * @see SearchFacets#getAllAvailableFacets()
-     * @verifies return all facet items in correct order
-     */
-    @Test
-    public void getAllAvailableFacets_shouldReturnAllFacetItemsInCorrectOrder() throws Exception {
-        SearchFacets facets = new SearchFacets();
-        List<FacetItem> facetItems = new ArrayList<>(4);
-        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":2018", false));
-        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-20", false));
-        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":-10", false));
-        facetItems.add(new FacetItem(SolrConstants._CALENDAR_YEAR + ":10", false));
-        facets.getAvailableFacets().put(SolrConstants._CALENDAR_YEAR, facetItems);
-        
-        Map<String, List<FacetItem>> allAvailableFacets = facets.getAllAvailableFacets();
-        Assert.assertEquals(4, allAvailableFacets.size());
-    }
 }
