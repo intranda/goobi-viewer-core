@@ -216,6 +216,10 @@ public class ImageHandler {
      * @throws URISyntaxException if {@link URI#URI(String, String, String, int, String, String, String)} throws this exception
      */
     public static URI toURI(URL url) throws URISyntaxException {
+        String path = url.getPath();
+        if(!path.startsWith("/")) {
+            path = "/" + path;
+        }
         URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
         return uri;
     }
@@ -252,6 +256,10 @@ public class ImageHandler {
      * @return  The path of the uri
      */
     public static Path getPath(URI uri) {
+        String pathString = uri.getPath();
+        if(pathString.contains(":") && pathString.startsWith("/")) {
+            pathString = pathString.substring(1);
+        }
         Path path = Paths.get(uri.getPath());
         return path;
     }

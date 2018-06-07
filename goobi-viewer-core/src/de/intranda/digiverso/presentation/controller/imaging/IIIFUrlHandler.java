@@ -73,7 +73,7 @@ public class IIIFUrlHandler {
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
         if(ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
             try {
-                URI uri = new URI(fileUrl);
+                URI uri = ImageHandler.toURI(fileUrl);
                 if(StringUtils.isBlank(uri.getScheme())) {
                     uri = new URI("file", fileUrl, null);
                 }
