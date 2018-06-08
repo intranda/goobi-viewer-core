@@ -353,4 +353,14 @@ public class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         SearchBean sb = new SearchBean();
         Assert.assertNull(sb.getSearchUrl());
     }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchString(boolean)
+     * @verifies set auto operator to appropriate value
+     */
+    @Test
+    public void generateAdvancedSearchString_shouldSetAutoOperatorToAppropriateValue() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
+    }
 }

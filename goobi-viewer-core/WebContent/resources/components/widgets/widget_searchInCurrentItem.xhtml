@@ -24,9 +24,8 @@
                                     <f:setPropertyActionListener value="PI_TOPSTRUCT" target="#{searchBean.advancedQueryGroups[0].queryItems[0].field}" />
                                     <f:setPropertyActionListener value="IS" target="#{searchBean.advancedQueryGroups[0].queryItems[0].operator}" />
                                     <f:setPropertyActionListener value="searchAdvanced_allFields" target="#{searchBean.advancedQueryGroups[0].queryItems[1].field}" />
-                                    <f:setPropertyActionListener value="AND" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
+                                    <f:setPropertyActionListener value="AUTO" target="#{searchBean.advancedQueryGroups[0].queryItems[1].operator}" />
                                     <f:setPropertyActionListener value="1" target="#{searchBean.activeSearchType}" />
-                                    <!--f:setPropertyActionListener value="#{searchBean.queryItems[1].value}*" target="#{searchBean.queryItems[1].value}" /-->
                                     <f:setPropertyActionListener value="#{searchBean.advancedQueryGroups[0].queryItems[1].value}"
                                         target="#{searchBean.advancedQueryGroups[0].queryItems[1].value}" />
                                 </h:commandButton>
