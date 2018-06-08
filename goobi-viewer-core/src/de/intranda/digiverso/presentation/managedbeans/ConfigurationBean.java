@@ -42,6 +42,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -593,6 +594,23 @@ public class ConfigurationBean implements Serializable {
         } catch (NumberFormatException e) {
             logger.error("'{}' is not a valid value for 'startyear'", value);
             return 2500;
+        }
+    }
+
+    /**
+     * 
+     * @return Total hit number for the time matrix
+     */
+    public int getTimeMatrixHits() {
+        String value = DataManager.getInstance().getConfiguration().getTimelineHits();
+        if ("MAX".equals(value)) {
+            return SolrSearchIndex.MAX_HITS;
+        }
+        try {
+            return Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            logger.error("'{}' is not a valid value for 'startyear'", value);
+            return 108;
         }
     }
 

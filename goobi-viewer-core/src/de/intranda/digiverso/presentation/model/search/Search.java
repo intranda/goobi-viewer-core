@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -153,7 +154,7 @@ public class Search implements Serializable {
     public Search(int searchType, SearchFilter searchFilter) {
         this.searchType = searchType;
         if (searchFilter != null) {
-        this.searchFilter = searchFilter.getField();
+            this.searchFilter = searchFilter.getField();
         }
     }
 
@@ -207,12 +208,13 @@ public class Search implements Serializable {
      * @param hitsPerPage
      * @param advancedSearchGroupOperator
      * @param advancedQueryGroups
+     * @param locale Selected locale
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator,
-            List<SearchQueryGroup> advancedQueryGroups) throws PresentationException, IndexUnreachableException, DAOException {
+            List<SearchQueryGroup> advancedQueryGroups, Locale locale) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("execute");
         if (facets == null) {
             throw new IllegalArgumentException("facets may not be null");
@@ -221,29 +223,26 @@ public class Search implements Serializable {
         String currentQuery = SearchHelper.prepareQuery(query, SearchHelper.getDocstrctWhitelistFilterSuffix());
 
         // Collect regular and hierarchical facet field names and combine them into one list
-        List<String> hierarchicalFacetFields = DataManager.getInstance()
-                .getConfiguration()
-                .getHierarchicalDrillDownFields();
+        List<String> hierarchicalFacetFields = DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields();
         List<String> allFacetFields = SearchHelper.getAllFacetFields(hierarchicalFacetFields);
 
         Map<String, String> params = SearchHelper.generateQueryParams();
         List<StructElement> luceneElements = new ArrayList<>();
         QueryResponse resp = null;
-        String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance()
-                .getConfiguration()
-                .isAggregateHits());
+        String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
+
+        // Apply current facets
         List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
         for (String fq : facetFilterQueries) {
             logger.trace("Facet query: {}", fq);
         }
+
         if (hitsCount == 0) {
             logger.trace("Final main query: {}", query);
-            resp = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(query, 0, 0, null, allFacetFields, Collections.singletonList(SolrConstants.IDDOC), facetFilterQueries, params);
+            resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields,
+                    Collections.singletonList(SolrConstants.IDDOC), facetFilterQueries, params);
             if (resp != null && resp.getResults() != null) {
-                hitsCount = resp.getResults()
-                        .getNumFound();
+                hitsCount = resp.getResults().getNumFound();
                 logger.trace("Pre-grouping search hits: {}", hitsCount);
                 // Check for duplicate values in the GROUPFIELD facet and subtract the number from the total hits.
                 for (FacetField facetField : resp.getFacetFields()) {
@@ -259,9 +258,18 @@ public class Search implements Serializable {
             }
         }
         if (hitsCount > 0 && resp != null) {
-            // Facets
+            // Collect available facets
+            String language = null;
+            if (locale != null) {
+                language = locale.getLanguage().toUpperCase();
+            }
             for (FacetField facetField : resp.getFacetFields()) {
                 if (SolrConstants.GROUPFIELD.equals(facetField.getName()) || facetField.getValues() == null) {
+                    continue;
+                }
+                // Skip language-specific facet fields if they don't match the given language
+                if (facetField.getName().contains(SolrConstants._LANG_)
+                        && (language == null || !facetField.getName().contains(SolrConstants._LANG_ + language))) {
                     continue;
                 }
                 Map<String, Long> facetResult = new TreeMap<>();
@@ -274,13 +282,8 @@ public class Search implements Serializable {
                 }
                 // Use non-FACET_ field names outside of the actual faceting query
                 String fieldName = SearchHelper.defacetifyField(facetField.getName());
-                if (hierarchicalFacetFields.contains(fieldName)) {
-                    facets.getAvailableHierarchicalFacets()
-                            .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
-                } else {
-                    facets.getAvailableFacets()
-                            .put(fieldName, FacetItem.generateFilterLinkList(fieldName, facetResult, false));
-                }
+                facets.getAvailableFacets().put(fieldName,
+                        FacetItem.generateFilterLinkList(fieldName, facetResult, hierarchicalFacetFields.contains(fieldName), locale));
             }
 
             int lastPage = getLastPage(hitsPerPage);
@@ -302,13 +305,11 @@ public class Search implements Serializable {
                 params.put(ExpandParams.EXPAND_FQ, ""); // The main filter query may not apply to the expand query to produce child hits
             }
 
-            List<SearchHit> hits = DataManager.getInstance()
-                    .getConfiguration()
-                    .isAggregateHits()
-                            ? SearchHelper.searchWithAggregation(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms,
-                                    null, BeanUtils.getLocale())
-                            : SearchHelper.searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms,
-                                    null, BeanUtils.getLocale(), BeanUtils.getRequest());
+            List<SearchHit> hits = DataManager.getInstance().getConfiguration().isAggregateHits()
+                    ? SearchHelper.searchWithAggregation(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null,
+                            BeanUtils.getLocale())
+                    : SearchHelper.searchWithFulltext(query, from, hitsPerPage, sortFields, null, facetFilterQueries, params, searchTerms, null,
+                            BeanUtils.getLocale(), BeanUtils.getRequest());
             this.hits.addAll(hits);
         }
     }
@@ -322,20 +323,12 @@ public class Search implements Serializable {
     public String getUrl() throws UnsupportedEncodingException {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-        sbUrl.append('/')
-                .append(PageType.search.getName());
-        sbUrl.append('/')
-                .append((StringUtils.isNotEmpty(hierarchicalFacetString) ? URLEncoder.encode(hierarchicalFacetString, SearchBean.URL_ENCODING)
-                        : "-"));
-        sbUrl.append('/')
-                .append(StringUtils.isNotEmpty(query) ? URLEncoder.encode(query, SearchBean.URL_ENCODING) : "-")
-                .append('/')
-                .append(page);
-        sbUrl.append('/')
-                .append((StringUtils.isNotEmpty(sortString) ? sortString : "-"));
-        sbUrl.append('/')
-                .append((StringUtils.isNotEmpty(facetString) ? URLEncoder.encode(facetString, SearchBean.URL_ENCODING) : "-"))
-                .append('/');
+        sbUrl.append('/').append(PageType.search.getName());
+        sbUrl.append('/').append(
+                (StringUtils.isNotEmpty(hierarchicalFacetString) ? URLEncoder.encode(hierarchicalFacetString, SearchBean.URL_ENCODING) : "-"));
+        sbUrl.append('/').append(StringUtils.isNotEmpty(query) ? URLEncoder.encode(query, SearchBean.URL_ENCODING) : "-").append('/').append(page);
+        sbUrl.append('/').append((StringUtils.isNotEmpty(sortString) ? sortString : "-"));
+        sbUrl.append('/').append((StringUtils.isNotEmpty(facetString) ? URLEncoder.encode(facetString, SearchBean.URL_ENCODING) : "-")).append('/');
         return sbUrl.toString();
     }
 

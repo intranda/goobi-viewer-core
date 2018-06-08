@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -930,7 +931,9 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @deprecated Use removeFacetAction()
      */
+    @Deprecated
     public String removeHierarchicalFacetAction(String facetQuery) throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("removeHierarchicalFacetAction: {}", facetQuery);
         CMSPage currentPage = getCurrentPage();
@@ -941,7 +944,7 @@ public class CmsBean implements Serializable {
             }
         }
         if (searchBean != null) {
-            searchBean.removeHierarchicalFacetAction(facetQuery);
+            searchBean.removeFacetAction(facetQuery);
         }
 
         return "pretty:cmsOpenPageWithSearch2";
@@ -1349,5 +1352,37 @@ public class CmsBean implements Serializable {
             return Collections.emptyList();
         }
     }
+    
+    public String getRepresentativeImageForQuery(CMSPage page) throws PresentationException, IndexUnreachableException {
+        int width = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+        int height = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+        return getRepresentativeImageForQuery(page, width, height);
+    }
+    
+    public String getRepresentativeImageForQuery(CMSContentItem item) throws PresentationException, IndexUnreachableException {
+        int width = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
+        int height = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
+        return getRepresentativeImageForQuery(item, width, height);
+    }
+
+    
+    public String getRepresentativeImageForQuery(CMSPage page, int width, int height) throws PresentationException, IndexUnreachableException {
+        CMSContentItem contentItem = page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.SOLRQUERY.equals(item.getType())).findAny().orElseThrow(() -> new IllegalStateException("The page does not contain content items of type '" + CMSContentItemType.SOLRQUERY + "'"));
+        return getRepresentativeImageForQuery(contentItem, width, height);
+    }
+
+    
+    public String getRepresentativeImageForQuery(CMSContentItem item, int width, int height) throws PresentationException, IndexUnreachableException {
+       if(StringUtils.isBlank(item.getSolrQuery())) {
+           throw new IllegalStateException("Item " + item + " does not define a solr query");
+       }
+       SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(item.getSolrQuery(), Arrays.asList(ThumbnailHandler.REQUIRED_SOLR_FIELDS));
+       if(doc != null) {           
+           return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
+       } else {
+           throw new PresentationException("No document matching query '" + item.getSolrQuery() + "' found");
+       }
+    }
+
 
 }

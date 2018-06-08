@@ -19,7 +19,7 @@
                 	<!-- COLLECTIONS -->
                 	<ul class="collection">
                 		<ui:repeat var="browseDcElement" value="#{collection.visibleDcElements}">
-                        	<li class="collection__item collection__item--level-#{browseDcElement.level}" style="padding-left: #{browseDcElement.level * 32}px">
+                            <li class="collection__item collection__item--level-#{browseDcElement.level}" style="padding-left: #{browseDcElement.level * 32}px">
                 				<div class="row">
                                     <div class="col-xs-2 col-sm-1 collection__structure-col">
                                         <!-- STRUCTURE -->
@@ -44,8 +44,8 @@
                                                     <div class="col-xs-12">
 														<!-- TITLE -->
 														<h:outputLink value="#{collection.getCollectionUrl(browseDcElement)}" styleClass="#{collection.isTopVisibleElement(browseDcElement) ? 'collection__top-element' : ''}">
-															<h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.name]} (#{browseDcElement.numberOfVolumes})" />
-															<h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.name]}" />
+															<h:outputText rendered="#{browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]} (#{browseDcElement.numberOfVolumes})" />
+															<h:outputText rendered="#{!browseDcElement.displayNumberOfVolumes}" value="#{msg[browseDcElement.label]}" />
 															<f:ajax render="@form" />
 														</h:outputLink>
 													</div>
@@ -54,9 +54,9 @@
 									</div>
                                     <div class="col-xs-3 col-sm-2">
 										<!-- TOGGLE DESCRIPTION -->
-										<h:panelGroup rendered="#{msg[browseDcElement.description] != browseDcElement.description}">
+										<h:panelGroup rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
 											<div class="collection__description-toggle pull-left">
-												<h:commandLink title="#{msg[browseDcElement.name]}">
+												<h:commandLink title="#{msg[browseDcElement.label]}">
 													<h:panelGroup rendered="#{not browseDcElement.showDescription}">
 														<i class="fa fa-angle-down" aria-hidden="true"></i>
 													</h:panelGroup>
@@ -87,8 +87,8 @@
                                             <div class="collection__description">
                                                 <h:outputText value="#{msg[browseDcElement.description]}" escape="false" />
                                             </div>
-                                            <h:panelGroup rendered="#{StringUtils.isNotBlank(browseDcElement.info.iconURI)}">
-                                                <img src="#{browseDcElement.info.iconURI}" alt="" class="img-responsive" />
+                                            <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
+                                                <img src="#{browseDcElement.icon}" alt="" class="img-responsive" />
                                             </h:panelGroup>
                                         </div>
                                     </h:panelGroup>

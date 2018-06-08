@@ -43,6 +43,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
@@ -60,6 +61,8 @@ import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.search.BrowseElement;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.search.SearchHit;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.model.toc.TOC;
@@ -241,20 +244,6 @@ public class ActiveDocumentBean implements Serializable {
 
             if (viewManager != null && viewManager.getCurrentDocument() != null) {
                 doublePageMode = viewManager.isDoublePageMode();
-                if (!viewManager.getCurrentDocument().isExists()) {
-                    logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
-                            viewManager.getPi(), topDocumentIddoc);
-                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(viewManager.getPi());
-                    if (topDocumentIddoc == 0) {
-                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
-                                viewManager.getPi());
-                        throw new RecordNotFoundException(lastReceivedIdentifier);
-                    }
-                    viewManager = null;
-                } else if (viewManager.getCurrentDocument().isDeleted()) {
-                    logger.debug("Record '{}' is deleted and only available as a trace document.", viewManager.getPi());
-                    throw new RecordDeletedException(viewManager.getPi());
-                }
             }
 
             // Do these steps only if a new document has been loaded
@@ -272,6 +261,23 @@ public class ActiveDocumentBean implements Serializable {
                 }
 
                 StructElement topDocument = new StructElement(topDocumentIddoc);
+
+                // Exit here if record is not found or has been deleted
+                if (!topDocument.isExists()) {
+                    logger.info("IDDOC for the current record '{}' ({}) no longer seems to exist, attempting to retrieve an updated IDDOC...",
+                            topDocument.getPi(), topDocumentIddoc);
+                    topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(topDocument.getPi());
+                    if (topDocumentIddoc == 0) {
+                        logger.warn("New IDDOC for the current record '{}' could not be found. Perhaps this record has been deleted?",
+                                viewManager.getPi());
+                        reset();
+                        throw new RecordNotFoundException(lastReceivedIdentifier);
+                    }
+                } else if (topDocument.isDeleted()) {
+                    logger.debug("Record '{}' is deleted and only available as a trace document.", topDocument.getPi());
+                    reset();
+                    throw new RecordDeletedException(topDocument.getPi());
+                }
 
                 // Do not open records who may not be listed for the current user
                 List<String> requiredAccessConditions = topDocument.getMetadataValues(SolrConstants.ACCESSCONDITION);
@@ -913,7 +919,12 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public String getTitleBarLabel() throws IndexUnreachableException {
-        return getTitleBarLabel(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+        Locale locale = BeanUtils.getLocale();
+        if(locale != null) {
+            return getTitleBarLabel(locale.getLanguage());
+        } else {            
+            return getTitleBarLabel(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
+        }
     }
 
     /**
@@ -1187,7 +1198,6 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     public void downloadTOCAction() throws IOException {
-
         try {
 
             String fileNameRaw = getToc().getTocElements().get(0).getLabel();
@@ -1209,4 +1219,59 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
+    /**
+     * 
+     * @param identifierField Index field containing related item identifiers
+     * @return List of related items as SearchHit objects.
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public List<SearchHit> getRelatedItems(String identifierField) throws PresentationException, IndexUnreachableException, DAOException {
+        logger.trace("getRelatedItems: {}", identifierField);
+        if (identifierField == null) {
+            return null;
+        }
+        if (viewManager == null) {
+            return null;
+        }
+        String query = getRelatedItemsQueryString(identifierField);
+        if (query == null) {
+            return null;
+        }
+
+        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        List<SearchHit> ret = SearchHelper.searchWithFulltext(query, 0, SolrSearchIndex.MAX_HITS, null, null, null, null, null, null,
+                navigationHelper.getLocale(), BeanUtils.getRequest());
+
+        logger.trace("{} related items found", ret.size());
+        return ret;
+    }
+
+    /**
+     * Returns a query string containing all values of the given identifier field.
+     * 
+     * @param identifierField Index field containing related item identifiers
+     * @return Query string of the pattern "PI:(a OR b OR c)"
+     * @should construct query correctly
+     */
+    public String getRelatedItemsQueryString(String identifierField) {
+        logger.trace("getRelatedItemsQueryString: {}", identifierField);
+        List<String> relatedItemIdentifiers = viewManager.getTopDocument().getMetadataValues(identifierField);
+        if (relatedItemIdentifiers.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder sbQuery = new StringBuilder(SolrConstants.PI).append(":(");
+        int initLength = sbQuery.length();
+        for (String identifier : relatedItemIdentifiers) {
+            if (sbQuery.length() > initLength) {
+                sbQuery.append(" OR ");
+            }
+            sbQuery.append(identifier);
+        }
+        sbQuery.append(')');
+
+        return sbQuery.toString();
+    }
 }

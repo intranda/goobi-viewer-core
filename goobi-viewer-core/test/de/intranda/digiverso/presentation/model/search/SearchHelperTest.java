@@ -71,7 +71,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void searchAutosuggestion_shouldReturnAutosuggestionsCorrectly() throws Exception {
-        List<String> values = SearchHelper.searchAutosuggestion("klein", null, null);
+        List<String> values = SearchHelper.searchAutosuggestion("klein", null);
         Assert.assertFalse(values.isEmpty());
     }
 
@@ -82,7 +82,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void searchAutosuggestion_shouldFilterByCollectionCorrectly() throws Exception {
         FacetItem item = new FacetItem(SolrConstants.FACET_DC + ":varia", true);
-        List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", Collections.singletonList(item), null);
+        List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", Collections.singletonList(item));
         Assert.assertTrue(values.isEmpty());
     }
 
@@ -93,7 +93,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void searchAutosuggestion_shouldFilterByFacetCorrectly() throws Exception {
         FacetItem item = new FacetItem(SolrConstants.TITLE + ":something", false);
-        List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", null, Collections.singletonList(item));
+        List<String> values = SearchHelper.searchAutosuggestion("kartenundplaene", Collections.singletonList(item));
         Assert.assertTrue(values.isEmpty());
     }
 

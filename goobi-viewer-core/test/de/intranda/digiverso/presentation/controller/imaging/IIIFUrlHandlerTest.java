@@ -83,6 +83,11 @@ public class IIIFUrlHandlerTest {
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/file:U002FU002FU002FimageU002Ffilename.tif/full/max/0/default.jpg", url);
 
+        fileUrl = "file:///image/filename 01.tif";
+        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
+
+        
         fileUrl = "/image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/file:U002FimageU002Ffilename.tif/full/max/0/default.jpg", url);
@@ -92,7 +97,10 @@ public class IIIFUrlHandlerTest {
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg", url);
 
-        
+        fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
+        url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
+
     }
 
 

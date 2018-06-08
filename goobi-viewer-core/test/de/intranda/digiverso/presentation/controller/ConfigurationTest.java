@@ -75,7 +75,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getBrowsingMenuFields_shouldReturnAllConfiguredElements() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
+        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getBrowsingMenuFields().size());
     }
 
     /**
@@ -1584,6 +1584,20 @@ public class ConfigurationTest {
     }
 
     /**
+     * @see Configuration#getAllDrillDownFields()
+     * @verifies return correct order
+     */
+    @Test
+    public void getAllDrillDownFields_shouldReturnCorrectOrder() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
+        Assert.assertEquals(4, result.size());
+        Assert.assertEquals("DC", result.get(0));
+        Assert.assertEquals("FIELD1", result.get(1));
+        Assert.assertEquals("FIELD3", result.get(2));
+        Assert.assertEquals("FIELD2", result.get(3));
+    }
+
+    /**
      * @see Configuration#getDrillDownFields()
      * @verifies return all values
      */
@@ -1608,9 +1622,44 @@ public class ConfigurationTest {
     @Test
     public void getInitialDrillDownElementNumber_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(SolrConstants.DC));
-        Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD1"));
         Assert.assertEquals(16, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD2"));
         Assert.assertEquals(23, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber(null));
+    }
+
+    /**
+     * @see Configuration#getInitialDrillDownElementNumber(String)
+     * @verifies return default value if field not found
+     */
+    @Test
+    public void getInitialDrillDownElementNumber_shouldReturnDefaultValueIfFieldNotFound() throws Exception {
+        Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getInitialDrillDownElementNumber("FIELD1"));
+    }
+
+    /**
+     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @verifies return return all configured elements for regular fields
+     */
+    @Test
+    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForRegularFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("FIELD2");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(3, result.size());
+        Assert.assertEquals("val1", result.get(0));
+        Assert.assertEquals("val2", result.get(1));
+        Assert.assertEquals("val3", result.get(2));
+    }
+
+    /**
+     * @see Configuration#getPriorityValuesForDrillDownField(String)
+     * @verifies return return all configured elements for hierarchical fields
+     */
+    @Test
+    public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() throws Exception {
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("DC");
+        Assert.assertNotNull(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("collection2", result.get(0));
+        Assert.assertEquals("collection1", result.get(1));
     }
 
     @Test
@@ -1809,6 +1858,15 @@ public class ConfigurationTest {
     @Test
     public void getStartYearForTimeline_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals("1861", DataManager.getInstance().getConfiguration().getStartYearForTimeline());
+    }
+
+    /**
+     * @see Configuration#getTimelineHits()
+     * @verifies return correct value
+     */
+    @Test
+    public void getTimelineHits_shouldReturnCorrectValue() throws Exception {
+        Assert.assertEquals("120", DataManager.getInstance().getConfiguration().getTimelineHits());
     }
 
     /**
@@ -2382,6 +2440,15 @@ public class ConfigurationTest {
     @Test
     public void getSitelinksField_shouldReturnCorrectValue() throws Exception {
         Assert.assertEquals(SolrConstants._CALENDAR_YEAR, DataManager.getInstance().getConfiguration().getSitelinksField());
+    }
+
+    @Test
+    public void getGetConfiguredCollections() {
+        List<String> fields = DataManager.getInstance().getConfiguration().getConfiguredCollections();
+        Assert.assertEquals(fields.size(), 3);
+        Assert.assertTrue(fields.contains("DC"));
+        Assert.assertTrue(fields.contains("MD_KNOWLEDGEFIELD"));
+        Assert.assertTrue(fields.contains("MD_HIERARCHICALFIELD"));
     }
 
     /**

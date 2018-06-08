@@ -672,15 +672,13 @@ public final class SearchHelper {
      * <li>Then search in field "TITLE" and check with contains</li>
      *
      * @param suggest the search string
-     * @param currentCollections Optional collections to which all suggestions have to belong.
      * @param currentFacets
      * @throws IndexUnreachableException
      * @should return autosuggestions correctly
      * @should filter by collection correctly
      * @should filter by facet correctly
      */
-    public static List<String> searchAutosuggestion(String suggest, List<FacetItem> currentCollections, List<FacetItem> currentFacets)
-            throws IndexUnreachableException {
+    public static List<String> searchAutosuggestion(String suggest, List<FacetItem> currentFacets) throws IndexUnreachableException {
         List<String> ret = new ArrayList<>();
 
         if (!suggest.contains(" ")) {
@@ -688,15 +686,6 @@ public final class SearchHelper {
                 suggest = suggest.toLowerCase();
                 StringBuilder sbQuery = new StringBuilder();
                 sbQuery.append(SolrConstants.DEFAULT).append(':').append(ClientUtils.escapeQueryChars(suggest)).append('*');
-                if (currentCollections != null && !currentCollections.isEmpty()) {
-                    for (FacetItem facetItem : currentCollections) {
-                        if (sbQuery.length() > 0) {
-                            sbQuery.append(" AND ");
-                        }
-                        sbQuery.append(facetItem.getQueryEscapedLink());
-                        logger.trace("Added collection facet: {}", facetItem.getQueryEscapedLink());
-                    }
-                }
                 if (currentFacets != null && !currentFacets.isEmpty()) {
                     for (FacetItem facetItem : currentFacets) {
                         if (sbQuery.length() > 0) {
@@ -1211,6 +1200,22 @@ public final class SearchHelper {
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
+        return getFacetValues(query, facetFieldName, null, facetMinCount);
+    }
+
+    /**
+     * Returns a list of values for a given facet field and the given query.
+     *
+     * @param query
+     * @param facetFieldName
+     * @param facetMinCount
+     * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public static List<String> getFacetValues(String query, String facetFieldName, String facetPrefix, int facetMinCount)
+            throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(query)) {
             throw new IllegalArgumentException("query may not be null or empty");
         }
@@ -1219,7 +1224,7 @@ public final class SearchHelper {
         }
 
         QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(query, Collections.singletonList(facetFieldName),
-                facetMinCount, false);
+                facetMinCount, facetPrefix, false);
         FacetField facetField = resp.getFacetField(facetFieldName);
         List<String> ret = new ArrayList<>(facetField.getValueCount());
         for (Count count : facetField.getValues()) {
@@ -1250,7 +1255,11 @@ public final class SearchHelper {
         Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
 
         StringBuilder sbQuery = new StringBuilder();
-        sbQuery.append(bmfc.getField()).append(':');
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
+            sbQuery.append(bmfc.getSortField()).append(':');
+        } else {
+            sbQuery.append(bmfc.getField()).append(':');
+        }
         if (StringUtils.isEmpty(startsWith)) {
             sbQuery.append("[* TO *]");
         } else {
@@ -1547,28 +1556,6 @@ public final class SearchHelper {
         }
 
         return params;
-    }
-
-    @Deprecated
-    public static List<String> generateFacetFields() {
-        List<String> facetFields = new ArrayList<>();
-        if (DataManager.getInstance().getConfiguration().isGroupDuplicateHits()) {
-            facetFields.add(SolrConstants.GROUPFIELD);
-        }
-        for (String field : DataManager.getInstance().getConfiguration().getHierarchicalDrillDownFields()) {
-            if (!facetFields.contains(field)) {
-                facetFields.add(field);
-            }
-        }
-        for (String field : DataManager.getInstance().getConfiguration().getDrillDownFields()) {
-            if (SolrConstants.DC.equals(field) && !facetFields.contains(SolrConstants.FACET_DC)) {
-                facetFields.add(SolrConstants.FACET_DC);
-            } else if (!facetFields.contains(field)) {
-                facetFields.add(field);
-            }
-        }
-
-        return facetFields;
     }
 
     /**

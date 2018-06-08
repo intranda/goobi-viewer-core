@@ -26,14 +26,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
+import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
@@ -57,7 +60,7 @@ public class ThumbnailHandler {
     private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
     private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
 
-    public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
+    public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
             SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
 
     private final int thumbWidth;
@@ -100,7 +103,152 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(PhysicalElement page) {
         return getThumbnailUrl(page, thumbWidth, thumbHeight);
+    }
+    
+    /**
+     * Returns a link to the representative image for the given pi. If the pi doesn't match an indexed item, null is returned
+     * 
+     * @param pi    the persistent identifier of the work which representative we want
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException {
+        return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(), DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+    }
+    
+    /**
+     * Returns a link to the representative image for the given pi with the given width and height. If the pi doesn't match an indexed item, null is returned
+     * 
+     * @param pi    the persistent identifier of the work which representative we want
+     * @param width     the width of the image
+     * @param height    the height of the image
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getThumbnailUrl(String pi, int width, int height) throws IndexUnreachableException, PresentationException {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if(doc != null) {
+            return getThumbnailUrl(doc, width, height);
+        } else {
+            return null;
+        }  
+    }
+    
+    /**
+     * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned
+     * 
+     * @param pi    the persistent identifier of the work which representative we want
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getSquareThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException {
+        return getSquareThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
+    }
+    
+    /**
+     * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned
+     * 
+     * @param pi    the persistent identifier of the work which representative we want
+     * @param size  the size (width and heigt) of the image
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getSquareThumbnailUrl(String pi, int size) throws IndexUnreachableException, PresentationException {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        if(doc != null) {
+            return getSquareThumbnailUrl(doc, size);
+        } else {
+            return null;
+        }  
+    }
+    
+    /**
+     * Returns a link to the image of the page of the given order (=page number) within the work with the given pi . 
+     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * 
+     * @param order the page number
+     * @param pi    the persistent identifier of the work which representative we want
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getThumbnailUrl(int order, String pi) throws IndexUnreachableException, PresentationException, DAOException {
+        return getThumbnailUrl(order, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(), DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+    }
 
+    /**
+     * Returns a link to the image of the page of the given order (=page number) within the work with the given pi of the given width and height. 
+     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * 
+     * @param order the page number
+     * @param pi    the persistent identifier of the work which representative we want
+     * @param width     the width of the image
+     * @param height    the height of the image
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getThumbnailUrl(int order, String pi, int width, int height) throws IndexUnreachableException, PresentationException, DAOException {
+        PhysicalElement page = getPage(pi, order);
+        if(page != null) {
+            return getThumbnailUrl(page, width, height);
+        } else {
+            return null;
+        }  
+    }
+    
+    /**
+     * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi. 
+     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * 
+     * @param order the page number
+     * @param pi    the persistent identifier of the work which representative we want
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getSquareThumbnailUrl(int order, String pi) throws IndexUnreachableException, PresentationException, DAOException {
+        return getSquareThumbnailUrl(order, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
+    }
+
+    /**
+     * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi of the given size. 
+     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * 
+     * @param order the page number
+     * @param pi    the persistent identifier of the work which representative we want
+     * @param size  the width and height of the image
+     * @return      The url string or null of no work is found
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public String getSquareThumbnailUrl( int order, String pi, int size) throws IndexUnreachableException, PresentationException, DAOException {
+        PhysicalElement page = getPage(pi, order);
+        if(page != null) {
+            return getSquareThumbnailUrl(page, size);
+        } else {
+            return null;
+        }  
+    }
+
+    /**
+     * @param pi
+     * @param order
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     */
+    public PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
+        StructElement struct = new StructElement(Long.parseLong(doc.getFirstValue(SolrConstants.IDDOC).toString()), doc);
+        LeanPageLoader pageLoader = new LeanPageLoader(struct, 1);
+        PhysicalElement page = pageLoader.getPage(order);
+        return page;
     }
 
     /**
@@ -453,7 +601,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item, fit into a box of the default width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height
      * 
      * @param item
      * @param width
@@ -465,7 +613,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item, fit into a box of the default width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height
      * 
      * @param item
      * @param width
@@ -478,7 +626,7 @@ public class ThumbnailHandler {
 
 
     /**
-     * Return the url to the image of the given media item, fit into a box of the given width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the given width and height
      * 
      * @param item
      * @param width
@@ -499,7 +647,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item, fit into a box of the given width and height
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the given width and height
      * 
      * @param item
      * @param width
@@ -511,7 +659,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the given size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
@@ -531,7 +679,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the given size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
@@ -543,7 +691,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the default size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
@@ -554,7 +702,7 @@ public class ThumbnailHandler {
     }
     
     /**
-     * Return the url to the image of the given media item of the default size. The image is always square and contains as much of the actual
+     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item

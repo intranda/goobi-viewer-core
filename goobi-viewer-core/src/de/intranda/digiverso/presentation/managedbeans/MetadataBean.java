@@ -51,7 +51,9 @@ public class MetadataBean {
     @Inject
     private ActiveDocumentBean activeDocumentBean;
 
+    /** Metadata blocks (one per structure element) */
     private List<MetadataElement> metadataElementList;
+    /** Events. */
     private List<EventElement> events = new ArrayList<>();
 
     /** Empty constructor. */

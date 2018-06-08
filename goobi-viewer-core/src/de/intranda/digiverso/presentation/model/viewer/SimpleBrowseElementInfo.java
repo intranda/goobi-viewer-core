@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
 public class SimpleBrowseElementInfo implements BrowseElementInfo {
 
@@ -70,7 +71,7 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
         this.iconURI = iconURI;
     }
 
-    private static URI createIconURI(String collectionName) {
+    protected static URI createIconURI(String collectionName) {
         String icon = DataManager.getInstance()
                 .getConfiguration()
                 .getDefaultBrowseIcon(collectionName);
@@ -92,6 +93,22 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
             logger.error("Unable to create icon path. Probably due to missing jsf context");
             return null;
         }
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getName()
+     */
+    @Override
+    public String getName() {
+        return collectionName;
+    }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getTranslationsForName()
+     */
+    @Override
+    public IMetadataValue getTranslationsForName() {
+        return IMetadataValue.getTranslations(getName());
     }
 
 }

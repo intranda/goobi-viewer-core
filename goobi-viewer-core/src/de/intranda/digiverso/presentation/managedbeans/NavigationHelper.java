@@ -35,14 +35,12 @@ import java.util.TimeZone;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
@@ -55,8 +53,6 @@ import com.ocpsoft.pretty.faces.url.URL;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
-import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.language.LocaleComparator;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -68,7 +64,6 @@ import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewerPath;
 import de.intranda.digiverso.presentation.model.viewer.LabeledLink;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.modules.IModule;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
@@ -679,6 +674,10 @@ public class NavigationHelper implements Serializable {
 
     public String getOverviewActiveUrl() {
         return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/!" + PageType.viewOverview.getName();
+    }
+
+    public String getObjectUrl() {
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.viewObject.getName();
     }
 
     public String getImageUrl() {

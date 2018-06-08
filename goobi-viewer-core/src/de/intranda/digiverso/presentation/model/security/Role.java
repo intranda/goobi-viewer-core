@@ -350,4 +350,9 @@ public class Role implements IPrivilegeHolder {
     public void setInheritedRoles(Set<Role> inheritedRoles) {
         this.inheritedRoles = inheritedRoles;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

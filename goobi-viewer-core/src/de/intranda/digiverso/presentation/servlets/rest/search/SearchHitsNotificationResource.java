@@ -51,7 +51,7 @@ import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding
 public class SearchHitsNotificationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchHitsNotificationResource.class);
-    
+
     public static final String RESOURCE_PATH = "/search";
 
     @Context
@@ -66,18 +66,14 @@ public class SearchHitsNotificationResource {
         logger.trace("sendNewHitsNotifications");
         Map<String, String> filters = new HashMap<>();
         filters.put("newHitsNotification", "1");
-        long searchCount = DataManager.getInstance()
-                .getDao()
-                .getSearchCount(null, filters);
+        long searchCount = DataManager.getInstance().getDao().getSearchCount(null, filters);
         logger.info("Found {} saved searches with notifications enabled.", searchCount);
         int pageSize = 100;
 
         StringBuilder sbDebug = new StringBuilder();
         for (int i = 0; i < searchCount; i += pageSize) {
             logger.debug("Getting searches {}-{}", i, i + pageSize);
-            List<Search> searches = DataManager.getInstance()
-                    .getDao()
-                    .getSearches(null, i, pageSize, null, false, filters);
+            List<Search> searches = DataManager.getInstance().getDao().getSearches(null, i, pageSize, null, false, filters);
             for (Search search : searches) {
                 // TODO access condition filters for each user
                 SearchFacets facets = new SearchFacets();
@@ -85,17 +81,15 @@ public class SearchHitsNotificationResource {
                 facets.setCurrentHierarchicalFacetString(search.getHierarchicalFacetString());
                 String oldSortString = search.getSortString();
                 search.setSortString('!' + SolrConstants.DATECREATED);
-                search.execute(facets, null, 100, 0, null);
+                search.execute(facets, null, 100, 0, null, null);
                 // TODO what if there're >100 new hits?
                 if (search.getHitsCount() > search.getLastHitsCount()) {
-                    List<SearchHit> newHits = search.getHits()
-                            .subList(0, (int) (search.getHitsCount() - search.getLastHitsCount()));
+                    List<SearchHit> newHits = search.getHits().subList(0, (int) (search.getHitsCount() - search.getLastHitsCount()));
                     StringBuilder sb = new StringBuilder();
                     sb.append("<table>");
                     int count = 0;
                     for (SearchHit newHit : newHits) {
-                        logger.trace("New hit: {}", newHit.getBrowseElement()
-                                .getPi());
+                        logger.trace("New hit: {}", newHit.getBrowseElement().getPi());
                         count++;
                         sb.append(newHit.generateNotificationFragment(count));
                     }
@@ -109,8 +103,7 @@ public class SearchHitsNotificationResource {
                     body = body.replace("{1}", sb.toString());
                     body = body.replace("{2}", "Goobi viewer");
 
-                    String address = search.getOwner()
-                            .getEmail();
+                    String address = search.getOwner().getEmail();
                     if (StringUtils.isNotEmpty(address)) {
                         try {
                             Helper.postMail(Collections.singletonList(address), subject, body);
@@ -125,9 +118,7 @@ public class SearchHitsNotificationResource {
                     // Update last count in DB
                     search.setLastHitsCount(search.getHitsCount());
                     search.setSortString(oldSortString);
-                    DataManager.getInstance()
-                            .getDao()
-                            .updateSearch(search);
+                    DataManager.getInstance().getDao().updateSearch(search);
                 }
             }
         }

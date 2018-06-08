@@ -23,7 +23,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +31,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +52,7 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter.MetadataParameterType;
-import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.model.viewer.StringPair;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElementStub;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
@@ -166,7 +162,7 @@ public class BrowseElement implements Serializable {
      */
     BrowseElement(StructElement structElement, List<Metadata> metadataList, Locale locale, String fulltext, boolean useThumbnail,
             Map<String, Set<String>> searchTerms, ThumbnailHandler thumbs) throws PresentationException, IndexUnreachableException, DAOException {
-        this.metadataList = metadataList;
+        this.metadataList = Metadata.filterMetadataByLanguage(metadataList, locale != null ? locale.getLanguage() : null);
         this.locale = locale;
         this.fulltext = fulltext;
 
@@ -408,9 +404,9 @@ public class BrowseElement implements Serializable {
                 && (this.mimeType.startsWith("audio") || this.mimeType.startsWith("video") || this.mimeType.startsWith("text")/*sandboxed*/);
 
         // Only topstructs should be openened with their overview page view (if they have one)
-//        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
-//            useOverviewPage = true;
-//        }
+        //        if ((structElement.isWork() || structElement.isAnchor()) && OverviewPage.loadOverviewPage(structElement, locale) != null) {
+        //            useOverviewPage = true;
+        //        }
 
         //record languages
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -716,7 +712,7 @@ public class BrowseElement implements Serializable {
 
         return ret;
     }
-    
+
     /**
      * @return the label
      */

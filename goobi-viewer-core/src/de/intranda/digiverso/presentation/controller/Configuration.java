@@ -37,6 +37,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.apache.commons.configuration.tree.ConfigurationNode;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -1650,6 +1651,32 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns the names of all configured drill-down fields in the order they appear in the list, no matter whether they're regular or hierarchical.
+     * 
+     * @return List of regular and hierarchical fields in the order in which they appear in the config file
+     * @should return correct order
+     */
+    public List<String> getAllDrillDownFields() {
+        HierarchicalConfiguration drillDown = getLocalConfigurationAt("search.drillDown");
+        List<ConfigurationNode> nodes = drillDown.getRootNode().getChildren();
+        if (!nodes.isEmpty()) {
+            List<String> ret = new ArrayList<>(nodes.size());
+            for (ConfigurationNode node : nodes) {
+                switch (node.getName()) {
+                    case "field":
+                    case "hierarchicalField":
+                        ret.add((String) node.getValue());
+                        break;
+                }
+            }
+
+            return ret;
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
      * 
      * @return
      * @should return all values
@@ -1671,39 +1698,45 @@ public final class Configuration extends AbstractConfiguration {
      * 
      * @return
      * @should return correct value
+     * @should return default value if field not found
      */
     public int getInitialDrillDownElementNumber(String field) {
-        if (StringUtils.isNotBlank(field)) {
-            field = SearchHelper.facetifyField(field);
-            // Regular fields
-            List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
-            if (drillDownFields != null && !drillDownFields.isEmpty()) {
-                for (HierarchicalConfiguration fieldConfig : drillDownFields) {
-                    if (fieldConfig.getRootNode().getValue().equals(field)
-                            || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
-                        try {
-                            return fieldConfig.getInt("[@initialElementNumber]");
-                        } catch (ConversionException | NoSuchElementException e) {
-                        }
+        if (StringUtils.isBlank(field)) {
+            return getLocalInt("search.drillDown.initialElementNumber", 3);
+        }
+
+        String facetifiedField = SearchHelper.facetifyField(field);
+        // Regular fields
+        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(field)
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        return fieldConfig.getInt("[@initialElementNumber]");
+                    } catch (ConversionException | NoSuchElementException e) {
                     }
                 }
             }
-            // Hierarchical fields
-            drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
-            if (drillDownFields != null && !drillDownFields.isEmpty()) {
-                for (HierarchicalConfiguration fieldConfig : drillDownFields) {
-                    if (fieldConfig.getRootNode().getValue().equals(field)
-                            || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
-                        try {
-                            return fieldConfig.getInt("[@initialElementNumber]");
-                        } catch (ConversionException | NoSuchElementException e) {
-                        }
+        }
+        // Hierarchical fields
+        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(field)
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        return fieldConfig.getInt("[@initialElementNumber]");
+                    } catch (ConversionException | NoSuchElementException e) {
                     }
                 }
             }
         }
 
-        return getLocalInt("search.drillDown.initialElementNumber", 20);
+        // return getLocalInt("search.drillDown.initialElementNumber", 3);
+        return -1;
     }
 
     /**
@@ -1715,14 +1748,15 @@ public final class Configuration extends AbstractConfiguration {
             return "default";
         }
 
-        field = SearchHelper.facetifyField(field);
+        String facetifiedField = SearchHelper.facetifyField(field);
 
         // Regular fields
         List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
         if (drillDownFields != null && !drillDownFields.isEmpty()) {
             for (HierarchicalConfiguration fieldConfig : drillDownFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
-                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
                     try {
                         String sortOrder = fieldConfig.getString("[@sortOrder]");
                         if (sortOrder != null) {
@@ -1738,7 +1772,8 @@ public final class Configuration extends AbstractConfiguration {
         if (drillDownFields != null && !drillDownFields.isEmpty()) {
             for (HierarchicalConfiguration fieldConfig : drillDownFields) {
                 if (fieldConfig.getRootNode().getValue().equals(field)
-                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)) {
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
                     try {
                         String sortOrder = fieldConfig.getString("[@sortOrder]");
                         if (sortOrder != null) {
@@ -1751,6 +1786,62 @@ public final class Configuration extends AbstractConfiguration {
         }
 
         return "default";
+    }
+
+    /**
+     * Returns a list of values to prioritize for the given drill-down field.
+     * 
+     * @param field
+     * @return List of priority values; empty list if none found for the given field
+     * @should return return all configured elements for regular fields
+     * @should return return all configured elements for hierarchical fields
+     */
+    public List<String> getPriorityValuesForDrillDownField(String field) {
+        if (StringUtils.isBlank(field)) {
+            return Collections.emptyList();
+        }
+
+        String facetifiedField = SearchHelper.facetifyField(field);
+
+        // Regular fields
+        List<HierarchicalConfiguration> drillDownFields = getLocalConfigurationsAt("search.drillDown.field");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(field)
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        String priorityValues = fieldConfig.getString("[@priorityValues]");
+                        if (StringUtils.isNotEmpty(priorityValues)) {
+                            String[] priorityValuesSplit = priorityValues.split(";");
+                            return Arrays.asList(priorityValuesSplit);
+                        }
+                    } catch (ConversionException | NoSuchElementException e) {
+                    }
+                }
+            }
+        }
+
+        // Hierarchical Field
+        drillDownFields = getLocalConfigurationsAt("search.drillDown.hierarchicalField");
+        if (drillDownFields != null && !drillDownFields.isEmpty()) {
+            for (HierarchicalConfiguration fieldConfig : drillDownFields) {
+                if (fieldConfig.getRootNode().getValue().equals(field)
+                        || fieldConfig.getRootNode().getValue().equals(field + SolrConstants._UNTOKENIZED)
+                        || fieldConfig.getRootNode().getValue().equals(facetifiedField)) {
+                    try {
+                        String priorityValues = fieldConfig.getString("[@priorityValues]");
+                        if (StringUtils.isNotEmpty(priorityValues)) {
+                            String[] priorityValuesSplit = priorityValues.split(";");
+                            return Arrays.asList(priorityValuesSplit);
+                        }
+                    } catch (ConversionException | NoSuchElementException e) {
+                    }
+                }
+            }
+        }
+
+        return Collections.emptyList();
     }
 
     /**
@@ -2706,6 +2797,14 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    public String getTimelineHits() {
+        return this.getLocalString("search.timeline.hits", "108");
+    }
+
+    /**
+     * @return
+     * @should return correct value
+     */
     public boolean isPiwikTrackingEnabled() {
         return getLocalBoolean("piwik.enabled", false);
     }
@@ -3136,5 +3235,13 @@ public final class Configuration extends AbstractConfiguration {
      */
     public String getSitelinksFilterQuery() {
         return getLocalString("sitemap.sitelinksFilterQuery");
+    }
+
+    /**
+     * 
+     */
+    public List<String> getConfiguredCollections() {
+        return getLocalList("collections.collection[@field]", Collections.EMPTY_LIST);
+
     }
 }

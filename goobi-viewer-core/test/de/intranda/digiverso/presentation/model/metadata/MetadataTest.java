@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 
 public class MetadataTest {
@@ -22,8 +23,7 @@ public class MetadataTest {
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
-        Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0)
-                .getLabel());
+        Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
     }
 
     /**
@@ -37,8 +37,25 @@ public class MetadataTest {
         metadataList.add(new Metadata("MD_TITLE", "", "bar"));
         List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
         Assert.assertEquals(1, filteredList.size());
-        Assert.assertEquals("MD_TITLE", filteredList.get(0)
-                .getLabel());
+        Assert.assertEquals("MD_TITLE", filteredList.get(0).getLabel());
+    }
+
+    /**
+     * @see Metadata#filterMetadataByLanguage(List,String)
+     * @verifies preserve metadata field order
+     */
+    @Test
+    public void filterMetadataByLanguage_shouldPreserveMetadataFieldOrder() throws Exception {
+        List<Metadata> metadataList = new ArrayList<>();
+        metadataList.add(new Metadata("MD_TITLE_LANG_EN", "", "foo"));
+        metadataList.add(new Metadata("MD_TITLE_LANG_DE", "", "foo"));
+        metadataList.add(new Metadata(SolrConstants.PI, "", "PPN123"));
+        metadataList.add(new Metadata("MD_DESCRIPTION_LANG_EN", "", "foo"));
+        List<Metadata> filteredList = Metadata.filterMetadataByLanguage(metadataList, "en");
+        Assert.assertEquals(3, filteredList.size());
+        Assert.assertEquals("MD_TITLE_LANG_EN", filteredList.get(0).getLabel());
+        Assert.assertEquals(SolrConstants.PI, filteredList.get(1).getLabel());
+        Assert.assertEquals("MD_DESCRIPTION_LANG_EN", filteredList.get(2).getLabel());
     }
 
     /**
@@ -50,7 +67,8 @@ public class MetadataTest {
         {
             String value = Metadata.buildHierarchicalValue("DC", "a.b", null, "http://localhost:8080/");
             Assert.assertEquals(
-                    "<a href=\"http://localhost:8080/browse/DC:a/-/1/-/-/\">a</a> > <a href=\"http://localhost:8080/browse/DC:a.b/-/1/-/-/\">a.b</a>", value);
+                    "<a href=\"http://localhost:8080/browse/DC:a/-/1/-/-/\">a</a> > <a href=\"http://localhost:8080/browse/DC:a.b/-/1/-/-/\">a.b</a>",
+                    value);
         }
         {
             // No root URL

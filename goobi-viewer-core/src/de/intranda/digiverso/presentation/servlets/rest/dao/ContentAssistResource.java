@@ -15,7 +15,11 @@
  */
 package de.intranda.digiverso.presentation.servlets.rest.dao;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,6 +29,13 @@ import javax.ws.rs.core.MediaType;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.managedbeans.CmsCollectionsBean;
+import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.cms.CMSCollection;
+import de.intranda.digiverso.presentation.model.search.SearchHelper;
+import de.intranda.digiverso.presentation.model.viewer.BrowseDcElement;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 @Path("/contentAssist")
@@ -37,5 +48,44 @@ public class ContentAssistResource {
     public List<String> getTagsForPageJson(@PathParam("input") String inputString) throws DAOException {
 		List<String> suggestions = DataManager.getInstance().getDao().getMatchingTags(inputString);
 		return suggestions;
+	}
+	
+	@GET
+    @Path("/collections/{solrField}/{input}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<String> getCollections(@PathParam("solrField") String solrField, @PathParam("input") String inputString) throws DAOException, IndexUnreachableException, PresentationException {
+	    if("-".equals(inputString)) {
+	        inputString = "";
+	    }
+	    String query = "DOCTYPE:DOCSTRCT AND (ISANCHOR:true OR ISWORK:true)";
+	    List<String> facets = SearchHelper.getFacetValues(query, solrField, inputString, 0);
+	    
+	    List<String> collections = new ArrayList<>();
+	    CmsCollectionsBean bean = BeanUtils.getCMSCollectionsBean();
+	    if(bean != null) {
+	        collections.addAll(bean.getCollections().stream().map(collection -> collection.getSolrFieldValue()).collect(Collectors.toList()));
+	    }
+	    List<String> list = facets.stream().flatMap(facet -> getHierarchy("", facet).stream()).distinct().filter(facet -> !collections.contains(facet))
+	            .sorted()
+	            .sorted((f1,f2) -> Integer.compare(f1.split(BrowseDcElement.split).length, f2.split(BrowseDcElement.split).length))
+	            .collect(Collectors.toList());
+	    
+	    
+	    return list;
+	}
+	
+	
+	private List<String> getHierarchy(String prefix, String facet) {
+	    if(!facet.contains(BrowseDcElement.split)) {
+	        ArrayList<String> list = new ArrayList<>();
+	        list.add(prefix + facet);
+	        return list;
+	    } else {
+	        int firstSeparator = facet.indexOf(BrowseDcElement.split);
+	        String parent = facet.substring(0, firstSeparator);
+	        List<String> children = getHierarchy(prefix + parent + BrowseDcElement.split, facet.substring(firstSeparator+BrowseDcElement.split.length()));
+	        children.add(prefix + parent);
+	        return children;
+	    }
 	}
 }

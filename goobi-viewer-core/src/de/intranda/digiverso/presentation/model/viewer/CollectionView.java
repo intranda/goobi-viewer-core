@@ -31,6 +31,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
+import de.intranda.digiverso.presentation.model.cms.CMSCollection;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
 
@@ -113,14 +114,21 @@ public class CollectionView {
      * @return
      */
     private boolean shouldOpenInOwnWindow(String collectionName) {
-        if (StringUtils.isBlank(getBaseElementName()) && calculateLevel(collectionName) < getBaseLevels()) {
+        if(StringUtils.isNotBlank(collectionName) && collectionName.equals(getTopVisibleElement())) {
+            //if this is the current top element, open in search
+            return false;
+        }else if (StringUtils.isBlank(getBaseElementName()) && calculateLevel(collectionName) < getBaseLevels()) {
+            //If we are beneath the base level, open in collection view
             return true;
         } else if (collectionName.equals(getBaseElementName())) {
+            //If this is the base element of the entiry collection view, open in collection view (TODO: is that correct?)
             return true;
         } else if (collectionName.startsWith(getBaseElementName() + BrowseDcElement.split) && calculateLevel(collectionName) - calculateLevel(
                 getBaseElementName()) <= getBaseLevels()) {
+            //If this is a subcollection of the base element and less than base levels beneath the base element, open in collection view (same as second 'if' but for views with a base element
             return true;
         } else if (getBaseElementName() != null && getBaseElementName().startsWith(collectionName + BrowseDcElement.split)) {
+            //If this is a parent of the base collection, open in collection view (effectively going upwards in the view hierarchy
             return true;
         } else {
             return false;
@@ -166,18 +174,26 @@ public class CollectionView {
             }
             this.visibleCollectionList = sortDcList(visibleList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
                     getTopVisibleElement());
-            if (!isDisplayParentCollections() && StringUtils.isNotBlank(topVisibleElement)) {
+            if (!isDisplayParentCollections() && StringUtils.isNotBlank(topVisibleElement) && ! this.visibleCollectionList.isEmpty()) {
                 //if parent elements should be hidden, remove topElement from the list
                 //This cannot be done earlier because it breaks sortDcList...
                 this.visibleCollectionList.remove(0);
             }
             if (loadDescriptions) {
-                try {
-                    this.visibleCollectionList = associateWithCMSMediaItems(this.visibleCollectionList);
-                } catch (PresentationException | DAOException e) {
-                    logger.error("Failed to associate collections with media items: " + e.getMessage());
-                }
+                associateElementsWithCMSData();
             }
+        }
+    }
+
+    /**
+     * 
+     */
+    public void associateElementsWithCMSData() {
+        try {
+            this.visibleCollectionList = associateWithCMSMediaItems(this.visibleCollectionList);
+            this.visibleCollectionList = associateWithCMSCollections(this.visibleCollectionList, this.field);
+        } catch (PresentationException | DAOException e) {
+            logger.error("Failed to associate collections with media items: " + e.getMessage());
         }
     }
 
@@ -206,6 +222,26 @@ public class CollectionView {
         }
         return collections;
     }
+    
+    private static List<HierarchicalBrowseDcElement> associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, String solrField) throws DAOException,
+    PresentationException {
+List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(solrField);
+if (cmsCollections != null) {
+    for (CMSCollection cmsCollection : cmsCollections) {
+        String collectionName = cmsCollection.getSolrFieldValue();
+        if (StringUtils.isBlank(collectionName)) {
+            continue;
+        }
+        HierarchicalBrowseDcElement searchItem = new HierarchicalBrowseDcElement(collectionName, 0, null, null);
+        int index = collections.indexOf(searchItem);
+        if (index > -1) {
+            HierarchicalBrowseDcElement element = collections.get(index);
+            element.setInfo(cmsCollection);
+        }
+    }
+}
+return collections;
+}
 
     public List<HierarchicalBrowseDcElement> getVisibleDcElements() {
         logger.trace("getVisibleDcElements");
@@ -267,6 +303,7 @@ public class CollectionView {
         if (elementIndex > -1) {
             visibleCollectionList.addAll(elementIndex + 1, element.getChildrenAndVisibleDescendants());
             element.setShowSubElements(true);
+            associateElementsWithCMSData();
         }
     }
 
@@ -287,6 +324,7 @@ public class CollectionView {
                 showChildren(element);
                 this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting(
                         field), getTopVisibleElement());
+                associateElementsWithCMSData();
             }
         }
         return "";
@@ -493,6 +531,7 @@ public class CollectionView {
             }
             this.visibleCollectionList = sortDcList(visibleCollectionList, DataManager.getInstance().getConfiguration().getCollectionSorting(field),
                     getTopVisibleElement());
+            associateElementsWithCMSData();
         }
     }
 

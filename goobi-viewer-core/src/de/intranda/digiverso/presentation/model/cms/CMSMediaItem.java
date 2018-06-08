@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.model.cms;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,6 +48,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
+import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 
@@ -285,17 +285,17 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 
         if (StringUtils.isNotBlank(getLink())) {
             try {
-                URI uri = new URI(URLDecoder.decode(getLink(), "utf-8"));
+                URI uri = new URI(getLink());
                 if (!uri.isAbsolute()) {
                     String viewerURL = "/";
                     if (request != null) {
                         viewerURL = request.getContextPath();
                     }
-                    String urlString = (viewerURL + URLDecoder.decode(getLink(), "utf-8")).replace("//", "/");
+                    String urlString = (viewerURL + getLink()).replace("//", "/");
                     uri = new URI(urlString);
                 }
                 return uri;
-            } catch (URISyntaxException | UnsupportedEncodingException e) {
+            } catch (URISyntaxException e) {
                 logger.error("Unable to create uri from " + getLink());
                 return null;
             }
@@ -367,6 +367,12 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public String getDescription() {
         return getCurrentLanguageMetadata().getDescription();
     }
+    
+    @Override
+    public String getName() {
+        return getCurrentLanguageMetadata().getName();
+    }
+
 
     /**
      * @return the size
@@ -388,10 +394,19 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
      */
     @Override
     public URI getIconURI() {
-        if (getFileName() != null) {
 
             int height = DataManager.getInstance().getConfiguration().getCmsMediaDisplayHeight();
             int width = DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth();
+            return getIconURI(width, height);
+    }
+    
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#getIconURI(int, int)
+     */
+    @Override
+    public URI getIconURI(int width, int height) {
+        if (getFileName() != null) {
 
             String uriString = CmsMediaBean.getMediaUrl(this, Integer.toString(width), Integer.toString(height));
             try {
@@ -483,5 +498,14 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
 //        imageUrlBuilder.append(getFileName());
 //        return imageUrlBuilder.toString();
     }
+
+    /* (non-Javadoc)
+     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getTranslationsForName()
+     */
+    @Override
+    public IMetadataValue getTranslationsForName() {
+        return IMetadataValue.getTranslations(getName());
+    }
+
 
 }

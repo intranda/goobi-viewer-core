@@ -67,6 +67,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
             String imageName = pathSegments.get(1);
+            imageName = Helper.decodeUrl(imageName);
             String size;
             if (pathSegments.size() > 4) {
                 pathSegments.get(2);
@@ -75,8 +76,8 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             } else {
                 size = "full";
             }
-            if(!BeanUtils.getImageDeliveryBean().isExternalUrl(Helper.decodeUrl(imageName)) && !BeanUtils.getImageDeliveryBean().isCmsUrl(Helper.decodeUrl(imageName)) && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(URLDecoder.decode(imageName, "utf-8"))) {                
-                filterForAccessConditions(request, pi, Helper.decodeUrl(imageName), size);
+            if(!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName) && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {                
+                filterForAccessConditions(request, pi, imageName, size);
                 filterForImageSize(requestPath, size);
             }
         } catch (ServiceNotAllowedException e) {

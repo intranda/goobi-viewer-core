@@ -47,6 +47,18 @@ public class FacetItemTest {
     }
 
     /**
+     * @see FacetItem#FacetItem(String,boolean)
+     * @verifies split field and value range correctly
+     */
+    @Test
+    public void FacetItem_shouldSplitFieldAndValueRangeCorrectly() throws Exception {
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        Assert.assertEquals("FIELD", item.getField());
+        Assert.assertEquals("foo", item.getValue());
+        Assert.assertEquals("bar", item.getValue2());
+    }
+
+    /**
      * @see FacetItem#getQueryEscapedLink()
      * @verifies construct link correctly
      */
@@ -77,6 +89,16 @@ public class FacetItemTest {
     }
 
     /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies construct range link correctly
+     */
+    @Test
+    public void getQueryEscapedLink_shouldConstructRangeLinkCorrectly() throws Exception {
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        Assert.assertEquals("FIELD:[foo TO bar]", item.getQueryEscapedLink());
+    }
+
+    /**
      * @see FacetItem#generateFacetItems(String,Map,boolean,boolean,boolean)
      * @verifies sort items correctly
      */
@@ -102,5 +124,17 @@ public class FacetItemTest {
             Assert.assertEquals("Monograph", items.get(1).getLabel());
             Assert.assertEquals("Volume", items.get(0).getLabel());
         }
+    }
+
+    /**
+     * @see FacetItem#getFullValue()
+     * @verifies build full value correctly
+     */
+    @Test
+    public void getFullValue_shouldBuildFullValueCorrectly() throws Exception {
+        FacetItem item = new FacetItem("FIELD:[foo TO bar]", false);
+        Assert.assertEquals("foo", item.getValue());
+        Assert.assertEquals("bar", item.getValue2());
+        Assert.assertEquals("foo - bar", item.getFullValue());
     }
 }

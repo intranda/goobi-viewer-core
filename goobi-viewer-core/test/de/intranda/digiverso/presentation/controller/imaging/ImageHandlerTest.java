@@ -15,7 +15,12 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -89,6 +94,28 @@ public class ImageHandlerTest {
 
         String url = handler.getImageUrl(page);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FexteralU002FrestrictedU002FimagesU002F00000001.tif/info.json", url);   
+    }
+    
+    @Test
+    public void testResolveURIs() throws MalformedURLException, UnsupportedEncodingException, URISyntaxException {
+        String stringExternal ="https://localhost:8080/a/b/c d";
+        String stringInternal = "file:/a/b/c d#yxwg=123,52,564,213";
+        String stringRelative = "a/b/c d [1]-falls.jpg";
+        
+        URI uriExternal = ImageHandler.toURI(stringExternal);
+        Assert.assertEquals("https://localhost:8080/a/b/c%20d", uriExternal.toString());
+        URI uriInternal = ImageHandler.toURI(stringInternal);
+        Assert.assertEquals("file:///a/b/c%20d#yxwg=123,52,564,213", uriInternal.toString());
+        URI uriRelative = ImageHandler.toURI(stringRelative);
+        Assert.assertEquals("a/b/c%20d%20%5B1%5D-falls.jpg", uriRelative.toString());
+                
+        Path pathExternal = ImageHandler.getPath(uriExternal);
+        Assert.assertEquals("/a/b/c d", pathExternal.toString());
+        Path pathInternal = ImageHandler.getPath(uriInternal);
+        Assert.assertEquals("/a/b/c d", pathInternal.toString());
+        Path pathRelative = ImageHandler.getPath(uriRelative);
+        Assert.assertEquals("a/b/c d [1]-falls.jpg", pathRelative.toString());
+
     }
 
 }

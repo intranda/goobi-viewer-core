@@ -73,7 +73,7 @@ public class IIIFUrlHandler {
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality, String format, int thumbCompression) {
         if(ImageHandler.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
             try {
-                URI uri = new URI(fileUrl);
+                URI uri = ImageHandler.toURI(fileUrl);
                 if(StringUtils.isBlank(uri.getScheme())) {
                     uri = new URI("file", fileUrl, null);
                 }
@@ -82,7 +82,7 @@ public class IIIFUrlHandler {
                 logger.warn("file url {} is not a valid url: {}", fileUrl, e.getMessage());
             }
             StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, true));
+            sb.append("image/-/").append(BeanUtils.escapeCriticalUrlChracters(fileUrl, false));
             return getIIIFImageUrl(sb.toString(), region, size, rotation, quality, format);
         } else if (ImageHandler.isExternalUrl(fileUrl)) {
             if (isIIIFImageUrl(fileUrl)) {

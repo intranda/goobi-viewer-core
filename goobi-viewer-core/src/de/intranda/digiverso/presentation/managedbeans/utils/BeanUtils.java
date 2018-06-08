@@ -38,6 +38,7 @@ import de.intranda.digiverso.presentation.managedbeans.BookshelfBean;
 import de.intranda.digiverso.presentation.managedbeans.BrowseBean;
 import de.intranda.digiverso.presentation.managedbeans.CalendarBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
+import de.intranda.digiverso.presentation.managedbeans.CmsCollectionsBean;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
@@ -213,6 +214,10 @@ public class BeanUtils {
      */
     public static SearchBean getSearchBean() {
         return (SearchBean) getBeanByName("searchBean", SearchBean.class);
+    }
+    
+    public static CmsCollectionsBean getCMSCollectionsBean() {
+        return (CmsCollectionsBean) getBeanByName("cmsCollectionsBean", CmsCollectionsBean.class);
     }
 
     /**

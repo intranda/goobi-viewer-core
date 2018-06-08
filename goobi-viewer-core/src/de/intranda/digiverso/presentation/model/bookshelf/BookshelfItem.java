@@ -234,7 +234,7 @@ public class BookshelfItem implements Serializable {
                 url.append(logId).append('/');
             }
         }
-
+        
         // logger.debug("URL: " + url.toString());
         return url.toString();
     }
