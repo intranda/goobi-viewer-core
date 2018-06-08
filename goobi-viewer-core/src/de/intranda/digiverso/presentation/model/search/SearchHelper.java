@@ -1630,14 +1630,16 @@ public final class SearchHelper {
      * 
      * @param fields
      * @param searchTerms
+     * @param phraseSearch If true, quotation marks are added to terms
      * @return
      * @should generate query correctly
      * @should return empty string if no fields match
      * @should skip reserved fields
      * @should escape reserved characters
      * @should not escape asterisks
+     * @should add quotation marks if phraseSearch is true
      */
-    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms) {
+    public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, boolean phraseSearch) {
         logger.trace("generateExpandQuery");
         StringBuilder sbOuter = new StringBuilder();
         if (!searchTerms.isEmpty()) {
@@ -1672,6 +1674,9 @@ public final class SearchHelper {
                     }
                     if (!"*".equals(term)) {
                         term = ClientUtils.escapeQueryChars(term);
+                        if (phraseSearch) {
+                            term = "\"" + term + "\"";
+                        }
                     }
                     sbInner.append(term);
                 }
