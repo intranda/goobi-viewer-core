@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
