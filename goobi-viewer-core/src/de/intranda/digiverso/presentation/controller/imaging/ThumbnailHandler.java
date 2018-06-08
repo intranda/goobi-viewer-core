@@ -538,6 +538,7 @@ public class ThumbnailHandler {
                         case "image":
                         case "image/png":
                         case "image/jpg":
+                        case "image/jpeg":
                         case "image/tiff":
                         case "image/jp2":
                             thumbnailUrl = getFieldValue(doc, SolrConstants.THUMBNAIL);
