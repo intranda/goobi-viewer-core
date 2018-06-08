@@ -120,6 +120,8 @@ public class SearchBean implements Serializable {
     private String guiSearchString = "";
     /** Individual terms extracted from the user query (used for highlighting). */
     private Map<String, Set<String>> searchTerms = new HashMap<>();
+
+    private boolean phraseSearch = false;
     /** Current search result page. */
     private int currentPage = 1;
     /** Index of the currently open search result (used for search result browsing). */
@@ -601,7 +603,8 @@ public class SearchBean implements Serializable {
         if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
             String expandQuery = activeSearchType == 1 ? SearchHelper.generateAdvancedExpandQuery(advancedQueryGroups, advancedSearchGroupOperator)
                     : SearchHelper.generateExpandQuery(
-                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms);
+                            SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedQueryGroups), searchTerms,
+                            phraseSearch);
             currentSearch.setExpandQuery(expandQuery);
         }
 
@@ -739,6 +742,7 @@ public class SearchBean implements Serializable {
         guiSearchString = inSearchString;
         searchString = "";
         searchTerms.clear();
+        phraseSearch = false;
 
         inSearchString = inSearchString.trim();
         if (StringUtils.isNotEmpty(inSearchString)) {
@@ -784,6 +788,7 @@ public class SearchBean implements Serializable {
 
             if (inSearchString.contains("\"")) {
                 // Phrase search
+                phraseSearch = true;
                 String[] toSearch = inSearchString.split("\"");
                 StringBuilder sb = new StringBuilder();
                 for (String phrase : toSearch) {

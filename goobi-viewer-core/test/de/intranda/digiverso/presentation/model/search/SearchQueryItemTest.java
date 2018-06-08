@@ -98,8 +98,8 @@ public class SearchQueryItemTest {
             item.setField(SolrConstants.FULLTEXT);
             item.setValue("lorem ipsum dolor sit amet");
             Set<String> searchTerms = new HashSet<>(1);
-            Assert.assertEquals("(SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")", item.generateQuery(
-                    searchTerms, true));
+            Assert.assertEquals("(SUPERFULLTEXT:\"lorem ipsum dolor sit amet\" OR FULLTEXT:\"lorem ipsum dolor sit amet\")",
+                    item.generateQuery(searchTerms, true));
             Assert.assertTrue(searchTerms.contains("lorem ipsum dolor sit amet"));
         }
     }
@@ -125,8 +125,7 @@ public class SearchQueryItemTest {
             item.setField(SolrConstants.DEFAULT);
             item.setValue("[foo] :bar:");
             Set<String> searchTerms = new HashSet<>(2);
-            Assert.assertEquals("(SUPERDEFAULT:\"[foo] :bar:\" OR DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms,
-                    true));
+            Assert.assertEquals("(SUPERDEFAULT:\"[foo] :bar:\" OR DEFAULT:\"[foo] :bar:\")", item.generateQuery(searchTerms, true));
         }
     }
 
@@ -160,5 +159,39 @@ public class SearchQueryItemTest {
         Assert.assertEquals(
                 "SUPERDEFAULT:*foo* OR SUPERFULLTEXT:*foo* OR DEFAULT:*foo* OR FULLTEXT:*foo* OR NORMDATATERMS:*foo* OR UGCTERMS:*foo* OR OVERVIEWPAGE_DESCRIPTION:*foo* OR OVERVIEWPAGE_PUBLICATIONTEXT:*foo*",
                 item.generateQuery(searchTerms, true));
+    }
+
+    /**
+     * @see SearchQueryItem#checkAutoOperator()
+     * @verifies set operator correctly
+     */
+    @Test
+    public void checkAutoOperator_shouldSetOperatorCorrectly() throws Exception {
+        {
+            SearchQueryItem item = new SearchQueryItem(null);
+            item.setOperator(SearchItemOperator.AUTO);
+            item.setValue("\"val\"");
+            item.checkAutoOperator();
+            Assert.assertEquals(SearchItemOperator.PHRASE, item.getOperator());
+        }
+        {
+            SearchQueryItem item = new SearchQueryItem(null);
+            item.setOperator(SearchItemOperator.AUTO);
+            item.setValue("val");
+            item.checkAutoOperator();
+            Assert.assertEquals(SearchItemOperator.AND, item.getOperator());
+        }
+    }
+
+    /**
+     * @see SearchQueryItem#checkAutoOperator()
+     * @verifies do nothing if no value set
+     */
+    @Test
+    public void checkAutoOperator_shouldDoNothingIfNoValueSet() throws Exception {
+        SearchQueryItem item = new SearchQueryItem(null);
+        item.setOperator(SearchItemOperator.AUTO);
+        item.checkAutoOperator();
+        Assert.assertEquals(SearchItemOperator.AUTO, item.getOperator());
     }
 }

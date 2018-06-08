@@ -621,7 +621,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
         Assert.assertEquals(
                 " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:six OR OVERVIEWPAGE_DESCRIPTION:seven OR OVERVIEWPAGE_PUBLICATIONTEXT:eight)",
-                SearchHelper.generateExpandQuery(fields, searchTerms));
+                SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
 
     /**
@@ -635,7 +635,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put("MD_TITLE", new HashSet<>(Arrays.asList(new String[] { "one", "two" })));
 
-        Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms));
+        Assert.assertEquals("", SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
 
     /**
@@ -656,7 +656,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT, new HashSet<>(Arrays.asList(new String[] { "eight" })));
         Assert.assertEquals(
                 " +(DEFAULT:(one OR two) OR FULLTEXT:(two OR three) OR NORMDATATERMS:(four OR five) OR UGCTERMS:six OR OVERVIEWPAGE_DESCRIPTION:seven OR OVERVIEWPAGE_PUBLICATIONTEXT:eight)",
-                SearchHelper.generateExpandQuery(fields, searchTerms));
+                SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
 
     /**
@@ -668,7 +668,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants._CALENDAR_DAY });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants._CALENDAR_DAY, new HashSet<>(Arrays.asList(new String[] { "*", })));
-        Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms));
+        Assert.assertEquals(" +(YEARMONTHDAY:*)", SearchHelper.generateExpandQuery(fields, searchTerms, false));
     }
 
     /**
@@ -680,7 +680,19 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "[one]", ":two:" })));
-        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms));
+        Assert.assertEquals(" +(DEFAULT:(\\[one\\] OR \\:two\\:))", SearchHelper.generateExpandQuery(fields, searchTerms, false));
+    }
+
+    /**
+     * @see SearchHelper#generateExpandQuery(List,Map,boolean)
+     * @verifies add quotation marks if phraseSearch is true
+     */
+    @Test
+    public void generateExpandQuery_shouldAddQuotationMarksIfPhraseSearchIsTrue() throws Exception {
+        List<String> fields = Arrays.asList(new String[] { SolrConstants.DEFAULT });
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "one two three" })));
+        Assert.assertEquals(" +(DEFAULT:\"one\\ two\\ three\")", SearchHelper.generateExpandQuery(fields, searchTerms, true));
     }
 
     /**
