@@ -60,8 +60,9 @@ public class ThumbnailHandler {
     private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
     private static final String ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME = "FIRSTVOLUME";
 
-    public static final String[] REQUIRED_SOLR_FIELDS = { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL, SolrConstants.DOCTYPE,
-            SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
+    public static final String[] REQUIRED_SOLR_FIELDS =
+            { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL,
+                    SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
 
     private final int thumbWidth;
     private final int thumbHeight;
@@ -89,10 +90,10 @@ public class ThumbnailHandler {
             uri = uri.resolve(filename);
             return uri;
         } catch (URISyntaxException e) {
-           logger.error(e.toString(), e);
+            logger.error(e.toString(), e);
         }
         return null;
-//        return Paths.get(staticImagesPath, filename).toUri();
+        //        return Paths.get(staticImagesPath, filename).toUri();
     }
 
     /**
@@ -104,110 +105,110 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(PhysicalElement page) {
         return getThumbnailUrl(page, thumbWidth, thumbHeight);
     }
-    
+
     /**
      * Returns a link to the representative image for the given pi. If the pi doesn't match an indexed item, null is returned
      * 
-     * @param pi    the persistent identifier of the work which representative we want
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException {
-        return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(), DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+        return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
-    
+
     /**
-     * Returns a link to the representative image for the given pi with the given width and height. If the pi doesn't match an indexed item, null is returned
+     * Returns a link to the representative image for the given pi with the given width and height. If the pi doesn't match an indexed item, null is
+     * returned
      * 
-     * @param pi    the persistent identifier of the work which representative we want
-     * @param width     the width of the image
-     * @param height    the height of the image
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @param width the width of the image
+     * @param height the height of the image
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public String getThumbnailUrl(String pi, int width, int height) throws IndexUnreachableException, PresentationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if(doc != null) {
+        if (doc != null) {
             return getThumbnailUrl(doc, width, height);
-        } else {
-            return null;
-        }  
+        }
+        return null;
     }
-    
+
     /**
      * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned
      * 
-     * @param pi    the persistent identifier of the work which representative we want
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public String getSquareThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException {
         return getSquareThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
-    
+
     /**
      * Returns a link to a square representative image for the given pi. If the pi doesn't match an indexed item, null is returned
      * 
-     * @param pi    the persistent identifier of the work which representative we want
-     * @param size  the size (width and heigt) of the image
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @param size the size (width and heigt) of the image
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public String getSquareThumbnailUrl(String pi, int size) throws IndexUnreachableException, PresentationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if(doc != null) {
+        if (doc != null) {
             return getSquareThumbnailUrl(doc, size);
-        } else {
-            return null;
-        }  
+        }
+        return null;
     }
-    
+
     /**
-     * Returns a link to the image of the page of the given order (=page number) within the work with the given pi . 
-     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * Returns a link to the image of the page of the given order (=page number) within the work with the given pi . If the pi doesn't match an
+     * indexed work or the work desn't contain a page of the given order, null is returned
      * 
      * @param order the page number
-     * @param pi    the persistent identifier of the work which representative we want
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public String getThumbnailUrl(int order, String pi) throws IndexUnreachableException, PresentationException, DAOException {
-        return getThumbnailUrl(order, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(), DataManager.getInstance().getConfiguration().getThumbnailsHeight());
+        return getThumbnailUrl(order, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
+                DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
 
     /**
-     * Returns a link to the image of the page of the given order (=page number) within the work with the given pi of the given width and height. 
-     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * Returns a link to the image of the page of the given order (=page number) within the work with the given pi of the given width and height. If
+     * the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
      * 
      * @param order the page number
-     * @param pi    the persistent identifier of the work which representative we want
-     * @param width     the width of the image
-     * @param height    the height of the image
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @param width the width of the image
+     * @param height the height of the image
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
     public String getThumbnailUrl(int order, String pi, int width, int height) throws IndexUnreachableException, PresentationException, DAOException {
         PhysicalElement page = getPage(pi, order);
-        if(page != null) {
+        if (page != null) {
             return getThumbnailUrl(page, width, height);
-        } else {
-            return null;
-        }  
+        }
+        return null;
     }
-    
+
     /**
-     * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi. 
-     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi. If the pi doesn't match an
+     * indexed work or the work desn't contain a page of the given order, null is returned
      * 
      * @param order the page number
-     * @param pi    the persistent identifier of the work which representative we want
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -216,23 +217,22 @@ public class ThumbnailHandler {
     }
 
     /**
-     * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi of the given size. 
-     * If the pi doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
+     * Returns a link to a square image of the page of the given order (=page number) within the work with the given pi of the given size. If the pi
+     * doesn't match an indexed work or the work desn't contain a page of the given order, null is returned
      * 
      * @param order the page number
-     * @param pi    the persistent identifier of the work which representative we want
-     * @param size  the width and height of the image
-     * @return      The url string or null of no work is found
+     * @param pi the persistent identifier of the work which representative we want
+     * @param size the width and height of the image
+     * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    public String getSquareThumbnailUrl( int order, String pi, int size) throws IndexUnreachableException, PresentationException, DAOException {
+    public String getSquareThumbnailUrl(int order, String pi, int size) throws IndexUnreachableException, PresentationException, DAOException {
         PhysicalElement page = getPage(pi, order);
-        if(page != null) {
+        if (page != null) {
             return getSquareThumbnailUrl(page, size);
-        } else {
-            return null;
-        }  
+        }
+        return null;
     }
 
     /**
@@ -260,13 +260,13 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(PhysicalElement page, int width, int height) {
         String path = getImagePath(page);
-        if(isStaticImageResource(path)) {
+        if (isStaticImageResource(path)) {
             return path;
-        } else if(IIIFUrlHandler.isIIIFImageUrl(path)) {
+        } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, null, getScale(width, height), null, null, null);
-        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
+        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, null, getScale(width, height), null, null, null);
-        } else {            
+        } else {
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
                     thumbCompression);
         }
@@ -294,17 +294,16 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(PhysicalElement page, int size) {
         String path = getImagePath(page);
-        if(isStaticImageResource(path)) {
+        if (isStaticImageResource(path)) {
             return path;
-        } else if(IIIFUrlHandler.isIIIFImageUrl(path)) {
+        } else if (IIIFUrlHandler.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
-        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
+        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(path)) {
             return iiifUrlHandler.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
-        } else {                  
+        } else {
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg", thumbCompression);
         }
     }
-
 
     /**
      * Returns a link to a small image representating the given document. The size depends on viewer configuration
@@ -315,7 +314,7 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(StructElement doc) {
         return getThumbnailUrl(doc, thumbWidth, thumbHeight);
     }
-    
+
     /**
      * Returns a link to a small image representating the given document. The size depends on viewer configuration
      * 
@@ -325,10 +324,10 @@ public class ThumbnailHandler {
     public String getThumbnailUrl(SolrDocument doc) {
         return getThumbnailUrl(getStructElement(doc), thumbWidth, thumbHeight);
     }
-    
+
     /**
-     * Returns a link to a small image representating the given document. The size depends on viewer configuration.
-     * The image may be cut at the longer side to provide a square image
+     * Returns a link to a small image representating the given document. The size depends on viewer configuration. The image may be cut at the longer
+     * side to provide a square image
      * 
      * @param page
      * @return
@@ -342,9 +341,9 @@ public class ThumbnailHandler {
      * @return
      */
     private StructElement getStructElement(SolrDocument doc) {
-        String value = (String)doc.getFirstValue(SolrConstants.IDDOC);
+        String value = (String) doc.getFirstValue(SolrConstants.IDDOC);
         Long iddoc = 0l;
-        if(value != null) {
+        if (value != null) {
             iddoc = Long.valueOf(value);
         }
         try {
@@ -355,7 +354,7 @@ public class ThumbnailHandler {
             return new StructElement();
         }
     }
-    
+
     /**
      * Returns a link to an image representating the given page of the given size (to be exact: the largest image size which fits within the given
      * bounds and keeps the image proportions
@@ -367,7 +366,7 @@ public class ThumbnailHandler {
         return getThumbnailUrl(getStructElement(doc), width, height);
 
     }
-    
+
     /**
      * Returns a link to an image representating the given page of the given size. The image will be cut at the longer side to create a square image
      * 
@@ -388,20 +387,19 @@ public class ThumbnailHandler {
      */
     public String getThumbnailUrl(StructElement doc, int width, int height) {
         String thumbnailUrl = getImagePath(doc);
-        if(thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
+        if (thumbnailUrl != null && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
-        } else if(IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
+        } else if (IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
-        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
+        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
             return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
-        } else if(thumbnailUrl != null){       
-        return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default", "jpg",
-                thumbCompression);
+        } else if (thumbnailUrl != null) {
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.FULL_IMAGE, "!" + width + "," + height, "0", "default",
+                    "jpg", thumbCompression);
         } else {
             return null;
         }
     }
-
 
     /**
      * returns a link the an image representing the given document. Its size depends on configuration. The image is always square and contains as much
@@ -425,14 +423,14 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(StructElement doc, int size) {
         String thumbnailUrl = getImagePath(doc);
-        if(StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
+        if (StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
-        } else if(IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
+        } else if (IIIFUrlHandler.isIIIFImageUrl(thumbnailUrl)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
-        } else if(IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
+        } else if (IIIFUrlHandler.isIIIFImageInfoUrl(thumbnailUrl)) {
             return iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
-        } else {   
-            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg",            
+        } else {
+            return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, doc.getPi(), Region.SQUARE_IMAGE, size + ",", "0", "default", "jpg",
                     thumbCompression);
         }
     }
@@ -499,12 +497,12 @@ public class ThumbnailHandler {
 
         String thumbnailUrl = null;
 
-        if(doc == null) {
+        if (doc == null) {
             return null;
         } else if (doc.isAnchor()) {
             if (ANCHOR_THUMBNAIL_MODE_GENERIC.equals(this.anchorThumbnailMode)) {
                 thumbnailUrl = getThumbnailPath(ANCHOR_THUMB).toString();
-            } else if(ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(this.anchorThumbnailMode)) {
+            } else if (ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(this.anchorThumbnailMode)) {
                 try {
                     thumbnailUrl = getImagePath(doc.getFirstVolume(Arrays.asList(REQUIRED_SOLR_FIELDS)));
                 } catch (PresentationException | IndexUnreachableException e) {
@@ -600,31 +598,50 @@ public class ThumbnailHandler {
         }
         return mimeType;
     }
-    
+
     /**
      * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height
      * 
      * @param item
      * @param width
      * @param height
-     * @return 
+     * @return
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> item) {
         return getThumbnailUrl(item, thumbWidth, thumbHeight);
     }
-    
+
     /**
      * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the default width and height
      * 
      * @param item
      * @param width
      * @param height
-     * @return 
+     * @return
      */
     public String getThumbnailUrl(CMSMediaItem item) {
         return getThumbnailUrl(Optional.ofNullable(item), thumbWidth, thumbHeight);
     }
 
+    /**
+     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the given width and height
+     * 
+     * @param item
+     * @param width
+     * @param height
+     * @return
+     */
+    public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
+        return optional.map(item -> {
+            String imagePath = item.getImageURI();
+            String size = getSize(width, height);
+            String format = "jpg";
+            if (imagePath.toLowerCase().endsWith(".png")) {
+                format = "png";
+            }
+            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format, thumbCompression);
+        }).orElse("");
+    }
 
     /**
      * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the given width and height
@@ -632,82 +649,60 @@ public class ThumbnailHandler {
      * @param item
      * @param width
      * @param height
-     * @return 
-     */
-    public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
-        return optional.map(item -> {
-        String imagePath = item.getImageURI();
-        String size = getSize(width, height);
-        String format = "jpg";
-        if(imagePath.toLowerCase().endsWith(".png")) {
-            format = "png";
-        }
-        return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.FULL_IMAGE, size, "0", "default", format,
-                thumbCompression);
-        }).orElse("");
-    }
-    
-    /**
-     * Return the url to the image of the given {@link CMSMediaItem}, fit into a box of the given width and height
-     * 
-     * @param item
-     * @param width
-     * @param height
-     * @return 
+     * @return
      */
     public String getThumbnailUrl(CMSMediaItem media, int width, int height) {
         return getThumbnailUrl(Optional.ofNullable(media), width, height);
     }
-    
+
     /**
      * Return the url to the image of the given {@link CMSMediaItem} of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
      * @param size
-     * @return 
+     * @return
      */
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> optional, int size) {
         return optional.map(item -> {
-        String imagePath = item.getImageURI();
-        String format = "jpg";
-        if(imagePath.toLowerCase().endsWith(".png")) {
-            format = "png";
-        }
-        return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format,
-                thumbCompression);
+            String imagePath = item.getImageURI();
+            String format = "jpg";
+            if (imagePath.toLowerCase().endsWith(".png")) {
+                format = "png";
+            }
+            return this.iiifUrlHandler.getIIIFImageUrl(imagePath, "-", Region.SQUARE_IMAGE, size + ",", "0", "default", format, thumbCompression);
         }).orElse("");
     }
-    
+
     /**
      * Return the url to the image of the given {@link CMSMediaItem} of the given size. The image is always square and contains as much of the actual
      * image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
      * @param size
-     * @return 
+     * @return
      */
     public String getSquareThumbnailUrl(CMSMediaItem media, int size) {
         return getSquareThumbnailUrl(Optional.ofNullable(media), size);
     }
-    
+
     /**
-     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the actual
-     * image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the
+     * actual image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
-     * @return 
+     * @return
      */
     public String getSquareThumbnailUrl(Optional<CMSMediaItem> item) {
         return getSquareThumbnailUrl(item, thumbWidth);
     }
-    
+
     /**
-     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the actual
-     * image as is possible to fit into a square - the delivered square is always centered within the full image
+     * Return the url to the image of the given {@link CMSMediaItem} of the default size. The image is always square and contains as much of the
+     * actual image as is possible to fit into a square - the delivered square is always centered within the full image
      * 
      * @param item
-     * @return 
+     * @return
      */
     public String getSquareThumbnailUrl(CMSMediaItem item) {
         return getSquareThumbnailUrl(Optional.ofNullable(item));
@@ -720,48 +715,45 @@ public class ThumbnailHandler {
      */
     private String getSize(Integer width, Integer height) {
         String size = "max";
-        if(height == null || (height.equals(0) && width != null && !width.equals(0))) {
+        if (height == null || (height.equals(0) && width != null && !width.equals(0))) {
             size = width + ",";
-        } else if((width == null || (width.equals(0)) && height != null && !height.equals(0))) {
+        } else if ((width == null || (width.equals(0)) && !height.equals(0))) {
             size = "," + height;
-        } else if(height != null && width != null && !width.equals(0) && !width.equals(0)) {
+        } else if (!width.equals(0) && !width.equals(0)) {
             size = "!" + width + "," + height;
         }
         return size;
     }
-    
+
     /**
      * Tests whether the given url refers to an image within the viewer image resource folder
      * 
      * @param thumbnailUrl
-     * @return  true if the url starts with the viewer url path to image resources
+     * @return true if the url starts with the viewer url path to image resources
      */
     public boolean isStaticImageResource(String thumbnailUrl) {
         return thumbnailUrl.contains(staticImagesPath);
     }
-    
 
     /**
-     * Creates a {@link Scale} representing the given width and height. If both values are greater than 0, a scale is returned 
-     * which scaled the image to fit a box of the given size. If just of width and height is greater than 0, a scale is returned to
-     * that value; if both values are 0 or less, the full (max) image scale is returned
+     * Creates a {@link Scale} representing the given width and height. If both values are greater than 0, a scale is returned which scaled the image
+     * to fit a box of the given size. If just of width and height is greater than 0, a scale is returned to that value; if both values are 0 or less,
+     * the full (max) image scale is returned
      * 
      * @param width
      * @param height
-     * @return  An instance of {@link Scale} which represents the given values for width and height
+     * @return An instance of {@link Scale} which represents the given values for width and height
      */
     private Scale getScale(int width, int height) {
-        if(width > 0 && height > 0) {
+        if (width > 0 && height > 0) {
             return new Scale.ScaleToBox(width, height);
-        } else if(width > 0) {
+        } else if (width > 0) {
             return new Scale.ScaleToWidth(width);
-        } else if(height > 0) {
+        } else if (height > 0) {
             return new Scale.ScaleToHeight(height);
         } else {
             return Scale.MAX;
         }
     }
-
-
 
 }
