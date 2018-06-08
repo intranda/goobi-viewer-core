@@ -1591,9 +1591,9 @@ public class ConfigurationTest {
     public void getAllDrillDownFields_shouldReturnCorrectOrder() throws Exception {
         List<String> result = DataManager.getInstance().getConfiguration().getAllDrillDownFields();
         Assert.assertEquals(4, result.size());
-        Assert.assertEquals("FACET_DC", result.get(0));
-        Assert.assertEquals("FIELD3", result.get(1));
-        Assert.assertEquals("FIELD1", result.get(2));
+        Assert.assertEquals("DC", result.get(0));
+        Assert.assertEquals("FIELD1", result.get(1));
+        Assert.assertEquals("FIELD3", result.get(2));
         Assert.assertEquals("FIELD2", result.get(3));
     }
 
@@ -1655,7 +1655,7 @@ public class ConfigurationTest {
      */
     @Test
     public void getPriorityValuesForDrillDownField_shouldReturnReturnAllConfiguredElementsForHierarchicalFields() throws Exception {
-        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("FACET_DC");
+        List<String> result = DataManager.getInstance().getConfiguration().getPriorityValuesForDrillDownField("DC");
         Assert.assertNotNull(result);
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("collection2", result.get(0));
