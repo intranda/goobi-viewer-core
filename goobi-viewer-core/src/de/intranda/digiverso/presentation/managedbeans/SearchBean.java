@@ -174,29 +174,8 @@ public class SearchBean implements Serializable {
     }
 
     /**
-     * Pretty-URL entry point.
-     *
-     * @return
-     * @throws IndexUnreachableException
-     * @throws PresentationException
-     * @throws DAOException
-     */
-    @Deprecated
-    public String newSearch() throws PresentationException, IndexUnreachableException, DAOException {
-        logger.trace("newSearch");
-
-        // set the current page for the horizontal template navigation, therefore this determines the current-cat css class
-        //        Object o = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("navigationHelper");
-        //        if (o != null) {
-        //            NavigationHelper nh = (NavigationHelper) o;
-        //            nh.setCurrentPage("search");
-        //        }
-
-        return search();
-    }
-
-    /**
-     *
+     * Executes the search using already set parameters. Usually called from Pretty URLs.
+     * 
      * @return {@link String} null
      * @throws IndexUnreachableException
      * @throws PresentationException
@@ -217,6 +196,7 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimple() {
+        generateSimpleSearchString(guiSearchString);
         return searchSimple(true);
     }
 
@@ -286,7 +266,7 @@ public class SearchBean implements Serializable {
      */
     public String resetSearchAction() {
         logger.trace("resetSearchAction");
-        setSearchStringKeepCurrentPage("");
+        generateSimpleSearchString("");
         setCurrentPage(1);
         setExactSearchString("");
         facets.resetCurrentFacets();
@@ -383,7 +363,7 @@ public class SearchBean implements Serializable {
     protected void resetSimpleSearchParameters() {
         logger.trace("resetSimpleSearchParameters");
         currentSearchFilter = SearchHelper.SEARCH_FILTER_ALL;
-        setSearchStringKeepCurrentPage("");
+        generateSimpleSearchString("");
         setCurrentPage(1);
 
         guiSearchString = "";
@@ -688,7 +668,7 @@ public class SearchBean implements Serializable {
      */
     public void setSearchStringForUrl(String searchString) {
         logger.trace("setSearchStringForUrl: {}", searchString);
-        setSearchStringKeepCurrentPage(searchString);
+        generateSimpleSearchString(searchString);
     }
 
     /**
@@ -700,14 +680,16 @@ public class SearchBean implements Serializable {
         logger.trace("setSearchString: {}", searchString);
         // Reset search result page
         currentPage = 1;
-        setSearchStringKeepCurrentPage(searchString);
+        guiSearchString = searchString;
+        generateSimpleSearchString(searchString);
     }
 
     /**
      * @param inSearchString the searchString to set
      */
-    public void setSearchStringKeepCurrentPage(String inSearchString) {
+    void generateSimpleSearchString(String inSearchString) {
         logger.trace("setSearchStringKeepCurrentPage: {}", inSearchString);
+        logger.trace("currentSearchFilter: {}", currentSearchFilter.getLabel());
         if (inSearchString == null) {
             inSearchString = "";
         }
@@ -1362,6 +1344,7 @@ public class SearchBean implements Serializable {
      * @param searchFilterLabel
      */
     public void setCurrentSearchFilterString(String searchFilterLabel) {
+        logger.trace("setCurrentSearchFilterString: {}", searchFilterLabel);
         for (SearchFilter filter : getSearchFilters()) {
             if (filter.getLabel().equals(searchFilterLabel)) {
                 this.currentSearchFilter = filter;

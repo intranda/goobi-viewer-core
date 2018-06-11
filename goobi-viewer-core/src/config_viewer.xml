@@ -254,7 +254,7 @@
 		<useViewerLocaleAsRecordLanguage>false</useViewerLocaleAsRecordLanguage>
 
 		<!-- theme: defines the theme that shall be used -->
-		<theme subTheme="false" mainTheme="reference" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true">
+		<theme subTheme="false" mainTheme="geiwv" discriminatorField="" autoSwitch="true" addFilterQuery="false" filterQueryVisible="true">
 			<!-- rootPath: If the theme is localed externally, the CMS template loading mechanism needs the root path of the theme. The path must be defined down to the /themes folder, just 
 				above the folder named like the theme. -->
 			<!-- <rootPath>/opt/digiverso/goobi-viewer-theme-reference/goobi-viewer-theme-reference/src/META-INF/resources/resources/themes/</rootPath> -->
