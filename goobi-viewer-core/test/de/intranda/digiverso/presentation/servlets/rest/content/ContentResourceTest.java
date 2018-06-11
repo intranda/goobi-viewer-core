@@ -11,6 +11,7 @@ import de.intranda.digiverso.presentation.TestUtils;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 
 public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -59,7 +60,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see ContentResource#getContentDocument(String,String,String,String)
      * @verifies throw ContentNotFoundException if file not found
      */
-    @Test(expected = ContentNotFoundException.class)
+    @Test(expected = ServiceNotAllowedException.class)
     public void getContentDocument_shouldThrowContentNotFoundExceptionIfFileNotFound() throws Exception {
         resource.getContentDocument(null, "foo", "notfound", "00000001.xml");
     }
@@ -77,7 +78,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see ContentResource#getFulltextDocument(String,String)
      * @verifies throw ContentNotFoundException if file not found
      */
-    @Test(expected = ContentNotFoundException.class)
+    @Test(expected = ServiceNotAllowedException.class)
     public void getFulltextDocument_shouldThrowContentNotFoundExceptionIfFileNotFound() throws Exception {
         resource.getFulltextDocument("notfound", "00000001.txt");
     }
@@ -97,7 +98,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see ContentResource#getTeiDocument(String,String)
      * @verifies throw ContentNotFoundException if file not found
      */
-    @Test(expected = ContentNotFoundException.class)
+    @Test(expected = ServiceNotAllowedException.class)
     public void getTeiDocument_shouldThrowContentNotFoundExceptionIfFileNotFound() throws Exception {
         resource.getTeiDocument("notfound", "en");
     }
