@@ -428,7 +428,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         break;
                 }
             }
-            childDocs = childDocs.subList(number, childDocs.size());
+//            childDocs = childDocs.subList(number, childDocs.size());
             if (childDocs.isEmpty()) {
                 ownerDocs.clear();
                 ownerHits.clear();

@@ -282,6 +282,11 @@ return collections;
             completeCollectionList = null;
         }
     }
+    
+    public boolean isSubcollection() {
+        boolean subcollection = StringUtils.isNotBlank(getTopVisibleElement()) && !getTopVisibleElement().equals(getBaseElementName());
+        return subcollection;
+    }
 
     public String getTopVisibleElement() {
         if (topVisibleElement == null && getBaseElementName() != null) {
@@ -652,6 +657,11 @@ return collections;
         return showAllHierarchyLevels;
     }
 
+    public String getCollectionUrl(String collection) {
+        return getCompleteList().stream().filter(element -> element.getName().equals(collection)).findFirst()
+        .map(element -> getCollectionUrl(element)).orElse("");
+    }
+    
     public String getCollectionUrl(HierarchicalBrowseDcElement collection) {
         if (collection.getInfo().getLinkURI(BeanUtils.getRequest()) != null) {
             return collection.getInfo().getLinkURI(BeanUtils.getRequest()).toString();
