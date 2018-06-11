@@ -348,11 +348,11 @@ public class Metadata implements Serializable {
             // Values containing random HTML-like elements (e.g. 'V<a>e') will break the table, therefore escape the string
             displayValue = StringEscapeUtils.escapeHtml(displayValue);
             if (applicationUrl != null) {
-                sbFullValue.append("<a href=\"").append(applicationUrl).append(PageType.browse.getName()).append('/');
+                sbFullValue.append("<a href=\"").append(applicationUrl).append(PageType.browse.getName()).append("/-/1/-/");
                 if (field != null) {
                     sbFullValue.append(field).append(':');
                 }
-                sbFullValue.append(sbHierarchy.toString()).append("/-/1/-/-/").append("\">").append(displayValue).append("</a>");
+                sbFullValue.append(sbHierarchy.toString()).append("/\">").append(displayValue).append("</a>");
             } else {
                 sbFullValue.append(displayValue);
             }

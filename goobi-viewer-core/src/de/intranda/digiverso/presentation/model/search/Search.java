@@ -106,6 +106,7 @@ public class Search implements Serializable {
     @Column(name = "page", nullable = false)
     private int page;
 
+    @Deprecated
     @Column(name = "collection")
     private String hierarchicalFacetString;
 
@@ -461,6 +462,7 @@ public class Search implements Serializable {
     /**
      * @return the hierarchicalFacetString
      */
+    @Deprecated
     public String getHierarchicalFacetString() {
         return hierarchicalFacetString;
     }
@@ -468,6 +470,7 @@ public class Search implements Serializable {
     /**
      * @param hierarchicalFacetString the hierarchicalFacetString to set
      */
+    @Deprecated
     public void setHierarchicalFacetString(String hierarchicalFacetString) {
         this.hierarchicalFacetString = hierarchicalFacetString;
     }

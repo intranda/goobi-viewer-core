@@ -213,7 +213,7 @@ public class BookshelfItem implements Serializable {
     }
 
     /**
-     * Constructs the image URL for this bookshelf item.
+     * Constructs the image view URL for this bookshelf item.
      *
      * @return The URL as string.
      */
@@ -230,7 +230,10 @@ public class BookshelfItem implements Serializable {
             } else {                
                 url.append("/1/");
             }
-            if (StringUtils.isNotEmpty(logId)) {
+            //hack for gei worldviews
+            if("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
+                url.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
+            } else if (StringUtils.isNotEmpty(logId)) {
                 url.append(logId).append('/');
             }
         }

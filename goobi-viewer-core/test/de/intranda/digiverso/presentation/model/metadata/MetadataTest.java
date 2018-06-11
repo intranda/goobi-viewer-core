@@ -67,7 +67,7 @@ public class MetadataTest {
         {
             String value = Metadata.buildHierarchicalValue("DC", "a.b", null, "http://localhost:8080/");
             Assert.assertEquals(
-                    "<a href=\"http://localhost:8080/browse/DC:a/-/1/-/-/\">a</a> > <a href=\"http://localhost:8080/browse/DC:a.b/-/1/-/-/\">a.b</a>",
+                    "<a href=\"http://localhost:8080/browse/-/1/-/DC:a/\">a</a> > <a href=\"http://localhost:8080/browse/-/1/-/DC:a.b/\">a.b</a>",
                     value);
         }
         {

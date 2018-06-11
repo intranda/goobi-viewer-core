@@ -625,6 +625,7 @@ public class BrowseElement implements Serializable {
                     } else {
                         ret = se.getMetadataValue(SolrConstants.LABEL);
                     }
+                    ret = Helper.getTranslation(ret, locale);
                     break;
                 case EVENT:
                     // Try to use the event name or type (optionally with dates), otherwise use LABEL
@@ -644,6 +645,7 @@ public class BrowseElement implements Serializable {
                     } else {
                         ret = se.getMetadataValue(SolrConstants.LABEL);
                     }
+                    ret = Helper.getTranslation(ret, locale);
                     break;
                 default:
                     ret = generateDefaultLabel(se, locale);
@@ -955,9 +957,14 @@ public class BrowseElement implements Serializable {
                             .append(pi)
                             .append('/')
                             .append(imageNo)
-                            .append('/')
-                            .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                             .append('/');
+                    //hack for worldviews which needs language paramater instead of logid
+                    if("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
+                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
+                    } else {                   
+                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                        .append('/');
+                    }
                     break;
             }
         } else {
@@ -968,9 +975,14 @@ public class BrowseElement implements Serializable {
                     .append(pi)
                     .append('/')
                     .append(imageNo)
-                    .append('/')
-                    .append(StringUtils.isNotEmpty(logId) ? logId : '-')
                     .append('/');
+                  //hack for worldviews which needs language paramater instead of logid
+                    if("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
+                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
+                    } else {                   
+                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-')
+                        .append('/');
+                    }
         }
 
         // logger.trace("generateUrl: {}", sb.toString());

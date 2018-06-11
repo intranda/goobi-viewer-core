@@ -235,7 +235,6 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimpleResetCollections() {
-        facets.resetCurrentCollection();
         facets.resetCurrentFacetString();
         return searchSimple();
     }
@@ -246,7 +245,6 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimpleSetFacets(String facetString) {
-        facets.resetCurrentCollection();
         facets.resetCurrentFacetString();
         facets.setCurrentFacetString(facetString);
         return searchSimple();
@@ -459,50 +457,54 @@ public class SearchBean implements Serializable {
 
             for (SearchQueryItem queryItem : queryGroup.getQueryItems()) {
                 // logger.trace("Query item: {}", queryItem.toString());
-                if (StringUtils.isNotEmpty(queryItem.getField()) && StringUtils.isNotBlank(queryItem.getValue())) {
-                    if (!sbInfo.toString().endsWith("(")) {
-                        sbInfo.append(' ')
-                                .append(Helper.getTranslation("searchOperator_" + queryGroup.getOperator().name(), BeanUtils.getLocale()))
-                                .append(' ');
-                    }
-                    // Generate the hierarchical facet parameter from query items
-                    if (queryItem.isHierarchical()) {
-                        logger.trace("{} is hierarchical", queryItem.getField());
-                        sbCurrentCollection.append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
-                        sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
-                                .append(": \"")
-                                .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
-                                .append('"');
-                        continue;
-                    }
+                if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
+                    continue;
+                }
+                if (!sbInfo.toString().endsWith("(")) {
+                    sbInfo.append(' ')
+                            .append(Helper.getTranslation("searchOperator_" + queryGroup.getOperator().name(), BeanUtils.getLocale()))
+                            .append(' ');
+                }
+                // Generate the hierarchical facet parameter from query items
+                if (queryItem.isHierarchical()) {
+                    logger.trace("{} is hierarchical", queryItem.getField());
+                    sbCurrentCollection.append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
+                    sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
+                            .append(": \"")
+                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
+                            .append('"');
+                    continue;
+                }
 
-                    // Non-hierarchical fields
-                    if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
-                        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
-                    }
-                    String itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
-                    // logger.trace("Item query: {}", itemQuery);
-                    switch (queryItem.getOperator()) {
-                        case IS:
-                        case PHRASE:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
-                                    .append(": \"")
-                                    .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
-                                    .append('"');
-                            break;
-                        default:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ").append(
-                                    Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
-                    }
-
-                    // Add item query part to the group query
-                    if (itemQuery.length() > 0) {
-                        if (sbGroup.length() > 0) {
-                            // If this is not the first item, add the group's operator
-                            sbGroup.append(' ').append(queryGroup.getOperator()).append(' ');
+                // Non-hierarchical fields
+                if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
+                    searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
+                }
+                String itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
+                // logger.trace("Item query: {}", itemQuery);
+                sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
+                switch (queryItem.getOperator()) {
+                    case IS:
+                    case PHRASE:
+                        if (!queryItem.getValue().startsWith("\"")) {
+                            sbInfo.append('"');
                         }
-                        sbGroup.append('(').append(itemQuery).append(')');
+                        sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (!queryItem.getValue().endsWith("\"")) {
+                            sbInfo.append('"');
+                        }
+                        break;
+                    default:
+                        sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                }
+
+                // Add item query part to the group query
+                if (itemQuery.length() > 0) {
+                    if (sbGroup.length() > 0) {
+                        // If this is not the first item, add the group's operator
+                        sbGroup.append(' ').append(queryGroup.getOperator()).append(' ');
                     }
+                    sbGroup.append('(').append(itemQuery).append(')');
                 }
             }
             // Add this group's query part to the main query
@@ -526,26 +528,9 @@ public class SearchBean implements Serializable {
             }
         }
         if (sbCurrentCollection.length() > 0) {
-            facets.setCurrentHierarchicalFacetString(sbCurrentCollection.toString());
+            facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
-            facets.setCurrentHierarchicalFacetString("-");
-        }
-
-        // Add faceting
-        if (!facets.getCurrentFacets().isEmpty()) {
-            if (sb.length() > 0) {
-                sb.insert(0, '(');
-                sb.append(')');
-            }
-            for (FacetItem facetItem : facets.getCurrentFacets()) {
-                if (!facetItem.isHierarchial()) {
-                    if (sb.length() > 0) {
-                        sb.append(" AND ");
-                    }
-                    sb.append(facetItem.getLink());
-                    logger.debug("Added facet: {}", facetItem.getLink());
-                }
-            }
+            facets.setCurrentFacetString("-");
         }
 
         // Add discriminator subquery, if set and configured to be part of the visible query
@@ -597,7 +582,6 @@ public class SearchBean implements Serializable {
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(sortString);
         currentSearch.setFacetString(facets.getCurrentFacetString());
-        currentSearch.setHierarchicalFacetString(facets.getCurrentHierarchicalFacetString());
 
         // Add search hit aggregation parameters, if enabled
         if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
@@ -1178,12 +1162,12 @@ public class SearchBean implements Serializable {
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
-            facets.removeFacetAction(facetQuery, "pretty:browse5");
+            facets.removeFacetAction(facetQuery, "pretty:browse4");
             SearchFunctionality search = oPath.get().getCmsPage().getSearch();
             search.redirectToSearchUrl();
             return "";
         } else if (PageType.browse.equals(oPath.map(path -> path.getPageType()).orElse(PageType.other))) {
-            String ret = facets.removeFacetAction(facetQuery, "pretty:browse5");
+            String ret = facets.removeFacetAction(facetQuery, "pretty:browse4");
             return ret;
         } else {
             String ret = facets.removeFacetAction(facetQuery,

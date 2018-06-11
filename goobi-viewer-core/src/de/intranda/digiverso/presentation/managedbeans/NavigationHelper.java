@@ -834,15 +834,28 @@ public class NavigationHelper implements Serializable {
         resetBreadcrumbs();
         Set<CMSPage> linkedPages = new HashSet<>();
         List<LabeledLink> tempBreadcrumbs = new ArrayList<>();
-        while (cmsPage != null) {
-            if (linkedPages.contains(cmsPage)) {
+        CMSPage currentPage = cmsPage;
+        
+        
+        //If the current cms page contains a collection and we are in a subcollection of it, attempt to add a breadcrumb link for the subcollection
+        try {
+            if(cmsPage.getCollection() != null && cmsPage.getCollection().isSubcollection()) {
+                LabeledLink link = new LabeledLink(cmsPage.getCollection().getTopVisibleElement(), cmsPage.getCollection().getCollectionUrl(cmsPage.getCollection().getTopVisibleElement()), 0);
+                tempBreadcrumbs.add(0, link);
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error(e.toString(), e);
+        }
+        
+        while (currentPage != null) {
+            if (linkedPages.contains(currentPage)) {
                 //encountered a breadcrumb loop. Simply break here
                 return;
             }
-            linkedPages.add(cmsPage);
+            linkedPages.add(currentPage);
             if (DataManager.getInstance()
                     .getDao()
-                    .getStaticPageForCMSPage(cmsPage)
+                    .getStaticPageForCMSPage(currentPage)
                     .map(sp -> sp.getPageName())
                     .filter(name -> PageType.index.name().equals(name))
                     .isPresent()) {
@@ -850,19 +863,21 @@ public class NavigationHelper implements Serializable {
                 //The current page is the start page. No need to add further breadcrumbs
                 return;
             }
-            LabeledLink pageLink = new LabeledLink(cmsPage.getMenuTitle(), cmsPage.getPageUrl(), 0);
+            LabeledLink pageLink = new LabeledLink(currentPage.getMenuTitle(), currentPage.getPageUrl(), 0);
             tempBreadcrumbs.add(0, pageLink);
-            if (StringUtils.isNotBlank(cmsPage.getParentPageId())) {
+            if (StringUtils.isNotBlank(currentPage.getParentPageId())) {
                 try {
-                    Long cmsPageId = Long.parseLong(cmsPage.getParentPageId());
-                    cmsPage = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
+                    Long cmsPageId = Long.parseLong(currentPage.getParentPageId());
+                    currentPage = DataManager.getInstance().getDao().getCMSPage(cmsPageId);
                 } catch (NumberFormatException | DAOException e) {
-                    logger.error("CMS breadcrumb creation: Parent page of page " + cmsPage.getId() + " is not a valid page id");
-                    cmsPage = null;
+                    logger.error("CMS breadcrumb creation: Parent page of page " + currentPage.getId() + " is not a valid page id");
+                    currentPage = null;
                 }
             } else {
-                cmsPage = null;
+                currentPage = null;
             }
+
+            
         }
         List<LabeledLink> breadcrumbs = Collections.synchronizedList(this.breadcrumbs);
         synchronized (breadcrumbs) {

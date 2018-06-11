@@ -352,12 +352,25 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @Deprecated
     public String getCollectionViewUri() {
         String baseUri = BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName();
-        return baseUri + "/" + PageType.expandCollection + "/" + getCollectionField() + ':' + getCollectionName() + "/";
+        return new StringBuilder(baseUri).append('/')
+                .append(PageType.expandCollection)
+                .append('/')
+                .append(getCollectionField())
+                .append(':')
+                .append(getCollectionName())
+                .append('/')
+                .toString();
     }
 
     public String getCollectionSearchUri() throws UnsupportedEncodingException {
-        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/" + PageType.browse.getName() + "/" + getCollectionField() + ':'
-                + URLEncoder.encode(getCollectionName(), "utf-8") + "/-/1/-/-/";
+        return new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).append('/')
+                .append(PageType.browse.getName())
+                .append("/-/1/-/")
+                .append(getCollectionField())
+                .append(':')
+                .append(URLEncoder.encode(getCollectionName(), "utf-8"))
+                .append('/')
+                .toString();
     }
 
     /* (non-Javadoc)
@@ -367,12 +380,11 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public String getDescription() {
         return getCurrentLanguageMetadata().getDescription();
     }
-    
+
     @Override
     public String getName() {
         return getCurrentLanguageMetadata().getName();
     }
-
 
     /**
      * @return the size
@@ -395,11 +407,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @Override
     public URI getIconURI() {
 
-            int height = DataManager.getInstance().getConfiguration().getCmsMediaDisplayHeight();
-            int width = DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth();
-            return getIconURI(width, height);
+        int height = DataManager.getInstance().getConfiguration().getCmsMediaDisplayHeight();
+        int width = DataManager.getInstance().getConfiguration().getCmsMediaDisplayWidth();
+        return getIconURI(width, height);
     }
-    
 
     /* (non-Javadoc)
      * @see de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile#getIconURI(int, int)
@@ -481,22 +492,22 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     }
 
     public String getImageURI() {
-        
-        Path path = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(), DataManager.getInstance().getConfiguration().getCmsMediaFolder(), getFileName());
+
+        Path path = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
+                DataManager.getInstance().getConfiguration().getCmsMediaFolder(), getFileName());
         return path.toUri().toString();
-                
-                
-//        StringBuilder imageUrlBuilder = new StringBuilder("file:/");
-//
-//        // Add an extra slash if not on Windows
-//        String os = System.getProperty("os.name").toLowerCase();
-//        if (os.indexOf("win") == -1) {
-//            imageUrlBuilder.append('/');
-//        }
-//        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
-//        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
-//        imageUrlBuilder.append(getFileName());
-//        return imageUrlBuilder.toString();
+
+        //        StringBuilder imageUrlBuilder = new StringBuilder("file:/");
+        //
+        //        // Add an extra slash if not on Windows
+        //        String os = System.getProperty("os.name").toLowerCase();
+        //        if (os.indexOf("win") == -1) {
+        //            imageUrlBuilder.append('/');
+        //        }
+        //        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getViewerHome());
+        //        imageUrlBuilder.append(DataManager.getInstance().getConfiguration().getCmsMediaFolder()).append('/');
+        //        imageUrlBuilder.append(getFileName());
+        //        return imageUrlBuilder.toString();
     }
 
     /* (non-Javadoc)
@@ -506,6 +517,5 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public IMetadataValue getTranslationsForName() {
         return IMetadataValue.getTranslations(getName());
     }
-
 
 }

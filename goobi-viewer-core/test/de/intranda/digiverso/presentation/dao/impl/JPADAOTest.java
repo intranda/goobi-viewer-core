@@ -746,7 +746,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(Long.valueOf(1), o.getOwner().getId());
         Assert.assertEquals("query 1", o.getQuery());
         Assert.assertEquals(1, o.getPage());
-        Assert.assertEquals("collection 1", o.getHierarchicalFacetString());
         Assert.assertEquals("sort 1", o.getSortString());
         Assert.assertEquals("filter 1", o.getFacetString());
         Assert.assertTrue(o.isNewHitsNotification());
@@ -769,9 +768,8 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         o.setName("new search");
         o.setQuery("PI:*");
         o.setPage(1);
-        o.setHierarchicalFacetString("DC:newcol");
         o.setSortString("SORT_FIELD");
-        o.setFacetString("DOCSTRCT:Other");
+        o.setFacetString("DOCSTRCT:Other;;DC:newcol");
         o.setNewHitsNotification(true);
         Date now = new Date();
         o.setDateUpdated(now);
@@ -785,7 +783,6 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
         Assert.assertEquals(o.getName(), o2.getName());
         Assert.assertEquals(o.getQuery(), o2.getQuery());
         Assert.assertEquals(o.getPage(), o2.getPage());
-        Assert.assertEquals(o.getHierarchicalFacetString(), o2.getHierarchicalFacetString());
         Assert.assertEquals(o.getSortString(), o2.getSortString());
         Assert.assertEquals(o.getFacetString(), o2.getFacetString());
         Assert.assertEquals(o.isNewHitsNotification(), o2.isNewHitsNotification());
@@ -2180,7 +2177,7 @@ public class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     @Test
     public void getCMSPagesCount_shouldReturnCorrectCount() throws Exception {
-        long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.EMPTY_MAP);
+        long numPages = DataManager.getInstance().getDao().getCMSPageCount(Collections.emptyMap());
         Assert.assertEquals(3, numPages);
     }
 

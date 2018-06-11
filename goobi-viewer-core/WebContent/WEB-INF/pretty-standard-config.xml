@@ -170,8 +170,8 @@
 		<pattern value="/searchList/" />
 		<view-id value="/searchList.xhtml" />
 	</url-mapping>
-	<url-mapping id="browse5">
-		<pattern value="/browse/#{dc:searchBean.facets.currentCollection}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{filter:searchBean.facets.currentFacetString}/" />
+	<url-mapping id="browse4">
+		<pattern value="/browse/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.search}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
