@@ -905,6 +905,7 @@ public final class SearchHelper {
      * @param fulltext
      * @param targetFragmentLength Desired (approximate) length of the text fragment.
      * @param firstMatchOnly If true, only the fragment for the first match will be returned
+     * @param addFragmentIfNoMatches If true, a fragment will be added even if no term was matched
      * @return
      * @should not add prefix and suffix to text
      * @should truncate string to 200 chars if no terms are given
@@ -913,8 +914,11 @@ public final class SearchHelper {
      * @should remove unclosed HTML tags
      * @should return multiple match fragments correctly
      * @should replace line breaks with spaces
+     * @should add fragment if no term was matched only if so requested
+     * 
      */
-    public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly) {
+    public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
+            boolean addFragmentIfNoMatches) {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
@@ -981,7 +985,7 @@ public final class SearchHelper {
             }
 
             // If no search term has been found (i.e. when searching for a phrase), make sure no empty string gets delivered
-            if (StringUtils.isEmpty(fulltextFragment)) {
+            if (addFragmentIfNoMatches && StringUtils.isEmpty(fulltextFragment)) {
                 if (fulltext.length() > 200) {
                     fulltextFragment = fulltext.substring(0, 200);
                 } else {

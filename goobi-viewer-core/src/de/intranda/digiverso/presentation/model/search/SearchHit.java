@@ -172,7 +172,7 @@ public class SearchHit implements Comparable<SearchHit> {
             Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
             Set<String> translateAdditionalFields, HitType overrideType) throws PresentationException, IndexUnreachableException, DAOException {
         List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
-                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true);
+                DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
         String docstructType = se.getDocStructType();
         if (DocType.METADATA.name().equals(se.getMetadataValue(SolrConstants.DOCTYPE))) {
@@ -255,7 +255,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION));
                         if (!highlightedValue.equals(value)) {
                             descriptionTexts = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION),
-                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false);
+                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true);
 
                         }
                     }
@@ -266,7 +266,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT));
                         if (!highlightedValue.equals(value)) {
                             publicationTexts = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT),
-                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false);
+                                    highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, true);
                         }
                     }
                     if ((descriptionTexts != null && !descriptionTexts.isEmpty()) || (publicationTexts != null && !publicationTexts.isEmpty())) {
@@ -341,10 +341,10 @@ public class SearchHit implements Comparable<SearchHit> {
             }
             // logger.trace(fulltext);
             List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT),
-                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false);
+                    fulltext, DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), false, false);
 
             int count = 0;
-            if (fulltextFragments != null) {
+            if (fulltextFragments != null && !fulltextFragments.isEmpty()) {
                 SearchHit hit = new SearchHit(HitType.PAGE,
                         new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("TEI", locale), null, false, locale, null), searchTerms,
                         locale);
@@ -472,7 +472,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         break;
                 }
             }
-//            childDocs = childDocs.subList(number, childDocs.size());
+            //            childDocs = childDocs.subList(number, childDocs.size());
             if (childDocs.isEmpty()) {
                 ownerDocs.clear();
                 ownerHits.clear();

@@ -224,7 +224,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldMakeTermsBoldIfFoundInText() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "ipsum", "tempor", "labore" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true);
         Assert.assertFalse(truncated.isEmpty());
         System.out.println(truncated.get(0));
         //        Assert.assertTrue(truncated.get(0).contains("<span class=\"search-list--highlight\">ipsum</span>"));
@@ -240,7 +240,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void truncateFulltext_shouldNotAddPrefixAndSuffixToText() throws Exception {
         String original = "text";
-        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true);
+        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true);
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals("text", truncated.get(0));
     }
@@ -252,7 +252,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermsAreGiven() throws Exception {
         String original = LOREM_IPSUM;
-        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true);
+        List<String> truncated = SearchHelper.truncateFulltext(null, original, 200, true, true);
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals(original.substring(0, 200), truncated.get(0));
     }
@@ -265,9 +265,15 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldTruncateStringTo200CharsIfNoTermHasBeenFound() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "boogers" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true);
-        Assert.assertFalse(truncated.isEmpty());
-        Assert.assertEquals(original.substring(0, 200), truncated.get(0));
+        {
+            List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, true);
+            Assert.assertFalse(truncated.isEmpty());
+            Assert.assertEquals(original.substring(0, 200), truncated.get(0));
+        }
+        {
+            List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 200, true, false);
+            Assert.assertTrue(truncated.isEmpty());
+        }
     }
 
     /**
@@ -276,10 +282,10 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void truncateFulltext_shouldRemoveUnclosedHTMLTags() throws Exception {
-        List<String> truncated = SearchHelper.truncateFulltext(null, "Hello <a href", 200, true);
+        List<String> truncated = SearchHelper.truncateFulltext(null, "Hello <a href", 200, true, true);
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals("Hello", truncated.get(0));
-        truncated = SearchHelper.truncateFulltext(null, "Hello <a href ...> and then <b", 200, true);
+        truncated = SearchHelper.truncateFulltext(null, "Hello <a href ...> and then <b", 200, true, true);
         Assert.assertEquals("Hello <a href ...> and then", truncated.get(0));
     }
 
@@ -291,7 +297,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldReturnMultipleMatchFragmentsCorrectly() throws Exception {
         String original = LOREM_IPSUM;
         String[] terms = { "in" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
         Assert.assertEquals(7, truncated.size());
         for (String fragment : truncated) {
             Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">in</span>"));
@@ -306,7 +312,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     public void truncateFulltext_shouldReplaceLineBreaksWithSpaces() throws Exception {
         String original = "one<br>two<br>three";
         String[] terms = { "two" };
-        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false);
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
         Assert.assertEquals(1, truncated.size());
         for (String fragment : truncated) {
             Assert.assertTrue(fragment.contains("one <span class=\"search-list--highlight\">two</span> three"));
