@@ -459,53 +459,54 @@ public class SearchBean implements Serializable {
 
             for (SearchQueryItem queryItem : queryGroup.getQueryItems()) {
                 // logger.trace("Query item: {}", queryItem.toString());
-                if (StringUtils.isNotEmpty(queryItem.getField()) && StringUtils.isNotBlank(queryItem.getValue())) {
-                    if (!sbInfo.toString().endsWith("(")) {
-                        sbInfo.append(' ')
-                                .append(Helper.getTranslation("searchOperator_" + queryGroup.getOperator().name(), BeanUtils.getLocale()))
-                                .append(' ');
-                    }
-                    // Generate the hierarchical facet parameter from query items
-                    if (queryItem.isHierarchical()) {
-                        logger.trace("{} is hierarchical", queryItem.getField());
-                        sbCurrentCollection.append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
-                        sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
-                                .append(": \"")
-                                .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
-                                .append('"');
-                        continue;
-                    }
+                if (StringUtils.isEmpty(queryItem.getField()) || StringUtils.isBlank(queryItem.getValue())) {
+                    continue;
+                }
+                if (!sbInfo.toString().endsWith("(")) {
+                    sbInfo.append(' ')
+                            .append(Helper.getTranslation("searchOperator_" + queryGroup.getOperator().name(), BeanUtils.getLocale()))
+                            .append(' ');
+                }
+                // Generate the hierarchical facet parameter from query items
+                if (queryItem.isHierarchical()) {
+                    logger.trace("{} is hierarchical", queryItem.getField());
+                    sbCurrentCollection.append(queryItem.getField()).append(':').append(queryItem.getValue().trim()).append(";;").toString();
+                    sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
+                            .append(": \"")
+                            .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
+                            .append('"');
+                    continue;
+                }
 
-                    // Non-hierarchical fields
-                    if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
-                        searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
-                    }
-                    String itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
-                    // logger.trace("Item query: {}", itemQuery);
-                    sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
-                    switch (queryItem.getOperator()) {
-                        case IS:
-                        case PHRASE:
-                            if (!queryItem.getValue().startsWith("\"")) {
-                                sbInfo.append('"');
-                            }
-                            sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
-                            if (!queryItem.getValue().endsWith("\"")) {
-                                sbInfo.append('"');
-                            }
-                            break;
-                        default:
-                            sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
-                    }
-
-                    // Add item query part to the group query
-                    if (itemQuery.length() > 0) {
-                        if (sbGroup.length() > 0) {
-                            // If this is not the first item, add the group's operator
-                            sbGroup.append(' ').append(queryGroup.getOperator()).append(' ');
+                // Non-hierarchical fields
+                if (searchTerms.get(SolrConstants.FULLTEXT) == null) {
+                    searchTerms.put(SolrConstants.FULLTEXT, new HashSet<String>());
+                }
+                String itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
+                // logger.trace("Item query: {}", itemQuery);
+                sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
+                switch (queryItem.getOperator()) {
+                    case IS:
+                    case PHRASE:
+                        if (!queryItem.getValue().startsWith("\"")) {
+                            sbInfo.append('"');
                         }
-                        sbGroup.append('(').append(itemQuery).append(')');
+                        sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                        if (!queryItem.getValue().endsWith("\"")) {
+                            sbInfo.append('"');
+                        }
+                        break;
+                    default:
+                        sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                }
+
+                // Add item query part to the group query
+                if (itemQuery.length() > 0) {
+                    if (sbGroup.length() > 0) {
+                        // If this is not the first item, add the group's operator
+                        sbGroup.append(' ').append(queryGroup.getOperator()).append(' ');
                     }
+                    sbGroup.append('(').append(itemQuery).append(')');
                 }
             }
             // Add this group's query part to the main query

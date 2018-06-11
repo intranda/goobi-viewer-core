@@ -231,6 +231,7 @@ public class SearchQueryItem implements Serializable {
      * @should preserve truncation
      */
     public String generateQuery(Set<String> searchTerms, boolean aggregateHits) {
+        checkAutoOperator();
         StringBuilder sbItem = new StringBuilder();
 
         if (StringUtils.isBlank(value)) {
