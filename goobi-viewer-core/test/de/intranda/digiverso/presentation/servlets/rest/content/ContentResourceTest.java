@@ -10,6 +10,7 @@ import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 
 public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -97,7 +98,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see ContentResource#getTeiDocument(String,String)
      * @verifies throw ContentNotFoundException if file not found
      */
-    @Test(expected = ServiceNotAllowedException.class)
+    @Test(expected = ContentNotFoundException.class)
     public void getTeiDocument_shouldThrowContentNotFoundExceptionIfFileNotFound() throws Exception {
         resource.getTeiDocument("notfound", "en");
     }
