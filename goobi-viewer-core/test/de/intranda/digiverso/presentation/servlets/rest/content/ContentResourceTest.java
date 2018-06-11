@@ -10,7 +10,6 @@ import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.TestUtils;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 
 public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -42,7 +41,7 @@ public class ContentResourceTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see ContentResource#getAltoDocument(String,String)
      * @verifies throw ContentNotFoundException if file not found
      */
-    @Test(expected = ContentNotFoundException.class)
+    @Test(expected = ServiceNotAllowedException.class)
     public void getAltoDocument_shouldThrowContentNotFoundExceptionIfFileNotFound() throws Exception {
         resource.getAltoDocument("notfound", "00000001.xml");
     }
