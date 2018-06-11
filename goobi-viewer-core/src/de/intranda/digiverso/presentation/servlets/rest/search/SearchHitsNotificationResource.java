@@ -78,7 +78,6 @@ public class SearchHitsNotificationResource {
                 // TODO access condition filters for each user
                 SearchFacets facets = new SearchFacets();
                 facets.setCurrentFacetString(search.getFacetString());
-                facets.setCurrentHierarchicalFacetString(search.getHierarchicalFacetString());
                 String oldSortString = search.getSortString();
                 search.setSortString('!' + SolrConstants.DATECREATED);
                 search.execute(facets, null, 100, 0, null, null);

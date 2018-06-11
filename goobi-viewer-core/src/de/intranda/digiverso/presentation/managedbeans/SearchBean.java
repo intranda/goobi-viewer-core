@@ -235,7 +235,6 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimpleResetCollections() {
-        facets.resetCurrentCollection();
         facets.resetCurrentFacetString();
         return searchSimple();
     }
@@ -246,7 +245,6 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimpleSetFacets(String facetString) {
-        facets.resetCurrentCollection();
         facets.resetCurrentFacetString();
         facets.setCurrentFacetString(facetString);
         return searchSimple();
@@ -530,26 +528,9 @@ public class SearchBean implements Serializable {
             }
         }
         if (sbCurrentCollection.length() > 0) {
-            facets.setCurrentHierarchicalFacetString(sbCurrentCollection.toString());
+            facets.setCurrentFacetString(facets.getCurrentFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
-            facets.setCurrentHierarchicalFacetString("-");
-        }
-
-        // Add faceting
-        if (!facets.getCurrentFacets().isEmpty()) {
-            if (sb.length() > 0) {
-                sb.insert(0, '(');
-                sb.append(')');
-            }
-            for (FacetItem facetItem : facets.getCurrentFacets()) {
-                if (!facetItem.isHierarchial()) {
-                    if (sb.length() > 0) {
-                        sb.append(" AND ");
-                    }
-                    sb.append(facetItem.getLink());
-                    logger.debug("Added facet: {}", facetItem.getLink());
-                }
-            }
+            facets.setCurrentFacetString("-");
         }
 
         // Add discriminator subquery, if set and configured to be part of the visible query
@@ -601,7 +582,6 @@ public class SearchBean implements Serializable {
         currentSearch.setPage(currentPage);
         currentSearch.setSortString(sortString);
         currentSearch.setFacetString(facets.getCurrentFacetString());
-        currentSearch.setHierarchicalFacetString(facets.getCurrentHierarchicalFacetString());
 
         // Add search hit aggregation parameters, if enabled
         if (DataManager.getInstance().getConfiguration().isAggregateHits() && !searchTerms.isEmpty()) {
@@ -1182,12 +1162,12 @@ public class SearchBean implements Serializable {
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
-            facets.removeFacetAction(facetQuery, "pretty:browse5");
+            facets.removeFacetAction(facetQuery, "pretty:browse4");
             SearchFunctionality search = oPath.get().getCmsPage().getSearch();
             search.redirectToSearchUrl();
             return "";
         } else if (PageType.browse.equals(oPath.map(path -> path.getPageType()).orElse(PageType.other))) {
-            String ret = facets.removeFacetAction(facetQuery, "pretty:browse5");
+            String ret = facets.removeFacetAction(facetQuery, "pretty:browse4");
             return ret;
         } else {
             String ret = facets.removeFacetAction(facetQuery,

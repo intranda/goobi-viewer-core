@@ -94,10 +94,10 @@
 		date_created="2013-07-15 12:00:00.000000000" text="comment 4 text" />
 
 	<searches search_id="1" owner_id="1" name="search 1" query="query 1"
-		page="1" date_updated="2013-07-15 00:00:00.000000000" collection="collection 1"
+		page="1" date_updated="2013-07-15 00:00:00.000000000"
 		sort_field="sort 1" filter="filter 1" new_hits_notification="1" />
 	<searches search_id="2" owner_id="2" name="search 2" query="query 2"
-		page="2" date_updated="2013-07-15 00:01:00.000000000" collection="collection 2"
+		page="2" date_updated="2013-07-15 00:01:00.000000000"
 		sort_field="sort 2" new_hits_notification="1" />
 	<searches search_id="3" owner_id="1" name="search 3" query="query 3"
 		page="1" date_updated="2013-07-15 12:00:00.000000000"
