@@ -482,17 +482,20 @@ public class SearchBean implements Serializable {
                     }
                     String itemQuery = queryItem.generateQuery(searchTerms.get(SolrConstants.FULLTEXT), aggregateHits);
                     // logger.trace("Item query: {}", itemQuery);
+                    sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ");
                     switch (queryItem.getOperator()) {
                         case IS:
                         case PHRASE:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale()))
-                                    .append(": \"")
-                                    .append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()))
-                                    .append('"');
+                            if (!queryItem.getValue().startsWith("\"")) {
+                                sbInfo.append('"');
+                            }
+                            sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                            if (!queryItem.getValue().endsWith("\"")) {
+                                sbInfo.append('"');
+                            }
                             break;
                         default:
-                            sbInfo.append(Helper.getTranslation(queryItem.getField(), BeanUtils.getLocale())).append(": ").append(
-                                    Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
+                            sbInfo.append(Helper.getTranslation(queryItem.getValue(), BeanUtils.getLocale()));
                     }
 
                     // Add item query part to the group query
