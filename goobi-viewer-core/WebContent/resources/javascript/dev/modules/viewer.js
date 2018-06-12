@@ -1969,7 +1969,18 @@ var viewerJS = ( function( viewer ) {
     };
     
     viewer.chronoSlider = {
-        init: function( config ) {
+    	/**
+    	 * Method to initialize the chronology slider.
+    	 * 
+    	 * @method init
+    	 * @param {Object} config An config object which overwrites the defaults.
+    	 * @param {Array} config.yearList An Array of all possible years.
+    	 * @param {Number} config.startValue The value of the first year.
+    	 * @param {Number} config.endValue The value of the last year.
+    	 * @param {String} config.currentMinRangeValue The lower range value.
+    	 * @param {String} config.currentMaxRangeValue The higher range value.
+    	 */
+    	init: function( config ) {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'viewer.chronoSlider.init' );
