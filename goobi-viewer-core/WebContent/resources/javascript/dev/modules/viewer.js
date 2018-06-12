@@ -1957,6 +1957,111 @@ var viewerJS = ( function( viewer ) {
 var viewerJS = ( function( viewer ) {
     'use strict';
     
+    var _debug = true;
+    var _firstHandlePos;
+    var _lastHandlePos;
+    var _defaults = {
+    	yearList: [],            		
+        startValue: 0,
+        endValue: 0,
+        currentMinRangeValue: '',
+        currentMaxRangeValue: '',
+    };
+    
+    viewer.chronoSlider = {
+        init: function( config ) {
+            if ( _debug ) {
+                console.log( '##############################' );
+                console.log( 'viewer.chronoSlider.init' );
+                console.log( '##############################' );
+                console.log( 'viewer.chronoSlider.init: config - ', config );
+            }
+            
+            $.extend( true, _defaults, config );
+            
+            $( "#chronoSlider" ).slider({
+        		range: true,
+				min: 0,
+        		max: _defaults.yearList.length - 1,
+				values: [ _defaults.yearList.indexOf( _defaults.currentMinRangeValue ), _defaults.yearList.indexOf( _defaults.currentMaxRangeValue) ],
+        		slide: function( event, ui ) {
+        			$( '.chronology-slider-start' ).html( _defaults.yearList[ ui.values[ 0 ] ] );
+        			$( '.chronology-slider-end' ).html( _defaults.yearList[ ui.values[ 1 ] ] );
+
+        			// set handler position
+        			if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
+                		$( "#chronoSlider .ui-slider-handle:first" ).css('margin-right', '-10px');
+                		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');
+                	}
+        			else {
+        				$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
+        			}
+        		},
+        		stop: function( event, ui ) {
+        			var startDate = parseInt( $( '.chronology-slider-start' ).text() );
+        			var endDate = parseInt( $( '.chronology-slider-end' ).text() );
+        			
+        			// show loader
+        			$( '.chronology-slider-action-loader' ).addClass( 'active' );
+        			
+        			// set query to hidden input
+        			$( '[id*="chronologySliderInput"]' ).val( '[' + startDate + ' TO ' + endDate + ']' );
+        			
+        			// submit form
+        			$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+        		},
+        	});
+            
+            // set handler position
+        	_firstHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:first" ).css('left') );
+        	_lastHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:last" ).css('left') );
+        	
+        	$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
+        	
+        	if ( _firstHandlePos == _lastHandlePos ) {
+        		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');	
+        	}
+        	
+        	// reset slider
+        	if ( _defaults.startValue > _defaults.yearList[ 0 ] || _defaults.endValue < _defaults.yearList[ _defaults.yearList.length - 1 ] ) {
+        		$( '.chronology-slider-action-reset' ).addClass( 'active' );
+        		$( '[data-reset="chrono-slider"]' ).on( 'click', function() {
+            		_resetChronoSlider( _defaults.yearList );
+            	} );
+        	} 
+        }
+    };
+    
+    /**
+     * Method to reset the chronology slider.
+     * 
+     * @method _resetChronoSlider
+     * @param {Array} years An Array of all possible years.
+     * */
+    function _resetChronoSlider( years ) {
+    	if ( _debug ) {
+            console.log( '---------- _resetChronoSlider() ----------' );
+            console.log( '_resetChronoSlider: years = ', years );
+        }
+    	
+		var $slider = $( '#chronoSlider' );
+		
+		$slider.slider( {
+			min: 0,
+			max: years.length - 1
+		} );
+		
+		$( '[id*="chronologySliderInput"]' ).val( '[' + years[ 0 ] + ' TO ' + years[years.length - 1] + ']' );
+		$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
+	}
+    
+    return viewer;
+    
+} )( viewerJS || {}, jQuery );
+
+var viewerJS = ( function( viewer ) {
+    'use strict';
+    
     var _debug = false;
     var _dataTablePaginator = null;
     var _txtField1 = null;

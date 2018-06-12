@@ -20,6 +20,25 @@
                 #{msg.widgetChronology_label}:
             </div>
             
+            <div class="widget-chronology-slider__item chronology-slider-actions">
+                <ul>
+                    <li class="widget-chronology-slider__item chronology-slider-action-loader">
+                        <img src="#{request.contextPath}/resources/images/image_preloader.gif" alt="Chrono Slider Loader" />
+                    </li>
+                    <li class="widget-chronology-slider__item chronology-slider-action-reset">
+                        <button 
+                            type="button" 
+                            class="btn-clean" 
+                            title="#{msg.removeFacet}" 
+                            data-toggle="tooltip" 
+                            data-placement="top" 
+                            data-reset="chrono-slider">
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
             <!-- START/END YEAR -->
             <div class="widget-chronology-slider__item chronology-slider-start">#{searchBean.facets.getCurrentMinRangeValue("YEAR")}</div>
             <div class="widget-chronology-slider__item chronology-slider-end">#{searchBean.facets.getCurrentMaxRangeValue("YEAR")}</div>
@@ -36,51 +55,15 @@
             </h:form>
     
             <script type="text/javascript">
-          		//<![CDATA[
-            	var firstHandlePos;
-          		var lastHandlePos;
-            	var yearList = #{searchBean.facets.getValueRange("YEAR")};
-            
-            	$( "#chronoSlider" ).slider({
-            		range: true,
-    				min: 0,
-            		max: yearList.length - 1,
-    				values: [ yearList.indexOf(#{searchBean.facets.getCurrentMinRangeValue("YEAR")}), yearList.indexOf(#{searchBean.facets.getCurrentMaxRangeValue("YEAR")}) ],
-            		slide: function( event, ui ) {
-            			$( '.chronology-slider-start' ).html( yearList[ ui.values[ 0 ] ] );
-            			$( '.chronology-slider-end' ).html( yearList[ ui.values[ 1 ] ] );
-    
-            			// set handler position
-            			if ( ui.values[ 0 ] == ui.values[ 1 ] ) {
-                    		$( "#chronoSlider .ui-slider-handle:first" ).css('margin-right', '-10px');
-                    		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');
-                    	}
-            			else {
-            				$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
-            			}
-            		},
-            		stop: function( event, ui ) {
-            			var startDate = parseInt( $( '.chronology-slider-start' ).text() );
-            			var endDate = parseInt( $( '.chronology-slider-end' ).text() );
-            			
-            			// set query to hidden input
-            			$( '[id*="chronologySliderInput"]' ).val( '[' + startDate + ' TO ' + endDate + ']' );
-            			
-            			// submit form
-            			$( '[id*="chronologySliderForm"] input[type="submit"]' ).click();
-            		},
-            	});
+            	var chronoSliderConfig = {
+                	yearList: #{searchBean.facets.getValueRange("YEAR")},            		
+                	startValue: parseInt( $( '.chronology-slider-start' ).text() ),
+                	endValue: parseInt( $( '.chronology-slider-end' ).text() ),
+                	currentMinRangeValue: #{searchBean.facets.getCurrentMinRangeValue("YEAR")},
+                    currentMaxRangeValue: #{searchBean.facets.getCurrentMaxRangeValue("YEAR")},
+            	};
             	
-            	// set handler position
-            	firstHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:first" ).css('left') );
-            	lastHandlePos = parseInt( $( "#chronoSlider .ui-slider-handle:last" ).css('left') );
-            	
-            	$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '-10px');
-            	
-            	if ( firstHandlePos == lastHandlePos ) {
-            		$( "#chronoSlider .ui-slider-handle:last" ).css('margin-left', '0');	
-            	}
-            	//]]>
+            	viewerJS.chronoSlider.init( chronoSliderConfig );
             </script>
         </div>
         </ui:fragment>

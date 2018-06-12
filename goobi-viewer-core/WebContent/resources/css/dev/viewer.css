@@ -50,6 +50,12 @@
   overflow: hidden;
 }
 /* GRID */
+/* LIST RESET */
+.mx-list-reset {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 /* ==============================================================
    General styling
    ==============================================================*/
@@ -7006,13 +7012,40 @@ div[id*="-Modal"] .email-form .form-group {
   color: #1a1a1a;
   /* ELEMENT */
 }
-.widget-chronology-slider__item.chronology-slider-label {
-  -ms-grid-column: span 2;
-      grid-column: span 2;
+.widget-chronology-slider__item.chronology-slider-label,
+.widget-chronology-slider__item.chronology-slider-actions {
   -ms-flex-item-align: center;
       -ms-grid-row-align: center;
       align-self: center;
   padding-bottom: 10px;
+}
+.widget-chronology-slider__item.chronology-slider-actions ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: end;
+      justify-content: flex-end;
+}
+.widget-chronology-slider__item.chronology-slider-actions li {
+  text-align: right;
+}
+.widget-chronology-slider__item.chronology-slider-actions img {
+  width: 14px;
+  height: 14px;
+  margin-top: -2px;
+}
+.widget-chronology-slider__item.chronology-slider-actions [data-reset="chrono-slider"] {
+  padding-left: 5px;
+}
+.widget-chronology-slider__item.chronology-slider-action-loader,
+.widget-chronology-slider__item.chronology-slider-action-reset {
+  display: none;
+}
+.widget-chronology-slider__item.chronology-slider-action-loader.active,
+.widget-chronology-slider__item.chronology-slider-action-reset.active {
+  display: list-item;
 }
 .widget-chronology-slider__item.chronology-slider-start,
 .widget-chronology-slider__item.chronology-slider-end {
@@ -7029,26 +7062,31 @@ div[id*="-Modal"] .email-form .form-group {
 #chronoSlider {
   height: 10px;
   border-radius: 5px;
-  border-color: #ccc;
+  border-color: #eee;
   background-image: none;
-  background-color: #ccc;
+  background-color: #eee;
 }
 #chronoSlider .ui-slider-range,
 #chronoSlider .ui-slider-handle {
   border-radius: 4px;
-  border-color: #507ebf;
   background-image: none;
-  background-color: #507ebf;
 }
 #chronoSlider .ui-slider-range:focus,
 #chronoSlider .ui-slider-handle:focus {
   outline: none;
+}
+#chronoSlider .ui-slider-range {
+  border-color: #507ebf;
+  background-color: #507ebf;
 }
 #chronoSlider .ui-slider-handle {
   width: 10px;
   height: 8px;
   top: 0;
   margin: 0;
+  border-color: #6f6f6f;
+  background-color: #ccc;
+  cursor: pointer;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
