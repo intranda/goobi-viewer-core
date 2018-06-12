@@ -7091,15 +7091,6 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
-@media screen and (max-width: 768px) {
-  .topbar-search {
-    /* ELEMENT */
-  }
-  .topbar-search__item.chronology {
-    display: none !important;
-    visibility: hidden !important;
-  }
-}
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    Widget CMS
