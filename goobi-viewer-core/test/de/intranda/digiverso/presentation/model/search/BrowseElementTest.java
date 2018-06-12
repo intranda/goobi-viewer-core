@@ -62,7 +62,7 @@ public class BrowseElementTest extends AbstractSolrEnabledTest {
         searchTerms.put("MD_YEARPUBLISH", new HashSet<>(Arrays.asList(new String[] { "1984" })));
 
         be.addAdditionalMetadataContainingSearchTerms(se, searchTerms, null, null);
-
+        Assert.assertEquals(2, be.getAdditionalMetadataList().size());
         {
             String field = "MD_TITLE";
             Assert.assertNotNull(be.getMetadataList(field));

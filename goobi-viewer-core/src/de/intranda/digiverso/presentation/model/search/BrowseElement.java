@@ -109,6 +109,11 @@ public class BrowseElement implements Serializable {
     private NavigationHelper navigationHelper;
     @JsonIgnore
     private List<Metadata> metadataList = null;
+    /**
+     * List of just the metadata fields that were added because they contained search terms (for use where not the entire metadata list is desired).
+     */
+    @JsonIgnore
+    private final List<Metadata> additionalMetadataList = new ArrayList<>();
     @JsonIgnore
     private String mimeType = "";
     @JsonIgnore
@@ -526,6 +531,7 @@ public class BrowseElement implements Serializable {
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
+                                additionalMetadataList.add(new Metadata(docFieldName, "", highlightedValue));
                             }
                         }
                     }
@@ -552,6 +558,7 @@ public class BrowseElement implements Serializable {
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
+                                additionalMetadataList.add(new Metadata(termsFieldName, "", highlightedValue));
                             }
                         }
                     }
@@ -952,37 +959,26 @@ public class BrowseElement implements Serializable {
                 default:
                     PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
                             hasImages || hasMedia, useOverviewPage, false);
-                    sb.append(pageType.getName())
-                            .append('/')
-                            .append(pi)
-                            .append('/')
-                            .append(imageNo)
-                            .append('/');
+                    sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
                     //hack for worldviews which needs language paramater instead of logid
-                    if("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
-                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
-                    } else {                   
-                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-')
-                        .append('/');
+                    if ("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
+                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
+                                .append("/");
+                    } else {
+                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
                     }
                     break;
             }
         } else {
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
                     useOverviewPage, false);
-            sb.append(pageType.getName())
-                    .append('/')
-                    .append(pi)
-                    .append('/')
-                    .append(imageNo)
-                    .append('/');
-                  //hack for worldviews which needs language paramater instead of logid
-                    if("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
-                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
-                    } else {                   
-                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-')
-                        .append('/');
-                    }
+            sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
+            //hack for worldviews which needs language paramater instead of logid
+            if ("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
+                sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
+            } else {
+                sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
+            }
         }
 
         // logger.trace("generateUrl: {}", sb.toString());
@@ -1128,6 +1124,13 @@ public class BrowseElement implements Serializable {
             }
         }
         return list;
+    }
+
+    /**
+     * @return the additionalMetadataList
+     */
+    public List<Metadata> getAdditionalMetadataList() {
+        return additionalMetadataList;
     }
 
     /**
