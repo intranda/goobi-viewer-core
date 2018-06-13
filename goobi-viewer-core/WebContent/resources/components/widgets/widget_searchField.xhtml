@@ -34,13 +34,13 @@
                                     <ui:fragment rendered="#{!cc.attrs.widget.hasLinkedPages}">
                                         <h:commandButton id="widgetSearchFieldBtn" action="#{searchBean.searchSimpleSetFacets(cc.attrs.widget.additionalQuery)}">
                                             <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
-                                            <f:setPropertyActionListener target="#{searchBean.facets.currentHierarchicalFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
+                                            <f:setPropertyActionListener target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
                                         </h:commandButton>
                                     </ui:fragment>
                                     <ui:fragment rendered="#{cc.attrs.widget.hasLinkedPages}">
                                         <h:commandButton id="widgetSearchFieldBtn_cms" action="#{cc.attrs.widget.linkedPages.getCMSPageIfExists().get().search.searchSimple}">
                                             <f:setPropertyActionListener target="#{searchBean.activeSearchType}" value="0" />
-                                            <f:setPropertyActionListener target="#{searchBean.facets.currentHierarchicalFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
+                                            <f:setPropertyActionListener target="#{searchBean.facets.currentFacetString}" value="#{cc.attrs.widget.additionalQuery}" />
                                         </h:commandButton>
                                     </ui:fragment>
                                 </div>
