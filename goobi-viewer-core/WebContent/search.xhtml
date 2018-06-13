@@ -42,7 +42,7 @@
                                 <h:outputText rendered="#{!searchBean.searchInDcFlag}" value="#{msg.searchGlobalDescription}" />
                                 <h:panelGroup rendered="#{searchBean.searchInDcFlag}">
                                     <h:outputText value="#{msg.searchIn}: " />
-                                    <ui:repeat var="facet" value="#{searchBean.facets.currentHierarchicalFacets}">
+                                    <ui:repeat var="facet" value="#{searchBean.facets.getCurrentFacetsForField('DC')}">
                                         <br />
                                         <h:outputText value="#{msg[facet.field]}: #{msg[facet.value]}" />
                                     </ui:repeat>
