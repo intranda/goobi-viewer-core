@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cms_page_template id="templateFaq" version="2018-06-13">
+    <name>Übersichtsseite mit FAQ</name>
+    <description>...</description>
+    <icon>cms_template_21_faq.png</icon>
+    <html>cms_template_21_faq.xhtml</html>
+    <content>
+        <item id="faqList" label="Aktuelle-Elemente" type="PAGELIST" mandatory="true"></item>
+        <item id="description" type="HTML" label="Beschreibung" mandatory="false" />
+    </content>
+</cms_page_template>

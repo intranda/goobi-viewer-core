@@ -8715,6 +8715,72 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "FAQ"
+   style declarations for cms_template_21_faq.xhtml
+   ==============================================================*/
+/* FAQ */
+/* BLOCK */
+.tpl-faq {
+  /* ELEMENT */
+}
+.tpl-faq__description {
+  margin-bottom: 15px;
+}
+.tpl-faq__list {
+  margin-bottom: 15px;
+}
+.tpl-faq__list .panel {
+  border-radius: 0;
+  border-color: transparent;
+  box-shadow: none;
+}
+.tpl-faq__list .panel-heading {
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-radius: 0;
+}
+.tpl-faq__list .panel-title {
+  text-transform: uppercase;
+  font-size: 1.1rem;
+}
+.tpl-faq__list .panel-title a:hover,
+.tpl-faq__list .panel-title a:active,
+.tpl-faq__list .panel-title a:focus {
+  text-decoration: none;
+}
+.tpl-faq__list .panel-title a .fa {
+  margin-right: 5px;
+}
+.tpl-faq__list .panel-title a .fa-chevron-down {
+  display: none;
+}
+.tpl-faq__list .panel-title a .fa-chevron-up {
+  display: inline-block;
+}
+.tpl-faq__list .panel-title a.collapsed .fa-chevron-down {
+  display: inline-block;
+}
+.tpl-faq__list .panel-title a.collapsed .fa-chevron-up {
+  display: none;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   CMS Template "FAQ Single"
+   style declarations for cms_template_22_faqSingle.xhtml
+   ==============================================================*/
+/* FAQ SINGLE */
+/* BLOCK */
+.tpl-faq-single {
+  /* ELEMENT */
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* CMS VIEWS */
 /* ==============================================================
    CMS Create Page
