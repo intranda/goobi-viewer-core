@@ -109,23 +109,21 @@
 	  color: rgb(100, 100, 100);
 	}
 }
+/* COORDS HIGHLIGHTING */
 .coords-highlighting {
 	background-color: yellow;
 	opacity: 0.5;
 	&.focus {}
 }
-
 /* TYPO */
 .uppercase {
 	text-transform: uppercase;
 }
-
 /* FIREFOX LAYOUT FIXES */
 .oneUp {
 	position: relative;
 	top: -1px;
 }
-
 /* VISUALLY HIDDEN */
 .visually-hidden {
     position: absolute; 
@@ -134,4 +132,27 @@
 	clip: rect(1px, 1px, 1px, 1px); 
     white-space: nowrap; 
     overflow: hidden; 
+}
+/* TABLE RESET */
+.table-reset {
+	width: auto;
+	thead, tbody, tfoot, tr, th, td {
+		display: block;
+		width: auto;
+		height: auto;
+		margin: 0;
+		padding: 0;
+		border: none;
+		border-collapse: inherit;
+		border-spacing: 0;
+		border-color: inherit;
+		vertical-align: inherit;
+		text-align: left;
+		font-weight: inherit;
+		-webkit-border-horizontal-spacing: 0;
+		-webkit-border-vertical-spacing: 0;
+	}
+	th, td {
+		display: inline;
+	}
 }
