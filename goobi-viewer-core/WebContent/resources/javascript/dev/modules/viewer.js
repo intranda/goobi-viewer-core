@@ -4879,7 +4879,7 @@ var viewerJS = ( function( viewer ) {
                         }
                     }
                     if ( v.identifier ) {
-                        html += '<a href="' + _defaults.path + '/search/-/NORM_IDENTIFIER:' + v.identifier + '/1/">';
+                        html += '<a href="' + _defaults.path + '/search/-/NORM_IDENTIFIER:%22' + v.identifier + '%22/1/-/-/">';
                         html += '<span class="glyphicon glyphicon-search"></span>';
                         html += '</a>';
                     }
