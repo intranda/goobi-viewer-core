@@ -197,11 +197,11 @@ var viewerJS = ( function( viewer ) {
                             html += v.text;
                         }
                     }
-                    if ( v.identifier ) {
-                        html += '<a href="' + _defaults.path + '/search/-/NORM_IDENTIFIER:%22' + v.identifier + '%22/1/-/-/">';
-                        html += '<span class="glyphicon glyphicon-search"></span>';
-                        html += '</a>';
-                    }
+//                    if ( v.identifier ) {
+//                        html += '<a href="' + _defaults.path + '/search/-/NORM_IDENTIFIER:%22' + v.identifier + '%22/1/-/-/">';
+//                        html += '<span class="glyphicon glyphicon-search"></span>';
+//                        html += '</a>';
+//                    }
                     if ( v.url ) {
                         html += '<button type="button" class="normdataDetailLink" data-remotecontent="';
                         html += _defaults.path;
