@@ -524,10 +524,11 @@ public class BrowseElement implements Serializable {
                             String highlightedValue = SearchHelper.applyHighlightingToPhrase(fieldValue, searchTerms.get(termsFieldName));
                             if (!highlightedValue.equals(fieldValue)) {
                                 // Translate values for certain fields
-                                if (translateFields != null && translateFields.contains(termsFieldName)) {
+                                if (translateFields != null && translateFields.contains(docFieldName)) {
                                     String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                            "$1" + translatedValue + "$3");
+                                    // highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                    // "$1" + translatedValue + "$3");
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(translatedValue, searchTerms.get(termsFieldName));
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(docFieldName, "", highlightedValue));
@@ -553,8 +554,9 @@ public class BrowseElement implements Serializable {
                                 // Translate values for certain fields
                                 if (translateFields != null && translateFields.contains(termsFieldName)) {
                                     String translatedValue = Helper.getTranslation(fieldValue, locale);
-                                    highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
-                                            "$1" + translatedValue + "$3");
+                                    // highlightedValue = highlightedValue.replaceAll("(\\W)(" + Pattern.quote(fieldValue) + ")(\\W)",
+                                    // "$1" + translatedValue + "$3");
+                                    highlightedValue = SearchHelper.applyHighlightingToPhrase(translatedValue, searchTerms.get(termsFieldName));
                                 }
                                 highlightedValue = SearchHelper.replaceHighlightingPlaceholders(highlightedValue);
                                 metadataList.add(new Metadata(termsFieldName, "", highlightedValue));
@@ -960,7 +962,7 @@ public class BrowseElement implements Serializable {
                     PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
                             hasImages || hasMedia, useOverviewPage, false);
                     sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-                    //hack for worldviews which needs language paramater instead of logid
+                    //hack for worldviews which needs language parameter instead of logid
                     if ("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
                         sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
                                 .append("/");
@@ -973,7 +975,7 @@ public class BrowseElement implements Serializable {
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
                     useOverviewPage, false);
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-            //hack for worldviews which needs language paramater instead of logid
+            //hack for worldviews which needs language parameter instead of logid
             if ("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
                 sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode()).append("/");
             } else {
