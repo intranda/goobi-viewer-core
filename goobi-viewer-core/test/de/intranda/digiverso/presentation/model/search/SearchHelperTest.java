@@ -942,4 +942,14 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String sortString = "!SORT_1;SORT_2;SORT_3";
         Assert.assertEquals(3, SearchHelper.parseSortString(sortString, null).size());
     }
+    
+
+    /**
+     * @see SearchHelper#removeHighlightingTags(String)
+     * @verifies remove html tags
+     */
+    @Test
+    public void removeHighlightingTags_shouldRemoveHtmlTags() throws Exception {
+Assert.assertEquals("foo bar", SearchHelper.removeHighlightingTags("f<span class=\"search-list--highlight\">oo</span> <span class=\"search-list--highlight\">bar</span>"));
+    }
 }

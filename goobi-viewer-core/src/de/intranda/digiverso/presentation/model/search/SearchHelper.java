@@ -1124,6 +1124,16 @@ public final class SearchHelper {
     }
 
     /**
+     * 
+     * @param phrase
+     * @return Given phrase without the highlighting html tags
+     * @should remove html tags
+     */
+    public static String removeHighlightingTags(String phrase) {
+        return phrase.replace("<span class=\"search-list--highlight\">", "").replace("</span>", "");
+    }
+
+    /**
      * @param fulltext
      * @param targetFragmentLength
      * @param fulltextFragment
