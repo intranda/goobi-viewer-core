@@ -5822,7 +5822,7 @@ var viewerJS = ( function( viewer ) {
                 // left cell
                 metadataTableCellLeft = $( '<td />' );
                 metadataKeyIcon = $( '<i />' ).attr( 'aria-hidden', 'true' ).addClass( 'fa fa-bookmark-o' );
-                metadataKeyLink = $( '<span />' ).html( metadata.one + ':' );
+                metadataKeyLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.one + ':' );
                 metadataTableCellLeft.append( metadataKeyIcon ).append( metadataKeyLink );
                 
                 // right cell
