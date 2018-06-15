@@ -333,37 +333,12 @@
         },
         getScaleToOriginalSize: function(imageNo) {
         	return 1.0;
-// if(!imageNo) {
-// imageNo = 0;
-// }
-// var displaySize = osViewer.viewer.viewport._contentSize.x;
-// return osViewer.getImageInfo()[imageNo].tileSource.width / displaySize;
         },
         scaleToOriginalSize: function( value, imageNo ) {
         	return value;
-// if ( _debug ) {
-// console.log( 'Overlays _scaleToOriginalSize: value - ' + value );
-// }
-//            
-// if(!imageNo) {
-// imageNo = 0;
-// }
-//            
-// var displaySize = osViewer.viewer.viewport._contentSize.x;
-// return value / displaySize * osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         scaleToImageSize: function( value, imageNo ) {
         	return value;
-// if ( _debug ) {
-// console.log( 'Overlays _scaleToImageSize: value - ' + value );
-// }
-//            
-// if(!imageNo) {
-// imageNo = 0;
-// }
-//            
-// var displaySize = osViewer.viewer.viewport._contentSize.x;
-// return value * displaySize / osViewer.getImageInfo()[imageNo].tileSource.width;
         },
         close: function() {
             if ( _debug ) {
@@ -476,6 +451,23 @@
                 result.reject(errorMessage);          
             });
             return result.promise;
+        },
+        
+        scaleToOpenSeadragon : function(roi) {
+            var displayImageSize = this.viewer.world.getItemAt(0).source.dimensions;
+            var originalImageSize = this.sizes.originalImageSize;
+            var scale = originalImageSize.x/displayImageSize.x;
+            roi = roi.times(1/displayImageSize.x);
+            roi = roi.times(1/scale);        
+            return roi;
+        },
+        scaleToImage : function(roi) {
+            var displayImageSize = this.viewer.world.getItemAt(0).source.dimensions;
+            var originalImageSize = this.sizes.originalImageSize;
+            var scale = originalImageSize.x/displayImageSize.x;
+            roi = roi.times(displayImageSize.x);
+            roi = roi.times(scale);
+            return roi;
         }
     };
     
