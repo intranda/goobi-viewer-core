@@ -196,7 +196,6 @@ public class SearchBean implements Serializable {
      * @return
      */
     public String searchSimple() {
-        generateSimpleSearchString(guiSearchString);
         return searchSimple(true);
     }
 
@@ -206,6 +205,8 @@ public class SearchBean implements Serializable {
         if (resetParameters) {
             resetSearchParameters();
         }
+        generateSimpleSearchString(guiSearchString);
+        
         return "pretty:newSearch5";
     }
 
