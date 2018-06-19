@@ -194,7 +194,7 @@ public class BrowseElement implements Serializable {
         if (DocType.METADATA.equals(docType)) {
             metadataGroupType = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
             // The LABEL field in grouped metadata docs contains the name of the field defined in the indexed configuration
-            originalFieldName = structElement.getLabel();
+            originalFieldName = structElement.getMetadataValue(SolrConstants.LABEL);
         }
 
         // If the topstruct is a volume of any kind or a subelement, add the anchor and volume labels to
@@ -459,41 +459,6 @@ public class BrowseElement implements Serializable {
                 continue;
             }
             switch (termsFieldName) {
-                //                case SolrConstants.OVERVIEWPAGE_DESCRIPTION:
-                //                case SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT:
-                //                    if (!overviewPageFetched && (structElement.isWork() || structElement.isAnchor())) {
-                //                        // Only load the page once for both fields
-                //                        overviewPageFetched = true;
-                //                        try {
-                //                            OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(structElement.getPi(), null,
-                //                                    null);
-                //                            if (overviewPage != null) {
-                //                                if (overviewPage.getDescription() != null) {
-                //                                    String value = Jsoup.parse(overviewPage.getDescription()).text();
-                //                                    String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(
-                //                                            SolrConstants.OVERVIEWPAGE_DESCRIPTION));
-                //                                    if (!highlightedValue.equals(value)) {
-                //                                        highlightedValue = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION),
-                //                                                highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
-                //                                        metadataList.add(new Metadata("viewOverviewDescription", "", highlightedValue));
-                //                                    }
-                //                                }
-                //                                if (overviewPage.getPublicationText() != null) {
-                //                                    String value = Jsoup.parse(overviewPage.getPublicationText()).text();
-                //                                    String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(
-                //                                            SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT));
-                //                                    if (!highlightedValue.equals(value)) {
-                //                                        highlightedValue = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT),
-                //                                                highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
-                //                                        metadataList.add(new Metadata("viewOverviewPublication_publication", "", highlightedValue));
-                //                                    }
-                //                                }
-                //                            }
-                //                        } catch (DAOException e) {
-                //                            logger.error(e.getMessage(), e);
-                //                        }
-                //                    }
-                //                    break;
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : structElement.getMetadataFields().keySet()) {
