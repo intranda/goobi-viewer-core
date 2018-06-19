@@ -16,7 +16,6 @@
 package de.intranda.digiverso.presentation.servlets.rest.iiif.image;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,13 +27,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.configuration.beanutils.BeanHelper;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -67,7 +65,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             List<String> pathSegments = tokenizer.getTokenList();
             String pi = pathSegments.get(0);
             String imageName = pathSegments.get(1);
-            imageName = Helper.decodeUrl(imageName);
+            imageName = StringTools.decodeUrl(imageName);
             String size;
             if (pathSegments.size() > 4) {
                 pathSegments.get(2);

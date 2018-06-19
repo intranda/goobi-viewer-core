@@ -49,6 +49,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.TranskribusUtils;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
@@ -1319,12 +1320,12 @@ public class ViewManager implements Serializable {
         // Current page fulltext
         PhysicalElement currentImg = getCurrentPage();
         if (currentImg != null && StringUtils.isNotEmpty(currentImg.getFullText())) {
-            currentFulltext = Helper.stripJS(currentImg.getFullText());
+            currentFulltext = StringTools.stripJS(currentImg.getFullText());
             if (currentFulltext.length() < currentImg.getFullText().length()) {
                 logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, currentImg.getOrder());
             }
             if (escapeHtml) {
-                currentFulltext = Helper.escapeHtmlChars(currentImg.getFullText());
+                currentFulltext = StringTools.escapeHtmlChars(currentImg.getFullText());
             }
 
         }
@@ -2025,12 +2026,12 @@ public class ViewManager implements Serializable {
     public String getTopDocumentTitle() {
         return getDocumentTitle(this.topDocument);
     }
-    
-//    public List<List<String>> getCurrentUGCCoords() throws ModuleMissingException {
-//        if(DataManager.getInstance().isModuleLoaded("viewer-module-crowdsourcing")) {            
-//            CrowdsourcingModule module = DataManager.getInstance().getModule("viewer-module-crowdsourcing");
-//        }
-//    }
+
+    //    public List<List<String>> getCurrentUGCCoords() throws ModuleMissingException {
+    //        if(DataManager.getInstance().isModuleLoaded("viewer-module-crowdsourcing")) {            
+    //            CrowdsourcingModule module = DataManager.getInstance().getModule("viewer-module-crowdsourcing");
+    //        }
+    //    }
 
     public String getDocumentTitle(StructElement document) {
         StringBuilder sb = new StringBuilder();

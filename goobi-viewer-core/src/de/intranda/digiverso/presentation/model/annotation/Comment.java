@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.model.security.user.User;
 
 @Entity
@@ -185,7 +186,7 @@ public class Comment implements Comparable<Comment> {
      */
     public void checkAndCleanScripts() {
         if (text != null) {
-            String cleanText = Helper.stripJS(text);
+            String cleanText = StringTools.stripJS(text);
             if (cleanText.length() < text.length()) {
                 logger.warn("User {} attempted to add a script block into a comment for {}, page {}, which was removed:\n{}", pi, page, text);
                 text = cleanText;
@@ -267,7 +268,7 @@ public class Comment implements Comparable<Comment> {
     }
 
     public String getDisplayText() {
-        return Helper.stripJS(text);
+        return StringTools.stripJS(text);
     }
 
     /**
