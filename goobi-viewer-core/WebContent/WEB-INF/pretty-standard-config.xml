@@ -177,6 +177,13 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 	</url-mapping>
+    <url-mapping id="browse5">
+        <pattern value="/browse/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.search}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+    </url-mapping>
 	<url-mapping id="newSearchTerm2">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPageResetFilter}/" />
 		<view-id value="/searchTermsList.xhtml" />
