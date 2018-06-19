@@ -6139,6 +6139,10 @@ div[id*="-Modal"] .email-form .form-group {
 .view-object__text {
   text-align: center;
 }
+.tooltipp {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.6);
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */

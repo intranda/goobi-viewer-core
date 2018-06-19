@@ -49,7 +49,12 @@
         				coordinates: #{activeDocumentBean.viewManager.currentSearchResultCoords},
         				displayTooltip: false,
         				pageIndex : #{activeDocumentBean.viewManager.currentPageSourceIndex},
-        			}
+        			},
+		            {
+		                name: "ugc",
+		                coordinates: #{crowdsourcingBean.currentUGCCoords},
+		                displayTooltip: true
+		            }
         		]
         	}
         };
