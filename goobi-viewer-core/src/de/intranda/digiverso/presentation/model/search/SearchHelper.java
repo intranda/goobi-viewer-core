@@ -1270,16 +1270,16 @@ public final class SearchHelper {
 
         StringBuilder sbQuery = new StringBuilder();
         // Only search via the sorting field if not doing a wildcard search
-        if (StringUtils.isNotEmpty(bmfc.getSortField()) && StringUtils.isEmpty(startsWith)) {
+        if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField()).append(':');
         } else {
             sbQuery.append(bmfc.getField()).append(':');
         }
-        if (StringUtils.isEmpty(startsWith)) {
-            sbQuery.append("[* TO *]");
-        } else {
-            sbQuery.append(ClientUtils.escapeQueryChars(startsWith)).append('*');
-        }
+        //        if (StringUtils.isEmpty(startsWith)) {
+        sbQuery.append("[* TO *]");
+        //        } else {
+        //            sbQuery.append(ClientUtils.escapeQueryChars(startsWith)).append('*');
+        //        }
         if (!bmfc.getDocstructFilters().isEmpty()) {
             sbQuery.append(" AND (");
             for (String docstruct : bmfc.getDocstructFilters()) {
