@@ -1269,16 +1269,17 @@ public final class SearchHelper {
         Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
 
         StringBuilder sbQuery = new StringBuilder();
+        // Only search via the sorting field if not doing a wildcard search
         if (StringUtils.isNotEmpty(bmfc.getSortField())) {
             sbQuery.append(bmfc.getSortField()).append(':');
         } else {
             sbQuery.append(bmfc.getField()).append(':');
         }
-        if (StringUtils.isEmpty(startsWith)) {
-            sbQuery.append("[* TO *]");
-        } else {
-            sbQuery.append(ClientUtils.escapeQueryChars(startsWith)).append('*');
-        }
+        //        if (StringUtils.isEmpty(startsWith)) {
+        sbQuery.append("[* TO *]");
+        //        } else {
+        //            sbQuery.append(ClientUtils.escapeQueryChars(startsWith)).append('*');
+        //        }
         if (!bmfc.getDocstructFilters().isEmpty()) {
             sbQuery.append(" AND (");
             for (String docstruct : bmfc.getDocstructFilters()) {
@@ -1393,6 +1394,9 @@ public final class SearchHelper {
             Map<String, BrowseTerm> usedTerms, boolean aggregateHits) {
         // logger.trace("processSolrResult thread {}", Thread.currentThread().getId());
         Collection<Object> termList = doc.getFieldValues(field);
+        if (termList == null) {
+            return;
+        }
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
         String sortTerm = (String) doc.getFieldValue(sortField);
         Set<String> usedTermsInCurrentDoc = new HashSet<>();
@@ -1405,6 +1409,8 @@ public final class SearchHelper {
             if (StringUtils.isNotEmpty(sortTerm)) {
                 compareTerm = sortTerm;
             }
+            if (StringUtils.startsWithIgnoreCase(compareTerm, startsWith))
+                logger.trace("compareTerm: {}", compareTerm);
             if (StringUtils.isEmpty(startsWith) || "-".equals(startsWith) || StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
                 if (!usedTerms.containsKey(term)) {
                     BrowseTerm browseTerm = new BrowseTerm(term, sortTerm);
