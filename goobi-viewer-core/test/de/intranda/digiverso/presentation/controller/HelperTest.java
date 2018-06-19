@@ -37,16 +37,6 @@ public class HelperTest {
     }
 
     /**
-     * @see Helper#removeLineBreaks(String)
-     * @verifies remove line breaks correctly
-     */
-    @Test
-    public void removeLineBreaks_shouldRemoveLineBreaksCorrectly() throws Exception {
-        //TODO auto-generated
-        Assert.fail("Not yet implemented");
-    }
-
-    /**
      * @see Helper#getDataFile(String,String,String)
      * @verifies construct METS file path correctly
      */
