@@ -5650,7 +5650,6 @@ div[id*="-Modal"] .email-form .form-group {
   /* ELEMENT */
 }
 .view-fulltext__box pre {
-  line-height: 10px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 0;
