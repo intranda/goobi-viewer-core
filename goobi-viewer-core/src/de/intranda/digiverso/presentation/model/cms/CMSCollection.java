@@ -396,6 +396,28 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
 
 //        return getMediaItem().getIconURI();
     }
+    
+    @Override
+    public URI getIconURI(int width, int height) {
+        return getRepresentativeWork()
+                .map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work, width, height)))
+                .orElse(Optional.ofNullable(getMediaItem())
+                        .map(item -> item.getIconURI())
+                        .orElse(getDefaultIcon(getSolrFieldValue())));
+
+//        return getMediaItem().getIconURI();
+    }
+    
+    @Override
+    public URI getIconURI(int size) {
+        return getRepresentativeWork()
+                .map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(work, size)))
+                .orElse(Optional.ofNullable(getMediaItem())
+                        .map(item -> item.getIconURI())
+                        .orElse(getDefaultIcon(getSolrFieldValue())));
+
+//        return getMediaItem().getIconURI();
+    }
 
     /**
      * @param solrFieldValue2

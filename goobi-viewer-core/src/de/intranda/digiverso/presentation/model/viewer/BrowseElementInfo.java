@@ -29,6 +29,8 @@ public interface BrowseElementInfo {
     public String getName();
     public URI getLinkURI(HttpServletRequest request);
     public URI getIconURI();
+    public URI getIconURI(int width, int height);
+    public URI getIconURI(int size);
     default boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());
     }
