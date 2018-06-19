@@ -70,6 +70,7 @@ import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
+
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
  */

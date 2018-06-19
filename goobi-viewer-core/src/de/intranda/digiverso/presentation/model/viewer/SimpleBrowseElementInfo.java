@@ -71,6 +71,16 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
         this.iconURI = iconURI;
     }
 
+    @Override
+    public URI getIconURI(int width, int height) {
+        return getIconURI();
+    }
+
+    @Override
+    public URI getIconURI(int size) {
+        return getIconURI();
+    }
+
     protected static URI createIconURI(String collectionName) {
         String icon = DataManager.getInstance()
                 .getConfiguration()
@@ -110,5 +120,6 @@ public class SimpleBrowseElementInfo implements BrowseElementInfo {
     public IMetadataValue getTranslationsForName() {
         return IMetadataValue.getTranslations(getName());
     }
+
 
 }

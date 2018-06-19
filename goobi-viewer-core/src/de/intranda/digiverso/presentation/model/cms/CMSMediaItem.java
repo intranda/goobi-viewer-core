@@ -428,6 +428,21 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         }
         return null;
     }
+    
+
+    @Override
+    public URI getIconURI(int size) {
+        if (getFileName() != null) {
+
+            String uriString = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(this, size);
+            try {
+                return new URI(uriString);
+            } catch (URISyntaxException e) {
+                logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
+            }
+        }
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -510,12 +525,10 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
         //        return imageUrlBuilder.toString();
     }
 
-    /* (non-Javadoc)
-     * @see de.intranda.digiverso.presentation.model.viewer.BrowseElementInfo#getTranslationsForName()
-     */
     @Override
     public IMetadataValue getTranslationsForName() {
         return IMetadataValue.getTranslations(getName());
     }
+
 
 }
