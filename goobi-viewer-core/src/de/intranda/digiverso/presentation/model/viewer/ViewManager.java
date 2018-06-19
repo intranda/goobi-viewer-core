@@ -53,6 +53,7 @@ import de.intranda.digiverso.presentation.controller.TranskribusUtils;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
@@ -68,6 +69,7 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusJob;
 import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
+import de.intranda.digiverso.presentation.modules.CrowdsourcingModule;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
 /**
@@ -2025,6 +2027,12 @@ public class ViewManager implements Serializable {
     public String getTopDocumentTitle() {
         return getDocumentTitle(this.topDocument);
     }
+    
+//    public List<List<String>> getCurrentUGCCoords() throws ModuleMissingException {
+//        if(DataManager.getInstance().isModuleLoaded("viewer-module-crowdsourcing")) {            
+//            CrowdsourcingModule module = DataManager.getInstance().getModule("viewer-module-crowdsourcing");
+//        }
+//    }
 
     public String getDocumentTitle(StructElement document) {
         StringBuilder sb = new StringBuilder();
