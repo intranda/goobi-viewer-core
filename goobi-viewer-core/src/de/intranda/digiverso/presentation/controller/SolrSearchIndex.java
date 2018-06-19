@@ -637,7 +637,7 @@ public final class SolrSearchIndex {
      * @return
      */
     public static String getSingleFieldStringValue(SolrDocument doc, String field) {
-        return (String) getSingleFieldValue(doc, field);
+        return String.valueOf(getSingleFieldValue(doc, field));
     }
 
     /**
