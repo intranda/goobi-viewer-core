@@ -46,8 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.StringTools;
 
 public class ViewerResourceBundle extends ResourceBundle {
 
@@ -409,8 +409,8 @@ public class ViewerResourceBundle extends ResourceBundle {
             Path configPath = Paths.get(DataManager.getInstance().getConfiguration().getConfigLocalPath());
             try (Stream<Path> messageFiles =
                     Files.list(configPath).filter(path -> path.getFileName().toString().matches("messages_[a-z]{1,3}.properties"))) {
-                allLocales = messageFiles
-                        .map(path -> Helper.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
+                allLocales = messageFiles.map(
+                        path -> StringTools.findFirstMatch(path.getFileName().toString(), "(?:messages_)([a-z]{1,3})(?:.properties)", 1).orElse(null))
                         .filter(lang -> lang != null)
                         .sorted((l1, l2) -> {
                             if (l1.equals(l2)) {

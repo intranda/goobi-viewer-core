@@ -53,6 +53,7 @@ import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.GroupParams;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.language.LocaleComparator;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -922,10 +924,11 @@ public final class SearchHelper {
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
+
+        // Remove HTML breaks
+        fulltext = Jsoup.parse(fulltext).text();
         List<String> ret = new ArrayList<>();
-
         String fulltextFragment = "";
-
         if (searchTerms != null && !searchTerms.isEmpty()) {
             for (String searchTerm : searchTerms) {
                 if (searchTerm.length() == 0) {

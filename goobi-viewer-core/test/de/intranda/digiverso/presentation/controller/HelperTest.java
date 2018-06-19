@@ -37,21 +37,13 @@ public class HelperTest {
     }
 
     /**
-     * @see Helper#escapeHtmlChars(String)
-     * @verifies escape all characters correctly
+     * @see Helper#removeLineBreaks(String)
+     * @verifies remove line breaks correctly
      */
     @Test
-    public void escapeHtmlChars_shouldEscapeAllCharactersCorrectly() throws Exception {
-        Assert.assertEquals("&lt;i&gt;&quot;A&amp;B&quot;&lt;/i&gt;", Helper.escapeHtmlChars("<i>\"A&B\"</i>"));
-    }
-
-    /**
-     * @see Helper#removeDiacriticalMarks(String)
-     * @verifies remove diacritical marks correctly
-     */
-    @Test
-    public void removeDiacriticalMarks_shouldRemoveDiacriticalMarksCorrectly() throws Exception {
-        Assert.assertEquals("aaaaoooouuuueeeeßn", Helper.removeDiacriticalMarks("äáàâöóòôüúùûëéèêßñ"));
+    public void removeLineBreaks_shouldRemoveLineBreaksCorrectly() throws Exception {
+        //TODO auto-generated
+        Assert.fail("Not yet implemented");
     }
 
     /**
@@ -125,15 +117,5 @@ public class HelperTest {
     public void buildFullTextUrl_shouldBuildUrlCorrectly() throws Exception {
         Assert.assertEquals(DataManager.getInstance().getConfiguration().getContentRestApiUrl() + "document/-/alto/PPN123/00000001.xml/",
                 Helper.buildFullTextUrl(null, "alto/PPN123/00000001.xml"));
-    }
-
-    /**
-     * @see Helper#stripJS(String)
-     * @verifies remove JS blocks correctly
-     */
-    @Test
-    public void stripJS_shouldRemoveJSBlocksCorrectly() throws Exception {
-        Assert.assertEquals("foo  bar", Helper.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
-        Assert.assertEquals("foo  bar", Helper.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
     }
 }

@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFPresentationAPIHandler;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
@@ -48,6 +47,7 @@ import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
+import de.intranda.digiverso.presentation.model.viewer.ViewManager;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
@@ -434,7 +434,7 @@ public class ImageDeliveryBean implements Serializable {
     public boolean isCmsUrl(String url) {
         URI uri;
         try {
-            url = Helper.decodeUrl(url);
+            url = StringTools.decodeUrl(url);
             uri = ImageHandler.toURI(url);
             Path path = ImageHandler.getPath(uri);
             if (path.isAbsolute()) {

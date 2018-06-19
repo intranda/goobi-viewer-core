@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -41,6 +40,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
+import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -825,7 +825,7 @@ public class BrowseElement implements Serializable {
     public String getFulltextForHtml() {
         if (fulltextForHtml == null) {
             if (fulltext != null) {
-                fulltextForHtml = Helper.stripJS(fulltext).replaceAll("\n", " ");
+                fulltextForHtml = StringTools.stripJS(fulltext).replaceAll("\n", " ");
             } else {
                 fulltextForHtml = "";
             }

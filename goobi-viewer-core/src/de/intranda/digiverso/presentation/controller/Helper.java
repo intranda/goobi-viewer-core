@@ -23,8 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,17 +30,13 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -93,7 +87,6 @@ import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
-import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
@@ -849,32 +842,6 @@ public class Helper {
         return Version.VERSION + "-" + Version.BUILDDATE + "-" + Version.BUILDVERSION;
     }
 
-    /**
-     * Escapes special HTML characters in the given string.
-     *
-     * @param str
-     * @return
-     * @should escape all characters correctly
-     */
-    public static String escapeHtmlChars(String str) {
-        return StringUtils.replaceEach(str, new String[] { "&", "\"", "<", ">" }, new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
-    }
-
-    /**
-     * Removed diacritical marks from each letter in the given String.
-     *
-     * @param s
-     * @return
-     * @should remove diacritical marks correctly
-     */
-    public static String removeDiacriticalMarks(String s) {
-        if (s == null) {
-            throw new IllegalArgumentException("s may not be null");
-        }
-
-        return Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+", "");
-    }
-
     public static void main(String[] args) throws DAOException {
         // FullText ft = new FullText();
         // ft.setPi("18979459-1830");
@@ -1006,66 +973,5 @@ public class Helper {
         }
 
         return null;
-    }
-
-    public static String encodeUrl(String string) {
-        try {
-            //            return BeanUtils.escapeCriticalUrlChracters(string);
-            return URLEncoder.encode(string, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Unable to encode '" + string + "' with utf-8");
-            return string;
-        }
-    }
-
-    public static String decodeUrl(String string) {
-        //    string = string.replace("%", "\\u");
-        String encodedString = string;
-        try {
-            do {                
-                string = encodedString;
-                encodedString = URLDecoder.decode(string, "utf-8");
-            }while (!encodedString.equals(string));
-            return BeanUtils.unescapeCriticalUrlChracters(string);
-        } catch (UnsupportedEncodingException e) {
-            return string;
-        }
-        //    return string;
-        //        try {            
-        //            return URLDecoder.decode(string, "utf-8");
-        //        } catch(UnsupportedEncodingException e) {
-        //            logger.error("Unable to decode '" + string + "' with utf-8");
-        //            return string;
-        //        }
-    }
-
-    /**
-     * Finds the first String matching a regex within another string and return it as an {@link Optional}
-     * 
-     * @param text The String in which to search
-     * @param regex The regex to search for
-     * @return An optional containing the first String within the {@code text} matched by {@code regex}, or an empty optional if no match was found
-     */
-    public static Optional<String> findFirstMatch(String text, String regex, int group) {
-        Matcher matcher = Pattern.compile(regex).matcher(text);
-        if (matcher.find()) {
-            return Optional.of(matcher.group(group));
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * 
-     * @param s String to clean
-     * @return String sans any script-tag blocks
-     * @should remove JS blocks correctly
-     */
-    public static String stripJS(String s) {
-        if (StringUtils.isBlank(s)) {
-            return s;
-        }
-
-        return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "");
     }
 }
