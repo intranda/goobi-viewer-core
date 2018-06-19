@@ -978,7 +978,7 @@ public final class SearchHelper {
                             fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                         }
                         // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
-                        fulltextFragment = fulltextFragment.replace("<br>", " ");
+                        // fulltextFragment = fulltextFragment.replace("<br>", " ");
                         ret.add(fulltextFragment);
                     }
                     if (firstMatchOnly) {
