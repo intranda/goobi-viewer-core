@@ -1130,6 +1130,7 @@ div.mce-fullscreen {
 .bookshelf-navigation__icons span {
   display: inline-block;
   float: right;
+  min-width: 13px;
   margin-right: 5px;
 }
 .bookshelf-navigation__counter {
