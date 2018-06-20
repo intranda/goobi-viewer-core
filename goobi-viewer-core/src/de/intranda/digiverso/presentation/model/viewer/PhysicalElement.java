@@ -570,7 +570,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFullText(altoText);
+            String text = ALTOTools.getFullText(altoText, null);
             return text;
         }
         wordCoordsFormat = CoordsFormat.NONE;

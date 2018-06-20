@@ -136,7 +136,7 @@ public class ALTOToolsTest {
         Assert.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, "utf-8");
         Assert.assertNotNull(alto);
-        String text = ALTOTools.alto2Txt(alto);
+        String text = ALTOTools.alto2Txt(alto, null);
         Assert.assertNotNull(text);
         System.out.println(text);
         Assert.assertTrue(text.length() > 100);
