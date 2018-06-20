@@ -623,84 +623,7 @@ public class BrowseElement implements Serializable {
                     break;
                 case UGC:
                     // User-generated content
-                    // TODO own method
-                    if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
-                        switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
-                            case "PERSON": {
-                                StringBuilder sb = new StringBuilder();
-                                String first = se.getMetadataValue("MD_FIRSTNAME");
-                                String last = se.getMetadataValue("MD_LASTNAME");
-                                if (StringUtils.isNotEmpty(last)) {
-                                    sb.append(last);
-                                }
-                                if (StringUtils.isNotEmpty(first)) {
-                                    if (sb.length() > 0) {
-                                        sb.append(", ");
-                                    }
-                                    sb.append(first);
-                                }
-                                ret = sb.toString();
-                            }
-                                break;
-                            case "CORPORATION": {
-                                StringBuilder sb = new StringBuilder();
-                                String address = se.getMetadataValue("MD_ADDRESS");
-                                String corp = se.getMetadataValue("MD_CORPORATION");
-                                if (StringUtils.isNotEmpty(corp)) {
-                                    sb.append(corp);
-                                }
-                                if (StringUtils.isNotEmpty(address)) {
-                                    sb.append(" (").append(corp).append(')');
-                                }
-                            }
-                                break;
-                            case "ADDRESS": {
-                                StringBuilder sb = new StringBuilder();
-                                String street = se.getMetadataValue("MD_STREET");
-                                String houseNumber = se.getMetadataValue("MD_HOUSENUMBER");
-                                String district = se.getMetadataValue("MD_DISTRICT");
-                                String city = se.getMetadataValue("MD_CITY");
-                                String country = se.getMetadataValue("MD_COUNTRY");
-                                if (StringUtils.isNotEmpty(street)) {
-                                    if (sb.length() > 0) {
-                                        sb.append(", ");
-                                    }
-                                    sb.append(street);
-                                    if (StringUtils.isNotEmpty(houseNumber)) {
-                                        sb.append(", ").append(houseNumber);
-                                    }
-                                }
-                                if (StringUtils.isNotEmpty(district)) {
-                                    if (sb.length() > 0) {
-                                        sb.append(", ");
-                                    }
-                                    sb.append(district);
-                                }
-                                if (StringUtils.isNotEmpty(city)) {
-                                    if (sb.length() > 0) {
-                                        sb.append(", ");
-                                    }
-                                    sb.append(city);
-                                }
-                                if (StringUtils.isNotEmpty(country)) {
-                                    if (sb.length() > 0) {
-                                        sb.append(", ");
-                                    }
-                                    sb.append(city);
-                                }
-                                ret = sb.toString();
-                            }
-                                break;
-                            case "COMMENT":
-                                ret = se.getMetadataValue("MD_TEXT");
-                                break;
-                            default:
-                                ret = se.getMetadataValue(SolrConstants.LABEL);
-                                break;
-                        }
-                    } else {
-                        ret = se.getMetadataValue(SolrConstants.LABEL);
-                    }
+                    ret = generateUgcLabel(se);
                     ret = Helper.getTranslation(ret, locale);
                     break;
                 default:
@@ -719,6 +642,97 @@ public class BrowseElement implements Serializable {
         }
 
         return ret;
+    }
+
+    /**
+     * Builds label out of user-generated content metadata.
+     * 
+     * @param se
+     * @return the generated label
+     * @should generate person label correctly
+     * @should generate corporation label correctly
+     * @should generate address label correctly
+     * @should generate comment label correctly
+     * @should return label field value if ugc type unknown
+     */
+    static String generateUgcLabel(StructElement se) {
+        if (se == null) {
+            throw new IllegalArgumentException("se may not be null");
+        }
+
+        if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
+            switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
+                case "PERSON": {
+                    StringBuilder sb = new StringBuilder();
+                    String first = se.getMetadataValue("MD_FIRSTNAME");
+                    String last = se.getMetadataValue("MD_LASTNAME");
+                    if (StringUtils.isNotEmpty(last)) {
+                        sb.append(last);
+                    }
+                    if (StringUtils.isNotEmpty(first)) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(first);
+                    }
+                    return sb.toString();
+                }
+                case "CORPORATION": {
+                    StringBuilder sb = new StringBuilder();
+                    String address = se.getMetadataValue("MD_ADDRESS");
+                    String corp = se.getMetadataValue("MD_CORPORATION");
+                    if (StringUtils.isNotEmpty(corp)) {
+                        sb.append(corp);
+                    }
+                    if (StringUtils.isNotEmpty(address)) {
+                        sb.append(" (").append(corp).append(')');
+                    }
+                    return sb.toString();
+                }
+                case "ADDRESS": {
+                    StringBuilder sb = new StringBuilder();
+                    String street = se.getMetadataValue("MD_STREET");
+                    String houseNumber = se.getMetadataValue("MD_HOUSENUMBER");
+                    String district = se.getMetadataValue("MD_DISTRICT");
+                    String city = se.getMetadataValue("MD_CITY");
+                    String country = se.getMetadataValue("MD_COUNTRY");
+                    if (StringUtils.isNotEmpty(street)) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(street);
+                        if (StringUtils.isNotEmpty(houseNumber)) {
+                            sb.append(", ").append(houseNumber);
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(district)) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(district);
+                    }
+                    if (StringUtils.isNotEmpty(city)) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(city);
+                    }
+                    if (StringUtils.isNotEmpty(country)) {
+                        if (sb.length() > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(city);
+                    }
+                    return sb.toString();
+                }
+                case "COMMENT":
+                    return se.getMetadataValue("MD_TEXT");
+                default:
+                    return se.getMetadataValue(SolrConstants.LABEL);
+            }
+        }
+
+        return se.getMetadataValue(SolrConstants.LABEL);
     }
 
     /**
