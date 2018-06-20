@@ -164,6 +164,14 @@ public class SearchHit implements Comparable<SearchHit> {
         }
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(SearchHit other) {
+        return Integer.compare(this.getBrowseElement().getImageNo(), other.getBrowseElement().getImageNo());
+    }
+
     /**
      * 
      * @param doc
@@ -501,7 +509,7 @@ public class SearchHit implements Comparable<SearchHit> {
                         SearchHit ownerHit = ownerHits.get("UGC");
                         if (ownerHit == null) {
                             ownerHit = new SearchHit(HitType.UGC,
-                                    new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("ugc", locale), null, true, locale, null),
+                                    new BrowseElement(browseElement.getPi(), 999999, Helper.getTranslation("ugc", locale), null, true, locale, null),
                                     searchTerms, locale);
                             children.add(ownerHit);
                             ownerHits.put("UGC", ownerHit);
@@ -821,14 +829,6 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public Map<String, String> getExportMetadata() {
         return exportMetadata;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(SearchHit other) {
-        return Integer.compare(this.getBrowseElement().getImageNo(), other.getBrowseElement().getImageNo());
     }
 
     /**
