@@ -587,6 +587,7 @@ public class SearchBean implements Serializable {
      * @param activeSearchType the activeSearchType to set
      */
     public void setActiveSearchType(int activeSearchType) {
+        logger.trace("setActiveSearchType: {}", activeSearchType);
         if (this.activeSearchType != activeSearchType) {
             switch (activeSearchType) {
                 case 1:

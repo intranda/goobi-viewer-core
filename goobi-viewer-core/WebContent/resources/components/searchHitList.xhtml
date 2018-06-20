@@ -152,6 +152,10 @@
 									<h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0}" value=", " />
 									<f:param value="#{hit.eventHitCount}" />
 								</h:outputFormat>
+                                <h:outputFormat rendered="#{hit.ugcHitCount > 0}" value="#{msg.searchChildUgcHitCount}">
+                                    <h:outputText rendered="#{hit.overviewPageHitCount > 0 or hit.docstructHitCount > 0 or hit.pageHitCount > 0 or hit.metadataHitCount > 0 or hit.eventHitCount > 0}" value=", " />
+                                    <f:param value="#{hit.ugcHitCount}" />
+                                </h:outputFormat>
 								<!-- LOADER -->
 								<span class="search-list__loader"> 
 									<img src="#{request.contextPath}/resources/images/ajax_preloader.gif" class="img-responsive" alt="Search List Loader" />

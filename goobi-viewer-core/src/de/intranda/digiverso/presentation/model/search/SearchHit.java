@@ -67,10 +67,12 @@ public class SearchHit implements Comparable<SearchHit> {
         DOCSTRCT,
         PAGE,
         METADATA, // grouped metadata
-        PERSON,
-        CORPORATION,
-        EVENT, // LIDO event
         UGC, // user-generated content
+        PERSON, // UGC/metadata person
+        CORPORATION, // UGC/meadata corporation
+        ADDRESS, // UGC address
+        COMMENT, // UGC comment
+        EVENT, // LIDO event
         GROUP, // convolute/series
         OVERVIEWPAGE; // overview page type for search hits
 
@@ -87,12 +89,18 @@ public class SearchHit implements Comparable<SearchHit> {
                         return EVENT;
                     case "OVERVIEWPAGE":
                         return OVERVIEWPAGE;
+                    case "UGC":
+                        return UGC;
                     case "METADATA":
                         return METADATA;
                     case "PERSON":
                         return PERSON;
                     case "CORPORATION":
                         return CORPORATION;
+                    case "ADDRESS":
+                        return ADDRESS;
+                    case "COMMENT":
+                        return COMMENT;
                     default:
                         return null;
                 }
@@ -116,6 +124,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private final Map<String, SearchHit> ownerHits = new HashMap<>();
     @JsonIgnore
     private final Map<String, SolrDocument> ownerDocs = new HashMap<>();
+    @JsonIgnore
+    private final Set<String> ugcDocIddocs = new HashSet<>();
     @JsonIgnore
     private final Map<String, Set<String>> searchTerms;
     /** Docstruct metadata that matches the search terms. */
@@ -192,6 +202,10 @@ public class SearchHit implements Comparable<SearchHit> {
 
         // Determine hit type
         String docType = se.getMetadataValue(SolrConstants.DOCTYPE);
+        if (docType == null) {
+            docType = (String) doc.getFieldValue(SolrConstants.DOCTYPE);
+        }
+        logger.trace("docType: {}", docType);
         HitType hitType = overrideType;
         if (hitType == null) {
             hitType = HitType.getByName(docType);
@@ -201,14 +215,15 @@ public class SearchHit implements Comparable<SearchHit> {
                 if (StringUtils.isNotEmpty(metadataType)) {
                     hitType = HitType.getByName(metadataType);
                 }
+            } else if (DocType.UGC.name().equals(docType)) {
+                // For user-generated content hits use the metadata type for the hit type
+                String ugcType = se.getMetadataValue(SolrConstants.UGCTYPE);
+                logger.trace("ugcType: {}", ugcType);
+                if (StringUtils.isNotEmpty(ugcType)) {
+                    hitType = HitType.getByName(ugcType);
+                    logger.trace("hit type found: {}", hitType);
+                }
             }
-            //            else if (DocType.UGC.name().equals(docType)) {
-            //                // For user-generated content hits use the metadata type for the hit type
-            //                String metadataType = se.getMetadataValue(SolrConstants.UGCTYPE);
-            //                if (StringUtils.isNotEmpty(metadataType)) {
-            //                    hitType = HitType.getByName(metadataType);
-            //                }
-            //            }
         }
 
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
@@ -401,10 +416,10 @@ public class SearchHit implements Comparable<SearchHit> {
             }
             Set<String> ignoreFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataIgnoreFields());
             Set<String> translateFields = new HashSet<>(DataManager.getInstance().getConfiguration().getDisplayAdditionalMetadataTranslateFields());
+            List<SolrDocument> ugcDocs = null;
             for (int i = 0; i < number; ++i) {
                 SolrDocument childDoc = childDocs.get(i);
                 String fulltext = null;
-                List<SolrDocument> ugcDocs = null;
                 DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                 if (docType == null) {
                     logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
@@ -414,16 +429,6 @@ public class SearchHit implements Comparable<SearchHit> {
                 boolean acccessDeniedType = false;
                 switch (docType) {
                     case PAGE:
-                        // Add user-generated content matches as child hits
-                        if (searchTerms.containsKey(SolrConstants.UGCTERMS) && childDoc.containsKey(SolrConstants.UGCTERMS)) {
-                            String ugcTerms = ((String) childDoc.getFieldValue(SolrConstants.UGCTERMS)).toLowerCase();
-                            for (String term : searchTerms.get(SolrConstants.UGCTERMS)) {
-                                if (ugcTerms.contains(term)) {
-                                    ugcDocs = getUgcDocsForPage(pi, (int) childDoc.getFieldValue(SolrConstants.ORDER));
-                                    break;
-                                }
-                            }
-                        }
                         try {
                             fulltext = Helper.loadFulltext(browseElement.getDataRepository(),
                                     (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO),
@@ -442,7 +447,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             continue;
                         }
                     case METADATA:
-                    case EVENT:
+                    case EVENT: {
                         String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
                         SearchHit ownerHit = ownerHits.get(ownerIddoc);
                         if (ownerHit == null) {
@@ -459,30 +464,21 @@ public class SearchHit implements Comparable<SearchHit> {
                         if (ownerHit == null) {
                             logger.error("No document found for IDDOC {}", ownerIddoc);
                             continue;
-                        } {
-                        {
-                            SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
-                                    ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
-                            // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
-                            for (StringPair metadata : childHit.getFoundMetadata()) {
-                                // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
-                                if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                    ownerHit.getFoundMetadata().add(metadata);
-                                }
-                            }
-
-                            ownerHit.getChildren().add(childHit);
-                            hitsPopulated++;
                         }
-                        // Add child hits for each UGC match
-                        if (ugcDocs != null && !ugcDocs.isEmpty()) {
-                            for (SolrDocument ugcDoc : ugcDocs) {
-                                SearchHit ugcChildHit = createSearchHit(ugcDoc, ownerDocs.get(ownerIddoc), locale, null, searchTerms, null, false,
-                                        ignoreFields, translateFields, HitType.UGC);
-                                ownerHit.getChildren().add(ugcChildHit);
-                                logger.trace("Added UGC child hit: {}", ugcChildHit.getBrowseElement().getLabel());
-                                hitsPopulated++;
+                        {
+                            {
+                                SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
+                                        ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
+                                // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                                for (StringPair metadata : childHit.getFoundMetadata()) {
+                                    // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                                    if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                        ownerHit.getFoundMetadata().add(metadata);
+                                    }
+                                }
 
+                                ownerHit.getChildren().add(childHit);
+                                hitsPopulated++;
                             }
                         }
                     }
@@ -500,13 +496,28 @@ public class SearchHit implements Comparable<SearchHit> {
                         }
                         break;
                     case UGC:
-                        // UGC docs are not yet searchable directly
-                    case GROUP:
+                    // User-generated contents as separate child hits
+                    {
+                        SearchHit ownerHit = ownerHits.get("UGC");
+                        if (ownerHit == null) {
+                            ownerHit = new SearchHit(HitType.UGC,
+                                    new BrowseElement(browseElement.getPi(), 1, Helper.getTranslation("ugc", locale), null, true, locale, null),
+                                    searchTerms, locale);
+                            children.add(ownerHit);
+                            ownerHits.put("UGC", ownerHit);
+                        }
+                        SearchHit childHit =
+                                createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields, null);
+                        ownerHit.getChildren().add(childHit);
+                        hitsPopulated++;
+                    }
                         break;
+                    case GROUP:
                     default:
                         break;
                 }
             }
+
             //            childDocs = childDocs.subList(number, childDocs.size());
             if (childDocs.isEmpty()) {
                 ownerDocs.clear();
@@ -709,6 +720,13 @@ public class SearchHit implements Comparable<SearchHit> {
     }
 
     /**
+     * @return the ugcDocIddocs
+     */
+    public Set<String> getUgcDocIddocs() {
+        return ugcDocIddocs;
+    }
+
+    /**
      * @return the children
      */
     public List<SearchHit> getChildren() {
@@ -775,7 +793,7 @@ public class SearchHit implements Comparable<SearchHit> {
 
         return 0;
     }
-    
+
     public int getUgcHitCount() {
         if (hitTypeCounts.get(HitType.UGC) != null) {
             return hitTypeCounts.get(HitType.UGC);

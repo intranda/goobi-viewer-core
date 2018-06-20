@@ -1279,6 +1279,7 @@ public class CmsBean implements Serializable {
      * @param currentPath
      */
     public void setSearchType() {
+        logger.trace("setSearchType");
         Optional<ViewerPath> currentPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (currentPath.isPresent()) {
             SearchBean searchBean = BeanUtils.getSearchBean();
