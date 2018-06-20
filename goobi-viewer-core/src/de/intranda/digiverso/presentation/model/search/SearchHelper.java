@@ -62,7 +62,6 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
-import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.controller.language.LocaleComparator;
 import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
@@ -978,7 +977,7 @@ public final class SearchHelper {
                             fulltextFragment = fulltextFragment.substring(0, lastIndexOfLT).trim();
                         }
                         // fulltextFragment = fulltextFragment.replaceAll("[\\t\\n\\r]+", " ");
-                        fulltextFragment = fulltextFragment.replace("<br>", " ");
+                        // fulltextFragment = fulltextFragment.replace("<br>", " ");
                         ret.add(fulltextFragment);
                     }
                     if (firstMatchOnly) {

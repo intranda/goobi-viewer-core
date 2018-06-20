@@ -286,7 +286,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertFalse(truncated.isEmpty());
         Assert.assertEquals("Hello", truncated.get(0));
         truncated = SearchHelper.truncateFulltext(null, "Hello <a href ...> and then <b", 200, true, true);
-        Assert.assertEquals("Hello <a href ...> and then", truncated.get(0));
+        Assert.assertEquals("Hello and then", truncated.get(0));
     }
 
     /**
@@ -315,7 +315,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
         Assert.assertEquals(1, truncated.size());
         for (String fragment : truncated) {
-            Assert.assertTrue(fragment.contains("one <span class=\"search-list--highlight\">two</span> three"));
+            Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">two</span>"));
         }
     }
 
@@ -942,7 +942,6 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         String sortString = "!SORT_1;SORT_2;SORT_3";
         Assert.assertEquals(3, SearchHelper.parseSortString(sortString, null).size());
     }
-    
 
     /**
      * @see SearchHelper#removeHighlightingTags(String)
@@ -950,6 +949,7 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @Test
     public void removeHighlightingTags_shouldRemoveHtmlTags() throws Exception {
-Assert.assertEquals("foo bar", SearchHelper.removeHighlightingTags("f<span class=\"search-list--highlight\">oo</span> <span class=\"search-list--highlight\">bar</span>"));
+        Assert.assertEquals("foo bar", SearchHelper
+                .removeHighlightingTags("f<span class=\"search-list--highlight\">oo</span> <span class=\"search-list--highlight\">bar</span>"));
     }
 }

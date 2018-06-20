@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.search;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,7 @@ public class SearchHit implements Comparable<SearchHit> {
         PAGE,
         METADATA, // grouped metadata
         PERSON,
+        CORPORATION,
         EVENT, // LIDO event
         UGC, // user-generated content
         GROUP, // convolute/series
@@ -89,6 +91,8 @@ public class SearchHit implements Comparable<SearchHit> {
                         return METADATA;
                     case "PERSON":
                         return PERSON;
+                    case "CORPORATION":
+                        return CORPORATION;
                     default:
                         return null;
                 }
@@ -198,6 +202,13 @@ public class SearchHit implements Comparable<SearchHit> {
                     hitType = HitType.getByName(metadataType);
                 }
             }
+            //            else if (DocType.UGC.name().equals(docType)) {
+            //                // For user-generated content hits use the metadata type for the hit type
+            //                String metadataType = se.getMetadataValue(SolrConstants.UGCTYPE);
+            //                if (StringUtils.isNotEmpty(metadataType)) {
+            //                    hitType = HitType.getByName(metadataType);
+            //                }
+            //            }
         }
 
         SearchHit hit = new SearchHit(hitType, browseElement, searchTerms, locale);
@@ -393,6 +404,7 @@ public class SearchHit implements Comparable<SearchHit> {
             for (int i = 0; i < number; ++i) {
                 SolrDocument childDoc = childDocs.get(i);
                 String fulltext = null;
+                List<SolrDocument> ugcDocs = null;
                 DocType docType = DocType.getByName((String) childDoc.getFieldValue(SolrConstants.DOCTYPE));
                 if (docType == null) {
                     logger.warn("Document {} has no DOCTYPE field, cannot add to child search hits.", childDoc.getFieldValue(SolrConstants.IDDOC));
@@ -402,6 +414,16 @@ public class SearchHit implements Comparable<SearchHit> {
                 boolean acccessDeniedType = false;
                 switch (docType) {
                     case PAGE:
+                        // Add user-generated content matches as child hits
+                        if (searchTerms.containsKey(SolrConstants.UGCTERMS) && childDoc.containsKey(SolrConstants.UGCTERMS)) {
+                            String ugcTerms = (String) childDoc.getFieldValue(SolrConstants.UGCTERMS);
+                            for (String term : searchTerms.get(SolrConstants.UGCTERMS)) {
+                                if (ugcTerms.contains(term)) {
+                                    ugcDocs = getUgcDocsForPage(pi, (int) childDoc.getFieldValue(SolrConstants.ORDER));
+                                    break;
+                                }
+                            }
+                        }
                         try {
                             fulltext = Helper.loadFulltext(browseElement.getDataRepository(),
                                     (String) childDoc.getFirstValue(SolrConstants.FILENAME_ALTO),
@@ -438,18 +460,31 @@ public class SearchHit implements Comparable<SearchHit> {
                             logger.error("No document found for IDDOC {}", ownerIddoc);
                             continue;
                         } {
-                        SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
-                                ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
-                        // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
-                        for (StringPair metadata : childHit.getFoundMetadata()) {
-                            // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
-                            if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                ownerHit.getFoundMetadata().add(metadata);
+                        {
+                            SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
+                                    ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
+                            // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                            for (StringPair metadata : childHit.getFoundMetadata()) {
+                                // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                                if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                    ownerHit.getFoundMetadata().add(metadata);
+                                }
+                            }
+
+                            ownerHit.getChildren().add(childHit);
+                            hitsPopulated++;
+                        }
+                        // Add child hits for each UGC match
+                        if (ugcDocs != null && !ugcDocs.isEmpty()) {
+                            for (SolrDocument ugcDoc : ugcDocs) {
+                                SearchHit ugcChildHit = createSearchHit(ugcDoc, ownerDocs.get(ownerIddoc), locale, null, searchTerms, null, false,
+                                        ignoreFields, translateFields, HitType.UGC);
+                                ownerHit.getChildren().add(ugcChildHit);
+                                logger.trace("Added UGC child hit: {}", ugcChildHit.getBrowseElement().getLabel());
+                                hitsPopulated++;
+                                
                             }
                         }
-
-                        ownerHit.getChildren().add(childHit);
-                        hitsPopulated++;
                     }
                         break;
                     case DOCSTRCT:
@@ -464,9 +499,9 @@ public class SearchHit implements Comparable<SearchHit> {
                             hitsPopulated++;
                         }
                         break;
-                    case GROUP:
-                        break;
                     case UGC:
+                        // UGC docs are not yet searchable directly
+                    case GROUP:
                         break;
                     default:
                         break;
@@ -568,6 +603,56 @@ public class SearchHit implements Comparable<SearchHit> {
             }
 
         }
+    }
+
+    /**
+     * 
+     * @param pi
+     * @param order
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    List<SolrDocument> getUgcDocsForPage(String pi, int order) throws PresentationException, IndexUnreachableException {
+        String ugcQuery = new StringBuilder().append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.UGC.name())
+                .append(" AND ")
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(':')
+                .append(pi)
+                .append(" AND ")
+                .append(SolrConstants.ORDER)
+                .append(':')
+                .append(order)
+                .toString();
+        logger.trace("ugc query: {}", ugcQuery);
+        SolrDocumentList ugcDocList = DataManager.getInstance().getSearchIndex().search(ugcQuery);
+        if (!ugcDocList.isEmpty()) {
+            List<SolrDocument> ret = new ArrayList<>(ugcDocList.size());
+            for (SolrDocument doc : ugcDocList) {
+                boolean added = false;
+                for (String field : doc.getFieldNames()) {
+                    if (added) {
+                        break;
+                    }
+                    String value = SolrSearchIndex.getSingleFieldStringValue(doc, field);
+                    if (value != null) {
+                        for (String term : searchTerms.get(SolrConstants.UGCTERMS)) {
+                            if (value.toLowerCase().contains(term)) {
+                                ret.add(doc);
+                                added = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            logger.trace("Found {} UGC documents for page {}", ret.size(), order);
+            return ret;
+        }
+
+        return Collections.emptyList();
     }
 
     /**

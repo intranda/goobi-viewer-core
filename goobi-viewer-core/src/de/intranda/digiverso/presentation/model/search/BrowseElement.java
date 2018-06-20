@@ -194,7 +194,7 @@ public class BrowseElement implements Serializable {
         if (DocType.METADATA.equals(docType)) {
             metadataGroupType = MetadataGroupType.getByName(structElement.getMetadataValue(SolrConstants.METADATATYPE));
             // The LABEL field in grouped metadata docs contains the name of the field defined in the indexed configuration
-            originalFieldName = structElement.getLabel();
+            originalFieldName = structElement.getMetadataValue(SolrConstants.LABEL);
         }
 
         // If the topstruct is a volume of any kind or a subelement, add the anchor and volume labels to
@@ -459,41 +459,6 @@ public class BrowseElement implements Serializable {
                 continue;
             }
             switch (termsFieldName) {
-                //                case SolrConstants.OVERVIEWPAGE_DESCRIPTION:
-                //                case SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT:
-                //                    if (!overviewPageFetched && (structElement.isWork() || structElement.isAnchor())) {
-                //                        // Only load the page once for both fields
-                //                        overviewPageFetched = true;
-                //                        try {
-                //                            OverviewPage overviewPage = DataManager.getInstance().getDao().getOverviewPageForRecord(structElement.getPi(), null,
-                //                                    null);
-                //                            if (overviewPage != null) {
-                //                                if (overviewPage.getDescription() != null) {
-                //                                    String value = Jsoup.parse(overviewPage.getDescription()).text();
-                //                                    String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(
-                //                                            SolrConstants.OVERVIEWPAGE_DESCRIPTION));
-                //                                    if (!highlightedValue.equals(value)) {
-                //                                        highlightedValue = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_DESCRIPTION),
-                //                                                highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
-                //                                        metadataList.add(new Metadata("viewOverviewDescription", "", highlightedValue));
-                //                                    }
-                //                                }
-                //                                if (overviewPage.getPublicationText() != null) {
-                //                                    String value = Jsoup.parse(overviewPage.getPublicationText()).text();
-                //                                    String highlightedValue = SearchHelper.applyHighlightingToPhrase(value, searchTerms.get(
-                //                                            SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT));
-                //                                    if (!highlightedValue.equals(value)) {
-                //                                        highlightedValue = SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.OVERVIEWPAGE_PUBLICATIONTEXT),
-                //                                                highlightedValue, DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
-                //                                        metadataList.add(new Metadata("viewOverviewPublication_publication", "", highlightedValue));
-                //                                    }
-                //                                }
-                //                            }
-                //                        } catch (DAOException e) {
-                //                            logger.error(e.getMessage(), e);
-                //                        }
-                //                    }
-                //                    break;
                 case SolrConstants.DEFAULT:
                     // If searching in DEFAULT, add all fields that contain any of the terms (instead of DEFAULT)
                     for (String docFieldName : structElement.getMetadataFields().keySet()) {
@@ -650,6 +615,77 @@ public class BrowseElement implements Serializable {
                             ret += " (" + eventDateStart + " - " + eventDateEnd + ")";
                         } else if (StringUtils.isNotEmpty(eventDate)) {
                             ret += " (" + eventDate + ")";
+                        }
+                    } else {
+                        ret = se.getMetadataValue(SolrConstants.LABEL);
+                    }
+                    ret = Helper.getTranslation(ret, locale);
+                    break;
+                case UGC:
+                    // User-generated content
+                    // TODO own method
+                    if (se.getMetadataValue(SolrConstants.UGCTYPE) != null) {
+                        switch (se.getMetadataValue(SolrConstants.UGCTYPE)) {
+                            case "PERSON": {
+                                StringBuilder sb = new StringBuilder();
+                                String first = se.getMetadataValue("MD_FIRSTNAME");
+                                String last = se.getMetadataValue("MD_LASTNAME");
+                                if (StringUtils.isNotEmpty(last)) {
+                                    sb.append(last);
+                                }
+                                if (StringUtils.isNotEmpty(first)) {
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(first);
+                                }
+                                ret = sb.toString();
+                            }
+                                break;
+                            case "CORPORATION": {
+                                StringBuilder sb = new StringBuilder();
+                                String address = se.getMetadataValue("MD_ADDRESS");
+                                String corp = se.getMetadataValue("MD_CORPORATION");
+                                if (StringUtils.isNotEmpty(corp)) {
+                                    sb.append(corp);
+                                }
+                                if (StringUtils.isNotEmpty(address)) {
+                                    sb.append(" (").append(corp).append(')');
+                                }
+                            }
+                                break;
+                            case "ADDRESS": {
+                                StringBuilder sb = new StringBuilder();
+                                String street = se.getMetadataValue("MD_STREET");
+                                String city = se.getMetadataValue("MD_CITY");
+                                String country = se.getMetadataValue("MD_COUNTRY");
+                                if (StringUtils.isNotEmpty(street)) {
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(street);
+                                }
+                                if (StringUtils.isNotEmpty(city)) {
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(city);
+                                }
+                                if (StringUtils.isNotEmpty(country)) {
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(city);
+                                }
+                                ret = sb.toString();
+                            }
+                                break;
+                            case "COMMENT":
+                                ret = se.getMetadataValue("MD_TEXT");
+                                break;
+                            default:
+                                ret = se.getMetadataValue(SolrConstants.LABEL);
+                                break;
                         }
                     } else {
                         ret = se.getMetadataValue(SolrConstants.LABEL);
@@ -974,6 +1010,9 @@ public class BrowseElement implements Serializable {
         } else {
             PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia,
                     useOverviewPage, false);
+            if (DocType.UGC.equals(docType)) {
+                pageType = PageType.viewObject;
+            }
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
             //hack for worldviews which needs language parameter instead of logid
             if ("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
