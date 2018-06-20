@@ -721,7 +721,7 @@ public class BrowseElement implements Serializable {
                         if (sb.length() > 0) {
                             sb.append(", ");
                         }
-                        sb.append(city);
+                        sb.append(country);
                     }
                     return sb.toString();
                 }

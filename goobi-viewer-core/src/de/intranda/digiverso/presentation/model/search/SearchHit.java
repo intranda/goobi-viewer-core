@@ -416,7 +416,7 @@ public class SearchHit implements Comparable<SearchHit> {
                     case PAGE:
                         // Add user-generated content matches as child hits
                         if (searchTerms.containsKey(SolrConstants.UGCTERMS) && childDoc.containsKey(SolrConstants.UGCTERMS)) {
-                            String ugcTerms = (String) childDoc.getFieldValue(SolrConstants.UGCTERMS);
+                            String ugcTerms = ((String) childDoc.getFieldValue(SolrConstants.UGCTERMS)).toLowerCase();
                             for (String term : searchTerms.get(SolrConstants.UGCTERMS)) {
                                 if (ugcTerms.contains(term)) {
                                     ugcDocs = getUgcDocsForPage(pi, (int) childDoc.getFieldValue(SolrConstants.ORDER));
@@ -482,7 +482,7 @@ public class SearchHit implements Comparable<SearchHit> {
                                 ownerHit.getChildren().add(ugcChildHit);
                                 logger.trace("Added UGC child hit: {}", ugcChildHit.getBrowseElement().getLabel());
                                 hitsPopulated++;
-                                
+
                             }
                         }
                     }
@@ -771,6 +771,14 @@ public class SearchHit implements Comparable<SearchHit> {
     public int getEventHitCount() {
         if (hitTypeCounts.get(HitType.EVENT) != null) {
             return hitTypeCounts.get(HitType.EVENT);
+        }
+
+        return 0;
+    }
+    
+    public int getUgcHitCount() {
+        if (hitTypeCounts.get(HitType.UGC) != null) {
+            return hitTypeCounts.get(HitType.UGC);
         }
 
         return 0;
