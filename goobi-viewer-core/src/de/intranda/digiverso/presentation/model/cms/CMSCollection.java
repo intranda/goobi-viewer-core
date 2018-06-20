@@ -402,7 +402,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return getRepresentativeWork()
                 .map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(work, width, height)))
                 .orElse(Optional.ofNullable(getMediaItem())
-                        .map(item -> item.getIconURI())
+                        .map(item -> item.getIconURI(width, height))
                         .orElse(getDefaultIcon(getSolrFieldValue())));
 
 //        return getMediaItem().getIconURI();
@@ -413,7 +413,7 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
         return getRepresentativeWork()
                 .map(work -> URI.create(BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(work, size)))
                 .orElse(Optional.ofNullable(getMediaItem())
-                        .map(item -> item.getIconURI())
+                        .map(item -> item.getIconURI(size))
                         .orElse(getDefaultIcon(getSolrFieldValue())));
 
 //        return getMediaItem().getIconURI();
