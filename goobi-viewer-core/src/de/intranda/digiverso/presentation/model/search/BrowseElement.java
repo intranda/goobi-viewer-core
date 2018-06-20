@@ -657,6 +657,8 @@ public class BrowseElement implements Serializable {
                             case "ADDRESS": {
                                 StringBuilder sb = new StringBuilder();
                                 String street = se.getMetadataValue("MD_STREET");
+                                String houseNumber = se.getMetadataValue("MD_HOUSENUMBER");
+                                String district = se.getMetadataValue("MD_DISTRICT");
                                 String city = se.getMetadataValue("MD_CITY");
                                 String country = se.getMetadataValue("MD_COUNTRY");
                                 if (StringUtils.isNotEmpty(street)) {
@@ -664,6 +666,15 @@ public class BrowseElement implements Serializable {
                                         sb.append(", ");
                                     }
                                     sb.append(street);
+                                    if (StringUtils.isNotEmpty(houseNumber)) {
+                                        sb.append(", ").append(houseNumber);
+                                    }
+                                }
+                                if (StringUtils.isNotEmpty(district)) {
+                                    if (sb.length() > 0) {
+                                        sb.append(", ");
+                                    }
+                                    sb.append(district);
                                 }
                                 if (StringUtils.isNotEmpty(city)) {
                                     if (sb.length() > 0) {
