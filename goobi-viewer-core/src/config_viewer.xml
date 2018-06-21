@@ -200,8 +200,8 @@
 		<thumbnailsPerPage>30</thumbnailsPerPage>
 
 		<!-- Optional: ThumbnailWidth und ThumbnailHeight, Default ist 100x120 <thumbnailsWidth>200</thumbnailsWidth> <thumbnailsHeight>220</thumbnailsHeight> -->
-		<thumbnailsWidth>200</thumbnailsWidth>
-		<thumbnailsHeight>220</thumbnailsHeight>
+		<thumbnailsWidth>400</thumbnailsWidth>
+		<thumbnailsHeight>400</thumbnailsHeight>
 		
 		<!-- <thumbnailsCompression>30</thumbnailsCompression> -->
 

@@ -126,7 +126,7 @@
 
 	<accessConditions>
         <!-- unconditionalImageAccesMaxWidth: Access conditions are not applied to images below this width - Thumbnails -->
-        <unconditionalImageAccessMaxWidth>150</unconditionalImageAccessMaxWidth>
+        <unconditionalImageAccessMaxWidth>400</unconditionalImageAccessMaxWidth>
         <!-- fullAccessForLocalhost: If true, users on localhost will be granted superuser access. Default is false. -->
         <fullAccessForLocalhost>true</fullAccessForLocalhost>
 	</accessConditions>
@@ -262,8 +262,8 @@
 		<thumbnailsPerPage>30</thumbnailsPerPage>
 
 		<!-- Optional: ThumbnailWidth und ThumbnailHeight, Default ist 100x120  -->
-		<!-- <thumbnailsWidth>200</thumbnailsWidth> -->
-		<!-- <thumbnailsHeight>220</thumbnailsHeight> -->
+		<thumbnailsWidth>400</thumbnailsWidth>
+		<thumbnailsHeight>400</thumbnailsHeight>
 
 		<!-- TODO DOCUMENTATION-->
 		<thumbnailsCompression>85</thumbnailsCompression>

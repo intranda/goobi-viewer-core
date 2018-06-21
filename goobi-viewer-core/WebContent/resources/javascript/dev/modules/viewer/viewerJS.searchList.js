@@ -123,12 +123,14 @@ var viewerJS = ( function( viewer ) {
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-default"]' ).addClass( 'active' );
                     $( '.search-list__hits' ).removeClass( 'grid' ).removeClass( 'list' ).fadeIn( 'fast' );
+                    $( '[data-toggle="hit-content"]' ).show();
                     
                     break;
                 case 'grid':
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-grid"]' ).addClass( 'active' );
                     $( '.search-list__hits' ).removeClass( 'list' ).addClass( 'grid' );
+                    $( '[data-toggle="hit-content"]' ).hide();
                     
                     // hide thumbnail and set src to header background
                     $( '.search-list__hit-thumbnail img' ).each( function() {
@@ -143,6 +145,7 @@ var viewerJS = ( function( viewer ) {
                     $( '.search-list__views button' ).removeClass( 'active' );
                     $( '[data-view="search-list-list"]' ).addClass( 'active' );
                     $( '.search-list__hits' ).removeClass( 'grid' ).addClass( 'list' ).fadeIn( 'fast' );
+                    $( '[data-toggle="hit-content"]' ).hide();
                     
                     break;
             }
@@ -152,6 +155,7 @@ var viewerJS = ( function( viewer ) {
             $( '[data-view="search-list-default"]' ).on( 'click', function() {
             	$( '.search-list__views button' ).removeClass( 'active' );
             	$( this ).addClass( 'active' );
+            	$( '[data-toggle="hit-content"]' ).show();
             	$( '.search-list__hits' ).hide().removeClass( 'grid' ).removeClass( 'list' );
             	
             	// set list style in local storage
@@ -166,6 +170,7 @@ var viewerJS = ( function( viewer ) {
             $( '[data-view="search-list-grid"]' ).on( 'click', function() {
                 $( '.search-list__views button' ).removeClass( 'active' );
                 $( this ).addClass( 'active' );
+                $( '[data-toggle="hit-content"]' ).hide();
                 $( '.search-list__hits' ).hide().removeClass( 'list' ).addClass( 'grid' );
                 
                 // set list style in local storage
@@ -183,6 +188,7 @@ var viewerJS = ( function( viewer ) {
             $( '[data-view="search-list-list"]' ).on( 'click', function() {
                 $( '.search-list__views button' ).removeClass( 'active' );
                 $( this ).addClass( 'active' );
+                $( '[data-toggle="hit-content"]' ).hide();
                 $( '.search-list__hits' ).hide().removeClass( 'grid' ).addClass( 'list' );
                 
                 // set list style in local storage

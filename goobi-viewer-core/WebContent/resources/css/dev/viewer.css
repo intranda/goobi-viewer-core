@@ -4801,8 +4801,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list a[data-toggle="hit-content"],
 .search-list button[data-toggle="hit-content"] {
-  display: none !important;
-  visibility: hidden !important;
+  display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
@@ -4839,8 +4838,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list a[data-toggle="hit-content"],
 .search-list button[data-toggle="hit-content"] {
-  display: none !important;
-  visibility: hidden !important;
+  display: none;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
