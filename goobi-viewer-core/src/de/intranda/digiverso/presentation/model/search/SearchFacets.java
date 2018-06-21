@@ -60,13 +60,20 @@ public class SearchFacets {
     private String tempValue;
 
     public void resetAvailableFacets() {
+        logger.trace("resetAvailableFacets");
         availableFacets.clear();
         drillDownExpanded.clear();
     }
 
     public void resetCurrentFacets() {
-        resetCurrentCollection();
         resetCurrentFacetString();
+    }
+
+    public void resetSliderRange() {
+        logger.trace("resetSliderRange");
+        minValues.clear();
+        maxValues.clear();
+        valueRanges.clear();
     }
 
     /**
@@ -570,9 +577,10 @@ public class SearchFacets {
     }
 
     /**
+     * Returns a sorted list of all available values for the given field among available facet values.
      * 
      * @param field
-     * @return
+     * @return sorted list of all values for the given field among available facet values
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
@@ -606,15 +614,12 @@ public class SearchFacets {
         //        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
         List<Integer> values = null;
         if (availableFacets.get(field) != null) {
-
             values = new ArrayList<>(availableFacets.get(field).size());
             for (FacetItem facetItem : availableFacets.get(field)) {
                 if (facetItem.getValue() == null) {
                     continue;
                 }
-
                 values.add(Integer.valueOf(facetItem.getValue()));
-
             }
         } else {
             logger.trace("No facets found for field {}", field);

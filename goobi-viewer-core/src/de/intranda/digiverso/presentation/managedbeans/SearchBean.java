@@ -204,6 +204,7 @@ public class SearchBean implements Serializable {
         resetSearchResults();
         if (resetParameters) {
             resetSearchParameters();
+            facets.resetSliderRange();
         }
         generateSimpleSearchString(guiSearchString);
         
@@ -241,6 +242,7 @@ public class SearchBean implements Serializable {
         resetSearchResults();
         if (resetParameters) {
             resetSearchParameters();
+            facets.resetSliderRange();
         }
         searchString = generateAdvancedSearchString(DataManager.getInstance().getConfiguration().isAggregateHits());
 
