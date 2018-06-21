@@ -334,7 +334,7 @@
 
 	<search>
 		<!-- hitsPerPage: defines the number of elements that are shown in a search hitlist or when opening a collection -->
-		<hitsPerPage>10</hitsPerPage>
+		<hitsPerPage>12</hitsPerPage>
 
 		<!-- fulltextFragmentLength: Approximate length of the full-text fragment displayed in search hits. Default is 200. -->
 		<fulltextFragmentLength>120</fulltextFragmentLength>
