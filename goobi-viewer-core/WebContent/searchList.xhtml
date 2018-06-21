@@ -227,6 +227,11 @@
     </ui:define>
 
     <ui:define name="sidebar">
+        <!-- OPTIONAL DRILLDOWN HEADING -->
+        <div class="search-list__drilldown-heading">
+            <h3>#{msg.searchListOptionalHeading}</h3>
+        </div>
+        
         <widgetComponent:widget_chronology />
         
         <widgetComponent:widget_searchDrillDown />

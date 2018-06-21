@@ -4299,6 +4299,7 @@ div[id*="-Modal"] .email-form .form-group {
   /* SORTING */
   /* ADVANCED SEARCH INFO */
   /* HITS */
+  /* DRILLDOWN HEADING */
   /* MODIFICATION */
 }
 .search-list__title {
@@ -4656,6 +4657,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list__struct-chapter + .search-list__struct-title {
   margin-top: 10px;
+}
+.search-list__drilldown-heading {
+  display: none;
 }
 .search-list--highlight {
   background-color: rgba(255, 255, 0, 0.5);
