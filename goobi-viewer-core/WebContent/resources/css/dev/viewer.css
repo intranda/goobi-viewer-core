@@ -2268,7 +2268,8 @@ div.mce-fullscreen {
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
   .image-controls__options {
-    margin-bottom: 10px;
+    display: none !important;
+    visibility: hidden !important;
   }
   .image-controls__option {
     width: 32px;
