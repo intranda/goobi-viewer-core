@@ -455,6 +455,7 @@ public class SearchHit implements Comparable<SearchHit> {
                             continue;
                         }
                     case METADATA:
+                    case UGC:
                     case EVENT: {
                         String ownerIddoc = (String) childDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
                         SearchHit ownerHit = ownerHits.get(ownerIddoc);
@@ -477,11 +478,13 @@ public class SearchHit implements Comparable<SearchHit> {
                             {
                                 SearchHit childHit = createSearchHit(childDoc, ownerDocs.get(ownerIddoc), locale, fulltext, searchTerms, null, false,
                                         ignoreFields, translateFields, acccessDeniedType ? HitType.ACCESSDENIED : null);
-                                // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
-                                for (StringPair metadata : childHit.getFoundMetadata()) {
-                                    // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
-                                    if (!ownerHit.getFoundMetadata().contains(metadata)) {
-                                        ownerHit.getFoundMetadata().add(metadata);
+                                if (!DocType.UGC.equals(docType)) {
+                                    // Add all found additional metadata to the owner doc (minus duplicates) so it can be displayed
+                                    for (StringPair metadata : childHit.getFoundMetadata()) {
+                                        // Found metadata lists will usually be very short, so it's ok to iterate through the list on every check
+                                        if (!ownerHit.getFoundMetadata().contains(metadata)) {
+                                            ownerHit.getFoundMetadata().add(metadata);
+                                        }
                                     }
                                 }
 
@@ -502,23 +505,6 @@ public class SearchHit implements Comparable<SearchHit> {
                             ownerDocs.put(iddoc, childDoc);
                             hitsPopulated++;
                         }
-                        break;
-                    case UGC:
-                    // User-generated contents as separate child hits
-                    {
-                        SearchHit ownerHit = ownerHits.get("UGC");
-                        if (ownerHit == null) {
-                            ownerHit = new SearchHit(HitType.UGC,
-                                    new BrowseElement(browseElement.getPi(), 999999, Helper.getTranslation("ugc", locale), null, true, locale, null),
-                                    searchTerms, locale);
-                            children.add(ownerHit);
-                            ownerHits.put("UGC", ownerHit);
-                        }
-                        SearchHit childHit =
-                                createSearchHit(childDoc, null, locale, fulltext, searchTerms, null, false, ignoreFields, translateFields, null);
-                        ownerHit.getChildren().add(childHit);
-                        hitsPopulated++;
-                    }
                         break;
                     case GROUP:
                     default:
