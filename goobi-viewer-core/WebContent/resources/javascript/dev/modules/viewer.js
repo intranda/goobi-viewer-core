@@ -5967,8 +5967,10 @@ var viewerJS = ( function( viewer ) {
                 hitSetChildrenDt.append( '<i class="fa fa-university" aria-hidden="true"></i>' );
                 break;
             case 'LOCATION':
-            case 'ADDRESS':
                 hitSetChildrenDt.append( '<i class="fa fa-location-arrow" aria-hidden="true"></i>' );
+                break;
+            case 'ADDRESS':
+                hitSetChildrenDt.append( '<i class="fa fa-envelope" aria-hidden="true"></i>' );
                 break;
             case 'SUBJECT':
                 hitSetChildrenDt.append( '<i class="fa fa-question-circle-o" aria-hidden="true"></i>' );
