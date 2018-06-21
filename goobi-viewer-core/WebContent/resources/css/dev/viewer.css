@@ -4292,6 +4292,8 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list {
   margin-bottom: 21px;
   /* ELEMENT */
+  /* OPTIONS */
+  /* CURRENT SEARCH */
   /* LINKS */
   /* SORTING */
   /* ADVANCED SEARCH INFO */
@@ -4306,8 +4308,17 @@ div[id*="-Modal"] .email-form .form-group {
   line-height: normal;
   font-size: 1rem;
 }
+.search-list__options {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  font-size: 0.8rem;
+}
 .search-list__options a,
 .search-list__options button {
+  display: inline-block;
+  padding: 3px;
   font-size: 1rem;
   color: #1a1a1a;
 }
@@ -4316,32 +4327,39 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__options a:focus,
 .search-list__options button:focus,
 .search-list__options a:active,
-.search-list__options button:active {
+.search-list__options button:active,
+.search-list__options a.active,
+.search-list__options button.active {
   color: #507ebf;
   outline: none !important;
 }
 .search-list__options form {
   display: inline-block;
 }
-.search-list__hitcount,
-.search-list__rss,
-.search-list__save-search,
-.search-list__excel-export {
-  display: inline-block;
-  padding-left: 7px;
-}
 .search-list__hitcount {
-  font-size: 0.8rem;
+  padding-right: 5px;
+}
+.search-list__rss {
+  padding-left: 5px;
+  border-left: 1px solid #ccc;
+}
+.search-list__save-search {
+  padding-left: 4px;
 }
 .search-list__excel-export {
-  font-size: 0.8rem;
+  padding-right: 5px;
 }
 .search-list__excel-export .excel-export-loader {
   display: none;
+  padding-left: 5px;
 }
 .search-list__excel-export .excel-export-loader img {
   width: 14px;
   margin-top: -4px;
+}
+.search-list__views {
+  padding-left: 5px;
+  border-left: 1px solid #ccc;
 }
 .search-list__label {
   display: inline-block;
@@ -4419,6 +4437,9 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__adv-search-info-back {
   font-size: 0.8rem;
   color: #1a1a1a;
+}
+.search-list__hits {
+  display: none;
 }
 .search-list__hit {
   position: relative;
@@ -4703,6 +4724,128 @@ div[id*="-Modal"] .email-form .form-group {
     margin-left: 30%;
   }
 }
+/* ==============================================================
+   Searchlist Grid View
+   style declarations for searchList.xhtml
+   ==============================================================*/
+/* SEARCH LIST GRID */
+/* BLOCK */
+.search-list {
+  /* ELEMENT */
+  /* HITS */
+}
+.search-list__hits.grid form {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(200px, 1fr))[auto-fill];
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 10px;
+  grid-auto-rows: minmax(300px, auto);
+  grid-auto-flow: dense;
+}
+.search-list__hits.grid .search-list__hit {
+  margin: 0;
+  padding: 0;
+}
+.search-list__hits.grid .search-list__hit .row,
+.search-list__hits.grid .search-list__hit [class*="col-"] {
+  float: none;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+.search-list__hits.grid .search-list__hit-header .row {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+}
+.search-list__hits.grid .search-list__hit-header .col-xs-12.col-sm-10 {
+  -ms-flex-order: 2;
+      order: 2;
+}
+.search-list__hits.grid .search-list__hit-header .col-xs-12.col-sm-2 {
+  -ms-flex-order: 1;
+      order: 1;
+}
+.search-list__hits.grid .search-list__hit-thumbnail {
+  min-height: 175px;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+}
+.search-list__hits.grid .search-list__hit-thumbnail a {
+  display: block;
+  height: 175px;
+}
+.search-list__hits.grid .search-list__hit-thumbnail [data-link="related-page"] {
+  top: 5px;
+}
+.search-list__hits.grid .search-list__hit-thumbnail [data-bookshelf-type="add"] {
+  top: 0;
+  right: 0;
+  padding: 5px;
+}
+.search-list__hits.grid .search-list__hit-title h4 {
+  text-align: center;
+  padding: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.search-list__hits.grid .search-list__hit-thumbnail img,
+.search-list__hits.grid .search-list__hit-type,
+.search-list__hits.grid .search-list__hit-info,
+.search-list__hits.grid .search-list__hit-content {
+  display: none !important;
+  visibility: hidden !important;
+}
+.search-list a[data-toggle="hit-content"],
+.search-list button[data-toggle="hit-content"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   Searchlist List View
+   style declarations for searchList.xhtml
+   ==============================================================*/
+/* SEARCH LIST LIST */
+/* BLOCK */
+.search-list {
+  /* ELEMENT */
+  /* HITS */
+}
+.search-list__hits.list .search-list__hit {
+  margin-bottom: 5px;
+}
+.search-list__hits.list .search-list__hit-header .col-xs-12.col-sm-10 {
+  width: 100%;
+}
+.search-list__hits.list .search-list__hit-header .col-xs-12.col-sm-2 {
+  width: 0;
+}
+.search-list__hits.list .search-list__hit-thumbnail,
+.search-list__hits.list .search-list__hit-type,
+.search-list__hits.list .search-list__hit-info,
+.search-list__hits.list .search-list__hit-content {
+  display: none !important;
+  visibility: hidden !important;
+}
+.search-list__hits.list .search-list--highlight {
+  display: inline;
+}
+.search-list a[data-toggle="hit-content"],
+.search-list button[data-toggle="hit-content"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    Search Calendar
    style declarations for searchCalendar.xhtml 

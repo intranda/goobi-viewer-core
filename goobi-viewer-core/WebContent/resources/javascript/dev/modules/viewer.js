@@ -5568,6 +5568,7 @@ var viewerJS = ( function( viewer ) {
     var _debug = false;
     var _promise = null;
     var _childHits = null;
+    var _searchListStyle = '';
     var _defaults = {
         contextPath: '',
         restApiPath: '/rest/search/hit/',
@@ -5649,9 +5650,88 @@ var viewerJS = ( function( viewer ) {
                     trigger.show();
                 });                
             } );
+                        
+            // get/set list style from local storage
+            if ( localStorage.getItem( 'searchListStyle' ) == undefined ) {
+                localStorage.setItem( 'searchListStyle', 'default' );
+            }
             
-            // get child hits
+            _searchListStyle = localStorage.getItem( 'searchListStyle' );
             
+            switch ( _searchListStyle ) {
+                case 'default':
+                    $( '.search-list__views button' ).removeClass( 'active' );
+                    $( '[data-view="search-list-default"]' ).addClass( 'active' );
+                    $( '.search-list__hits' ).removeClass( 'grid' ).removeClass( 'list' ).fadeIn( 'fast' );
+                    
+                    break;
+                case 'grid':
+                    $( '.search-list__views button' ).removeClass( 'active' );
+                    $( '[data-view="search-list-grid"]' ).addClass( 'active' );
+                    $( '.search-list__hits' ).removeClass( 'list' ).addClass( 'grid' );
+                    
+                    // hide thumbnail and set src to header background
+                    $( '.search-list__hit-thumbnail img' ).each( function() {
+                        var imgUrl = $( this ).attr( 'src' );
+                        $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                    } );
+                    
+                    $( '.search-list__hits' ).fadeIn( 'fast' );
+                    
+                    break;
+                case 'list':
+                    $( '.search-list__views button' ).removeClass( 'active' );
+                    $( '[data-view="search-list-list"]' ).addClass( 'active' );
+                    $( '.search-list__hits' ).removeClass( 'grid' ).addClass( 'list' ).fadeIn( 'fast' );
+                    
+                    break;
+            }
+            
+            // set searchlist views
+            // set default style
+            $( '[data-view="search-list-default"]' ).on( 'click', function() {
+            	$( '.search-list__views button' ).removeClass( 'active' );
+            	$( this ).addClass( 'active' );
+            	$( '.search-list__hits' ).hide().removeClass( 'grid' ).removeClass( 'list' );
+            	
+            	// set list style in local storage
+            	localStorage.setItem( 'searchListStyle', 'default' );
+            	
+            	// remove header background
+            	$( '.search-list__hit-thumbnail' ).css( 'background-image', 'none' );
+            	
+            	$( '.search-list__hits' ).fadeIn( 'fast' );
+            } );
+            // set grid style
+            $( '[data-view="search-list-grid"]' ).on( 'click', function() {
+                $( '.search-list__views button' ).removeClass( 'active' );
+                $( this ).addClass( 'active' );
+                $( '.search-list__hits' ).hide().removeClass( 'list' ).addClass( 'grid' );
+                
+                // set list style in local storage
+                localStorage.setItem( 'searchListStyle', 'grid' );
+                
+                // hide thumbnail and set src to header background
+                $( '.search-list__hit-thumbnail img' ).each( function() {
+                    var imgUrl = $( this ).attr( 'src' );
+                    $( this ).parents( '.search-list__hit-thumbnail' ).css( 'background-image', 'url("' + imgUrl + '")' );
+                } );
+                
+                $( '.search-list__hits' ).fadeIn( 'fast' );
+            } );
+            // set list style
+            $( '[data-view="search-list-list"]' ).on( 'click', function() {
+                $( '.search-list__views button' ).removeClass( 'active' );
+                $( this ).addClass( 'active' );
+                $( '.search-list__hits' ).hide().removeClass( 'grid' ).addClass( 'list' );
+                
+                // set list style in local storage
+                localStorage.setItem( 'searchListStyle', 'list' );
+                
+                $( '.search-list__hits' ).fadeIn( 'fast' );
+            } );
+            
+            // get child hits            
             $( '[data-toggle="hit-content"]' ).each( function() {
                 var currBtn = $( this );
                 var currIdDoc = $( this ).attr( 'data-iddoc' );
