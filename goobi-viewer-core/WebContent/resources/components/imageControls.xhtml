@@ -104,7 +104,7 @@
                                     <li
                                         class="image-controls__action page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep1 + 1) ? 'inactive' : ''}">
                                         <h:outputLink value="#{activeDocumentBean.getPreviousPageUrl(configurationBean.pageBrowseStep1)}"
-                                            title="#{configurationBean.pageBrowseStep2} #{msg.stepBack}"
+                                            title="#{configurationBean.pageBrowseStep1} #{msg.stepBack}"
                                             disabled="#{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep1 + 1) ? 'true' : 'false'}">
     	                                -#{configurationBean.pageBrowseStep1}
     	                                <f:passThroughAttribute name="data-toggle" value="tooltip" />
