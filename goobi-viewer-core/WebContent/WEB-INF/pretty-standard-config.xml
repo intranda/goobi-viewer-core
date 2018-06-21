@@ -225,7 +225,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="searchAdvanced4">
-		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+		<pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>

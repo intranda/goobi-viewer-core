@@ -64,8 +64,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldSortResultsCorrectly() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10, Collections.singletonList(
-                new StringPair(SolrConstants.DATECREATED, "desc")), null, null);
+        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10,
+                Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null, null);
         Assert.assertEquals(10, response.getResults().size());
         long previous = -1;
         for (SolrDocument doc : response.getResults()) {
@@ -84,8 +84,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldFacetResultsCorrectly() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10, null, Collections.singletonList(
-                SolrConstants.DC), null);
+        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10, null,
+                Collections.singletonList(SolrConstants.DC), null);
         Assert.assertEquals(10, response.getResults().size());
         Assert.assertNotNull(response.getFacetField(SolrConstants.DC));
         Assert.assertNotNull(response.getFacetField(SolrConstants.DC).getValues());
@@ -97,8 +97,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void search_shouldFilterFieldsCorrectly() throws Exception {
-        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10, null, null, Collections
-                .singletonList(SolrConstants.PI));
+        QueryResponse response = DataManager.getInstance().getSearchIndex().search(SolrConstants.PI + ":*", 0, 10, null, null,
+                Collections.singletonList(SolrConstants.PI));
         Assert.assertEquals(10, response.getResults().size());
         for (SolrDocument doc : response.getResults()) {
             Assert.assertEquals(1, doc.getFieldNames().size());
@@ -138,8 +138,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFacetsCorrectly() throws Exception {
         String[] facetFields = { SolrConstants._CALENDAR_YEAR, SolrConstants._CALENDAR_MONTH };
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays.asList(
-                facetFields), 0, false);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*",
+                Arrays.asList(facetFields), 0, false);
         Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_YEAR));
         Assert.assertNotNull(resp.getFacetField(SolrConstants._CALENDAR_MONTH));
     }
@@ -151,8 +151,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     @Test
     public void searchFacetsAndStatistics_shouldGenerateFieldStatisticsForEveryFacetFieldIfRequested() throws Exception {
         String[] facetFields = { SolrConstants._CALENDAR_YEAR };
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Arrays.asList(
-                facetFields), 0, true);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*",
+                Arrays.asList(facetFields), 0, true);
         Assert.assertNotNull(resp.getFieldStatsInfo());
         FieldStatsInfo info = resp.getFieldStatsInfo().get(SolrConstants._CALENDAR_YEAR);
         Assert.assertNotNull(info);
@@ -164,8 +164,8 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void searchFacetsAndStatistics_shouldNotReturnAnyDocs() throws Exception {
-        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*", Collections
-                .singletonList(SolrConstants._CALENDAR_YEAR), 0, false);
+        QueryResponse resp = DataManager.getInstance().getSearchIndex().searchFacetsAndStatistics(SolrConstants._CALENDAR_YEAR + ":*",
+                Collections.singletonList(SolrConstants._CALENDAR_YEAR), 0, false);
         Assert.assertTrue(resp.getResults().isEmpty());
     }
 
@@ -242,8 +242,9 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
      */
     @Test
     public void getFirstDoc_shouldReturnCorrectDoc() throws Exception {
-        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(
-                ":PPN517154005 AND ").append(SolrConstants.DOCTYPE).append(":PAGE").toString(), Collections.singletonList(SolrConstants.ORDER));
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(
+                new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(":PPN517154005 AND ").append(SolrConstants.DOCTYPE).append(":PAGE").toString(),
+                Collections.singletonList(SolrConstants.ORDER));
         Assert.assertNotNull(doc);
         Assert.assertEquals(1, doc.getFieldValue(SolrConstants.ORDER));
     }
@@ -293,12 +294,12 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         doc.addField("field_B_LANG_EN", "field_B_en");
         doc.addField("field_B_LANG_DE", "field_B_de");
         doc.addField("field_B_LANG_EN", "field_B_en_2");
-        
+
         Map<String, List<String>> mapA = SolrSearchIndex.getMetadataValuesForLanguage(doc, "field_A");
         Assert.assertEquals(1, mapA.size());
         Assert.assertEquals(1, mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).size());
         Assert.assertEquals("value_A", mapA.get(MultiLanguageMetadataValue.DEFAULT_LANGUAGE).get(0));
-        
+
         Map<String, List<String>> mapB = SolrSearchIndex.getMetadataValuesForLanguage(doc, "field_B");
         Assert.assertEquals(2, mapB.size());
         Assert.assertEquals(mapB.get("en").size(), 2);
@@ -308,7 +309,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("field_B_en_2", mapB.get("en").get(1));
 
     }
-    
+
     @Test
     public void testGetMultiLanguageFieldValueMap() {
         SolrDocument doc = new SolrDocument();
@@ -317,7 +318,7 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         doc.addField("field_B_LANG_EN", "field_B_en");
         doc.addField("field_B_LANG_DE", "field_B_de");
         doc.addField("field_B_LANG_EN", "field_B_en_2");
-        
+
         Map<String, List<IMetadataValue>> map = SolrSearchIndex.getMultiLanguageFieldValueMap(doc);
         Assert.assertEquals(2, map.keySet().size());
         Assert.assertEquals("value_A", map.get("field_A").get(0).getValue().get());
@@ -325,9 +326,30 @@ public class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assert.assertEquals("field_B_de", map.get("field_B").get(0).getValue("de").get());
         Assert.assertEquals("field_B_en", map.get("field_B").get(0).getValue("en").get());
         Assert.assertEquals("field_B_en_2", map.get("field_B").get(1).getValue("en").get());
-        
+
         Assert.assertEquals("value_B", map.get("field_B").get(0).getValue("fr").orElse(map.get("field_B").get(0).getValue().orElse("")));
 
     }
-    
+
+    /**
+     * @see SolrSearchIndex#getSingleFieldStringValue(SolrDocument,String)
+     * @verifies return value as string correctly
+     */
+    @Test
+    public void getSingleFieldStringValue_shouldReturnValueAsStringCorrectly() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.addField("NUM", 1337);
+        Assert.assertEquals("1337", SolrSearchIndex.getSingleFieldStringValue(doc, "NUM"));
+    }
+
+    /**
+     * @see SolrSearchIndex#getSingleFieldStringValue(SolrDocument,String)
+     * @verifies not return null as string if value is null
+     */
+    @Test
+    public void getSingleFieldStringValue_shouldNotReturnNullAsStringIfValueIsNull() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        Assert.assertNull(SolrSearchIndex.getSingleFieldStringValue(doc, "MD_NOSUCHFIELD"));
+    }
+
 }

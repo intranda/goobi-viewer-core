@@ -73,13 +73,14 @@ public class ALTOTools {
     /**
      *
      * @param alto
+     * @param request
      * @return
      * @should throw IllegalArgumentException if altoDoc is null
      */
-    public static String getFullText(String alto) {
+    public static String getFullText(String alto, HttpServletRequest request) {
 
         try {
-            return alto2Txt(alto);
+            return alto2Txt(alto, request);
         } catch (IOException | XMLStreamException e) {
             logger.error(e.getMessage(), e);
         }
@@ -148,12 +149,13 @@ public class ALTOTools {
     /**
      * 
      * @param alto
+     * @param request
      * @return
      * @throws IOException
      * @throws XMLStreamException
      * @should use extract fulltext correctly
      */
-    protected static String alto2Txt(String alto) throws IOException, XMLStreamException {
+    protected static String alto2Txt(String alto, HttpServletRequest request) throws IOException, XMLStreamException {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
@@ -207,15 +209,16 @@ public class ALTOTools {
                                         // that the tag link is not rendered for
                                         // every tagged word)
                                         FacesContext context = FacesContext.getCurrentInstance();
-                                        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-                                        String contextPath = request.getContextPath();
-                                        strings.append("<span data-remotecontent=\"");
-                                        strings.append(contextPath);
-                                        strings.append("/api?action=normdata&amp;url=");
-                                        strings.append(neUriMap.get(tagref));
-                                        strings.append("&amp;lang=de\" class=\"ner-trigger\" title=\"");
-                                        strings.append(neLabelMap.get(tagref));
-                                        strings.append("\" tabindex=\"-1\"><span class=\"ner-popover-pointer\"></span>");
+                                        if (request != null) {
+                                            String contextPath = request.getContextPath();
+                                            strings.append("<span data-remotecontent=\"");
+                                            strings.append(contextPath);
+                                            strings.append("/api?action=normdata&amp;url=");
+                                            strings.append(neUriMap.get(tagref));
+                                            strings.append("&amp;lang=de\" class=\"ner-trigger\" title=\"");
+                                            strings.append(neLabelMap.get(tagref));
+                                            strings.append("\" tabindex=\"-1\"><span class=\"ner-popover-pointer\"></span>");
+                                        }
                                         switch (neTypeMap.get(tagref)) {
                                             case "person":
                                                 strings.append("<span class=\"glyphicon glyphicon-user\"></span>");

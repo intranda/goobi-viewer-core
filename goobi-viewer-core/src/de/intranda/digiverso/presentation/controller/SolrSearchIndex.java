@@ -374,26 +374,25 @@ public final class SolrSearchIndex {
 
         return ret;
     }
-    
-    /**
-    *
-    * @param iddoc
-    * @return
-    * @throws IndexUnreachableException
-    * @throws PresentationException
-    * @should return correct doc
-    */
-   public SolrDocument getDocumentByPI(String pi) throws IndexUnreachableException, PresentationException {
-       // logger.trace("getDocumentByIddoc: {}", iddoc);
-       SolrDocument ret = null;
-       SolrDocumentList hits =
-               search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 0, 1, null, null, null).getResults();
-       if (hits != null && hits.size() > 0) {
-           ret = hits.get(0);
-       }
 
-       return ret;
-   }
+    /**
+     *
+     * @param iddoc
+     * @return
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @should return correct doc
+     */
+    public SolrDocument getDocumentByPI(String pi) throws IndexUnreachableException, PresentationException {
+        // logger.trace("getDocumentByIddoc: {}", iddoc);
+        SolrDocument ret = null;
+        SolrDocumentList hits = search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 0, 1, null, null, null).getResults();
+        if (hits != null && hits.size() > 0) {
+            ret = hits.get(0);
+        }
+
+        return ret;
+    }
 
     /**
      * Returns a list of Tags created from the terms for the given field name. This method uses the slower doc search instead of term search, but can
@@ -635,9 +634,12 @@ public final class SolrSearchIndex {
      * @param doc
      * @param field
      * @return
+     * @should return value as string correctly
+     * @should not return null as string if value is null
      */
     public static String getSingleFieldStringValue(SolrDocument doc, String field) {
-        return String.valueOf(getSingleFieldValue(doc, field));
+        Object val = getSingleFieldValue(doc, field);
+        return val != null ? String.valueOf(val) : null;
     }
 
     /**
@@ -928,18 +930,18 @@ public final class SolrSearchIndex {
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
      */
-    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, boolean getFieldStatistics)
+            throws PresentationException, IndexUnreachableException {
         return searchFacetsAndStatistics(query, facetFields, facetMinCount, null, getFieldStatistics);
     }
 
-    
     /**
      * Returns facets for the given facet field list. No actual docs are returned since they aren't necessary.
      *
      * @param query The query to use.
      * @param facetFields List of facet fields.
      * @param facetMinCount
-     * @param facetPrefix   The facet field value must start with these characters. Ignored if null or blank
+     * @param facetPrefix The facet field value must start with these characters. Ignored if null or blank
      * @param getFieldStatistics If true, field statistics will be generated for every facet field.
      * @return
      * @throws PresentationException
@@ -948,8 +950,8 @@ public final class SolrSearchIndex {
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
      */
-    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, String facetPrefix, boolean getFieldStatistics)
-            throws PresentationException, IndexUnreachableException {
+    public QueryResponse searchFacetsAndStatistics(String query, List<String> facetFields, int facetMinCount, String facetPrefix,
+            boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
         SolrQuery solrQuery = new SolrQuery(query);
         solrQuery.setStart(0);
         solrQuery.setRows(0);
@@ -963,7 +965,7 @@ public final class SolrSearchIndex {
             }
         }
         solrQuery.setFacetMinCount(facetMinCount);
-        if(StringUtils.isNotBlank(facetPrefix)) {            
+        if (StringUtils.isNotBlank(facetPrefix)) {
             solrQuery.setFacetPrefix(facetPrefix);
         }
         solrQuery.setFacetLimit(-1); // no limit
@@ -1143,7 +1145,7 @@ public final class SolrSearchIndex {
         }
         return map;
     }
-    
+
     /**
      * @param doc The document containing the metadata
      * @param key the metadata key without the '_LANG_...' suffix

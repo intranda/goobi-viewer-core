@@ -889,7 +889,7 @@ public class Helper {
             // ALTO file
             String alto = loadFulltext(dataRepository, altoFilePath, request);
             if (alto != null) {
-                return ALTOTools.getFullText(alto);
+                return ALTOTools.getFullText(alto, request);
 
             }
         }

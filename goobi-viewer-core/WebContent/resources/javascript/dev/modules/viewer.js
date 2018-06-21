@@ -5967,6 +5967,7 @@ var viewerJS = ( function( viewer ) {
                 hitSetChildrenDt.append( '<i class="fa fa-university" aria-hidden="true"></i>' );
                 break;
             case 'LOCATION':
+            case 'ADDRESS':
                 hitSetChildrenDt.append( '<i class="fa fa-location-arrow" aria-hidden="true"></i>' );
                 break;
             case 'SUBJECT':
@@ -5975,11 +5976,11 @@ var viewerJS = ( function( viewer ) {
             case 'PUBLISHER':
                 hitSetChildrenDt.append( '<i class="fa fa-copyright" aria-hidden="true"></i>' );
                 break;
+            case 'COMMENT':
+                hitSetChildrenDt.append( '<i class="fa fa-comment" aria-hidden="true"></i>' );
+                break;
             case 'EVENT':
                 hitSetChildrenDt.append( '<i class="fa fa-calendar" aria-hidden="true"></i>' );
-                break;
-            case 'UGC':
-                hitSetChildrenDt.append( '<i class="fa fa-comment" aria-hidden="true"></i>' );
                 break;
             case 'ACCESSDENIED':
                 hitSetChildrenDt.append( '<i class="fa fa-lock" aria-hidden="true"></i>' );
