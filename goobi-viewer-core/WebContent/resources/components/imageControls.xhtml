@@ -75,7 +75,7 @@
                             </ui:fragment>
                             <!-- PAGE BROWSE BACK -->
                             <h:panelGroup
-                                rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord and activeDocumentBean.imageToShow gt 5}">
+                                rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.viewManager.multiPageRecord}">
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep3Visible}">
                                     <li
                                         class="image-controls__action page-browse #{activeDocumentBean.imageToShow lt (configurationBean.pageBrowseStep3 + 1) ? 'inactive' : ''}">
@@ -160,7 +160,7 @@
                                 </li>
                             </ui:fragment>
                             <!-- PAGE BROWSE FORWARD -->
-                            <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext' and activeDocumentBean.imageToShow gt 5}">
+                            <h:panelGroup rendered="#{configurationBean.pageBrowseEnabled and navigationHelper.currentPage != 'fulltext'}">
                                 <h:panelGroup rendered="#{configurationBean.pageBrowseStep1Visible}">
                                     <li
                                         class="image-controls__action page-browse #{activeDocumentBean.imageToShow gt (activeDocumentBean.viewManager.imagesCount - configurationBean.pageBrowseStep1) ? 'inactive' : ''}">
