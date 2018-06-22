@@ -35,10 +35,11 @@
 							<ui:fragment rendered="#{!cc.attrs.widget.hasWidgetTitle}">						
 								#{msg[cc.attrs.widget.type]}
 							</ui:fragment>
-							<a href="#customCollapse-#{cc.attrs.widget.order}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse"> #{msg[cc.attrs.widget.type]} <span
-								class="glyphicon glyphicon-arrow-down"></span>
-							</a>
-						</h3>
+                            <a href="#customCollapse-#{cc.attrs.widget.order}" data-toggle="collapse" aria-expanded="false" aria-controls="customCollapse">
+                                #{msg[cc.attrs.widget.type]}
+                                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                            </a>
+                        </h3>
 
 						<ul>
 							<ui:repeat value="#{cc.attrs.widget.linkedPages}" var="pageId">

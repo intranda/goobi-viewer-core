@@ -54,7 +54,7 @@
                         <h:commandLink styleClass="btn" title="#{msg.edit}">
                             <f:setPropertyActionListener value="#{license}" target="#{adminBean.currentLicense}" />
                             <f:ajax render="@form" />
-                            <span class="glyphicon glyphicon-pencil"></span>
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
                         </h:commandLink> 
                         
                         <!-- delete license --> 
@@ -63,7 +63,7 @@
                             action="#{adminBean.deleteLicenseAction(license)}" 
                             styleClass="btn" 
                             title="#{msg.delete}">
-                            <span class="glyphicon glyphicon-trash"></span>
+                            <i class="fa fa-trash-o" aria-hidden="true"></i>
                         </h:commandLink>
                     </td>
                 </tr>
