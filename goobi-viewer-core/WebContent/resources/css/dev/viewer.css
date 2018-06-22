@@ -2230,9 +2230,11 @@ div.mce-fullscreen {
 .image-controls__action.switch-pages [class*="image-"] {
   font-size: 20px;
 }
-.image-controls__action.switch-pages [class*="image-"] {
-  top: 0;
-  left: 2px;
+.image-controls__action.switch-pages a {
+  padding: 4px;
+}
+.image-controls__action.switch-pages svg {
+  fill: #6f6f6f;
 }
 .image-controls__action.rotate-left [class*="image-"],
 .image-controls__action.rotate-right [class*="image-"] {
@@ -2260,6 +2262,12 @@ div.mce-fullscreen {
 .image-controls .labeltext {
   padding: 0;
   display: none;
+}
+/* FIREFOX CORRECTION */
+@-moz-document url-prefix() {
+  .image-controls__action.switch-pages .image-switchPages {
+    width: 21px;
+  }
 }
 /* BREAKPOINT FOR LARGE DESKTOP */
 /* BREAKPOINT FOR DESKTOP */
