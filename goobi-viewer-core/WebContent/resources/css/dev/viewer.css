@@ -2183,6 +2183,7 @@ div.mce-fullscreen {
   line-height: 30px;
   text-align: center;
   color: #6f6f6f;
+  cursor: pointer;
 }
 .image-controls__action a:hover,
 .image-controls__action span:hover,
@@ -2196,18 +2197,15 @@ div.mce-fullscreen {
   text-decoration: none;
   color: #6f6f6f;
 }
-.image-controls__action a,
-.image-controls__action button {
-  cursor: pointer;
+.image-controls__action span {
+  cursor: default;
 }
 .image-controls__action [class*="image-"] {
   position: relative;
   top: 3px;
   font-size: 24px;
 }
-.image-controls__action.inactive a,
-.image-controls__action.inactive span,
-.image-controls__action.inactive button {
+.image-controls__action.inactive {
   opacity: 0.4;
 }
 .image-controls__action.select-text span {
