@@ -99,6 +99,7 @@
 			line-height: 30px;
 			text-align: center;
 			color: @gray;
+			cursor: pointer;
 			&:hover,
 			&:active,
 			&:focus {
@@ -106,9 +107,8 @@
 				color: @gray;
 			}
 		}
-		a, 
-		button {
-			cursor: pointer;
+		span {
+			cursor: default;
 		}
 		[class*="image-"] {
 			position: relative;
@@ -116,11 +116,10 @@
 			font-size: 24px;
 		}
 		&.inactive {
+			opacity: 0.4;
 	    	a,
 	    	span,
-	    	button {
-	        	opacity: 0.4;
-	    	}
+	    	button {}
 		}    
 	    /* ELEMENT */
 	    &.start {}
