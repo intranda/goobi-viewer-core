@@ -61,8 +61,8 @@
 										<tr>
 											<td>
 												<h:panelGroup rendered="#{licenseType.description != ''}">
-													<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="top" title="#{msg[licenseType.description]}"></span>
-												</h:panelGroup>
+												    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="#{msg[licenseType.description]}" aria-hidden="true"></i>
+                                                </h:panelGroup>
 												<h:outputText value="#{msg[licenseType.name]}" /> 
 											</td>
 											<td><h:outputText value="#{licenseType.conditions}" /></td>
@@ -74,55 +74,55 @@
 												<ul>
                                                     <h:panelGroup rendered="#{licenseType.privList}">
                                                         <li>
-                                                            <span class="glyphicon glyphicon-ok-sign"></span>
+                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
                                                             <h:outputText value="#{msg.license_privList}" />
                                                         </li>
                                                     </h:panelGroup>
 													<h:panelGroup rendered="#{licenseType.privViewImages}">
 														<li>
-															<span class="glyphicon glyphicon-ok-sign"></span>
+															<i class="fa fa-check-circle" aria-hidden="true"></i>
 															<h:outputText value="#{msg.license_privViewImages}" />
 														</li>
 													</h:panelGroup>
                                                     <h:panelGroup rendered="#{licenseType.privViewThumbnails}">
                                                         <li>
-                                                            <span class="glyphicon glyphicon-ok-sign"></span>
+                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
                                                             <h:outputText value="#{msg.license_privViewThumbnails}" />
                                                         </li>
                                                     </h:panelGroup>
 													<h:panelGroup rendered="#{licenseType.privViewFulltext}">
 														<li>
-															<span class="glyphicon glyphicon-ok-sign"></span>
+															<i class="fa fa-check-circle" aria-hidden="true"></i>
 															<h:outputText value="#{msg.license_privViewFulltext}" />
 														</li>
 													</h:panelGroup>
                                                     <h:panelGroup rendered="#{licenseType.privViewVideo}">
                                                         <li>
-                                                            <span class="glyphicon glyphicon-ok-sign"></span>
+                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
                                                             <h:outputText value="#{msg.license_privViewVideo}" />
                                                         </li>
                                                     </h:panelGroup>
                                                     <h:panelGroup rendered="#{licenseType.privViewAudio}">
                                                         <li>
-                                                            <span class="glyphicon glyphicon-ok-sign"></span>
+                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
                                                             <h:outputText value="#{msg.license_privViewAudio}" />
                                                         </li>
                                                     </h:panelGroup>
 													<h:panelGroup rendered="#{licenseType.privDownloadPdf}">
 														<li>
-															<span class="glyphicon glyphicon-ok-sign"></span>
+															<i class="fa fa-check-circle" aria-hidden="true"></i>
 															<h:outputText value="#{msg.license_privDownloadPdf}" />
 														</li>
 													</h:panelGroup>
                                                     <h:panelGroup rendered="#{licenseType.privDownloadOriginalContent}">
                                                         <li>
-                                                            <span class="glyphicon glyphicon-ok-sign"></span>
+                                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
                                                             <h:outputText value="#{msg.license_privDownloadOriginalContent}" />
                                                         </li>
                                                     </h:panelGroup>
 													<h:panelGroup rendered="#{licenseType.privSetRepresentativeImage}">
 														<li>
-															<span class="glyphicon glyphicon-ok-sign"></span>
+															<i class="fa fa-check-circle" aria-hidden="true"></i>
 															<h:outputText value="#{msg.license_privSetRepresentativeImage}" />
 														</li>
 													</h:panelGroup>
