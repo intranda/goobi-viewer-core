@@ -101,11 +101,11 @@ var cmsJS = ( function( cms ) {
             if ( config.sortablesConfig.availableItemList.length > 0 ) {
                 cmsJS.sortableList.init( 0, false, config );
                 config.sortablesConfig.editButton.on( 'click', function() {
-                    if ( $( this ).hasClass( 'glyphicon-edit' ) ) {
-                        $( this ).removeClass( 'glyphicon-edit' ).addClass( 'glyphicon-remove' );
+                    if ( $( this ).hasClass( 'fa-pencil-square-o' ) ) {
+                        $( this ).removeClass( 'fa-pencil-square-o' ).addClass( 'fa-times' );
                     }
                     else {
-                        $( this ).removeClass( 'glyphicon-remove' ).addClass( 'glyphicon-edit' );
+                        $( this ).removeClass( 'fa-times' ).addClass( 'fa-pencil-square-o' );
                     }
                     $( this ).parent( '.sidebar-editor-widget-item-header' ).next( '.sidebar-editor-widget-item-body' ).slideToggle( 'slow' );
                 } );

@@ -79,16 +79,16 @@ var viewerJS = ( function() {
         
         // off canvas
         $( '[data-toggle="offcanvas"]' ).click( function() {
-            var icon = $( this ).children( '.glyphicon' );
+            var icon = $( this ).children( '.fa' );
             
             $( '.row-offcanvas' ).toggleClass( 'active' );
             $( this ).toggleClass( 'in' );
             
-            if ( icon.hasClass( 'glyphicon-option-vertical' ) ) {
-                icon.removeClass( 'glyphicon-option-vertical' ).addClass( 'glyphicon-option-horizontal' );
+            if ( icon.hasClass( 'fa-ellipsis-v' ) ) {
+                icon.removeClass( 'fa-ellipsis-v' ).addClass( 'fa-ellipsis-h' );
             }
             else {
-                icon.removeClass( 'glyphicon-option-horizontal' ).addClass( 'glyphicon-option-vertical' );
+                icon.removeClass( 'fa-ellipsis-h' ).addClass( 'fa-ellipsis-v' );
             }
         } );
         
@@ -161,11 +161,11 @@ var viewerJS = ( function() {
         
         // add class on toggle sidebar widget (CMS individual sidebar widgets)
         $( '.collapse' ).on( 'show.bs.collapse', function() {
-            $( this ).prev().find( '.glyphicon' ).removeClass( 'glyphicon-arrow-down' ).addClass( 'glyphicon-arrow-up' );
+            $( this ).prev().find( '.fa' ).removeClass( 'fa-arrow-down' ).addClass( 'fa-arrow-up' );
         } );
         
         $( '.collapse' ).on( 'hide.bs.collapse', function() {
-            $( this ).prev().find( '.glyphicon' ).removeClass( 'glyphicon-arrow-up' ).addClass( 'glyphicon-arrow-down' );
+            $( this ).prev().find( '.fa' ).removeClass( 'fa-arrow-up' ).addClass( 'fa-arrow-down' );
         } );
         
         // scroll page animated

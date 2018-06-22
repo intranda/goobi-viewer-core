@@ -160,10 +160,12 @@
 	    &.double-page-view {}
 	    &.single-page-view {}
 	    &.switch-pages {
-			[class*="image-"] {
-				top: 0;
-				left: 2px;
-			}
+	    	a {
+	    		padding: 4px;
+	    	}
+	    	svg {
+	    		fill: @gray;
+	    	}
 	    }
 	    &.rotate-left,
 	    &.rotate-right {
@@ -201,6 +203,13 @@
 		display: none;
 	}
 }
+
+/* FIREFOX CORRECTION */
+@-moz-document url-prefix() {
+	.image-controls__action.switch-pages .image-switchPages {
+		width: 21px;
+	}
+} 
 
 /* BREAKPOINT FOR LARGE DESKTOP */
 @media screen and (max-width: @largeBreakpoint) {} 

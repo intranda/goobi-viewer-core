@@ -36,17 +36,21 @@
 							<td><h:selectOneMenu value="#{membership.role}" converter="roleConverter">
 									<f:selectItems value="#{adminBean.allRoles}" var="role" itemLabel="#{role.name}" />
 								</h:selectOneMenu></td>
-							<td>
-								<!-- save role --> <h:commandLink action="#{adminBean.saveUserRoleAction}" styleClass="btn" title="#{msg.save}">
-									<f:setPropertyActionListener value="#{membership}" target="#{adminBean.currentUserRole}" />
-									<f:ajax render="@form" />
-									<span class="glyphicon glyphicon-save"></span>
-								</h:commandLink> <!-- delete member --> <h:commandLink onclick="if (!confirm('#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}')) {return false};"
-									action="#{adminBean.deleteUserRoleAction(membership)}" styleClass="btn" title="#{msg.delete}">
-									<span class="glyphicon glyphicon-trash"></span>
-								</h:commandLink>
-							</td>
-						</tr>
+                            <td>
+                                <!-- save role -->
+                                <h:commandLink action="#{adminBean.saveUserRoleAction}" styleClass="btn" title="#{msg.save}">
+                                    <f:setPropertyActionListener value="#{membership}" target="#{adminBean.currentUserRole}" />
+                                    <f:ajax render="@form" />
+                                    <i class="fa fa-floppy-o" aria-hidden="true"></i>
+                                </h:commandLink>
+                                <!-- delete member -->
+                                <h:commandLink
+                                    onclick="if (!confirm('#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}')) {return false};"
+                                    action="#{adminBean.deleteUserRoleAction(membership)}" styleClass="btn" title="#{msg.delete}">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </h:commandLink>
+                            </td>
+                        </tr>
 					</ui:repeat>
 				</tbody>
 			</table>

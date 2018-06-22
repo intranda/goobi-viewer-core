@@ -22,136 +22,141 @@
 		<ui:include src="/resources/includes/breadcrumbs.xhtml" />
 	</ui:define>
 
-	<ui:define name="content">
-		<h:panelGroup id="cmsMenuItemsAccessControl" rendered="#{configurationBean.cmsEnabled}">
-			<div id="cmsMenuItems">
-				<h:form id="editMenuForm">
-					<h:panelGroup rendered="#{userBean.admin}">
-						<h2>#{msg.cms_menuItems}</h2>
+    <ui:define name="content">
+        <h:panelGroup id="cmsMenuItemsAccessControl" rendered="#{configurationBean.cmsEnabled}">
+            <div id="cmsMenuItems">
+                <h:form id="editMenuForm">
+                    <h:panelGroup rendered="#{userBean.admin}">
+                        <h2>#{msg.cms_menuItems}</h2>
 
-						<!-- add menu item -->
-						<div class="row">
-							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-								<div id="addMenuItemWrapper">
-									<!-- trigger -->
-									<h:commandButton id="addMenuItemBtn" styleClass="btn" value="#{msg.cms_menu_createItem}"
-										action="#{cmsNavigationBean.createNavigationItem()}">
-										<f:passThroughAttribute name="data-toggle" value="modal" />
-										<f:passThroughAttribute name="data-target" value="#addMenuItemModal" />
-										<f:ajax render="modalPanel"></f:ajax>
-									</h:commandButton>
+                        <!-- add menu item -->
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div id="addMenuItemWrapper">
+                                    <!-- trigger -->
+                                    <h:commandButton id="addMenuItemBtn" styleClass="btn" value="#{msg.cms_menu_createItem}" action="#{cmsNavigationBean.createNavigationItem()}">
+                                        <f:passThroughAttribute name="data-toggle" value="modal" />
+                                        <f:passThroughAttribute name="data-target" value="#addMenuItemModal" />
+                                        <f:ajax render="modalPanel"></f:ajax>
+                                    </h:commandButton>
 
-									<!-- add menu item modal -->
-									<div class="modal fade" id="addMenuItemModal" tabindex="-1" role="dialog"
-										aria-labelledby="addMenuItemModalLabel" aria-hidden="true">
-										<div class="modal-dialog">
-											<div class="modal-content">
-											<h:panelGroup id="modalPanel">
-												<div class="modal-header">
-														<button type="button" class="close" data-dismiss="modal">
-															<span aria-hidden="true">
-																<h:outputText value="&amp;times;" escape="false" />
-															</span>
-															<span class="sr-only">Close</span>
-														</button>
-														<h:panelGroup rendered="#{!cmsNavigationBean.editMode}">
-							                                <h4 class="modal-title" id="myModalLabel">#{msg.cms_menu_createItem_title}</h4>
-							                            </h:panelGroup>
-							                            
-							                            <h:panelGroup rendered="#{cmsNavigationBean.editMode}">
-							                                <h4 class="modal-title" id="myModalLabel">#{msg.cms_menu_editItem_title}</h4>
-							                            </h:panelGroup>
-												</div>
-												<div class="modal-body">
-														<div class="form-horizontal">
-															<div class="form-group">
-																<h:outputLabel value="#{msg.cms_menu_item_label}:" styleClass="col-sm-3 control-label" />
-																<div class="col-sm-9">
-																	<h:inputText value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
-																</div>
-															</div>
-															<div class="form-group">
-																<h:outputLabel value="#{msg.cms_menu_item_url}:" styleClass="col-sm-3 control-label">
-																	<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="top" title="#{msg.cms_addMenuItemUrlInfo}"></span>
-																</h:outputLabel>
-																<div class="col-sm-9">
-																	<h:inputText value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
-																</div>
-															</div>
-														</div>
-												</div>
-													</h:panelGroup>
-												<div class="modal-footer">
-													<button type="button" class="btn" data-dismiss="modal">#{msg.cms_menu_cancelItem}</button>
-													<h:commandButton value="#{msg.cms_menu_saveItem}" action="#{cmsNavigationBean.saveNavigationItem()}"
-														styleClass="btn" />
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+                                    <!-- add menu item modal -->
+                                    <div class="modal fade" id="addMenuItemModal" tabindex="-1" role="dialog" aria-labelledby="addMenuItemModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <h:panelGroup id="modalPanel">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal">
+                                                            <span aria-hidden="true">
+                                                                <h:outputText value="&amp;times;" escape="false" />
+                                                            </span>
+                                                            <span class="sr-only">Close</span>
+                                                        </button>
+                                                        <h:panelGroup rendered="#{!cmsNavigationBean.editMode}">
+                                                            <h4 class="modal-title" id="myModalLabel">#{msg.cms_menu_createItem_title}</h4>
+                                                        </h:panelGroup>
 
-						<!-- menu editor -->
-						<div class="row">
-							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-								<div id="menuEditor" class="menu-editor">
-									<div class="row">
-										<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-											<div class="menu-editor-left">
-												<h3>#{msg.cms_menu_visibleComponents} <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="top" title="#{msg.cms_menu_instruction}"></span></h3>
+                                                        <h:panelGroup rendered="#{cmsNavigationBean.editMode}">
+                                                            <h4 class="modal-title" id="myModalLabel">#{msg.cms_menu_editItem_title}</h4>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-horizontal">
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="#{msg.cms_menu_item_label}:" styleClass="col-sm-3 control-label" />
+                                                                <div class="col-sm-9">
+                                                                    <h:inputText value="#{cmsNavigationBean.navigationItem.itemLabel}" styleClass="form-control" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <h:outputLabel value="#{msg.cms_menu_item_url}:" styleClass="col-sm-3 control-label">
+                                                                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="#{msg.cms_addMenuItemUrlInfo}"
+                                                                        aria-hidden="true"></i>
+                                                                </h:outputLabel>
+                                                                <div class="col-sm-9">
+                                                                    <h:inputText value="#{cmsNavigationBean.navigationItem.pageUrl}" styleClass="form-control" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </h:panelGroup>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn" data-dismiss="modal">#{msg.cms_menu_cancelItem}</button>
+                                                    <h:commandButton value="#{msg.cms_menu_saveItem}" action="#{cmsNavigationBean.saveNavigationItem()}" styleClass="btn" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-												<ul id="visibleItemList">
-													<ui:repeat var="visibleItem" value="#{cmsNavigationBean.visibleMenuItems}">
-														<li sortPosition="item_#{visibleItem.availableItemId}?#{visibleItem.level}"
-															class="menu-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
+                        <!-- menu editor -->
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div id="menuEditor" class="menu-editor">
+                                    <div class="row">
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <div class="menu-editor-left">
+                                                <h3>
+                                                    #{msg.cms_menu_visibleComponents}
+                                                    <i class="fa fa-question-circle" data-toggle="tooltip" data-placement="top" title="#{msg.cms_menu_instruction}" aria-hidden="true"></i>
+                                                </h3>
+
+                                                <ul id="visibleItemList">
+                                                    <ui:repeat var="visibleItem" value="#{cmsNavigationBean.visibleMenuItems}">
+                                                        <li sortPosition="item_#{visibleItem.availableItemId}?#{visibleItem.level}"
+                                                            class="menu-item #{visibleItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{visibleItem.hasDeletedCmsPage() ? 'deleted':''}">
                                                             <div class="menu-item__level">
-                                                                <button type="button" class="btn-clean left" title="#{msg.cms_menu_decreaseMenuItem}" onclick="cmsJS.sortableList.decreaseLevel(this, true);">
-    															    <span class="glyphicon glyphicon-circle-arrow-left"></span>                                                                
+                                                                <button type="button" class="btn-clean left" title="#{msg.cms_menu_decreaseMenuItem}"
+                                                                    onclick="cmsJS.sortableList.decreaseLevel(this, true);">
+                                                                    <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                                                                 </button>
-                                                                <button type="button" class="btn-clean right" title="#{msg.cms_menu_increaseMenuItem}" onclick="cmsJS.sortableList.increaseLevel(this, true);">
-        															<span class="glyphicon glyphicon-circle-arrow-right"></span>                                                            
+                                                                <button type="button" class="btn-clean right" title="#{msg.cms_menu_increaseMenuItem}"
+                                                                    onclick="cmsJS.sortableList.increaseLevel(this, true);">
+                                                                    <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                                                                 </button>
                                                             </div>
                                                             <div class="menu-item__text">#{msg[visibleItem.itemLabel]}</div>
-                                                            
-															<h:panelGroup rendered="#{visibleItem.absoluteLink}">
+
+                                                            <h:panelGroup rendered="#{visibleItem.absoluteLink}">
                                                                 <div class="menu-item__edit text-right">
-    																<h:commandLink action="#{cmsNavigationBean.selectVisibleNavigationItem(visibleItem.availableItemId)}">
-    																	<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-    																	<f:passThroughAttribute name="data-toggle" value="modal" />
-    																	<f:passThroughAttribute name="data-target" value="#addMenuItemModal" />
-    																	<f:ajax render=":editMenuForm:modalPanel"></f:ajax>
-    																</h:commandLink>
+                                                                    <h:commandLink action="#{cmsNavigationBean.selectVisibleNavigationItem(visibleItem.availableItemId)}">
+                                                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                                                        <f:passThroughAttribute name="data-toggle" value="modal" />
+                                                                        <f:passThroughAttribute name="data-target" value="#addMenuItemModal" />
+                                                                        <f:ajax render=":editMenuForm:modalPanel"></f:ajax>
+                                                                    </h:commandLink>
                                                                 </div>
-															</h:panelGroup>
-                                                            
+                                                            </h:panelGroup>
+
                                                             <div class="clearfix"></div>
-														</li>
-													</ui:repeat>
-												</ul>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
 
-											</div>
-										</div>
-										<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-											<div class="menu-editor-right">
-												<h3>#{msg.cms_menu_availableComponents}</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                            <div class="menu-editor-right">
+                                                <h3>#{msg.cms_menu_availableComponents}</h3>
 
-												<ul id="availableItemList">
-													<ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
-														<li sortPosition="item_#{availableItem.availableItemId}?0"
-															class="menu-item #{availableItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{availableItem.hasDeletedCmsPage() ? 'deleted':''}">
+                                                <ul id="availableItemList">
+                                                    <ui:repeat var="availableItem" value="#{cmsNavigationBean.availableMenuItems}">
+                                                        <li sortPosition="item_#{availableItem.availableItemId}?0"
+                                                            class="menu-item #{availableItem.hasUnpublishedCmsPage() ? 'unpublished':''} #{availableItem.hasDeletedCmsPage() ? 'deleted':''}">
                                                             <div class="menu-item__level">
-                                                                <button  type="button" class="btn-clean left" title="#{msg.cms_menu_decreaseMenuItem}" onclick="cmsJS.sortableList.decreaseLevel(this, true);">
-                                                                    <span class="glyphicon glyphicon-circle-arrow-left"></span>                                                                
+                                                                <button type="button" class="btn-clean left" title="#{msg.cms_menu_decreaseMenuItem}"
+                                                                    onclick="cmsJS.sortableList.decreaseLevel(this, true);">
+                                                                    <i class="fa fa-arrow-circle-left" aria-hidden="true"></i>
                                                                 </button>
-                                                                <button  type="button" class="btn-clean right" title="#{msg.cms_menu_increaseMenuItem}" onclick="cmsJS.sortableList.increaseLevel(this, true);">
-                                                                    <span class="glyphicon glyphicon-circle-arrow-right"></span>                                                            
+                                                                <button type="button" class="btn-clean right" title="#{msg.cms_menu_increaseMenuItem}"
+                                                                    onclick="cmsJS.sortableList.increaseLevel(this, true);">
+                                                                    <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
                                                                 </button>
                                                             </div>
                                                             <div class="menu-item__text">#{msg[availableItem.itemLabel]}</div>
-                                                            
+
                                                             <h:panelGroup rendered="#{visibleItem.absoluteLink}">
                                                                 <div class="menu-item__edit text-right">
                                                                     <h:commandLink action="#{cmsNavigationBean.selectNavigationItem(availableItem.availableItemId)}">
@@ -162,48 +167,31 @@
                                                                     </h:commandLink>
                                                                 </div>
                                                             </h:panelGroup>
-                                                            
+
                                                             <div class="clearfix"></div>
-                                                            
-                                                            
-                                                            
-<!-- 															<span class="glyphicon glyphicon-circle-arrow-left" title="#{msg.cms_menu_decreaseMenuItem}" -->
-<!-- 																onclick="cmsJS.sortableList.decreaseLevel(this, true);"></span> -->
-<!-- 															<span class="glyphicon glyphicon-circle-arrow-right" title="#{msg.cms_menu_increaseMenuItem}" -->
-<!-- 																onclick="cmsJS.sortableList.increaseLevel(this, true);"></span> -->
-<!-- 															<span>#{msg[availableItem.itemLabel]}</span> -->
-<!-- 															<h:panelGroup rendered="#{availableItem.absoluteLink}"> -->
-<!-- 																<h:commandLink styleClass="btn" -->
-<!-- 																	action="#{cmsNavigationBean.selectNavigationItem(availableItem.availableItemId)}"> -->
-<!-- 																	<span class="glyphicon glyphicon-pencil"></span> -->
-<!-- 																	<f:passThroughAttribute name="data-toggle" value="modal" /> -->
-<!-- 																	<f:passThroughAttribute name="data-target" value="#addMenuItemModal" /> -->
-<!-- 																	<f:ajax render=":editMenuForm:modalPanel"></f:ajax> -->
-<!-- 																</h:commandLink> -->
-<!-- 															</h:panelGroup> -->
-														</li>
-													</ui:repeat>
-												</ul>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+                                                        </li>
+                                                    </ui:repeat>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-						<div class="row">
-							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-								<div id="saveMenuItemsWrapper">
-									<h:inputHidden id="itemOrderInput" name="itemOrderInput" value="#{cmsNavigationBean.menuItemList}" />
-									<h:commandButton value="#{msg.save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn" />
-								</div>
-							</div>
-						</div>
-					</h:panelGroup>
-				</h:form>
-			</div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                                <div id="saveMenuItemsWrapper">
+                                    <h:inputHidden id="itemOrderInput" name="itemOrderInput" value="#{cmsNavigationBean.menuItemList}" />
+                                    <h:commandButton value="#{msg.save}" action="#{cmsNavigationBean.saveMenuItems}" styleClass="btn" />
+                                </div>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                </h:form>
+            </div>
 
-			<script type="text/javascript">
+            <script type="text/javascript">
                 $( document ).ready( function() {
                     $( function() {
                         $( '[data-toggle="tooltip"]' ).tooltip()
@@ -228,10 +216,10 @@
                     cmsJS.sortableList.init( 20, true, createMenuConfig );
                 } );
             </script>
-		</h:panelGroup>
-	</ui:define>
+        </h:panelGroup>
+    </ui:define>
 
-	<ui:define name="sidebar">
+    <ui:define name="sidebar">
 		<widgetComponent:widget_admin />
     	<widgetComponent:widget_cms />
     	<widgetComponent:widget_user />

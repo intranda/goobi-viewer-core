@@ -1,218 +1,207 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-	xmlns:h="http://xmlns.jcp.org/jsf/html" 
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core" 
-	xmlns:t="http://myfaces.apache.org/tomahawk"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:composite="http://xmlns.jcp.org/jsf/composite"> 
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:t="http://myfaces.apache.org/tomahawk" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
 
-	<composite:interface />
+    <composite:interface />
 
-	<composite:implementation>
-		<div id="cmsCreatePageMetadataItemWrapper">
-			<!-- metadata item type -->
-			<div class="page-metadata-item page-metadata-item-type">
-				<h3>
-					#{msg.cms_pageMetadata_template}
-					<span class="glyphicon glyphicon-question-sign"></span>
-				</h3>
+    <composite:implementation>
+        <div id="cmsCreatePageMetadataItemWrapper">
+            <!-- METADATA ITEM TYPE -->
+            <div class="page-metadata-item page-metadata-item-type">
+                <h3>
+                    #{msg.cms_pageMetadata_template}
+                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                </h3>
 
-				<div class="row">
-					<div class="col-xs-6 col-sm-3 col-md-12 col-lg-12">
-						<img alt="Template Icon" src="#{cmsBean.getIconUrlByTemplateId(cmsBean.selectedPage.template.id)}" />
-					</div>
-					<div class="col-xs-6 col-sm-9 col-md-12 col-lg-12">
-						<p>
-							<h:outputText value="#{cmsBean.selectedPage.template.name}" />
-						</p>
-					</div>
-				</div>
-				
-				<script type="text/javascript">
-					// init template description popover
-					$('.page-metadata-item-type .glyphicon-question-sign').popover({
-				        html: true,
-				        title: '#{cmsBean.selectedPage.template.name}',
-				        content: '#{cmsBean.selectedPage.template.description}',
-				        placement: 'bottom',
-				        trigger: 'click',
-				        container: 'body'
-				    });	
-				</script>
-			</div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-3 col-md-12 col-lg-12">
+                        <img alt="Template Icon" src="#{cmsBean.getIconUrlByTemplateId(cmsBean.selectedPage.template.id)}" />
+                    </div>
+                    <div class="col-xs-6 col-sm-9 col-md-12 col-lg-12">
+                        <p>
+                            <h:outputText value="#{cmsBean.selectedPage.template.name}" />
+                        </p>
+                    </div>
+                </div>
 
-			<!-- metadata item status -->
-			<h:panelGroup id="metadata-status">
-			<div class="page-metadata-item page-metadata-item-status">
-				<h3>#{msg.cms_pageMetadata_creationStatus}</h3>
+                <script type="text/javascript">
+                    // init template description popover
+                    $('.page-metadata-item-type .fa-question-circle').popover({
+                        html : true,
+                        title : '#{cmsBean.selectedPage.template.name}',
+                        content : '#{cmsBean.selectedPage.template.description}',
+                        placement : 'bottom',
+                        trigger : 'click',
+                        container : 'body'
+                    });
+                </script>
+            </div>
 
-				<dl class="dl-horizontal">
-					<dt>
-						<h:outputText value="#{msg.cms_pageMetadata_pageId}:" />
-					</dt>
-					<dd>
-						<h:panelGroup rendered="#{cmsBean.selectedPage.id != null or ''}">
-							<h:outputText value="#{cmsBean.selectedPage.id}" />
-						</h:panelGroup>
-						<h:panelGroup rendered="#{cmsBean.selectedPage.id == null or ''}">
+            <!-- METADATA ITEM STATUS -->
+            <h:panelGroup id="metadata-status">
+                <div class="page-metadata-item page-metadata-item-status">
+                    <h3>#{msg.cms_pageMetadata_creationStatus}</h3>
+
+                    <dl class="dl-horizontal">
+                        <dt>
+                            <h:outputText value="#{msg.cms_pageMetadata_pageId}:" />
+                        </dt>
+                        <dd>
+                            <h:panelGroup rendered="#{cmsBean.selectedPage.id != null or ''}">
+                                <h:outputText value="#{cmsBean.selectedPage.id}" />
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{cmsBean.selectedPage.id == null or ''}">
 							#{msg.cms_createPage_missingIdText}
 						</h:panelGroup>
-					</dd>
-					<dt>
-						<h:outputText value="#{msg.cms_pageMetadata_pageURL}:" />
-					</dt>
-					<dd>
-						<h:outputText value="#{cmsBean.getUrl(cmsBean.selectedPage)}" />
-					</dd>
-					<dt>
-						<h:outputText value="#{msg.cms_pageMetadata_date}:" />
-					</dt>
-					<dd>
-						<h:outputText value="#{cmsBean.selectedPage.dateCreated}" />
-					</dd>
-					<dt>
-						<h:outputText value="#{msg.cms_pageMetadata_lastEdited}:" />
-					</dt>
-					<dd>
-						<h:outputText value="#{cmsBean.selectedPage.dateUpdated}" />
-					</dd>
-				</dl>
-			</div>
-			</h:panelGroup>
+                        </dd>
+                        <dt>
+                            <h:outputText value="#{msg.cms_pageMetadata_pageURL}:" />
+                        </dt>
+                        <dd>
+                            <h:outputText value="#{cmsBean.getUrl(cmsBean.selectedPage)}" />
+                        </dd>
+                        <dt>
+                            <h:outputText value="#{msg.cms_pageMetadata_date}:" />
+                        </dt>
+                        <dd>
+                            <h:outputText value="#{cmsBean.selectedPage.dateCreated}" />
+                        </dd>
+                        <dt>
+                            <h:outputText value="#{msg.cms_pageMetadata_lastEdited}:" />
+                        </dt>
+                        <dd>
+                            <h:outputText value="#{cmsBean.selectedPage.dateUpdated}" />
+                        </dd>
+                    </dl>
+                </div>
+            </h:panelGroup>
 
-			<!-- metadata item classification -->
-			<div class="page-metadata-item page-metadata-item-classification">
-			<h:panelGroup id="classifications_group">
-				<h3>#{msg.cms_pageMetadata_classifications}</h3>
+            <!-- metadata item classification -->
+            <div class="page-metadata-item page-metadata-item-classification">
+                <h:panelGroup id="classifications_group">
+                    <h3>#{msg.cms_pageMetadata_classifications}</h3>
 
-				<ul>
-					<c:forEach var="classification" items="#{cmsBean.selectedPage.classifications}">
-						<li><span> <h:outputText value="#{classification}" />
-						</span> <h:commandLink action="#{cmsBean.selectedPage.removeClassification(classification)}" title="#{msg.more}">
-								<span class="glyphicon glyphicon-minus-sign"></span>
-								<f:ajax render="classifications_group"/>
-							</h:commandLink></li>
-					</c:forEach>
-				</ul>
+                    <ul>
+                        <c:forEach var="classification" items="#{cmsBean.selectedPage.classifications}">
+                            <li>
+                                <span>
+                                    <h:outputText value="#{classification}" />
+                                </span>
+                                <h:commandLink action="#{cmsBean.selectedPage.removeClassification(classification)}" title="#{msg.more}">
+                                    <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                    <f:ajax render="classifications_group" />
+                                </h:commandLink>
+                            </li>
+                        </c:forEach>
+                    </ul>
 
-				<div class="row">
-					<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-						<div class="form-control__select">
-							<h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedClassification}">
-								<f:selectItems value="#{cmsBean.classifications}" var="field" itemValue="#{field}" itemLabel="#{field}" />
-								<f:ajax render="@none"></f:ajax>
-							</h:selectOneMenu>
-						</div>
-					</div>
-					<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-						<h:commandLink 
-                            action="#{cmsBean.selectedPage.addClassification(cmsBean.selectedClassification)}" 
-                            title="#{msg.more}">
-							<span class="glyphicon glyphicon-plus-sign"></span>
-							<f:ajax render="classifications_group"/>
-						</h:commandLink>
-					</div>
-				</div>
-				</h:panelGroup>
-			</div>
+                    <div class="row">
+                        <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                            <div class="form-control__select">
+                                <h:selectOneMenu id="page_classification_select" value="#{cmsBean.selectedClassification}">
+                                    <f:selectItems value="#{cmsBean.classifications}" var="field" itemValue="#{field}" itemLabel="#{field}" />
+                                    <f:ajax render="@none"></f:ajax>
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                            <h:commandLink action="#{cmsBean.selectedPage.addClassification(cmsBean.selectedClassification)}" title="#{msg.more}">
+                                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                <f:ajax render="classifications_group" />
+                            </h:commandLink>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </div>
 
-			<!-- metadata item privacy status -->
-			<div class="page-metadata-item page-metadata-item-privacy-status">
-				<h3>#{msg.cms_pageMetadata_privacyStatus}</h3>
+            <!-- metadata item privacy status -->
+            <div class="page-metadata-item page-metadata-item-privacy-status">
+                <h3>#{msg.cms_pageMetadata_privacyStatus}</h3>
 
-				<h:selectOneRadio 
-                    value="#{cmsBean.selectedPage.published}" 
-                    layout="pageDirection" 
-                    id="pageMetadataItemPrivacyStatusRadioTable">
-					<f:ajax event="valueChange" />
-					<f:selectItem id="select_private" itemLabel="#{msg.cms_pageMetadata_private}" itemValue="#{false}"></f:selectItem>
-					<f:selectItem id="select_public" itemLabel="#{msg.cms_pageMetadata_public}" itemValue="#{true}"></f:selectItem>
-				</h:selectOneRadio>
-			</div>
+                <h:selectOneRadio value="#{cmsBean.selectedPage.published}" layout="pageDirection" id="pageMetadataItemPrivacyStatusRadioTable">
+                    <f:ajax event="valueChange" />
+                    <f:selectItem id="select_private" itemLabel="#{msg.cms_pageMetadata_private}" itemValue="#{false}"></f:selectItem>
+                    <f:selectItem id="select_public" itemLabel="#{msg.cms_pageMetadata_public}" itemValue="#{true}"></f:selectItem>
+                </h:selectOneRadio>
+            </div>
 
-			<!-- metadata item action -->
-			<div class="page-metadata-item page-metadata-item-action">
-				<ul>
-					<li>
-						<!-- preview description text -->
-						<div id="previewDescription" class="alert alert-danger" role="alert">
-							<span class="glyphicon glyphicon-exclamation-sign"></span> #{msg.cms_pagePreview_info}
-						</div> 
-						
-						<!-- preview page -->
-                        <button 
-                            type="button"
-                            id="preview-button" 
-                            class="btn"
-                            data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}">
-                            #{msg.cms_pagePreview}
-                        </button>
-					</li>
-					<li>
-						<!-- delete page -->
-						<a href="#" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" class="btn">
-							#{msg.cms_pageMetadata_delete}
-						</a>
-						
-						<!-- delete media modal -->
-						<div id="deleteMediaModal-#{media.id}" class="modal fade" tabindex="-1" role="dialog">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage)}">
-										<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal">
-												<span aria-hidden="true"> 	
-													<h:outputText value="&amp;times;" escape="false" />
-												</span> 
-												<span class="sr-only">Close</span>
-											</button>
-											<h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
-										</div>
-										<div class="modal-body">
-											#{msg.cms_deletePage_confirmation}
-										</div>
-										<div class="modal-footer">
-											<a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
-											<h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
-												styleClass="btn">
-												<f:ajax render="@none" />
-											</h:commandLink>
-										</div>
-									</h:panelGroup>
-		
-									<h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsBean.selectedPage)}">
-										<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal">
-												<span aria-hidden="true"> 
-													<h:outputText value="&amp;times;" escape="false" />
-												</span> 
-												<span class="sr-only">Close</span>
-											</button>
-										</div>
-										<div class="modal-body">
-											<h4 class="modal-title" id="myModalLabel">#{msg.cms_deletePage_denied}</h4>
-										</div>
-										<div class="modal-footer">
-											<a href="#" class="btn" data-dismiss="modal">#{msg.OK}</a>
-										</div>
-									</h:panelGroup>
-								</div>
-							</div>
-						</div>
-					</li>
-					<li>
-						<!-- save page -->
-						<h:commandButton
-							type="submit"
-							action="#{cmsBean.saveSelectedPage}" 
-							id="save-button" 
-							styleClass="btn"
-							value="#{msg.cms_pageMetadata_save}"
-							onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
-						</h:commandButton>
-					</li>
-				</ul>	
-			</div> <!-- end .page-metadata-item-action -->
-		</div> <!-- end #cmsPageMetadataWrapper -->		
-	</composite:implementation>
+            <!-- metadata item action -->
+            <div class="page-metadata-item page-metadata-item-action">
+                <ul>
+                    <li>
+                        <!-- preview description text -->
+                        <div id="previewDescription" class="alert alert-danger" role="alert">
+                            <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                            #{msg.cms_pagePreview_info}
+                        </div>
+
+                        <!-- preview page -->
+                        <button type="button" id="preview-button" class="btn" data-previewUrl="#{cmsBean.getPagePreviewUrl(cmsBean.selectedPage, true)}">
+                            #{msg.cms_pagePreview}</button>
+                    </li>
+                    <li>
+                        <!-- delete page -->
+                        <a href="#" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" class="btn"> #{msg.cms_pageMetadata_delete} </a>
+
+                        <!-- delete media modal -->
+                        <div id="deleteMediaModal-#{media.id}" class="modal fade" tabindex="-1" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <h:panelGroup rendered="#{!cmsBean.isLinkedFromNavBar(cmsBean.selectedPage)}">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span aria-hidden="true">
+                                                    <h:outputText value="&amp;times;" escape="false" />
+                                                </span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <h4 class="modal-title">#{msg.cms_deletePage_agree}</h4>
+                                        </div>
+                                        <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
+                                        <div class="modal-footer">
+                                            <a href="#" class="btn" data-dismiss="modal">#{msg.cancel}</a>
+                                            <h:commandLink action="pretty:adminCmsOverview" actionListener="#{cmsBean.deleteSelectedPage}" value="#{msg.cms_deletePage_agree}"
+                                                styleClass="btn">
+                                                <f:ajax render="@none" />
+                                            </h:commandLink>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{cmsBean.isLinkedFromNavBar(cmsBean.selectedPage)}">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span aria-hidden="true">
+                                                    <h:outputText value="&amp;times;" escape="false" />
+                                                </span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h4 class="modal-title" id="myModalLabel">#{msg.cms_deletePage_denied}</h4>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="#" class="btn" data-dismiss="modal">#{msg.OK}</a>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <!-- save page -->
+                        <h:commandButton type="submit" action="#{cmsBean.saveSelectedPage}" id="save-button" styleClass="btn" value="#{msg.cms_pageMetadata_save}"
+                            onclick="$( '#AJAXLoader' ).show(); cmsJS.createPage.enablePreview();">
+                        </h:commandButton>
+                    </li>
+                </ul>
+            </div>
+            <!-- end .page-metadata-item-action -->
+        </div>
+        <!-- end #cmsPageMetadataWrapper -->
+    </composite:implementation>
 </ui:composition>

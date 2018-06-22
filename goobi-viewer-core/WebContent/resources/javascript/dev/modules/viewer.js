@@ -70,16 +70,16 @@
         
         // off canvas
         $( '[data-toggle="offcanvas"]' ).click( function() {
-            var icon = $( this ).children( '.glyphicon' );
+            var icon = $( this ).children( '.fa' );
             
             $( '.row-offcanvas' ).toggleClass( 'active' );
             $( this ).toggleClass( 'in' );
             
-            if ( icon.hasClass( 'glyphicon-option-vertical' ) ) {
-                icon.removeClass( 'glyphicon-option-vertical' ).addClass( 'glyphicon-option-horizontal' );
+            if ( icon.hasClass( 'fa-ellipsis-v' ) ) {
+                icon.removeClass( 'fa-ellipsis-v' ).addClass( 'fa-ellipsis-h' );
             }
             else {
-                icon.removeClass( 'glyphicon-option-horizontal' ).addClass( 'glyphicon-option-vertical' );
+                icon.removeClass( 'fa-ellipsis-h' ).addClass( 'fa-ellipsis-v' );
             }
         } );
         
@@ -152,11 +152,11 @@
         
         // add class on toggle sidebar widget (CMS individual sidebar widgets)
         $( '.collapse' ).on( 'show.bs.collapse', function() {
-            $( this ).prev().find( '.glyphicon' ).removeClass( 'glyphicon-arrow-down' ).addClass( 'glyphicon-arrow-up' );
+            $( this ).prev().find( '.fa' ).removeClass( 'fa-arrow-down' ).addClass( 'fa-arrow-up' );
         } );
         
         $( '.collapse' ).on( 'hide.bs.collapse', function() {
-            $( this ).prev().find( '.glyphicon' ).removeClass( 'glyphicon-arrow-up' ).addClass( 'glyphicon-arrow-down' );
+            $( this ).prev().find( '.fa' ).removeClass( 'fa-arrow-up' ).addClass( 'fa-arrow-down' );
         } );
         
         // scroll page animated
@@ -4548,22 +4548,22 @@ var viewerJS = ( function( viewer ) {
                     
                     switch ( property ) {
                         case 'Beruf':
-                            icon = 'glyphicon-briefcase';
+                            icon = 'fa-briefcase';
                             break;
                         case 'Verwandte Begriffe':
-                            icon = 'glyphicon-briefcase';
+                            icon = 'fa-briefcase';
                             break;
                         case 'Sohn':
-                            icon = 'glyphicon-user';
+                            icon = 'fa-user';
                             break;
                         case 'Vater':
-                            icon = 'glyphicon-user';
+                            icon = 'fa-user';
                             break;
                         case 'Geburtsort':
-                            icon = 'glyphicon-map-marker';
+                            icon = 'fa-map-marker';
                             break;
                         case 'Sterbeort':
-                            icon = 'glyphicon-map-marker';
+                            icon = 'fa-map-marker';
                             break;
                     }
                     
@@ -4573,7 +4573,7 @@ var viewerJS = ( function( viewer ) {
                         objValue += 'title="' + v.text + '" ';
                         objValue += 'tabindex="-1"';
                         objValue += 'data-remotecontent="' + path + '/api?action=normdata&url=' + v.url + '">';
-                        objValue += '<span class="glyphicon ' + icon + '"></span>&nbsp;';
+                        objValue += '<i class="fa ' + icon + '" aria-hidden="true"></i>&nbsp;';
                         objValue += v.text;
                         objValue += '<span class="ner-detail-loader"></span>';
                         objValue += '</span>';
@@ -4859,7 +4859,7 @@ var viewerJS = ( function( viewer ) {
         html += '<div id="normdataPopover-' + id + '" class="normdata-popover">';
         html += '<div class="normdata-popover-title">';
         html += '<h4>' + _defaults.lang.popoverTitle + '</h4>';
-        html += '<span class="normdata-popover-close glyphicon glyphicon-remove" title="' + _defaults.lang.popoverClose + '"></span>';
+        html += '<i class="normdata-popover-close fa fa-times" title="' + _defaults.lang.popoverClose + '" aria-hidden="true"></i>';
         html += '</div>';
         html += '<div class="normdata-popover-content">';
         html += '<dl class="dl-horizontal">';
@@ -4878,11 +4878,6 @@ var viewerJS = ( function( viewer ) {
                             html += v.text;
                         }
                     }
-//                    if ( v.identifier ) {
-//                        html += '<a href="' + _defaults.path + '/search/-/NORM_IDENTIFIER:%22' + v.identifier + '%22/1/-/-/">';
-//                        html += '<span class="glyphicon glyphicon-search"></span>';
-//                        html += '</a>';
-//                    }
                     if ( v.url ) {
                         html += '<button type="button" class="normdataDetailLink" data-remotecontent="';
                         html += _defaults.path;
@@ -5295,14 +5290,14 @@ var viewerJS = ( function( viewer ) {
                     image += '<img src="' + _defaults.themePath + _defaults.imagePath + n.name + '" alt="' + n.alt + '" />';
                     if ( _defaults.lightbox.active ) {
                         image += '<div class="lightbox-toggle" title="' + _defaults.lang.showLightbox + '">';
-                        image += '<span class="glyphicon glyphicon-fullscreen"></span>';
+                        image += '<i class="fa fa-arrows-alt" aria-hidden="true"></i>';
                         image += '</div>';
                     }
                     image += '</div>';
                     if ( _defaults.caption ) {
                         image += '<div class="rcg-image-footer">';
                         image += '<p>' + n.caption + '<a href="' + n.url + '" title="' + n.title + '">';
-                        image += _defaults.lang.goToWork + ' <span class="glyphicon glyphicon glyphicon-picture"></span></a></p>';
+                        image += _defaults.lang.goToWork + ' <i class="fa fa-picture-o" aria-hidden="true"></i></a></p>';
                         image += '</div>';
                     }
                     image += '</div>';
@@ -5384,7 +5379,7 @@ var viewerJS = ( function( viewer ) {
             
             lightbox += '<div class="rcg-lightbox-overlay">';
             lightbox += '<div class="rcg-lightbox-body">';
-            lightbox += '<div class="rcg-lightbox-close" title="' + _defaults.lang.close + '"><span class="glyphicon glyphicon-remove"></span></div>';
+            lightbox += '<div class="rcg-lightbox-close" title="' + _defaults.lang.close + '"><i class="fa fa-times" aria-hidden="true"></i></div>';
             lightbox += '<div class="rcg-lightbox-image">';
             lightbox += '<img src="' + data.src + '" alt="' + data.alt + '" />';
             lightbox += '</div>'; // .rcg-lightbox-image
@@ -7204,11 +7199,11 @@ var cmsJS = ( function( cms ) {
             if ( config.sortablesConfig.availableItemList.length > 0 ) {
                 cmsJS.sortableList.init( 0, false, config );
                 config.sortablesConfig.editButton.on( 'click', function() {
-                    if ( $( this ).hasClass( 'glyphicon-edit' ) ) {
-                        $( this ).removeClass( 'glyphicon-edit' ).addClass( 'glyphicon-remove' );
+                    if ( $( this ).hasClass( 'fa-pencil-square-o' ) ) {
+                        $( this ).removeClass( 'fa-pencil-square-o' ).addClass( 'fa-times' );
                     }
                     else {
-                        $( this ).removeClass( 'glyphicon-remove' ).addClass( 'glyphicon-edit' );
+                        $( this ).removeClass( 'fa-times' ).addClass( 'fa-pencil-square-o' );
                     }
                     $( this ).parent( '.sidebar-editor-widget-item-header' ).next( '.sidebar-editor-widget-item-body' ).slideToggle( 'slow' );
                 } );

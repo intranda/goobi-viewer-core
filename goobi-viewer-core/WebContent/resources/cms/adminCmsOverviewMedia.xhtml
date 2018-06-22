@@ -88,7 +88,7 @@
                                                         <div class="media-gallery__item-action text-right">
                                                             <!-- EDIT MEDIA BUTTON -->
                                                             <h:commandLink action="#{cmsMediaBean.setCurrentMediaItem(media)}" title="#{msg.edit}">
-                                                                <span class="glyphicon glyphicon-pencil"></span>
+                                                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                                                 <f:passThroughAttribute name="data-toggle" value="modal" />
                                                                 <f:passThroughAttribute name="data-target" value="#addMediaModal" />
                                                                 <f:ajax render=":uploadMediaDialog:fileUploadForm" />
@@ -96,7 +96,7 @@
     
                                                             <!-- DELETE MEDIA BUTTON -->
                                                             <button type="button" class="btn-clean" data-toggle="modal" data-target="#deleteMediaModal-#{media.id}" title="#{msg.delete}">
-                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                                <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                             </button>
                                                         </div>                                                    
                                                     </div>

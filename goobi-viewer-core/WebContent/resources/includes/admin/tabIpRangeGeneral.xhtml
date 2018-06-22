@@ -18,7 +18,7 @@
             </div>
             <div class="form-group">
                 <h:outputLabel for="subnetMask" styleClass="col-sm-4 control-label" value="#{msg.ipRange_subnetMask} *">
-                    <span class="glyphicon glyphicon-question-sign"></span>
+                    <i class="fa fa-question-circle" aria-hidden="true"></i>
                 </h:outputLabel>
                 <div class="col-sm-8">
                     <h:inputText value="#{adminBean.currentIpRange.subnetMask}" id="subnetMask" required="true" styleClass="form-control">
@@ -44,7 +44,7 @@
         </h:form>
 
         <script type="text/javascript">
-                                    $( '#editIpRangeForm .glyphicon-question-sign' ).popover( {
+                                    $( '#editIpRangeForm .fa-question-circle' ).popover( {
                                         html: true,
                                         title: '#{msg.ipRange_descriptionHeading}',
                                         content: '#{msg.ipRange_errInvalidSubnetMask}',
