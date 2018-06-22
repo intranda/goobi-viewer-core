@@ -221,16 +221,16 @@ public class ALTOTools {
                                         }
                                         switch (neTypeMap.get(tagref)) {
                                             case "person":
-                                                strings.append("<span class=\"glyphicon glyphicon-user\"></span>");
+                                                strings.append("<i class=\"fa fa-user\" aria-hidden=\"true\"></i>");
                                                 break;
                                             case "location":
-                                                strings.append("<span class=\"glyphicon glyphicon-map-marker\"></span>");
+                                                strings.append("<i class=\"fa fa-map-marker\" aria-hidden=\"true\"></i>");
                                                 break;
                                             case "institution":
-                                                strings.append("<span class=\"glyphicon glyphicon-home\"></span>");
+                                                strings.append("<i class=\"fa fa-home\" aria-hidden=\"true\"></i>");
                                                 break;
                                             default:
-                                                strings.append("<span></span>");
+                                                strings.append("<i></i>");
                                                 break;
                                         }
 
