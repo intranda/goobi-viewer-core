@@ -193,21 +193,41 @@ public class SearchBean implements Serializable {
     /**
      * Action method for search buttons (simple search).
      * 
-     * @return
+     * @return Target URL
      */
     public String searchSimple() {
-        return searchSimple(true);
+        return searchSimple(true, true);
     }
 
+    /**
+     * Action method for search buttons (simple search) with an option to reset search parameters.
+     * 
+     * @param resetParameters
+     * @return Target URL
+     */
     public String searchSimple(boolean resetParameters) {
+        return searchSimple(resetParameters, true);
+    }
+
+    /**
+     * Action method for search buttons (simple search) with an option to reset search parameters and active facets.
+     * 
+     * @param resetParameters
+     * @param resetFacets
+     * @return Target URL
+     */
+    public String searchSimple(boolean resetParameters, boolean resetFacets) {
         logger.trace("searchSimple");
         resetSearchResults();
         if (resetParameters) {
             resetSearchParameters();
             facets.resetSliderRange();
         }
+        if (resetFacets) {
+            facets.resetCurrentFacetString();
+        }
         generateSimpleSearchString(guiSearchString);
-        
+
         return "pretty:newSearch5";
     }
 
@@ -705,9 +725,6 @@ public class SearchBean implements Serializable {
         if ("-".equals(inSearchString)) {
             inSearchString = "";
         }
-
-        logger.trace("Resetting selected facets...");
-        facets.setCurrentFacetString("-");
 
         guiSearchString = inSearchString;
         searchString = "";
