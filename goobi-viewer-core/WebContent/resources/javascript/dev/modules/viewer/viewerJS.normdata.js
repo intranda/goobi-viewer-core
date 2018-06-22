@@ -178,7 +178,7 @@ var viewerJS = ( function( viewer ) {
         html += '<div id="normdataPopover-' + id + '" class="normdata-popover">';
         html += '<div class="normdata-popover-title">';
         html += '<h4>' + _defaults.lang.popoverTitle + '</h4>';
-        html += '<span class="normdata-popover-close glyphicon glyphicon-remove" title="' + _defaults.lang.popoverClose + '"></span>';
+        html += '<i class="normdata-popover-close fa fa-times" title="' + _defaults.lang.popoverClose + '" aria-hidden="true"></i>';
         html += '</div>';
         html += '<div class="normdata-popover-content">';
         html += '<dl class="dl-horizontal">';
@@ -197,11 +197,6 @@ var viewerJS = ( function( viewer ) {
                             html += v.text;
                         }
                     }
-//                    if ( v.identifier ) {
-//                        html += '<a href="' + _defaults.path + '/search/-/NORM_IDENTIFIER:%22' + v.identifier + '%22/1/-/-/">';
-//                        html += '<span class="glyphicon glyphicon-search"></span>';
-//                        html += '</a>';
-//                    }
                     if ( v.url ) {
                         html += '<button type="button" class="normdataDetailLink" data-remotecontent="';
                         html += _defaults.path;

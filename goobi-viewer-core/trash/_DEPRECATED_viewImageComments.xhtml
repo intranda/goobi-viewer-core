@@ -65,7 +65,7 @@
 										<h:panelGroup rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
 											<h:commandLink styleClass="comments-delete-btn" title="#{msg.commentDelete}">
 												<f:ajax execute="@form" />
-												<span class="glyphicon glyphicon-trash"></span>
+												<i class="fa fa-trash-o" aria-hidden="true"></i>
 											</h:commandLink>
 										</h:panelGroup>
 									</div>

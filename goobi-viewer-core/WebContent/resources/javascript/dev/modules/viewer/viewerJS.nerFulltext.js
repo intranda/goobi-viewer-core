@@ -189,22 +189,22 @@ var viewerJS = ( function( viewer ) {
                     
                     switch ( property ) {
                         case 'Beruf':
-                            icon = 'glyphicon-briefcase';
+                            icon = 'fa-briefcase';
                             break;
                         case 'Verwandte Begriffe':
-                            icon = 'glyphicon-briefcase';
+                            icon = 'fa-briefcase';
                             break;
                         case 'Sohn':
-                            icon = 'glyphicon-user';
+                            icon = 'fa-user';
                             break;
                         case 'Vater':
-                            icon = 'glyphicon-user';
+                            icon = 'fa-user';
                             break;
                         case 'Geburtsort':
-                            icon = 'glyphicon-map-marker';
+                            icon = 'fa-map-marker';
                             break;
                         case 'Sterbeort':
-                            icon = 'glyphicon-map-marker';
+                            icon = 'fa-map-marker';
                             break;
                     }
                     
@@ -214,7 +214,7 @@ var viewerJS = ( function( viewer ) {
                         objValue += 'title="' + v.text + '" ';
                         objValue += 'tabindex="-1"';
                         objValue += 'data-remotecontent="' + path + '/api?action=normdata&url=' + v.url + '">';
-                        objValue += '<span class="glyphicon ' + icon + '"></span>&nbsp;';
+                        objValue += '<i class="fa ' + icon + '" aria-hidden="true"></i>&nbsp;';
                         objValue += v.text;
                         objValue += '<span class="ner-detail-loader"></span>';
                         objValue += '</span>';
