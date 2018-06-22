@@ -320,6 +320,21 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#truncateFulltext(Set,String,int,boolean,boolean)
+     * @verifies highlight multi word terms while removing stopwords
+     */
+    @Test
+    public void truncateFulltext_shouldHighlightMultiWordTermsWhileRemovingStopwords() throws Exception {
+        String original = "funky beats";
+        String[] terms = { "two beats one" };
+        List<String> truncated = SearchHelper.truncateFulltext(new HashSet<>(Arrays.asList(terms)), original, 50, false, true);
+        Assert.assertEquals(1, truncated.size());
+        for (String fragment : truncated) {
+            Assert.assertTrue(fragment.contains("<span class=\"search-list--highlight\">beats</span>"));
+        }
+    }
+
+    /**
      * @see SearchHelper#extractSearchTermsFromQuery(String)
      * @verifies extract all values from query except from NOT blocks
      */

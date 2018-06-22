@@ -916,10 +916,12 @@ public final class SearchHelper {
      * @should return multiple match fragments correctly
      * @should replace line breaks with spaces
      * @should add fragment if no term was matched only if so requested
+     * @should highlight multi word terms while removing stopwords
      * 
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, String fulltext, int targetFragmentLength, boolean firstMatchOnly,
             boolean addFragmentIfNoMatches) {
+        logger.trace("truncateFulltext");
         if (fulltext == null) {
             throw new IllegalArgumentException("fulltext may not be null");
         }
@@ -932,6 +934,16 @@ public final class SearchHelper {
             for (String searchTerm : searchTerms) {
                 if (searchTerm.length() == 0) {
                     continue;
+                }
+                logger.trace("term: {}", searchTerm);
+                // Stopwords do not get pre-filtered out when doing a phrase search
+                if (searchTerm.contains(" ")) {
+                    for (String stopword : DataManager.getInstance().getConfiguration().getStopwords()) {
+                        if (searchTerm.startsWith(stopword + " ") || searchTerm.endsWith(" " + stopword)) {
+                            logger.trace("filtered out stopword '{}' from term '{}'", stopword, searchTerm);
+                            searchTerm = searchTerm.replace(stopword, "").trim();
+                        }
+                    }
                 }
                 if (searchTerm.length() > 1 && searchTerm.endsWith("*") || searchTerm.endsWith("?")) {
                     searchTerm = searchTerm.substring(0, searchTerm.length() - 1);
