@@ -264,15 +264,7 @@ public class ContentResource {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path teiPath =
                 Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getTeiFolder(), pi);
-        java.nio.file.Path filePath = null;
-        if (Files.exists(teiPath)) {
-            // This will return the file with the requested language or alternatively the first file in the TEI folder
-            try (Stream<java.nio.file.Path> teiFiles = Files.list(teiPath)) {
-                filePath = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
-            }
-        }
-
+        java.nio.file.Path filePath = getDocumentLanguageVersion(teiPath, language);
         if (filePath != null) {
             boolean access =
                     AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
@@ -322,14 +314,7 @@ public class ContentResource {
         final Language language = DataManager.getInstance().getLanguageHelper().getLanguage(langCode);
         java.nio.file.Path cmdiPath =
                 Paths.get(Helper.getRepositoryPath(dataRepository), DataManager.getInstance().getConfiguration().getCmdiFolder(), pi);
-        java.nio.file.Path filePath = null;
-        if (Files.exists(cmdiPath)) {
-            // This will return the file with the requested language or alternatively the first file in the CMDI folder
-            try (Stream<java.nio.file.Path> cmdiFiles = Files.list(cmdiPath)) {
-                filePath = cmdiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(
-                        null);
-            }
-        }
+        java.nio.file.Path filePath = getDocumentLanguageVersion(cmdiPath, language);
         if (filePath != null) {
             boolean access =
                     AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest);
@@ -352,6 +337,39 @@ public class ContentResource {
         }
 
         throw new ContentNotFoundException("Resource not found");
+    }
+
+    /**
+     * Returns the first file on the given folder path that contains the requested language code in its name. ISO-3 files are preferred, with a
+     * fallback to ISO-2.
+     * 
+     * @param folder
+     * @param language
+     * @return Path of the requested file; null if not found
+     * @throws IOException
+     */
+    static java.nio.file.Path getDocumentLanguageVersion(java.nio.file.Path folder, Language language) throws IOException {
+        if (language == null) {
+            throw new IllegalArgumentException("language may not be null");
+        }
+        if (folder == null || !Files.isDirectory(folder)) {
+            return null;
+        }
+
+        java.nio.file.Path ret;
+        // This will return the file with the requested language or alternatively the first file in the TEI folder
+        try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
+            ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(null);
+        }
+        // Fallback to ISO-2
+        if (ret == null) {
+            try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
+                ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml")).findFirst().orElse(
+                        null);
+            }
+        }
+
+        return ret;
     }
 
     public static URI getAltoURI(String pi, String filename) throws URISyntaxException {
