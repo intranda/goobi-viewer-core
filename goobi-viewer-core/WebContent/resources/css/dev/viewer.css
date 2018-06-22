@@ -9085,7 +9085,7 @@ div[id*="-Modal"] .email-form .form-group {
   padding-right: 15px;
   color: #1a1a1a;
 }
-#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header .glyphicon {
+#cmsCreatePage #cmsCreatePageWrapper #sidebarEditorWrapper .sidebar-editor ul li .sidebar-editor-widget-item .sidebar-editor-widget-item-header .fa {
   position: absolute;
   top: 9px;
   right: 7px;
@@ -9181,7 +9181,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
   padding: 0;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type .glyphicon {
+#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type .fa {
   cursor: pointer;
 }
 #cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-type img {
@@ -9213,7 +9213,7 @@ div[id*="-Modal"] .email-form .form-group {
 #cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] select {
   width: 100%;
 }
-#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] .glyphicon {
+#cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-classification div[class^="col-"] .fa {
   margin-top: 4px;
 }
 #cmsCreatePage #cmsCreatePageMetadataItemWrapper .page-metadata-item.page-metadata-item-privacy-status table {
