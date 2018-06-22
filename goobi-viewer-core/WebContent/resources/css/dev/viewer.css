@@ -2672,7 +2672,7 @@ div.mce-fullscreen {
   cursor: pointer;
   z-index: 102;
 }
-#responsiveColumnGallery .rcg-col .rcg-image-container .rcg-image-body .lightbox-toggle .glyphicon {
+#responsiveColumnGallery .rcg-col .rcg-image-container .rcg-image-body .lightbox-toggle .fa {
   color: #fff;
 }
 #responsiveColumnGallery .rcg-col .rcg-image-container .rcg-image-body:hover .rcg-image-overlay {
@@ -2736,7 +2736,7 @@ div.mce-fullscreen {
   background-color: #fff;
   cursor: pointer;
 }
-.rcg-lightbox-overlay .rcg-lightbox-body .rcg-lightbox-close .glyphicon {
+.rcg-lightbox-overlay .rcg-lightbox-body .rcg-lightbox-close .fa {
   top: 0;
   font-size: 12px;
 }
@@ -2933,7 +2933,6 @@ input[id*="cmdMoveTo"] {
   margin-left: 35%;
   padding-left: 5px;
 }
-.normdata-popover .normdata-popover-content .dl-horizontal dd .glyphicon,
 .normdata-popover .normdata-popover-content .dl-horizontal dd .fa {
   margin-left: 5px;
 }
@@ -3352,7 +3351,7 @@ div[id*="-Modal"] .email-form .form-group {
   color: #507ebf;
   cursor: pointer;
 }
-.ner-trigger .glyphicon {
+.ner-trigger .fa {
   margin-right: 0.1875rem;
 }
 .ner-trigger .ner-popover-pointer {
@@ -3492,7 +3491,7 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* IP RANGES */
 /* LICENSE TYPES */
-#adminLicenseTypesTable td:nth-child(1) .glyphicon-info-sign {
+#adminLicenseTypesTable td:nth-child(1) .fa {
   float: right;
   cursor: pointer;
 }
@@ -3502,7 +3501,7 @@ div[id*="-Modal"] .email-form .form-group {
 #adminLicenseTypesTable td:nth-child(5) {
   min-width: 100px;
 }
-#adminLicenseTypesTable li .glyphicon {
+#adminLicenseTypesTable li .fa {
   margin-right: 5px;
   color: green;
 }
@@ -5313,7 +5312,7 @@ div[id*="-Modal"] .email-form .form-group {
   margin-bottom: 15px;
   /* ELEMENT */
 }
-.user-activity__table .glyphicon {
+.user-activity__table .fa {
   cursor: pointer;
 }
 .user-activity__table .popover {
@@ -5860,7 +5859,7 @@ div[id*="-Modal"] .email-form .form-group {
 #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value:last-child {
   margin-bottom: 0;
 }
-#metadataElementWrapper .glyphicon {
+#metadataElementWrapper .fa {
   margin-right: 5px;
 }
 /* DOWNLOADS */
@@ -7349,8 +7348,8 @@ div[id*="-Modal"] .email-form .form-group {
   list-style: none;
   text-align: right;
 }
-.widget-custom-drilldown .sidebar-collection-more .glyphicon,
-.widget-custom-drilldown .sidebar-collection-less .glyphicon {
+.widget-custom-drilldown .sidebar-collection-more .fa,
+.widget-custom-drilldown .sidebar-collection-less .fa {
   margin-left: 5px;
 }
 /* ==============================================================
