@@ -4,6 +4,8 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	//	grunt.loadNpmTasks('grunt-jsdoc');
+	grunt.loadNpmTasks('grunt-browserify');
 
 	// ---------- VARIABLES ----------
 	var packageJson = grunt.file.readJSON('package.json');
@@ -32,7 +34,9 @@ module.exports = function(grunt) {
 		src : {
 			jsDevFolder : 'WebContent/resources/javascript/dev/',
 			jsDevFolderModules : 'WebContent/resources/javascript/dev/modules/',
+			//			jsDevFolderES6 : 'WebContent/resources/javascript/dev/es6/',
 			jsDistFolder : 'WebContent/resources/javascript/dist/',
+			//			jsDocFolder : 'doc/jsdoc/',
 			cssDevFolder : 'WebContent/resources/css/dev/',
 			cssDistFolder : 'WebContent/resources/css/dist/',
 			lessDevFolder : 'WebContent/resources/css/less/viewer/'
@@ -72,6 +76,24 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+		//		browserify : {
+		//			dist : {
+		//				files : {
+		//					'<%=src.jsDevFolder%>es6.viewer.js' : '<%=src.jsDevFolderES6%>viewer/*.js',
+		//					'<%=src.jsDevFolder%>es6.viewer.js' : '<%=src.jsDevFolderES6%>viewer/**/*.js',
+		//					'<%=src.jsDevFolder%>es6.viewImage.js' : '<%=src.jsDevFolderES6%>viewImage/*.js',
+		//					'<%=src.jsDevFolder%>es6.viewImage.js' : '<%=src.jsDevFolderES6%>viewImage/**/*.js'
+		//				},
+		//				options : {
+		//					transform : [ [ 'babelify', {
+		//						presets : "es2015"
+		//					} ] ],
+		//					browserifyOptions : {
+		//						debug : true
+		//					}
+		//				}
+		//			}
+		//		},
 		concat : {
 			options : {
 				banner : banner,
@@ -109,6 +131,8 @@ module.exports = function(grunt) {
 				files : {
 					'<%=src.jsDistFolder%>viewer.min.js' : [ '<%=src.jsDevFolderModules%>viewer.js' ],
 					'<%=src.jsDistFolder%>viewImage.min.js' : [ '<%=src.jsDevFolderModules%>viewImage.js' ],
+				//					'<%=src.jsDistFolder%>es6.viewer.min.js' : [ '<%=src.jsDevFolder%>es6.viewer.js' ],
+				//					'<%=src.jsDistFolder%>es6.viewImage.min.js' : [ '<%=src.jsDevFolder%>es6.viewImage.js' ]
 				},
 			}
 		},
@@ -129,6 +153,7 @@ module.exports = function(grunt) {
 			scripts : {
 				files : [
 					'<%=src.jsDevFolderModules%>**/*.js',
+				//					'<%=src.jsDevFolderES6%>**/*.js'
 				],
 				tasks : [ 'concat', 'uglify' ],
 				options : {
@@ -136,8 +161,20 @@ module.exports = function(grunt) {
 				}
 			}
 		},
+	//		jsdoc : {
+	//			dist : {
+	//				src : [ '<%=src.jsDevFolderModules %>**/*.js' ],
+	//				options : {
+	//					destination : '<%=src.jsDocFolder %>',
+	//					template : "node_modules/ink-docstrap/template",
+	//					configure : "node_modules/ink-docstrap/template/jsdoc.conf.json"
+	//				}
+	//			}
+	//		}
 	});
 
-	// ---------- REGISTER DEVELOPMENT TASKS ----------
+	// register tasks
+	////	grunt.registerTask('default', [ 'jsdoc', 'watch' ]);
+	// register development tasks
 	grunt.registerTask('default', [ 'watch' ]);
 };

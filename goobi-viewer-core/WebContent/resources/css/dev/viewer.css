@@ -1,5 +1,5 @@
 /***************************************************************
- * viewer Stylesheet v3.2.0
+ * viewer Stylesheet v3.4.0
  * 
  * Write {LESS}, do more!
  *
@@ -4906,7 +4906,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day,
 .search-calendar__month-day-empty {
   float: left;
-  width: calc(14.28571429%);
+  width: calc(100% / 7);
 }
 .search-calendar__month-days span {
   display: block;
@@ -5094,7 +5094,7 @@ div[id*="-Modal"] .email-form .form-group {
   float: left;
 }
 .search-timeline__year {
-  width: calc(10%);
+  width: calc(100% / 10);
 }
 .search-timeline__months {
   border-top: 1px solid #ccc;
@@ -5102,14 +5102,14 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #eee;
 }
 .search-timeline__month {
-  width: calc(8.33333333%);
+  width: calc(100% / 12);
 }
 .search-timeline__days {
   margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
 }
 .search-timeline__day {
-  width: calc(3.22580645%);
+  width: calc(100% / 31);
 }
 .search-timeline__day a,
 .search-timeline__day span {
@@ -5137,23 +5137,23 @@ div[id*="-Modal"] .email-form .form-group {
     padding: 5px;
   }
   .search-timeline__month {
-    width: calc(16.66666667%);
+    width: calc(100% / 6);
   }
   .search-timeline__day {
-    width: calc(6.4516129%);
+    width: calc(100% / 15.5);
   }
 }
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .search-timeline__year {
-    width: calc(20%);
+    width: calc(100% / 5);
   }
   .search-timeline__month {
-    width: calc(33.33333333%);
+    width: calc(100% / 3);
   }
   .search-timeline__day {
-    width: calc(12.90322581%);
+    width: calc(100% / 7.75);
   }
 }
 /* USER VIEWS */
