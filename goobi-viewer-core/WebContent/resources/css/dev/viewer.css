@@ -5816,51 +5816,42 @@ div[id*="-Modal"] .email-form .form-group {
    style declarations for viewMetadata.xhtml 
    ==============================================================*/
 /* METADATA */
-#metadataElementWrapper {
+/* BLOCK */
+.metadata {
   position: relative;
-  float: left;
-  width: 100%;
   margin-bottom: 1.3125rem;
+  /* ELEMENTS / EVENTS */
+  /* ELEMENT */
+  /* EVENT */
 }
-#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal {
-  margin: 0;
-}
-#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dt {
-  width: 30%;
-  text-align: left;
-}
-#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd {
-  margin-left: 30%;
-}
-#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value {
-  display: block;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-#metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd .metadata-value:last-child {
-  margin-bottom: 0;
-}
-#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal {
-  margin: 0;
-}
-#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dt {
-  width: 30%;
-  text-align: left;
-}
-#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd {
-  margin-left: 30%;
-}
-#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value {
-  display: block;
-  margin-bottom: 0.5rem;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-#metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd .metadata-value:last-child {
-  margin-bottom: 0;
-}
-#metadataElementWrapper .fa {
+.metadata .fa {
   margin-right: 5px;
+}
+.metadata__element-dl,
+.metadata__event-dl {
+  margin: 0;
+}
+.metadata__element-dl dt,
+.metadata__event-dl dt {
+  width: 30%;
+  text-align: left;
+}
+.metadata__element-dl dd,
+.metadata__event-dl dd {
+  margin-left: 30%;
+}
+.metadata__element-value,
+.metadata__event-value {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.metadata__element-value:last-child,
+.metadata__event-value:last-child {
+  margin-bottom: 0;
+}
+.metadata__elements-h3 {
+  display: none;
 }
 /* DOWNLOADS */
 #viewMetadataDownloads {
@@ -5878,17 +5869,12 @@ div[id*="-Modal"] .email-form .form-group {
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: 768px) {
-  #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dt {
+  .metadata__element-dl dt,
+  .metadata__event-dl dt {
     width: 100%;
   }
-  #metadataElementWrapper .metadata-element-box .metadata-element .dl-horizontal dd {
-    width: 100%;
-    margin: 0;
-  }
-  #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dt {
-    width: 100%;
-  }
-  #metadataElementWrapper .metadata-event-box .metadata-event .dl-horizontal dd {
+  .metadata__element-dl dd,
+  .metadata__event-dl dd {
     width: 100%;
     margin: 0;
   }

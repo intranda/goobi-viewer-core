@@ -12,19 +12,22 @@
 
 	<h2>#{msg.bibData}</h2>
 
-	<viewerComponent:changeRecordLocale />
+	<!-- CHANGE RECORD LOCALE -->
+    <viewerComponent:changeRecordLocale />
 
-    <div id="metadataElementWrapper">
+    <!-- METADATA -->
+    <div id="metadataElementWrapper" class="metadata">
         <ui:repeat value="#{metadataBean.metadataElementList}" var="metadataElement" varStatus="status">
             <ui:repeat var="type" value="#{metadataElement.metadataTypes}">
-                <div class="metadata-element-box level-#{status.index}">
-                    <h3>
+                <!-- METADATA ELEMENT -->
+                <div class="metadata__elements level-#{status.index}">
+                    <h3 class="metadata__elements-h3">
                         <h:outputText rendered="#{fn:length(metadataElement.metadataTypes) > 0}" value="#{msg[type.tabName]}" />
                     </h3>
                     <ui:repeat value="#{metadataElement.metadataList}" var="metadata">
                         <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
-                            <div class="metadata-element">
-                                <dl class="dl-horizontal">
+                            <div class="metadata__element">
+                                <dl class="dl-horizontal metadata__element-dl">
                                     <dt title="#{msg[metadata.label]}">
                                         <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                     </dt>
@@ -66,7 +69,7 @@
                                     <h:panelGroup rendered="#{!metadata.group}">
                                         <dd>
                                             <ui:repeat value="#{metadata.values}" var="val">
-                                                <span class="metadata-value">
+                                                <span class="metadata__element-value">
                                                     <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                         <f:param value="#{val.getComboValueShort(0)}" />
                                                         <f:param value="#{val.getComboValueShort(1)}" />
@@ -92,18 +95,19 @@
         </ui:repeat>
 
         <c:forEach items="#{metadataBean.events}" var="event">
-            <div class="metadata-event-box">
+            <!-- METADATA EVENT -->
+            <div class="metadata__events">
                 <ui:repeat value="#{event.metadata}" var="metadata">
                     <h:panelGroup rendered="#{!metadata.blank}">
-                        <div class="metadata-event">
-                            <dl class="dl-horizontal">
+                        <div class="metadata__event">
+                            <dl class="dl-horizontal metadata__event-dl">
                                 <dt title="#{msg[metadata.label]}">
                                     <h:outputText value="#{msg[metadata.label]}:" escape="false" />
                                 </dt>
                                 <h:panelGroup>
                                     <dd>
                                         <ui:repeat value="#{metadata.values}" var="val">
-                                            <span class="metadata-value">
+                                            <span class="metadata__event-value">
                                                 <h:outputFormat value="#{msg[val.masterValue]}" escape="false">
                                                     <f:param value="#{val.paramValues[0] != null ? val.paramValues[0] : ''}" />
                                                     <f:param value="#{val.paramValues[1] != null ? val.paramValues[1] : ''}" />

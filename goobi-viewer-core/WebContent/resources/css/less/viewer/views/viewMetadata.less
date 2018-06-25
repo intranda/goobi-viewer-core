@@ -3,34 +3,41 @@
    style declarations for viewMetadata.xhtml 
    ==============================================================*/
 /* METADATA */
-#metadataElementWrapper {
+/* BLOCK */
+.metadata {
 	position: relative;
-    float: left;
-    width: 100%;
     margin-bottom: 1.3125rem;
-    .metadata-element-box {
-        .metadata-element {
-            .dl-horizontal {
-            	margin: 0;
-                dt {
-                    width: 30%;
-                    text-align: left;
-
-                }
-                dd {
-                    margin-left: 30%;
-                    .metadata-value {
-                        display: block;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                        &:last-child {
-                        	margin-bottom: 0;
-                        }
-                    }
-                }
-            }
-        }
-        &.level-0 {}
+    .fa {
+    	margin-right: 5px;
+    }
+	/* ELEMENTS / EVENTS */
+	&__elements,
+	&__events {}
+	&__element,
+	&__event {}
+	&__element-dl,
+	&__event-dl {
+		margin: 0;
+		dt {
+			width: 30%;
+			text-align: left;			
+		}
+		dd {
+			margin-left: 30%;			
+		}
+	}
+	&__element-value,
+	&__event-value {
+		display: block;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+	/* ELEMENT */
+	&__elements {
+		&.level-0 {}
         &.level-1 {}
         &.level-2 {}
         &.level-3 {}
@@ -40,34 +47,24 @@
         &.level-7 {}
         &.level-8 {}
         &.level-9 {}
-    }
-    .metadata-event-box {
-        .metadata-event {
-            .dl-horizontal {
-            	margin: 0;
-                dt {
-                    width: 30%;
-                    text-align: left;
-
-                }
-                dd {
-                    margin-left: 30%;
-                    .metadata-value {
-                        display: block;
-                        margin-bottom: 0.5rem;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                        &:last-child {
-                        	margin-bottom: 0;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    .fa {
-    	margin-right: 5px;
-    }
+	}
+	&__elements-h3 {
+		display: none;
+	}
+	&__element {}
+	&__element-dl {
+		dt {}
+		dd {}
+	}
+	&__element-value {}
+	/* EVENT */
+	&__events {}
+	&__event {}
+	&__event-dl {
+		dt {}
+		dd {}
+	}
+	&__event-value {}
 }
 
 /* DOWNLOADS */
@@ -105,36 +102,18 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    #metadataElementWrapper {
-        .metadata-element-box {
-            .metadata-element {
-                .dl-horizontal {
-                    dt {
-                        width: 100%;
-                    }
-                    dd {
-                        width: 100%;
-                        margin: 0;
-                        .metadata-value {}
-                    }
-                }
-            }
-        }
-        .metadata-event-box {
-            .metadata-event {
-                .dl-horizontal {
-                    dt {
-                        width: 100%;
-                    }
-                    dd {
-                        width: 100%;
-                        margin: 0;
-                        .metadata-value {}
-                    }
-                }
-            }
-        }
-    }
+	.metadata {
+		&__element-dl,
+		&__event-dl {
+			dt {
+				width: 100%;			
+			}
+			dd {
+				width: 100%;
+				margin: 0;			
+			}
+		}
+	}
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
