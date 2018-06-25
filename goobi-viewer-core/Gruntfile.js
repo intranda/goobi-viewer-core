@@ -7,6 +7,14 @@ module.exports = function(grunt) {
 
 	// ---------- VARIABLES ----------
 	var packageJson = grunt.file.readJSON('package.json');
+	var sources = {
+		jsDevFolder : 'WebContent/resources/javascript/dev/',
+		jsDevFolderModules : 'WebContent/resources/javascript/dev/modules/',
+		jsDistFolder : 'WebContent/resources/javascript/dist/',
+		cssDevFolder : 'WebContent/resources/css/dev/',
+		cssDistFolder : 'WebContent/resources/css/dist/',
+		lessDevFolder : 'WebContent/resources/css/less/viewer/'
+	};
 	var banner = '/*!\n'
 		+ ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
 		+ ' *\n'
@@ -29,14 +37,7 @@ module.exports = function(grunt) {
 			name : 'viewer'
 		},
 		pkg : packageJson,
-		src : {
-			jsDevFolder : 'WebContent/resources/javascript/dev/',
-			jsDevFolderModules : 'WebContent/resources/javascript/dev/modules/',
-			jsDistFolder : 'WebContent/resources/javascript/dist/',
-			cssDevFolder : 'WebContent/resources/css/dev/',
-			cssDistFolder : 'WebContent/resources/css/dist/',
-			lessDevFolder : 'WebContent/resources/css/less/viewer/'
-		},
+		src : sources,
 		less : {
 			development : {
 				options : {
