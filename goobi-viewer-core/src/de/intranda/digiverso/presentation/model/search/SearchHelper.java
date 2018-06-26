@@ -739,7 +739,7 @@ public final class SearchHelper {
             synchronized (lock) {
                 suffix = docstrctWhitelistFilterSuffix;
                 if (suffix == null) {
-                    suffix = generateDocstrctWhitelistFilterSuffix();
+                    suffix = generateDocstrctWhitelistFilterSuffix(DataManager.getInstance().getConfiguration().getDocStructWhiteList());
                     docstrctWhitelistFilterSuffix = suffix;
                 }
             }
@@ -772,24 +772,34 @@ public final class SearchHelper {
 
     /**
      *
-     * @return
+     * @param docstructList
+     * @return Solr query suffix for docstruct filtering
      * @should construct suffix correctly
+     * @should return empty string if only docstruct is asterisk
      */
-    protected static String generateDocstrctWhitelistFilterSuffix() {
+    protected static String generateDocstrctWhitelistFilterSuffix(List<String> docstructList) {
+        if (docstructList == null) {
+            throw new IllegalArgumentException("docstructList may not be null");
+        }
         logger.debug("Generating docstruct whitelist suffix...");
-        StringBuilder sbQuery = new StringBuilder();
-        List<String> list = DataManager.getInstance().getConfiguration().getDocStructWhiteList();
-        if (!list.isEmpty()) {
+        if (!docstructList.isEmpty()) {
+            if (docstructList.size() == 1 && "*".equals(docstructList.get(0))) {
+                return "";
+            }
+            StringBuilder sbQuery = new StringBuilder();
             sbQuery.append(" AND (");
-            for (String s : list) {
+            for (String s : docstructList) {
                 if (StringUtils.isNotBlank(s)) {
-                    sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(ClientUtils.escapeQueryChars(s.trim())).append(" OR ");
+                    String escapedS = s.trim();
+                    sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(escapedS).append(" OR ");
                 }
             }
             sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
             sbQuery.append(')');
+            return sbQuery.toString();
         }
-        return sbQuery.toString();
+
+        return "";
     }
 
     /**

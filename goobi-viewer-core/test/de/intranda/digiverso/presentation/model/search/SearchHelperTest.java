@@ -967,4 +967,24 @@ public class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         Assert.assertEquals("foo bar", SearchHelper
                 .removeHighlightingTags("f<span class=\"search-list--highlight\">oo</span> <span class=\"search-list--highlight\">bar</span>"));
     }
+
+    /**
+     * @see SearchHelper#generateDocstrctWhitelistFilterSuffix(List)
+     * @verifies construct suffix correctly
+     */
+    @Test
+    public void generateDocstrctWhitelistFilterSuffix_shouldConstructSuffixCorrectly() throws Exception {
+        String[] docstructs = new String[] { "monograph", "manuscript" };
+        Assert.assertEquals(" AND (" + SolrConstants.DOCSTRCT + ":monograph OR " + SolrConstants.DOCSTRCT + ":manuscript)",
+                SearchHelper.generateDocstrctWhitelistFilterSuffix(Arrays.asList(docstructs)));
+    }
+
+    /**
+     * @see SearchHelper#generateDocstrctWhitelistFilterSuffix(List)
+     * @verifies return empty string if only docstruct is asterisk
+     */
+    @Test
+    public void generateDocstrctWhitelistFilterSuffix_shouldReturnEmptyStringIfOnlyDocstructIsAsterisk() throws Exception {
+        Assert.assertEquals("", SearchHelper.generateDocstrctWhitelistFilterSuffix(Collections.singletonList("*")));
+    }
 }
