@@ -5828,7 +5828,7 @@ var viewerJS = ( function( viewer ) {
             // build child hits
             if ( child.hasChildren ) {
                 $.each( child.children, function( subChildren, subChild ) {
-                    hitSet.append( _renderSubChildHits( subChild.browseElement, subChild.type ) );
+                    hitSet.append( _renderSubChildHits( subChild.browseElement, subChild.type, subChild.translatedType ) );
                 } );
             }
             
@@ -5934,18 +5934,27 @@ var viewerJS = ( function( viewer ) {
      * @param {String} type The type of hit to render.
      * @returns {Object} A jquery object which contains the sub child hits.
      */
-    function _renderSubChildHits( data, type ) {
+    function _renderSubChildHits( data, type, title ) {
         if ( _debug ) {
             console.log( '---------- _renderSubChildHits() ----------' );
             console.log( '_renderSubChildHits: data = ', data );
             console.log( '_renderSubChildHits: type = ', type );
+            console.log( '_renderSubChildHits: title = ', title );
         }
         
         var hitSetChildren = null;
         var hitSetChildrenDl = null;
         var hitSetChildrenDt = null;
         var hitSetChildrenDd = null;
-        var hitSetChildrenLink = null;
+        var hitSetChildrenLink = null;        
+        var iconTitle;
+        
+        if ( title === '' || title === null ) {
+        	iconTitle = '';
+        }
+        else {
+        	iconTitle = title;
+        }
         
         hitSetChildren = $( '<div class="search-list__struct-child-hits" />' );
         hitSetChildrenDl = $( '<dl class="dl-horizontal" />' );
@@ -5953,34 +5962,34 @@ var viewerJS = ( function( viewer ) {
         // check hit type
         switch ( type ) {
             case 'PAGE':
-                hitSetChildrenDt.append( '<i class="fa fa-file-text" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-file-text" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'PERSON':
-                hitSetChildrenDt.append( '<i class="fa fa-user" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-user" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'CORPORATION':
-                hitSetChildrenDt.append( '<i class="fa fa-university" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-university" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'LOCATION':
-                hitSetChildrenDt.append( '<i class="fa fa-location-arrow" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-location-arrow" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'ADDRESS':
-                hitSetChildrenDt.append( '<i class="fa fa-envelope" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-envelope" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'SUBJECT':
-                hitSetChildrenDt.append( '<i class="fa fa-question-circle-o" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-question-circle-o" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'PUBLISHER':
-                hitSetChildrenDt.append( '<i class="fa fa-copyright" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-copyright" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'COMMENT':
-                hitSetChildrenDt.append( '<i class="fa fa-comment" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-comment" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'EVENT':
-                hitSetChildrenDt.append( '<i class="fa fa-calendar" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-calendar" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
             case 'ACCESSDENIED':
-                hitSetChildrenDt.append( '<i class="fa fa-lock" aria-hidden="true"></i>' );
+                hitSetChildrenDt.append( '<i class="fa fa-lock" title="' + iconTitle + '" aria-hidden="true"></i>' );
                 break;
         }
         hitSetChildrenDd = $( '<dd />' );
