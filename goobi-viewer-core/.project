@@ -50,6 +50,7 @@
 		<project>goobi-viewer-theme-wienerlibrary-testifyingtothetruth</project>
 		<project>goobi-viewer-theme-zlb</project>
 		<project>goobi-viewer-theme-kuepo</project>
+		<project>goobi-viewer-theme-sudanmemory</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
