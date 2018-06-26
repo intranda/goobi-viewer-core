@@ -92,6 +92,8 @@ public class BrowseBean implements Serializable {
     private Map<String, List<String>> availableStringFilters = new HashMap<>();
     /** This is used for filtering term browsing by the starting letter. */
     private String currentStringFilter = "";
+    /** Optional filter query */
+    private String filterQuery;
     private int hitsCount = 0;
     private int currentPage = -1;
 
@@ -297,11 +299,11 @@ public class BrowseBean implements Serializable {
                 return "searchTermList";
             }
             if (StringUtils.isEmpty(currentStringFilter) || availableStringFilters.get(browsingMenuField) == null) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, "", new BrowseTermRawComparator(),
+                terms = SearchHelper.getFilteredTerms(currentBmfc, "", filterQuery, new BrowseTermRawComparator(),
                         DataManager.getInstance().getConfiguration().isAggregateHits());
 
                 // Populate the list of available starting characters with ones that actually exist in the complete terms list
-                if (availableStringFilters.get(browsingMenuField) == null) {
+                if (availableStringFilters.get(browsingMenuField) == null || filterQuery != null) {
                     logger.debug("Populating search term filters for field '{}'...", browsingMenuField);
                     availableStringFilters.put(browsingMenuField, new ArrayList<String>());
                     for (BrowseTerm term : terms) {
@@ -332,7 +334,7 @@ public class BrowseBean implements Serializable {
 
             // Get the terms again, this time using the requested filter. The search over all terms the first time is necessary to get the list of available filters.
             if (StringUtils.isNotEmpty(currentStringFilter)) {
-                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, new BrowseTermRawComparator(),
+                terms = SearchHelper.getFilteredTerms(currentBmfc, currentStringFilter, filterQuery, new BrowseTermRawComparator(),
                         DataManager.getInstance().getConfiguration().isAggregateHits());
             }
             hitsCount = terms.size();
@@ -484,6 +486,23 @@ public class BrowseBean implements Serializable {
         }
     }
 
+    /**
+     * @return the filterQuery
+     */
+    public String getFilterQuery() {
+        if (StringUtils.isEmpty(filterQuery)) {
+            return "-";
+        }
+        return filterQuery;
+    }
+
+    /**
+     * @param filterQuery the filterQuery to set
+     */
+    public void setFilterQuery(String filterQuery) {
+        this.filterQuery = "-".equals(filterQuery) ? null : filterQuery;
+    }
+
     public int getCurrentPageResetFilter() {
         return currentPage;
     }
@@ -492,7 +511,9 @@ public class BrowseBean implements Serializable {
      * This is used when a term search query doesn't contain a filter value. In this case, the value is reset.
      *
      * @param currentPage
+     * @deprecated Reset the currentStringFilter value in the PrettyFaces mapping
      */
+    @Deprecated
     public void setCurrentPageResetFilter(int currentPage) {
         synchronized (this) {
             currentStringFilter = null;

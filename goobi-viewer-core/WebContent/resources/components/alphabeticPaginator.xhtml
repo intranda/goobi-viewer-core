@@ -14,7 +14,7 @@
 				<ul>
 					<ui:repeat value="#{browseBean.availableStringFilters}" var="filter">
 						<li class="#{browseBean.currentStringFilter == filter ? 'active' : ''}">
-							<a href="#{navigationHelper.applicationUrl}term/#{browseBean.browsingMenuField}/#{filter}/1/">#{filter}</a>
+							<a href="#{navigationHelper.applicationUrl}term/#{browseBean.browsingMenuField}/#{browseBean.filterQuery}/#{filter}/1/">#{filter}</a>
 						</li>
 					</ui:repeat>
 				</ul>
