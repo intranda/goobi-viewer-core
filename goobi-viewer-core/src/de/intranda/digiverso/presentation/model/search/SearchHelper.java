@@ -1270,14 +1270,15 @@ public final class SearchHelper {
      *
      * @param bmfc
      * @param startsWith
+     * @param filterQuery
      * @param comparator
      * @param aggregateHits
      * @return
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, Comparator<BrowseTerm> comparator,
-            boolean aggregateHits) throws PresentationException, IndexUnreachableException {
+    public static List<BrowseTerm> getFilteredTerms(BrowsingMenuFieldConfig bmfc, String startsWith, String filterQuery,
+            Comparator<BrowseTerm> comparator, boolean aggregateHits) throws PresentationException, IndexUnreachableException {
         List<BrowseTerm> ret = new ArrayList<>();
         Map<BrowseTerm, Boolean> terms = new ConcurrentHashMap<>();
         Map<String, BrowseTerm> usedTerms = new ConcurrentHashMap<>();
@@ -1294,16 +1295,25 @@ public final class SearchHelper {
         //        } else {
         //            sbQuery.append(ClientUtils.escapeQueryChars(startsWith)).append('*');
         //        }
+        List<String> filterQueries = new ArrayList<>();
+        if (StringUtils.isNotEmpty(filterQuery)) {
+            filterQueries.add(filterQuery);
+        }
         if (!bmfc.getDocstructFilters().isEmpty()) {
-            sbQuery.append(" AND (");
+            //            sbQuery.append(" AND (");
+            StringBuilder sbDocstructFilter = new StringBuilder();
             for (String docstruct : bmfc.getDocstructFilters()) {
-                sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
+                //                sbQuery.append(SolrConstants.DOCSTRCT).append(':').append(docstruct).append(" OR ");
+                sbDocstructFilter.append(docstruct).append(" OR ");
             }
-            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
-            sbQuery.append(')');
+            //            sbQuery.delete(sbQuery.length() - 4, sbQuery.length());
+            //            sbQuery.append(')');
+            sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
         }
         if (bmfc.isRecordsAndAnchorsOnly()) {
-            sbQuery.append(" AND (").append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+            //            sbQuery.append(" AND (").append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
+            filterQueries.add(
+                    new StringBuilder().append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true").toString());
         }
 
         String query = buildFinalQuery(sbQuery.toString(), false);
@@ -1323,7 +1333,8 @@ public final class SearchHelper {
                 params.put(GroupParams.GROUP_MAIN, "true");
                 params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
             }
-            QueryResponse resp = DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, fieldList, null, params);
+            QueryResponse resp =
+                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, fieldList, filterQueries, params);
             // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
             // facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());

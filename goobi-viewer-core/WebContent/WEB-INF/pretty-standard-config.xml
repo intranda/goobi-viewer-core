@@ -170,6 +170,8 @@
 		<pattern value="/searchList/" />
 		<view-id value="/searchList.xhtml" />
 	</url-mapping>
+	
+	<!-- Collection browsing -->
 	<url-mapping id="browse4">
 		<pattern value="/browse/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
@@ -184,30 +186,37 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
     </url-mapping>
-	<url-mapping id="newSearchTerm2">
-		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPageResetFilter}/" />
+    
+    <!-- Term browsing -->
+	<url-mapping id="searchTerm2">
+		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
+		<action onPostback="false">#{searchBean.setCurrentStringFilter(null))}</action>
+        <action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{browseBean.searchTerms}</action>
-		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
-	<url-mapping id="newSearchTerm3">
+	<url-mapping id="searchTerm3">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
-		<action onPostback="false">#{browseBean.searchTerms}</action>
+		<action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{browseBean.searchTerms}</action>
 	</url-mapping>
-	<url-mapping id="newSearch1">
-		<pattern value="/search/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.search}</action>
-		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-	</url-mapping>
-	<url-mapping id="searchAdvanced1">
-		<pattern value="/searchadvanced/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-		<view-id value="/searchAdvanced.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-	</url-mapping>
+    <url-mapping id="searchTerm4">
+        <pattern value="/term/#{field:browseBean.browsingMenuField}/#{filterQuery:browseBean.filterQuery}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
+        <view-id value="/searchTermsList.xhtml" />
+        <action onPostback="false">#{browseBean.searchTerms}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+    </url-mapping>
+	
+	<!-- Simple search -->
+    <url-mapping id="newSearch1">
+        <pattern value="/search/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.search}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+    </url-mapping>
 	<url-mapping id="newSearch3">
 		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
@@ -224,25 +233,10 @@
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
-	<url-mapping id="searchAdvanced4">
-		<pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
-		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
-		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
-		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-		<action onPostback="false">#{searchBean.search}</action>
-	</url-mapping>
 	<url-mapping id="newSearch5">
 		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-		<action onPostback="false">#{searchBean.search}</action>
-	</url-mapping>
-	<url-mapping id="searchAdvanced5">
-		<pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-		<view-id value="/searchList.xhtml" />
-		<action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
@@ -253,6 +247,29 @@
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
+	
+	<!-- Advanced search -->
+	   <url-mapping id="searchAdvanced1">
+        <pattern value="/searchadvanced/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <view-id value="/searchAdvanced.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+    </url-mapping>
+    <url-mapping id="searchAdvanced4">
+        <pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
+    <url-mapping id="searchAdvanced5">
+        <pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+        <view-id value="/searchList.xhtml" />
+        <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{searchBean.search}</action>
+    </url-mapping>
 	<url-mapping id="searchAdvanced6">
 		<pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchStringResetGui}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/-/" />
 		<view-id value="/searchList.xhtml" />
@@ -260,6 +277,8 @@
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
+	
+	<!-- Calendar search -->
 	<url-mapping id="searchCalendar5">
 		<pattern value="/searchcalendar/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
