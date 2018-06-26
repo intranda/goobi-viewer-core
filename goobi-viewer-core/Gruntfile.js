@@ -1,20 +1,5 @@
 module.exports = function(grunt) {
-	// ---------- LOAD TASKS ----------
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-
 	// ---------- VARIABLES ----------
-	var packageJson = grunt.file.readJSON('package.json');
-	var sources = {
-		jsDevFolder : 'WebContent/resources/javascript/dev/',
-		jsDevFolderModules : 'WebContent/resources/javascript/dev/modules/',
-		jsDistFolder : 'WebContent/resources/javascript/dist/',
-		cssDevFolder : 'WebContent/resources/css/dev/',
-		cssDistFolder : 'WebContent/resources/css/dist/',
-		lessDevFolder : 'WebContent/resources/css/less/viewer/'
-	};
 	var banner = '/*!\n'
 		+ ' * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.\n'
 		+ ' *\n'
@@ -36,8 +21,15 @@ module.exports = function(grunt) {
 		theme : {
 			name : 'viewer'
 		},
-		pkg : packageJson,
-		src : sources,
+		pkg : grunt.file.readJSON('package.json'),
+		src : {
+			jsDevFolder : 'WebContent/resources/javascript/dev/',
+			jsDevFolderModules : 'WebContent/resources/javascript/dev/modules/',
+			jsDistFolder : 'WebContent/resources/javascript/dist/',
+			cssDevFolder : 'WebContent/resources/css/dev/',
+			cssDistFolder : 'WebContent/resources/css/dist/',
+			lessDevFolder : 'WebContent/resources/css/less/viewer/'
+		},
 		less : {
 			development : {
 				options : {
@@ -138,6 +130,12 @@ module.exports = function(grunt) {
 			}
 		},
 	});
+	
+	// ---------- LOAD TASKS ----------
+	grunt.loadNpmTasks('grunt-contrib-less');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	// ---------- REGISTER DEVELOPMENT TASKS ----------
 	grunt.registerTask('default', [ 'watch' ]);
