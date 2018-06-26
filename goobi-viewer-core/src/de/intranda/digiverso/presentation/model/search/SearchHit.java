@@ -116,7 +116,11 @@ public class SearchHit implements Comparable<SearchHit> {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchHit.class);
 
+    private static final String SEARCH_HIT_TYPE_PREFIX = "searchHitType_";
+
     private final HitType type;
+    /** Translated label for the search hit type. */
+    private final String translatedType;
     private final BrowseElement browseElement;
     @JsonIgnore
     private List<SolrDocument> childDocs;
@@ -151,6 +155,7 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     private SearchHit(HitType type, BrowseElement browseElement, Map<String, Set<String>> searchTerms, Locale locale) {
         this.type = type;
+        this.translatedType = Helper.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale);
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
@@ -665,6 +670,13 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     public HitType getType() {
         return type;
+    }
+
+    /**
+     * @return the translatedType
+     */
+    public String getTranslatedType() {
+        return translatedType;
     }
 
     /**
