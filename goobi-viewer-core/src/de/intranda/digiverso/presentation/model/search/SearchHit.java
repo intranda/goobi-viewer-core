@@ -155,7 +155,7 @@ public class SearchHit implements Comparable<SearchHit> {
      */
     private SearchHit(HitType type, BrowseElement browseElement, Map<String, Set<String>> searchTerms, Locale locale) {
         this.type = type;
-        this.translatedType = Helper.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale);
+        this.translatedType = type != null ? Helper.getTranslation(SEARCH_HIT_TYPE_PREFIX + type.name(), locale) : null;
         this.browseElement = browseElement;
         this.searchTerms = searchTerms;
         this.locale = locale;
