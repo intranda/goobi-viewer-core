@@ -8,75 +8,81 @@
 	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
 
+    <!-- METADATA -->
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('thumbs')}" />
         </f:metadata>
     </ui:define>
 
+    <!-- HEAD -->
     <ui:define name="head">
         <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
-                rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
-                rendered="#{configurationBean.addHighwirePressMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
         </f:view>
     </ui:define>
+    
+    <!-- BREADCRUMBS -->
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>
 
+    <!-- CONTENT -->
     <ui:define name="content">
         <!-- reCAPTCHA API -->
         <h:panelGroup rendered="#{configurationBean.useReCaptcha}">
             <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
         </h:panelGroup>
 
-        <div id="viewThumbs">
-            <ui:include src="/resources/includes/title.xhtml">
-                <ui:param name="structure" value="false" />
-                <ui:param name="purl" value="true" />
-            </ui:include>
+        <!-- TITLE -->
+        <ui:include src="/resources/includes/title.xhtml">
+            <ui:param name="structure" value="false" />
+            <ui:param name="purl" value="true" />
+        </ui:include>
 
-            <div id="viewThumbsWrapper" class="row">
+        <!-- VIEW THUMBS -->
+        <div id="viewThumbs" class="view-thumbs">
+            <div class="view-thumbs__thumbnails">
                 <ui:repeat var="image" value="#{activeDocumentBean.viewManager.imagesSection}">
-                    <div class="col-sm-2">
-                    	<div class="thumb-element">
-                    		<div class="thumb-element-image">
-		                        <a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
-		                            <img 
-		                                src="#{image.thumbnailUrl}"
-		                            	alt="#{image.order}:#{image.orderLabel}" 
-		                            	title="#{image.order}:#{image.orderLabel}" />
-		                        </a>
-	                        </div>
-
-							<div class="row no-margin">
-								<div class="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable ? 'col-xs-10' : 'col-xs-12'} no-padding">
-									<div class="thumb-element-number">#{image.order}:#{image.orderLabel}</div>
-								</div>
-								<ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
-								    <div class="col-xs-2 no-padding">
-										<div class="thumb-element-fulltext">
-											<i class="fa fa-file-text-o" aria-hidden="true"></i>
-										</div>
-								    </div>
-								</ui:fragment>
-							</div>
-						</div>	                    
+                    <!-- THUMBNAIL -->
+                    <div class="view-thumbs__thumbnail">
+                        <!-- THUMBNAIL IMAGE -->
+                        <figure class="view-thumbs__thumbnail-image">
+                            <a href="#{navigationHelper.imageActiveUrl}#{image.purlPart}">
+                                <img src="#{image.thumbnailUrl}" alt="#{image.order}:#{image.orderLabel}" title="#{image.order}:#{image.orderLabel}" />
+                            </a>
+                            
+                            <figcaption>
+                                <!-- THUMBNAIL IMAGE ORDER -->
+                                <div class="view-thumbs__thumbnail-image-order">#{image.order}:#{image.orderLabel}</div>
+                                
+                                <!-- THUMBNAIL IMAGE FULLTEXT -->
+                                <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and image.fulltextAvailable}">
+                                    <div class="view-thumbs__thumbnail-image-fulltext">
+                                        <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                    </div>
+                                </ui:fragment>
+                            </figcaption>
+                        </figure>
                     </div>
                 </ui:repeat>
             </div>
             
+            <!-- PAGINATOR -->
             <viewerComponent:simplePaginator 
             	itemCount="#{activeDocumentBean.viewManager.imagesSizeThumbnail}"
                 itemActive="#{activeDocumentBean.viewManager.currentThumbnailPage}"
                 urlPrefix="#{navigationHelper.thumbsUrl}/#{activeDocumentBean.persistentIdentifier}/" />
         </div>
 
+        <!-- HIDDEN USER EMAIL -->
         <h:panelGroup rendered="#{userBean.loggedIn}">
             <input id="userEmail" type="hidden" value="#{userBean.user.email}" />
         </h:panelGroup>
 
         <script type="text/javascript">
-        var downloadModalConfig = {
+        	var downloadModalConfig = {
             	downloadBtn: $( '.download-modal' ),
                 path: '#{navigationHelper.applicationUrl}',
                 iiifPath: '#{configurationBean.iiifApiUrl}',
@@ -105,6 +111,7 @@
         </script>
     </ui:define>
 
+    <!-- SIDEBAR -->
     <ui:define name="sidebar">
         <widgetComponent:widget_views pageType="thumbs" />
         
@@ -135,9 +142,5 @@
         </c:forEach>
         
         <widgetComponent:widget_user />        
-    </ui:define>
-
-    <ui:define name="breadcrumbs">
-        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
     </ui:define>
 </ui:composition>

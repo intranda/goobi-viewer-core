@@ -2,35 +2,42 @@
    View Thumbs
    style declarations for viewThumbs.xhtml 
    ==============================================================*/
-#viewThumbsWrapper {
-    margin: 15px 0 0 0;
-    .col-sm-2 {
-        padding-right: 0.1875rem;
-        padding-left: 0.1875rem;
-    }
-    .thumb-element {
-        margin-bottom: 0.375rem;
-        padding: 0.1875rem;
-        border: 1px solid @lightgray;
-        .thumb-element-image {
-            height: 120px;
-            overflow: hidden;
-            a {
-                img {
-                    display: block;
-                    max-width: 100%;
-                    max-height: 120px;
-                    margin: 0 auto;
-                }
-            }            
-        }
-        .thumb-element-number,
-        .thumb-element-fulltext {
-            padding: 0.4375rem 0;
-            text-align: center;
-        }
-        .thumb-element-fulltext {}    
-    }
+/* VIEW THUMBS */
+/* BLOCK */
+.view-thumbs {
+	margin-top: 15px;
+	margin-bottom: 15px;
+	/* ELEMENT */
+	&__thumbnails {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+		grid-gap: 5px;
+	}
+	&__thumbnail {
+		padding: 5px;
+		border: 1px solid @lightgray;
+	}
+	&__thumbnail-image {
+		a {}
+		img {
+			display: block;
+			max-width: 100%;
+			max-height: 120px;
+			margin: 0 auto;
+		}
+		figcaption {
+			display: flex;
+			justify-content: center;
+			padding: 5px;
+			padding-bottom: 0;
+		}
+	}
+	&__thumbnail-image-order {
+		padding-right: 5px;
+	}
+	&__thumbnail-image-fulltext {
+		padding-left: 5px;
+	}
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

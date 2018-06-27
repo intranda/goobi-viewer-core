@@ -4906,7 +4906,7 @@ div[id*="-Modal"] .email-form .form-group {
 .search-calendar__month-day,
 .search-calendar__month-day-empty {
   float: left;
-  width: calc(100% / 7);
+  width: calc(14.28571429%);
 }
 .search-calendar__month-days span {
   display: block;
@@ -5094,7 +5094,7 @@ div[id*="-Modal"] .email-form .form-group {
   float: left;
 }
 .search-timeline__year {
-  width: calc(100% / 10);
+  width: calc(10%);
 }
 .search-timeline__months {
   border-top: 1px solid #ccc;
@@ -5102,14 +5102,14 @@ div[id*="-Modal"] .email-form .form-group {
   background-color: #eee;
 }
 .search-timeline__month {
-  width: calc(100% / 12);
+  width: calc(8.33333333%);
 }
 .search-timeline__days {
   margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
 }
 .search-timeline__day {
-  width: calc(100% / 31);
+  width: calc(3.22580645%);
 }
 .search-timeline__day a,
 .search-timeline__day span {
@@ -5137,23 +5137,23 @@ div[id*="-Modal"] .email-form .form-group {
     padding: 5px;
   }
   .search-timeline__month {
-    width: calc(100% / 6);
+    width: calc(16.66666667%);
   }
   .search-timeline__day {
-    width: calc(100% / 15.5);
+    width: calc(6.4516129%);
   }
 }
 /* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: 480px) {
   .search-timeline__year {
-    width: calc(100% / 5);
+    width: calc(20%);
   }
   .search-timeline__month {
-    width: calc(100% / 3);
+    width: calc(33.33333333%);
   }
   .search-timeline__day {
-    width: calc(100% / 7.75);
+    width: calc(12.90322581%);
   }
 }
 /* USER VIEWS */
@@ -6711,32 +6711,43 @@ div[id*="-Modal"] .email-form .form-group {
    View Thumbs
    style declarations for viewThumbs.xhtml 
    ==============================================================*/
-#viewThumbsWrapper {
-  margin: 15px 0 0 0;
+/* VIEW THUMBS */
+/* BLOCK */
+.view-thumbs {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  /* ELEMENT */
 }
-#viewThumbsWrapper .col-sm-2 {
-  padding-right: 0.1875rem;
-  padding-left: 0.1875rem;
+.view-thumbs__thumbnails {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (minmax(125px, 1fr))[auto-fit];
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  grid-gap: 5px;
 }
-#viewThumbsWrapper .thumb-element {
-  margin-bottom: 0.375rem;
-  padding: 0.1875rem;
+.view-thumbs__thumbnail {
+  padding: 5px;
   border: 1px solid #eee;
 }
-#viewThumbsWrapper .thumb-element .thumb-element-image {
-  height: 120px;
-  overflow: hidden;
-}
-#viewThumbsWrapper .thumb-element .thumb-element-image a img {
+.view-thumbs__thumbnail-image img {
   display: block;
   max-width: 100%;
   max-height: 120px;
   margin: 0 auto;
 }
-#viewThumbsWrapper .thumb-element .thumb-element-number,
-#viewThumbsWrapper .thumb-element .thumb-element-fulltext {
-  padding: 0.4375rem 0;
-  text-align: center;
+.view-thumbs__thumbnail-image figcaption {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  padding: 5px;
+  padding-bottom: 0;
+}
+.view-thumbs__thumbnail-image-order {
+  padding-right: 5px;
+}
+.view-thumbs__thumbnail-image-fulltext {
+  padding-left: 5px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
