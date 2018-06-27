@@ -1843,6 +1843,8 @@ div.mce-fullscreen {
 #titleWrapper .title-header h3 a span {
   float: left;
   width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #titleWrapper .title-header h3 a .fa {
   float: right;
