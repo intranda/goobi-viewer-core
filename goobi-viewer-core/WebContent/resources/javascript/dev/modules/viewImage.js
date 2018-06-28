@@ -2586,6 +2586,11 @@ var ImageView = ( function( imageView ) {
                     else {
                         localStorage.setItem( 'sidebarStatus', 'false' );
                     }
+                    
+                    // reload image footer
+                    setTimeout( function() {
+                    	viewImage.loadFooter();
+                    }, 300 );
                 } );
                 
                 $( window ).on( 'resize', function() {
