@@ -51,6 +51,7 @@
 		<project>goobi-viewer-theme-zlb</project>
 		<project>goobi-viewer-theme-kuepo</project>
 		<project>goobi-viewer-theme-sudanmemory</project>
+		<project>goobi-viewer-theme-gacaca</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
