@@ -22,12 +22,12 @@
  * @module viewImage.tileSourceResolver
  * @requires jQuery
  */
-var viewImage = ( function( osViewer ) {
+ImageView = ( function( imageView ) {
     'use strict';
     
     var _debug = false;
     
-    osViewer.tileSourceResolver = {
+    imageView.TileSourceResolver = {
         
         resolveAsJsonOrURI: function( imageInfo ) {
             var deferred = Q.defer();
@@ -98,7 +98,7 @@ var viewImage = ( function( osViewer ) {
         
         loadIfJsonURL: function( imageInfo ) {
             return Q.promise( function( resolve, reject ) {
-                if ( osViewer.tileSourceResolver.isURI( imageInfo ) ) {
+                if ( imageView.TileSourceResolver.isURI( imageInfo ) ) {
                     var ajaxParams = {
                         url: decodeURI( imageInfo ),
                         type: "GET",
@@ -165,6 +165,6 @@ var viewImage = ( function( osViewer ) {
     
     }
 
-    return osViewer;
+    return imageView;
     
-} )( viewImage || {}, jQuery );
+} )( ImageView );

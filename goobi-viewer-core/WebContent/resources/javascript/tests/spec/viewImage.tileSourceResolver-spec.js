@@ -2,7 +2,7 @@
  * 
  */
 
-describe( "ViewImage.TileSourceResolver Tests ", function() {
+describe( "ImageView.TileSourceResolver Tests ", function() {
 
     var iiifInfoURI = "http://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/info.json";
     var iiifImageURI = "https://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/full/full/0/native.jpg";
@@ -38,35 +38,35 @@ describe( "ViewImage.TileSourceResolver Tests ", function() {
         
         it( "returns the json object behind the url", function( done ) {
             
-            viewImage.tileSourceResolver.loadIfJsonURL( iiifInfoURI )
+            ImageView.TileSourceResolver.loadIfJsonURL( iiifInfoURI )
             .then( checkJson, checkError )
             .then( done, done.fail );
         } )
 
         it( "fails for a iiif image url", function( done ) {
             
-            viewImage.tileSourceResolver.loadIfJsonURL( iiifImageURI )
+            ImageView.TileSourceResolver.loadIfJsonURL( iiifImageURI )
             .then( checkJson, checkError )
             .then( done.fail, done );
         } )
         
         it( "fails for an image url", function( done ) {
             
-            viewImage.tileSourceResolver.loadIfJsonURL( simpleImageURI )
+            ImageView.TileSourceResolver.loadIfJsonURL( simpleImageURI )
             .then( checkJson, checkError )
             .then( done.fail, done );
         } )
         
         it( "fails for a string other than a url", function( done ) {
             
-            viewImage.tileSourceResolver.loadIfJsonURL( iiifInfoString )
+            ImageView.TileSourceResolver.loadIfJsonURL( iiifInfoString )
             .then( checkJson, checkError )
             .then( done.fail, done );
         } )
         
         it( "fails for a json object", function( done ) {
             
-            viewImage.tileSourceResolver.loadIfJsonURL( iiifInfoObject )
+            ImageView.TileSourceResolver.loadIfJsonURL( iiifInfoObject )
             .then( checkJson, checkError )
             .then( done.fail, done );
         } )
@@ -79,31 +79,31 @@ describe( "ViewImage.TileSourceResolver Tests ", function() {
 
         it( "returns a json object from image info url", function( done ) {
             
-            viewImage.tileSourceResolver.resolveAsJson( iiifInfoURI, true )
+            ImageView.TileSourceResolver.resolveAsJson( iiifInfoURI, true )
             .then( checkJson, checkError )
             .then( done, done.fail );
         } );
         it( "fails for a iiif image url", function( done ) {
             
-            viewImage.tileSourceResolver.resolveAsJson( iiifImageURI, true )
+            ImageView.TileSourceResolver.resolveAsJson( iiifImageURI, true )
             .then( checkJson, checkError )
             .then( done.fail, done );
         } );
         it( "fails for an image url", function( done ) {
             
-            viewImage.tileSourceResolver.resolveAsJson( simpleImageURI, true )
+            ImageView.TileSourceResolver.resolveAsJson( simpleImageURI, true )
             .then( checkJson, checkError )
             .then( done.fail, done );
         } );
         it( "returns the inserted object if it already is a json object", function( done ) {
             
-            viewImage.tileSourceResolver.resolveAsJson( iiifInfoObject, true )
+            ImageView.TileSourceResolver.resolveAsJson( iiifInfoObject, true )
             .then( checkJson, checkError )
             .then( done, done.fail );
         } );
         it( "returns the resolved json object is it is a stringified object", function( done ) {
             
-            viewImage.tileSourceResolver.resolveAsJson( iiifInfoString, true )
+            ImageView.TileSourceResolver.resolveAsJson( iiifInfoString, true )
             .then( checkJson, checkError )
             .then( done, done.fail );
         } );
@@ -111,43 +111,43 @@ describe( "ViewImage.TileSourceResolver Tests ", function() {
         
     describe( "Test isJsonURI ", function() {
         it( "returns true if object is an uri and represents a json object ", function() {
-            expect(viewImage.tileSourceResolver.isJsonURI(iiifInfoURI)).toBe(true);
-            expect(viewImage.tileSourceResolver.isJsonURI(iiifInfoURI + "/")).toBe(true);
-            expect(viewImage.tileSourceResolver.isJsonURI(iiifInfoURI + "?a=asdas&b=las")).toBe(true);
-            expect(viewImage.tileSourceResolver.isJsonURI(iiifImageURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isJsonURI(simpleImageURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isJsonURI(iiifInfoObject)).toBe(false);
-            expect(viewImage.tileSourceResolver.isJsonURI(iiifInfoString)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJsonURI(iiifInfoURI)).toBe(true);
+            expect(ImageView.TileSourceResolver.isJsonURI(iiifInfoURI + "/")).toBe(true);
+            expect(ImageView.TileSourceResolver.isJsonURI(iiifInfoURI + "?a=asdas&b=las")).toBe(true);
+            expect(ImageView.TileSourceResolver.isJsonURI(iiifImageURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJsonURI(simpleImageURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJsonURI(iiifInfoObject)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJsonURI(iiifInfoString)).toBe(false);
         } )
     } )
     
     describe( "Test isURI ", function() {
         it( "returns true if object is an uri and leads to an image ", function() {
-            expect(viewImage.tileSourceResolver.isURI(iiifInfoURI)).toBe(true);
-            expect(viewImage.tileSourceResolver.isURI(iiifImageURI)).toBe(true);
-            expect(viewImage.tileSourceResolver.isURI(simpleImageURI)).toBe(true);
-            expect(viewImage.tileSourceResolver.isURI(iiifInfoObject)).toBe(false);
-            expect(viewImage.tileSourceResolver.isURI(iiifInfoString)).toBe(false);
+            expect(ImageView.TileSourceResolver.isURI(iiifInfoURI)).toBe(true);
+            expect(ImageView.TileSourceResolver.isURI(iiifImageURI)).toBe(true);
+            expect(ImageView.TileSourceResolver.isURI(simpleImageURI)).toBe(true);
+            expect(ImageView.TileSourceResolver.isURI(iiifInfoObject)).toBe(false);
+            expect(ImageView.TileSourceResolver.isURI(iiifInfoString)).toBe(false);
         } )
     } )
     
     describe( "Test isStringifiedJson", function() {
         it("returns true of parameter is a stringified json object", function() {
-            expect(viewImage.tileSourceResolver.isStringifiedJson(iiifInfoURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isStringifiedJson(iiifImageURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isStringifiedJson(simpleImageURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isStringifiedJson(iiifInfoObject)).toBe(false);
-            expect(viewImage.tileSourceResolver.isStringifiedJson(iiifInfoString)).toBe(true);
+            expect(ImageView.TileSourceResolver.isStringifiedJson(iiifInfoURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isStringifiedJson(iiifImageURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isStringifiedJson(simpleImageURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isStringifiedJson(iiifInfoObject)).toBe(false);
+            expect(ImageView.TileSourceResolver.isStringifiedJson(iiifInfoString)).toBe(true);
         })
     })
     
         describe( "Test isJson", function() {
         it("returns true if parameter is a json object", function() {
-            expect(viewImage.tileSourceResolver.isJson(iiifInfoURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isJson(iiifImageURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isJson(simpleImageURI)).toBe(false);
-            expect(viewImage.tileSourceResolver.isJson(iiifInfoObject)).toBe(true);
-            expect(viewImage.tileSourceResolver.isJson(iiifInfoString)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJson(iiifInfoURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJson(iiifImageURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJson(simpleImageURI)).toBe(false);
+            expect(ImageView.TileSourceResolver.isJson(iiifInfoObject)).toBe(true);
+            expect(ImageView.TileSourceResolver.isJson(iiifInfoString)).toBe(false);
         })
     })
 } )

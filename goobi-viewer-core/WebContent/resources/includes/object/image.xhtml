@@ -69,7 +69,8 @@
         
        	// desktop object view
        	if ( access && openSeadragonVisible ) {
-           	viewImage.init( configViewer ).then( function( osViewer ) {} ).catch( function( error ) {
+           	var viewImage = new ImageView.Image( configViewer )
+           	viewImage.load().then( function( osViewer ) {} ).catch( function( error ) {
            		console.error( 'viewObject.xhtml - viewImage.init: Error opening image' );
            		imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
            	} );

@@ -5,7 +5,7 @@
  * @author Marc Lettau-Poelchen
  * @copyright intranda GmbH 2017
  */
-describe( 'ViewImage Controls Tests', function() {
+describe( 'ImageView Controls Tests', function() {
     beforeEach( function() {
         jasmine.getFixtures().load( 'fullScreenTest.html' );
         var body = $("body");
@@ -17,16 +17,17 @@ describe( 'ViewImage Controls Tests', function() {
         body.removeAttr("id");
     } );
     
-    describe( 'ViewImage Controls: fullscreenControlsFadeout', function() {
+    describe( 'ImageView Controls: fullscreenControlsFadeout', function() {
         it( ' is called on mouse move', function() {
             var config = {
                 global: {},
                 image: {}
             };
-            viewImage.controls.init( config );
-            spyOn( viewImage.controls, 'fullscreenControlsFadeout' );
+            var viewImage = new ImageView.Image(config);
+            var controls = new ImageView.Controls( config, viewImage );
+            spyOn( controls, 'fullscreenControlsFadeout' );
             $( '#fullscreenTemplate' ).trigger( 'mousemove' );
-            expect( viewImage.controls.fullscreenControlsFadeout ).toHaveBeenCalled();
+            expect( controls.fullscreenControlsFadeout ).toHaveBeenCalled();
         } );
     } );
 } );

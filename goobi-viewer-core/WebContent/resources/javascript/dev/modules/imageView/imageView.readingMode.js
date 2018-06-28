@@ -22,7 +22,7 @@
  * @module viewImage.readingMode
  * @requires jQuery
  */
-var viewImage = ( function( osViewer ) {
+var ImageView = ( function( imageView ) {
     'use strict';
     
     var _debug = false;
@@ -45,7 +45,7 @@ var viewImage = ( function( osViewer ) {
         msg: {},
     };
     
-    osViewer.readingMode = {
+    imageView.readingMode = {
         /**
          * Method to initialize the viewer reading mode.
          * 
@@ -304,6 +304,8 @@ var viewImage = ( function( osViewer ) {
         $( _defaults.sidebarSelector ).removeClass( 'invisible' );
     }
     
-    return osViewer;
+    return imageView;
     
-} )( viewImage || {}, jQuery );
+} )( ImageView );
+
+var viewImage = ImageView;

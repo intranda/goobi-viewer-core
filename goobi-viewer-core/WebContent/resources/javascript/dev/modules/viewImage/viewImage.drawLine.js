@@ -75,7 +75,6 @@ var viewImage = ( function( osViewer ) {
             _drawElement = document.createElement( "div" );
             _drawElement.style.border = "2px solid green";
             _drawPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            _drawPoint = osViewer.overlays.getRotated( _drawPoint );
             var rect = new OpenSeadragon.Rect( _drawPoint.x, _drawPoint.y, 0, 0 );
             osViewer.viewer.addOverlay( _drawElement, rect, 1 );
             // console.log(osViewer.viewer.viewport
@@ -88,7 +87,6 @@ var viewImage = ( function( osViewer ) {
     function _onViewerDrag( event ) {
         if ( _drawing ) {
             var newPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            newPoint = osViewer.overlays.getRotated( newPoint );
             var rect = new OpenSeadragon.Rect( _drawPoint.x, _drawPoint.y, newPoint.x - _drawPoint.x, newPoint.y - _drawPoint.y );
             if ( newPoint.x < _drawPoint.x ) {
                 rect.x = newPoint.x;
@@ -107,7 +105,6 @@ var viewImage = ( function( osViewer ) {
     function _onViewerDragEnd( event ) {
         if ( _drawing ) {
             var newPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            newPoint = osViewer.overlays.getRotated( newPoint );
             var rect = new OpenSeadragon.Rect( _drawPoint.x, _drawPoint.y, newPoint.x - _drawPoint.x, newPoint.y - _drawPoint.y );
             if ( newPoint.x < _drawPoint.x ) {
                 rect.x = newPoint.x;

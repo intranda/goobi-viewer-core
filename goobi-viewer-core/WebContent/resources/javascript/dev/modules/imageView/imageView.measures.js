@@ -22,21 +22,21 @@
  * @module viewImage.Measures
  * @requires jQuery
  */
-var viewImage = ( function( osViewer ) {
+ImageView = ( function( imageView ) {
     'use strict';
     
     var _debug = false;
     
-    osViewer.Measures = function( osViewer ) {
-        this.config = osViewer.getConfig();
+    imageView.Measures = function( imageView ) {
+        this.config = imageView.getConfig();
         this.$container = $( "#" + this.config.global.divId );
         
         this.outerCanvasSize = new OpenSeadragon.Point( this.$container.outerWidth(), this.$container.outerHeight() );
         this.innerCanvasSize = new OpenSeadragon.Point( this.$container.width(), this.$container.height() );
-        this.originalImageSize = new OpenSeadragon.Point( this.getTotalImageWidth( osViewer.getImageInfo() ), this.getMaxImageHeight( osViewer.getImageInfo() ) );
+        this.originalImageSize = new OpenSeadragon.Point( this.getTotalImageWidth( imageView.getImageInfo() ), this.getMaxImageHeight( imageView.getImageInfo() ) );
         // console.log("Original image size = ", this.originalImageSize);
         this.footerHeight = this.config.global.footerHeight;
-        this.rotation = osViewer.viewer != null ? osViewer.viewer.viewport.getRotation() : 0;
+        this.rotation = imageView.viewer != null ? imageView.viewer.viewport.getRotation() : 0;
         this.xPadding = this.outerCanvasSize.x - this.innerCanvasSize.x;
         this.yPadding = this.outerCanvasSize.y - this.innerCanvasSize.y;
         this.innerCanvasSize.y -= this.footerHeight;
@@ -52,7 +52,7 @@ var viewImage = ( function( osViewer ) {
             this.imageDisplaySize = this.getRotatedSize( this.imageDisplaySize );
         }
     };
-    osViewer.Measures.prototype.getMaxImageWidth = function( imageInfo ) {
+    imageView.Measures.prototype.getMaxImageWidth = function( imageInfo ) {
         var width = 0;
         if ( imageInfo && imageInfo.length > 0 ) {
             for ( var i = 0; i < imageInfo.length; i++ ) {
@@ -66,7 +66,7 @@ var viewImage = ( function( osViewer ) {
         }
         return width;
     };
-    osViewer.Measures.prototype.getMaxImageHeight = function( imageInfo ) {
+    imageView.Measures.prototype.getMaxImageHeight = function( imageInfo ) {
         var height = 0;
         if ( imageInfo && imageInfo.length > 0 ) {
             for ( var i = 0; i < imageInfo.length; i++ ) {
@@ -81,7 +81,7 @@ var viewImage = ( function( osViewer ) {
         }
         return height;
     };
-    osViewer.Measures.prototype.getTotalImageWidth = function( imageInfo ) {
+    imageView.Measures.prototype.getTotalImageWidth = function( imageInfo ) {
         var width = 0;
         if ( imageInfo && imageInfo.length > 0 ) {
             for ( var i = 0; i < imageInfo.length; i++ ) {
@@ -96,7 +96,7 @@ var viewImage = ( function( osViewer ) {
         }
         return width;
     };
-    osViewer.Measures.prototype.getTotalImageHeight = function( imageInfo ) {
+    imageView.Measures.prototype.getTotalImageHeight = function( imageInfo ) {
         var height = 0;
         if ( imageInfo && imageInfo.length > 0 ) {
             for ( var i = 0; i < imageInfo.length; i++ ) {
@@ -111,7 +111,7 @@ var viewImage = ( function( osViewer ) {
         }
         return height;
     };
-    osViewer.Measures.prototype.getImageHomeSize = function() {
+    imageView.Measures.prototype.getImageHomeSize = function() {
         var ratio = this.rotated() ? 1 / this.ratio( this.originalImageSize ) : this.ratio( this.originalImageSize );
         if ( this.fitToHeight() ) {
             var height = this.innerCanvasSize.y;
@@ -123,22 +123,22 @@ var viewImage = ( function( osViewer ) {
         }
         return this.getRotatedSize( new OpenSeadragon.Point( width, height ) );
     };
-    osViewer.Measures.prototype.rotated = function() {
+    imageView.Measures.prototype.rotated = function() {
         return this.rotation % 180 !== 0;
     };
-    osViewer.Measures.prototype.landscape = function() {
+    imageView.Measures.prototype.landscape = function() {
         return this.ratio( this.originalImageSize ) < 1;
     };
-    osViewer.Measures.prototype.ratio = function( size ) {
+    imageView.Measures.prototype.ratio = function( size ) {
         return size.y / size.x;
     };
-    osViewer.Measures.prototype.getRotatedSize = function( size ) {
+    imageView.Measures.prototype.getRotatedSize = function( size ) {
         return new OpenSeadragon.Point( this.rotated() ? size.y : size.x, this.rotated() ? size.x : size.y );
     };
-    osViewer.Measures.prototype.fitToHeight = function() {
+    imageView.Measures.prototype.fitToHeight = function() {
         return !this.config.global.adaptContainerHeight && this.ratio( this.getRotatedSize( this.originalImageSize ) ) > this.ratio( this.innerCanvasSize );
     };
-    osViewer.Measures.prototype.resizeCanvas = function() {
+    imageView.Measures.prototype.resizeCanvas = function() {
         // Set height of container if required
         if ( this.config.global.adaptContainerHeight ) {
             if ( _debug ) {
@@ -149,12 +149,12 @@ var viewImage = ( function( osViewer ) {
         this.outerCanvasSize = new OpenSeadragon.Point( this.$container.outerWidth(), this.$container.outerHeight() );
         this.innerCanvasSize = new OpenSeadragon.Point( this.$container.width(), this.$container.height() - this.footerHeight );
     };
-    osViewer.Measures.prototype.calculateExcessHeight = function() {
+    imageView.Measures.prototype.calculateExcessHeight = function() {
         var imageSize = this.getRotatedSize( this.getImageHomeSize() );
         var excessHeight = this.config.global.adaptContainerHeight || this.fitToHeight() ? 0 : 0.5 * ( this.innerCanvasSize.y - imageSize.y );
         return excessHeight;
     };
     
-    return osViewer;
+    return imageView;
     
-} )( viewImage || {}, jQuery );
+} )( ImageView );

@@ -18,7 +18,7 @@ var viewImage = ( function() {
     var _footerImage = null;
     var _canvasScale;
     var _container;
-    var _defaults = {  
+    var _defaults = {
         global: {
             divId: "map",
             zoomSlider: ".zoom-slider",

@@ -83,9 +83,9 @@ module.exports = function(grunt) {
 			},
 			distViewImage : {
 				src : [
-					'<%=src.jsDevFolderModules %>viewImage/viewImage.js',
-					'<%=src.jsDevFolderModules %>viewImage/viewImage.controls.js',
-					'<%=src.jsDevFolderModules %>viewImage/viewImage.*.js'
+					'<%=src.jsDevFolderModules %>imageView/imageView.image.js',
+					'<%=src.jsDevFolderModules %>imageView/imageView.controls.js',
+					'<%=src.jsDevFolderModules %>imageView/imageView.*.js'
 				],
 				dest : '<%=src.jsDevFolderModules %>viewImage.js'
 			},

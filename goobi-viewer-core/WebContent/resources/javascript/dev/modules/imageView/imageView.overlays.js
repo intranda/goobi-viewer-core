@@ -22,125 +22,125 @@
  * @module viewImage.overlays
  * @requires jQuery
  */
-var viewImage = ( function( osViewer ) {
+var ImageView = ( function( imageView ) {
     'use strict';
     
     var _debug = false;
     var _focusStyleClass = 'focus';
     var _highlightStyleClass = 'highlight';
-    var _overlayFocusHook = null;
-    var _overlayClickHook = null;
-    var _drawingOverlay = null;
-    var _overlays = [];
-    var _defaults = {};
+//    var _overlayFocusHook = null;
+//    var _overlayClickHook = null;
+//    var _drawingOverlay = null;
+//    var _overlays = [];
     
-    var _initializedCallback = null;
+//    var _initializedCallback = null;
 
-    osViewer.overlays = {
-        init: function( config ) {
+    imageView.Overlays = function(config, image){
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'osViewer.overlays.init' );
                 console.log( '##############################' );
             }
+            this.config = config;
+            this.image = image;
+            this.overlays = [];
+            var overlays = this;
             
-            $.extend( true, _defaults, config );
-            
-            osViewer.observables.overlayRemove.subscribe(function( event ) {
+            this.image.observables.overlayRemove.subscribe(function( event ) {
                 if ( event.element ) {
                     $( event.element ).remove();
                 }
             });
-            if(_defaults.image.highlightCoords) {
-               	osViewer.observables.viewerOpen.subscribe( function( data ) {
-            		for ( var index=0; index<_defaults.image.highlightCoords.length; index++) {
-            			var highlightCoords = _defaults.image.highlightCoords[ index ];
+            if(this.config.image.highlightCoords) {
+               	this.image.observables.viewerOpen.subscribe( function( data ) {
+            		for ( var index=0; index<overlays.config.image.highlightCoords.length; index++) {
+            			var highlightCoords = overlays.config.image.highlightCoords[ index ];
             			var imageIndex = highlightCoords.pageIndex;
-            			osViewer.overlays.draw( highlightCoords.name, highlightCoords.displayTooltip, imageIndex);
+            			overlays.draw( highlightCoords.name, highlightCoords.displayTooltip, imageIndex);
             		}
-            		if ( _initializedCallback ) {
-            			_initializedCallback();
+            		if ( overlays.initializedCallback ) {
+            			overlays.initializedCallback();
             		}
             	} );
             }
-        },
-        onInitialized: function( callback ) {
-            var oldCallback = _initializedCallback;
-            _initializedCallback = function() {
+        }
+        imageView.Overlays.prototype.onInitialized = function( callback ) {
+            var oldCallback = this.initializedCallback;
+            this.initializedCallback = function() {
                 if ( oldCallback ) {
                     oldCallback();
                 }
                 callback();
             }
-        },
-        onFocus: function( hook ) {
-            var tempHook = _overlayFocusHook;
-            _overlayFocusHook = function( overlay, focus ) {
+        }
+        imageView.Overlays.prototype.onFocus = function( hook ) {
+            var tempHook = this.overlayFocusHook;
+            this.overlayFocusHook = function( overlay, focus ) {
                 if ( tempHook )
                     tempHook( overlay, focus );
                 hook( overlay, focus );
             }
-        },
-        onClick: function( hook ) {
-            var tempHook = _overlayClickHook;
-            _overlayClickHook = function( overlay ) {
+        }
+        imageView.Overlays.prototype.onClick = function( hook ) {
+            var tempHook = this.overlayClickHook;
+            this.overlayClickHook = function( overlay ) {
                 if ( tempHook )
                     tempHook( overlay );
                 hook( overlay );
             }
         },
-        getOverlays: function() {
-            return _overlays.slice();
-        },
-        getRects: function() {
-            return _overlays.filter( function( overlay ) {
-                return overlay.type === osViewer.overlays.overlayTypes.RECTANGLE
+        imageView.Overlays.prototype.getOverlays = function() {
+            return this.overlays.slice();
+        }
+        imageView.Overlays.prototype.getRects = function() {
+            return this.overlays.filter( function( overlay ) {
+                return overlay.type === imageView.Overlays.OverlayTypes.RECTANGLE
+            } ).slice();
+        }
+        imageView.Overlays.prototype.getLines = function() {
+            return this.overlays.filter( function( overlay ) {
+                return overlay.type === imageView.Overlays.OverlayTypes.LINE
             } ).slice();
         },
-        getLines: function() {
-            return _overlays.filter( function( overlay ) {
-                return overlay.type === osViewer.overlays.overlayTypes.LINE
-            } ).slice();
-        },
-        draw: function( group, displayTitle, imageIndex ) {
+        imageView.Overlays.prototype.draw = function( group, displayTitle, imageIndex ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.draw: group - ' + group );
                 console.log( 'osViewer.overlays.draw: displayTitle - ' + displayTitle );
                 console.log( 'osViewer.overlays.draw: imageIndex - ' + imageIndex );
             }
             
-            var coordList = _defaults.getCoordinates( group );
+            var coordList = this.config.getCoordinates( group );
             if ( coordList ) {
                 for ( var index=0; index<coordList.coordinates.length; index++ ) {
                     var coords = coordList.coordinates[ index ];
                     var title = displayTitle && coords.length > 4 ? coords[ 4 ] : '';
                     var id = coords.length > 5 ? coords[ 5 ] : index;
-                    _createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group, imageIndex );
+                    this.createRectangle( coords[ 0 ], coords[ 1 ], coords[ 2 ] - coords[ 0 ], coords[ 3 ] - coords[ 1 ], title, id, group, imageIndex );
                 }
             }
-        },
-        unDraw: function( group ) {
+        }
+        imageView.Overlays.prototype.unDraw = function( group ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.unDraw: group - ' + group );
             }
             
             var newRects = [];
-            _overlays = _overlays.filter( function( overlay ) {
+            this.overlays = this.overlays.filter( function( overlay ) {
                 if ( overlay.group === group ) {
-                    osViewer.viewer.removeOverlay( overlay.element );
+                    this.image.viewer.removeOverlay( overlay.element );
                     return false;
                 }
                 else {
                     return true;
                 }
             } );
-        },
-        highlight: function( group ) {
+        }
+        imageView.Overlays.prototype.highlight = function( group ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.highlight: group - ' + group );
             }
             
-            _overlays.filter( function( overlay ) {
+            this.overlays.filter( function( overlay ) {
                 return overlay.group === group;
             } ).forEach( function( overlay ) {
                 if ( overlay.element ) {
@@ -148,13 +148,13 @@ var viewImage = ( function( osViewer ) {
                 }
             } );
             
-        },
-        unHighlight: function( group ) {
+        }
+        imageView.Overlays.prototype.unHighlight = function( group ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.unHighlight: group - ' + group );
             }
             
-            _overlays.filter( function( overlay ) {
+            this.overlays.filter( function( overlay ) {
                 return overlay.group === group;
             } ).forEach( function( overlay ) {
                 if ( overlay.element ) {
@@ -162,13 +162,13 @@ var viewImage = ( function( osViewer ) {
                 }
             } );
             
-        },
-        focusBox: function( group, id ) {
+        }
+        imageView.Overlays.prototype.focusBox = function( group, id ) {
             if ( _debug ) {
             	console.log( 'osViewer.overlays.highlightBox: group - ' + group );
             	console.log( 'osViewer.overlays.highlightBox: id - ' + id );
             }
-            _overlays.filter( function( overlay ) {
+            this.overlays.filter( function( overlay ) {
                 return overlay.group === group;
             } ).forEach( function( overlay ) {
                 if ( overlay.element ) {
@@ -176,64 +176,64 @@ var viewImage = ( function( osViewer ) {
                 }
             } );
             
-        },
-        addOverlay: function( overlay ) {
+        }
+        imageView.Overlays.prototype.addOverlay = function( overlay ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.addOverlay: overlay - ' + overlay );
             }
             
-            _overlays.push( overlay );
+            this.overlays.push( overlay );
             if ( overlay.element ) {
-                osViewer.viewer.updateOverlay( overlay.element, overlay.rect, 0 );
+                this.image.viewer.updateOverlay( overlay.element, overlay.rect, 0 );
             }
-        },
-        removeOverlay: function( overlay ) {
+        }
+        imageView.Overlays.prototype.removeOverlay = function( overlay ) {
             if ( overlay ) {
                 if ( _debug )
                     console.log( "Removing overlay " + overlay.id );
-                var index = _overlays.indexOf( overlay );
-                _overlays.splice( index, 1 );
+                var index = this.overlays.indexOf( overlay );
+                this.overlays.splice( index, 1 );
                 if ( overlay.element ) {
-                    osViewer.viewer.removeOverlay( overlay.element );
+                    this.image.viewer.removeOverlay( overlay.element );
                 }
             }
-        },
-        drawRect: function( rectangle, group, title, id ) {
+        }
+        imageView.Overlays.prototype.drawRect = function( rectangle, group, title, id ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.drawRect: rectangle - ' + rectangle );
                 console.log( 'osViewer.overlays.drawRect: group - ' + group );
             }
             
-            _createRectangle( rectangle.x, rectangle.y, rectangle.width, rectangle.height, title ? title : "", id ? id : "", group );
-        },
-        drawLine: function( point1, point2, group ) {
+            this.createRectangle( rectangle.x, rectangle.y, rectangle.width, rectangle.height, title ? title : "", id ? id : "", group );
+        }
+        imageView.Overlays.prototype.drawLine = function( point1, point2, group ) {
             if ( _debug ) {
                 console.log( 'osViewer.overlays.drawLine: point1 - ' + point1 );
                 console.log( 'osViewer.overlays.drawLine: point2 - ' + point2 );
                 console.log( 'osViewer.overlays.drawLine: group - ' + group );
             }
             
-            _createLine( point1.x, point1.y, point2.x, point2.y, "", "", group );
-        },
-        showOverlay: function( overlay ) {
+            this.createLine( point1.x, point1.y, point2.x, point2.y, "", "", group );
+        }
+        imageView.Overlays.prototype.showOverlay = function( overlay ) {
             if ( overlay && !overlay.element ) {
-                _drawOverlay( overlay );
-                if ( _overlayFocusHook ) {
-                    _overlayFocusHook( overlay, true );
+                _drawOverlay( overlay, this );
+                if ( this.overlayFocusHook ) {
+                    this.overlayFocusHook( overlay, true );
                 }
             }
             
-        },
-        hideOverlay: function( overlay ) {
-            if ( overlay && overlay.element && _drawingOverlay != overlay ) {
-                _undrawOverlay( overlay );
-                if ( _overlayFocusHook ) {
-                    _overlayFocusHook( overlay, false );
+        }
+        imageView.Overlays.prototype.hideOverlay = function( overlay ) {
+            if ( overlay && overlay.element && this.drawingOverlay != overlay ) {
+                _undrawOverlay( overlay, this );
+                if ( this.overlayFocusHook ) {
+                    this.overlayFocusHook( overlay, false );
                 }
             }
-        },
-        getOverlay: function( id, group ) {
-            var overlay =  _overlays.find( function( overlay ) {
+        }
+        imageView.Overlays.prototype.getOverlay = function( id, group ) {
+            var overlay =  this.overlays.find( function( overlay ) {
                 if ( group ) {
                     return overlay.id === id && overlay.group === group;
                 }
@@ -244,166 +244,152 @@ var viewImage = ( function( osViewer ) {
 // console.log("search for overlay with id = " + id);
 // console.log("Found overlay ", overlay);
             return overlay;
-        },
-        getCoordinates: function( overlay ) {
+        }
+        imageView.Overlays.prototype.getCoordinates = function( overlay ) {
             if(_debug){
                 console.log("getCoordinates - overlay", overlay);
             }
-            if ( overlay.type === osViewer.overlays.overlayTypes.RECTANGLE ) {
-                var transformedRect = osViewer.viewer.viewport.viewportToImageRectangle( overlay.rect );
-                transformedRect = transformedRect.times( osViewer.getScaleToOriginalSize() );
+            if ( overlay.type === imageView.Overlays.OverlayTypes.RECTANGLE ) {
+                var transformedRect = this.image.viewer.viewport.viewportToImageRectangle( overlay.rect );
                 return transformedRect;
             }
-            else if ( overlay.type === osViewer.overlays.overlayTypes.LINE ) {
-                var p1 = osViewer.viewer.viewport.viewportToImageCoordinates( overlay.poin1 );
-                var p2 = osViewer.viewer.viewport.viewportToImageCoordinates( overlay.poin2 );
+            else if ( overlay.type === imageView.Overlays.OverlayTypes.LINE ) {
+                var p1 = this.image.viewer.viewport.viewportToImageCoordinates( overlay.poin1 );
+                var p2 = this.image.viewer.viewport.viewportToImageCoordinates( overlay.poin2 );
                 return {
                     point1: p1,
                     point2: p2
                 };
             }
-        },
-        getDrawingOverlay: function() {
-            return _drawingOverlay;
-        },
-        setDrawingOverlay: function( overlay ) {
-            _drawingOverlay = overlay;
-        },
-        showHiddenOverlays: function() {
-            osViewer.viewer.addViewerInputHook( {
+        }
+        imageView.Overlays.prototype.getDrawingOverlay = function() {
+            return this.drawingOverlay;
+        }
+        imageView.Overlays.prototype.setDrawingOverlay = function( overlay ) {
+            this.drawingOverlay = overlay;
+        }
+        imageView.Overlays.prototype.showHiddenOverlays = function() {
+            var overlays = this;
+            this.image.viewer.addViewerInputHook( {
                 hooks: [ {
                     tracker: "viewer",
                     handler: "moveHandler",
-                    hookHandler: _onViewerMove
+                    hookHandler: function(event) { _onViewerMove(event, overlays) }
                 } ]
             } );
-        },
-        contains: function( rect, point, precision ) {
+        }
+        imageView.Overlays.prototype.contains = function( rect, point, precision ) {
             if ( precision == null ) {
                 precision = 0;
             }
             return _isInside( rect, point, precision );
-        },
-        overlayTypes: {
+        }
+        imageView.Overlays.OverlayTypes = {
             RECTANGLE: "rectangle",
             LINE: "line"
-        },
-        getRotated: function(point) {
-// var rotation = osViewer.viewer.viewport.getRotation();
-// var center = osViewer.viewer.viewport.getCenter( true );
-// point = point.rotate(-rotation, center);
-            return point;
         }
-    };
-    
-    function _createLine( x1, y1, x2, y2, title, id, group ) {
-        if ( _debug ) {
-            console.log( '------------------------------' );
-            console.log( 'Overlays _createLine: x1 - ' + x1 );
-            console.log( 'Overlays _createLine: y1 - ' + y1 );
-            console.log( 'Overlays _createLine: x2 - ' + x2 );
-            console.log( 'Overlays _createLine: y2 - ' + y2 );
-            console.log( 'Overlays _createLine: title - ' + title );
-            console.log( 'Overlays _createLine: id - ' + id );
-            console.log( 'Overlays _createLine: group - ' + group );
-            console.log( '------------------------------' );
+        
+        imageView.Overlays.prototype.createLine = function( x1, y1, x2, y2, title, id, group ) {
+            if ( _debug ) {
+                console.log( '------------------------------' );
+                console.log( 'Overlays _createLine: x1 - ' + x1 );
+                console.log( 'Overlays _createLine: y1 - ' + y1 );
+                console.log( 'Overlays _createLine: x2 - ' + x2 );
+                console.log( 'Overlays _createLine: y2 - ' + y2 );
+                console.log( 'Overlays _createLine: title - ' + title );
+                console.log( 'Overlays _createLine: id - ' + id );
+                console.log( 'Overlays _createLine: group - ' + group );
+                console.log( '------------------------------' );
+            }
+            
+            var p1 = new OpenSeadragon.Point( x1, y1 );
+            var p2 = new OpenSeadragon.Point( x2, y2 );
+            var length = p1.distanceTo( p2 );
+            
+            var angle = _calculateAngle( p1, p2 );
+            var beta = ( 180 - angle ) / 2;
+    // console.log( "drawing line with length = " + length + " and angle = " + angle );
+            
+            y1 += length / 2 * Math.sin( angle * Math.PI / 180 );
+            x1 -= length / 2 * Math.sin( angle * Math.PI / 180 ) / Math.tan( beta * Math.PI / 180 );
+     
+            var rectangle = this.image.viewer.viewport.imageToViewportRectangle( x1, y1, length, 1 );
+            var p1Viewer = this.image.viewer.viewport.imageToViewportCoordinates( p1 );
+            var p2Viewer = this.image.viewer.viewport.imageToViewportCoordinates( p2 );
+            var overlay = {
+                type: imageView.Overlays.OerlayTypes.LINE,
+                rect: rectangle,
+                angle: angle,
+                point1: p1Viewer,
+                point2: p2Viewer,
+                group: group,
+                id: id,
+                title: title
+            };
+            var overlayStyle = this.config.getOverlayGroup( overlay.group );
+            if ( !overlayStyle.hidden ) {
+                _drawOverlay( overlay, this );
+            }
+            this.overlays.push( overlay );
+            
         }
-        x1 = osViewer.scaleToImageSize( x1 );
-        y1 = osViewer.scaleToImageSize( y1 );
-        x2 = osViewer.scaleToImageSize( x2 );
-        y2 = osViewer.scaleToImageSize( y2 );
         
-        var p1 = new OpenSeadragon.Point( x1, y1 );
-        var p2 = new OpenSeadragon.Point( x2, y2 );
-        var length = p1.distanceTo( p2 );
-        
-        var angle = _calculateAngle( p1, p2 );
-        var beta = ( 180 - angle ) / 2;
-// console.log( "drawing line with length = " + length + " and angle = " + angle );
-        
-        y1 += length / 2 * Math.sin( angle * Math.PI / 180 );
-        x1 -= length / 2 * Math.sin( angle * Math.PI / 180 ) / Math.tan( beta * Math.PI / 180 );
- 
-        var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x1, y1, length, 1 );
-        var p1Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p1 );
-        var p2Viewer = osViewer.viewer.viewport.imageToViewportCoordinates( p2 );
-        var overlay = {
-            type: osViewer.overlays.overlayTypes.LINE,
-            rect: rectangle,
-            angle: angle,
-            point1: p1Viewer,
-            point2: p2Viewer,
-            group: group,
-            id: id,
-            title: title
-        };
-        var overlayStyle = _defaults.getOverlayGroup( overlay.group );
-        if ( !overlayStyle.hidden ) {
-            _drawOverlay( overlay );
-        }
-        _overlays.push( overlay );
-        
-    }
-    
-    /**
-     * coordinates are in original image space
-     */
-    function _createRectangle( x, y, width, height, title, id, group, imageIndex ) {
-        if ( _debug ) {
-            console.log( '------------------------------' );
-            console.log( 'Overlays _createRectangle: x - ' + x );
-            console.log( 'Overlays _createRectangle: y - ' + y );
-            console.log( 'Overlays _createRectangle: width - ' + width );
-            console.log( 'Overlays _createRectangle: height - ' + height );
-            console.log( 'Overlays _createRectangle: title - ' + title );
-            console.log( 'Overlays _createRectangle: id - ' + id );
-            console.log( 'Overlays _createRectangle: group - ' + group );
-            console.log( 'Overlays _createRectangle: imageIndex - ' + imageIndex );
-            console.log( '------------------------------' );
-        }
-        x = osViewer.scaleToImageSize( x );
-        y = osViewer.scaleToImageSize( y );
-        width = osViewer.scaleToImageSize( width );
-        height = osViewer.scaleToImageSize( height );
-        
-        if(!imageIndex) {
-        	imageIndex = 0;
-        }
-			var tiledImage = osViewer.viewer.world.getItemAt(imageIndex);
-			var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
-// console.log("Found rect ", rectangle);
-// var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height
-// );
-			var overlay = {
-					type: osViewer.overlays.overlayTypes.RECTANGLE,
-					rect: rectangle,
-					group: group,
-					id: id,
-					title: title
-			};
-			var overlayStyle = _defaults.getOverlayGroup( overlay.group );
-			if ( !overlayStyle.hidden ) {
-				_drawOverlay( overlay );
-			}
-			_overlays.push( overlay );
+        /**
+         * coordinates are in original image space
+         */
+        imageView.Overlays.prototype.createRectangle = function( x, y, width, height, title, id, group, imageIndex ) {
+            if ( _debug ) {
+                console.log( '------------------------------' );
+                console.log( 'Overlays _createRectangle: x - ' + x );
+                console.log( 'Overlays _createRectangle: y - ' + y );
+                console.log( 'Overlays _createRectangle: width - ' + width );
+                console.log( 'Overlays _createRectangle: height - ' + height );
+                console.log( 'Overlays _createRectangle: title - ' + title );
+                console.log( 'Overlays _createRectangle: id - ' + id );
+                console.log( 'Overlays _createRectangle: group - ' + group );
+                console.log( 'Overlays _createRectangle: imageIndex - ' + imageIndex );
+                console.log( '------------------------------' );
+            }
+            
+            if(!imageIndex) {
+                imageIndex = 0;
+            }
+                var tiledImage = this.image.viewer.world.getItemAt(imageIndex);
+                var rectangle = tiledImage.imageToViewportRectangle( x, y, width, height );
+    // console.log("Found rect ", rectangle);
+    // var rectangle = osViewer.viewer.viewport.imageToViewportRectangle( x, y, width, height
+    // );
+                var overlay = {
+                        type: imageView.Overlays.OverlayTypes.RECTANGLE,
+                        rect: rectangle,
+                        group: group,
+                        id: id,
+                        title: title
+                };
+                var overlayStyle = this.config.getOverlayGroup( overlay.group );
+                if ( !overlayStyle.hidden ) {
+                    _drawOverlay( overlay, this);
+                }
+                this.overlays.push( overlay );
 
-        
-        
-    }
+            
+            
+        }
+
     
-    function _undrawOverlay( overlay ) {
-        osViewer.viewer.removeOverlay( overlay.element );
+    function _undrawOverlay( overlay, overlays ) {
+        overlays.image.viewer.removeOverlay( overlay.element );
         overlay.element = null;
     }
     
-    function _drawOverlay( overlay ) {
+    function _drawOverlay( overlay, overlays ) {
         if(_debug) {
             console.log("viewImage.overlays._drawOverlay");
             console.log("overlay: ", overlay);
         }
         var element = document.createElement( "div" );
         $(element).attr("id", "overlay_" + overlay.id)
-        var overlayStyle = _defaults.getOverlayGroup( overlay.group );
+        var overlayStyle = overlays.image.config.getOverlayGroup( overlay.group );
         if ( overlayStyle ) {
             if(_debug)console.log("overlay style", overlayStyle);
 // element.title = overlay.title;
@@ -411,7 +397,7 @@ var viewImage = ( function( osViewer ) {
 // $( element ).attr( "data-placement", "auto top" );
             $( element ).addClass( overlayStyle.styleClass );
             
-            if ( overlay.type === osViewer.overlays.overlayTypes.LINE ) {
+            if ( overlay.type === imageView.Overlays.OverlayTypes.LINE ) {
                 _rotate( overlay.angle, element );
             }
             
@@ -419,7 +405,7 @@ var viewImage = ( function( osViewer ) {
                 element.focus = function( focus ) {
                     if ( focus ) {
                         $( element ).addClass( _focusStyleClass );
-                        _createTooltip(element, overlay);
+                        _createTooltip(element, overlay, overlays.image);
                         
 // tooltip.height(100);
 // $( element ).tooltip( "show" );
@@ -428,8 +414,8 @@ var viewImage = ( function( osViewer ) {
                         $( element ).removeClass( _focusStyleClass );
                         $(".tooltipp#tooltip_" + overlay.id).remove();
                     }
-                    if ( _overlayFocusHook ) {
-                        _overlayFocusHook( overlay, focus );
+                    if ( overlays.overlayFocusHook ) {
+                        overlays.overlayFocusHook( overlay, focus );
                     }
                 };
                 
@@ -446,7 +432,7 @@ var viewImage = ( function( osViewer ) {
                     if ( _debug ) {
                         console.log( 'Overlays _drawOverlay: mouse over - ' + overlayStyle.name );
                     }
-                    osViewer.overlays.focusBox( overlay.group, overlay.id );
+                    overlays.focusBox( overlay.group, overlay.id );
                 } );
                 $( element ).on( "mouseout", function() {
                     if ( _debug ) {
@@ -455,19 +441,19 @@ var viewImage = ( function( osViewer ) {
                     element.focus( false );
                 } );
                 $( element ).on( "click", function() {
-                    if ( _overlayClickHook ) {
-                        _overlayClickHook( overlay );
+                    if ( overlays.overlayClickHook ) {
+                        overlays.overlayClickHook( overlay );
                     }
                 } );
             }
             overlay.element = element;
-            osViewer.viewer.addOverlay( element, overlay.rect, 0 );
+            overlays.image.viewer.addOverlay( element, overlay.rect, 0 );
         }
     }
     
-    function _createTooltip(element, overlay) {
+    function _createTooltip(element, overlay, image) {
     	if(overlay.title) {    		
-    		var canvasCorner = osViewer.sizes.$container.offset();
+    		var canvasCorner = image.sizes.$container.offset();
     		
     		var top = $( element ).offset().top;
     		var left = $( element ).offset().left;
@@ -487,7 +473,7 @@ var viewImage = ( function( osViewer ) {
     		
     		// listener for zoom
     		
-    		osViewer.observables.animation
+    		image.observables.animation
     		.do(function() {
 // console.log("element at: ", $(element).offset());
     			var top = Math.max($( element ).offset().top, canvasCorner.top);
@@ -580,7 +566,7 @@ var viewImage = ( function( osViewer ) {
                 && point.y < ( rect.y + rect.height + extra );
     }
     
-    function _onViewerMove( event ) { 
+    function _onViewerMove( event, overlays ) { 
         var position = event.position;
         var ieVersion = viewerJS.helper.detectIEVersion();
         if(ieVersion && ieVersion === 10) {
@@ -589,17 +575,17 @@ var viewImage = ( function( osViewer ) {
             position.y += $(window).scrollTop();
         }
 // console.log( "viewer move ", position);
-        var point = osViewer.viewer.viewport.viewerElementToViewportCoordinates( position );
-        _overlays.forEach( function( o ) {
+        var point = overlays.image.viewer.viewport.viewerElementToViewportCoordinates( position );
+        overlays.overlays.forEach( function( o ) {
             if ( _isInside( o.rect, point, 0 ) ) {
-                osViewer.overlays.showOverlay( o );
+                overlays.showOverlay( o );
             }
             else {
-                osViewer.overlays.hideOverlay( o );
+                overlays.hideOverlay( o );
             }
         } );
     }
     
-    return osViewer;
+    return imageView;
     
-} )( viewImage || {}, jQuery );
+} )( ImageView );

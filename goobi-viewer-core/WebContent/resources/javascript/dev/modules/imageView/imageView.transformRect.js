@@ -22,7 +22,7 @@
  * @module viewImage.transformRect
  * @requires jQuery
  */
-var viewImage = ( function( osViewer ) {
+var ImageView = ( function( imageView ) {
     'use strict';
     
     var DEFAULT_CURSOR = "default";
@@ -41,18 +41,20 @@ var viewImage = ( function( osViewer ) {
     var _drawArea = "";
     var _enterPoint = null;
     
-    osViewer.transformRect = {
-        init: function() {
+    imageView.TransformRect = function(config, image){
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'osViewer.transformRect.init' );
                 console.log( '##############################' );
             }
-            _viewerInputHook = osViewer.viewer.addViewerInputHook( {
+            this.config = config;
+            this.image = image;
+            var draw = this;
+            this.viewerInputHook = image.viewer.addViewerInputHook( {
                 hooks: [ {
                     tracker: "viewer",
                     handler: "clickHandler",
-                    hookHandler: _disableViewerEvent
+                    hookHandler: function(event) { _disableViewerEvent(event, draw) }
                 // }, {
                 // tracker : "viewer",
                 // handler : "scrollHandler",
@@ -60,52 +62,52 @@ var viewImage = ( function( osViewer ) {
                 }, {
                     tracker: "viewer",
                     handler: "dragHandler",
-                    hookHandler: _onViewerDrag
+                    hookHandler: function(event) { _onViewerDrag(event, draw) }
                 }, {
                     tracker: "viewer",
                     handler: "pressHandler",
-                    hookHandler: _onViewerPress
+                    hookHandler: function(event) { _onViewerPress(event, draw) }
                 }, {
                     tracker: "viewer",
                     handler: "dragEndHandler",
-                    hookHandler: _onViewerDragEnd
+                    hookHandler: function(event) { _onViewerDragEnd(event, draw) }
                 }, {
                     tracker: "viewer",
                     handler: "releaseHandler",
-                    hookHandler: _onViewerRelease
+                    hookHandler: function(event) { _onViewerRelease(event, draw) }
                 }, {
                     tracker: "viewer",
                     handler: "moveHandler",
-                    hookHandler: _onViewerMove
+                    hookHandler: function(event) { _onViewerMove(event, draw) }
                 } ]
             } );
-        },
-        startDrawing: function( overlay, finishHook ) {
+        }
+    imageView.TransformRect.prototype.startDrawing = function( overlay, finishHook ) {
             if ( _debug )
                 console.log( "Start drawing" );
-            osViewer.overlays.setDrawingOverlay( overlay );
-            _active = true;
-            _group = overlay.group;
-            _finishHook = finishHook;
+            this.image.overlays.setDrawingOverlay( overlay );
+            this.active = true;
+            this.group = overlay.group;
+            this.finishHook = finishHook;
             $( overlay.element ).addClass( _drawingStyleClass );
-        },
-        endDrawing: function() {
-            _drawing = false;
-            _group = null;
-            _finishHook = null;
-            _active = false;
-            var drawOverlay = osViewer.overlays.getDrawingOverlay();
+        }
+    imageView.TransformRect.prototype.endDrawing = function() {
+            this.drawing = false;
+            this.group = null;
+            this.finishHook = null;
+            this.active = false;
+            var drawOverlay = this.image.overlays.getDrawingOverlay();
             if ( drawOverlay != null ) {
                 $( drawOverlay.element ).removeClass( _drawingStyleClass );
                 $( drawOverlay.element ).css( {
                     cursor: DEFAULT_CURSOR
                 } );
             }
-        },
-        isActive: function() {
-            return _active;
-        },
-        hitAreas: {
+        }
+        imageView.TransformRect.prototype.isActive = function() {
+            return this.active;
+        }
+        imageView.TransformRect.HitAreas = {
             TOP: "t",
             BOTTOM: "b",
             RIGHT: "r",
@@ -121,8 +123,8 @@ var viewImage = ( function( osViewer ) {
             isEdge: function( area ) {
                 return area === this.TOP || area === this.BOTTOM || area === this.LEFT || area === this.RIGHT;
             },
-            getCursor: function( area ) {
-                var rotated = osViewer.viewer.viewport.getRotation() % 180 === 90;
+            getCursor: function( area, image ) {
+                var rotated = image.viewer.viewport.getRotation() % 180 === 90;
                 if ( area === this.TOPLEFT || area === this.BOTTOMRIGHT ) {
                     return rotated ? "nesw-resize" : "nwse-resize";
                 }
@@ -143,25 +145,23 @@ var viewImage = ( function( osViewer ) {
                 }
             }
         }
-    }
 
-    function _onViewerMove( event ) {
-        if ( !_drawing && _active ) {
-            var drawPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            drawPoint = osViewer.overlays.getRotated( drawPoint );
-            var overlayRect = osViewer.overlays.getDrawingOverlay().rect;
-            var overlayElement = osViewer.overlays.getDrawingOverlay().element;
-            var viewerElement = osViewer.viewer.element;
+    function _onViewerMove( event, draw ) {
+        if ( !draw.drawing && draw.active ) {
+            var drawPoint = draw.image.viewer.viewport.viewerElementToViewportCoordinates( event.position );
+            var overlayRect = draw.image.overlays.getDrawingOverlay().rect;
+            var overlayElement = draw.image.overlays.getDrawingOverlay().element;
+            var viewerElement = draw.image.viewer.element;
             var area = _findCorner( overlayRect, drawPoint, _sideClickPrecision );
             if ( !area ) {
                 area = _findEdge( overlayRect, drawPoint, _sideClickPrecision );
             }
-            if ( !area && osViewer.overlays.contains( overlayRect, drawPoint, 0 ) ) {
-                area = osViewer.transformRect.hitAreas.CENTER;
+            if ( !area && draw.image.overlays.contains( overlayRect, drawPoint, 0 ) ) {
+                area = imageView.TransformRect.HitAreas.CENTER;
             }
             if ( area ) {
                 $( viewerElement ).css( {
-                    cursor: osViewer.transformRect.hitAreas.getCursor( area )
+                    cursor: imageView.TransformRect.HitAreas.getCursor( area, draw.image )
                 } );
             }
             else {
@@ -174,80 +174,78 @@ var viewImage = ( function( osViewer ) {
         }
     }
     
-    function _onViewerPress( event ) {
-        if ( _active ) {
-            if ( !osViewer.overlays.getDrawingOverlay() ) {
+    function _onViewerPress( event, draw ) {
+        if ( draw.active ) {
+            if ( !draw.image.overlays.getDrawingOverlay() ) {
                 return false;
             }
-            var overlayRect = osViewer.overlays.getDrawingOverlay().rect;
-            var overlayElement = osViewer.overlays.getDrawingOverlay().element;
-            var drawPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            drawPoint = osViewer.overlays.getRotated( drawPoint );
+            var overlayRect = draw.image.overlays.getDrawingOverlay().rect;
+            var overlayElement = draw.image.overlays.getDrawingOverlay().element;
+            var drawPoint = draw.image.viewer.viewport.viewerElementToViewportCoordinates( event.position );
             var drawArea = _findCorner( overlayRect, drawPoint, _sideClickPrecision );
             if ( !drawArea ) {
                 drawArea = _findEdge( overlayRect, drawPoint, _sideClickPrecision );
             }
-            if ( !drawArea && osViewer.overlays.contains( overlayRect, drawPoint, 0 ) ) {
-                drawArea = osViewer.transformRect.hitAreas.CENTER;
+            if ( !drawArea && draw.image.overlays.contains( overlayRect, drawPoint, 0 ) ) {
+                drawArea = imageView.TransformRect.HitAreas.CENTER;
             }
             if ( _debug )
                 console.log( "draw area = " + drawArea );
             if ( drawArea ) {
                 $( overlayElement ).tooltip( 'destroy' );
-                _enterPoint = drawPoint;
+                draw.enterPoint = drawPoint;
             }
-            _drawArea = drawArea;
+            draw.drawArea = drawArea;
             event.preventDefaultAction = true;
             return true;
         }
     }
     
-    function _onViewerDrag( event ) {
-        if ( _drawing ) {
-            var newPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            newPoint = osViewer.overlays.getRotated( newPoint );
-            var rect = osViewer.overlays.getDrawingOverlay().rect;
+    function _onViewerDrag( event, draw ) {
+        if ( draw.drawing ) {
+            var newPoint = draw.image.viewer.viewport.viewerElementToViewportCoordinates( event.position );
+            var rect = draw.image.overlays.getDrawingOverlay().rect;
             var topLeft;
             var bottomRight;
             // if(_debug)console.log("Draw location = " + newPoint);
-            if ( _drawArea === osViewer.transformRect.hitAreas.TOPLEFT ) {
+            if ( draw.drawArea === imageView.TransformRect.HitAreas.TOPLEFT ) {
                 topLeft = new OpenSeadragon.Point( Math.min( newPoint.x, rect.getBottomRight().x ), Math.min( newPoint.y, rect.getBottomRight().y ) );
                 bottomRight = rect.getBottomRight();
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.TOPRIGHT ) {
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.TOPRIGHT ) {
                 topLeft = new OpenSeadragon.Point( rect.getTopLeft().x, Math.min( newPoint.y, rect.getBottomRight().y ) );
                 bottomRight = new OpenSeadragon.Point( Math.max( newPoint.x, rect.getTopLeft().x ), rect.getBottomRight().y );
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.BOTTOMLEFT ) {
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.BOTTOMLEFT ) {
                 topLeft = new OpenSeadragon.Point( Math.min( newPoint.x, rect.getBottomRight().x ), rect.getTopLeft().y );
                 bottomRight = new OpenSeadragon.Point( rect.getBottomRight().x, Math.max( newPoint.y, rect.getTopLeft().y ) );
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.BOTTOMRIGHT ) {
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.BOTTOMRIGHT ) {
                 topLeft = rect.getTopLeft();
                 bottomRight = new OpenSeadragon.Point( Math.max( newPoint.x, rect.getTopLeft().x ), Math.max( newPoint.y, rect.getTopLeft().y ) );
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.LEFT ) {
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.LEFT ) {
                 topLeft = new OpenSeadragon.Point( Math.min( newPoint.x, rect.getBottomRight().x ), rect.getTopLeft().y );
                 bottomRight = rect.getBottomRight();
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.RIGHT ) {
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.RIGHT ) {
                 topLeft = rect.getTopLeft();
                 bottomRight = new OpenSeadragon.Point( Math.max( newPoint.x, rect.getTopLeft().x ), rect.getBottomRight().y );
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.TOP ) {
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.TOP ) {
                 topLeft = new OpenSeadragon.Point( rect.getTopLeft().x, Math.min( newPoint.y, rect.getBottomRight().y ) );
                 bottomRight = rect.getBottomRight();
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.BOTTOM ) {
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.BOTTOM ) {
                 topLeft = rect.getTopLeft();
                 bottomRight = new OpenSeadragon.Point( rect.getBottomRight().x, Math.max( newPoint.y, rect.getTopLeft().y ) );
             }
-            else if ( _drawArea === osViewer.transformRect.hitAreas.CENTER && _enterPoint ) {
-                var dx = _enterPoint.x - newPoint.x;
-                var dy = _enterPoint.y - newPoint.y;
+            else if ( draw.drawArea === imageView.TransformRect.HitAreas.CENTER && draw.enterPoint ) {
+                var dx = draw.enterPoint.x - newPoint.x;
+                var dy = draw.enterPoint.y - newPoint.y;
                 rect.x -= dx;
                 rect.y -= dy;
-                _enterPoint = newPoint;
+                draw.enterPoint = newPoint;
             }
             
             if ( topLeft && bottomRight ) {
@@ -261,44 +259,44 @@ var viewImage = ( function( osViewer ) {
                 rect.height = bottomRight.y - topLeft.y;
             }
             
-            osViewer.viewer.updateOverlay( osViewer.overlays.getDrawingOverlay().element, rect, 0 );
+            draw.image.viewer.updateOverlay( draw.image.overlays.getDrawingOverlay().element, rect, 0 );
             event.preventDefaultAction = true;
             return true;
         }
-        else if ( _drawArea ) {
-            _drawing = true;
+        else if ( draw.drawArea ) {
+            draw.drawing = true;
             event.preventDefaultAction = true;
             return true;
             
         }
     }
     
-    function _onViewerRelease( event ) {
-        if ( _active ) {
-            if ( _drawing && _finishHook ) {
-                _finishHook( osViewer.overlays.getDrawingOverlay() );
+    function _onViewerRelease( event, draw ) {
+        if ( draw.active ) {
+            if ( draw.drawing && draw.finishHook ) {
+                draw.finishHook( draw.image.overlays.getDrawingOverlay() );
             }
-            _drawing = false;
-            if ( osViewer.overlays.getDrawingOverlay() ) {
-                $( osViewer.overlays.getDrawingOverlay().element ).tooltip();
+            draw.drawing = false;
+            if ( draw.image.overlays.getDrawingOverlay() ) {
+                $( draw.image.overlays.getDrawingOverlay().element ).tooltip();
             }
-            _drawArea = "";
-            _enterPoint = null;
+            draw.drawArea = "";
+            draw.enterPoint = null;
             event.preventDefaultAction = true;
             return true;
         }
     }
     
-    function _onViewerDragEnd( event ) {
-        if ( _drawing ) {
-            _drawing = false;
+    function _onViewerDragEnd( event, draw ) {
+        if ( draw.drawing ) {
+            draw.drawing = false;
             event.preventDefaultAction = true;
             return true;
         }
     }
     
-    function _disableViewerEvent( event ) {
-        if ( _drawing ) {
+    function _disableViewerEvent( event, draw ) {
+        if ( draw.drawing ) {
             event.preventDefaultAction = true;
             return true;
         }
@@ -373,16 +371,16 @@ var viewImage = ( function( osViewer ) {
         var minDistance = Math.min( distanceToLeft, Math.min( distanceToRight, Math.min( distanceToTop, distanceToBottom ) ) );
         if ( minDistance <= maxDist ) {
             if ( distanceToLeft === minDistance ) {
-                return osViewer.transformRect.hitAreas.LEFT;
+                return imageView.TransformRect.HitAreas.LEFT;
             }
             if ( distanceToRight === minDistance ) {
-                return osViewer.transformRect.hitAreas.RIGHT;
+                return imageView.TransformRect.HitAreas.RIGHT;
             }
             if ( distanceToTop === minDistance ) {
-                return osViewer.transformRect.hitAreas.TOP;
+                return imageView.TransformRect.HitAreas.TOP;
             }
             if ( distanceToBottom === minDistance ) {
-                return osViewer.transformRect.hitAreas.BOTTOM;
+                return imageView.TransformRect.HitAreas.BOTTOM;
             }
         }
         return "";
@@ -401,16 +399,16 @@ var viewImage = ( function( osViewer ) {
         var minDistance = Math.min( distanceToTopLeft, Math.min( distanceToTopRight, Math.min( distanceToBottomLeft, distanceToBottomRight ) ) );
         if ( minDistance <= maxDist ) {
             if ( distanceToTopLeft === minDistance ) {
-                return osViewer.transformRect.hitAreas.TOPLEFT;
+                return imageView.TransformRect.HitAreas.TOPLEFT;
             }
             if ( distanceToTopRight === minDistance ) {
-                return osViewer.transformRect.hitAreas.TOPRIGHT;
+                return imageView.TransformRect.HitAreas.TOPRIGHT;
             }
             if ( distanceToBottomLeft === minDistance ) {
-                return osViewer.transformRect.hitAreas.BOTTOMLEFT;
+                return imageView.TransformRect.HitAreas.BOTTOMLEFT;
             }
             if ( distanceToBottomRight === minDistance ) {
-                return osViewer.transformRect.hitAreas.BOTTOMRIGHT;
+                return imageView.TransformRect.HitAreas.BOTTOMRIGHT;
             }
         }
         return "";
@@ -442,6 +440,6 @@ var viewImage = ( function( osViewer ) {
     function _distToSegment( point, lineP1, lineP2 ) {
         return Math.sqrt( _distToSegmentSquared( point, lineP1, lineP2 ) );
     }
-    return osViewer;
+    return imageView;
     
-} )( viewImage || {}, jQuery );
+} )( ImageView );

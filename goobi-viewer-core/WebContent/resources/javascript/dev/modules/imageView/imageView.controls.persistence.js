@@ -22,21 +22,20 @@
  * @module viewImage.controls.persistence
  * @requires jQuery
  */
-var viewImage = ( function( osViewer ) {
+var ImageView = ( function( imageView ) {
     'use strict';
     
     var _debug = false; 
     
-    osViewer.controls.persistence = {
+    imageView.Controls.Persistence = function(config, image) {
         
-        init: function( config ) {
             if ( typeof ( Storage ) !== 'undefined' ) {
                 
                 /**
                  * Set Location from local storage
                  */
                 var location = null;
-                var currentPersistenceId = osViewer.getConfig().global.persistenceId;
+                var currentPersistenceId = config.global.persistenceId;
                 if ( config.global.persistZoom || config.global.persistRotation ) {
                     try {
                         var location = JSON.parse( localStorage.imageLocation );
@@ -75,8 +74,8 @@ var viewImage = ( function( osViewer ) {
                      * save current location to local storage before navigating away
                      */
                     window.onbeforeunload = function() {
-                        var loc = osViewer.controls.getLocation();
-                        loc.persistenceId = osViewer.getConfig().global.persistenceId;
+                        var loc = image.controls.getLocation();
+                        loc.persistenceId = config.global.persistenceId;
                         localStorage.imageLocation = JSON.stringify( loc );
                         if ( _debug ) {
                             console.log( "storing zoom " + localStorage.imageLocation );
@@ -85,7 +84,6 @@ var viewImage = ( function( osViewer ) {
                 }
             }
         }
-    }
 
     function _isValid( location ) {
         return _isNumber( location.x ) && _isNumber( location.y ) && _isNumber( location.zoom ) && _isNumber( location.rotation );
@@ -95,6 +93,6 @@ var viewImage = ( function( osViewer ) {
         return typeof x === "number" && !Number.isNaN( x );
     }
     
-    return osViewer;
+    return imageView;
     
-} )( viewImage || {}, jQuery );
+} )( ImageView );

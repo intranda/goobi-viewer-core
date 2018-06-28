@@ -5,14 +5,14 @@
  * @author Marc Lettau-Poelchen
  * @copyright intranda GmbH 2017
  */
-describe( 'ViewImage zoom/rotation persistence Tests', function() {
+describe( 'ImageView zoom/rotation persistence Tests', function() {
 	var config = null;
 	
 	beforeEach( function(){
 		
 		jasmine.getFixtures().load("viewImage.html");
 		localStorage.imageLocation = "";
-		viewImage.getConfig().image.location = null;
+//		viewImage.getConfig().image.location = null;
 		config = {
 				    global: {
 				    	divId: "map",
@@ -47,8 +47,8 @@ describe( 'ViewImage zoom/rotation persistence Tests', function() {
 			var expectedLocation = JSON.parse(localStorage.imageLocation);
 			
 			config.image.tileSource = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
-
-			Rx.Observable.fromPromise(viewImage.init( config ))
+			var viewImage = new ImageView.Image(config);
+			Rx.Observable.fromPromise(viewImage.load())
 			.map(function(osViewer) {
 			       expect(osViewer.getConfig().image.location.x).toEqual(expectedLocation.x);
 			       expect(osViewer.getConfig().image.location.y).toEqual(expectedLocation.y);
@@ -91,7 +91,8 @@ describe( 'ViewImage zoom/rotation persistence Tests', function() {
 			config.image.tileSource = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
 
 			
-			Rx.Observable.fromPromise(viewImage.init( config ))
+			var viewImage = new ImageView.Image(config);
+            Rx.Observable.fromPromise(viewImage.load())
 			.do(function(osViewer) {
 				   expect(osViewer.controls.getRotation()).toEqual(0);
 			       osViewer.controls.rotateTo(expectedLocation.rotation);

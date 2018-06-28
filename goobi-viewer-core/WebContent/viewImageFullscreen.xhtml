@@ -135,10 +135,11 @@
 						var fileNotFoundMessage = '<span class="file-not-found">#{msg.noImage_fileNotFound}</span>';
 						
 						if ( access ) {
-						    viewImage.init( configViewer )
-						    .then(function(osViewer) {
+						    var viewImage = new ImageView.Image( configViewer );
+						    viewImage.load()
+						    .then(function(image) {
 						        //TODO: Hide loader?
-						        if ( !viewImage.hasFooter() ) {
+						        if ( !image.hasFooter() ) {
 						            $('#intrandaLogo').show();
 			                        $('#customerLogo').show();
 						        }

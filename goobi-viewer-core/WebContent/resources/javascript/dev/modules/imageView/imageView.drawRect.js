@@ -22,36 +22,38 @@
  * @module viewImage.drawRect
  * @requires jQuery
  */
-var viewImage = ( function( osViewer ) {
+var ImageView = ( function( imageView ) {
     'use strict';
     
     var _debug = false;
     
     var drawingStyleClass = "drawing";
+    var _hbAdd = 5;
+    var _minDistanceToExistingRect = 0.01;
     
     var _active = false;
     var _drawing = false;
     var _overlayGroup = null;
     var _finishHook = null;
     var _viewerInputHook = null;
-    var _hbAdd = 5;
-    var _minDistanceToExistingRect = 0.01;
     var _deleteOldDrawElement = true;
     var _drawElement = null;
     var _drawPoint = null;
     
-    osViewer.drawRect = {
-        init: function() {
+    imageView.DrawRect = function(config, image) {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'osViewer.drawRect.init' );
                 console.log( '##############################' );
             }
-            _viewerInputHook = osViewer.viewer.addViewerInputHook( {
+            this.config = config;
+            this.image = image;
+            var draw = this;
+            this.viewerInputHook = image.viewer.addViewerInputHook( {
                 hooks: [ {
                     tracker: "viewer",
                     handler: "clickHandler",
-                    hookHandler: _disableViewerEvent
+                    hookHandler: function(event) { _disableViewerEvent(event, draw) }
                 // }, {
                 // tracker: "viewer",
                 // handler: "scrollHandler",
@@ -59,118 +61,117 @@ var viewImage = ( function( osViewer ) {
                 }, {
                     tracker: "viewer",
                     handler: "dragHandler",
-                    hookHandler: _onViewerDrag
+                    hookHandler: function(event) { _onViewerDrag(event, draw) }
                 }, {
                     tracker: "viewer",
                     handler: "pressHandler",
-                    hookHandler: _onViewerPress
+                    hookHandler: function(event) { _onViewerPress(event, draw) }
                 }, {
                     tracker: "viewer",
                     handler: "dragEndHandler",
-                    hookHandler: _onViewerDragEnd
+                    hookHandler: function(event) { _onViewerDragEnd(event, draw) }
                 } ]
             } );
-        },
-        startDrawing: function( overlayGroup, finishHook ) {
-            _active = true;
-            _overlayGroup = overlayGroup;
-            _finishHook = finishHook;
-        },
-        endDrawing: function( removeLastElement ) {
-            _active = false;
-            _overlayGroup = null;
-            _finishHook = null;
-            if ( _drawElement && removeLastElement ) {
-                osViewer.viewer.removeOverlay( _drawElement );
+        }
+       imageView.DrawRect.prototype.startDrawing = function( overlayGroup, finishHook ) {
+            this.active = true;
+            this.overlayGroup = overlayGroup;
+            this.finishHook = finishHook;
+        }
+        imageView.DrawRect.prototype.endDrawing = function( removeLastElement ) {
+            this.active = false;
+            this.overlayGroup = null;
+            this.finishHook = null;
+            if ( this.drawElement && removeLastElement ) {
+                this.image.viewer.removeOverlay( this.drawElement );
             }
             else {
-                $( _drawElement ).removeClass( drawingStyleClass );
+                $( this.drawElement ).removeClass( drawingStyleClass );
             }
-        },
-        isActive: function() {
-            return _active;
-        },
-        isDrawing: function() {
-            return _drawing;
-        },
-        removeLastDrawnElement: function() {
-            if ( _drawElement ) {
-                osViewer.viewer.removeOverlay( _drawElement );
+        }
+        imageView.DrawRect.prototype.isActive = function() {
+            return this.active;
+        }
+        imageView.DrawRect.prototype.isDrawing = function() {
+            return this.drawing;
+        }
+        imageView.DrawRect.prototype.removeLastDrawnElement = function() {
+            if ( this.drawElement ) {
+                this.image.viewer.removeOverlay( this.drawElement );
             }
-        },
-    }
+        }
 
-    function _onViewerPress( event ) {
-        if ( _active ) {
-            _drawPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
+    function _onViewerPress( event, draw) {
+        if ( draw.active ) {
+            draw.drawPoint = draw.image.viewer.viewport.viewerElementToViewportCoordinates( event.position );
             
             event.preventDefaultAction = false;
             return true;
         }
     }
     
-    function _onViewerDrag( event ) {
+    function _onViewerDrag( event, draw ) {
         // if(_debug) {
         // console.log("Dragging: ");
         // console.log("_active = " + _active);
         // console.log("_drawing = " + _drawing);
         // console.log("_drawPoint = " + _drawPoint);
         // }
-        if ( _drawing ) {
-            var newPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            var rect = new OpenSeadragon.Rect( _drawPoint.x, _drawPoint.y, newPoint.x - _drawPoint.x, newPoint.y - _drawPoint.y );
-            if ( newPoint.x < _drawPoint.x ) {
+        if ( draw.drawing ) {
+            var newPoint = draw.image.viewer.viewport.viewerElementToViewportCoordinates( event.position );
+            var rect = new OpenSeadragon.Rect( draw.drawPoint.x, draw.drawPoint.y, newPoint.x - draw.drawPoint.x, newPoint.y - draw.drawPoint.y );
+            if ( newPoint.x < draw.drawPoint.x ) {
                 rect.x = newPoint.x;
-                rect.width = _drawPoint.x - newPoint.x;
+                rect.width = draw.drawPoint.x - newPoint.x;
             }
-            if ( newPoint.y < _drawPoint.y ) {
+            if ( newPoint.y < draw.drawPoint.y ) {
                 rect.y = newPoint.y;
-                rect.height = _drawPoint.y - newPoint.y;
+                rect.height = draw.drawPoint.y - newPoint.y;
             }
-            osViewer.viewer.updateOverlay( _drawElement, rect, 0 );
+            draw.image.viewer.updateOverlay( draw.drawElement, rect, 0 );
             event.preventDefaultAction = true;
             return true;
             
         }
-        else if ( _active && _drawPoint ) {
-            var activeOverlay = osViewer.overlays.getDrawingOverlay();
-            if ( activeOverlay && osViewer.transformRect && osViewer.transformRect.isActive()
-                    && osViewer.overlays.contains( activeOverlay.rect, _drawPoint, _minDistanceToExistingRect ) ) {
-                _drawPoint = null;
+        else if ( draw.active && draw.drawPoint ) {
+            var activeOverlay = draw.image.overlays.getDrawingOverlay();
+            if ( activeOverlay && draw.image.transformRect && draw.image.transformRect.isActive()
+                    && draw.image.overlays.contains( activeOverlay.rect, draw.drawPoint, _minDistanceToExistingRect ) ) {
+                draw.drawPoint = null;
                 if ( _debug )
                     console.log( "Action overlaps active overlay" );
             }
             else {
-                _drawing = true;
+                draw.drawing = true;
                 if ( activeOverlay && _deleteOldDrawElement ) {
-                    osViewer.overlays.removeOverlay( activeOverlay );
+                    draw.image.overlays.removeOverlay( activeOverlay );
                 }
                 
-                _drawElement = document.createElement( "div" );
-                if ( _overlayGroup ) {
-                    $( _drawElement ).addClass( _overlayGroup.styleClass );
+                draw.drawElement = document.createElement( "div" );
+                if ( draw.overlayGroup ) {
+                    $( draw.drawElement ).addClass( draw.overlayGroup.styleClass );
                 }
-                $( _drawElement ).addClass( drawingStyleClass );
-                var rect = new OpenSeadragon.Rect( _drawPoint.x, _drawPoint.y, 0, 0 );
-                osViewer.viewer.addOverlay( _drawElement, rect, 1 );
+                $( draw.drawElement ).addClass( drawingStyleClass );
+                var rect = new OpenSeadragon.Rect( draw.drawPoint.x, draw.drawPoint.y, 0, 0 );
+                draw.image.viewer.addOverlay( draw.drawElement, rect, 1 );
             }
             event.preventDefaultAction = true;
             return true;
         }
     }
     
-    function _onViewerDragEnd( event ) {
-        if ( _drawing ) {
-            _drawing = false;
-            var newPoint = osViewer.viewer.viewport.viewerElementToViewportCoordinates( event.position );
-            var rect = new OpenSeadragon.Rect( _drawPoint.x, _drawPoint.y, newPoint.x - _drawPoint.x, newPoint.y - _drawPoint.y );
-            if ( newPoint.x < _drawPoint.x ) {
+    function _onViewerDragEnd( event, draw ) {
+        if ( draw.drawing ) {
+            draw.drawing = false;
+            var newPoint = draw.image.viewer.viewport.viewerElementToViewportCoordinates( event.position );
+            var rect = new OpenSeadragon.Rect( draw.drawPoint.x, draw.drawPoint.y, newPoint.x - draw.drawPoint.x, newPoint.y - draw.drawPoint.y );
+            if ( newPoint.x < draw.drawPoint.x ) {
                 rect.x = newPoint.x;
-                rect.width = _drawPoint.x - newPoint.x;
+                rect.width = draw.drawPoint.x - newPoint.x;
             }
-            if ( newPoint.y < _drawPoint.y ) {
+            if ( newPoint.y < draw.drawPoint.y ) {
                 rect.y = newPoint.y;
-                rect.height = _drawPoint.y - newPoint.y;
+                rect.height = draw.drawPoint.y - newPoint.y;
             }
             rect.hitBox = {
                 l: rect.x - _hbAdd,
@@ -180,14 +181,14 @@ var viewImage = ( function( osViewer ) {
             };
             
             var overlay = {
-                type: osViewer.overlays.overlayTypes.RECTANGLE,
-                element: _drawElement,
+                type: imageView.Overlays.OverlayTypes.RECTANGLE,
+                element: draw.drawElement,
                 rect: rect,
-                group: _overlayGroup.name,
+                group: draw.overlayGroup.name,
             };
-            osViewer.overlays.setDrawingOverlay( overlay );
-            if ( _finishHook ) {
-                _finishHook( overlay );
+            draw.image.overlays.setDrawingOverlay( overlay );
+            if ( draw.finishHook ) {
+                draw.finishHook( overlay );
             }
             
             event.preventDefaultAction = true;
@@ -260,6 +261,6 @@ var viewImage = ( function( osViewer ) {
         }
     }
     
-    return osViewer;
+    return imageView;
     
-} )( viewImage || {}, jQuery );
+} )( ImageView );

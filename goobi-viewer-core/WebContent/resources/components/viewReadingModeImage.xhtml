@@ -55,7 +55,8 @@
                 var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
                 
                 if ( access ) {
-                    viewImage.init( configViewer ).then( function( osViewer ) {
+                    var viewImage = new ImageView.Image( configViewer );
+                    viewImage.load().then( function( image ) {
                         // TODO: hide loader
                     }).catch( function( error ) {
                         imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );

@@ -1,5 +1,5 @@
 
-describe("viewImage tests", function() {
+describe("imageView tests", function() {
 	
 	var config = null;
 	
@@ -39,7 +39,8 @@ describe("viewImage tests", function() {
 			
 			config.image.tileSource = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
 			
-			 viewImage.init( config )
+			 var viewImage = new ImageView.Image( config )
+			 viewImage.load()
 			    .then(function(osViewer) {
 			       expect(osViewer.viewer).toExist();
 			       expect(osViewer.viewer.viewport._contentSize.x).toBeGreaterThan(0);
