@@ -21,6 +21,7 @@
             <script type="text/javascript" rel="nofollow">          
                 //<![CDATA[
                 var imageMap = $( '#readingModeImage' );
+                var page = '#{navigationHelper.currentPage}';
                 var configViewer = {
                     global: {
                         divId: 'readingModeImage',
@@ -61,6 +62,13 @@
                         imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
                         console.log(error);
                     })
+                    
+                    // reload image footer in readingmode
+                    if ( page === 'readingmode' ) {
+                    	$( window ).on( 'resize', function() {
+                    		viewImage.loadFooter();                    		
+                    	} );
+                    }
                 } else {
                     imageMap.html( accessDeniedMessage );
                 }

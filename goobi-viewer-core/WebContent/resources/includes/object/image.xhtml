@@ -30,6 +30,7 @@
         var staticImage = $('<img />').attr('src', '#{activeDocumentBean.viewManager.currentImageUrl}').attr('alt', 'current object').addClass('img-responsive');
         var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
         var accessDeniedMessage = $('<div />').addClass('view-object__access-denied').html('#{msg.noImage_accessDenied}');
+        var page = '#{navigationHelper.currentPage}';
         var configViewer = {
         	global: {
         		divId: 'imageMap',
@@ -60,18 +61,19 @@
         		]
         	}
         };
-        
-        function getUGCCoords(coords) {
-            
-        }
-        
-
-        
+                
        	// desktop object view
        	if ( access && openSeadragonVisible ) {
            	viewImage.init( configViewer ).then( function( osViewer ) {} ).catch( function( error ) {
            		console.error( 'viewObject.xhtml - viewImage.init: Error opening image' );
            		imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
+           		
+           		// reload image footer in readingmode
+           		if ( page === 'readingmode' ) {
+                	$( window ).on( 'resize', function() {
+                		viewImage.loadFooter();                    		
+                	} );
+                }
            	} );
         } else if ( openSeadragonVisible ) {
        		imageMap.append( accessDeniedMessage );
