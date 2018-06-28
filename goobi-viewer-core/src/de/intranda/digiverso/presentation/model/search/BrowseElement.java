@@ -1023,12 +1023,18 @@ public class BrowseElement implements Serializable {
                     PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType),
                             hasImages || hasMedia, useOverviewPage, false);
                     sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-                    //hack for worldviews which needs language parameter instead of logid
-                    if ("geiwv".equals(DataManager.getInstance().getConfiguration().getTheme())) {
-                        sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
-                                .append("/");
-                    } else {
-                        sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
+                    // Hack for viewers that need a language parameter instead of LOGID
+                    String theme = DataManager.getInstance().getConfiguration().getTheme();
+                    if (theme != null) {
+                        switch (theme) {
+                            case "geiwv":
+                            case "wienerlibrary-novemberpogrom":
+                                sb.append(DataManager.getInstance().getLanguageHelper().getLanguage(BeanUtils.getLocale().getLanguage()).getIsoCode())
+                                        .append("/");
+                                break;
+                            default:
+                                sb.append(StringUtils.isNotEmpty(logId) ? logId : '-').append('/');
+                        }
                     }
                     break;
             }
@@ -1039,7 +1045,7 @@ public class BrowseElement implements Serializable {
                 pageType = PageType.viewObject;
             }
             sb.append(pageType.getName()).append('/').append(pi).append('/').append(imageNo).append('/');
-            //hack for worldviews which needs language parameter instead of logid
+            // Hack for viewers that need a language parameter instead of LOGID
             String theme = DataManager.getInstance().getConfiguration().getTheme();
             if (theme != null) {
                 switch (theme) {
