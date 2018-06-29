@@ -292,7 +292,6 @@ public class SearchBean implements Serializable {
         generateSimpleSearchString("");
         setCurrentPage(1);
         setExactSearchString("");
-        facets.resetCurrentFacets();
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         resetSearchResults();
         resetSearchParameters(true);
