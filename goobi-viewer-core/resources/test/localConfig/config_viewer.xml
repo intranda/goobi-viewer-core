@@ -44,8 +44,6 @@
 	<!-- Folders for generated download files -->
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>resources/test/stopwords.txt</stopwordsFile>
-	<!-- oaiConfigFile: location of configuration file for the OAI-PMH interface -->
-	<oaiConfigFile>oaiConfigFile_value</oaiConfigFile>
 	<!-- xstreamFolder: contains information about bookshelfes and / or annotations 
 		on the images -->
 	<xstreamFolder>xstreamFolder_value</xstreamFolder>
