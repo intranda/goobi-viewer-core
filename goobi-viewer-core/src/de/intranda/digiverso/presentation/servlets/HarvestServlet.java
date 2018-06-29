@@ -188,7 +188,8 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                 case "get_overviewpage": {
                     Path tempFolder = Paths.get(DataManager.getInstance().getConfiguration().getTempFolder());
                     if (!FileTools.checkPathExistance(tempFolder, true)) {
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Temp folder could not be created");
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                "Temp folder could not be created: " + DataManager.getInstance().getConfiguration().getTempFolder());
                         return;
                     }
                     Path tempFile = null;
@@ -201,14 +202,16 @@ public class HarvestServlet extends HttpServlet implements Serializable {
                         }
                         String now = DateTools.formatterFilename.print(System.currentTimeMillis());
                         String fileNamePrefix = String.valueOf(Thread.currentThread().getId()) + "_"; // Thread ID as prefix so that it doesn't collide with other users' calls
-                        String fileName = identifier + "_overviewpage_" + (fromDate != null ? fromDate.getTime() : "-") + "-" + (toDate != null
-                                ? toDate.getTime() : "-") + ".xml";
-                        tempFile = FileTools.getFileFromString(overviewPage.getExportFormat(), DataManager.getInstance().getConfiguration()
-                                .getTempFolder() + fileNamePrefix + fileName, "UTF-8", false).toPath();
+                        String fileName = identifier + "_overviewpage_" + (fromDate != null ? fromDate.getTime() : "-") + "-"
+                                + (toDate != null ? toDate.getTime() : "-") + ".xml";
+                        tempFile = FileTools
+                                .getFileFromString(overviewPage.getExportFormat(),
+                                        DataManager.getInstance().getConfiguration().getTempFolder() + fileNamePrefix + fileName, "UTF-8", false)
+                                .toPath();
                         if (Files.isRegularFile(tempFile)) {
                             response.setContentType("application/xml");
-                            response.setHeader("Content-Disposition", new StringBuilder("attachment;filename=").append(now + "_" + fileName)
-                                    .toString());
+                            response.setHeader("Content-Disposition",
+                                    new StringBuilder("attachment;filename=").append(now + "_" + fileName).toString());
                             response.setHeader("Content-Length", String.valueOf(Files.size(tempFile)));
                             response.flushBuffer();
                             OutputStream os = response.getOutputStream();

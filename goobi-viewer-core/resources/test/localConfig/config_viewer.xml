@@ -38,9 +38,6 @@
 	<!-- hotfolder: defines the hotfolder from the solr Indexer for indexing 
 		uploaded born-digital-material (see <content> also) -->
 	<hotfolder>hotfolder_value</hotfolder>
-	<!-- tempFolder: defines a temp folder for the processing of born-digital-material 
-		(see <content> also) -->
-	<tempFolder>tempFolder_value</tempFolder>
 	<!-- Folders for generated download files -->
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>resources/test/stopwords.txt</stopwordsFile>

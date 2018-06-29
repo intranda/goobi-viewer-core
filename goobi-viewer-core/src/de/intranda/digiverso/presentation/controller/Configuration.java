@@ -1258,8 +1258,9 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
+    @SuppressWarnings("static-method")
     public String getTempFolder() {
-        return getLocalString("tempFolder");
+        return System.getProperty("java.io.tmpdir") + "viewer";
     }
 
     /**

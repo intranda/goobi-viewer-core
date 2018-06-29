@@ -58,6 +58,7 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("Launching {}", Helper.getVersion());
         DataManager.getInstance();
+        logger.trace("Temp folder: {}", DataManager.getInstance().getConfiguration().getTempFolder());
         // Add a "member" role, if not yet in the database
         try {
             if (DataManager.getInstance().getDao().getRole("member") == null) {

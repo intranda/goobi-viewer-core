@@ -883,15 +883,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getTempFolder()
-     * @verifies return correct value
-     */
-    @Test
-    public void getTempFolder_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals("temp", DataManager.getInstance().getConfiguration().getTempFolder());
-    }
-
-    /**
      * @see Configuration#getTheme()
      * @verifies return correct value
      */

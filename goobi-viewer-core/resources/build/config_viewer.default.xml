@@ -49,10 +49,7 @@
 
 	<!-- hotfolder: defines the hotfolder from the Goobi viewer Indexer for indexing uploaded born-digital-material (see <content> also) -->
 	<hotfolder>/opt/digiverso/viewer/hotfolder/</hotfolder>
-
-	<!-- tempFolder: defines a temp folder for the processing of born-digital-material (see <content> also) -->
-	<tempFolder>/opt/digiverso/viewer/temp/</tempFolder>
-
+	
 	<!-- stopwordsFile: location of the stopword.txt file used in Solr -->
 	<stopwordsFile>/opt/digiverso/viewer/apache-solr/collection1/conf/lang/stopwords.txt</stopwordsFile>
 
