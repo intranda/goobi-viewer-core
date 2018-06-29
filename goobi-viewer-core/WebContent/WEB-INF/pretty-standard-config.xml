@@ -439,6 +439,11 @@
 		<view-id value="/viewFulltext.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
+	<url-mapping id="fulltext5">
+        <pattern value="/fulltext/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{language:activeDocumentBean.selectedRecordLanguage}/#{logId:activeDocumentBean.logid}/" />
+        <view-id value="/viewFulltext.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
 
 	<!-- NER -->
 	<url-mapping id="ner">
@@ -652,6 +657,14 @@
     <url-mapping id="cmsOpenPageWithSearch3">
         <pattern
             value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/" />
+        <view-id value="#{cmsBean.getCurrentPageUrl}" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
+    </url-mapping>
+    <url-mapping id="cmsOpenPageWithSearch4">
+        <pattern
+            value="/cms/#{page:cmsBean.currentPageId}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="#{cmsBean.getCurrentPageUrl}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
