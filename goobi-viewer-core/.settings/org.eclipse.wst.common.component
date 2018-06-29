@@ -197,19 +197,28 @@
         <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-novemberpogrom.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-novemberpogrom/goobi-viewer-theme-wienerlibrary-novemberpogrom">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- TWL TESTIFYING TOT THE TRUTH -->
         <dependent-module archiveName="goobi-viewer-theme-wienerlibrary-testifyingtothetruth.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-wienerlibrary-testifyingtothetruth/goobi-viewer-theme-wienerlibrary-testifyingtothetruth">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- ZLB -->
         <dependent-module archiveName="goobi-viewer-theme-zlb.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-zlb/goobi-viewer-theme-zlb">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- KUEPO -->
         <dependent-module archiveName="goobi-viewer-theme-kuepo.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-kuepo/goobi-viewer-theme-kuepo">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- SUDAN MEMORY -->
         <dependent-module archiveName="goobi-viewer-theme-sudanmemory.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-sudanmemory/goobi-viewer-theme-sudanmemory">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- GACACA -->
         <dependent-module archiveName="goobi-viewer-theme-gacaca.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-gacaca/goobi-viewer-theme-gacaca">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- UB WIEN -->
+        <dependent-module archiveName="goobi-viewer-theme-ubwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubwien/goobi-viewer-theme-ubwien">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
