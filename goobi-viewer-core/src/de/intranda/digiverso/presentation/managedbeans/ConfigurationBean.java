@@ -281,10 +281,6 @@ public class ConfigurationBean implements Serializable {
         return !DataManager.getInstance().getConfiguration().isDisableMenuBrowsingOnSearchList();
     }
 
-    public boolean useOpenLayers() throws ConfigurationException {
-        return DataManager.getInstance().getConfiguration().useOpenLayers();
-    }
-
     public boolean useOpenSeadragon() throws ConfigurationException {
         return DataManager.getInstance().getConfiguration().useOpenSeadragon();
     }
@@ -526,22 +522,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getSidebarTocLengthBeforeCut();
     }
 
-    public int getImageViewHeight() {
-        return DataManager.getInstance().getConfiguration().getViewImageHeight();
-    }
-
-    public int getImageViewWidth() {
-        return DataManager.getInstance().getConfiguration().getViewImageWidth();
-    }
-
-    public int getFullscreenImageHeight() {
-        return DataManager.getInstance().getConfiguration().getFullscreenImageHeight();
-    }
-
-    public int getFullscreenImageWidth() {
-        return DataManager.getInstance().getConfiguration().getFullscreenImageWidth();
-    }
-
     public boolean isDisplayTitleBreadcrumbs() {
         return DataManager.getInstance().getConfiguration().getDisplayTitleBreadcrumbs();
     }
@@ -639,7 +619,7 @@ public class ConfigurationBean implements Serializable {
      * @param language
      * @return
      */
-    private boolean isLanguageVersionOtherThan(String field, String language) {
+    private static boolean isLanguageVersionOtherThan(String field, String language) {
         return field.matches(".*_LANG_[A-Z][A-Z]") && !field.matches(".*_LANG_" + language.toUpperCase());
     }
 

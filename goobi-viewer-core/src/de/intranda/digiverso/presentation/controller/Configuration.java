@@ -203,46 +203,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Display width of the image in normal image view
-     * 
-     * @return
-     */
-    @Deprecated
-    public int getViewImageWidth() {
-        return getLocalInt("viewer.zoomImageView[@width]", 600);
-    }
-
-    /**
-     * Display height of the image in normal image view
-     * 
-     * @return
-     */
-    @Deprecated
-    public int getViewImageHeight() {
-        return getLocalInt("viewer.zoomImageView[@height]", 800);
-    }
-
-    /**
-     * Display width of the image in fullscreen view
-     * 
-     * @return
-     */
-    @Deprecated
-    public int getFullscreenImageWidth() {
-        return getLocalInt("viewer.zoomFullscreenView[@width]", 1024);
-    }
-
-    /**
-     * Display height of the image in fullscreen view
-     * 
-     * @return
-     */
-    @Deprecated
-    public int getFullscreenImageHeight() {
-        return getLocalInt("viewer.zoomFullscreenView[@height]", 768);
-    }
-
-    /**
      * 
      * @return
      * @should return correct value
@@ -2099,14 +2059,6 @@ public final class Configuration extends AbstractConfiguration {
 
     public String getZoomImageViewType(PageType view, ImageType image) throws ConfigurationException {
         return getZoomImageViewConfig(view, image).getString("[@type]");
-    }
-
-    public boolean useOpenLayers() throws ConfigurationException {
-        return "openlayers".equalsIgnoreCase(getImageViewType());
-    }
-
-    public boolean useOpenLayersFullscreen() throws ConfigurationException {
-        return "openlayers".equalsIgnoreCase(getZoomFullscreenViewType());
     }
 
     public boolean useOpenSeadragon() throws ConfigurationException {

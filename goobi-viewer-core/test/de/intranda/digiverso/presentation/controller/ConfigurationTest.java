@@ -1447,24 +1447,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#useOpenLayers()
-     * @verifies return correct value
-     */
-    @Test
-    public void useOpenLayers_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().useOpenLayers());
-    }
-
-    /**
-     * @see Configuration#useOpenLayersFullscreen()
-     * @verifies return correct value
-     */
-    @Test
-    public void useOpenLayersFullscreen_shouldReturnCorrectValue() throws Exception {
-        Assert.assertFalse(DataManager.getInstance().getConfiguration().useOpenLayersFullscreen());
-    }
-
-    /**
      * @see Configuration#isDisplaySearchRssLinks()
      * @verifies return correct value
      */

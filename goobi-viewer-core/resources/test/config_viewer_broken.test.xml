@@ -194,9 +194,7 @@
 				<size>512</size>
 			</tileSize>
 		</zoomImageView>
-		<!-- <zoomImageView type="openlayers" tileImage="false" width="900" height="1500" 
-			zoomScale="3"> -->
-		<!-- </zoomImageView> -->
+
 		<zoomFullscreenView type="classic" tileImage="true"
 			footerHeight="50">
 			<scale>1000</scale>
