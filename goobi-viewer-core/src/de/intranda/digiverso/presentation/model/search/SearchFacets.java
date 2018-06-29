@@ -644,15 +644,6 @@ public class SearchFacets {
     }
 
     /**
-     * 
-     */
-    @Deprecated
-    public void resetCurrentCollection() {
-        logger.trace("resetCurrentCollection");
-        setCurrentHierarchicalFacetString("-");
-    }
-
-    /**
      * Returns a URL encoded value returned by generateFacetPrefix() for regular facets.
      *
      * @return

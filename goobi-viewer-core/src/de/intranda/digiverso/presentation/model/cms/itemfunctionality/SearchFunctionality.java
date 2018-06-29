@@ -57,8 +57,7 @@ public class SearchFunctionality implements Functionality {
     private final String baseUrl;
     private final String pageFacetString;
 
-
-//    private SearchBean searchBean;
+    //    private SearchBean searchBean;
 
     /**
      * @param searchPrefix
@@ -74,13 +73,13 @@ public class SearchFunctionality implements Functionality {
     }
 
     /**
-     * @throws DAOException 
+     * @throws DAOException
      * 
      */
     public void redirectToSearchUrl() {
-        try {            
-            ViewerPathBuilder.createPath(BeanUtils.getRequest(), this.baseUrl).ifPresent(path -> {            
-                if(path != null) {            
+        try {
+            ViewerPathBuilder.createPath(BeanUtils.getRequest(), this.baseUrl).ifPresent(path -> {
+                if (path != null) {
                     path.setParameterPath(getParameterPath());
                     final FacesContext context = FacesContext.getCurrentInstance();
                     String redirectUrl = path.getApplicationName() + path.getCombinedPrettyfiedUrl();
@@ -91,7 +90,7 @@ public class SearchFunctionality implements Functionality {
                     }
                 }
             });
-        } catch(DAOException e) {
+        } catch (DAOException e) {
             logger.error("Error retrieving search url", e);
         }
     }
@@ -100,27 +99,27 @@ public class SearchFunctionality implements Functionality {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
-        } else{            
+        } else {
             getSearchBean().searchSimple();
             redirectToSearchUrl();
         }
     }
-    
+
     public void searchAdvanced() throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("searchAdvanced");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
-        } else {    
+        } else {
             getSearchBean().searchAdvanced();
             redirectToSearchUrl();
         }
     }
-    
+
     public void searchFacetted() throws PresentationException, IndexUnreachableException, DAOException {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
-        } else{            
+        } else {
             getSearchBean().searchSimple();
             redirectToSearchUrl();
         }
@@ -136,7 +135,7 @@ public class SearchFunctionality implements Functionality {
         String facetString = getSearchBean().getFacets().getCurrentFacetString();
         getSearchBean().getFacets().setCurrentFacetString(getCompleteFacetString(getSearchBean().getFacets().getCurrentFacetString()));
         getSearchBean().search();
-        getSearchBean().getFacets().setCurrentFacetString(facetString);        
+        getSearchBean().getFacets().setCurrentFacetString(facetString);
     }
 
     /**
@@ -163,7 +162,6 @@ public class SearchFunctionality implements Functionality {
     public String getUrlPrefix() {
         StringBuilder sb = new StringBuilder();
         sb.append(getBaseUrl());
-        sb.append(getCollection()).append("/");
         sb.append(getQueryString()).append("/");
         return sb.toString();
     }
@@ -242,19 +240,19 @@ public class SearchFunctionality implements Functionality {
         getSearchBean().getFacets().setCurrentFacetString(facetString);
     }
 
-    /**
-     * @return the collection
-     */
-    public String getCollection() {
-        return getSearchBean().getFacets().getCurrentHierarchicalFacetString();
-    }
+    //    /**
+    //     * @return the collection
+    //     */
+    //    public String getCollection() {
+    //        return getSearchBean().getFacets().getCurrentFacetString();
+    //    }
 
-    /**
-     * @param collection the collection to set
-     */
-    public void setCollection(String collection) {
-        getSearchBean().getFacets().setCurrentHierarchicalFacetString(collection);
-    }
+    //    /**
+    //     * @param collection the collection to set
+    //     */
+    //    public void setCollection(String collection) {
+    //        getSearchBean().getFacets().setCurrentFacetString(collection);
+    //    }
 
     public String getQueryString() {
         return getSearchBean().getExactSearchString();
@@ -273,21 +271,21 @@ public class SearchFunctionality implements Functionality {
 
     private URI getParameterPath() {
         URI path = URI.create("");
-        path = ViewerPathBuilder.resolve(path,getCollection());
-        path = ViewerPathBuilder.resolve(path,getQueryString());
-        path = ViewerPathBuilder.resolve(path,Integer.toString(getPageNo()));
-        path = ViewerPathBuilder.resolve(path,getSolrSortFields());
-        path = ViewerPathBuilder.resolve(path,getFacetString());
+        //        path = ViewerPathBuilder.resolve(path, getCollection());
+        path = ViewerPathBuilder.resolve(path, getQueryString());
+        path = ViewerPathBuilder.resolve(path, Integer.toString(getPageNo()));
+        path = ViewerPathBuilder.resolve(path, getSolrSortFields());
+        path = ViewerPathBuilder.resolve(path, getFacetString());
         return path;
     }
-    
+
     /**
      * @return the pageFacetString
      */
     public String getPageFacetString() {
         return pageFacetString;
     }
-    
+
     public String getNewSearchUrl() {
         return getSortUrl("-", false);
     }
@@ -296,17 +294,17 @@ public class SearchFunctionality implements Functionality {
         sortString = (descending ? "!" : "") + sortString;
         return getUrlPrefix() + getPageNo() + "/" + getUrlSuffix(sortString);
     }
-    
+
     public String getFacettedUrl(String facetString) {
         Path path = Paths.get(getBaseUrl());
-        path = path.resolve(getCollection());
+        //        path = path.resolve(getCollection());
         path = path.resolve(getQueryString());
         path = path.resolve(Integer.toString(getPageNo()));
         path = path.resolve(getSolrSortFields());
         path = path.resolve(facetString);
         return path.toString();
     }
-    
+
     public String removeFacet(String facet) {
         final String currentFacetString = getSearchBean().getFacets().getCurrentFacetString();
         String separator = ";;";
@@ -315,21 +313,18 @@ public class SearchFunctionality implements Functionality {
         } catch (UnsupportedEncodingException e) {
             logger.error(e.toString(), e);
         }
-        String facetString = Stream.of(currentFacetString.split(separator))
-        .filter(s -> !s.equalsIgnoreCase(facet))
-        .collect(Collectors.joining(";;"));
-        if(StringUtils.isBlank(facetString)) {
+        String facetString = Stream.of(currentFacetString.split(separator)).filter(s -> !s.equalsIgnoreCase(facet)).collect(Collectors.joining(";;"));
+        if (StringUtils.isBlank(facetString)) {
             facetString = "-";
         }
         return facetString;
     }
-    
+
     public String getCurrentPagePath() {
         ViewerPath path = ViewHistory.getCurrentView(BeanUtils.getRequest()).get();
-        if(path != null) {            
+        if (path != null) {
             return path.getApplicationName() + path.getPrettifiedPagePath();
-        } else {
-            return "";
         }
+        return "";
     }
 }
