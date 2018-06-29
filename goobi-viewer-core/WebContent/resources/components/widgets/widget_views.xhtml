@@ -39,7 +39,7 @@
 					<h:panelGroup
 						rendered="#{configurationBean.sidebarPageLinkVisible and !activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.filesOnly}">
 						<li
-							class="#{navigationHelper.currentPage == 'image' ? 'active' : ''}">
+							class="#{navigationHelper.currentPage == 'object' ? 'active' : ''}">
 							<h:outputLink
 								value="#{navigationHelper.imageActiveUrl}#{activeDocumentBean.logPart}">
 								<h:outputText
