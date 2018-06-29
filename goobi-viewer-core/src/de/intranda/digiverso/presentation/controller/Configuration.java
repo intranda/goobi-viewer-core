@@ -2569,38 +2569,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return
-     * @should return correct value
-     */
-    public int getPreviewHeightPercentage() {
-        return getLocalInt("viewer.previewImageView[@previewHeightPercentage]", 10);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public int getPreviewWidth() {
-        return getLocalInt("viewer.previewImageView[@previewWidth]", 600);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public int getPreviewThumbnailWidth() {
-        return getLocalInt("viewer.previewImageView[@thumbnailWidth]", 200);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    public int getPreviewThumbnailHeight() {
-        return getLocalInt("viewer.previewImageView[@thumbnailHeight]", 240);
-    }
-
-    /**
      * 
      * @return
      * @should return correct template configuration

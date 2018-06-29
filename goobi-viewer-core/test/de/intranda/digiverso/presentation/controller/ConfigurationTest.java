@@ -1447,42 +1447,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getPreviewHeightPercentage()
-     * @verifies return correct value
-     */
-    @Test
-    public void getPreviewHeightPercentage_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(11, DataManager.getInstance().getConfiguration().getPreviewHeightPercentage());
-    }
-
-    /**
-     * @see Configuration#getPreviewThumbnailHeight()
-     * @verifies return correct value
-     */
-    @Test
-    public void getPreviewThumbnailHeight_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(122, DataManager.getInstance().getConfiguration().getPreviewThumbnailHeight());
-    }
-
-    /**
-     * @see Configuration#getPreviewThumbnailWidth()
-     * @verifies return correct value
-     */
-    @Test
-    public void getPreviewThumbnailWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(111, DataManager.getInstance().getConfiguration().getPreviewThumbnailWidth());
-    }
-
-    /**
-     * @see Configuration#getPreviewWidth()
-     * @verifies return correct value
-     */
-    @Test
-    public void getPreviewWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(666, DataManager.getInstance().getConfiguration().getPreviewWidth());
-    }
-
-    /**
      * @see Configuration#getTitleBreadcrumbsMaxTitleLength()
      * @verifies return correct value
      */

@@ -247,14 +247,6 @@
 		<rememberImageZoom>true</rememberImageZoom>
 		<rememberImageRotation>true</rememberImageRotation>
 
-		<!-- image size settings for the "newspaper" preview view. previewWidth 
-			is the pixel-width of the preview image as delivered by the contentServer; 
-			previewHeightPercentage is the fraktion (in percent) of the image (from top 
-			to bottom) which is displayed. ThumbnailWidth/Height are the sizes of the 
-			thumbnail image as delivered by the contentServer -->
-		<previewImageView previewWidth="666"
-			previewHeightPercentage="11" thumbnailWidth="111" thumbnailHeight="122" />
-
 		<!-- defaultImageFullscreenWidth|Height: default initial image size for 
 			full screen view, in case the full image size is larger (default is 1024x768) -->
 		<defaultImageFullscreenWidth>4</defaultImageFullscreenWidth>

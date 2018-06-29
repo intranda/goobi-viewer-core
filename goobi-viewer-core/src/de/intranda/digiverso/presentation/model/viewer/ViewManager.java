@@ -71,7 +71,6 @@ import de.intranda.digiverso.presentation.model.transkribus.TranskribusSession;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.IPageLoader;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 
-
 /**
  * Holds information about the currently open record (structure, pages, etc.). Used to reduced the size of ActiveDocumentBean.
  */
@@ -288,16 +287,6 @@ public class ViewManager implements Serializable {
                         Optional.ofNullable(PageType.getByName(pageType)))
                 .orElse("");
 
-    }
-
-    public String getCurrentThumbnailUrl() throws IndexUnreachableException, DAOException {
-        int width = DataManager.getInstance().getConfiguration().getPreviewThumbnailWidth();
-        int height = DataManager.getInstance().getConfiguration().getPreviewThumbnailHeight();
-        PhysicalElement currentImg = getCurrentPage();
-        if (currentImg == null) {
-            return "";
-        }
-        return currentImg.getThumbnailUrl(width, height);
     }
 
     public String getCurrentImageUrl() throws ConfigurationException, IndexUnreachableException, DAOException {

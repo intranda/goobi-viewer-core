@@ -219,9 +219,6 @@
 		<rememberImageZoom>false</rememberImageZoom>
 		<rememberImageRotation>false</rememberImageRotation>
 
-		<previewImageView previewWidth="600"
-			previewHeightPercentage="10" thumbnailWidth="100" thumbnailHeight="120"></previewImageView>
-
 		<!-- max. allowed values for ContentServer arguments, higher values than 
 			these will be reduced to the values defined here -->
 		<maxImageWidth>10000</maxImageWidth>
