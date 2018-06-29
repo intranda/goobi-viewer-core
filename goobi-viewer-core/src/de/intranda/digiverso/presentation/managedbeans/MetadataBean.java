@@ -28,7 +28,6 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -179,14 +178,6 @@ public class MetadataBean {
     }
 
     /**
-     * @return
-     * @throws IndexUnreachableException
-     */
-    private int getBreadcrumbStartLevel() throws IndexUnreachableException {
-        return activeDocumentBean.hasAnchor() ? 2 : 1;
-    }
-
-    /**
      * @return the events
      */
     public List<EventElement> getEvents() {
@@ -198,12 +189,6 @@ public class MetadataBean {
      */
     public void setEvents(List<EventElement> events) {
         this.events = events;
-    }
-
-    @Deprecated
-    public boolean displayBreadCrumbs() throws IndexUnreachableException {
-        int cutoff = getBreadcrumbStartLevel();
-        return DataManager.getInstance().getConfiguration().getDisplayBibdataBreadcrumbs() && cutoff > 0 && metadataElementList.size() > cutoff;
     }
 
     public boolean displayChildStructs() {

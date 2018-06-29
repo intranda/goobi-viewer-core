@@ -1175,11 +1175,6 @@
 		<displayTitleBreadcrumbs maxTitleLength="40"
 			includeAnchor="false">false</displayTitleBreadcrumbs>
 
-		<!-- DEPRECATED displayTitleBreadcrumbs: if true, the document structure 
-			below the current topStruct is displayed in bibliographical data in breadcrumb 
-			form -->
-		<displayBibdataBreadcrumbs maxTitleLength="0">false
-		</displayBibdataBreadcrumbs>
 
 		<!-- displayTitlePURL: if true, a PURL to the current page in the title 
 			component. Default is true. -->

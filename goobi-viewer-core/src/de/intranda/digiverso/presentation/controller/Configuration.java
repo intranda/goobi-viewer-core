@@ -2684,24 +2684,6 @@ public final class Configuration extends AbstractConfiguration {
      * @return
      * @should return correct value
      */
-    @Deprecated
-    public boolean getDisplayBibdataBreadcrumbs() {
-        return this.getLocalBoolean("webGuiDisplay.displayBibdataBreadcrumbs", false);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
-    @Deprecated
-    public int getBibdataBreadcrumbsMaxTitleLength() {
-        return this.getLocalInt("webGuiDisplay.displayBibdataBreadcrumbs[@maxTitleLength]", 0);
-    }
-
-    /**
-     * @return
-     * @should return correct value
-     */
     public boolean showThumbnailsInToc() {
         return this.getLocalBoolean("toc.multiVolumeThumbnailsEnabled", true);
     }
@@ -3170,7 +3152,7 @@ public final class Configuration extends AbstractConfiguration {
      * 
      */
     public List<String> getConfiguredCollections() {
-        return getLocalList("collections.collection[@field]", Collections.EMPTY_LIST);
+        return getLocalList("collections.collection[@field]", Collections.emptyList());
 
     }
 }

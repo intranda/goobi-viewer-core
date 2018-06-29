@@ -550,11 +550,6 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getTitleBreadcrumbsMaxTitleLength();
     }
 
-    @Deprecated
-    public int getBibdataBreadcrumbsMaxTitleLength() {
-        return DataManager.getInstance().getConfiguration().getBibdataBreadcrumbsMaxTitleLength();
-    }
-
     public boolean isDisplayTimeMatrix() {
         return DataManager.getInstance().getConfiguration().isDisplayTimeMatrix();
     }

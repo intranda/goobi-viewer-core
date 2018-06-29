@@ -1474,26 +1474,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getDisplayBibdataBreadcrumbs()
-     * @verifies return correct value
-     */
-    @Test
-    @Deprecated
-    public void getDisplayBibdataBreadcrumbs_shouldReturnCorrectValue() throws Exception {
-        Assert.assertTrue(DataManager.getInstance().getConfiguration().getDisplayBibdataBreadcrumbs());
-    }
-
-    /**
-     * @see Configuration#getBibdataBreadcrumbsMaxTitleLength()
-     * @verifies return correct value
-     */
-    @Test
-    @Deprecated
-    public void getBibdataBreadcrumbsMaxTitleLength_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(200, DataManager.getInstance().getConfiguration().getBibdataBreadcrumbsMaxTitleLength());
-    }
-
-    /**
      * @see Configuration#getCalendarDocStructTypes()
      * @verifies return all configured elements
      */
