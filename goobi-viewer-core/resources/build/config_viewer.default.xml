@@ -242,10 +242,6 @@
 			previewHeightPercentage="10" thumbnailWidth="100" thumbnailHeight="120">
 		</previewImageView>
 
-		<!-- defaultImageWidth|Height: default image size in pixel -->
-		<defaultImageWidth>800</defaultImageWidth>
-		<defaultImageHeight>1000</defaultImageHeight>
-
 		<!-- defaultImageFullscreenWidth|Height: default initial image size for full screen view, in case the full image size is larger (default is 1024x768) -->
 		<defaultImageFullscreenWidth>900</defaultImageFullscreenWidth>
 		<defaultImageFullscreenHeight>1333</defaultImageFullscreenHeight>

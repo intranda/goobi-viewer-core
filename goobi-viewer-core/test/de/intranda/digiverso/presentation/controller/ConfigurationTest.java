@@ -230,24 +230,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getDefaultImageHeight()
-     * @verifies return correct value
-     */
-    @Test
-    public void getDefaultImageHeight_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(3, DataManager.getInstance().getConfiguration().getDefaultImageHeight());
-    }
-
-    /**
-     * @see Configuration#getDefaultImageWidth()
-     * @verifies return correct value
-     */
-    @Test
-    public void getDefaultImageWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(2, DataManager.getInstance().getConfiguration().getDefaultImageWidth());
-    }
-
-    /**
      * @see Configuration#getDisplayBreadcrumbs()
      * @verifies return correct value
      */
