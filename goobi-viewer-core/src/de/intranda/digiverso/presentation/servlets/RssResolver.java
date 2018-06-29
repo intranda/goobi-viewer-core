@@ -64,7 +64,7 @@ public class RssResolver extends HttpServlet {
         if (request.getParameterMap().get("language") != null && request.getParameterMap().get("language").length > 0) {
             language = request.getParameterMap().get("language")[0];
         }
-        logger.debug("RSS request language: {}", language);
+        logger.trace("RSS request language: {}", language);
         Long bookshelfId = null;
         if (request.getParameterMap().get("bookshelfId") != null) {
             try {
@@ -100,7 +100,9 @@ public class RssResolver extends HttpServlet {
                         sbQuery.append(SolrConstants.ISWORK).append(":true");
                     }
                     if (StringUtils.isNotBlank(request.getParameter("partnerId"))) {
-                        sbQuery.append(" AND ").append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField()).append(':')
+                        sbQuery.append(" AND ")
+                                .append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField())
+                                .append(':')
                                 .append(request.getParameter("partnerId").trim());
                     }
                     query = sbQuery.toString();
@@ -110,9 +112,12 @@ public class RssResolver extends HttpServlet {
             logger.trace("RSS query: {}", query);
             if (StringUtils.isNotEmpty(query)) {
                 SyndFeedOutput output = new SyndFeedOutput();
-                output.output(RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request), query + SearchHelper.getAllSuffixes(
-                        request, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()), language), new OutputStreamWriter(
-                                response.getOutputStream(), "utf-8"));
+                output.output(
+                        RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
+                                query + SearchHelper.getAllSuffixes(request, true,
+                                        DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()),
+                                language),
+                        new OutputStreamWriter(response.getOutputStream(), "utf-8"));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");
                 return;
