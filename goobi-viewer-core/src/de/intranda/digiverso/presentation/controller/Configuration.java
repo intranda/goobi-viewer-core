@@ -203,26 +203,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * width of the image returned by content server for fullscreen view
-     * 
-     * @return
-     * @should return correct value
-     */
-    public int getDefaultImageFullscreenWidth() {
-        return getLocalInt("viewer.defaultImageFullscreenWidth", 1000);
-    }
-
-    /**
-     * height of the image returned by content server for fullscreen view
-     * 
-     * @return
-     * @should return correct value
-     */
-    public int getDefaultImageFullscreenHeight() {
-        return getLocalInt("viewer.defaultImageFullscreenHeight", 1400);
-    }
-
-    /**
      * Display width of the image in normal image view
      * 
      * @return

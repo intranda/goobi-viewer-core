@@ -818,26 +818,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     }
 
     /**
-     * Return the initial width at which to display the image in full screen mode. Should not be larger than defaultImageFullscreenWidth, but may be
-     * smaller.
-     *
-     * @return
-     */
-    public int getImageDefaultFullscreenWidth() {
-        return DataManager.getInstance().getConfiguration().getDefaultImageFullscreenWidth();
-    }
-
-    /**
-     * Return the initial height at which to display the image in full screen mode. Should not be larger than defaultImageFullscreenHeight, but may be
-     * smaller.
-     *
-     * @return
-     */
-    public int getImageDefaultFullscreenHeight() {
-        return DataManager.getInstance().getConfiguration().getDefaultImageFullscreenHeight();
-    }
-
-    /**
      * Return the zoom factor for this image depending on its actual size.
      *
      * @return

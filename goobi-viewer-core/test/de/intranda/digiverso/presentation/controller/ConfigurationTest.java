@@ -212,24 +212,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getDefaultImageFullscreenHeight()
-     * @verifies return correct value
-     */
-    @Test
-    public void getDefaultImageFullscreenHeight_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(5, DataManager.getInstance().getConfiguration().getDefaultImageFullscreenHeight());
-    }
-
-    /**
-     * @see Configuration#getDefaultImageFullscreenWidth()
-     * @verifies return correct value
-     */
-    @Test
-    public void getDefaultImageFullscreenWidth_shouldReturnCorrectValue() throws Exception {
-        Assert.assertEquals(4, DataManager.getInstance().getConfiguration().getDefaultImageFullscreenWidth());
-    }
-
-    /**
      * @see Configuration#getDisplayBreadcrumbs()
      * @verifies return correct value
      */

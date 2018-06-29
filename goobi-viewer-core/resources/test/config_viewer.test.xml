@@ -247,11 +247,6 @@
 		<rememberImageZoom>true</rememberImageZoom>
 		<rememberImageRotation>true</rememberImageRotation>
 
-		<!-- defaultImageFullscreenWidth|Height: default initial image size for 
-			full screen view, in case the full image size is larger (default is 1024x768) -->
-		<defaultImageFullscreenWidth>4</defaultImageFullscreenWidth>
-		<defaultImageFullscreenHeight>5</defaultImageFullscreenHeight>
-
 		<!-- max. allowed values for ContentServer arguments, higher values than 
 			these will be reduced to the values defined here -->
 		<maxImageWidth>6</maxImageWidth>
