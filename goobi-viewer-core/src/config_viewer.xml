@@ -676,12 +676,12 @@
 				<metadata label="MD_FORMATDDC" value="">
 					<param type="field" key="MD_FORMATDDC" />
 				</metadata>
-				<metadata label="MD_NOTESOURCEDIMENSIONS" value="">
-					<param type="field" key="MD_NOTESOURCEDIMENSIONS" />
-				</metadata>
-				<metadata label="MD_PHYSICALDESCRIPTIONEXTENT" value="">
-					<param type="field" key="MD_PHYSICALDESCRIPTIONEXTENT" />
-				</metadata>
+                <metadata label="MD_SIZESOURCEPRINT" value="">
+                    <param type="field" key="MD_SIZESOURCEPRINT" />
+                </metadata>
+                <metadata label="MD_FORMATSOURCEPRINT" value="">
+                    <param type="field" key="MD_FORMATSOURCEPRINT" />
+                </metadata>
 				<metadata label="MD_SCALE" value="">
 					<param type="field" key="MD_SCALE" />
 				</metadata>
