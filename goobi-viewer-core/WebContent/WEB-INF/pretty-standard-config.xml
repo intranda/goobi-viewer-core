@@ -191,7 +191,7 @@
 	<url-mapping id="searchTerm2">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
-		<action onPostback="false">#{searchBean.setCurrentStringFilter(null))}</action>
+		<action onPostback="false">#{browseBean.setCurrentStringFilter('-')}</action>
         <action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{browseBean.searchTerms}</action>
