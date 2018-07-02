@@ -1614,17 +1614,6 @@ public class ConfigurationTest {
     }
 
     /**
-     * @see Configuration#getSelectedRecords()
-     * @verifies return all configured elements
-     */
-    @Test
-    public void getSelectedRecords_shouldReturnAllConfiguredElements() throws Exception {
-        List<String> ret = DataManager.getInstance().getConfiguration().getSelectedRecords(SolrConstants.DC);
-        Assert.assertNotNull(ret);
-        Assert.assertEquals(4, ret.size());
-    }
-
-    /**
      * @see Configuration#getOverviewFolder()
      * @verifies return correct value
      */

@@ -766,20 +766,6 @@ public final class Configuration extends AbstractConfiguration {
     }
 
     /**
-     *
-     * @param field
-     * @return
-     * @should return all configured elements
-     */
-    public List<String> getSelectedRecords(String field) {
-        HierarchicalConfiguration collection = getCollectionConfiguration(field);
-        if (collection == null) {
-            return null;
-        }
-        return getLocalList(collection, null, "selectedRecords.pi", Collections.<String> emptyList());
-    }
-
-    /**
      * 
      * @return
      * @should return correct value

@@ -81,8 +81,8 @@
 		<contentServerWrapper>http://localhost:8080/viewer/content/
 		</contentServerWrapper>
 
-		<!-- <iiif>http://viewertest.fritz.box/reference/</iiif> -->
-		<iiif>http://localhost:8080/viewer/iiif/</iiif>
+		<!--rest: TODO -->
+		<rest>http://localhost:8080/viewer/rest/</rest>
 
 		<!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic 
 			data -->
@@ -498,13 +498,6 @@
 				in the displayed in advanced search 0 is the first (lowest) level; a value 
 				of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>-1</displayDepthForSearch>
-
-			<!-- DEPRECATED: selectedRecords: A list of record identifiers that represent 
-				a special selection of records (e.g. for displaying in a special widget etc.). 
-				The record identifiers are put into child <pi> elements. -->
-			<selectedRecords>
-				<pi>PPN517154005</pi>
-			</selectedRecords>
 
 			<!-- Default-Image for tiled collection in CMS, relative to theme path. -->
 			<defaultBrowseIcon>images/collections/collection_tiled_default.jpg

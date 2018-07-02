@@ -418,16 +418,6 @@
 			<!-- The highest level of the collection hierarchy which will be displayed in the displayed in advanced search 
 			0 is the first (lowest) level; a value of -1 means all levels are being displayed, this is also the default -->
 			<displayDepthForSearch>5</displayDepthForSearch>
-
-		<!-- selectedRecords: A list of record identifiers that represent a special 
-			selection of records (e.g. for displaying in a special widget etc.). The 
-			record identifiers are put into child <pi> elements. -->
-		<selectedRecords>
-			<pi>pi_value1</pi>
-			<pi>pi_value2</pi>
-			<pi>pi_value3</pi>
-			<pi>pi_value4</pi>
-		</selectedRecords>
 		</collection>
 	</collections>
 
