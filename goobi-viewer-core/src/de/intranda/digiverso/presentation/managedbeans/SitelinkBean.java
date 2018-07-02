@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
@@ -154,7 +155,7 @@ public class SitelinkBean implements Serializable {
                 if (label == null) {
                     label = (String) doc.getFieldValue(SolrConstants.CURRENTNO);
                     if (label == null) {
-                        label = (String) doc.getFieldValue(SolrConstants.TITLE);
+                        label = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
 
                         if (label == null) {
                             label = pi;
