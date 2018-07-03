@@ -3242,6 +3242,9 @@ div[id*="-Modal"] .email-form .form-group {
 .login-navigation__user-icon {
   /* MODIFICATION */
 }
+.login-navigation__user-icon span {
+  display: inline;
+}
 .login-navigation__user-icon--loggedout .fa {
   color: #ccc;
 }
