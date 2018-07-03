@@ -4774,9 +4774,6 @@ div[id*="-Modal"] .email-form .form-group {
     text-align: center;
     padding-top: 10px;
   }
-  .search-list__hit-thumbnail [data-bookshelf-type="add"] {
-    display: none;
-  }
   .search-list__struct-child-hits,
   .search-list__metadata-info {
     padding-left: 0;
