@@ -1269,6 +1269,21 @@
 		<property name="contentserver.color.alpha" value="255" />
 		<antcall target="war-internal" />
 	</target>
+	<target name="gacaca">
+		<property name="local.folder" value="resources/build/deploy_ubuntu" />
+		<property name="server.config" value="/opt/digiverso/viewer/config/" />
+		<property name="server.folder" value="/opt/digiverso/viewer/" />
+		<property name="server.url" value="http://10.255.19.31/viewer/" />
+		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2F10.255.19.31%2Fviewer%2Foai" />
+		<property name="theme" value="reference" />
+		<property name="ehcache.dirname" value="cache" />
+		<property name="contentserver.color.red" value="255" />
+		<property name="contentserver.color.green" value="255" />
+		<property name="contentserver.color.blue" value="0" />
+		<property name="contentserver.color.alpha" value="255" />
+		<antcall target="war" />
+	</target>
 	<target name="marbach">
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/viewer/config/" />
