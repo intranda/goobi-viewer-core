@@ -4992,6 +4992,9 @@ div[id*="-Modal"] .email-form .form-group {
   column-count: 3;
   column-gap: 15px;
 }
+.search-termlist__list li {
+  break-inside: avoid;
+}
 .search-termlist__list a {
   display: block;
   padding: 5px 10px;
