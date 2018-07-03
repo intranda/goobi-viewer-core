@@ -6840,7 +6840,7 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     var _debug = false;
-    var _bookselfDropdown = false;
+    var _bookshelfDropdown = false;
     var _defaults = {};
     
     viewer.userDropdown = {
@@ -6852,8 +6852,8 @@ var viewerJS = ( function( viewer ) {
             }
             
             // check if bookshelfdropdown exist
-            if ( $( '.bookshelf-navigation__dropdown' ).length > 0 ) {
-                _bookselfDropdown = true;
+            if ( $( '.bookshelf-navigation__dropdown:visible' ) ) {
+                _bookshelfDropdown = true;
             }
             
             // login dropdown
@@ -6861,7 +6861,7 @@ var viewerJS = ( function( viewer ) {
                 event.stopPropagation();
                 
                 // hide bookshelfdropdow if exist
-                if ( _bookselfDropdown ) {
+                if ( _bookshelfDropdown ) {
                     $( '.bookshelf-navigation__dropdown' ).hide();
                     $( '.bookshelf-popup' ).remove();
                 }
@@ -6877,7 +6877,7 @@ var viewerJS = ( function( viewer ) {
                 event.stopPropagation();
                 
                 // hide bookshelfdropdow if exist
-                if ( _bookselfDropdown ) {
+                if ( _bookshelfDropdown ) {
                     $( '.bookshelf-navigation__dropdown' ).hide();
                     $( '.bookshelf-popup' ).remove();
                 }

@@ -1089,7 +1089,7 @@ var ImageView = ( function() {
       * get the rotation as a value between 0 and 360 degrees and rounded to 90 degrees 
       * 
       * @param degrees
-      * @returns
+      * @returns the rotation as a value between 0 and 360 degrees and rounded to 90 degrees  
       */
      function _getRotation(degrees) {
          degrees += _MAX_DESKEW_ANGLE;
@@ -1103,7 +1103,7 @@ var ImageView = ( function() {
       * get the rotation modulo 90 degrees as a value between 0 and 45 degrees or between 315 and 360 degrees
       * 
       * @param degrees
-      * @returns
+      * @returns the rotation modulo 90 degrees as a value between 0 and 45 degrees or between 315 and 360 degrees
       */
      function _getDeskewAngle(degrees) {
          degrees += _MAX_DESKEW_ANGLE;
