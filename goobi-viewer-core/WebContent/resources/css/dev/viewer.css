@@ -1204,13 +1204,10 @@ div.mce-fullscreen {
 .bookshelf-navigation__dropdown-list-remove {
   text-align: center;
 }
-.bookshelf-navigation__dropdown-list-remove.no-padding {
-  padding: 5px 0;
-}
 .bookshelf-navigation__dropdown-list-remove [data-bookshelf-type="delete"] {
   width: 16px;
   height: 16px;
-  background-size: 72%;
+  background-size: 10px;
 }
 .bookshelf-navigation__dropdown-list-actions {
   border-top: 1px solid #ccc;
