@@ -1276,7 +1276,7 @@
 		<property name="server.url" value="http://10.255.19.31/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
 		<property name="server.oai.maskedUrl" value="http%3A%2F%2F10.255.19.31%2Fviewer%2Foai" />
-		<property name="theme" value="reference" />
+		<property name="theme" value="gacaca" />
 		<property name="ehcache.dirname" value="cache" />
 		<property name="contentserver.color.red" value="255" />
 		<property name="contentserver.color.green" value="255" />
