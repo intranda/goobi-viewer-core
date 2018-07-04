@@ -65,10 +65,10 @@
 							</h:panelGroup>
 						</h:panelGroup>
 						<script type="text/javascript">
-                            userGeneratedContentJSArray.push(["#{content.id}", '#{content.displayCoordinates}', '#{content.title}']);
-                            $("#words-#{content.id}").on( 'click', function(e) {
+                            userGeneratedContentJSArray.push(["#{content.id}", "#{content.displayCoordinates}", "#{content.title}"]);
+                            $("#words-#{content.id}").on( "click", function(e) {
                                	e.preventDefault();
-                               	highlightContentBox( '${content.id}' );
+                               	highlightContentBox( "${content.id}" );
                                	highlightCurrentSelection( $( this ) );
                             });
                         </script>
@@ -78,10 +78,10 @@
                             
                         var highlightCurrentSelection = function( $Obj ) {
                          	// reset styles for all li elements
-                         	$( '#user_generated_content_nav li' ).removeClass( 'ugc-highlight' );
+                         	$( "#user_generated_content_nav li" ).removeClass( "ugc-highlight" );
                             	
                            	// highlight clicked li element
-                           	$Obj.addClass( 'ugc-highlight' );
+                           	$Obj.addClass( "ugc-highlight" );
                         };
                     </script>
 				</ul>

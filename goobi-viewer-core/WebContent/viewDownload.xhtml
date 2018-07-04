@@ -106,26 +106,26 @@
 				<script>
 					updateJobStatus();
             		var interval = setInterval( function() {
-						$( '#viewDownload' ).load( document.URL + ' #viewDownload .download__status', function() {
+						$( "#viewDownload" ).load( document.URL + " #viewDownload .download__status", function() {
 							updateJobStatus();
 						});
 					}, 5000 );
             		
 
 					function updateJobStatus() {
-						var status = $( '#jobStatusField' ).val();
+						var status = $( "#jobStatusField" ).val();
 
 						switch ( status ) {
-							case 'ERROR':
+							case "ERROR":
 								clearInterval( interval );
 								break;
-							case 'READY':
+							case "READY":
 								clearInterval( interval );
 								viewerJS.download.init();
 								break;
-							case 'UNDEFINED':
+							case "UNDEFINED":
 								console.log("Download job status is undefined. Keep checking...");
-							case 'WAITING':
+							case "WAITING":
 							    break;
 						}
 					}

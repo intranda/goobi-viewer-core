@@ -43,9 +43,9 @@
 				
 				<script type="text/javascript">
                     $.ajax( {
-                        url: '#{request.contextPath}/rest/rss/#{navigationHelper.localeString}/-/#{cmsPage.getContentItem("rss").elementsPerPage}/',
-                        type: 'GET',
-                        datatype: 'JSON'
+                        url: "#{request.contextPath}/rest/rss/#{navigationHelper.localeString}/-/#{cmsPage.getContentItem('rss').elementsPerPage}/",
+                        type: "GET",
+                        datatype: "JSON"
                     } ).then( function( data ) {
                         var rssFeedConfig = {};
                             

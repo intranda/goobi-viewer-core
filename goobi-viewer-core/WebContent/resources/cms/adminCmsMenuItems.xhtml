@@ -198,7 +198,7 @@
                     } )
 
                     // trigger tooltips on modal shown up
-                    $( '#addMenuItemModal' ).on( 'shown.bs.modal', function( e ) {
+                    $( "#addMenuItemModal" ).on( "shown.bs.modal", function( e ) {
                         $( function() {
                             $( '[data-toggle="tooltip"]' ).tooltip()
                         } )
@@ -207,9 +207,9 @@
                     var createMenuConfig = {
                         sortablesConfig: {
                             componentListInput: document.getElementById( "editMenuForm:itemOrderInput" ),
-                            editButton: $( '.widget-edit' ),
-                            availableItemList: $( '#availableItemList' ),
-                            visibleItemList: $( '#visibleItemList' )
+                            editButton: $( ".widget-edit" ),
+                            availableItemList: $( "#availableItemList" ),
+                            visibleItemList: $( "#visibleItemList" )
                         }
                     };
                     
