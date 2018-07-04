@@ -6787,6 +6787,7 @@ div[id*="-Modal"] .email-form .form-group {
 .view-thumbs__thumbnail-image img {
   display: block;
   max-width: 100%;
+  min-height: 120px;
   max-height: 120px;
   margin: 0 auto;
 }
