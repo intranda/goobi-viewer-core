@@ -7214,6 +7214,9 @@ div[id*="-Modal"] .email-form .form-group {
 .widget-bookshelf-list {
   /* BACK */
 }
+.widget-bookshelf-list ul {
+  margin-bottom: 15px;
+}
 .widget-bookshelf-list__back {
   padding-top: 10px;
 }
