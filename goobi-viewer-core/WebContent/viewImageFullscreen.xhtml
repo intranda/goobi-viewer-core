@@ -101,19 +101,19 @@
 
 					<script type="text/javascript" rel="nofollow">
 					    //<![CDATA[  
-				        var imageMap = $('#fullscreenMap');
+				        var imageMap = $("#fullscreenMap");
 						var configViewer = {
 						    global: {
-						    	divId: 'fullscreenMap',
+						    	divId: "fullscreenMap",
 						        adaptContainerHeight: false,
-						        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewFullscreen')},
+						        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight("viewFullscreen")},
 						        persistZoom: #{configurationBean.rememberImageZoom},
 					            persistRotation: #{configurationBean.rememberImageRotation},
 					            persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
 						    },
 						    image: {
 						        mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
-						        tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+						        tileSource : "#{activeDocumentBean.viewManager.currentImageInfo}",
 						        baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl('viewFullscreen')}",
 						        highlightCoords: [
     						        {
@@ -131,8 +131,8 @@
 						    }
 						};
 						var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-						var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
-						var fileNotFoundMessage = '<span class="file-not-found">#{msg.noImage_fileNotFound}</span>';
+						var accessDeniedMessage = "<span class="access-denied">#{msg.noImage_accessDenied}</span>";
+						var fileNotFoundMessage = "<span class="file-not-found">#{msg.noImage_fileNotFound}</span>";
 						
 						if ( access ) {
 						    var viewImage = new ImageView.Image( configViewer );
@@ -140,8 +140,8 @@
 						    .then(function(image) {
 						        //TODO: Hide loader?
 						        if ( !image.hasFooter() ) {
-						            $('#intrandaLogo').show();
-			                        $('#customerLogo').show();
+						            $("#intrandaLogo").show();
+			                        $("#customerLogo").show();
 						        }
 						    })
 						    .catch(function(error){

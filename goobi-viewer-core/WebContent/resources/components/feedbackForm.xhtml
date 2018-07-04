@@ -19,7 +19,7 @@
 			<script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
 			<script>
 				function enableBtn() {
-				    $( '[id*="submitFeedbackBtn"]' ).attr( 'disabled', false );
+				    $( '[id*="submitFeedbackBtn"]' ).attr( "disabled", false );
 				}
             </script>
 		</h:panelGroup>
@@ -71,7 +71,7 @@
                         <ui:fragment rendered="#{configurationBean.useReCaptcha}">
     						<h:commandButton id="submitFeedbackBtn" styleClass="btn" value="#{msg.submit}" action="#{userBean.submitFeedbackAction}" />
                             <script type="text/javascript">
-                            	$( '[id*="submitFeedbackBtn"]' ).attr( 'disabled', true );
+                            	$( '[id*="submitFeedbackBtn"]' ).attr( "disabled", true );
                             </script>
                         </ui:fragment>
 						<!-- DON'T USE RECAPTCHA -->

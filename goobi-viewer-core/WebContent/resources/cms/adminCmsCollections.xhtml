@@ -131,7 +131,7 @@
                                             <h:commandLink 
                                                 action="#{cmsCollectionsBean.deleteCollection(collection)}"
                                                 title="#{msg.cms_collection_delete}"
-                                                onclick="if ( !confirm( '#{msg.cms_deleteCollection_confirmation}' ) ) { return false };">
+                                                onclick="if ( !confirm( &quot;#{msg.cms_deleteCollection_confirmation}&quot; ) ) { return false };">
                                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
                                                 <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                                 <f:passThroughAttribute name="data-placement" value="top" />

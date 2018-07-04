@@ -59,7 +59,7 @@
                         
                         <!-- delete license --> 
                         <h:commandLink 
-                            onclick="if (!confirm('#{msg.license_deleteConfirmationText}')) {return false};" 
+                            onclick="if ( !confirm( &quot;#{msg.license_deleteConfirmationText}&quot; ) ) { return false };" 
                             action="#{adminBean.deleteLicenseAction(license)}" 
                             styleClass="btn" 
                             title="#{msg.delete}">

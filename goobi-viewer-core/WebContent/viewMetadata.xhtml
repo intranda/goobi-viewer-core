@@ -62,39 +62,39 @@
 
         <script type="text/javascript">            
             var normdataConfig = {
-                path: '#{request.contextPath}',
+                path: "#{request.contextPath}",
                 lang: {
-                    popoverTitle: '#{msg.normdataPopverTitle}',
-                    popoverClose: '#{msg.normdataPopoverClose}',
-                    showNormdata: '#{msg.normdataExpand}'
+                    popoverTitle: "#{msg.normdataPopverTitle}",
+                    popoverClose: "#{msg.normdataPopoverClose}",
+                    showNormdata: "#{msg.normdataExpand}"
                 },
-                elemWrapper: $( '#metadataElementWrapper' )
+                elemWrapper: $( "#metadataElementWrapper" )
             };
             
             viewerJS.normdata.init( normdataConfig );
             
             var downloadModalConfig = {
-                downloadBtn: $( '.download-modal' ),
-                path: '#{navigationHelper.applicationUrl}',
-                iiifPath: '#{configurationBean.iiifApiUrl}',
-                userEmail: $( '#userEmail' ).val(),
+                downloadBtn: $( ".download-modal" ),
+                path: "#{navigationHelper.applicationUrl}",
+                iiifPath: "#{configurationBean.iiifApiUrl}",
+                userEmail: $( "#userEmail" ).val(),
                 useReCaptcha: #{configurationBean.useReCaptcha},
-                reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
+                reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
                 messages: {
                 	downloadInfo: {
-                		text: '#{msg.downloadInfoText}',
-                		title: '#{msg.downloadInfoTitle}',
-                		part: '#{msg.downloadInfoPart}',
-                		fileSize: '#{msg.downloadInfoFileSize}'
+                		text: "#{msg.downloadInfoText}",
+                		title: "#{msg.downloadInfoTitle}",
+                		part: "#{msg.downloadInfoPart}",
+                		fileSize: "#{msg.downloadInfoFileSize}"
                 	},
-                	reCaptchaText: '#{msg.downloadReCaptchaText}',
-                	rcInvalid: '#{msg.downloadRcInvalid}',
-                	rcValid: '#{msg.downloadRcValid}',
-                	eMailText: '#{msg.downloadEMailText}',
-                	eMailTextLoggedIn: '#{msg.downloadEMailTextLoggedIn}',
-                	eMail: '#{msg.downloadEmail}',
-                	closeBtn: '#{msg.downloadCloseModal}',
-                	saveBtn: '#{msg.downloadGenerateFile}',
+                	reCaptchaText: "#{msg.downloadReCaptchaText}",
+                	rcInvalid: "#{msg.downloadRcInvalid}",
+                	rcValid: "#{msg.downloadRcValid}",
+                	eMailText: "#{msg.downloadEMailText}",
+                	eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
+                	eMail: "#{msg.downloadEmail}",
+                	closeBtn: "#{msg.downloadCloseModal}",
+                	saveBtn: "#{msg.downloadGenerateFile}",
                 }
             };
             

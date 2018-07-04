@@ -47,12 +47,12 @@
 
                 <script type="text/javascript">
                     $.ajax( {
-                        url: '#{cmsPage.getTileGridUrl("grid")}',
-                        type: 'GET',
-                        datatype: 'JSON'
+                        url: "#{cmsPage.getTileGridUrl('grid')}",
+                        type: "GET",
+                        datatype: "JSON"
                     } ).then( function( data ) {
                         var staticGridConfig = {
-                            gridSelector: '.tpl-static-grid__grid'
+                            gridSelector: ".tpl-static-grid__grid"
                         };
                         
                         cmsJS.staticGrid.init( staticGridConfig, data );

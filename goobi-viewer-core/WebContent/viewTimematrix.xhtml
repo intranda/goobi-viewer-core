@@ -42,14 +42,14 @@
             <script type="text/javascript">
             $(document).ready(function() {
               	var timematrixConfig = {
-	                contextPath: '#{request.contextPath}/',
-	                rangeInput1: $( '#timematrixSelectionRangeInput1' ),
-	                startDate: $( '#timematrixSelectionRangeInput1' ).val(),
-	                rangeInput1: $( '#timematrixSelectionRangeInput2' ),
-		            endDate: $( '#timematrixSelectionRangeInput2' ).val(),
+	                contextPath: "#{request.contextPath}/",
+	                rangeInput1: $( "#timematrixSelectionRangeInput1" ),
+	                startDate: $( "#timematrixSelectionRangeInput1" ).val(),
+	                rangeInput1: $( "#timematrixSelectionRangeInput2" ),
+		            endDate: $( "#timematrixSelectionRangeInput2" ).val(),
 		            count: #{configurationBean.timeMatrixHits},
-		            $tmCanvas: $( '#timematrixCanvas' ),
-		            $tmCanvasPos: $( '#timematrixCanvas' ).position(),
+		            $tmCanvas: $( "#timematrixCanvas" ),
+		            $tmCanvasPos: $( "#timematrixCanvas" ).position(),
 	                lang: {
 	                	closeWindow: "#{msg.timematrixCloseWindow}",
 	                	goToWork: "#{msg.timematrixGoToWork}"	                  
