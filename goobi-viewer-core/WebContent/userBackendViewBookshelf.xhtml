@@ -57,7 +57,7 @@
                                 <h:commandLink
                                     title="#{msg.bookshelf_delete}"
                                     action="#{bookshelfBean.deleteCurrentBookshelfAction}"
-                                    onclick="if (!confirm('#{msg.bookshelves_confirmDeleteBookshelf}')) return false">
+                                    onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelf}&quot; ) ) { return false };">
                                     <i
                                         class="fa fa-trash-o"
                                         aria-hidden="true"></i>
@@ -116,7 +116,7 @@
                                                     <h:commandLink
                                                         title="#{msg.bookshelf_itemDelete}"
                                                         action="#{bookshelfBean.deleteCurrentItemAction(item)}"
-                                                        onclick="if (!confirm('#{msg.bookshelves_confirmDeleteBookshelfItem}')) return false"
+                                                        onclick="if ( !confirm( &quot;#{msg.bookshelves_confirmDeleteBookshelfItem}&quot; ) ) { return false };"
                                                         role="button">
                                                         <f:passThroughAttribute
                                                             name="data-bookshelf-type"

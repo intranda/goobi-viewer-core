@@ -45,7 +45,7 @@
                                 </h:commandLink>
                                 <!-- delete member -->
                                 <h:commandLink
-                                    onclick="if (!confirm('#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}')) {return false};"
+                                    onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_removeMemberConfirmationText, membership.user.displayName, membership.userGroup.name)}&quot; ) ) { return false };"
                                     action="#{adminBean.deleteUserRoleAction(membership)}" styleClass="btn" title="#{msg.delete}">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
                                 </h:commandLink>

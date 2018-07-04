@@ -118,7 +118,7 @@
 												<!-- suspend user -->
 												<h:panelGroup rendered="#{!user.suspended}">
 													<h:commandLink 
-														onclick="if (!confirm('#{navigationHelper.getTranslationWithParams(msg.admin_suspendUserConfirmationText, user.name)}')) {return false};" 
+														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin_suspendUserConfirmationText, user.name)}&quot; ) ) { return false };" 
 														action="adminAllUsers"
 														actionListener="#{adminBean.toggleSuspendUserAction(user)}"
 														title="#{msg.suspend}">
@@ -130,7 +130,7 @@
 												<!-- unsuspend user -->
 												<h:panelGroup rendered="#{user.suspended}">
 													<h:commandLink 
-														onclick="if (!confirm('#{navigationHelper.getTranslationWithParams(msg.admin_unsuspendUserConfirmationText, user.name)}')) {return false};" 
+														onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.admin_unsuspendUserConfirmationText, user.name)}&quot; ) ) { return false };" 
 														action="adminAllUsers"
 														actionListener="#{adminBean.toggleSuspendUserAction(user)}"
 														title="#{msg.unsuspend}">

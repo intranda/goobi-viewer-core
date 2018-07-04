@@ -115,7 +115,7 @@
 			
 											<!-- delete comment -->
 											<h:commandLink 
-												onclick="if (!confirm('#{msg.commentDeleteConfirmationText}')) {return false};"
+												onclick="if ( !confirm( &quot;#{msg.commentDeleteConfirmationText}&quot; ) ) { return false };"
 												action="#{adminBean.deleteCommentAction(comment)}"
 												title="#{msg.delete}">
 												<i class="fa fa-trash-o" aria-hidden="true"></i>

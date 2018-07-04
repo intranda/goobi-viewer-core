@@ -121,7 +121,7 @@
 
 												<!-- delete user group -->
 												<h:commandLink
-													onclick="if (!confirm('#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}')) {return false};"
+													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.userGroup_deleteConfirmationText, userGroup.name)}&quot; ) ) { return false };"
 													action="adminAllUserGroups"
 													actionListener="#{adminBean.deleteUserGroupAction(userGroup)}"
 													title="#{msg.delete}">

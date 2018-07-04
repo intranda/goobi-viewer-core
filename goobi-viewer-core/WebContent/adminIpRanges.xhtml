@@ -102,7 +102,7 @@
 												
 												<!-- delete ip range -->
 												<h:commandLink 
-													onclick="if (!confirm('#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}')) {return false};"
+													onclick="if ( !confirm( &quot;#{navigationHelper.getTranslationWithParams(msg.ipRange_deleteConfirmationText, ipRange.name)}&quot; ) ) { return false };"
 													action="adminIpRanges" 
 													actionListener="#{adminBean.deleteIpRangeAction(ipRange)}"
 													title="#{msg.delete}">

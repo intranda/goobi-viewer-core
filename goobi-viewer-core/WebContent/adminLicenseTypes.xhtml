@@ -136,7 +136,7 @@
 												
 												<!-- delete license type -->													
 												<h:commandLink 
-													onclick="if (!confirm('#{msg.license_licenseType_deleteConfirmationText}')) {return false};"
+													onclick="if ( !confirm( &quot;#{msg.license_licenseType_deleteConfirmationText}&quot; ) ) { return false };"
 													action="adminLicenseTypes" 
 													actionListener="#{adminBean.deleteLicenseTypeAction(licenseType)}"
 													disabled="#{licenseType.deleteLocked}"
