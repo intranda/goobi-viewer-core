@@ -12,7 +12,7 @@
     <composite:implementation>
         <!-- OPEN SEADRAGON -->
         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
-			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
 
         <div id="readingModeImageWrapper">            
@@ -53,16 +53,17 @@
                 };
                 
                 var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-                var accessDeniedMessage = "<span class="access-denied">#{msg.noImage_accessDenied}</span>";
+                var accessDeniedMessage = $( "<span />" ).addClass( "access-denied" ).text( '#{msg.noImage_accessDenied}' );
                 
                 if ( access ) {
                     var viewImage = new ImageView.Image( configViewer );
+                    
                     viewImage.load().then( function( image ) {
                         // TODO: hide loader
                     }).catch( function( error ) {
-                        imageMap.html( viewerJS.helper.renderAlert( "alert-danger", ( "#{msg.noImage_fileNotFound}: " + error, false ) );
+                        imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
                         console.log(error);
-                    })
+                    });
                     
                     // reload image footer in readingmode
                     if ( page === "readingmode" ) {

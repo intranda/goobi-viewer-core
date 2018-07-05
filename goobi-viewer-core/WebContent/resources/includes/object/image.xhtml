@@ -25,11 +25,11 @@
     <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
     <script type="text/javascript">
   		//<![CDATA[
-    	var imageMap = $("#imageMap");
+    	var imageMap = $( "#imageMap" );
         var openSeadragonVisible = $( "#imageContainer" ).is( ":visible" );
-        var staticImage = $("<img />").attr("src", "#{activeDocumentBean.viewManager.currentImageUrl}").attr("alt", "current object").addClass("img-responsive");
+        var staticImage = $( "<img />" ).attr( "src", "#{activeDocumentBean.viewManager.currentImageUrl}" ).attr( "alt", "current object" ).addClass( "img-responsive" );
         var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-        var accessDeniedMessage = $("<div />").addClass("view-object__access-denied").html('#{msg.noImage_accessDenied}');
+        var accessDeniedMessage = $( "<div />" ).addClass( "view-object__access-denied" ).html( '#{msg.noImage_accessDenied}' );
         var page = "#{navigationHelper.currentPage}";
         var configViewer = {
         	global: {
@@ -65,6 +65,7 @@
        	// desktop object view
        	if ( access && openSeadragonVisible ) {
            	var viewImage = new ImageView.Image( configViewer )
+           	
            	viewImage.load().then( function( osViewer ) {} ).catch( function( error ) {
            		console.error( "viewObject.xhtml - viewImage.init: Error opening image" );
            		imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
