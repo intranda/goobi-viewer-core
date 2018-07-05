@@ -1069,6 +1069,7 @@ public class CalendarBean implements Serializable {
 
     public String searchCalendar() throws PresentationException, IndexUnreachableException, DAOException {
         if (StringUtils.isEmpty(selectYear)) {
+            logger.trace("No year selected");
             return "";
         }
 
