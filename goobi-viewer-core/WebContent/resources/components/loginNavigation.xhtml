@@ -97,7 +97,7 @@
                         <ui:fragment rendered="#{userBean.user.nickName != ''}">
                             <span class="login-navigation__user-name" title="#{userBean.user.nickName}">#{userBean.user.nickName}</span>
                         </ui:fragment>
-                        <ui:fragment rendered="#{userBean.user.nickName == ''}">
+                        <ui:fragment rendered="#{userBean.user.nickName eq null}">
                             <span class="login-navigation__user-name" title="#{userBean.user.email}">#{userBean.user.email}</span>
                         </ui:fragment>
                         
