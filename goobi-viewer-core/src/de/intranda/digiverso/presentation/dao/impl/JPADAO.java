@@ -2359,10 +2359,10 @@ public class JPADAO implements IDAO {
             this.em.refresh(o);
             return true;
         } catch (IllegalArgumentException e) {
-            logger.error("CMSPage with id " + id + " has an ivalid type, or is not persisted");
+            logger.error("CMSPage with ID '{}' has an invalid type, or is not persisted: {}", id, e.getMessage());
             return false;
         } catch (EntityNotFoundException e) {
-            logger.debug("CMSPage with id " + id + " not found in database");
+            logger.debug("CMSPage with ID '{}' not found in database.", id);
             //remove from em as well
             if (o != null) {
                 em.remove(o);
@@ -3007,11 +3007,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.persist(collection);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -3026,11 +3024,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             em.merge(collection);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
@@ -3048,7 +3044,7 @@ public class JPADAO implements IDAO {
         q.setParameter("value", solrFieldValue);
         return (CMSCollection) getSingleResult(q).orElse(null);
     }
-    
+
     @Override
     public void refreshCMSCollection(CMSCollection collection) throws DAOException {
         preQuery();
@@ -3063,12 +3059,10 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            em.getTransaction()
-                    .begin();
+            em.getTransaction().begin();
             CMSCollection u = em.getReference(CMSCollection.class, collection.getId());
             em.remove(u);
-            em.getTransaction()
-                    .commit();
+            em.getTransaction().commit();
             return true;
         } finally {
             em.close();
