@@ -221,6 +221,17 @@
         <dependent-module archiveName="goobi-viewer-theme-ubwien.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-ubwien/goobi-viewer-theme-ubwien">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <!-- BSH -->
+        <dependent-module archiveName="goobi-viewer-theme-bsh.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-bsh/goobi-viewer-theme-bsh">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <!-- DLA MARBACH -->
+        <dependent-module archiveName="goobi-viewer-theme-dlam.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-dlam/goobi-viewer-theme-dlam">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="goobi-viewer-theme-playground.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/goobi-viewer-theme-playground/goobi-viewer-theme-playground">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/DigiversoPresentation/build/classes"/>
         <property name="context-root" value="viewer"/>
     </wb-module>
