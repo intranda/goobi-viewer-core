@@ -11,14 +11,14 @@
 	<composite:implementation>
 		<!-- TODO: fertig machen -->
 			<script type="text/javascript">
-			var searchURL = '#{navigationHelper.searchUrl}/-/#{cc.attrs.searchString}/1/-/';
+			var searchURL = "#{navigationHelper.searchUrl}/-/#{cc.attrs.searchString}/1/-/";
 			var applicationURL = "#{navigationHelper.applicationUrl}";
 			alert(searchURL);
 		
 		var $ = jQuery;
 		$().ready(function() {
 			alert(searchURL);
-			$('#resultYEAH').load(" http://localhost:8080/viewer/search/-/volk/1/-/ #searchList");
+			$("#resultYEAH").load(" http://localhost:8080/viewer/search/-/volk/1/-/ #searchList");
 		});
 		
 	</script>

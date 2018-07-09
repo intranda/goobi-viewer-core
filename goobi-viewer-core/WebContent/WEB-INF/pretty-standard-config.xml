@@ -279,8 +279,8 @@
 	</url-mapping>
 	
 	<!-- Calendar search -->
-	<url-mapping id="searchCalendar5">
-		<pattern value="/searchcalendar/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
+	<url-mapping id="searchCalendar4">
+		<pattern value="/searchcalendar/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(3)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>

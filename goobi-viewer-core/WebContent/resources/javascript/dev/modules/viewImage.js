@@ -78,7 +78,7 @@ var ImageView = ( function() {
          this.config = jQuery.extend(true, {}, _defaults);
          jQuery.extend(true, this.config, config);
          this.container = $( "#" + this.config.global.divId );
-         console.log("initializing image view with config ", this.config);
+         // console.log("initializing image view with config ", this.config);
 
 //         this.originalImageSize = {x:this.config.imageWidth, y:this.config.imageHeight};
 //         this.imageViewWidth = parseFloat($('#'+this.config.div).css("width"));

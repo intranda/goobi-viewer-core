@@ -103,7 +103,7 @@
                         </ui:repeat>
                         
                             <script>
-                                $('.search-standard__filter-radio input[type="radio"]').on('change', function() {
+                                $('.search-standard__filter-radio input[type="radio"]').on("change", function() {
                                     var currValue = $(this).val();
                                     console.log(currValue);
                                     
@@ -297,9 +297,9 @@
 							function() {
 								var searchSortingDropdownConfig = {};
 								var searchListConfig = {
-									contextPath : '#{request.contextPath}',
+									contextPath : "#{request.contextPath}",
 									msg : {
-										getMoreChildren : '#{msg.searchList_getMoreHits}'
+										getMoreChildren : "#{msg.searchList_getMoreHits}"
 									}
 								};
 
@@ -308,7 +308,7 @@
 								viewerJS.searchList.init(searchListConfig);
 							});
 
-			$(window).on('load', function() {
+			$(window).on("load", function() {
 				var stackedThumbnailsConfig = {};
 
 				viewerJS.stackedThumbnails.init(stackedThumbnailsConfig);

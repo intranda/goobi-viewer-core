@@ -40,14 +40,14 @@
 	                labelList : "#{statisticsBean.topStructTypesByNumber}",
 	                labelDesc : "#{msg.statistics_publicationTypes_dataLabel}",
 	            });
-	            publicationTypes.plot('chart-publication');
-	            publicationTypes.initSearchQuery('chart-publication', 'searchInput', 'searchBtn');
+	            publicationTypes.plot("chart-publication");
+	            publicationTypes.initSearchQuery("chart-publication", "searchInput", "searchBtn");
 	            
 	            var importedWorks = new Statistics.MostImportedWorksTrend( {
 	                labelList : "#{statisticsBean.getImportedRecordsTrend(6*30, 12)}",
 	                labelDesc : "#{msg.statistics_importedWorksTrend_dataLabel}",
 	            });
-	            importedWorks.plot('chart-import-over-time');
+	            importedWorks.plot("chart-import-over-time");
 	            
 	            var numPages = new Statistics.NumberOfPages( {
 	                titlePages : "#{msg.statistics_importedPages}",

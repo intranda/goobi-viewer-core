@@ -86,8 +86,6 @@
 
 		<download>http://localhost:8080/viewer/download/</download>
 
-		<!-- contentRestApi: REST API URL for content files -->
-		<!-- <contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi> -->
 	</urls>
 
 	<user>

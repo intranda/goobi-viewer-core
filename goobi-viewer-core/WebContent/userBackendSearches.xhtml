@@ -124,15 +124,15 @@
         <script type="text/javascript">
 			$( document ).ready( function() {
 			    var btnCount = 0;
-			    $.each( $('.my-searches__delete-button' ), function() {
-			        $( this ).attr( 'data-target', '#deleteSearchModal-' + btnCount );
+			    $.each( $(".my-searches__delete-button" ), function() {
+			        $( this ).attr( "data-target", "#deleteSearchModal-" + btnCount );
 			        btnCount++;
 			    });
 
 			    var modalCount = 0;
-			    $.each( $( '.my-searches__delete-modal' ), function() {
-			        $( this ).attr( 'id', 'deleteSearchModal-' + modalCount );
-			        $( this ).find( '.modal-title' ).attr( 'id', 'deleteSearchModalLabel-' + modalCount );
+			    $.each( $( ".my-searches__delete-modal" ), function() {
+			        $( this ).attr( "id", "deleteSearchModal-" + modalCount );
+			        $( this ).find( ".modal-title" ).attr( "id", "deleteSearchModalLabel-" + modalCount );
 			        modalCount++;
 			    });
 			});

@@ -12,7 +12,7 @@
     <composite:implementation>
         <!-- OPEN SEADRAGON -->
         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js"></script>
-			<script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
+        <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon-viewerinputhook.js"></script>
         <script type="text/javascript" src="#{request.contextPath}/resources/javascript/dist/viewImage.min.js"></script>
 
         <div id="readingModeImageWrapper">            
@@ -20,21 +20,21 @@
             
             <script type="text/javascript" rel="nofollow">          
                 //<![CDATA[
-                var imageMap = $( '#readingModeImage' );
-                var page = '#{navigationHelper.currentPage}';
+                var imageMap = $( "#readingModeImage" );
+                var page = "#{navigationHelper.currentPage}";
                 var configViewer = {
                     global: {
-                        divId: 'readingModeImage',
-                        zoomSlider: '.zoom-slider',
-                        zoomSliderHandle: '.zoom-slider-handle',
-				        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight('viewReadingMode')},
+                        divId: "readingModeImage",
+                        zoomSlider: ".zoom-slider",
+                        zoomSliderHandle: ".zoom-slider-handle",
+				        footerHeight: #{activeDocumentBean.viewManager.currentPage.getFooterHeight("viewReadingMode")},
                         persistZoom: #{configurationBean.rememberImageZoom},
                         persistRotation: #{configurationBean.rememberImageRotation},
                         persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
                     },
                     image: {
                         mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",
-                        tileSource : '#{activeDocumentBean.viewManager.currentImageInfo}',
+                        tileSource : "#{activeDocumentBean.viewManager.currentImageInfo}",
                         baseFooterUrl : "#{activeDocumentBean.viewManager.getWatermarkUrl('viewReadingMode')}",
                         highlightCoords: [
                             {
@@ -53,20 +53,21 @@
                 };
                 
                 var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-                var accessDeniedMessage = '<span class="access-denied">#{msg.noImage_accessDenied}</span>';
+                var accessDeniedMessage = $( "<span />" ).addClass( "access-denied" ).text( '#{msg.noImage_accessDenied}' );
                 
                 if ( access ) {
                     var viewImage = new ImageView.Image( configViewer );
+                    
                     viewImage.load().then( function( image ) {
                         // TODO: hide loader
                     }).catch( function( error ) {
-                        imageMap.html( viewerJS.helper.renderAlert( 'alert-danger', ( '#{msg.noImage_fileNotFound}: "' + error + '"' ), false ) );
+                        imageMap.html( viewerJS.helper.renderAlert( "alert-danger", "#{msg.noImage_fileNotFound}: " + error, false ) );
                         console.log(error);
-                    })
+                    });
                     
                     // reload image footer in readingmode
-                    if ( page === 'readingmode' ) {
-                    	$( window ).on( 'resize', function() {
+                    if ( page === "readingmode" ) {
+                    	$( window ).on( "resize", function() {
                     		viewImage.loadFooter();                    		
                     	} );
                     }

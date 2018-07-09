@@ -9,18 +9,18 @@
 	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
 	template="/resources/themes/#{navigationHelper.theme}/templateReadingMode.html">
 
+    <!-- METADATA -->
     <ui:define name="metadata">
         <f:metadata>
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('readingmode')}" />
         </f:metadata>
     </ui:define>
 
+    <!-- HEAD -->
     <ui:define name="head">
         <f:view contentType="text/html" encoding="utf-8">
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}"
-                rendered="#{configurationBean.addDublinCoreMetaTags}" />
-            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}"
-                rendered="#{configurationBean.addHighwirePressMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
         </f:view>
     </ui:define>
 </ui:composition>

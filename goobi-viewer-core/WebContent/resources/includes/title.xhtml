@@ -228,7 +228,7 @@
                             <!-- truncate title breadcrumbs -->
                             <script type="text/javascript">
                                 var maxStringLength = #{configurationBean.titleBreadcrumbsMaxTitleLength};
-                                $('.bread_label').each(function() {
+                                $(".bread_label").each(function() {
                                     $(this).html( viewerJS.helper.truncateString($(this).html(), maxStringLength) );
                                 });
                             </script>
@@ -242,12 +242,12 @@
 			<div class="clearfix"></div>
             
             <script type="text/javascript">                
-                $( '#titleCollapse' ).on( 'show.bs.collapse', function () {
-                    $( '.title-header .fa' ).removeClass( 'fa-chevron-down' ).addClass( 'fa-chevron-up' );
+                $( "#titleCollapse" ).on( "show.bs.collapse", function () {
+                    $( ".title-header .fa" ).removeClass( "fa-chevron-down" ).addClass( "fa-chevron-up" );
                 });
                 
-                $( '#titleCollapse' ).on( 'hidden.bs.collapse', function () {
-                    $( '.title-header .fa' ).removeClass( 'fa-chevron-up' ).addClass( 'fa-chevron-down' );
+                $( "#titleCollapse" ).on( "hidden.bs.collapse", function () {
+                    $( ".title-header .fa" ).removeClass( "fa-chevron-up" ).addClass( "fa-chevron-down" );
                 });
             </script>
         </f:view>

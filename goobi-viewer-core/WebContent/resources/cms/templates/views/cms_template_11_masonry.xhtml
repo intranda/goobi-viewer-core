@@ -58,12 +58,12 @@
                 <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/masonry/imagesloaded.min.js"></script>
                 <script type="text/javascript">
                     $.ajax( {
-                        url: '#{cmsPage.getTileGridUrl("grid")}',
-                        type: 'GET',
-                        datatype: 'JSON'
+                        url: "#{cmsPage.getTileGridUrl('grid')}",
+                        type: "GET",
+                        datatype: "JSON"
                     } ).then( function( data ) {
                         var masonryConfig = {
-                            $grid: $( '.grid' )
+                            $grid: $( ".grid" )
                         };
                             
                         cmsJS.masonry.init( masonryConfig, data );

@@ -327,50 +327,50 @@
             </h:panelGroup>            
             
             <script type="text/javascript">
-                $( '[data-toggle="mv-element"]' ).on( 'click', function() {
+                $( '[data-toggle="mv-element"]' ).on( "click", function() {
                     var currBtn = $( this );
                     
-                    currBtn.toggleClass( 'active' );
-                    currBtn.parents().next( '.toc__mv-element' ).slideToggle( {
+                    currBtn.toggleClass( "active" );
+                    currBtn.parents().next( ".toc__mv-element" ).slideToggle( {
                         duration: 0,
                         start: function() {
-                            currBtn.prev().toggleClass( 'inactive' );                        
+                            currBtn.prev().toggleClass( "inactive" );                        
                         }
                     } );
                 } );
                 
-                 $( '[data-iddoc*="iddoc"] a' ).on( 'click', function( event ) {
+                 $( '[data-iddoc*="iddoc"] a' ).on( "click", function( event ) {
                      event.preventDefault();
                      
-                     var currIdDoc = $( this ).parents( 'li' ).attr( 'data-iddoc' );
-                     var currUrl = $( this ).attr( 'href' );
+                     var currIdDoc = $( this ).parents( "li" ).attr( "data-iddoc" );
+                     var currUrl = $( this ).attr( "href" );
                      
-                     localStorage.setItem( 'currIdDoc', currIdDoc );
+                     localStorage.setItem( "currIdDoc", currIdDoc );
                      location.href = currUrl;
                  } );
             
                 var downloadModalConfig = {
-                	downloadBtn: $( '.download-modal' ),
-                    path: '#{navigationHelper.applicationUrl}',
-                    iiifPath: '#{configurationBean.iiifApiUrl}',
-                    userEmail: $( '#userEmail' ).val(),
+                	downloadBtn: $( ".download-modal" ),
+                    path: "#{navigationHelper.applicationUrl}",
+                    iiifPath: "#{configurationBean.iiifApiUrl}",
+                    userEmail: $( "#userEmail" ).val(),
                     useReCaptcha: #{configurationBean.useReCaptcha},
-                    reCaptchaSiteKey: '#{configurationBean.reCaptchaSiteKey}',
+                    reCaptchaSiteKey: "#{configurationBean.reCaptchaSiteKey}",
                     messages: {
                         downloadInfo: {
-                            text: '#{msg.downloadInfoText}',
-                            title: '#{msg.downloadInfoTitle}',
-                            part: '#{msg.downloadInfoPart}',
-                            fileSize: '#{msg.downloadInfoFileSize}'
+                            text: "#{msg.downloadInfoText}",
+                            title: "#{msg.downloadInfoTitle}",
+                            part: "#{msg.downloadInfoPart}",
+                            fileSize: "#{msg.downloadInfoFileSize}"
                         },
-                        reCaptchaText: '#{msg.downloadReCaptchaText}',
-                        rcInvalid: '#{msg.downloadRcInvalid}',
-                        rcValid: '#{msg.downloadRcValid}',
-                        eMailText: '#{msg.downloadEMailText}',
-                        eMailTextLoggedIn: '#{msg.downloadEMailTextLoggedIn}',
-                        eMail: '#{msg.downloadEmail}',
-                        closeBtn: '#{msg.downloadCloseModal}',
-                        saveBtn: '#{msg.downloadGenerateFile}',
+                        reCaptchaText: "#{msg.downloadReCaptchaText}",
+                        rcInvalid: "#{msg.downloadRcInvalid}",
+                        rcValid: "#{msg.downloadRcValid}",
+                        eMailText: "#{msg.downloadEMailText}",
+                        eMailTextLoggedIn: "#{msg.downloadEMailTextLoggedIn}",
+                        eMail: "#{msg.downloadEmail}",
+                        closeBtn: "#{msg.downloadCloseModal}",
+                        saveBtn: "#{msg.downloadGenerateFile}",
                     }
                 };
             

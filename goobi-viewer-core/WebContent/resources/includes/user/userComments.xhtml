@@ -85,7 +85,7 @@
                                     <ui:fragment rendered="#{userBean.loggedIn and (userBean.user == comment.owner or userBean.user.superuser)}">
                                         <span class="user-comments__comment-content-options-delete">
                                             <h:commandLink
-                                                onclick="if ( !confirm( '#{msg.userCommentDeleteText}' ) ) { return false; }"
+                                                onclick="if ( !confirm( &quot;#{msg.userCommentDeleteText}&quot; ) ) { return false; }"
                                                 action="#{activeDocumentBean.viewManager.currentPage.deleteCommentAction(comment)}" 
                                                 title="#{msg.userCommentDelete}">
                                                 <i class="fa fa-trash-o" aria-hidden="true"></i>

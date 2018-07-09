@@ -383,9 +383,9 @@
             $( document ).ready( function() {
                 var searchSortingDropdownConfig = {};
                 var searchListConfig = {
-                    contextPath: '#{request.contextPath}',
+                    contextPath: "#{request.contextPath}",
                     msg: {
-                        getMoreChildren: '#{msg.searchList_getMoreHits}'
+                        getMoreChildren: "#{msg.searchList_getMoreHits}"
                     }
                 };
                 
@@ -393,7 +393,7 @@
                 viewerJS.searchList.init( searchListConfig );
             } );
             
-            $( window ).on( 'load', function() {
+            $( window ).on( "load", function() {
                 var stackedThumbnailsConfig = {};
                 
                 viewerJS.stackedThumbnails.init( stackedThumbnailsConfig );
