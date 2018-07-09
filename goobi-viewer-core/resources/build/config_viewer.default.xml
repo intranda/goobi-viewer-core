@@ -79,13 +79,10 @@
 		<dfg-viewer>http://dfg-viewer.de/show?set[mets]=</dfg-viewer>
 
 		<!-- The iiif service url from which images are requested via iiif -->
-		<iiif>http://localhost:8080/viewer/iiif/</iiif>
+		<rest>http://localhost:8080/viewer/rest/</rest>
 
 		<!-- The base urls to access download pages for pdf and epub downloads -->
 		<download>http://localhost:8080/viewer/download/</download>
-
-		<!-- contentRestApi: REST API URL for content files -->
-		<contentRestApi>http://localhost:8080/viewer/rest/content/</contentRestApi>
 	</urls>
 
 
