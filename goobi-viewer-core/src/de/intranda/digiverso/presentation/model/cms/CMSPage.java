@@ -103,12 +103,12 @@ public class CMSPage {
 
     @Column(name = "persistent_url", nullable = true)
     private String persistentUrl;
-    
+
     @Column(name = "related_pi", nullable = true)
     private String relatedPI;
-    
+
     @Column(name = "subtheme_discriminator", nullable = true)
-    private String subThemeDiscriminatorValue = null;    
+    private String subThemeDiscriminatorValue = null;
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @OrderBy("order")
@@ -125,22 +125,23 @@ public class CMSPage {
     private List<String> classifications = new ArrayList<>();
 
     /**
-     * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page
-     * The system could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
+     * The id of the parent page. This is usually the id (as String) of the parent cms page, or NULL if the parent page is the start page The system
+     * could be extended to set any page type name as parent page (so this page is a breadcrumb-child of e.g. "image view")
      */
     @Column(name = "parent_page")
     private String parentPageId = null;
-    
+
     @Transient
     private String sidebarElementString = null;
 
-    @Transient PageValidityStatus validityStatus;
+    @Transient
+    PageValidityStatus validityStatus;
 
     @Transient
     private int listPage = 1;
 
     /**
-     *  @deprecated static pages are now stored in a separate table. This only remains for backwards compability
+     * @deprecated static pages are now stored in a separate table. This only remains for backwards compability
      */
     @Deprecated
     @Column(name = "static_page", nullable = true)
@@ -441,7 +442,7 @@ public class CMSPage {
                 return version;
             }
         }
-        synchronized (languageVersions) {            
+        synchronized (languageVersions) {
             try {
                 CMSPageLanguageVersion version = getTemplate().createNewLanguageVersion(this, language);
                 this.languageVersions.add(version);
@@ -468,7 +469,7 @@ public class CMSPage {
 
     public String getMenuTitle(Locale locale) {
         CMSPageLanguageVersion lang = getLanguageVersion(locale.getLanguage());
-        if(lang != null) {            
+        if (lang != null) {
             return lang.getMenuTitle();
         }
         return "";
@@ -481,14 +482,14 @@ public class CMSPage {
     public void setPageSorting(Long pageSorting) {
         this.pageSorting = pageSorting;
     }
-    
+
     /**
      * @return the subThemeDiscriminatorValue
      */
     public String getSubThemeDiscriminatorValue() {
         return subThemeDiscriminatorValue;
     }
-    
+
     /**
      * @param subThemeDiscriminatorValue the subThemeDiscriminatorValue to set
      */
@@ -544,6 +545,7 @@ public class CMSPage {
     }
 
     private CMSPageLanguageVersion getBestLanguage(Locale locale) {
+        logger.trace("getBestLanguage");
         CMSPageLanguageVersion language = getLanguageVersion(locale);
         if (language != null && language.getStatus().equals(CMSPageStatus.FINISHED)) {
             return language;
@@ -568,9 +570,10 @@ public class CMSPage {
             return l;
         }
 
+        logger.trace("getBestLanguage END");
         return new CMSPageLanguageVersion();
     }
-    
+
     /**
      * @return the pretty url to this page (using alternative url if set)
      */
@@ -604,18 +607,17 @@ public class CMSPage {
     public String getContent(String itemId) throws ViewerConfigurationException {
         return getContent(itemId, null, null);
     }
-    
+
     public Optional<CMSMediaItem> getMediaItem(String itemId) {
-        return Optional.ofNullable(getContentItem(itemId))
-        .map(content -> content.getMediaItem());
+        return Optional.ofNullable(getContentItem(itemId)).map(content -> content.getMediaItem());
     }
-    
+
     public Optional<CMSMediaItem> getMediaItem() {
         return getGlobalContentItems().stream()
-        .filter(content -> CMSContentItemType.MEDIA.equals(content.getType()))
-        .map(content -> content.getMediaItem())
-        .filter(item -> item != null)
-        .findFirst();
+                .filter(content -> CMSContentItemType.MEDIA.equals(content.getType()))
+                .map(content -> content.getMediaItem())
+                .filter(item -> item != null)
+                .findFirst();
     }
 
     public String getContent(String itemId, String width, String height) throws ViewerConfigurationException {
@@ -706,7 +708,7 @@ public class CMSPage {
         resetItemData();
         this.listPage = listPage;
         this.getContentItems().forEach(item -> item.getFunctionality().setPageNo(listPage));
-        
+
     }
 
     /**
@@ -806,13 +808,20 @@ public class CMSPage {
         CMSContentItem item = getContentItem(itemId);
         if (item != null && item.getType().equals(CMSContentItemType.TILEGRID)) {
             StringBuilder sb = new StringBuilder(BeanUtils.getServletPathWithHostAsUrlFromJsfContext());
-            sb.append("/rest/tilegrid/").append(CmsBean.getCurrentLocale().getLanguage()).append("/").append(item.getNumberOfTiles()).append("/")
-                    .append(item.getNumberOfImportantTiles()).append("/").append(item.getAllowedTags()).append("/");
+            sb.append("/rest/tilegrid/")
+                    .append(CmsBean.getCurrentLocale().getLanguage())
+                    .append("/")
+                    .append(item.getNumberOfTiles())
+                    .append("/")
+                    .append(item.getNumberOfImportantTiles())
+                    .append("/")
+                    .append(item.getAllowedTags())
+                    .append("/");
             return sb.toString();
         }
         throw new IllegalRequestException("No tile grid item with id '" + itemId + "' found");
     }
-    
+
     public String getRelativeUrlPath() {
         return getRelativeUrlPath(true);
     }
@@ -823,10 +832,10 @@ public class CMSPage {
     public String getRelativeUrlPath(boolean pretty) {
         if (pretty && StringUtils.isNotBlank(getPersistentUrl())) {
             return getPersistentUrl() + "/";
-        } else if(pretty){
+        } else if (pretty) {
             try {
                 Optional<CMSStaticPage> staticPage = DataManager.getInstance().getDao().getStaticPageForCMSPage(this);
-                if(staticPage.isPresent()){
+                if (staticPage.isPresent()) {
                     return staticPage.get().getPageName() + "/";
                 }
             } catch (DAOException e) {
@@ -837,11 +846,10 @@ public class CMSPage {
     }
 
     public void addContentItem(CMSContentItem item) {
-        synchronized (languageVersions) {            
-            if(item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
-            getLanguageVersions().stream()
-            .filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE))
-            .forEach(lang -> lang.addContentItem(item));
+        synchronized (languageVersions) {
+            if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+                getLanguageVersions().stream().filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
+                        lang -> lang.addContentItem(item));
             } else {
                 getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
             }
@@ -852,105 +860,105 @@ public class CMSPage {
      * @param itemId
      * @return
      */
-    public boolean hasContentItem(final String itemId) {          
-        synchronized (languageVersions) {            
+    public boolean hasContentItem(final String itemId) {
+        synchronized (languageVersions) {
             return languageVersions.stream()
                     .flatMap(lang -> lang.getContentItems().stream())
-//                    .map(lang -> lang.getContentItem(itemId))
-//                    .filter(item -> item != null)
+                    //                    .map(lang -> lang.getContentItem(itemId))
+                    //                    .filter(item -> item != null)
                     .filter(item -> item.getItemId().equals(itemId))
-                    .findAny().isPresent();
+                    .findAny()
+                    .isPresent();
         }
     }
-    
+
     /**
-     * Returns the first found SearchFunctionality of any containted content items
-     * If no fitting item is found, a new default SearchFunctionality is returned
+     * Returns the first found SearchFunctionality of any containted content items If no fitting item is found, a new default SearchFunctionality is
+     * returned
      * 
      * @return SearchFunctionality, not null
      */
     public SearchFunctionality getSearch() {
-        Optional<CMSContentItem> searchItem = getGlobalContentItems().stream()
-        .filter(item -> CMSContentItemType.SEARCH.equals(item.getType()))
-        .findFirst();
-        if(searchItem.isPresent()) {
+        Optional<CMSContentItem> searchItem =
+                getGlobalContentItems().stream().filter(item -> CMSContentItemType.SEARCH.equals(item.getType())).findFirst();
+        if (searchItem.isPresent()) {
             return (SearchFunctionality) searchItem.get().getFunctionality();
         }
         logger.warn("Did not find search functionality in page " + this);
         return new SearchFunctionality("", getPageUrl());
     }
-    
+
     public boolean isHasSidebarElements() {
-       if(!isUseDefaultSidebar()) {
-           return getSidebarElements() != null && !getSidebarElements().isEmpty();
-       }
-    return true;
+        if (!isUseDefaultSidebar()) {
+            return getSidebarElements() != null && !getSidebarElements().isEmpty();
+        }
+        return true;
     }
-    
+
     public void addLanguageVersion(CMSPageLanguageVersion version) {
         this.languageVersions.add(version);
         version.setOwnerPage(this);
     }
-    
+
     /**
      * @param parentPageId the parentPageId to set
      */
     public void setParentPageId(String parentPageId) {
         this.parentPageId = parentPageId;
     }
-    
+
     /**
      * @return the parentPageId
      */
     public String getParentPageId() {
         return parentPageId;
     }
-    
+
     /**
      * @return the validityStatus
      */
     public PageValidityStatus getValidityStatus() {
         return validityStatus;
     }
-    
+
     /**
      * @param validityStatus the validityStatus to set
      */
     public void setValidityStatus(PageValidityStatus validityStatus) {
         this.validityStatus = validityStatus;
     }
+
     /**
      * @return true if this page's template is configured to follow urls which contain additional parameters (e.g. search parameters)
      */
     public boolean mayContainURLParameters() {
-        try {            
-            if(getTemplate() != null) {            
+        try {
+            if (getTemplate() != null) {
                 return getTemplate().isAppliesToExpandedUrl();
             }
             return false;
-        } catch(IllegalStateException e) {
+        } catch (IllegalStateException e) {
             logger.warn("Unable to acquire template", e);
             return false;
         }
     }
-    
+
     /**
      * @return the relatedPI
      */
     public String getRelatedPI() {
         return relatedPI;
     }
-    
+
     /**
      * @param relatedPI the relatedPI to set
      */
     public void setRelatedPI(String relatedPI) {
         this.relatedPI = relatedPI;
     }
-    
+
     public CollectionView getCollection() throws PresentationException, IndexUnreachableException {
         return BeanUtils.getCmsBean().getCollection(this);
     }
-
 
 }
