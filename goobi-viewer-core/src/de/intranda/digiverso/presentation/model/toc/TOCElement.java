@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
@@ -172,8 +173,9 @@ public class TOCElement implements Serializable {
      *
      * @param str {@link String}
      * @return {@link String}
+     * @throws ViewerConfigurationException
      ***************************************************************************************************************/
-    public String getContentServerPdfUrl() {        
+    public String getContentServerPdfUrl() throws ViewerConfigurationException {        
         return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(topStructPi, Optional.ofNullable(logId), Optional.ofNullable(getFooterId()), Optional.empty(), label.getValue());
 
     }
@@ -248,9 +250,9 @@ public class TOCElement implements Serializable {
         Locale locale = BeanUtils.getLocale();
         if(locale != null) {
             return getLabel(locale);
-        } else {            
-            return label.getValue().orElse("");
         }
+        
+        return label.getValue().orElse("");
     }
     
     /**

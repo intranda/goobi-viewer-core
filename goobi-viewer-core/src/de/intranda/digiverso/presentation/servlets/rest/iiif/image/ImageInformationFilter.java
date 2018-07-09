@@ -33,7 +33,6 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
@@ -41,25 +40,18 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
-import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
-import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 import de.intranda.digiverso.presentation.model.viewer.pageloader.LeanPageLoader;
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.AbsoluteScale;
-import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale.RelativeScale;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageProfile;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageTile;
@@ -84,7 +76,7 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
             Path requestPath = Paths.get(request.getUriInfo().getPath());
 
-            switch(requestPath.getName(0).toString().toLowerCase()) {
+            switch (requestPath.getName(0).toString().toLowerCase()) {
                 case "fullscreen":
                     pageType = PageType.viewFullscreen;
                     break;
@@ -98,42 +90,44 @@ public class ImageInformationFilter implements ContainerResponseFilter {
                     pageType = PageType.editContent;
                     break;
                 default:
-                        pageType = PageType.getByName(requestPath.getName(0).toString());
-                    
+                    pageType = PageType.getByName(requestPath.getName(0).toString());
+
             }
 
             imageType = getImageType((ImageInformation) responseObject);
 
-			try {
-				List<Integer> imageSizes = getImageSizesFromConfig();
-				setImageSizes((ImageInformation) responseObject, imageSizes);
-				List<ImageTile> tileSizes;
-				tileSizes = getTileSizesFromConfig();
-				setTileSizes((ImageInformation) responseObject, tileSizes);
-				setMaxImageSizes((ImageInformation) responseObject);
-				//This adds 200 or more ms to the request time. So we ignore this unless it is actually requested
-//				setWatermark((ImageInformation) responseObject);
-			} catch (ConfigurationException e) {
-				logger.error(e.toString(), e);
-			}
+            try {
+                List<Integer> imageSizes = getImageSizesFromConfig();
+                setImageSizes((ImageInformation) responseObject, imageSizes);
+                List<ImageTile> tileSizes;
+                tileSizes = getTileSizesFromConfig();
+                setTileSizes((ImageInformation) responseObject, tileSizes);
+                setMaxImageSizes((ImageInformation) responseObject);
+                //This adds 200 or more ms to the request time. So we ignore this unless it is actually requested
+                //				setWatermark((ImageInformation) responseObject);
+            } catch (ViewerConfigurationException e) {
+                logger.error(e.toString());
+            }
         }
     }
-    
+
     /**
      * @param responseObject
+     * @throws ViewerConfigurationException
      */
     private void setWatermark(ImageInformation info) {
         Path path = Paths.get(info.getId());
-        String filename = path.getName(path.getNameCount()-1).toString();
-        String pi = path.getName(path.getNameCount()-2).toString();
-        
-        if(StringUtils.isNoneBlank(filename, pi) && !pi.equals("-")) {
-            try {                
+        String filename = path.getName(path.getNameCount() - 1).toString();
+        String pi = path.getName(path.getNameCount() - 2).toString();
+
+        if (StringUtils.isNoneBlank(filename, pi) && !pi.equals("-")) {
+            try {
                 Optional<StructElement> element = getStructElement(pi);
                 Optional<PhysicalElement> page = element.map(ele -> getPage(filename, ele).orElse(null));
-                Optional<String> watermarkUrl = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(page, element, Optional.ofNullable(pageType));
+                Optional<String> watermarkUrl =
+                        BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(page, element, Optional.ofNullable(pageType));
                 watermarkUrl.ifPresent(url -> info.setLogo(url));
-            } catch(DAOException | ConfigurationException | IndexUnreachableException | PresentationException e) {
+            } catch (DAOException | ViewerConfigurationException | IndexUnreachableException | PresentationException e) {
                 logger.error("Unable to add watermark to image information: " + e.toString(), e);
             }
         }
@@ -143,11 +137,11 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @param filename
      * @param element
      * @return
-     * @throws IndexUnreachableException 
-     * @throws DAOException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws PresentationException
      */
-    private Optional<PhysicalElement> getPage(String filename, StructElement element) {
+    private static Optional<PhysicalElement> getPage(String filename, StructElement element) {
         try {
             LeanPageLoader pageLoader = new LeanPageLoader(element, 1);
             return Optional.ofNullable(pageLoader.getPageForFileName(filename));
@@ -168,8 +162,8 @@ public class ImageInformationFilter implements ContainerResponseFilter {
         List<String> fieldList = new ArrayList<>(Arrays.asList(WatermarkHandler.REQUIRED_SOLR_FIELDS));
         fieldList.add(DataManager.getInstance().getConfiguration().getWatermarkIdField());
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, fieldList);
-        if(doc != null) {            
-            Long iddoc = Long.parseLong((String)doc.getFieldValue(SolrConstants.IDDOC));
+        if (doc != null) {
+            Long iddoc = Long.parseLong((String) doc.getFieldValue(SolrConstants.IDDOC));
             StructElement element = new StructElement(iddoc, doc);
             return Optional.ofNullable(element);
         }
@@ -180,28 +174,25 @@ public class ImageInformationFilter implements ContainerResponseFilter {
      * @param responseObject
      * @return
      */
-    private ImageType getImageType(ImageInformation info) {
+    private static ImageType getImageType(ImageInformation info) {
         String id = info.getId();
         ImageFileFormat iff = ImageFileFormat.getImageFileFormatFromFileExtension(id);
-        if(iff != null) {
+        if (iff != null) {
             return new ImageType(iff);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
-    private static void setMaxImageSizes(ImageInformation info){
-        Optional<ImageProfile> profile = info.getProfiles().stream()
-                .filter(p -> p instanceof ImageProfile)
-                .map(p -> (ImageProfile)p)
-                .findFirst();
-        profile.ifPresent(p -> {            
+    private static void setMaxImageSizes(ImageInformation info) {
+        Optional<ImageProfile> profile = info.getProfiles().stream().filter(p -> p instanceof ImageProfile).map(p -> (ImageProfile) p).findFirst();
+        profile.ifPresent(p -> {
             int maxWidth = DataManager.getInstance().getConfiguration().getViewerMaxImageWidth();
             int maxHeight = DataManager.getInstance().getConfiguration().getViewerMaxImageHeight();
-            if(maxWidth > 0) {
+            if (maxWidth > 0) {
                 p.setMaxWidth(maxWidth);
             }
-            if(maxHeight > 0) {
+            if (maxHeight > 0) {
                 p.setMaxHeight(maxHeight);
             }
         });
@@ -226,9 +217,9 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     /**
      * @param responseObject
      * @return
-     * @throws ConfigurationException 
+     * @throws ViewerConfigurationException
      */
-    private List<Integer> getImageSizesFromConfig() throws ConfigurationException {
+    private List<Integer> getImageSizesFromConfig() throws ViewerConfigurationException {
 
         List<String> sizeStrings = DataManager.getInstance().getConfiguration().getImageViewZoomScales(pageType, imageType);
         List<Integer> sizes = new ArrayList<>();
@@ -245,11 +236,11 @@ public class ImageInformationFilter implements ContainerResponseFilter {
 
     /**
      * @return
-     * @throws ConfigurationException 
+     * @throws ViewerConfigurationException
      */
-    private List<ImageTile> getTileSizesFromConfig() throws ConfigurationException {
-        Map<Integer, List<Integer>> configSizes = Collections.EMPTY_MAP;
-        if(DataManager.getInstance().getConfiguration().useTiles(pageType, imageType)) {            
+    private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
+        Map<Integer, List<Integer>> configSizes = Collections.emptyMap();
+        if (DataManager.getInstance().getConfiguration().useTiles(pageType, imageType)) {
             configSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, imageType);
         }
         List<ImageTile> tiles = new ArrayList<>();
@@ -267,6 +258,5 @@ public class ImageInformationFilter implements ContainerResponseFilter {
     private static void setTileSizes(ImageInformation imageInfo, List<ImageTile> tileSizes) {
         imageInfo.setTiles(tileSizes);
     }
-
 
 }

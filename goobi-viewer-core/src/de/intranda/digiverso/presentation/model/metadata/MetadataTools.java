@@ -17,7 +17,6 @@ package de.intranda.digiverso.presentation.model.metadata;
 
 import java.util.List;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -25,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
@@ -115,10 +115,10 @@ public class MetadataTools {
      * @param pages
      * @return String containing meta tags
      * @throws IndexUnreachableException
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      */
     public static String generateHighwirePressMetaTags(StructElement structElement, List<PhysicalElement> pages)
-            throws IndexUnreachableException, ConfigurationException {
+            throws IndexUnreachableException, ViewerConfigurationException {
         if (structElement == null) {
             return "";
         }

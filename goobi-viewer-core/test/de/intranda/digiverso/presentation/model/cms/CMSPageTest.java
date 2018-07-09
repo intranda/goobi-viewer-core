@@ -41,6 +41,7 @@ import de.intranda.digiverso.presentation.TestUtils;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.CMSContentItem.CMSContentItemType;
@@ -49,20 +50,21 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 
 //@RunWith(PowerMockRunner.class)
 //@PrepareForTest(BeanUtils.class)
-public class CMSPageTest extends AbstractDatabaseEnabledTest{
+public class CMSPageTest extends AbstractDatabaseEnabledTest {
 
-    private static final String[] CLASSIFICATIONS = new String[]{"A", "B", "C", "D"};
-    
+    private static final String[] CLASSIFICATIONS = new String[] { "A", "B", "C", "D" };
+
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-//        ImageDeliveryBean idb = new ImageDeliveryBean();
-//        PowerMockito.mockStatic(BeanUtils.class);
-//        BDDMockito.given(BeanUtils.getImageDeliveryBean()).willReturn(idb);
-//        BDDMockito.given(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).willReturn("http://localhost:8080/viewer");
+        //        ImageDeliveryBean idb = new ImageDeliveryBean();
+        //        PowerMockito.mockStatic(BeanUtils.class);
+        //        BDDMockito.given(BeanUtils.getImageDeliveryBean()).willReturn(idb);
+        //        BDDMockito.given(BeanUtils.getServletPathWithHostAsUrlFromJsfContext()).willReturn("http://localhost:8080/viewer");
         FacesContext facesContext = TestUtils.mockFacesContext();
         ServletContext servletContext = (ServletContext) facesContext.getExternalContext().getContext();
         Mockito.when(servletContext.getRealPath("/")).thenReturn("WebContent");
@@ -72,6 +74,7 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -110,53 +113,53 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
             String viewerUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
             String language = CmsBean.getCurrentLocale().getLanguage();
             String expecedUrl = viewerUrl + "/rest/tilegrid/" + language + "/" + numTiles + "/" + numTiles + "/" + allowedTags + "/";
-//            expecedUrl = expecedUrl.replace("//", "/");
+            //            expecedUrl = expecedUrl.replace("//", "/");
             Assert.assertEquals(expecedUrl, url);
         } catch (IllegalRequestException e) {
             fail("Item not found");
         }
 
     }
-    
+
     @Test
-    public void testCMSPage() throws DAOException, IOException, ServletException, URISyntaxException {
+    public void testCMSPage() throws DAOException, IOException, ServletException, URISyntaxException, ViewerConfigurationException {
         //setup
         CMSPage page = new CMSPage();
         String templateId = "template";
         page.setTemplateId(templateId);
-        
+
         CMSPageLanguageVersion german = new CMSPageLanguageVersion();
         german.setLanguage("de");
         page.addLanguageVersion(german);
         CMSPageLanguageVersion global = new CMSPageLanguageVersion();
         global.setLanguage("global");
         page.addLanguageVersion(global);
-        
+
         Date created = new Date();
-        created.setYear(created.getYear()-2);
+        created.setYear(created.getYear() - 2);
         Date updated = new Date();
         page.setDateCreated(created);
         page.setDateUpdated(updated);
-        
-        page.setClassifications(new ArrayList<String>(Arrays.asList(CLASSIFICATIONS)));
-        
+
+        page.setClassifications(new ArrayList<>(Arrays.asList(CLASSIFICATIONS)));
+
         String altUrl = "test/page/";
         page.setPersistentUrl(altUrl);
-        
+
         String textContent = "Text";
         String textId = "text";
         CMSContentItem text = new CMSContentItem(CMSContentItemType.TEXT);
         text.setItemId(textId);
         text.setHtmlFragment(textContent);
         page.addContentItem(text);
-        
+
         String htmlContent = "<div>Content</div>";
         String htmlId = "html";
         CMSContentItem html = new CMSContentItem(CMSContentItemType.HTML);
         html.setItemId(htmlId);
         html.setHtmlFragment(htmlContent);
         page.addContentItem(html);
-        
+
         CMSMediaItem media = new CMSMediaItem();
         String mediaFilename = "image 01.jpg";
         media.setFileName(mediaFilename);
@@ -165,44 +168,45 @@ public class CMSPageTest extends AbstractDatabaseEnabledTest{
         image.setItemId(imageId);
         image.setMediaItem(media);
         page.addContentItem(image);
-        
+
         String componentName = "sampleComponent";
         String componentId = "component";
         CMSContentItem component = new CMSContentItem(CMSContentItemType.COMPONENT);
         component.setItemId(componentId);
         component.setComponent(componentName);
         page.addContentItem(component);
-        
+
         DataManager.getInstance().getDao().addCMSMediaItem(media);
         Long mediaId = media.getId();
         DataManager.getInstance().getDao().addCMSPage(page);
         Long pageId = page.getId();
-        
+
         german.generateCompleteContentItemList();
-        
+
         //tests
         Assert.assertEquals(created, page.getDateCreated());
         Assert.assertEquals(updated, page.getDateUpdated());
         Assert.assertEquals(Arrays.asList(CLASSIFICATIONS), page.getClassifications());
         Assert.assertEquals(altUrl, page.getRelativeUrlPath(true));
         Assert.assertEquals("cms/" + pageId + "/", page.getRelativeUrlPath(false));
-        
+
         Assert.assertEquals(textContent, page.getContent(textId));
-        
+
         String htmlUrl = page.getContent(htmlId);
         Path htmlUrlPath = Paths.get(new URI(htmlUrl).getPath());
-        String htmlResponse = new CMSContentResource().getContentHtml(Long.parseLong(htmlUrlPath.subpath(3, 4).toString()), htmlUrlPath.subpath(4, 5).toString(), htmlUrlPath.subpath(5, 6).toString());
+        String htmlResponse = new CMSContentResource().getContentHtml(Long.parseLong(htmlUrlPath.subpath(3, 4).toString()),
+                htmlUrlPath.subpath(4, 5).toString(), htmlUrlPath.subpath(5, 6).toString());
         Assert.assertEquals("<span>" + htmlContent + "</span>", htmlResponse);
-       
-        String contentServerUrl = DataManager.getInstance().getConfiguration().getIiifUrl();
+
+        String contentServerUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
 
         String filePath = media.getImageURI();
         filePath = BeanUtils.escapeCriticalUrlChracters(filePath, false);
-       
-        String imageUrl = contentServerUrl + "image/-/"+filePath+"/full/max/0/default.jpg";
+
+        String imageUrl = contentServerUrl + "image/-/" + filePath + "/full/max/0/default.jpg";
         Assert.assertEquals(imageUrl, page.getContent(imageId));
         Assert.assertEquals(componentName, page.getContent(componentId));
-        
+
     }
 
 }

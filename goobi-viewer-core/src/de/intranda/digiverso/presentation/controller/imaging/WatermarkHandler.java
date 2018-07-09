@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -34,6 +33,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
@@ -78,12 +78,12 @@ public class WatermarkHandler {
      * @param doc
      * @param pageType The pageType of the currentView. Taken into consideration for footer height, if not null
      * @return
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      * @throws IndexUnreachableException
      * @throws DAOException
      */
     public Optional<String> getWatermarkUrl(Optional<PhysicalElement> page, Optional<StructElement> doc, Optional<PageType> pageType)
-            throws ConfigurationException, IndexUnreachableException, DAOException {
+            throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return getWatermarkUrl(Scale.MAX, pageType, page.map(p -> p.getImageType()), doc.map(d -> getFooterIdIfExists(d).orElse(null)),
                 page.map(p -> getWatermarkTextIfExists(p).orElse(null)));
     }
@@ -98,16 +98,16 @@ public class WatermarkHandler {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      */
     public Optional<String> getWatermarkUrl(Scale scale, Optional<PageType> pageType, Optional<ImageType> imageType, Optional<String> watermarkId,
-            Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ConfigurationException {
+            Optional<String> watermarkText) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         int footerHeight = DataManager.getInstance().getConfiguration().getFooterHeight(pageType.orElse(null), imageType.orElse(null));
         if (footerHeight > 0) {
             String format = DataManager.getInstance().getConfiguration().getWatermarkFormat();
 
-            StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
+            StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
 
             urlBuilder.append("footer/full/").append(scale.toString()).append("/0/default.").append(format);
 
@@ -117,9 +117,9 @@ public class WatermarkHandler {
             watermarkText.ifPresent(text -> urlBuilder.append(separator.getChar()).append("watermarkText=").append(text));
 
             return Optional.of(urlBuilder.toString());
-        } else {
-            return Optional.empty();
         }
+
+        return Optional.empty();
     }
 
     /**
@@ -238,7 +238,7 @@ public class WatermarkHandler {
                     }
                 }
                 if (!documentWatermarkTextMap.containsKey(doc.getPi())) {
-                    documentWatermarkTextMap.put(doc.getPi(), urlBuilder.length() > 0 ? urlBuilder.toString(): null);
+                    documentWatermarkTextMap.put(doc.getPi(), urlBuilder.length() > 0 ? urlBuilder.toString() : null);
                 }
                 if (StringUtils.isNotBlank(urlBuilder.toString())) {
                     return Optional.of(urlBuilder.toString());

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -46,7 +47,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 public class DFGViewerImage extends HttpServlet implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DFGViewerImage.class);
-    
+
     /**
      * 
      */
@@ -62,7 +63,6 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        
         Path path = Paths.get(request.getPathInfo());
 
         String pi = path.getName(0).toString();
@@ -80,16 +80,18 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
                 throw new IllegalRequestException("Size parameter must be a number, but is " + widthString);
             }
 
-            String baseUri = DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + id;
+            String baseUri = DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + id;
             String uri = BeanUtils.getImageDeliveryBean().getIiif().getIIIFImageUrl(baseUri, RegionRequest.FULL, new Scale.ScaleToWidth(width),
                     new Rotation(rotation), Colortype.DEFAULT, ImageFileFormat.valueOf(format.toUpperCase()));
             logger.trace("Forwarding " + request.getPathInfo() + " to " + uri);
-//            getServletContext().getRequestDispatcher(uri).forward(request, response);
+            //            getServletContext().getRequestDispatcher(uri).forward(request, response);
 
             response.sendRedirect(uri);
-            
+
         } catch (ContentLibException e) {
             throw new ServletException(e);
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.getMessage());
         }
     }
 }

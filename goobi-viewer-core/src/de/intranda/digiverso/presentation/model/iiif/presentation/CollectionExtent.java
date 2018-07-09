@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.servlets.rest.services.Service;
 
 /**
@@ -54,7 +55,7 @@ public class CollectionExtent implements Service {
      * @see de.intranda.digiverso.presentation.servlets.rest.services.Service#getContext()
      */
     @Override
-    public URI getContext() throws URISyntaxException {
+    public URI getContext() throws URISyntaxException, ViewerConfigurationException {
         return new URI(DataManager.getInstance().getConfiguration().getRestApiUrl() + CONTEXTPATH);
     }
     

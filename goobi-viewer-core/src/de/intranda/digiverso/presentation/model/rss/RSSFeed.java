@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -44,6 +43,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -54,11 +54,11 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
 public class RSSFeed {
     private static final Logger logger = LoggerFactory.getLogger(RSSFeed.class);
 
-    public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.DOCSTRCT,
-            SolrConstants.DOCTYPE, SolrConstants.FILENAME, SolrConstants.FULLTEXT, SolrConstants.IDDOC, SolrConstants.LABEL,
-            SolrConstants.IDDOC_PARENT, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE,
-            SolrConstants.PERSON_ONEFIELD, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH,
-            SolrConstants.PUBLISHER, SolrConstants.TITLE, SolrConstants.THUMBNAIL, SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
+    public static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE,
+            SolrConstants.FILENAME, SolrConstants.FULLTEXT, SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.IDDOC_PARENT,
+            SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PERSON_ONEFIELD,
+            SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER, SolrConstants.TITLE,
+            SolrConstants.THUMBNAIL, SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
 
     /**
      *
@@ -68,13 +68,15 @@ public class RSSFeed {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public static SyndFeed createRss(String rootPath, String query) throws PresentationException, IndexUnreachableException, DAOException {
+    public static SyndFeed createRss(String rootPath, String query)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return createRss(rootPath, query, null);
     }
 
-    public static SyndFeed createRss(String rootPath, String query, String language) throws PresentationException, IndexUnreachableException,
-            DAOException {
+    public static SyndFeed createRss(String rootPath, String query, String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -103,31 +105,40 @@ public class RSSFeed {
         List<SyndEntry> entries = new ArrayList<>();
 
         int rssFeedItems = DataManager.getInstance().getConfiguration().getRssFeedItems();
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(
-                SolrConstants.DATECREATED, "desc")), null, Arrays.asList(FIELDS)).getResults();
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                        Arrays.asList(FIELDS))
+                .getResults();
         if (docs != null) {
             for (SolrDocument doc : docs) {
                 boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
-                boolean child = !anchor && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(
-                        SolrConstants.LOGID) != null) && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(
-                                SolrConstants.ISWORK)));
+                boolean child = !anchor
+                        && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE))
+                                || doc.getFieldValue(SolrConstants.LOGID) != null)
+                        && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
                 boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
                 boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
                 SolrDocument topDoc = null;
                 SolrDocument ownerDoc = null;
                 if (child || page) {
                     // Find top level docstruct to extract metadata such as DATECREATED
-                    List<SolrDocument> topDocs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(':')
-                            .append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(), 0, 1, null, null, Arrays.asList(FIELDS))
+                    List<SolrDocument> topDocs = DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(new StringBuilder(SolrConstants.PI).append(':').append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(),
+                                    0, 1, null, null, Arrays.asList(FIELDS))
                             .getResults();
                     if (!topDocs.isEmpty()) {
                         topDoc = topDocs.get(0);
                     }
                     if (page) {
                         // Find page owner docstruct to extract its metadata
-                        List<SolrDocument> ownerDocs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC)
-                                .append(':').append(doc.getFieldValue(SolrConstants.IDDOC_PARENT)).toString(), 0, 1, null, null, Arrays.asList(
-                                        FIELDS)).getResults();
+                        List<SolrDocument> ownerDocs = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(new StringBuilder(SolrConstants.IDDOC).append(':')
+                                        .append(doc.getFieldValue(SolrConstants.IDDOC_PARENT))
+                                        .toString(), 0, 1, null, null, Arrays.asList(FIELDS))
+                                .getResults();
                         if (!ownerDocs.isEmpty()) {
                             ownerDoc = ownerDocs.get(0);
                         }
@@ -154,8 +165,8 @@ public class RSSFeed {
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
                 // If the document has an overview page, use the overview view
                 boolean hasOverviewPage = false;
-                if (pi != null && DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible() && DataManager.getInstance().getDao()
-                        .getOverviewPageForRecord(pi, null, null) != null) {
+                if (pi != null && DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible()
+                        && DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null) != null) {
                     hasOverviewPage = true;
                 }
                 PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, hasOverviewPage, false);
@@ -178,15 +189,17 @@ public class RSSFeed {
                                 break;
                             case SolrConstants.IDDOC_PARENT:
                                 // TODO This query is executed O(size of feed) times.
-                                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC)
-                                        .append(':').append(value).toString(), 1, null, Collections.singletonList(SolrConstants.LABEL));
+                                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
+                                        new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                        Collections.singletonList(SolrConstants.LABEL));
                                 if (hits != null && hits.getNumFound() > 0) {
                                     SolrDocument parent = hits.get(0);
                                     Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
                                     if (fieldParentLabel != null) {
                                         label = new StringBuilder((String) fieldParentLabel).append("; ").append(label).toString();
-                                        bookSeries = new StringBuilder("<strong>Book series: </strong>").append((String) fieldParentLabel).append(
-                                                "<br />").toString();
+                                        bookSeries = new StringBuilder("<strong>Book series: </strong>").append((String) fieldParentLabel)
+                                                .append("<br />")
+                                                .toString();
                                     }
                                 }
                                 break;
@@ -209,8 +222,13 @@ public class RSSFeed {
                                 }
                                 break;
                             case SolrConstants.URN:
-                                urn = new StringBuilder("<strong>URL: </strong><a href=\"").append(rootPath).append("/resolver?urn=").append(value)
-                                        .append("\">").append(value).append("</a><br />").toString();
+                                urn = new StringBuilder("<strong>URL: </strong><a href=\"").append(rootPath)
+                                        .append("/resolver?urn=")
+                                        .append(value)
+                                        .append("\">")
+                                        .append(value)
+                                        .append("</a><br />")
+                                        .toString();
                                 break;
                             case SolrConstants.PI:
                                 pi = (String) value;
@@ -243,18 +261,34 @@ public class RSSFeed {
                 }
 
                 String imageUrl = BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight);
-                        
+
                 String imageHtmlElement = null;
                 if (StringUtils.isNotEmpty(pi) && StringUtils.isNotEmpty(imageUrl)) {
-                    imageHtmlElement = new StringBuilder("<a href=\"").append(rootPath).append('/').append(pageType.getName()).append('/').append(pi)
-                            .append('/').append("1").append('/').append("\">").append("<img style=\"margin-right:10px;\" src=\"").append(imageUrl)
-                            .append("\" align=\"left\" border=\"0\" /></a>").toString();
+                    imageHtmlElement = new StringBuilder("<a href=\"").append(rootPath)
+                            .append('/')
+                            .append(pageType.getName())
+                            .append('/')
+                            .append(pi)
+                            .append('/')
+                            .append("1")
+                            .append('/')
+                            .append("\">")
+                            .append("<img style=\"margin-right:10px;\" src=\"")
+                            .append(imageUrl)
+                            .append("\" align=\"left\" border=\"0\" /></a>")
+                            .toString();
                 }
 
                 entry.setAuthor(authorRss);
                 entry.setTitle(label);
-                entry.setLink(new StringBuilder(rootPath).append('/').append(pageType.getName()).append('/').append(pi).append('/').append("1")
-                        .append('/').toString());
+                entry.setLink(new StringBuilder(rootPath).append('/')
+                        .append(pageType.getName())
+                        .append('/')
+                        .append(pi)
+                        .append('/')
+                        .append("1")
+                        .append('/')
+                        .toString());
                 if (modified != null) {
                     try {
                         entry.setPublishedDate(new Date(modified));
@@ -264,9 +298,15 @@ public class RSSFeed {
                     }
                 }
                 description.setType("text/html");
-                descValue = new StringBuilder(imageHtmlElement != null ? new StringBuilder(imageHtmlElement).append(
-                        "<div style=\"display:block;margin-left:5px;\">").toString() : "").append("<p>").append(bookSeries).append(author).append(
-                                publisher).append(placeAndTime).append(urn).append("</p></div>").toString();
+                descValue = new StringBuilder(imageHtmlElement != null
+                        ? new StringBuilder(imageHtmlElement).append("<div style=\"display:block;margin-left:5px;\">").toString() : "").append("<p>")
+                                .append(bookSeries)
+                                .append(author)
+                                .append(publisher)
+                                .append(placeAndTime)
+                                .append(urn)
+                                .append("</p></div>")
+                                .toString();
                 description.setValue(descValue);
                 entry.setDescription(description);
                 entries.add(entry);
@@ -286,13 +326,14 @@ public class RSSFeed {
 
         return feed;
     }
-    
-    public static Channel createRssFeed(String rootPath, String query, int rssFeedItems) throws PresentationException, IndexUnreachableException, DAOException {
+
+    public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return createRssFeed(rootPath, query, rssFeedItems, null);
     }
 
-    public static Channel createRssFeed(String rootPath, String query, int rssFeedItems, String language) throws PresentationException, IndexUnreachableException,
-            DAOException {
+    public static Channel createRssFeed(String rootPath, String query, int rssFeedItems, String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String feedType = "rss_2.0";
 
         Locale locale = null;
@@ -312,32 +353,41 @@ public class RSSFeed {
         feed.setLanguage(locale.getLanguage());
         feed.setCopyright(DataManager.getInstance().getConfiguration().getRssCopyrightText());
         feed.setPubDate(new Date());
-        
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(
-                SolrConstants.DATECREATED, "desc")), null, Arrays.asList(FIELDS)).getResults();
+
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, 0, rssFeedItems, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null,
+                        Arrays.asList(FIELDS))
+                .getResults();
         if (docs != null) {
             for (SolrDocument doc : docs) {
                 boolean anchor = doc.containsKey(SolrConstants.ISANCHOR) && ((Boolean) doc.getFieldValue(SolrConstants.ISANCHOR));
-                boolean child = !anchor && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.getFieldValue(
-                        SolrConstants.LOGID) != null) && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(
-                                SolrConstants.ISWORK)));
+                boolean child = !anchor
+                        && (DocType.DOCSTRCT.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE))
+                                || doc.getFieldValue(SolrConstants.LOGID) != null)
+                        && (!doc.containsKey(SolrConstants.ISWORK) || !((Boolean) doc.getFieldValue(SolrConstants.ISWORK)));
                 boolean page = DocType.PAGE.name().equals(doc.getFieldValue(SolrConstants.DOCTYPE)) || doc.containsKey(SolrConstants.ORDER);
                 boolean ePublication = PhysicalElement.MIME_TYPE_APPLICATION.equals(doc.getFieldValue(SolrConstants.MIMETYPE));
                 SolrDocument topDoc = null;
                 SolrDocument ownerDoc = null;
                 if (child || page) {
                     // Find top level docstruct to extract metadata such as DATECREATED
-                    List<SolrDocument> topDocs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(':')
-                            .append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(), 0, 1, null, null, Arrays.asList(FIELDS))
+                    List<SolrDocument> topDocs = DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(new StringBuilder(SolrConstants.PI).append(':').append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT)).toString(),
+                                    0, 1, null, null, Arrays.asList(FIELDS))
                             .getResults();
                     if (!topDocs.isEmpty()) {
                         topDoc = topDocs.get(0);
                     }
                     if (page) {
                         // Find page owner docstruct to extract its metadata
-                        List<SolrDocument> ownerDocs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC)
-                                .append(':').append(doc.getFieldValue(SolrConstants.IDDOC_PARENT)).toString(), 0, 1, null, null, Arrays.asList(
-                                        FIELDS)).getResults();
+                        List<SolrDocument> ownerDocs = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(new StringBuilder(SolrConstants.IDDOC).append(':')
+                                        .append(doc.getFieldValue(SolrConstants.IDDOC_PARENT))
+                                        .toString(), 0, 1, null, null, Arrays.asList(FIELDS))
+                                .getResults();
                         if (!ownerDocs.isEmpty()) {
                             ownerDoc = ownerDocs.get(0);
                         }
@@ -366,8 +416,8 @@ public class RSSFeed {
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
                 // If the document has an overview page, use the overview view
                 boolean hasOverviewPage = false;
-                if (pi != null && DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible() && DataManager.getInstance().getDao()
-                        .getOverviewPageForRecord(pi, null, null) != null) {
+                if (pi != null && DataManager.getInstance().getConfiguration().isSidebarOverviewLinkVisible()
+                        && DataManager.getInstance().getDao().getOverviewPageForRecord(pi, null, null) != null) {
                     hasOverviewPage = true;
                 }
                 PageType pageType = PageType.determinePageType(docStructType, mimeType, anchor, hasImages, hasOverviewPage, false);
@@ -390,8 +440,9 @@ public class RSSFeed {
                                 break;
                             case SolrConstants.IDDOC_PARENT:
                                 // TODO This query is executed O(size of feed) times.
-                                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.IDDOC)
-                                        .append(':').append(value).toString(), 1, null, Collections.singletonList(SolrConstants.LABEL));
+                                SolrDocumentList hits = DataManager.getInstance().getSearchIndex().search(
+                                        new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                        Collections.singletonList(SolrConstants.LABEL));
                                 if (hits != null && hits.getNumFound() > 0) {
                                     SolrDocument parent = hits.get(0);
                                     Object fieldParentLabel = parent.getFieldValue(SolrConstants.LABEL);
@@ -413,7 +464,7 @@ public class RSSFeed {
                                 break;
                             case SolrConstants.YEARPUBLISH:
                             case SolrConstants.PLACEPUBLISH:
-                                if(StringUtils.isBlank(placeAndTime)) {                                    
+                                if (StringUtils.isBlank(placeAndTime)) {
                                     placeAndTime = value.toString();
                                 } else {
                                     placeAndTime = placeAndTime + ", " + value;
@@ -450,32 +501,32 @@ public class RSSFeed {
                         }
                     }
                 }
-                
+
                 String link = createLink(rootPath, pi, pageType);
-                
+
                 description.setImage(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, thumbWidth, thumbHeight));
-                                
-                if(StringUtils.isNotBlank(placeAndTime)) {                    
+
+                if (StringUtils.isNotBlank(placeAndTime)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("rss_published", locale), placeAndTime));
                 }
-                if(StringUtils.isNotBlank(bookSeries)) {                    
+                if (StringUtils.isNotBlank(bookSeries)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("rss_bookSeries", locale), bookSeries));
                 }
-                if(StringUtils.isNotBlank(author)) {                    
+                if (StringUtils.isNotBlank(author)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("MD_AUTHOR", locale), author));
                 }
-                if(StringUtils.isNotBlank(publisher)) {                    
+                if (StringUtils.isNotBlank(publisher)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("MD_PUBLISHER", locale), publisher));
                 }
-                if(StringUtils.isNotBlank(urn)) {                    
+                if (StringUtils.isNotBlank(urn)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("rss_url", locale), urn, urnLink));
                 }
-                if(StringUtils.isNotBlank(shelfmark)) {                    
+                if (StringUtils.isNotBlank(shelfmark)) {
                     description.addMetadata(new RssMetadata(Helper.getTranslation("MD_SHELFMARK", locale), shelfmark));
                 }
                 entry.setDescription(description);
-                
-                if(StringUtils.isNotBlank(authorRss)) {                    
+
+                if (StringUtils.isNotBlank(authorRss)) {
                     entry.setCreator(authorRss);
                 }
                 entry.setTitle(label);
@@ -502,7 +553,7 @@ public class RSSFeed {
         // myChannel.setImage(digiversoLogo);
         //
         Collections.sort(feed.getItems());
-        
+
         return feed;
     }
 
@@ -513,8 +564,7 @@ public class RSSFeed {
      */
     public static String createLink(String rootPath, String pi, PageType pageType) {
         StringBuilder link = new StringBuilder();
-        link.append(rootPath).append('/').append(pageType.getName()).append('/').append(pi)
-        .append('/').append("1").append('/');
+        link.append(rootPath).append('/').append(pageType.getName()).append('/').append(pi).append('/').append("1").append('/');
         return link.toString();
     }
 
@@ -533,27 +583,47 @@ public class RSSFeed {
         String imageUrl = null;
         if (ePublication) {
             // E-publication thumbnail
-            imageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                    "?action=image&sourcepath=").append(rootPath).append("/resources/themes/").append(DataManager.getInstance()
-                            .getConfiguration().getTheme()).append("/images/thumbnail_epub.jpg").append("&width=").append(thumbWidth).append(
-                                    "&height=").append(thumbHeight).append("&rotate=0&format=png&resolution=72&ignoreWatermark=true")
-                    .toString();
+            imageUrl =
+                    new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
+                            .append(rootPath)
+                            .append("/resources/themes/")
+                            .append(DataManager.getInstance().getConfiguration().getTheme())
+                            .append("/images/thumbnail_epub.jpg")
+                            .append("&width=")
+                            .append(thumbWidth)
+                            .append("&height=")
+                            .append(thumbHeight)
+                            .append("&rotate=0&format=png&resolution=72&ignoreWatermark=true")
+                            .toString();
         } else if (anchor && StringUtils.isEmpty(thumbnail)) {
             // Anchor thumbnail
-            imageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                    "?action=image&sourcepath=").append(rootPath).append("/resources/themes/").append(DataManager.getInstance()
-                            .getConfiguration().getTheme()).append("/images/multivolume_thumbnail.jpg").append("&width=").append(thumbWidth)
-                    .append("&height=").append(thumbHeight).append("&rotate=0&format=png&resolution=72&ignoreWatermark=true").toString();
+            imageUrl =
+                    new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=")
+                            .append(rootPath)
+                            .append("/resources/themes/")
+                            .append(DataManager.getInstance().getConfiguration().getTheme())
+                            .append("/images/multivolume_thumbnail.jpg")
+                            .append("&width=")
+                            .append(thumbWidth)
+                            .append("&height=")
+                            .append(thumbHeight)
+                            .append("&rotate=0&format=png&resolution=72&ignoreWatermark=true")
+                            .toString();
 
         } else if (StringUtils.isNotEmpty(thumbnail)) {
-            StringBuilder sbImageUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                    "?action=image&sourcepath=");
+            StringBuilder sbImageUrl =
+                    new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append("?action=image&sourcepath=");
             if (!thumbnail.startsWith("http")) {
                 sbImageUrl.append(pi).append('/');
             }
-            sbImageUrl.append(thumbnail).append("&width=").append(thumbWidth).append("&height=").append(thumbHeight).append(
-                    "&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true").append(DataManager.getInstance().getConfiguration()
-                            .isForceJpegConversion() ? "&format=jpg" : "").toString();
+            sbImageUrl.append(thumbnail)
+                    .append("&width=")
+                    .append(thumbWidth)
+                    .append("&height=")
+                    .append(thumbHeight)
+                    .append("&rotate=0&resolution=72&thumbnail=true&ignoreWatermark=true")
+                    .append(DataManager.getInstance().getConfiguration().isForceJpegConversion() ? "&format=jpg" : "")
+                    .toString();
             imageUrl = sbImageUrl.toString();
         }
         return imageUrl;

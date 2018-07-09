@@ -87,6 +87,7 @@ import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.ModuleMissingException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.overviewpage.OverviewPage;
@@ -648,9 +649,10 @@ public class Helper {
      * @param dataRepository
      * @param filePath
      * @return Full REST URL
+     * @throws ViewerConfigurationException
      * @should build url correctly
      */
-    public static String buildFullTextUrl(String dataRepository, String filePath) {
+    public static String buildFullTextUrl(String dataRepository, String filePath) throws ViewerConfigurationException {
         return new StringBuilder(DataManager.getInstance().getConfiguration().getContentRestApiUrl()).append("document/")
                 .append(StringUtils.isEmpty(dataRepository) ? '-' : dataRepository)
                 .append('/')
@@ -880,11 +882,12 @@ public class Helper {
      * @throws FileNotFoundException
      * @throws DAOException
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
      */
     public static String loadFulltext(String dataRepository, String altoFilePath, String fulltextFilePath, HttpServletRequest request)
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (altoFilePath != null) {
             // ALTO file
             String alto = loadFulltext(dataRepository, altoFilePath, request);
@@ -917,10 +920,11 @@ public class Helper {
      * @throws IOException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should return file content correctly
      */
     public static String loadFulltext(String dataRepository, String filePath, HttpServletRequest request)
-            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (filePath == null) {
             return null;
         }
@@ -948,8 +952,10 @@ public class Helper {
      * @throws AccessDeniedException
      * @throws FileNotFoundException
      * @throws IOException
+     * @throws ViewerConfigurationException
      */
-    public static String loadTei(String pi, String language) throws AccessDeniedException, FileNotFoundException, IOException {
+    public static String loadTei(String pi, String language)
+            throws AccessDeniedException, FileNotFoundException, IOException, ViewerConfigurationException {
         logger.trace("loadTei: {}/{}", pi, language);
         if (pi == null) {
             return null;

@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.cms.tilegrid.ImageGalleryTile;
@@ -299,9 +300,9 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
                 logger.error("Unable to create uri from " + getLink());
                 return null;
             }
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -418,29 +419,31 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     @Override
     public URI getIconURI(int width, int height) {
         if (getFileName() != null) {
-
-            String uriString = CmsMediaBean.getMediaUrl(this, Integer.toString(width), Integer.toString(height));
             try {
+                String uriString = CmsMediaBean.getMediaUrl(this, Integer.toString(width), Integer.toString(height));
                 return new URI(uriString);
             } catch (URISyntaxException e) {
                 logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
+            } catch (ViewerConfigurationException e) {
+                logger.error(e.getMessage());
             }
         }
+
         return null;
+
     }
-    
 
     @Override
     public URI getIconURI(int size) {
         if (getFileName() != null) {
-
-            String uriString = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(this, size);
             try {
+                String uriString = BeanUtils.getImageDeliveryBean().getThumbs().getSquareThumbnailUrl(this, size);
                 return new URI(uriString);
             } catch (URISyntaxException e) {
                 logger.error("Failed to create resource uri for " + getFileName() + ": " + e.getMessage());
             }
         }
+
         return null;
     }
 
@@ -529,6 +532,5 @@ public class CMSMediaItem implements BrowseElementInfo, ImageGalleryTile {
     public IMetadataValue getTranslationsForName() {
         return IMetadataValue.getTranslations(getName());
     }
-
 
 }

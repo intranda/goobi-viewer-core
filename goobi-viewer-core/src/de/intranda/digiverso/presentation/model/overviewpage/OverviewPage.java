@@ -51,12 +51,14 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
@@ -143,10 +145,11 @@ public class OverviewPage implements Harvestable, Serializable {
      * @throws IndexUnreachableException
      * @throws IllegalArgumentException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should load overview page correctly
      */
-    public static OverviewPage loadOverviewPage(StructElement structElement, Locale locale) throws IllegalArgumentException,
-            IndexUnreachableException, PresentationException, DAOException {
+    public static OverviewPage loadOverviewPage(StructElement structElement, Locale locale)
+            throws IllegalArgumentException, IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not be null");
         }
@@ -214,14 +217,16 @@ public class OverviewPage implements Harvestable, Serializable {
      * @param locale
      * @throws IllegalArgumentException
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
      */
-    public void init(StructElement structElement, Locale locale) throws IllegalArgumentException, IndexUnreachableException {
+    public void init(StructElement structElement, Locale locale)
+            throws IllegalArgumentException, IndexUnreachableException, ViewerConfigurationException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not be null");
         }
         if (pi != null && !structElement.getPi().equals(pi)) {
-            throw new IllegalArgumentException("structElement has a different PI (" + structElement.getPi() + ") than the overview page (" + pi
-                    + ")");
+            throw new IllegalArgumentException(
+                    "structElement has a different PI (" + structElement.getPi() + ") than the overview page (" + pi + ")");
         }
         this.structElement = structElement;
         this.pi = structElement.getPi();
@@ -231,7 +236,7 @@ public class OverviewPage implements Harvestable, Serializable {
             publicationText = "";
         }
 
-        imageUrl = structElement.getImageUrl(imageWidth, imageHeight, 0, false, false);
+        imageUrl = structElement.getImageUrl(imageWidth, imageHeight);
 
         if (!loadConfig(configXml)) {
             config = new Document();
@@ -289,7 +294,7 @@ public class OverviewPage implements Harvestable, Serializable {
             // Metadata
             metadata.clear();
             if (config.getRootElement().getChild("metadata") != null) {
-                metadata = DataManager.getInstance().getConfiguration().getMetadataForTemplateFromJDOM(config.getRootElement().getChild("metadata"));
+                metadata = Configuration.getMetadataForTemplateFromJDOM(config.getRootElement().getChild("metadata"));
             }
             // Description (only load from XML if not yet in the database column)
             if (description == null) {

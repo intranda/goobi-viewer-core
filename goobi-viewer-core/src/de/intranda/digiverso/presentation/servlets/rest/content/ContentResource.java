@@ -53,6 +53,7 @@ import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.intranda.digiverso.presentation.model.security.IPrivilegeHolder;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
@@ -372,13 +373,13 @@ public class ContentResource {
         return ret;
     }
 
-    public static URI getAltoURI(String pi, String filename) throws URISyntaxException {
+    public static URI getAltoURI(String pi, String filename) throws URISyntaxException, ViewerConfigurationException {
         URI uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
         uri = uri.resolve("content/alto/" + pi + "/" + filename);
         return uri;
     }
 
-    public static URI getFulltextURI(String pi, String filename) throws URISyntaxException {
+    public static URI getFulltextURI(String pi, String filename) throws URISyntaxException, ViewerConfigurationException {
         URI uri = new URI(DataManager.getInstance().getConfiguration().getRestApiUrl());
         uri = uri.resolve("content/fulltext/" + pi + "/" + filename);
         return uri;
@@ -391,6 +392,8 @@ public class ContentResource {
             uri = uri.resolve("content/tei/" + pi + "/" + locale);
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.toString());
         }
         return uri;
     }
@@ -402,6 +405,8 @@ public class ContentResource {
             uri = uri.resolve("content/cmdi/" + pi + "/" + locale);
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.toString());
         }
         return uri;
     }

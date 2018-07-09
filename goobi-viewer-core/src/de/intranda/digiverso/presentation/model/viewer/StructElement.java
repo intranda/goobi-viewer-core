@@ -37,6 +37,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.IMetadataValue;
 
@@ -415,23 +416,14 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Returns the URL to the image set in the THUMBNAIL field of this docstruct.
-     *
+     * 
      * @param width
      * @param height
-     * @param rotation  ignored
-     * @param thumbnail ignored
-     * @param ignoreWatermark   ignored
-     * @return
+     * @return Image URL
+     * @throws ViewerConfigurationException 
      * @should construct url correctly
-     * @deprecated  use {@link #getImageUrl(int, int)} instead
      */
-    @Deprecated
-    public String getImageUrl(int width, int height, int rotation, boolean thumbnail, boolean ignoreWatermark) {
-        return getImageUrl(width, height);
-    }
-        
-    public String getImageUrl(int width, int height) {
+    public String getImageUrl(int width, int height) throws ViewerConfigurationException {
         String filename = getMetadataValue(SolrConstants.THUMBNAIL);
         if (filename != null) {
             return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(this, width, height);
@@ -491,11 +483,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     public String getCollection() {
         return this.getMetadataValue(SolrConstants.DC);
     }
-    
+
     public List<String> getCollections() {
         return this.getMetadataValues(SolrConstants.DC);
     }
-    
+
     /**
      * @return the fulltextAvailable
      */
@@ -599,7 +591,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
         return label;
     }
-    
+
     public IMetadataValue getMultiLanguageDisplayLabel() {
         IMetadataValue label = getMultiLanguageMetadataValue(SolrConstants.LABEL);
         if (label.isEmpty()) {
@@ -663,7 +655,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
                 String iddoc = SolrSearchIndex.getSingleFieldStringValue(docVolume, SolrConstants.IDDOC);
-                if(StringUtils.isNotBlank(iddoc)) {                    
+                if (StringUtils.isNotBlank(iddoc)) {
                     StructElement volume = new StructElement(Long.parseLong(iddoc), docVolume);
                     return volume;
                 }

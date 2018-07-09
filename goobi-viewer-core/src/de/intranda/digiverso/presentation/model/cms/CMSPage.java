@@ -51,6 +51,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsMediaBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -469,9 +470,8 @@ public class CMSPage {
         CMSPageLanguageVersion lang = getLanguageVersion(locale.getLanguage());
         if(lang != null) {            
             return lang.getMenuTitle();
-        } else {
-            return "";
         }
+        return "";
     }
 
     public Long getPageSorting() {
@@ -601,7 +601,7 @@ public class CMSPage {
         return false;
     }
 
-    public String getContent(String itemId) {
+    public String getContent(String itemId) throws ViewerConfigurationException {
         return getContent(itemId, null, null);
     }
     
@@ -618,7 +618,7 @@ public class CMSPage {
         .findFirst();
     }
 
-    public String getContent(String itemId, String width, String height) {
+    public String getContent(String itemId, String width, String height) throws ViewerConfigurationException {
         logger.trace("Getting content " + itemId + " from page " + getId());
         CMSContentItem item = getContentItem(itemId);
         String contentString = "";
@@ -761,6 +761,8 @@ public class CMSPage {
                                 dirty = true;
                             case HTML:
                             case TEXT:
+                            default:
+                                break;
                         }
                     }
                 }
@@ -873,18 +875,16 @@ public class CMSPage {
         .findFirst();
         if(searchItem.isPresent()) {
             return (SearchFunctionality) searchItem.get().getFunctionality();
-        } else {
-            logger.warn("Did not find search functionality in page " + this);
-            return new SearchFunctionality("", getPageUrl());
         }
+        logger.warn("Did not find search functionality in page " + this);
+        return new SearchFunctionality("", getPageUrl());
     }
     
     public boolean isHasSidebarElements() {
        if(!isUseDefaultSidebar()) {
            return getSidebarElements() != null && !getSidebarElements().isEmpty();
-       } else {
-           return true;
        }
+    return true;
     }
     
     public void addLanguageVersion(CMSPageLanguageVersion version) {
@@ -926,9 +926,8 @@ public class CMSPage {
         try {            
             if(getTemplate() != null) {            
                 return getTemplate().isAppliesToExpandedUrl();
-            } else {
-                return false;
             }
+            return false;
         } catch(IllegalStateException e) {
             logger.warn("Unable to acquire template", e);
             return false;

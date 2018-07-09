@@ -35,7 +35,6 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.JDOMException;
@@ -55,6 +54,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
@@ -178,13 +178,13 @@ public class ViewManager implements Serializable {
 
     }
 
-    public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException {
+    public String getRepresentativeImageInfo() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         PhysicalElement representative = getRepresentativePage();
         if (representative == null) {
             return "";
         }
 
-        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
+        StringBuilder urlBuilder = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
         urlBuilder.append("image/").append(pi).append('/').append(representative.getFileName()).append("/info.json");
         return urlBuilder.toString();
     }
@@ -247,14 +247,6 @@ public class ViewManager implements Serializable {
         return getPage(this.currentImageOrder + 1);
     }
 
-    /**
-     * @param page
-     * @return
-     */
-    private String getImageInfo(PhysicalElement page) {
-        return imageDelivery.getImages().getImageUrl(page);
-    }
-
     private String getImageInfo(PhysicalElement page, PageType pageType) {
         return imageDelivery.getImages().getImageUrl(page, pageType);
     }
@@ -277,11 +269,11 @@ public class ViewManager implements Serializable {
         return url;
     }
 
-    public String getWatermarkUrl() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getWatermarkUrl() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getWatermarkUrl("viewImage");
     }
 
-    public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getWatermarkUrl(String pageType) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return imageDelivery.getFooter()
                 .getWatermarkUrl(Optional.ofNullable(getCurrentPage()), Optional.ofNullable(getTopDocument()),
                         Optional.ofNullable(PageType.getByName(pageType)))
@@ -289,7 +281,7 @@ public class ViewManager implements Serializable {
 
     }
 
-    public String getCurrentImageUrl() throws ConfigurationException, IndexUnreachableException, DAOException {
+    public String getCurrentImageUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage);
     }
 
@@ -297,9 +289,9 @@ public class ViewManager implements Serializable {
      * @return the iiif url to the image in a configured size
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      */
-    public String getCurrentImageUrl(PageType view) throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getCurrentImageUrl(PageType view) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         int size = DataManager.getInstance()
                 .getConfiguration()
@@ -332,6 +324,7 @@ public class ViewManager implements Serializable {
         //                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
+    @Deprecated
     private String getFooterId() {
         String footerIdField = DataManager.getInstance().getConfiguration().getWatermarkIdField();
         String footerId = null;
@@ -341,7 +334,7 @@ public class ViewManager implements Serializable {
         return footerId;
     }
 
-    public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException {
+    public List<List<String>> getCurrentSearchResultCoords() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<List<String>> coords = new ArrayList<>();
         List<String> coordStrings = getSearchResultCoords(getCurrentPage());
         if (coordStrings != null) {
@@ -352,7 +345,7 @@ public class ViewManager implements Serializable {
         return coords;
     }
 
-    private List<String> getSearchResultCoords(PhysicalElement currentImg) {
+    private List<String> getSearchResultCoords(PhysicalElement currentImg) throws ViewerConfigurationException {
         if (currentImg == null) {
             return null;
         }
@@ -403,7 +396,7 @@ public class ViewManager implements Serializable {
         return 0;
     }
 
-    public String getRepresentativeImageUrl() throws IndexUnreachableException, PresentationException, DAOException, ConfigurationException {
+    public String getRepresentativeImageUrl() throws IndexUnreachableException, PresentationException, DAOException {
 
         if (getRepresentativePage() != null) {
             Dimension imageSize = new Dimension(representativePage.getImageWidth(), representativePage.getImageHeight());
@@ -976,8 +969,9 @@ public class ViewManager implements Serializable {
      * @return {@link String}
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException {
+    public String getPdfDownloadLink() throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return imageDelivery.getPdf().getPdfUrl(getTopDocument(), "");
     }
 
@@ -987,8 +981,9 @@ public class ViewManager implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException {
+    public String getPdfPageDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
             return null;
@@ -1002,9 +997,10 @@ public class ViewManager implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should construct url correctly
      */
-    public String getPdfPartDownloadLink() throws IndexUnreachableException, DAOException {
+    public String getPdfPartDownloadLink() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPdfPartDownloadLink: {}-{}", firstPdfPage, lastPdfPage);
         if (firstPdfPage > pageLoader.getLastPageOrder()) {
             firstPdfPage = pageLoader.getLastPageOrder();
@@ -1288,8 +1284,9 @@ public class ViewManager implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public String getFulltext() throws IndexUnreachableException, DAOException {
+    public String getFulltext() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         return getFulltext(true, null);
     }
 
@@ -1301,10 +1298,11 @@ public class ViewManager implements Serializable {
      * @return Full-text for the current page.
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @throws IOException
      * @throws FileNotFoundException
      */
-    public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException {
+    public String getFulltext(boolean escapeHtml, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String currentFulltext = null;
 
         // Current page fulltext
@@ -1654,7 +1652,7 @@ public class ViewManager implements Serializable {
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage(), e);
             return "";
-        } catch (ConfigurationException e) {
+        } catch (ViewerConfigurationException e) {
             logger.error(e.getMessage(), e);
             return "";
         } catch (DAOException e) {
@@ -1858,7 +1856,7 @@ public class ViewManager implements Serializable {
         return jobs != null && !jobs.isEmpty();
     }
 
-    public boolean useTiles() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public boolean useTiles() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
             return false;
@@ -1867,7 +1865,7 @@ public class ViewManager implements Serializable {
         return DataManager.getInstance().getConfiguration().useTiles();
     }
 
-    public boolean useTilesFullscreen() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public boolean useTilesFullscreen() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage == null) {
             return false;

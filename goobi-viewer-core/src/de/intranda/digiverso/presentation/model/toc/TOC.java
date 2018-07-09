@@ -30,6 +30,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
@@ -72,12 +73,13 @@ public class TOC implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public void generate(StructElement structElement, boolean addAllSiblings, String mimeType, int tocCurrentPage) throws PresentationException,
-            IndexUnreachableException, DAOException {
+    public void generate(StructElement structElement, boolean addAllSiblings, String mimeType, int tocCurrentPage)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
-            tocElementMap = TocMaker.generateToc(this, structElement, addAllSiblings, mimeType, tocCurrentPage, DataManager.getInstance()
-                    .getConfiguration().getTocAnchorGroupElementsPerPage());
+            tocElementMap = TocMaker.generateToc(this, structElement, addAllSiblings, mimeType, tocCurrentPage,
+                    DataManager.getInstance().getConfiguration().getTocAnchorGroupElementsPerPage());
         }
     }
 
@@ -483,7 +485,7 @@ public class TOC implements Serializable {
     public String getLabel(String pi) {
         return getLabel(pi, MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
     }
-    
+
     /**
      * Returns the label in the given language of the first found TOCElement that has the given PI as its topStructPi.
      * 
@@ -507,7 +509,7 @@ public class TOC implements Serializable {
 
         return null;
     }
-    
+
     /**
      * Returns the label in the given locale of the first found TOCElement that has the given PI as its topStructPi.
      * 

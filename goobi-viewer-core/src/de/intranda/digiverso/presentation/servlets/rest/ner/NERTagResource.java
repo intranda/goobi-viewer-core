@@ -41,13 +41,13 @@ import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.ALTOTools;
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.FileTools;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
 
 @Path("/ner")
@@ -63,7 +63,7 @@ public class NERTagResource {
     @Path("/tags/{pi}.json")
     @Produces({ MediaType.APPLICATION_JSON })
     public DocumentReference getTagsForPageJson(@Context ContainerRequestContext request, @PathParam("pi") String pi)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getNERTags(pi, null, null, null, 1);
     }
 
@@ -81,8 +81,8 @@ public class NERTagResource {
     @GET
     @Path("/tags/{pi}.xml")
     @Produces({ MediaType.APPLICATION_XML })
-    public DocumentReference getTagsForPageXml(@Context ContainerRequestContext request, @PathParam("pi") String pi) throws IndexUnreachableException,
-            PresentationException {
+    public DocumentReference getTagsForPageXml(@Context ContainerRequestContext request, @PathParam("pi") String pi)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getNERTags(pi, null, null, null, 1);
     }
 
@@ -90,7 +90,7 @@ public class NERTagResource {
     @Path("/tags/{pi}/{pageOrder}.json")
     @Produces({ MediaType.APPLICATION_JSON })
     public DocumentReference getTagsForPageJson(@Context ContainerRequestContext request, @PathParam("pi") String pi,
-            @PathParam("pageOrder") Integer order) throws IndexUnreachableException, PresentationException {
+            @PathParam("pageOrder") Integer order) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getNERTags(pi, null, order, order, 1);
     }
 
@@ -110,12 +110,12 @@ public class NERTagResource {
     @Path("/tags/{pi}/{pageOrder}.xml")
     @Produces({ MediaType.APPLICATION_XML })
     public DocumentReference getTagsForPageXml(@Context ContainerRequestContext request, @PathParam("pi") String pi,
-            @PathParam("pageOrder") Integer order) throws IndexUnreachableException, PresentationException {
+            @PathParam("pageOrder") Integer order) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getNERTags(pi, null, order, order, 1);
     }
 
-    private static DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize) throws PresentationException,
-            IndexUnreachableException {
+    private static DocumentReference getNERTags(String pi, String type, Integer start, Integer end, int rangeSize)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         StringBuilder query = new StringBuilder();
         query.append(SolrConstants.PI_TOPSTRUCT).append(':').append(pi);
 
@@ -153,7 +153,7 @@ public class NERTagResource {
     @Path("/tags/type/{type}/{pi}")
     @Produces({ MediaType.APPLICATION_JSON })
     public DocumentReference getTagsByType(@Context ContainerRequestContext request, @PathParam("pi") String pi, @PathParam("type") String type)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         return getNERTags(pi, type, null, null, 1);
     }
 
@@ -206,7 +206,8 @@ public class NERTagResource {
     @Path("/tags/{startpage}/{endpage}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })
     public DocumentReference getTagsForPageArea(@Context ContainerRequestContext request, @PathParam("startpage") int startpage,
-            @PathParam("endpage") int endpage, @PathParam("pi") String pi) throws IndexUnreachableException, PresentationException {
+            @PathParam("endpage") int endpage, @PathParam("pi") String pi)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if (startpage > endpage) {
             throw new PresentationException("start page must not be greater than end page");
         }
@@ -218,8 +219,8 @@ public class NERTagResource {
     @Path("/tags/{startpage}/{endpage}/{type}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })
     public DocumentReference getTagsForPageArea(@Context ContainerRequestContext request, @PathParam("startpage") int startpage,
-            @PathParam("type") String type, @PathParam("endpage") int endpage, @PathParam("pi") String pi) throws IndexUnreachableException,
-            PresentationException {
+            @PathParam("type") String type, @PathParam("endpage") int endpage, @PathParam("pi") String pi)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         if (startpage > endpage) {
             throw new PresentationException("start page must not be greater than end page");
         }
@@ -234,7 +235,8 @@ public class NERTagResource {
     @Path("/tags/ranges/{range}/{type}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })
     public DocumentReference getTagRangesByType(@Context ContainerRequestContext request, @PathParam("range") int rangeSize,
-            @PathParam("type") String type, @PathParam("pi") String pi) throws IndexUnreachableException, PresentationException {
+            @PathParam("type") String type, @PathParam("pi") String pi)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         DocumentReference ref = getNERTags(pi, type, null, null, rangeSize);
         return ref;
     }
@@ -243,7 +245,7 @@ public class NERTagResource {
     @Path("/tags/ranges/{range}/{pi}/")
     @Produces({ MediaType.APPLICATION_JSON })
     public DocumentReference getTagRanges(@Context ContainerRequestContext request, @PathParam("range") int rangeSize, @PathParam("pi") String pi)
-            throws IndexUnreachableException, PresentationException {
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         DocumentReference ref = getNERTags(pi, null, null, null, rangeSize);
         return ref;
     }
@@ -257,9 +259,10 @@ public class NERTagResource {
      * @throws PresentationException if there is an error parsing the alto documents or if the search doesn't result in PAGE documents from a single
      *             topStruct
      * @throws IndexUnreachableException if the index cannot be reached
+     * @throws ViewerConfigurationException
      */
-    private static DocumentReference getNERTagsByQuery(String query, String typeString, int rangeSize) throws PresentationException,
-            IndexUnreachableException {
+    private static DocumentReference getNERTagsByQuery(String query, String typeString, int rangeSize)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         final List<String> fieldList = Arrays.asList(new String[] { SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
                 SolrConstants.IDDOC_TOPSTRUCT, SolrConstants.ORDER, SolrConstants.FILENAME_ALTO });
         SolrDocumentList solrDocuments = DataManager.getInstance().getSearchIndex().search(query, fieldList);
@@ -274,8 +277,8 @@ public class NERTagResource {
                 topStructPi = SolrSearchIndex.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
 
                 // Determine data repository name
-                SolrDocument topSolrDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ':' + topStructPi, Collections
-                        .singletonList(SolrConstants.DATAREPOSITORY));
+                SolrDocument topSolrDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ':' + topStructPi,
+                        Collections.singletonList(SolrConstants.DATAREPOSITORY));
                 if (topSolrDoc != null && topSolrDoc.containsKey(SolrConstants.DATAREPOSITORY)) {
                     dataRepository = (String) topSolrDoc.get(SolrConstants.DATAREPOSITORY);
                 }

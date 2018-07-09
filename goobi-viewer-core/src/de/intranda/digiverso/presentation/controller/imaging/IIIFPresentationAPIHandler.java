@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.builder.AbstractBuilder;
 import de.intranda.digiverso.presentation.model.iiif.presentation.enums.AnnotationType;
 
@@ -34,7 +35,7 @@ public class IIIFPresentationAPIHandler {
 
     private final AbstractBuilder builder;
 
-    public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException {
+    public IIIFPresentationAPIHandler(String servletPath, Configuration configuration) throws URISyntaxException, ViewerConfigurationException {
         this.builder = new AbstractBuilder(new URI(servletPath), new URI(DataManager.getInstance().getConfiguration().getRestApiUrl())) {
         };
     }

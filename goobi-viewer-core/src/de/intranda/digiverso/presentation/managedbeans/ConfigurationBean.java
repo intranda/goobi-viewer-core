@@ -33,7 +33,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -46,6 +45,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.language.Language;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
@@ -281,47 +281,47 @@ public class ConfigurationBean implements Serializable {
         return !DataManager.getInstance().getConfiguration().isDisableMenuBrowsingOnSearchList();
     }
 
-    public boolean useOpenSeadragon() throws ConfigurationException {
+    public boolean useOpenSeadragon() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useOpenSeadragon();
     }
 
-    public boolean useTiles(String pageType, String mimeType) throws ConfigurationException {
+    public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.getByName(pageType), getImageType(mimeType));
     }
 
-    public int getFooterHeight(String pageType, String mimeType) throws ConfigurationException {
+    public int getFooterHeight(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType(mimeType));
     }
 
-    public List<String> getImageSizes(String pageType, String mimeType) throws ConfigurationException {
+    public List<String> getImageSizes(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getImageViewZoomScales(PageType.getByName(pageType), getImageType(mimeType));
     }
 
-    public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ConfigurationException {
+    public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getTileSizes(PageType.getByName(pageType), getImageType(mimeType));
     }
 
-    public boolean useTiles() throws ConfigurationException {
+    public boolean useTiles() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles();
     }
 
-    public boolean useTilesFullscreen() throws ConfigurationException {
+    public boolean useTilesFullscreen() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.viewFullscreen, null);
     }
 
-    public boolean useTilesCrowd() throws ConfigurationException {
+    public boolean useTilesCrowd() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().useTiles(PageType.editContent, null);
     }
 
-    public int getFooterHeight() throws ConfigurationException {
+    public int getFooterHeight() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight();
     }
 
-    public int getFooterHeightFullscreen() throws ConfigurationException {
+    public int getFooterHeightFullscreen() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.viewFullscreen, null);
     }
 
-    public int getFooterHeightCrowd() throws ConfigurationException {
+    public int getFooterHeightCrowd() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.editContent, null);
     }
 
@@ -731,8 +731,8 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().isDoublePageModeEnabled();
     }
 
-    public String getIiifApiUrl() {
-        return DataManager.getInstance().getConfiguration().getIiifUrl();
+    public String getIiifApiUrl() throws ViewerConfigurationException {
+        return DataManager.getInstance().getConfiguration().getRestApiUrl();
     }
 
     public String getIso639_1(String language) {

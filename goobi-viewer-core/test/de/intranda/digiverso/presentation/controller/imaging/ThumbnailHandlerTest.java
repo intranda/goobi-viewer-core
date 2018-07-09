@@ -27,6 +27,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroupType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
@@ -38,7 +39,7 @@ public class ThumbnailHandlerTest {
 
     private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
     private ThumbnailHandler handler;
-    
+
     /**
      * @throws java.lang.Exception
      */
@@ -57,16 +58,17 @@ public class ThumbnailHandlerTest {
     }
 
     @Test
-    public void testPage() {
-        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
+    public void testPage() throws ViewerConfigurationException {
+        PhysicalElement page =
+                new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
         String url = handler.getThumbnailUrl(page, 200, 300);
         System.out.println(url);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
     }
-    
+
     @Test
-    public void testExternalIIIFImageUrl() {
+    public void testExternalIIIFImageUrl() throws ViewerConfigurationException {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
@@ -75,9 +77,9 @@ public class ThumbnailHandlerTest {
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/native.jpg";
         Assert.assertEquals(refrenceUrl, url);
     }
-    
+
     @Test
-    public void testExternalIIIFImageInfoUrl() {
+    public void testExternalIIIFImageInfoUrl() throws ViewerConfigurationException {
         String fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/info.json";
         PhysicalElement page = new PhysicalElement("PHYS_0001", fileUrl, 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
 
@@ -86,9 +88,9 @@ public class ThumbnailHandlerTest {
         String refrenceUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/!200,300/0/default.jpg";
         Assert.assertEquals(refrenceUrl, url);
     }
-    
+
     @Test
-    public void testDocLocal() throws IndexUnreachableException {
+    public void testDocLocal() throws IndexUnreachableException, ViewerConfigurationException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -98,17 +100,15 @@ public class ThumbnailHandlerTest {
         solrDoc.setField(SolrConstants.PI, "1234");
         solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
 
-
         StructElement doc = new StructElement(1, solrDoc);
-        
-        
+
         String url = handler.getThumbnailUrl(doc, 200, 300);
         System.out.println(url);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/00000001.tif/full/!200,300/0/default.jpg", url);
-   }
-   
+    }
+
     @Test
-    public void testDocExternal() throws IndexUnreachableException {
+    public void testDocExternal() throws IndexUnreachableException, ViewerConfigurationException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -118,17 +118,17 @@ public class ThumbnailHandlerTest {
         solrDoc.setField(SolrConstants.PI, "1234");
         solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
 
-
         StructElement doc = new StructElement(1, solrDoc);
-        
-        
+
         String url = handler.getThumbnailUrl(doc, 200, 300);
         System.out.println(url);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg", url);
-   }
-    
+        Assert.assertEquals(
+                "http://localhost:8080/viewer/rest/image/-/http:U002FU002FexternalU002FiiifU002FimageU002F00000001.tif/full/!200,300/0/default.jpg",
+                url);
+    }
+
     @Test
-    public void testDocExternalIIIF() throws IndexUnreachableException {
+    public void testDocExternalIIIF() throws IndexUnreachableException, ViewerConfigurationException {
 
         SolrDocument solrDoc = new SolrDocument();
         solrDoc.setField(SolrConstants.MIMETYPE, "image/tiff");
@@ -138,14 +138,11 @@ public class ThumbnailHandlerTest {
         solrDoc.setField(SolrConstants.PI, "1234");
         solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
 
-
         StructElement doc = new StructElement(1, solrDoc);
-        
-        
+
         String url = handler.getThumbnailUrl(doc, 200, 300);
         System.out.println(url);
         Assert.assertEquals("http://external/iiif/image/00000001.tif/full/!200,300/0/default.jpg", url);
-   }
-
+    }
 
 }

@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.PersistentTableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider;
 import de.intranda.digiverso.presentation.managedbeans.tabledata.TableDataProvider.SortOrder;
@@ -808,8 +809,9 @@ public class CmsBean implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public String cmsContextAction() throws PresentationException, IndexUnreachableException, DAOException {
+    public String cmsContextAction() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         return cmsContextAction(true);
     }
 
@@ -821,8 +823,10 @@ public class CmsBean implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public String cmsContextAction(boolean resetSearch) throws PresentationException, IndexUnreachableException, DAOException {
+    public String cmsContextAction(boolean resetSearch)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("cmsContextAction: {}", resetSearch);
         if (currentPage != null) {
             List<CMSContentItem> contentItems = currentPage.getGlobalContentItems();
@@ -879,8 +883,10 @@ public class CmsBean implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public String searchAction(CMSContentItem item) throws PresentationException, IndexUnreachableException, DAOException {
+    public String searchAction(CMSContentItem item)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchAction");
         if (searchBean == null) {
             logger.error("Cannot search: SearchBean is null");
@@ -1330,26 +1336,29 @@ public class CmsBean implements Serializable {
         }
     }
 
-    public String getRepresentativeImageForQuery(CMSPage page) throws PresentationException, IndexUnreachableException {
+    public String getRepresentativeImageForQuery(CMSPage page) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         int width = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
         int height = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
         return getRepresentativeImageForQuery(page, width, height);
     }
 
-    public String getRepresentativeImageForQuery(CMSContentItem item) throws PresentationException, IndexUnreachableException {
+    public String getRepresentativeImageForQuery(CMSContentItem item)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         int width = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
         int height = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
         return getRepresentativeImageForQuery(item, width, height);
     }
 
-    public String getRepresentativeImageForQuery(CMSPage page, int width, int height) throws PresentationException, IndexUnreachableException {
+    public String getRepresentativeImageForQuery(CMSPage page, int width, int height)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         CMSContentItem contentItem =
                 page.getGlobalContentItems().stream().filter(item -> CMSContentItemType.SOLRQUERY.equals(item.getType())).findAny().orElseThrow(
                         () -> new IllegalStateException("The page does not contain content items of type '" + CMSContentItemType.SOLRQUERY + "'"));
         return getRepresentativeImageForQuery(contentItem, width, height);
     }
 
-    public String getRepresentativeImageForQuery(CMSContentItem item, int width, int height) throws PresentationException, IndexUnreachableException {
+    public String getRepresentativeImageForQuery(CMSContentItem item, int width, int height)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         if (StringUtils.isBlank(item.getSolrQuery())) {
             throw new IllegalStateException("Item " + item + " does not define a solr query");
         }

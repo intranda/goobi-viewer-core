@@ -35,6 +35,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.rss.RSSFeed;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -142,6 +143,9 @@ public class RssResolver extends HttpServlet {
             logger.debug("DAOException thrown here: {}", e.getMessage());
             //            response.isCommitted()
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            return;
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.getMessage());
             return;
         }
 

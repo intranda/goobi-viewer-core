@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.urlresolution.ViewHistory;
@@ -67,7 +68,7 @@ public class SearchFunctionality implements Functionality {
         this.baseUrl = baseUrl;
     }
 
-    public void resetSearch() throws PresentationException, IndexUnreachableException, DAOException {
+    public void resetSearch() {
         getSearchBean().resetSearchAction();
         redirectToSearchUrl();
     }
@@ -95,7 +96,7 @@ public class SearchFunctionality implements Functionality {
         }
     }
 
-    public void searchSimple() throws PresentationException, IndexUnreachableException, DAOException {
+    public void searchSimple() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
@@ -105,7 +106,7 @@ public class SearchFunctionality implements Functionality {
         }
     }
 
-    public void searchAdvanced() throws PresentationException, IndexUnreachableException, DAOException {
+    public void searchAdvanced() {
         logger.trace("searchAdvanced");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
@@ -115,7 +116,7 @@ public class SearchFunctionality implements Functionality {
         }
     }
 
-    public void searchFacetted() throws PresentationException, IndexUnreachableException, DAOException {
+    public void searchFacetted() {
         logger.trace("searchSimple");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
@@ -125,8 +126,7 @@ public class SearchFunctionality implements Functionality {
         }
     }
 
-    public void search() throws PresentationException, IndexUnreachableException, DAOException {
-
+    public void search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchAction");
         if (getSearchBean() == null) {
             logger.error("Cannot search: SearchBean is null");
