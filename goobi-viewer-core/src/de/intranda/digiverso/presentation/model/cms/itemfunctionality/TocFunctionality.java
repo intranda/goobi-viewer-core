@@ -18,7 +18,6 @@ package de.intranda.digiverso.presentation.model.cms.itemfunctionality;
 import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
-import org.goobi.presentation.contentServlet.controller.GetMetsPageCountAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +26,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.toc.TOC;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
@@ -35,21 +35,21 @@ import de.intranda.digiverso.presentation.model.viewer.StructElement;
  *
  */
 public class TocFunctionality implements Functionality {
-    
+
     private static Logger logger = LoggerFactory.getLogger(TocFunctionality.class);
-    
+
     private TOC toc = null;
-    
+
     private StructElement docStruct = null;
-    
+
     private int currentPage = 1;
-    
+
     private final String pi;
-    
+
     public TocFunctionality(String pi) {
         this.pi = pi;
     }
-    
+
     /**
      * @param cmsContentItemPeriodical
      */
@@ -60,25 +60,29 @@ public class TocFunctionality implements Functionality {
         this.pi = blueprint.pi;
     }
 
-
-    public String getBannerUrl(int width, int height) throws IndexUnreachableException, PresentationException, DAOException {
-        String url = getDocStruct().getImageUrl(width, height, 0, true, true);
-        if(StringUtils.isBlank(url)) {
-            Optional<String> thumb = getToc().getTocElements().stream().filter(element -> StringUtils.isNotBlank(element.getThumbnailUrl())).map(element -> element.getThumbnailUrl(width, height)).findFirst();
+    public String getBannerUrl(int width, int height)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
+        String url = getDocStruct().getImageUrl(width, height);
+        if (StringUtils.isBlank(url)) {
+            Optional<String> thumb = getToc().getTocElements()
+                    .stream()
+                    .filter(element -> StringUtils.isNotBlank(element.getThumbnailUrl()))
+                    .map(element -> element.getThumbnailUrl(width, height))
+                    .findFirst();
             url = thumb.orElseGet(() -> "");
         }
         return url;
     }
-    
-    public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException {
-        if(toc == null || toc.getCurrentPage() != this.getPageNo()) {
+
+    public TOC getToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+        if (toc == null || toc.getCurrentPage() != this.getPageNo()) {
             toc = createToc();
         }
         return toc;
     }
-    
+
     public StructElement getDocStruct() throws IndexUnreachableException, PresentationException {
-        if(docStruct == null) {
+        if (docStruct == null) {
             docStruct = createDocStruct();
         }
         return docStruct;
@@ -86,40 +90,39 @@ public class TocFunctionality implements Functionality {
 
     /**
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
      */
     private StructElement createDocStruct() throws IndexUnreachableException, PresentationException {
-        if(StringUtils.isNotBlank(getPi())) {            
+        if (StringUtils.isNotBlank(getPi())) {
             long topDocumentIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(getPi());
             StructElement struct = new StructElement(topDocumentIddoc);
             return struct;
-        } else {
-            return new StructElement();
         }
+
+        return new StructElement();
     }
 
     /**
      * @return
-     * @throws DAOException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
+     * @throws DAOException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    private TOC createToc() throws PresentationException, IndexUnreachableException, DAOException {
+    private TOC createToc() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         TOC toc = new TOC();
         toc.generate(getDocStruct(), false, getDocStruct().getMetadataValue(SolrConstants.MIMETYPE), currentPage);
         toc.setCurrentPage(currentPage);
         return toc;
     }
-    
 
-    
     @Override
     public TocFunctionality clone() {
         TocFunctionality clone = new TocFunctionality(this);
         return clone;
     }
-    
+
     /**
      * @return the piPeriodical
      */
@@ -132,9 +135,9 @@ public class TocFunctionality implements Functionality {
      */
     @Override
     public void setPageNo(int pageNo) {
-        this.currentPage = pageNo;  
+        this.currentPage = pageNo;
     }
-    
+
     @Override
     public int getPageNo() {
         return this.currentPage;

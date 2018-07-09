@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -51,7 +52,7 @@ public class SearchResultResource {
     @Path("/hit/{id}/{numChildren}")
     @Produces({ MediaType.APPLICATION_JSON })
     public SearchHitChildList getTagsForPageJson(@PathParam("id") String hitId, @PathParam("numChildren") int numChildren) throws DAOException,
-            PresentationException, IndexUnreachableException, IOException {
+            PresentationException, IndexUnreachableException, IOException, ViewerConfigurationException {
         SearchBean searchBean = BeanUtils.getSearchBean();
         if (searchBean == null) {
             servletResponse.sendError(HttpServletResponse.SC_FORBIDDEN,

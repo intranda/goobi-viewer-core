@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
@@ -59,12 +60,11 @@ public class ImageHandler {
      * @return
      */
     public String getImageUrl(PhysicalElement page, PageType pageType) {
-
         if (page == null) {
-            throw new NullPointerException("Cannot get image url: PhysicalElement is null");
+            throw new IllegalArgumentException("Cannot get image url: PhysicalElement is null");
         }
         if (pageType == null) {
-            throw new NullPointerException("Cannot get image url: PageType is null");
+            throw new IllegalArgumentException("Cannot get image url: PageType is null");
         }
 
         String pageName;
@@ -82,17 +82,23 @@ public class ImageHandler {
 
         }
 
-        if (isRestrictedUrl(page.getFilepath())) {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath(), true)).append("/info.json");
-            return sb.toString();
-        } else if (isExternalUrl(page.getFilepath())) {
-            return page.getFilepath();
-        } else {
-            StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getIiifUrl());
-            sb.append(pageName).append("/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
-            return sb.toString();
+        try {
+            if (isRestrictedUrl(page.getFilepath())) {
+                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+                sb.append(pageName).append("/-/").append(BeanUtils.escapeCriticalUrlChracters(page.getFilepath(), true)).append("/info.json");
+                return sb.toString();
+            } else if (isExternalUrl(page.getFilepath())) {
+                return page.getFilepath();
+            } else {
+                StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl());
+                sb.append(pageName).append("/").append(page.getPi()).append("/").append(page.getFileName()).append("/info.json");
+                return sb.toString();
+            }
+        } catch (ViewerConfigurationException e) {
+            logger.error(e.getMessage());
         }
+
+        return null;
     }
 
     /**

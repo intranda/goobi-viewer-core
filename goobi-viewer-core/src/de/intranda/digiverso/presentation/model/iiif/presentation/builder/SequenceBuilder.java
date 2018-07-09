@@ -25,16 +25,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
@@ -71,7 +70,6 @@ public class SequenceBuilder extends AbstractBuilder {
 
     protected final ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
 
-
     /**
      * @param request
      * @throws URISyntaxException
@@ -98,9 +96,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
     public Map<AnnotationType, List<AnnotationList>> addBaseSequence(Manifest manifest, StructElement doc, String manifestId)
-            throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException {
+            throws URISyntaxException, PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
 
         Map<AnnotationType, List<AnnotationList>> annotationMap = new HashMap<>();
 
@@ -141,8 +140,10 @@ public class SequenceBuilder extends AbstractBuilder {
      * @return a map with the list of all annotationlists (one list per page)
      * @throws DAOException
      * @throws URISyntaxException
+     * @throws ViewerConfigurationException
      */
-    public List<AnnotationList> addComments(Map<Integer, Canvas> canvases, String pi, boolean populate) throws DAOException, URISyntaxException {
+    public List<AnnotationList> addComments(Map<Integer, Canvas> canvases, String pi, boolean populate)
+            throws DAOException, URISyntaxException, ViewerConfigurationException {
         List<AnnotationList> list = new ArrayList<>();
         List<Integer> pages = DataManager.getInstance().getDao().getPagesWithComments(pi);
         for (Integer order : pages) {
@@ -172,7 +173,7 @@ public class SequenceBuilder extends AbstractBuilder {
         for (AnnotationType type : content.keySet()) {
             List<AnnotationList> list = annotationMap.get(type);
             if (list == null) {
-                list = new ArrayList<AnnotationList>();
+                list = new ArrayList<>();
                 annotationMap.put(type, list);
             }
             list.add(content.get(type));
@@ -189,8 +190,9 @@ public class SequenceBuilder extends AbstractBuilder {
      * @param page
      * @return
      * @throws URISyntaxException
+     * @throws ViewerConfigurationException
      */
-    public Canvas generateCanvas(StructElement doc, PhysicalElement page) throws URISyntaxException {
+    public Canvas generateCanvas(StructElement doc, PhysicalElement page) throws URISyntaxException, ViewerConfigurationException {
         if (doc == null || page == null) {
             return null;
         }
@@ -241,7 +243,7 @@ public class SequenceBuilder extends AbstractBuilder {
     }
 
     public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas canvas, String dataRepository,
-            boolean populate) throws URISyntaxException, PresentationException, IndexUnreachableException {
+            boolean populate) throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
         Map<AnnotationType, AnnotationList> annotationMap = new HashMap<>();
 
@@ -253,7 +255,7 @@ public class SequenceBuilder extends AbstractBuilder {
             fulltextAnnotation.setOn(canvas);
             annoList.addResource(fulltextAnnotation);
             annotationMap.put(AnnotationType.FULLTEXT, annoList);
-            if(populate) {                
+            if (populate) {
                 LinkingContent fulltextLink = new LinkingContent(ContentResource.getFulltextURI(page.getPi(), page.getFileName("txt")));
                 fulltextLink.setFormat(Format.TEXT_PLAIN);
                 fulltextLink.setType(DcType.TEXT);
@@ -270,7 +272,7 @@ public class SequenceBuilder extends AbstractBuilder {
             altoAnnotation.setOn(canvas);
             annoList.addResource(altoAnnotation);
             annotationMap.put(AnnotationType.ALTO, annoList);
-            if(populate) {                
+            if (populate) {
                 LinkingContent altoLink = new LinkingContent(ContentResource.getAltoURI(page.getPi(), page.getFileName("xml")));
                 altoLink.setFormat(Format.TEXT_XML);
                 altoLink.setType(DcType.TEXT);
@@ -282,46 +284,40 @@ public class SequenceBuilder extends AbstractBuilder {
         if (PhysicalElement.MIME_TYPE_AUDIO.equals(page.getMimeType())) {
             AnnotationList annoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO));
             annoList.setLabel(IMetadataValue.getTranslations(AnnotationType.AUDIO.name()));
-            try {
-                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
-                annotation.setMotivation(Motivation.PAINTING);
-                annotation.setOn(canvas);
-                annoList.addResource(annotation);
-                annotationMap.put(AnnotationType.AUDIO, annoList);
-                if(populate) {                    
-                    String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
-                    Format format = Format.fromFilename(url);
-                    LinkingContent audioLink = new LinkingContent(new URI(url));
-                    audioLink.setFormat(format);
-                    audioLink.setType(DcType.SOUND);
-                    audioLink.setLabel(IMetadataValue.getTranslations("AUDIO"));
-                    annotation.setResource(audioLink);
-                }
-            } catch (ConfigurationException e) {
-                logger.error(e.toString(), e);
+            Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.AUDIO, 1));
+            annotation.setMotivation(Motivation.PAINTING);
+            annotation.setOn(canvas);
+            annoList.addResource(annotation);
+            annotationMap.put(AnnotationType.AUDIO, annoList);
+            if (populate) {
+                String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
+                Format format = Format.fromFilename(url);
+                LinkingContent audioLink = new LinkingContent(new URI(url));
+                audioLink.setFormat(format);
+                audioLink.setType(DcType.SOUND);
+                audioLink.setLabel(IMetadataValue.getTranslations("AUDIO"));
+                annotation.setResource(audioLink);
             }
+
         }
 
         AnnotationList videoList = new AnnotationList(getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO));
         videoList.setLabel(IMetadataValue.getTranslations(AnnotationType.VIDEO.name()));
         if (PhysicalElement.MIME_TYPE_VIDEO.equals(page.getMimeType())) {
-            try {
-                Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
-                annotation.setMotivation(Motivation.PAINTING);
-                annotation.setOn(canvas);
-                videoList.addResource(annotation);
-                if(populate) {                    
-                    String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
-                    Format format = Format.fromFilename(url);
-                    LinkingContent link = new LinkingContent(new URI(url));
-                    link.setFormat(format);
-                    link.setType(DcType.MOVING_IMAGE);
-                    link.setLabel(IMetadataValue.getTranslations("VIDEO"));
-                    annotation.setResource(link);
-                }
-            } catch (ConfigurationException e) {
-                logger.error(e.toString(), e);
+            Annotation annotation = new Annotation(getAnnotationURI(page.getPi(), page.getOrder(), AnnotationType.VIDEO, 1));
+            annotation.setMotivation(Motivation.PAINTING);
+            annotation.setOn(canvas);
+            videoList.addResource(annotation);
+            if (populate) {
+                String url = page.getMediaUrl(page.getFileNames().keySet().stream().findFirst().orElse(""));
+                Format format = Format.fromFilename(url);
+                LinkingContent link = new LinkingContent(new URI(url));
+                link.setFormat(format);
+                link.setType(DcType.MOVING_IMAGE);
+                link.setLabel(IMetadataValue.getTranslations("VIDEO"));
+                annotation.setResource(link);
             }
+
         }
         if (PhysicalElement.MIME_TYPE_SANDBOXED_HTML.equals(page.getMimeType())) {
             try {
@@ -329,19 +325,19 @@ public class SequenceBuilder extends AbstractBuilder {
                 annotation.setMotivation(Motivation.PAINTING);
                 annotation.setOn(canvas);
                 videoList.addResource(annotation);
-                if(populate) {                    
+                if (populate) {
                     String url = page.getUrl();
                     if (url.startsWith("//")) {
                         url = "http:" + url;
                     }
-                    
+
                     LinkingContent link = new LinkingContent(new URI(url));
                     link.setFormat(Format.TEXT_HTML);
                     link.setType(DcType.MOVING_IMAGE);
                     link.setLabel(IMetadataValue.getTranslations("VIDEO"));
                     annotation.setResource(link);
                 }
-            } catch (ConfigurationException e) {
+            } catch (ViewerConfigurationException e) {
                 logger.error(e.toString(), e);
             }
         }
@@ -392,8 +388,9 @@ public class SequenceBuilder extends AbstractBuilder {
     /**
      * @param page
      * @return
+     * @throws ViewerConfigurationException
      */
-    private Dimension getSize(PhysicalElement page) {
+    private Dimension getSize(PhysicalElement page) throws ViewerConfigurationException {
         Dimension size = new Dimension(0, 0);
         if (page.getMimeType().toLowerCase().startsWith("video") || page.getMimeType().toLowerCase().startsWith("text")) {
             size.setSize(page.getVideoWidth(), page.getVideoHeight());

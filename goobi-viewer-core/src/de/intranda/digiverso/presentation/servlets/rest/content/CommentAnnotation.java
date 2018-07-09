@@ -31,11 +31,10 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.annotation.Comment;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
-import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 public class CommentAnnotation extends AbstractAnnotation  implements IAnnotation {
 
@@ -74,7 +73,7 @@ public class CommentAnnotation extends AbstractAnnotation  implements IAnnotatio
         this.addContext = addContext;
     }
     
-    public CommentAnnotation(Comment comment, String appplicationPath, boolean addContext) {
+    public CommentAnnotation(Comment comment, String appplicationPath, boolean addContext) throws ViewerConfigurationException {
         super(appplicationPath);
 
         if (comment == null) {
@@ -84,6 +83,7 @@ public class CommentAnnotation extends AbstractAnnotation  implements IAnnotatio
         this.addContext = addContext;
     }
 
+    @Override
     @JsonSerialize()
     public URI getTarget() throws URISyntaxException {
         String uri = new StringBuilder(applicationPath).append('/')

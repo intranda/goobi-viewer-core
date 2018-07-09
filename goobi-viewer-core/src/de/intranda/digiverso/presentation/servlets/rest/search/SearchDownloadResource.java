@@ -45,6 +45,7 @@ import de.intranda.digiverso.presentation.controller.DateTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -93,7 +94,7 @@ public class SearchDownloadResource {
     @Path("/excel")
     @Produces({ "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
     public ExcelStreamingOutput downloadAsExcel(@Context HttpServletResponse response, @Context HttpServletRequest request) throws DAOException,
-            PresentationException, IndexUnreachableException {
+            PresentationException, IndexUnreachableException, ViewerConfigurationException {
         SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
         String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString(), SearchHelper.getDocstrctWhitelistFilterSuffix());
         List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();

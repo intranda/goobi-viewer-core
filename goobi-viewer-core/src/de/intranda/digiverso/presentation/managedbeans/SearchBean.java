@@ -64,6 +64,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.itemfunctionality.SearchFunctionality;
@@ -180,8 +181,9 @@ public class SearchBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public String search() throws PresentationException, IndexUnreachableException, DAOException {
+    public String search() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("search");
         updateBreadcrumbsForSearchHits();
         resetSearchResults();
@@ -565,8 +567,9 @@ public class SearchBean implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException {
+    public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchString);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
 
@@ -1298,8 +1301,9 @@ public class SearchBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException {
+    public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getNextElement: {}", currentHitIndex);
         if (currentHitIndex > -1 && currentSearch != null) {
             if (currentHitIndex < currentSearch.getHitsCount() - 1) {
@@ -1322,8 +1326,9 @@ public class SearchBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException {
+    public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getPreviousElement: {}", currentHitIndex);
         if (currentHitIndex > -1 && currentSearch != null) {
             if (currentHitIndex > 0) {
@@ -1732,7 +1737,7 @@ public class SearchBean implements Serializable {
         downloadReady = new FutureTask<>(new Callable<Boolean>() {
 
             @Override
-            public Boolean call() throws InterruptedException {
+            public Boolean call() throws InterruptedException, ViewerConfigurationException {
                 if (!facesContext.getResponseComplete()) {
                     final SXSSFWorkbook wb = buildExcelSheet(facesContext);
                     if (wb == null) {
@@ -1816,11 +1821,12 @@ public class SearchBean implements Serializable {
      * @param facesContext
      * @return
      * @throws InterruptedException
+     * @throws ViewerConfigurationException
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
      */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext) throws InterruptedException {
+    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext) throws InterruptedException, ViewerConfigurationException {
         try {
             String currentQuery = SearchHelper.prepareQuery(searchString, SearchHelper.getDocstrctWhitelistFilterSuffix());
             final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());

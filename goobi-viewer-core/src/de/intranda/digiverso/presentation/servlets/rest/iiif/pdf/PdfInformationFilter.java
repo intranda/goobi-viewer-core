@@ -28,12 +28,12 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.iiif.ImageTile;
@@ -54,12 +54,12 @@ public class PdfInformationFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
-        
+
         Object content = response.getEntity();
-        
-        if(content != null && content instanceof PdfInformation) {
-            PdfInformation info = (PdfInformation)content;
-            if(info.getDiv() != null) {
+
+        if (content != null && content instanceof PdfInformation) {
+            PdfInformation info = (PdfInformation) content;
+            if (info.getDiv() != null) {
                 info.setDiv(Helper.getTranslation(info.getDiv(), null));
             }
         }
@@ -84,14 +84,14 @@ public class PdfInformationFilter implements ContainerResponseFilter {
     /**
      * @param responseObject
      * @return
-     * @throws ConfigurationException 
+     * @throws ViewerConfigurationException
      */
-    private List<Integer> getImageSizesFromConfig() throws ConfigurationException {
-    	PageType pageType = PageType.viewImage;
+    private List<Integer> getImageSizesFromConfig() throws ViewerConfigurationException {
+        PageType pageType = PageType.viewImage;
         if (fullscreen) {
-        	pageType = PageType.viewFullscreen;
+            pageType = PageType.viewFullscreen;
         } else if (crowdsourcing) {
-        	pageType = PageType.editContent;
+            pageType = PageType.editContent;
         }
         List<String> sizeStrings = DataManager.getInstance().getConfiguration().getImageViewZoomScales(pageType, null);
         List<Integer> sizes = new ArrayList<>();
@@ -108,14 +108,14 @@ public class PdfInformationFilter implements ContainerResponseFilter {
 
     /**
      * @return
-     * @throws ConfigurationException 
+     * @throws ViewerConfigurationException
      */
-    private List<ImageTile> getTileSizesFromConfig() throws ConfigurationException {
+    private List<ImageTile> getTileSizesFromConfig() throws ViewerConfigurationException {
         PageType pageType = PageType.viewImage;
         if (fullscreen) {
-        	pageType = PageType.viewFullscreen;
+            pageType = PageType.viewFullscreen;
         } else if (crowdsourcing) {
-        	pageType = PageType.editContent;
+            pageType = PageType.editContent;
         }
         Map<Integer, List<Integer>> configSizes = DataManager.getInstance().getConfiguration().getTileSizes(pageType, null);
         List<ImageTile> tiles = new ArrayList<>();

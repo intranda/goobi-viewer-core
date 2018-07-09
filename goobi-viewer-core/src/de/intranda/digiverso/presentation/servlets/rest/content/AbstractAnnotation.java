@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 public abstract class AbstractAnnotation {
@@ -65,7 +66,7 @@ public abstract class AbstractAnnotation {
         this.applicationPath = ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest);
     }
     
-    public AbstractAnnotation(String applicationPath) {
+    public AbstractAnnotation(String applicationPath) throws ViewerConfigurationException {
         this.servicePath = DataManager.getInstance().getConfiguration().getRestApiUrl() + SERVICE + PATH;
         this.applicationPath = applicationPath;
     }

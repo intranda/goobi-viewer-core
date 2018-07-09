@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,6 +29,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
 import de.intranda.digiverso.presentation.model.security.OpenIdProvider;
@@ -1912,7 +1912,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void getImageViewZoomScalesTest() throws ConfigurationException {
+    public void getImageViewZoomScalesTest() throws ViewerConfigurationException {
         List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales();
         Assert.assertEquals("600", scales.get(0));
         Assert.assertEquals("1000", scales.get(1));
@@ -1921,7 +1921,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void getFullscreenViewZoomScalesTest() throws ConfigurationException {
+    public void getFullscreenViewZoomScalesTest() throws ViewerConfigurationException {
         List<String> scales = DataManager.getInstance().getConfiguration().getImageViewZoomScales(PageType.viewFullscreen, null);
         Assert.assertEquals("1000", scales.get(0));
         Assert.assertEquals("2000", scales.get(1));
@@ -1929,7 +1929,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void getImageViewTileSizesTest() throws ConfigurationException {
+    public void getImageViewTileSizesTest() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes();
         Assert.assertEquals(512, tiles.keySet().iterator().next(), 0);
         Assert.assertEquals(1, tiles.get(512).get(0), 0);
@@ -1938,7 +1938,7 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void getFullscreenTileSizesTest() throws ConfigurationException {
+    public void getFullscreenTileSizesTest() throws ViewerConfigurationException {
         Map<Integer, List<Integer>> tiles = DataManager.getInstance().getConfiguration().getTileSizes(PageType.viewFullscreen, null);
         Assert.assertEquals(1024, tiles.keySet().iterator().next(), 0);
         Assert.assertEquals(2, tiles.get(1024).get(0), 0);
@@ -1947,12 +1947,12 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void getFooterHeightTest() throws ConfigurationException {
+    public void getFooterHeightTest() throws ViewerConfigurationException {
         Assert.assertEquals(50, DataManager.getInstance().getConfiguration().getFooterHeight());
     }
 
     @Test
-    public void getCrowdsourcingFooterHeightTest() throws ConfigurationException {
+    public void getCrowdsourcingFooterHeightTest() throws ViewerConfigurationException {
         Assert.assertEquals(0, DataManager.getInstance().getConfiguration().getFooterHeight(PageType.editContent, null));
     }
 
@@ -2110,11 +2110,6 @@ public class ConfigurationTest {
     @Test
     public void getCollectionDisplayDepthForSearch_shouldReturn1IfNoCollectionConfigWasFound() throws Exception {
         Assert.assertEquals(-1, DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch("MD_NOSUCHFIELD"));
-    }
-
-    @Test
-    public void testGetIIIFUrl() {
-        Assert.assertEquals("http://localhost:8080/viewer/rest/", DataManager.getInstance().getConfiguration().getIiifUrl());
     }
 
     @Test

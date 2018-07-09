@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.RecordDeletedException;
 import de.intranda.digiverso.presentation.exceptions.RecordNotFoundException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.faces.validators.PIValidator;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
@@ -211,7 +212,7 @@ public class ActiveDocumentBean implements Serializable {
                 update();
             } catch (PresentationException e) {
                 logger.debug("PresentationException thrown here: {}", e.getMessage());
-            } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException e) {
+            } catch (RecordNotFoundException | RecordDeletedException | IndexUnreachableException | DAOException | ViewerConfigurationException e) {
             }
         }
 
@@ -226,12 +227,13 @@ public class ActiveDocumentBean implements Serializable {
      * @throws RecordDeletedException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should create ViewManager correctly
      * @should update ViewManager correctly if LOGID has changed
      * @should not override topDocumentIddoc if LOGID has changed
      */
-    public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException {
-
+    public void update() throws PresentationException, IndexUnreachableException, RecordNotFoundException, RecordDeletedException, DAOException,
+            ViewerConfigurationException {
         synchronized (this) {
             if (topDocumentIddoc == 0) {
                 throw new RecordNotFoundException(lastReceivedIdentifier);
@@ -411,8 +413,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws RecordDeletedException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public String open() throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException {
+    public String open()
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
             logger.trace("open");
             try {
@@ -442,12 +446,13 @@ public class ActiveDocumentBean implements Serializable {
         }
     }
 
-    public String openFulltext() throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException {
+    public String openFulltext()
+            throws RecordNotFoundException, RecordDeletedException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         open();
         return "viewFulltext";
     }
 
-    public BrowseElement getPrevHit() throws PresentationException, IndexUnreachableException, DAOException {
+    public BrowseElement getPrevHit() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (prevHit == null && searchBean != null) {
             prevHit = searchBean.getPreviousElement();
         }
@@ -455,7 +460,7 @@ public class ActiveDocumentBean implements Serializable {
         return prevHit;
     }
 
-    public BrowseElement getNextHit() throws PresentationException, IndexUnreachableException, DAOException {
+    public BrowseElement getNextHit() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (nextHit == null && searchBean != null) {
             nextHit = searchBean.getNextElement();
         }
@@ -885,7 +890,16 @@ public class ActiveDocumentBean implements Serializable {
         return tocCurrentPage;
     }
 
-    public void setTocCurrentPage(int tocCurrentPage) throws PresentationException, IndexUnreachableException, DAOException {
+    /**
+     * 
+     * @param tocCurrentPage
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ViewerConfigurationException
+     */
+    public void setTocCurrentPage(int tocCurrentPage)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
             this.tocCurrentPage = tocCurrentPage;
             if (this.tocCurrentPage < 1) {
@@ -920,11 +934,11 @@ public class ActiveDocumentBean implements Serializable {
      */
     public String getTitleBarLabel() throws IndexUnreachableException {
         Locale locale = BeanUtils.getLocale();
-        if(locale != null) {
+        if (locale != null) {
             return getTitleBarLabel(locale.getLanguage());
-        } else {            
-            return getTitleBarLabel(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
         }
+
+        return getTitleBarLabel(MultiLanguageMetadataValue.DEFAULT_LANGUAGE);
     }
 
     /**
@@ -1047,12 +1061,13 @@ public class ActiveDocumentBean implements Serializable {
      * @throws IndexUnreachableException
      * @throws IllegalArgumentException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should create new config document
      * @should set forced to true
      * @should set displayLink to true
      * @should save the config document
      */
-    public String forceOverviewPage() throws IllegalArgumentException, IndexUnreachableException, DAOException {
+    public String forceOverviewPage() throws IllegalArgumentException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         synchronized (this) {
             logger.debug("forceOverviewPage");
             overviewPage = new OverviewPage();
@@ -1226,8 +1241,10 @@ public class ActiveDocumentBean implements Serializable {
      * @throws DAOException
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public List<SearchHit> getRelatedItems(String identifierField) throws PresentationException, IndexUnreachableException, DAOException {
+    public List<SearchHit> getRelatedItems(String identifierField)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("getRelatedItems: {}", identifierField);
         if (identifierField == null) {
             return null;

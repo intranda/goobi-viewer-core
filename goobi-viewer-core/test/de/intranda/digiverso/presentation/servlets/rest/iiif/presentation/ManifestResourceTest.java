@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +31,7 @@ import de.intranda.digiverso.presentation.AbstractDatabaseAndSolrEnabledTest;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AnnotationList;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.IPresentationModelElement;
@@ -46,13 +46,14 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
  * @author Florian Alpers
  *
  */
-public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
-    
+public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest {
+
     private ManifestResource resource;
 
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -65,6 +66,7 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
     /**
      * @throws java.lang.Exception
      */
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -72,31 +74,36 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
 
     /**
      * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getManifest(java.lang.String)}.
-     * @throws DAOException 
-     * @throws URISyntaxException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws ContentNotFoundException 
-     * @throws ConfigurationException 
+     * 
+     * @throws DAOException
+     * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ContentNotFoundException
+     * @throws ViewerConfigurationException
      */
     @Test
-    public void testGetManifest() throws ConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
+    public void testGetManifest() throws ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException,
+            URISyntaxException, DAOException {
         IPresentationModelElement manifest = resource.getManifest("PPN517154005");
         Assert.assertTrue(manifest instanceof Manifest);
         System.out.println(manifest);
     }
 
     /**
-     * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getRange(java.lang.String, java.lang.String)}.
-     * @throws DAOException 
-     * @throws URISyntaxException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws ContentNotFoundException 
-     * @throws ConfigurationException 
+     * Test method for
+     * {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getRange(java.lang.String, java.lang.String)}.
+     * 
+     * @throws DAOException
+     * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ContentNotFoundException
+     * @throws ViewerConfigurationException
      */
     @Test
-    public void testGetRange() throws ConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
+    public void testGetRange() throws ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException,
+            URISyntaxException, DAOException {
         Range range = resource.getRange("PPN517154005", "LOG_0003");
         Assert.assertTrue(range instanceof Range);
         System.out.println(range);
@@ -104,58 +111,66 @@ public class ManifestResourceTest extends AbstractDatabaseAndSolrEnabledTest{
 
     /**
      * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getCanvas(java.lang.String, int)}.
-     * @throws DAOException 
-     * @throws URISyntaxException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws ContentNotFoundException 
-     * @throws ConfigurationException 
+     * 
+     * @throws DAOException
+     * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws ContentNotFoundException
+     * @throws ViewerConfigurationException
      */
     @Test
-    public void testGetCanvas() throws ConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
+    public void testGetCanvas() throws ViewerConfigurationException, ContentNotFoundException, PresentationException, IndexUnreachableException,
+            URISyntaxException, DAOException {
         Canvas canvas = resource.getCanvas("PPN517154005", 1);
         Assert.assertTrue(canvas instanceof Canvas);
         System.out.println(canvas);
     }
 
     /**
-     * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getOtherContent(java.lang.String, int, java.lang.String)}.
-     * @throws DAOException 
-     * @throws URISyntaxException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws IllegalRequestException 
-     * @throws ContentNotFoundException 
-     * @throws ConfigurationException 
+     * Test method for
+     * {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getOtherContent(java.lang.String, int, java.lang.String)}.
+     * 
+     * @throws DAOException
+     * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws IllegalRequestException
+     * @throws ContentNotFoundException
+     * @throws ViewerConfigurationException
      */
     @Test
-    public void testGetOtherContent() throws ConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
-        try {            
+    public void testGetOtherContent() throws ViewerConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException,
+            IndexUnreachableException, URISyntaxException, DAOException {
+        try {
             AnnotationList annoList = resource.getOtherContent("PPN517154005", 1, AnnotationType.FULLTEXT.name());
             Assert.assertTrue(annoList instanceof AnnotationList);
             System.out.println(annoList);
-        } catch(ContentNotFoundException e) {
+        } catch (ContentNotFoundException e) {
             //may be thrown if no fulltext content exists. Do not fail test
             System.out.println(e.getMessage());
         }
     }
 
     /**
-     * Test method for {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getLayer(java.lang.String, java.lang.String)}.
-     * @throws IOException 
-     * @throws DAOException 
-     * @throws URISyntaxException 
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws IllegalRequestException 
-     * @throws ContentNotFoundException 
-     * @throws ConfigurationException 
+     * Test method for
+     * {@link de.intranda.digiverso.presentation.servlets.rest.iiif.presentation.ManifestResource#getLayer(java.lang.String, java.lang.String)}.
+     * 
+     * @throws IOException
+     * @throws DAOException
+     * @throws URISyntaxException
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws IllegalRequestException
+     * @throws ContentNotFoundException
+     * @throws ViewerConfigurationException
      */
     @Test
-    public void testGetLayer() throws ConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException, IndexUnreachableException, URISyntaxException, DAOException, IOException {
-       Layer layer = resource.getLayer("PPN517154005", AnnotationType.FULLTEXT.name());
-       Assert.assertTrue(layer instanceof Layer);
-       System.out.println(layer);
+    public void testGetLayer() throws ViewerConfigurationException, ContentNotFoundException, IllegalRequestException, PresentationException,
+            IndexUnreachableException, URISyntaxException, DAOException, IOException {
+        Layer layer = resource.getLayer("PPN517154005", AnnotationType.FULLTEXT.name());
+        Assert.assertTrue(layer instanceof Layer);
+        System.out.println(layer);
     }
 
 }

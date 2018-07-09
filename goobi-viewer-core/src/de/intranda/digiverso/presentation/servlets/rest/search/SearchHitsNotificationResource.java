@@ -40,6 +40,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.search.Search;
 import de.intranda.digiverso.presentation.model.search.SearchFacets;
@@ -62,7 +63,7 @@ public class SearchHitsNotificationResource {
     @GET
     @Path("/sendnotifications/")
     @Produces({ MediaType.TEXT_HTML })
-    public String sendNewHitsNotifications() throws DAOException, PresentationException, IndexUnreachableException {
+    public String sendNewHitsNotifications() throws DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("sendNewHitsNotifications");
         Map<String, String> filters = new HashMap<>();
         filters.put("newHitsNotification", "1");

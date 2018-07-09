@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
 
@@ -38,24 +39,24 @@ public class PdfHandler {
     private final WatermarkHandler watermarkHandler;
     private final String iiifUrl;
 
-    public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) {
+    public PdfHandler(WatermarkHandler watermarkHandler, Configuration configuration) throws ViewerConfigurationException {
         this.watermarkHandler = watermarkHandler;
-        this.iiifUrl = configuration.getIiifUrl();
+        this.iiifUrl = configuration.getRestApiUrl();
     }
 
     /**
-     * Return the pdf-download url for the given  {@link StructElement} and {@link PhysicalElement}
+     * Return the pdf-download url for the given {@link StructElement} and {@link PhysicalElement}
      * 
      * @param doc
      * @param page
      * @return
      */
     public String getPdfUrl(StructElement doc, PhysicalElement page) {
-        return getPdfUrl(doc, new PhysicalElement[]{page});
+        return getPdfUrl(doc, new PhysicalElement[] { page });
     }
 
     /**
-     * Return the pdf-download url for the given  {@link StructElement} and a number of {@link PhysicalElement}s
+     * Return the pdf-download url for the given {@link StructElement} and a number of {@link PhysicalElement}s
      * 
      * @param doc
      * @param pages
@@ -75,10 +76,10 @@ public class PdfHandler {
                 .append(pages[0].getPi())
                 .append("_")
                 .append(pages[0].getOrder());
-                if(pages.length > 1) {
-                    sb.append("-").append(pages[pages.length-1].getOrder());
-                }
-                sb.append(".pdf");
+        if (pages.length > 1) {
+            sb.append("-").append(pages[pages.length - 1].getOrder());
+        }
+        sb.append(".pdf");
 
         if (doc != null && StringUtils.isNotBlank(doc.getLogid())) {
             sb.append(paramSep.getChar()).append("divID=").append(doc.getLogid());
@@ -127,7 +128,6 @@ public class PdfHandler {
         String pi = doc.getTopStruct().getPi();
         String divId = doc.isWork() ? null : doc.getLogid();
 
-        
         return getPdfUrl(pi, Optional.ofNullable(divId), this.watermarkHandler.getFooterIdIfExists(doc),
                 this.watermarkHandler.getWatermarkTextIfExists(doc), Optional.ofNullable(label));
     }
@@ -149,19 +149,19 @@ public class PdfHandler {
         final UrlParameterSeparator paramSep = new UrlParameterSeparator();
 
         divId = divId.filter(id -> StringUtils.isNotBlank(id));
-        String filename = label.filter(l -> StringUtils.isNotBlank(l)).map(l -> l.replaceAll("[\\s]", "_"))
+        String filename = label.filter(l -> StringUtils.isNotBlank(l))
+                .map(l -> l.replaceAll("[\\s]", "_"))
                 .map(l -> l.replaceAll("[\\W]", ""))
                 .map(l -> l.toLowerCase().endsWith(".pdf") ? l : (l + ".pdf"))
                 .orElse(pi + divId.map(id -> "_" + id).orElse("") + ".pdf");
-
 
         StringBuilder sb = new StringBuilder(this.iiifUrl);
         sb.append("pdf/mets/").append(pi).append(".xml").append("/");
         divId.ifPresent(id -> sb.append(id).append("/"));
         sb.append(filename);
 
-            watermarkText.ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(encode(text)));
-            watermarkId.ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
+        watermarkText.ifPresent(text -> sb.append(paramSep.getChar()).append("watermarkText=").append(encode(text)));
+        watermarkId.ifPresent(footerId -> sb.append(paramSep.getChar()).append("watermarkId=").append(footerId));
 
         return sb.toString();
     }

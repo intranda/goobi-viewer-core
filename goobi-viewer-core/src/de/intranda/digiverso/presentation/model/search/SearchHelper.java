@@ -67,6 +67,7 @@ import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
@@ -129,10 +130,11 @@ public final class SearchHelper {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     public static List<SearchHit> searchWithFulltext(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale,
-            HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException {
+            HttpServletRequest request) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -206,11 +208,12 @@ public final class SearchHelper {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should return all hits
      */
     public static List<SearchHit> searchWithAggregation(String query, int first, int rows, List<StringPair> sortFields, List<String> resultFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, List<String> exportFields, Locale locale)
-            throws PresentationException, IndexUnreachableException, DAOException {
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("searchWithAggregation: {}", query);
         QueryResponse resp =
                 DataManager.getInstance().getSearchIndex().search(query, first, rows, sortFields, null, resultFields, filterQueries, params);
@@ -332,12 +335,13 @@ public final class SearchHelper {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      */
     public static BrowseElement getBrowseElement(String query, int index, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException, DAOException {
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         String finalQuery = prepareQuery(query, getDocstrctWhitelistFilterSuffix());
         finalQuery = buildFinalQuery(finalQuery, aggregateHits);
         logger.debug("getBrowseElement final query: {}", finalQuery);
@@ -966,8 +970,14 @@ public final class SearchHelper {
                     break;
                 }
                 Matcher m = Pattern.compile(searchTerm.toLowerCase()).matcher(fulltext.toLowerCase());
+                int lastIndex = -1;
                 while (m.find()) {
+                    // Skip match if it follows right after the last match
+                    if (lastIndex != -1 && m.start() <= lastIndex + searchTerm.length()) {
+                        continue;
+                    }
                     int indexOfTerm = m.start();
+                    lastIndex = m.start();
 
                     // fulltextFragment = getTextFragmentFromLine(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
                     fulltextFragment = getTextFragmentRandomized(fulltext, searchTerm, indexOfTerm, targetFragmentLength);
@@ -1321,7 +1331,6 @@ public final class SearchHelper {
             sbDocstructFilter.delete(sbDocstructFilter.length() - 4, sbDocstructFilter.length());
         }
         if (bmfc.isRecordsAndAnchorsOnly()) {
-            //            sbQuery.append(" AND (").append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true)");
             filterQueries.add(
                     new StringBuilder().append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true").toString());
         }
@@ -1343,8 +1352,10 @@ public final class SearchHelper {
                 params.put(GroupParams.GROUP_MAIN, "true");
                 params.put(GroupParams.GROUP_FIELD, SolrConstants.GROUPFIELD);
             }
+            List<StringPair> sortFields =
+                    StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
             QueryResponse resp =
-                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, null, facetFields, fieldList, filterQueries, params);
+                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, fieldList, filterQueries, params);
             // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
             // facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
@@ -1995,11 +2006,12 @@ public final class SearchHelper {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      * @should create excel workbook correctly
      */
     public static SXSSFWorkbook exportSearchAsExcel(String query, String exportQuery, List<StringPair> sortFields, List<String> filterQueries,
             Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, boolean aggregateHits, HttpServletRequest request)
-            throws IndexUnreachableException, DAOException, PresentationException {
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
         SXSSFWorkbook wb = new SXSSFWorkbook(25);
         List<SXSSFSheet> sheets = new ArrayList<>();
         int currentSheetIndex = 0;

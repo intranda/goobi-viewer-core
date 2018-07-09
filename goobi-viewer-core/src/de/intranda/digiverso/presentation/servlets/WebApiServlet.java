@@ -53,6 +53,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.CompareYearSolrDocWrapper;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
@@ -110,7 +111,10 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         // Query given as parameter
                         try {
                             // Time matrix query automatically filters by the current sub-theme discriminator value
-                            query = new StringBuilder().append('(').append(queryParameter[0]).append(')').append(SearchHelper.getAllSuffixes(true))
+                            query = new StringBuilder().append('(')
+                                    .append(queryParameter[0])
+                                    .append(')')
+                                    .append(SearchHelper.getAllSuffixes(true))
                                     .toString();
                         } catch (IndexUnreachableException e) {
                             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -138,8 +142,15 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         logger.trace("end Date: {}", endDate);
 
                         try {
-                            query = new StringBuilder().append('(').append(SolrConstants.ISWORK).append(":true AND YEAR:[").append(startDate).append(
-                                    " TO ").append(endDate).append("])").append(SearchHelper.getAllSuffixes(true)).toString();
+                            query = new StringBuilder().append('(')
+                                    .append(SolrConstants.ISWORK)
+                                    .append(":true AND YEAR:[")
+                                    .append(startDate)
+                                    .append(" TO ")
+                                    .append(endDate)
+                                    .append("])")
+                                    .append(SearchHelper.getAllSuffixes(true))
+                                    .toString();
                             logger.debug("query: {}", query);
                         } catch (IndexUnreachableException e) {
                             logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
@@ -162,8 +173,10 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         // Solr supports dynamic random_* sorting fields. Each value represents one particular order, so a random number is required.
                         Random random = new Random();
                         String sortfield = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
-                        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, count, Collections.singletonList(
-                                new StringPair(sortfield, "asc")), null, null).getResults();
+                        SolrDocumentList result = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(query, 0, count, Collections.singletonList(new StringPair(sortfield, "asc")), null, null)
+                                .getResults();
                         LinkedList<CompareYearSolrDocWrapper> sortDocResult = new LinkedList<>();
                         if (result != null) {
                             logger.debug("count: {} result.getNumFound: {} size: {}", count, result.getNumFound(), result.size());
@@ -184,6 +197,10 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         return;
                     } catch (IndexUnreachableException e) {
                         logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                        return;
+                    } catch (ViewerConfigurationException e) {
+                        logger.debug("ViewerConfigurationException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                         return;
                     }
@@ -258,8 +275,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                     }
 
                     try {
-                        SolrDocumentList result = DataManager.getInstance().getSearchIndex().search(query, 0, count, sortFields, null, null)
-                                .getResults();
+                        SolrDocumentList result =
+                                DataManager.getInstance().getSearchIndex().search(query, 0, count, sortFields, null, null).getResults();
 
                         JSONArray jsonArray = null;
                         switch (jsonFormat) {
@@ -287,6 +304,9 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                         logger.debug("DAOException thrown here: {}", e.getMessage());
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                         return;
+                    } catch (ViewerConfigurationException e) {
+                        logger.debug("ViewerConfigurationException thrown here: {}", e.getMessage());
+                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                     }
                 }
                     break;
@@ -433,10 +453,11 @@ public class WebApiServlet extends HttpServlet implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     @SuppressWarnings("unchecked")
-    private static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request) throws IndexUnreachableException,
-            PresentationException, DAOException {
+    private static JSONArray getRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
 
         for (SolrDocument doc : result) {
@@ -449,8 +470,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
-                        SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
+                        new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
                 if (!access) {
                     logger.trace("User may not list {}", pi);
                     continue;
@@ -473,10 +494,11 @@ public class WebApiServlet extends HttpServlet implements Serializable {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     @SuppressWarnings("unchecked")
-    private static JSONArray getDateCentricRecordJsonArray(SolrDocumentList result, HttpServletRequest request) throws IndexUnreachableException,
-            PresentationException, DAOException {
+    private static JSONArray getDateCentricRecordJsonArray(SolrDocumentList result, HttpServletRequest request)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         JSONArray jsonArray = new JSONArray();
 
         JSONArray jsonArrayUngrouped = new JSONArray();
@@ -490,8 +512,8 @@ public class WebApiServlet extends HttpServlet implements Serializable {
                 for (Object o : requiredAccessConditions) {
                     requiredAccessConditionSet.add((String) o);
                 }
-                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST, new StringBuilder(
-                        SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
+                boolean access = AccessConditionUtils.checkAccessPermission(requiredAccessConditionSet, IPrivilegeHolder.PRIV_LIST,
+                        new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':').append(pi).toString(), request);
                 if (!access) {
                     logger.debug("User may not list {}", pi);
                     continue;
@@ -532,10 +554,11 @@ public class WebApiServlet extends HttpServlet implements Serializable {
      * @param doc
      * @param rootUrl
      * @return
+     * @throws ViewerConfigurationException
      * @should add all metadata
      */
     @SuppressWarnings("unchecked")
-    protected static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl) {
+    protected static JSONObject getRecordJsonObject(SolrDocument doc, String rootUrl) throws ViewerConfigurationException {
         JSONObject jsonObj = new JSONObject();
 
         String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);

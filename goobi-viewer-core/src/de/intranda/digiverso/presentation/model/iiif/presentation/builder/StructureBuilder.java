@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +32,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Canvas;
 import de.intranda.digiverso.presentation.model.iiif.presentation.Range;
@@ -78,14 +78,14 @@ public class StructureBuilder extends AbstractBuilder {
      * @param uri
      * @param useMembers
      * @return
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
      * @throws URISyntaxException
      */
     public List<Range> generateStructure(List<StructElement> elements, boolean useMembers)
-            throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
+            throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException, URISyntaxException {
         List<Range> ranges = new ArrayList<>();
         Map<String, String> idMap = new HashMap<>();
         if (elements != null && !elements.isEmpty()) {
@@ -142,13 +142,13 @@ public class StructureBuilder extends AbstractBuilder {
      * 
      * @param ele
      * @param manifest
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
      */
     public void populate(StructElement ele, final Range range)
-            throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException {
+            throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
 
         addMetadata(range, ele);
 

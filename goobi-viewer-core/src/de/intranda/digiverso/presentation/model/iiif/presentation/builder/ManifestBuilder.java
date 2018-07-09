@@ -24,11 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
@@ -39,6 +37,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ImageDeliveryBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.iiif.presentation.AbstractPresentationModelElement;
@@ -90,10 +89,10 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      * @throws DAOException
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      */
     public IPresentationModelElement generateManifest(StructElement ele)
-            throws URISyntaxException, PresentationException, IndexUnreachableException, ConfigurationException, DAOException {
+            throws URISyntaxException, PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
 
         final AbstractPresentationModelElement manifest;
 
@@ -112,13 +111,13 @@ public class ManifestBuilder extends AbstractBuilder {
     /**
      * @param ele
      * @param manifest
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws PresentationException
      */
     public void populate(StructElement ele, final AbstractPresentationModelElement manifest)
-            throws ConfigurationException, IndexUnreachableException, DAOException, PresentationException {
+            throws ViewerConfigurationException, IndexUnreachableException, DAOException, PresentationException {
         manifest.setAttribution(getAttribution());
         manifest.setLabel(new SimpleMetadataValue(ele.getLabel()));
 
@@ -134,10 +133,9 @@ public class ManifestBuilder extends AbstractBuilder {
             logger.warn("Unable to retrieve thumbnail url", e);
         }
 
-        
         Optional<String> logoUrl = getLogoUrl();
-        if(!logoUrl.isPresent()) {
-            logoUrl =  BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
+        if (!logoUrl.isPresent()) {
+            logoUrl = BeanUtils.getImageDeliveryBean().getFooter().getWatermarkUrl(Optional.empty(), Optional.ofNullable(ele), Optional.empty());
         }
         logoUrl.ifPresent(url -> {
             try {
@@ -216,7 +214,7 @@ public class ManifestBuilder extends AbstractBuilder {
                     //                    addBaseSequence((Manifest)child, volume, child.getId().toString());
                     anchor.addManifest((Manifest) child);
                 }
-            } catch (ConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
+            } catch (ViewerConfigurationException | URISyntaxException | PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error("Error creating child manigest for " + volume);
             }
 
@@ -229,10 +227,9 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws PresentationException
      * @throws DAOException
      * @throws URISyntaxException
-     * @throws ConfigurationException
      */
     public void addAnchor(Manifest manifest, String anchorPI)
-            throws PresentationException, IndexUnreachableException, ConfigurationException, URISyntaxException, DAOException {
+            throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
 
         /*ANCHOR*/
         if (StringUtils.isNotBlank(anchorPI)) {
@@ -247,7 +244,6 @@ public class ManifestBuilder extends AbstractBuilder {
      * @throws IndexUnreachableException
      * @throws PresentationException
      */
-    @SuppressWarnings("unchecked")
     private List<StructElement> getChildDocs(long iddocParent) throws PresentationException, IndexUnreachableException {
         String query = SolrConstants.IDDOC_PARENT + ":" + iddocParent;
         SolrDocumentList solrDocs = DataManager.getInstance().getSearchIndex().getDocs(query, getSolrFieldList());
@@ -260,16 +256,16 @@ public class ManifestBuilder extends AbstractBuilder {
                     return null;
                 }
             }).filter(ele -> ele != null).collect(Collectors.toList());
-        } else {
-            return Collections.EMPTY_LIST;
         }
+
+        return Collections.emptyList();
     }
 
     /**
      * @param v1
      * @return
      */
-    private Integer getSortingNumber(StructElement volume) {
+    private static Integer getSortingNumber(StructElement volume) {
         String numSort = volume.getVolumeNoSort();
         if (StringUtils.isNotBlank(numSort)) {
             try {
@@ -282,31 +278,32 @@ public class ManifestBuilder extends AbstractBuilder {
     }
 
     /**
-     * Retrieves the logo url configured in webapi.iiif.logo. If the configured value is an absulute http(s) url, this url 
-     * will be returned. If it is any other absolute url a contentserver link to that url will be returned.
-     * If it is a non-absolute url, it will be considered a filepath within the static images folder of the viewer theme and
-     * the appropriate url will be returned
+     * Retrieves the logo url configured in webapi.iiif.logo. If the configured value is an absulute http(s) url, this url will be returned. If it is
+     * any other absolute url a contentserver link to that url will be returned. If it is a non-absolute url, it will be considered a filepath within
+     * the static images folder of the viewer theme and the appropriate url will be returned
      * 
-     * @return  An optional containing the configured logo url, or an empty optional if no logo was configured
+     * @return An optional containing the configured logo url, or an empty optional if no logo was configured
+     * @throws ViewerConfigurationException
      */
-    private Optional<String> getLogoUrl() {
+    private Optional<String> getLogoUrl() throws ViewerConfigurationException {
         String urlString = DataManager.getInstance().getConfiguration().getIIIFLogo();
-        if(urlString != null) {
+        if (urlString != null) {
             try {
                 URI url = new URI(urlString);
-                if(url.isAbsolute() && url.getScheme().toLowerCase().startsWith("http")) {
+                if (url.isAbsolute() && url.getScheme().toLowerCase().startsWith("http")) {
                     //fall through
-                } else if(url.isAbsolute()) {
-                    try {                        
-                        urlString = imageDelivery.getIiif().getIIIFImageUrl(urlString, "-", RegionRequest.FULL.toString(), Scale.MAX.toString(), 
-                                Rotation.NONE.toString(), Colortype.DEFAULT.toString(), 
-                                ImageFileFormat.getMatchingTargetFormat(ImageFileFormat.getImageFileFormatFromFileExtension(url.getPath())).toString()
-                                , 85);
-                    } catch(NullPointerException e) {
+                } else if (url.isAbsolute()) {
+                    try {
+                        urlString = imageDelivery.getIiif().getIIIFImageUrl(urlString, "-", RegionRequest.FULL.toString(), Scale.MAX.toString(),
+                                Rotation.NONE.toString(), Colortype.DEFAULT.toString(),
+                                ImageFileFormat.getMatchingTargetFormat(ImageFileFormat.getImageFileFormatFromFileExtension(url.getPath()))
+                                        .toString(),
+                                85);
+                    } catch (NullPointerException e) {
                         logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
                         urlString = null;
                     }
-                } else if(!StringUtils.isBlank(urlString)) {
+                } else if (!StringUtils.isBlank(urlString)) {
                     urlString = imageDelivery.getThumbs().getThumbnailPath(urlString).toString();
                 } else {
                     urlString = null;

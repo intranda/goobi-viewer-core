@@ -16,6 +16,7 @@
 package de.intranda.digiverso.presentation.controller.imaging;
 
 import de.intranda.digiverso.presentation.controller.Configuration;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 
 /**
  * Resolves urls audio or video files
@@ -29,7 +30,7 @@ public class MediaHandler {
 
     private final String mediaRestApiUrl;
     
-    public MediaHandler(Configuration config) {
+    public MediaHandler(Configuration config) throws ViewerConfigurationException {
         this.mediaRestApiUrl = config.getRestApiUrl();
     }
     

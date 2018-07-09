@@ -44,6 +44,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
@@ -806,29 +807,24 @@ public final class Configuration extends AbstractConfiguration {
     /**
      *
      * @return
+     * @throws ViewerConfigurationException
      * @should return correct value
      */
-    public String getContentRestApiUrl() {
+    public String getContentRestApiUrl() throws ViewerConfigurationException {
         return getRestApiUrl() + "content/";
 
     }
 
     /**
-     * 
      * @return
-     * @should return correct value
+     * @throws ViewerConfigurationException
      */
-    public String getIiifUrl() {
-        return getRestApiUrl();
-    }
+    public String getRestApiUrl() throws ViewerConfigurationException {
+        String urlString = getLocalString("urls.rest");
+        if (urlString == null) {
+            throw new ViewerConfigurationException("urls.rest is not configured.");
+        }
 
-    /**
-     * @return
-     */
-    public String getRestApiUrl() {
-        String urlString = getLocalString("urls.rest",
-                getLocalString("urls.contentRestApi", getLocalString("urls.iiif", "http://localhost:8080/viewer/rest/").replace("/iiif", ""))
-                        .replace("/content", ""));
         if (!urlString.endsWith("/")) {
             urlString += "/";
         }
@@ -2002,64 +1998,64 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      * @should return correct value
      */
-    public boolean useTiles() throws ConfigurationException {
+    public boolean useTiles() throws ViewerConfigurationException {
         return useTiles(PageType.viewImage, null);
     }
 
     /**
      * 
      * @return
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      * @should return correct value
      */
-    public boolean useTilesFullscreen() throws ConfigurationException {
+    public boolean useTilesFullscreen() throws ViewerConfigurationException {
         return useTiles(PageType.viewFullscreen, null);
     }
 
-    public boolean useTiles(PageType view, ImageType image) throws ConfigurationException {
+    public boolean useTiles(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getBoolean("[@tileImage]", false);
     }
 
-    public int getFooterHeight() throws ConfigurationException {
+    public int getFooterHeight() throws ViewerConfigurationException {
         return getFooterHeight(PageType.viewImage, null);
     }
 
-    public int getFullscreenFooterHeight() throws ConfigurationException {
+    public int getFullscreenFooterHeight() throws ViewerConfigurationException {
         return getFooterHeight(PageType.viewFullscreen, null);
     }
 
-    public int getFooterHeight(PageType view, ImageType image) throws ConfigurationException {
+    public int getFooterHeight(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getInt("[@footerHeight]", 50);
     }
 
-    public String getImageViewType() throws ConfigurationException {
+    public String getImageViewType() throws ViewerConfigurationException {
         return getZoomImageViewType(PageType.viewImage, null);
     }
 
-    public String getZoomFullscreenViewType() throws ConfigurationException {
+    public String getZoomFullscreenViewType() throws ViewerConfigurationException {
         return getZoomImageViewType(PageType.viewFullscreen, null);
     }
 
-    public String getZoomImageViewType(PageType view, ImageType image) throws ConfigurationException {
+    public String getZoomImageViewType(PageType view, ImageType image) throws ViewerConfigurationException {
         return getZoomImageViewConfig(view, image).getString("[@type]");
     }
 
-    public boolean useOpenSeadragon() throws ConfigurationException {
+    public boolean useOpenSeadragon() throws ViewerConfigurationException {
         return "openseadragon".equalsIgnoreCase(getImageViewType());
     }
 
-    public List<String> getImageViewZoomScales() throws ConfigurationException {
+    public List<String> getImageViewZoomScales() throws ViewerConfigurationException {
         return getImageViewZoomScales(PageType.viewImage, null);
     }
 
-    public List<String> getImageViewZoomScales(String view) throws ConfigurationException {
+    public List<String> getImageViewZoomScales(String view) throws ViewerConfigurationException {
         return getImageViewZoomScales(PageType.valueOf(view), null);
     }
 
-    public List<String> getImageViewZoomScales(PageType view, ImageType image) throws ConfigurationException {
+    public List<String> getImageViewZoomScales(PageType view, ImageType image) throws ViewerConfigurationException {
         List<String> defaultList = new ArrayList<>();
         //        defaultList.add("600");
         //        defaultList.add("900");
@@ -2070,13 +2066,13 @@ public final class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return the configured tile sizes for imageView as a hashmap linking each tile size to the list of resolutions to use with that size
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      */
-    public Map<Integer, List<Integer>> getTileSizes() throws ConfigurationException {
+    public Map<Integer, List<Integer>> getTileSizes() throws ViewerConfigurationException {
         return getTileSizes(PageType.viewImage, null);
     }
 
-    public Map<Integer, List<Integer>> getTileSizes(PageType view, ImageType image) throws ConfigurationException {
+    public Map<Integer, List<Integer>> getTileSizes(PageType view, ImageType image) throws ViewerConfigurationException {
         Map<Integer, List<Integer>> map = new HashMap<>();
         List<HierarchicalConfiguration> sizes = getZoomImageViewConfig(view, image).configurationsAt("tileSize");
         if (sizes != null) {
@@ -2101,7 +2097,7 @@ public final class Configuration extends AbstractConfiguration {
         return map;
     }
 
-    public SubnodeConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ConfigurationException {
+    public SubnodeConfiguration getZoomImageViewConfig(PageType pageType, ImageType imageType) throws ViewerConfigurationException {
         List<HierarchicalConfiguration> configs = getLocalConfigurationsAt("viewer.zoomImageView");
 
         for (HierarchicalConfiguration subConfig : configs) {
@@ -2126,7 +2122,7 @@ public final class Configuration extends AbstractConfiguration {
 
             return (SubnodeConfiguration) subConfig;
         }
-        throw new ConfigurationException("Viewer config must define at least a generic <zoomImageView>");
+        throw new ViewerConfigurationException("Viewer config must define at least a generic <zoomImageView>");
     }
 
     /**

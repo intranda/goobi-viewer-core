@@ -17,7 +17,6 @@ package de.intranda.digiverso.presentation.managedbeans.utils;
 
 import java.util.Locale;
 
-import javax.annotation.Resource;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -27,14 +26,12 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.WebServiceContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.intranda.digiverso.presentation.managedbeans.ActiveDocumentBean;
-import de.intranda.digiverso.presentation.managedbeans.BookshelfBean;
 import de.intranda.digiverso.presentation.managedbeans.BrowseBean;
 import de.intranda.digiverso.presentation.managedbeans.CalendarBean;
 import de.intranda.digiverso.presentation.managedbeans.CmsBean;

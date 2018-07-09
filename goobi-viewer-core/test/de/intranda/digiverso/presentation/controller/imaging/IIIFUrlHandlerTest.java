@@ -15,8 +15,7 @@
  */
 package de.intranda.digiverso.presentation.controller.imaging;
 
-import static org.junit.Assert.*;
-
+import org.apache.commons.configuration.ConfigurationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,9 +38,7 @@ public class IIIFUrlHandlerTest {
     @Before
     public void setUp() throws Exception {
         DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
-
         handler = new IIIFUrlHandler();
-        
     }
 
     /**
@@ -52,11 +49,14 @@ public class IIIFUrlHandlerTest {
     }
 
     /**
-     * Test method for {@link de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler#getIIIFImageUrl(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int)}.
+     * Test method for
+     * {@link de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler#getIIIFImageUrl(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int)}.
+     * 
+     * @throws ConfigurationException
      */
     @Test
     public void testGetIIIFImageUrl() {
-        
+
         String fileUrl = "filename.tif";
         String pi = "1234";
         String region = "full";
@@ -65,15 +65,16 @@ public class IIIFUrlHandlerTest {
         String quality = "default";
         String format = "jpg";
         int thumbCompression = 75;
-        
+
         String url;
-        
+
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/1234/filename.tif/full/max/0/default.jpg", url);
- 
+
         fileUrl = "http://localhost/image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg", url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+                url);
 
         fileUrl = "http://rosdok.uni-rostock.de/iiif/image-api/rosdok%252Fppn740913301%252Fphys_0001/full/full/0/native.jpg";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
@@ -87,21 +88,21 @@ public class IIIFUrlHandlerTest {
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/file:U002FU002FU002FimageU002Ffilename%2001.tif/full/max/0/default.jpg", url);
 
-        
         fileUrl = "/image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
         Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/file:U002FimageU002Ffilename.tif/full/max/0/default.jpg", url);
 
-        
         fileUrl = "http://localhost/image/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg", url);
+        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/http:U002FU002FlocalhostU002FimageU002Ffilename.tif/full/max/0/default.jpg",
+                url);
 
         fileUrl = "file:///C:/opt/digiverso/viewer/cms_media/filename.tif";
         url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format, thumbCompression);
-        Assert.assertEquals("http://localhost:8080/viewer/rest/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg", url);
+        Assert.assertEquals(
+                "http://localhost:8080/viewer/rest/image/-/file:U002FU002FU002FC:U002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Ffilename.tif/full/max/0/default.jpg",
+                url);
 
     }
-
 
 }

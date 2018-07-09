@@ -35,6 +35,7 @@ import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.StringTools;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.AccessConditionUtils;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -74,16 +75,21 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             } else {
                 size = "full";
             }
-            if(!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName) && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {                
+            if (!BeanUtils.getImageDeliveryBean().isExternalUrl(imageName) && !BeanUtils.getImageDeliveryBean().isCmsUrl(imageName)
+                    && !BeanUtils.getImageDeliveryBean().isStaticImageUrl(imageName)) {
                 filterForAccessConditions(request, pi, imageName, size);
                 filterForImageSize(requestPath, size);
             }
         } catch (ServiceNotAllowedException e) {
             String mediaType = MediaType.APPLICATION_JSON;
-//            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
-//                mediaType = MediaType.APPLICATION_JSON;
-//            }
+            //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
+            //                mediaType = MediaType.APPLICATION_JSON;
+            //            }
             Response response = Response.status(Status.NOT_FOUND).type(mediaType).entity(new ErrorMessage(Status.NOT_FOUND, e, false)).build();
+            request.abortWith(response);
+        } catch (ViewerConfigurationException e) {
+            Response response =
+                    Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorMessage(Status.INTERNAL_SERVER_ERROR, e, false)).build();
             request.abortWith(response);
         }
     }

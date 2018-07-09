@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.NavigationHelper;
 import de.intranda.digiverso.presentation.managedbeans.TagCloudBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
@@ -97,8 +97,10 @@ public class TagLib {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public static List<String> getLastImportImages(Integer number) throws PresentationException, IndexUnreachableException {
+    public static List<String> getLastImportImages(Integer number)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         List<String> ret = new ArrayList<>();
 
         String query = new StringBuilder("(").append(SolrConstants.ISWORK)
@@ -164,8 +166,10 @@ public class TagLib {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public static String getFeaturedVolumeImage(String pi, Integer width, Integer height) throws PresentationException, IndexUnreachableException {
+    public static String getFeaturedVolumeImage(String pi, Integer width, Integer height)
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String query = new StringBuilder(SolrConstants.PI).append(':').append(pi).toString();
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, Collections.singletonList(SolrConstants.THUMBNAIL));
         if (doc != null) {
@@ -173,11 +177,7 @@ public class TagLib {
             if (o != null) {
                 String thumbnailFile = (String) o;
                 return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, width, height);
-                //                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                //                        "?action=image&sourcepath=").append(pi).append('/').append(thumbnailFile).append("&width=").append(width).append("&height=")
-                //                        .append(height).append("&rotate=0&format=jpg&resolution=72&thumbnail=true&ignoreWatermark=true").toString();
             }
-            // String thumbnailFile = (String) doc.getFieldValue(LuceneConstants.THUMBNAIL);
         }
 
         return "";
@@ -193,9 +193,10 @@ public class TagLib {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
     public static String getFeaturedImage(String pi, Integer imageNumber, Integer imageWidth, Integer imageHeight)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         String query = new StringBuilder(SolrConstants.PI_TOPSTRUCT).append(':')
                 .append(pi)
                 .append(" AND ")
@@ -223,9 +224,6 @@ public class TagLib {
                 logger.debug(o.toString());
                 String fileName = (String) o;
                 return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(doc, imageWidth, imageHeight);
-                //                return new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl()).append(
-                //                        "?action=image&sourcepath=").append(pi).append('/').append(fileName).append("&width=").append(width).append("&height=")
-                //                        .append(height).append("&rotate=0&format=jpg&resolution=72&ignoreWatermark=true").toString();
             }
         }
 

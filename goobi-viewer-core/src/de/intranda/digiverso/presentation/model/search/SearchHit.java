@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.exceptions.AccessDeniedException;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
@@ -193,11 +194,13 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @should add export fields correctly
      */
     public static SearchHit createSearchHit(SolrDocument doc, SolrDocument ownerDoc, Locale locale, String fulltext,
             Map<String, Set<String>> searchTerms, List<String> exportFields, boolean useThumbnail, Set<String> ignoreAdditionalFields,
-            Set<String> translateAdditionalFields, HitType overrideType) throws PresentationException, IndexUnreachableException, DAOException {
+            Set<String> translateAdditionalFields, HitType overrideType)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         List<String> fulltextFragments = fulltext == null ? null : SearchHelper.truncateFulltext(searchTerms.get(SolrConstants.FULLTEXT), fulltext,
                 DataManager.getInstance().getConfiguration().getFulltextFragmentLength(), true, true);
         StructElement se = new StructElement(Long.valueOf((String) doc.getFieldValue(SolrConstants.IDDOC)), doc, ownerDoc);
@@ -346,8 +349,9 @@ public class SearchHit implements Comparable<SearchHit> {
      * @param language
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
-    public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException {
+    public void addFulltextChild(SolrDocument doc, String language) throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (doc == null) {
             throw new IllegalArgumentException("doc may not be null");
         }
@@ -415,9 +419,10 @@ public class SearchHit implements Comparable<SearchHit> {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     public void populateChildren(int number, Locale locale, HttpServletRequest request)
-            throws PresentationException, IndexUnreachableException, DAOException {
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("populateChildren START");
 
         // Create child hits

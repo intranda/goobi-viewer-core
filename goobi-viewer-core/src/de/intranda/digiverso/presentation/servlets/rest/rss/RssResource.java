@@ -36,6 +36,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
 import de.intranda.digiverso.presentation.model.rss.Channel;
 import de.intranda.digiverso.presentation.model.rss.Description;
@@ -43,11 +44,10 @@ import de.intranda.digiverso.presentation.model.rss.RSSFeed;
 import de.intranda.digiverso.presentation.model.rss.RssItem;
 import de.intranda.digiverso.presentation.model.search.SearchHelper;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
-import de.intranda.digiverso.presentation.servlets.rest.search.SearchHitChildList;
 import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
- * REST resource providing a rss feed  as json response
+ * REST resource providing a rss feed as json response
  * 
  * 
  * @author Florian Alpers
@@ -56,17 +56,16 @@ import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 @Path("/rss")
 @ViewerRestServiceBinding
 public class RssResource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(RssResource.class);
-    
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
 
     /**
-     * Returns the RSS feed containing the @numHits most recently indexed objects
-     * All metadata is provided in the passed language
+     * Returns the RSS feed containing the @numHits most recently indexed objects All metadata is provided in the passed language
      * 
      * @param numHits
      * @param language
@@ -74,28 +73,29 @@ public class RssResource {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     @GET
     @Path("/{language}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Channel getTagsForPageJson(@PathParam("numhits") int numHits, @PathParam("language") String language) throws PresentationException, IndexUnreachableException, DAOException {
-        
+    public Channel getTagsForPageJson(@PathParam("numhits") int numHits, @PathParam("language") String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+
         Long bookshelfId = null;
         String query = null;
         String partnerId = null;
-        
-        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), createQuery(query, bookshelfId, partnerId), numHits, language);
-           
+
+        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                createQuery(query, bookshelfId, partnerId), numHits, language);
+
         servletResponse.setContentType("application/json");
-        
+
         return rss;
     }
-    
+
     /**
-     * Returns the RSS feed containing the @numHits most recently indexed objects.
-     * Only objects are returned whose value in the "subthemeDiscriminatorField" matches that
-     * provided in @partnerId
-     * All metadata is provided in the passed language
+     * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned whose value in the
+     * "subthemeDiscriminatorField" matches that provided in @partnerId All metadata is provided in the passed language
      * 
      * @param numHits
      * @param language
@@ -104,31 +104,34 @@ public class RssResource {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     @GET
     @Path("/{language}/{partnerId}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Channel getTagsForPageJson(@PathParam("numhits") int numHits, @PathParam("language") String language, @PathParam("partnerId") String partnerId) throws PresentationException, IndexUnreachableException, DAOException {
-        
+    public Channel getTagsForPageJson(@PathParam("numhits") int numHits, @PathParam("language") String language,
+            @PathParam("partnerId") String partnerId)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+
         Long bookshelfId = null;
         String query = null;
-        if(partnerId.equals("-")) {
+        if (partnerId.equals("-")) {
             partnerId = null;
         }
-        
-        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), createQuery(query, bookshelfId, partnerId), numHits, language);
-           
+
+        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                createQuery(query, bookshelfId, partnerId), numHits, language);
+
         servletResponse.setContentType("application/json");
-        
+
         return rss;
     }
-    
+
     /**
      * 
-     * Returns the RSS feed containing the @numHits most recently indexed objects.
-     * Only objects are returned whose value in the "subthemeDiscriminatorField" matches that
-     * provided in @partnerId, and further filtered by the given @query
-     * All metadata is provided in the passed language
+     * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned whose value in the
+     * "subthemeDiscriminatorField" matches that provided in @partnerId, and further filtered by the given @query All metadata is provided in the
+     * passed language
      * 
      * @param partnerId
      * @param numHits
@@ -138,33 +141,36 @@ public class RssResource {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ConfigurationExViewerConfigurationExceptionception
      */
     @GET
     @Path("/{query}/{language}/{partnerId}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Channel getTagsForPageJson(@PathParam("partnerId") String partnerId, @PathParam("numhits") int numHits, @PathParam("query") String query, @PathParam("language") String language) throws PresentationException, IndexUnreachableException, DAOException {
-        
+    public Channel getTagsForPageJson(@PathParam("partnerId") String partnerId, @PathParam("numhits") int numHits, @PathParam("query") String query,
+            @PathParam("language") String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+
         Long bookshelfId = null;
-        if(query.equals("-")) {
+        if (query.equals("-")) {
             query = null;
         }
-        if(partnerId.equals("-")) {
+        if (partnerId.equals("-")) {
             partnerId = null;
         }
-        
-        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), createQuery(query, bookshelfId, partnerId), numHits, language);
-           
+
+        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                createQuery(query, bookshelfId, partnerId), numHits, language);
+
         servletResponse.setContentType("application/json");
-        
+
         return rss;
     }
-    
+
     /**
      * 
-     * Returns the RSS feed containing the @numHits most recently indexed objects.
-     * Only objects are returned whose value in the "subthemeDiscriminatorField" matches that
-     * provided in @partnerId and are in the given @bookshelf
-     * All metadata is provided in the passed language
+     * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned whose value in the
+     * "subthemeDiscriminatorField" matches that provided in @partnerId and are in the given @bookshelf All metadata is provided in the passed
+     * language
      * 
      * @param bookshelfIdString
      * @param numHits
@@ -173,30 +179,33 @@ public class RssResource {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     @GET
     @Path("bookshelf/{bookshelfId}/{language}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Channel getTagsForPageJson(@PathParam("bookshelfId") String bookshelfIdString, @PathParam("numhits") int numHits, @PathParam("language") String language) throws PresentationException, IndexUnreachableException, DAOException {
-        
+    public Channel getTagsForPageJson(@PathParam("bookshelfId") String bookshelfIdString, @PathParam("numhits") int numHits,
+            @PathParam("language") String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+
         Long bookshelfId = null;
-        if(bookshelfIdString.matches("\\d+")) {
+        if (bookshelfIdString.matches("\\d+")) {
             bookshelfId = Long.parseLong(bookshelfIdString);
         }
         String query = null;
         String partnerId = null;
-        
-        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), createQuery(query, bookshelfId, partnerId), numHits, language);
-           
+
+        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                createQuery(query, bookshelfId, partnerId), numHits, language);
+
         servletResponse.setContentType("application/json");
-        
+
         return rss;
     }
-    
+
     /**
-     * Returns the RSS feed containing the @numHits most recently indexed objects.
-     * Only objects are returned that are within the given @bookshelf
-     * All metadata is provided in the passed language
+     * Returns the RSS feed containing the @numHits most recently indexed objects. Only objects are returned that are within the given @bookshelf All
+     * metadata is provided in the passed language
      * 
      * @param partnerId
      * @param bookshelfIdString
@@ -207,27 +216,31 @@ public class RssResource {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     @GET
     @Path("/{query}/{language}/{bookshelfId}/{partnerId}/{numhits}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Channel getTagsForPageJson(@PathParam("partnerId") String partnerId, @PathParam("bookshelfId") String bookshelfIdString, @PathParam("numhits") int numHits, @PathParam("query") String query, @PathParam("language") String language) throws PresentationException, IndexUnreachableException, DAOException {
-        
+    public Channel getTagsForPageJson(@PathParam("partnerId") String partnerId, @PathParam("bookshelfId") String bookshelfIdString,
+            @PathParam("numhits") int numHits, @PathParam("query") String query, @PathParam("language") String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+
         Long bookshelfId = null;
-        if(bookshelfIdString.matches("\\d+")) {
+        if (bookshelfIdString.matches("\\d+")) {
             bookshelfId = Long.parseLong(bookshelfIdString);
         }
-        if(query.equals("-")) {
+        if (query.equals("-")) {
             query = null;
         }
-        if(partnerId.equals("-")) {
+        if (partnerId.equals("-")) {
             partnerId = null;
         }
-        
-        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest), createQuery(query, bookshelfId, partnerId), numHits, language);
-           
+
+        Channel rss = RSSFeed.createRssFeed(ServletUtils.getServletPathWithHostAsUrlFromRequest(servletRequest),
+                createQuery(query, bookshelfId, partnerId), numHits, language);
+
         servletResponse.setContentType("application/json");
-        
+
         return rss;
     }
 
@@ -246,16 +259,16 @@ public class RssResource {
         rss.setPubDate(feed.getPublishedDate());
         rss.setTitle(feed.getTitle());
         for (Object object : feed.getEntries()) {
-            if(object instanceof SyndEntry) {
-                SyndEntry entry = (SyndEntry)object;
-                
+            if (object instanceof SyndEntry) {
+                SyndEntry entry = (SyndEntry) object;
+
                 RssItem item = new RssItem();
                 item.setCreator(entry.getAuthor());
                 item.setDescription(new Description(entry.getDescription().getValue()));
                 item.setLink(entry.getLink());
                 item.setPubDate(entry.getPublishedDate());
                 item.setTitle(entry.getTitle());
-                
+
                 rss.addItem(item);
             }
         }
@@ -265,41 +278,42 @@ public class RssResource {
     /**
      * @param query
      * @return
-     * @throws IndexUnreachableException 
-     * @throws PresentationException 
-     * @throws DAOException 
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
      */
-    private String createQuery(String query, Long bookshelfId, String partnerId) throws IndexUnreachableException, PresentationException, DAOException {
-        
+    private String createQuery(String query, Long bookshelfId, String partnerId)
+            throws IndexUnreachableException, PresentationException, DAOException {
+
         StringBuilder sbQuery = new StringBuilder();
         sbQuery.append("(").append(query).append(")");
-        
-            // Build query
-            if (StringUtils.isEmpty(query)) {
-                if (bookshelfId != null) {
-                    // Bookshelf RSS feed
-                    Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(bookshelfId);
-                    if (bookshelf == null) {
-                        throw new PresentationException("Requested bookshelf not found: " + bookshelfId);
-                    }
-                    if (!bookshelf.isPublic()) {
-                        throw new PresentationException("Requested bookshelf not public: "+ bookshelfId);
-                    }
-                    sbQuery = new StringBuilder(bookshelf.generateSolrQueryForItems());
-                } else {
-                    // Main RSS feed
-                    sbQuery.append(SolrConstants.ISWORK).append(":true");
+
+        // Build query
+        if (StringUtils.isEmpty(query)) {
+            if (bookshelfId != null) {
+                // Bookshelf RSS feed
+                Bookshelf bookshelf = DataManager.getInstance().getDao().getBookshelf(bookshelfId);
+                if (bookshelf == null) {
+                    throw new PresentationException("Requested bookshelf not found: " + bookshelfId);
                 }
+                if (!bookshelf.isPublic()) {
+                    throw new PresentationException("Requested bookshelf not public: " + bookshelfId);
+                }
+                sbQuery = new StringBuilder(bookshelf.generateSolrQueryForItems());
+            } else {
+                // Main RSS feed
+                sbQuery.append(SolrConstants.ISWORK).append(":true");
             }
-            
-            if (StringUtils.isNotBlank(partnerId)) {
-                sbQuery.append(" AND ").append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField()).append(':')
-                        .append(partnerId.trim());
-            }
-            
-            sbQuery.append(SearchHelper.getAllSuffixes(servletRequest, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
-            
-            return sbQuery.toString();
+        }
+
+        if (StringUtils.isNotBlank(partnerId)) {
+            sbQuery.append(" AND ").append(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField()).append(':').append(
+                    partnerId.trim());
+        }
+
+        sbQuery.append(SearchHelper.getAllSuffixes(servletRequest, true, DataManager.getInstance().getConfiguration().isSubthemeAddFilterQuery()));
+
+        return sbQuery.toString();
     }
 
 }

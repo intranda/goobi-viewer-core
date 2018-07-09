@@ -53,6 +53,7 @@ import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.SearchBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.User;
@@ -213,9 +214,11 @@ public class Search implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, int advancedSearchGroupOperator,
-            List<SearchQueryGroup> advancedQueryGroups, Locale locale) throws PresentationException, IndexUnreachableException, DAOException {
+            List<SearchQueryGroup> advancedQueryGroups, Locale locale)
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("execute");
         if (facets == null) {
             throw new IllegalArgumentException("facets may not be null");

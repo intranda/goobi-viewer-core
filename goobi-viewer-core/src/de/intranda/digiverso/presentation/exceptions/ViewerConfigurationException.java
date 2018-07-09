@@ -13,27 +13,22 @@
  *
  * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package de.intranda.digiverso.presentation.servlets.rest.services;
+package de.intranda.digiverso.presentation.exceptions;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
+import java.io.Serializable;
 
 /**
- * Interface for any services linked to in a rest response
- * 
- * @author Florian Alpers
- *
+ * Exception that is thrown if an essential configuration element is missing.
  */
-@JsonPropertyOrder({"@context"})
-public interface Service {
-    
-    @JsonProperty("@context")
-    public URI getContext() throws URISyntaxException, ViewerConfigurationException;
-    
+public class ViewerConfigurationException extends Exception implements Serializable {
+
+    private static final long serialVersionUID = 3263005370127814191L;
+
+    /**
+     * @param string {@link String}
+     */
+    public ViewerConfigurationException(String string) {
+        super(string);
+    }
 
 }

@@ -43,6 +43,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants;
 import de.intranda.digiverso.presentation.dao.IDAO;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
@@ -166,24 +167,26 @@ public class CmsMediaBean implements Serializable {
         return items;
     }
 
-    public static String getMediaUrl(CMSMediaItem item) {
+    public static String getMediaUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
         return getMediaUrl(item, null, null);
     }
 
     /**
      * @param item
      * @return
+     * @throws ViewerConfigurationException
      */
-    public static String getMediaUrl(CMSMediaItem item, String width, String height) {
+    public static String getMediaUrl(CMSMediaItem item, String width, String height) throws ViewerConfigurationException {
         if (item != null && item.getFileName() != null) {
-            
-            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(Optional.ofNullable(item), StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0, StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
+
+            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(Optional.ofNullable(item),
+                    StringUtils.isNotBlank(width) ? Integer.parseInt(width) : 0, StringUtils.isNotBlank(height) ? Integer.parseInt(height) : 0);
 
         }
         return "";
     }
 
-    public static String getMediaPreviewUrl(CMSMediaItem item) {
+    public static String getMediaPreviewUrl(CMSMediaItem item) throws NumberFormatException, ViewerConfigurationException {
         if (item != null && item.getFileName() != null) {
 
             StringBuilder urlBuilder = new StringBuilder(getMediaUrl(item, null, "160"));
@@ -241,18 +244,18 @@ public class CmsMediaBean implements Serializable {
         // URL(ContentServerDataManager.getInstance().getConfiguration().getRepositoryPathImages());
         // File folder = new File(new File(imageRepositoryUrl.toURI()),
         // DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        File folder = new File(DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration()
-                .getCmsMediaFolder());
+        File folder = new File(
+                DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder());
         if (!folder.isDirectory() && !folder.mkdir()) {
             throw new IOException("Unable to create directory " + folder);
         }
-//        fileName = fileName.replaceAll("\\s", "_");
+        //        fileName = fileName.replaceAll("\\s", "_");
         File file = new File(folder, fileName);
         int counter = 1;
         File newFile = file;
         while (renameIfFileExists && newFile.isFile()) {
-            newFile = new File(file.getParent(), FilenameUtils.getBaseName(file.getName()) + "_" + counter + "." + FilenameUtils.getExtension(file
-                    .getName()));
+            newFile = new File(file.getParent(),
+                    FilenameUtils.getBaseName(file.getName()) + "_" + counter + "." + FilenameUtils.getExtension(file.getName()));
             counter++;
         }
         file = newFile;
@@ -394,8 +397,8 @@ public class CmsMediaBean implements Serializable {
         List<String> usedCollections = getUsedCollections();
         for (BrowseDcElement element : collections) {
             String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName) || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem()
-                    .getCollectionName()))) {
+            if (!usedCollections.contains(collectionName)
+                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
                 collectionNames.add(collectionName);
             }
         }
@@ -414,8 +417,8 @@ public class CmsMediaBean implements Serializable {
         List<String> usedCollections = getUsedCollections();
         for (BrowseDcElement element : collections) {
             String collectionName = element.getName();
-            if (!usedCollections.contains(collectionName) || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem()
-                    .getCollectionName()))) {
+            if (!usedCollections.contains(collectionName)
+                    || (getCurrentMediaItem() != null && collectionName.equals(getCurrentMediaItem().getCollectionName()))) {
                 collectionNames.add(collectionName);
             }
         }

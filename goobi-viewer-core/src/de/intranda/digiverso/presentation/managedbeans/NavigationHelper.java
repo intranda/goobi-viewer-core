@@ -42,7 +42,6 @@ import javax.inject.Named;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +55,7 @@ import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.ViewerResourceBundle;
 import de.intranda.digiverso.presentation.model.cms.CMSPage;
@@ -698,9 +698,9 @@ public class NavigationHelper implements Serializable {
      * @return the path which viewImageFullscreen.xhtml the user should see for the current page.
      * @throws IndexUnreachableException
      * @throws DAOException
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      */
-    public String getViewImagePathFullscreen() throws IndexUnreachableException, DAOException, ConfigurationException {
+    public String getViewImagePathFullscreen() throws IndexUnreachableException, DAOException, ViewerConfigurationException {
         String imageDisplayType = DataManager.getInstance().getConfiguration().getZoomFullscreenViewType();
         logger.trace("Detected display mode: {}", imageDisplayType);
         if (StringUtils.isNotEmpty(imageDisplayType)) {

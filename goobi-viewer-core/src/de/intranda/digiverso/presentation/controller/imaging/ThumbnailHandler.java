@@ -33,6 +33,7 @@ import de.intranda.digiverso.presentation.controller.SolrConstants.MetadataGroup
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.cms.CMSMediaItem;
 import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -113,8 +114,9 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException {
+    public String getThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
                 DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
@@ -129,8 +131,10 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getThumbnailUrl(String pi, int width, int height) throws IndexUnreachableException, PresentationException {
+    public String getThumbnailUrl(String pi, int width, int height)
+            throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
             return getThumbnailUrl(doc, width, height);
@@ -145,8 +149,9 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getSquareThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException {
+    public String getSquareThumbnailUrl(String pi) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         return getSquareThumbnailUrl(pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
@@ -158,8 +163,9 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getSquareThumbnailUrl(String pi, int size) throws IndexUnreachableException, PresentationException {
+    public String getSquareThumbnailUrl(String pi, int size) throws IndexUnreachableException, PresentationException, ViewerConfigurationException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
         if (doc != null) {
             return getSquareThumbnailUrl(doc, size);
@@ -176,8 +182,10 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getThumbnailUrl(int order, String pi) throws IndexUnreachableException, PresentationException, DAOException {
+    public String getThumbnailUrl(int order, String pi)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         return getThumbnailUrl(order, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth(),
                 DataManager.getInstance().getConfiguration().getThumbnailsHeight());
     }
@@ -193,8 +201,10 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getThumbnailUrl(int order, String pi, int width, int height) throws IndexUnreachableException, PresentationException, DAOException {
+    public String getThumbnailUrl(int order, String pi, int width, int height)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         PhysicalElement page = getPage(pi, order);
         if (page != null) {
             return getThumbnailUrl(page, width, height);
@@ -211,8 +221,10 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getSquareThumbnailUrl(int order, String pi) throws IndexUnreachableException, PresentationException, DAOException {
+    public String getSquareThumbnailUrl(int order, String pi)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         return getSquareThumbnailUrl(order, pi, DataManager.getInstance().getConfiguration().getThumbnailsWidth());
     }
 
@@ -226,8 +238,10 @@ public class ThumbnailHandler {
      * @return The url string or null of no work is found
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getSquareThumbnailUrl(int order, String pi, int size) throws IndexUnreachableException, PresentationException, DAOException {
+    public String getSquareThumbnailUrl(int order, String pi, int size)
+            throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException {
         PhysicalElement page = getPage(pi, order);
         if (page != null) {
             return getSquareThumbnailUrl(page, size);
@@ -279,6 +293,7 @@ public class ThumbnailHandler {
      * @param page
      * @param size
      * @return
+     * @throws ViewerConfigurationException
      */
     public String getSquareThumbnailUrl(PhysicalElement page) {
         return getSquareThumbnailUrl(page, thumbWidth);
@@ -291,6 +306,7 @@ public class ThumbnailHandler {
      * @param page
      * @param size
      * @return
+     * @throws ViewerConfigurationException
      */
     public String getSquareThumbnailUrl(PhysicalElement page, int size) {
         String path = getImagePath(page);
@@ -310,9 +326,11 @@ public class ThumbnailHandler {
      * 
      * @param page
      * @return
+     * @throws ViewerConfigurationException
      */
     public String getThumbnailUrl(StructElement doc) {
         return getThumbnailUrl(doc, thumbWidth, thumbHeight);
+
     }
 
     /**
@@ -320,8 +338,9 @@ public class ThumbnailHandler {
      * 
      * @param page
      * @return
+     * @throws ViewerConfigurationException
      */
-    public String getThumbnailUrl(SolrDocument doc) {
+    public String getThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
         return getThumbnailUrl(getStructElement(doc), thumbWidth, thumbHeight);
     }
 
@@ -331,8 +350,9 @@ public class ThumbnailHandler {
      * 
      * @param page
      * @return
+     * @throws ViewerConfigurationException
      */
-    public String getSquareThumbnailUrl(SolrDocument doc) {
+    public String getSquareThumbnailUrl(SolrDocument doc) throws ViewerConfigurationException {
         return getSquareThumbnailUrl(getStructElement(doc), thumbWidth);
     }
 
@@ -340,7 +360,7 @@ public class ThumbnailHandler {
      * @param doc
      * @return
      */
-    private StructElement getStructElement(SolrDocument doc) {
+    private static StructElement getStructElement(SolrDocument doc) {
         String value = (String) doc.getFirstValue(SolrConstants.IDDOC);
         Long iddoc = 0l;
         if (value != null) {
@@ -361,8 +381,9 @@ public class ThumbnailHandler {
      * 
      * @param page
      * @return
+     * @throws ViewerConfigurationException
      */
-    public String getThumbnailUrl(SolrDocument doc, int width, int height) {
+    public String getThumbnailUrl(SolrDocument doc, int width, int height) throws ViewerConfigurationException {
         return getThumbnailUrl(getStructElement(doc), width, height);
 
     }
@@ -372,8 +393,9 @@ public class ThumbnailHandler {
      * 
      * @param page
      * @return
+     * @throws ViewerConfigurationException
      */
-    public String getSquareThumbnailUrl(SolrDocument doc, int size) {
+    public String getSquareThumbnailUrl(SolrDocument doc, int size) throws ViewerConfigurationException {
         return getSquareThumbnailUrl(getStructElement(doc), size);
 
     }
@@ -441,7 +463,7 @@ public class ThumbnailHandler {
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private String getFieldValue(StructElement doc, String field) {
+    private static String getFieldValue(StructElement doc, String field) {
         String imagePath = doc.getMetadataValue(field);
         try {
             if (StringUtils.isBlank(imagePath) && !doc.isWork()) {
@@ -713,7 +735,7 @@ public class ThumbnailHandler {
      * @param height
      * @return
      */
-    private String getSize(Integer width, Integer height) {
+    private static String getSize(Integer width, Integer height) {
         String size = "max";
         if (height == null || (height.equals(0) && width != null && !width.equals(0))) {
             size = width + ",";
@@ -744,7 +766,7 @@ public class ThumbnailHandler {
      * @param height
      * @return An instance of {@link Scale} which represents the given values for width and height
      */
-    private Scale getScale(int width, int height) {
+    private static Scale getScale(int width, int height) {
         if (width > 0 && height > 0) {
             return new Scale.ScaleToBox(width, height);
         } else if (width > 0) {

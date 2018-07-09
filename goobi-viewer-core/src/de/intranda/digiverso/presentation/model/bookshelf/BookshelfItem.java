@@ -41,12 +41,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.intranda.digiverso.presentation.controller.DataManager;
-import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
-import de.intranda.digiverso.presentation.controller.SolrSearchIndex;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.viewer.PageType;
 import de.intranda.digiverso.presentation.model.viewer.StructElement;
@@ -248,8 +247,9 @@ public class BookshelfItem implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException
      */
-    public String getRepresentativeImageUrl() throws PresentationException, IndexUnreachableException {
+    public String getRepresentativeImageUrl() throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         int width = 90;
         int height = 120;
         return getRepresentativeImageUrl(width, height);
@@ -261,8 +261,9 @@ public class BookshelfItem implements Serializable {
      * @return
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @throws ViewerConfigurationException 
      */
-        public String getRepresentativeImageUrl(int width, int height) throws PresentationException, IndexUnreachableException {
+        public String getRepresentativeImageUrl(int width, int height) throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(new StringBuilder(SolrConstants.PI).append(':').append(pi).toString(), 1, null,
                 Arrays.asList(FIELDS));
         if (!docs.isEmpty()) {
@@ -272,9 +273,9 @@ public class BookshelfItem implements Serializable {
             ThumbnailHandler thumbs = BeanUtils.getImageDeliveryBean().getThumbs();
             StructElement doc = new StructElement(Long.parseLong(luceneId), docs.get(0));
             return thumbs.getThumbnailUrl(doc, width, height);
-        } else {
-            return "";
         }
+        
+        return "";
     }
     
     /**

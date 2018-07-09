@@ -54,6 +54,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.HTTPException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.ConfigurationBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.messages.Messages;
@@ -144,7 +145,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /** Textual content of the previously created page comment. Workaround for duplicate posts via browser refresh. */
     private String previousCommentText;
     /** set to false if the image cannot be read **/
-    private Boolean imageAvailable = null;
+    //    private Boolean imageAvailable = null;
 
     /**
      * 
@@ -269,9 +270,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * 
      * @return the url to the media content of the page, for example the
      * @throws IndexUnreachableException
-     * @throws ConfigurationException
+     * @throws ViewerConfigurationException
      */
-    public String getUrl() throws IndexUnreachableException, ConfigurationException {
+    public String getUrl() throws IndexUnreachableException, ViewerConfigurationException {
 
         switch (mimeType) {
             case MIME_TYPE_IMAGE:
@@ -358,15 +359,16 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     /**
      *
      * @return {@link String}
+     * @throws ViewerConfigurationException
      */
-    public String getThumbnailUrl() {
+    public String getThumbnailUrl() throws ViewerConfigurationException {
         int thumbWidth = DataManager.getInstance().getConfiguration().getThumbnailsWidth();
         int thumbHeight = DataManager.getInstance().getConfiguration().getThumbnailsHeight();
 
         return getThumbnailUrl(thumbWidth, thumbHeight);
     }
 
-    public String getThumbnailUrl(int width, int height) {
+    public String getThumbnailUrl(int width, int height) throws ViewerConfigurationException {
         ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumbs();
         return thumbHandler.getThumbnailUrl(this, width, height);
     }
@@ -551,8 +553,9 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
 
     /**
      * @return the fullText
+     * @throws ViewerConfigurationException
      */
-    public String getFullText() {
+    public String getFullText() throws ViewerConfigurationException {
         if (altoText == null && wordCoordsFormat == CoordsFormat.UNCHECKED) {
             // Load XML document
             try {
@@ -600,10 +603,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws FileNotFoundException
      * @throws DAOException
      * @throws IndexUnreachableException
+     * @throws ConfigurationException
      * @should load full-text correctly if not yet loaded
      * @should return null if already loaded
      */
-    String loadFullText() throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException {
+    String loadFullText()
+            throws AccessDeniedException, FileNotFoundException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (fullText == null && fulltextFileName != null) {
             logger.trace("Loading full-text for page {}", fulltextFileName);
             String url = Helper.buildFullTextUrl(dataRepository, fulltextFileName);
@@ -622,7 +627,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return null;
     }
 
-    public List<String> getWordCoords(Set<String> searchTerms) {
+    public List<String> getWordCoords(Set<String> searchTerms) throws ViewerConfigurationException {
         return getWordCoords(searchTerms, 0);
     }
 
@@ -631,11 +636,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      *
      * @param searchTerms
      * @return
+     * @throws ViewerConfigurationException
      * @throws IOException
      * @throws JDOMException
      * @should load XML document if none yet set
      */
-    public List<String> getWordCoords(Set<String> searchTerms, int rotation) {
+    public List<String> getWordCoords(Set<String> searchTerms, int rotation) throws ViewerConfigurationException {
         if (searchTerms == null || searchTerms.isEmpty()) {
             return Collections.emptyList();
         }
@@ -676,10 +682,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @throws JDOMException
      * @throws DAOException
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
      * @should load and set alto correctly
      * @should set wordCoordsFormat correctly
      */
-    public String loadAlto() throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException {
+    public String loadAlto()
+            throws AccessDeniedException, JDOMException, IOException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("loadAlto: {}", altoFileName);
         if (altoText == null && altoFileName != null) {
             if (!AccessConditionUtils.checkAccessPermissionByIdentifierAndFilePathWithSessionMap(BeanUtils.getRequest(), altoFileName,
@@ -737,27 +745,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return getFileNameForFormat(format);
     }
 
-    public String getImageToPdfUrl() throws IndexUnreachableException {
-
+    public String getImageToPdfUrl() throws IndexUnreachableException, ViewerConfigurationException {
         return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
-
-        //        StringBuilder sb = new StringBuilder(DataManager.getInstance().getConfiguration().getContentServerWrapperUrl());
-        //        sb.append("?action=pdf")
-        //                .append("&images=")
-        //                .append(pi)
-        //                .append("/")
-        //                .append(fileName)
-        //                .append("&metsFile=")
-        //                .append(pi)
-        //                .append(".xml")
-        //                .append("&targetFileName=")
-        //                .append(pi)
-        //                .append("_")
-        //                .append(order)
-        //                .append(".pdf");
-        //        return sb.toString();
-        //        return DataManager.getInstance().getConfiguration().getContentServerWrapperUrl() + "?action=pdf&images=" + pi + "/" + fileName
-        //                + "&targetFileName=" + pi + "_" + order + ".pdf";
     }
 
     /**
@@ -767,7 +756,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
      * @return
      * @throws IndexUnreachableException
      */
-    public String getMediaUrl(String format) throws IndexUnreachableException, ConfigurationException {
+    public String getMediaUrl(String format) throws IndexUnreachableException {
 
         String url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(mimeType + "/" + format, pi, getFileNameForFormat(format));
 
@@ -826,22 +815,24 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return getImageWidth() / 100;
     }
 
-    public String getImageUrl() {
+    public String getImageUrl() throws ViewerConfigurationException {
         ImageFileFormat format = ImageFileFormat.JPG;
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getFileName(),
-                RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
+        return new IIIFUrlHandler().getIIIFImageUrl(
+                DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL, Scale.MAX,
+                Rotation.NONE, Colortype.DEFAULT, format);
     }
 
-    public String getImageUrl(int size) {
+    public String getImageUrl(int size) throws ViewerConfigurationException {
         ImageFileFormat format = ImageFileFormat.JPG;
         if (ImageFileFormat.PNG.equals(getImageType().getFormat())) {
             format = ImageFileFormat.PNG;
         }
-        return new IIIFUrlHandler().getIIIFImageUrl(DataManager.getInstance().getConfiguration().getIiifUrl() + "image/" + pi + "/" + getFileName(),
-                RegionRequest.FULL, new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
+        return new IIIFUrlHandler().getIIIFImageUrl(
+                DataManager.getInstance().getConfiguration().getRestApiUrl() + "image/" + pi + "/" + getFileName(), RegionRequest.FULL,
+                new Scale.ScaleToWidth(size), Rotation.NONE, Colortype.DEFAULT, format);
     }
 
     /**
@@ -920,11 +911,11 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return false;
     }
 
-    public int getFooterHeight() throws ConfigurationException {
+    public int getFooterHeight() throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(PageType.viewImage.name()), getImageType());
     }
 
-    public int getFooterHeight(String pageType) throws ConfigurationException {
+    public int getFooterHeight(String pageType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(PageType.getByName(pageType), getImageType());
     }
 
@@ -1121,10 +1112,10 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     public String getFileName(String extension) {
         if (extension == null) {
             return getFileName();
-        } else {
-            String baseName = FilenameUtils.removeExtension(getFileName());
-            return baseName + (StringUtils.isNotBlank(extension) ? "." + extension : "");
         }
+
+        String baseName = FilenameUtils.removeExtension(getFileName());
+        return baseName + (StringUtils.isNotBlank(extension) ? "." + extension : "");
     }
 
 }

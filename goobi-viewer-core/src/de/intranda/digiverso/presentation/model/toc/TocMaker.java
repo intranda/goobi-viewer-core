@@ -47,6 +47,7 @@ import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.metadata.Metadata;
 import de.intranda.digiverso.presentation.model.metadata.MetadataParameter;
@@ -112,6 +113,7 @@ public class TocMaker {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      * @throws Exception in case of errors.
      * @should generate volume TOC correctly with siblings correctly
      * @should generate volume TOC correctly without siblings correctly
@@ -121,7 +123,7 @@ public class TocMaker {
      * @should throw IllegalArgumentException if toc is null
      */
     public static LinkedHashMap<String, List<TOCElement>> generateToc(TOC toc, StructElement structElement, boolean addAllSiblings, String mimeType,
-            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {
+            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         if (structElement == null) {
             throw new IllegalArgumentException("structElement may not me null");
         }
@@ -270,9 +272,10 @@ public class TocMaker {
      * @param mimeType
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
      */
     private static void buildGroupToc(List<TOCElement> ret, String groupIdField, String groupIdValue, boolean sourceFormatPdfAllowed, String mimeType)
-            throws PresentationException, IndexUnreachableException {
+            throws PresentationException, IndexUnreachableException, ViewerConfigurationException {
         logger.trace("addMembersToGroup: {}", groupIdValue);
         String template = "_GROUPS";
         String groupSortField = groupIdField.replace(SolrConstants.GROUPID_, SolrConstants.GROUPORDER_);
@@ -339,9 +342,10 @@ public class TocMaker {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @throws DAOException
+     * @throws ViewerConfigurationException
      */
     private static int buildAnchorToc(Map<String, List<TOCElement>> ret, SolrDocument anchorDoc, boolean sourceFormatPdfAllowed, String mimeType,
-            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException {
+            int tocCurrentPage, int hitsPerPage) throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.trace("buildAnchorToc");
         String iddoc = (String) anchorDoc.getFieldValue(SolrConstants.IDDOC);
         String anchorDocstructType = (String) anchorDoc.getFieldValue(SolrConstants.DOCSTRCT);
@@ -682,15 +686,15 @@ public class TocMaker {
                         // Docstruct fallback should always be translated
                         String docstruct = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
                         value = IMetadataValue.getTranslations(docstruct);
-//                        value.setValue(Helper.getTranslation(docstruct, null));
+                        //                        value.setValue(Helper.getTranslation(docstruct, null));
                     }
                 }
                 // Translate parameter value, if so configured and not already translated
                 if (MetadataParameterType.TRANSLATEDFIELD.equals(param.getType()) && !(value instanceof MultiLanguageMetadataValue)) {
-//                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
+                    //                    value.setValue(Helper.getTranslation(value.getValue().orElse(""), null));
                     value = IMetadataValue.getTranslations(value.getValue().orElse(""));
                 } else if (MetadataParameterType.MESSAGES_KEY.equals(param.getType())) {
-//                    value.setValue(Helper.getTranslation(param.getKey(), BeanUtils.getLocale()));
+                    //                    value.setValue(Helper.getTranslation(param.getKey(), BeanUtils.getLocale()));
                     value = IMetadataValue.getTranslations(param.getKey());
                 }
                 String placeholder = new StringBuilder("{").append(param.getKey()).append("}").toString();
@@ -716,8 +720,8 @@ public class TocMaker {
                     for (String language : languages) {
                         String langValue = label.getValue(language).orElse(label.getValue().orElse(""));
                         langValue = langValue.replace(placeholder, value.getValue(language).orElse(value.getValue().orElse("")));
-//                        String langValue =
-//                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
+                        //                        String langValue =
+                        //                                label.getValue(language).orElse(label.getValue().orElse("")).replace(placeholder, value.getValue().orElse(""));
                         label.setValue(langValue, language);
                     }
                 }
