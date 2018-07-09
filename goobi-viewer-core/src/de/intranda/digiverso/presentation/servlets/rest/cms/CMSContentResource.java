@@ -139,6 +139,7 @@ public class CMSContentResource {
                 throw new ServletException(cause);
             }
         } catch (TimeoutException e) {
+            result.cancel(true);
             throw new DAOException("Timeout while accessing database: " + e.getMessage());
         }
     }
