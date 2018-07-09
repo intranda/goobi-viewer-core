@@ -2248,13 +2248,16 @@ public class JPADAO implements IDAO {
      * @should return correct page
      */
     @Override
-    public CMSPage getCMSPage(long id) throws DAOException {
+    public synchronized CMSPage getCMSPage(long id) throws DAOException {
+        logger.trace("getCMSPage: {}", id);
         preQuery();
         try {
             CMSPage o = em.getReference(CMSPage.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            logger.trace("getCMSPage END");
         }
     }
 
@@ -2267,7 +2270,7 @@ public class JPADAO implements IDAO {
     public CMSPage getCMSPageForEditing(long id) throws DAOException {
         logger.trace("getCMSPageForEditing: {}", id);
         preQuery();
-        EntityManager em = factory.createEntityManager();
+        //        EntityManager em = factory.createEntityManager();
         try {
             CMSPage o = em.getReference(CMSPage.class, id);
             return o;
@@ -2282,19 +2285,22 @@ public class JPADAO implements IDAO {
 
     @Override
     public CMSSidebarElement getCMSSidebarElement(long id) throws DAOException {
+        logger.trace("getCMSSidebarElement: {}", id);
         preQuery();
         try {
             CMSSidebarElement o = em.getReference(CMSSidebarElement.class, id);
-            if (o != null) {
-                try {
-                    em.refresh(o);
-                } catch (IllegalArgumentException e) {
-                    logger.error(e.toString());
-                }
-            }
+            //            if (o != null) {
+            //                try {
+            em.refresh(o);
+            //                } catch (IllegalArgumentException e) {
+            //                    logger.error(e.toString());
+            //                }
+            //            }
             return o;
         } catch (EntityNotFoundException e) {
             return null;
+        } finally {
+            logger.trace("getCMSSidebarElement END");
         }
     }
 
