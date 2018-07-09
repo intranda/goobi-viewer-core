@@ -698,9 +698,9 @@
 		<property name="local.folder" value="resources/build/deploy_ubuntu" />
 		<property name="server.config" value="/opt/digiverso/archiv_viewer/config/" />
 		<property name="server.folder" value="/opt/digiverso/archiv_viewer/" />
-		<property name="server.url" value="http://digitalisate.archiv.humboldt.de/viewer/" />
+		<property name="server.url" value="http://digitalisate.archiv.hu-berlin.de/viewer/" />
 		<property name="solr.url" value="http://localhost:8080/solr/collection1" />
-		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitalisate.archiv.humboldt.de%2Fviewer%2Foai" />
+		<property name="server.oai.maskedUrl" value="http%3A%2F%2Fdigitalisate.archiv.hu-berlin.de%2Fviewer%2Foai" />
 		<property name="jta-data-source" value="java:comp/env/viewer_archiv" />
 		<property name="theme" value="huba" />
 		<property name="ehcache.dirname" value="cache" />
