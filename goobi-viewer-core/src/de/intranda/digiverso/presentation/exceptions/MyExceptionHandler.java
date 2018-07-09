@@ -101,8 +101,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             } else if (t instanceof RecordNotFoundException || isCausedByExceptionType(t, RecordNotFoundException.class.getName())
                     || (t instanceof PrettyException && t.getMessage().contains(RecordNotFoundException.class.getSimpleName()))) {
                 try {
-                    String pi = t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ",
-                            "");
+                    String pi =
+                            t.getMessage().substring(t.getMessage().indexOf("RecordNotFoundException: ")).replace("RecordNotFoundException: ", "");
                     String msg = Helper.getTranslation("errRecordNotFoundMsg", null).replace("{0}", pi);
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
@@ -130,6 +130,7 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
             } else if (t instanceof IndexUnreachableException || isCausedByExceptionType(t, IndexUnreachableException.class.getName())
                     || (t instanceof PrettyException && t.getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
                 logger.trace("Caused by IndexUnreachableException");
+                logger.error(t.getMessage());
                 try {
                     requestMap.put("errorType", "indexUnreachable");
                     flash.put("errorType", "indexUnreachable");
@@ -138,8 +139,8 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            } else if (t instanceof DAOException || isCausedByExceptionType(t, DAOException.class.getName()) || (t instanceof PrettyException && t
-                    .getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
+            } else if (t instanceof DAOException || isCausedByExceptionType(t, DAOException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(IndexUnreachableException.class.getSimpleName()))) {
                 logger.trace("Caused by DAOException");
                 try {
                     requestMap.put("errorType", "dao");
@@ -149,17 +150,32 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 } finally {
                     i.remove();
                 }
-            } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName()) || (t instanceof PrettyException
-                    && t.getMessage().contains(SocketException.class.getSimpleName()))) {
-                logger.error(t.getMessage());
+            } else if (t instanceof ViewerConfigurationException || isCausedByExceptionType(t, ViewerConfigurationException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(ViewerConfigurationException.class.getSimpleName()))) {
+                logger.trace("Caused by ViewerConfigurationException");
+                String msg = getRootCause(t).getMessage();
+                logger.error(getRootCause(t).getMessage());
+                try {
+                    flash.put("errorDetails", msg);
+                    requestMap.put("errMsg", msg);
+                    requestMap.put("errorType", "configuration");
+                    flash.put("errorType", "configuration");
+                    nav.handleNavigation(fc, null, "pretty:error");
+                    fc.renderResponse();
+                } finally {
+                    i.remove();
+                }
+            } else if (t instanceof SocketException || isCausedByExceptionType(t, SocketException.class.getName())
+                    || (t instanceof PrettyException && t.getMessage().contains(SocketException.class.getSimpleName()))) {
+
                 try {
                 } finally {
                     i.remove();
                 }
             } else if (t instanceof DownloadException || isCausedByExceptionType(t, DownloadException.class.getName())
                     || (t instanceof PrettyException && t.getMessage().contains(DownloadException.class.getSimpleName()))) {
-                logger.error(t.getMessage());
-                String msg = t.getMessage();
+                logger.error(getRootCause(t).getMessage());
+                String msg = getRootCause(t).getMessage();
                 if (msg.contains(DownloadException.class.getSimpleName() + ":")) {
                     msg = msg.substring(StringUtils.lastIndexOf(msg, ":") + 1).trim();
                 }
@@ -178,8 +194,9 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                 logger.error(t.getMessage(), t);
                 try {
                     // Put the exception in the flash scope to be displayed in the error page if necessary ...
-                    String msg = new StringBuilder(DateTools.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ").append(t
-                            .getMessage()).toString();
+                    String msg = new StringBuilder(DateTools.formatterISO8601DateTime.print(System.currentTimeMillis())).append(": ")
+                            .append(t.getMessage())
+                            .toString();
                     flash.put("errorDetails", msg);
                     requestMap.put("errMsg", msg);
                     requestMap.put("errorType", "general");

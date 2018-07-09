@@ -32,6 +32,7 @@
 				<c:if test="#{type == null}">
                     <c:set var="type" value="general" scope="request" />
                 </c:if>
+                        type: #{type}
                 
 				<!-- ERROR GENERAL -->
                 <h:panelGroup rendered="#{type == 'general'}">
@@ -125,6 +126,27 @@
 
                     <div class="alert alert-danger" role="alert">
                         <h:outputText value="#{msg.errDAOExceptionMsg}" />
+                    </div>
+
+                    <div class="alert alert-danger" role="alert">
+                        <h:outputText rendered="#{!empty header['referer']}" value="URL: #{header['referer']}" />
+                        <h:outputText rendered="#{empty header['referer'] and sourceUrl != null}" value="URL: #{sourceUrl}" />
+                        <h:outputText rendered="#{empty header['referer'] and sourceUrl == null}" value="URL: #{flash.sourceUrl}" />
+                    </div>
+
+                    <p>
+                        <h:outputLink rendered="#{!empty header['referer']}" value="#{header['referer']}">#{msg.returnToPreviousPage}</h:outputLink>
+                        <br />
+                        <h:outputLink value="#{navigationHelper.applicationUrl}">#{msg.returnHome}</h:outputLink>
+                    </p>
+                </h:panelGroup>
+                
+                <!-- CONFIG ERROR -->             
+                <h:panelGroup rendered="#{type == 'configuration'}">
+                    <h2>#{msg.errViewerConfigurationExceptionTitle}</h2>
+
+                    <div class="alert alert-danger" role="alert">
+                        <h:outputText value="#{msg.errViewerConfigurationExceptionMsg}" />
                     </div>
 
                     <div class="alert alert-danger" role="alert">
