@@ -1310,11 +1310,8 @@ public final class SearchHelper {
         } else {
             sbQuery.append(bmfc.getField()).append(':');
         }
-        //        if (StringUtils.isEmpty(startsWith)) {
         sbQuery.append("[* TO *]");
-        //        } else {
-        //            sbQuery.append(ClientUtils.escapeQueryChars(startsWith)).append('*');
-        //        }
+
         List<String> filterQueries = new ArrayList<>();
         if (StringUtils.isNotEmpty(filterQuery)) {
             filterQueries.add(filterQuery);
@@ -1333,15 +1330,18 @@ public final class SearchHelper {
         if (bmfc.isRecordsAndAnchorsOnly()) {
             filterQueries.add(
                     new StringBuilder().append(SolrConstants.ISWORK).append(":true OR ").append(SolrConstants.ISANCHOR).append(":true").toString());
+
         }
 
         String query = buildFinalQuery(sbQuery.toString(), false);
-        logger.debug("getFilteredTerms query: {}", query);
-        // int rows = 0;
+        if (logger.isDebugEnabled()) {
+            logger.debug("getFilteredTerms query: {}", query);
+            for (String fq : filterQueries) {
+                logger.trace("getFilteredTerms filter query: {}", fq);
+            }
+        }
+
         int rows = SolrSearchIndex.MAX_HITS;
-        List<String> fieldList = new ArrayList<>();
-        fieldList.add(bmfc.getField());
-        fieldList.add(SolrConstants.PI_TOPSTRUCT);
         List<String> facetFields = new ArrayList<>();
         facetFields.add(bmfc.getField());
 
@@ -1355,7 +1355,7 @@ public final class SearchHelper {
             List<StringPair> sortFields =
                     StringUtils.isEmpty(bmfc.getSortField()) ? null : Collections.singletonList(new StringPair(bmfc.getSortField(), "asc"));
             QueryResponse resp =
-                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, fieldList, filterQueries, params);
+                    DataManager.getInstance().getSearchIndex().search(query, 0, rows, sortFields, facetFields, null, filterQueries, params);
             // QueryResponse resp = DataManager.getInstance().getSolrHelper().searchFacetsAndStatistics(sbQuery.toString(),
             // facetFields, false);
             logger.debug("getFilteredTerms hits: {}", resp.getResults().getNumFound());
@@ -1395,14 +1395,13 @@ public final class SearchHelper {
                 }
             } else {
                 // Without filtering or using alphabetical filtering
-
                 // Parallel processing of hits (if sorting field is provided), requires compiler level 1.8
                 ((List<SolrDocument>) resp.getResults()).parallelStream()
                         .forEach(doc -> processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms, aggregateHits));
 
-                // Sequential processing
+                // Sequential processing (doesn't break the sorting done by Solr)
                 //                for (SolrDocument doc : resp.getResults()) {
-                //                    processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms);
+                //                    processSolrResult(doc, bmfc.getField(), bmfc.getSortField(), startsWith, terms, usedTerms, aggregateHits);
                 //                }
             }
         } catch (PresentationException e) {
@@ -1452,11 +1451,12 @@ public final class SearchHelper {
                 continue;
             }
             String compareTerm = term;
-            if (StringUtils.isNotEmpty(sortTerm)) {
-                compareTerm = sortTerm;
-            }
-            if (StringUtils.startsWithIgnoreCase(compareTerm, startsWith))
-                logger.trace("compareTerm: {}", compareTerm);
+            //            if (StringUtils.isNotEmpty(sortTerm)) {
+            //                compareTerm = sortTerm;
+            //            }
+            //            if (logger.isTraceEnabled() && StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
+            //                logger.trace("compareTerm '{}' starts with '{}'", compareTerm, startsWith);
+            //            }
             if (StringUtils.isEmpty(startsWith) || "-".equals(startsWith) || StringUtils.startsWithIgnoreCase(compareTerm, startsWith)) {
                 if (!usedTerms.containsKey(term)) {
                     BrowseTerm browseTerm = new BrowseTerm(term, sortTerm);

@@ -145,26 +145,28 @@ public class BrowseTerm implements Serializable {
             if (StringUtils.isNotEmpty(relevantString1)) {
                 if (o1a.getSortTerm() == null) {
                     relevantString1 = relevantString1.toLowerCase();
-                    // Remove the first character, if not alphanumeric
-                    if (relevantString1.length() > 1 && !StringUtils.isAlphanumeric(relevantString1.substring(0, 1))) {
-                        relevantString1 = relevantString1.substring(1);
-                    }
                 } else {
                     relevantString1 = o1a.getSortTerm().toLowerCase();
                 }
             }
+            // Remove the first character, if not alphanumeric
+            if (relevantString1.length() > 1 && !StringUtils.isAlphanumeric(relevantString1.substring(0, 1))) {
+                relevantString1 = relevantString1.substring(1);
+            }
+
             String relevantString2 = o2a.getTerm();
             if (StringUtils.isNotEmpty(relevantString2)) {
                 if (o2a.getSortTerm() == null) {
                     relevantString2 = relevantString2.toLowerCase();
-                    // Remove the first character, if not alphanumeric
-                    if (relevantString2.length() > 1 && !StringUtils.isAlphanumeric(relevantString2.substring(0, 1))) {
-                        relevantString2 = relevantString2.substring(1);
-                    }
                 } else {
                     relevantString2 = o2a.getSortTerm().toLowerCase();
                 }
             }
+            // Remove the first character, if not alphanumeric
+            if (relevantString2.length() > 1 && !StringUtils.isAlphanumeric(relevantString2.substring(0, 1))) {
+                relevantString2 = relevantString2.substring(1);
+            }
+
             return comparator.compare(relevantString1, relevantString2);
         }
     }
@@ -226,13 +228,12 @@ public class BrowseTerm implements Serializable {
     public long getHitCount() {
         return hitCount;
     }
-    
+
     /**
      * @return the piList
      */
     public Set<String> getPiList() {
         return piList;
     }
-    
-    
+
 }
