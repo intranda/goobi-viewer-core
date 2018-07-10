@@ -11,6 +11,7 @@
             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentPageBrowse}" />
             <f:event type="preRenderView" listener="#{searchBean.resetActiveSearchType}" />
             <f:event type="preRenderView" listener="#{searchBean.resetSearchFilter}" />
+            <f:event type="preRenderView" listener="#{searchBean.facets.resetSliderRange}" />
         </f:metadata>
     </ui:define>
 
