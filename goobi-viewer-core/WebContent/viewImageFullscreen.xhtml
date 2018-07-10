@@ -131,7 +131,7 @@
 						    }
 						};
 						var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-						var accessDeniedMessage = $( "<span />" ).addClass( "access-denied" ).text( "#{msg.noImage_accessDenied}" );
+						var accessDeniedMessage = $( "<span />" ).addClass( "access-denied" ).text( '#{msg.noImage_accessDenied}' );
 						var fileNotFoundMessage = $( "<span />" ).addClass( "file-not-found" ).text( "#{msg.noImage_fileNotFound}" );
 						
 						if ( access ) {
