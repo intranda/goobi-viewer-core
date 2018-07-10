@@ -178,6 +178,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+		<action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
 	</url-mapping>
     <url-mapping id="browse5">
         <pattern value="/browse/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
@@ -194,6 +195,7 @@
 		<action onPostback="false">#{browseBean.setCurrentStringFilter('-')}</action>
         <action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+        <action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
 		<action onPostback="false">#{browseBean.searchTerms}</action>
 	</url-mapping>
 	<url-mapping id="searchTerm3">
@@ -201,6 +203,7 @@
 		<view-id value="/searchTermsList.xhtml" />
 		<action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+		<action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
 		<action onPostback="false">#{browseBean.searchTerms}</action>
 	</url-mapping>
     <url-mapping id="searchTerm4">
@@ -208,6 +211,7 @@
         <view-id value="/searchTermsList.xhtml" />
         <action onPostback="false">#{browseBean.searchTerms}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+        <action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
     </url-mapping>
 	
 	<!-- Simple search -->
@@ -216,12 +220,14 @@
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.search}</action>
         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
+        <action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
     </url-mapping>
 	<url-mapping id="newSearch3">
 		<pattern value="/search/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+		<action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
@@ -230,6 +236,7 @@
 		<view-id value="/searchList.xhtml" />
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+		<action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
 		<action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
@@ -254,12 +261,14 @@
         <view-id value="/searchAdvanced.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
+        <action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
     </url-mapping>
     <url-mapping id="searchAdvanced4">
         <pattern value="/searchadvanced/#{dc:searchBean.facets.currentHierarchicalFacetString}/#{searchString:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/" />
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.setActiveSearchType(1)}</action>
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
+        <action onPostback="false">#{searchBean.facets.resetSliderRange()}</action>
         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
