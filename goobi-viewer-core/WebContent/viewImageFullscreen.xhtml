@@ -131,8 +131,8 @@
 						    }
 						};
 						var access = #{activeDocumentBean.viewManager.currentPage.accessForJs};
-						var accessDeniedMessage = "<span class="access-denied">#{msg.noImage_accessDenied}</span>";
-						var fileNotFoundMessage = "<span class="file-not-found">#{msg.noImage_fileNotFound}</span>";
+						var accessDeniedMessage = $( "<span />" ).addClass( "access-denied" ).text( "#{msg.noImage_accessDenied}" );
+						var fileNotFoundMessage = $( "<span />" ).addClass( "file-not-found" ).text( "#{msg.noImage_fileNotFound}" );
 						
 						if ( access ) {
 						    var viewImage = new ImageView.Image( configViewer );
