@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -1734,12 +1735,14 @@ public class SearchBean implements Serializable {
     public String exportSearchAsExcelAction() throws IndexUnreachableException {
         logger.trace("exportSearchAsExcelAction");
         final FacesContext facesContext = FacesContext.getCurrentInstance();
+        Locale locale = navigationHelper.getLocale();
+
         downloadReady = new FutureTask<>(new Callable<Boolean>() {
 
             @Override
             public Boolean call() throws InterruptedException, ViewerConfigurationException {
                 if (!facesContext.getResponseComplete()) {
-                    final SXSSFWorkbook wb = buildExcelSheet(facesContext);
+                    final SXSSFWorkbook wb = buildExcelSheet(facesContext, locale);
                     if (wb == null) {
                         return Boolean.FALSE;
                     } else if (Thread.interrupted()) {
@@ -1819,6 +1822,7 @@ public class SearchBean implements Serializable {
 
     /**
      * @param facesContext
+     * @param locale
      * @return
      * @throws InterruptedException
      * @throws ViewerConfigurationException
@@ -1826,13 +1830,13 @@ public class SearchBean implements Serializable {
      * @throws DAOException
      * @throws PresentationException
      */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext) throws InterruptedException, ViewerConfigurationException {
+    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, Locale locale) throws InterruptedException, ViewerConfigurationException {
         try {
             String currentQuery = SearchHelper.prepareQuery(searchString, SearchHelper.getDocstrctWhitelistFilterSuffix());
             final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
             Map<String, String> params = SearchHelper.generateQueryParams();
             final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, currentSearch.getSortFields(),
-                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, navigationHelper.getLocale(),
+                    facets.generateFacetFilterQueries(advancedSearchGroupOperator, true), params, searchTerms, locale,
                     DataManager.getInstance().getConfiguration().isAggregateHits(), BeanUtils.getRequest());
             if (Thread.interrupted()) {
                 throw new InterruptedException();
