@@ -6008,7 +6008,9 @@ var viewerJS = ( function( viewer ) {
         }
         hitSetChildrenDd.append( hitSetChildrenLink );
         hitSetChildrenDl.append( hitSetChildrenDt ).append( hitSetChildrenDd );
-        hitSetChildren.append( hitSetChildrenDl );
+        if ( type !== null ) {        	
+        	hitSetChildren.append( hitSetChildrenDl );        	
+        }
         
         return hitSetChildren;
     }
