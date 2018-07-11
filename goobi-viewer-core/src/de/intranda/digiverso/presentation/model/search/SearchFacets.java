@@ -82,7 +82,7 @@ public class SearchFacets {
      * @param advancedSearchGroupOperator
      * @return
      */
-    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator) {
+    public List<String> generateFacetFilterQueries(int advancedSearchGroupOperator, boolean includeRangeFacets) {
         List<String> ret = new ArrayList<>(2);
 
         // Add hierarchical facets
@@ -92,7 +92,7 @@ public class SearchFacets {
         }
 
         // Add regular facets
-        String regularQuery = generateFacetFilterQuery();
+        String regularQuery = generateFacetFilterQuery(includeRangeFacets);
         if (StringUtils.isNotEmpty(regularQuery)) {
             ret.add(regularQuery);
         }
@@ -145,11 +145,13 @@ public class SearchFacets {
     /**
      * Generates a filter query for the selected non-hierarchical facets.
      * 
+     * @param includeRangeFacets
      * @return
      * @should generate query correctly
      * @should return null if facet list is empty
+     * @should skip range facet fields if so requested
      */
-    String generateFacetFilterQuery() {
+    String generateFacetFilterQuery(boolean includeRangeFacets) {
         if (!currentFacets.isEmpty()) {
             StringBuilder sbQuery = new StringBuilder();
             if (sbQuery.length() > 0) {
@@ -158,6 +160,9 @@ public class SearchFacets {
             }
             for (FacetItem facetItem : currentFacets) {
                 if (facetItem.isHierarchial()) {
+                    continue;
+                }
+                if (!includeRangeFacets && DataManager.getInstance().getConfiguration().getRangeFacetFields().contains(facetItem.getField())) {
                     continue;
                 }
                 if (sbQuery.length() > 0) {
@@ -390,6 +395,8 @@ public class SearchFacets {
      * @param currentFacetString
      * @should create FacetItems from all links
      * @should decode slashes and backslashes
+     * @should reset slider range if no slider field among current facets
+     * @should not reset slider range if slider field among current facets
      */
     public void setCurrentFacetString(String currentFacetString) {
         logger.trace("setCurrentFacetString: {}", currentFacetString);
@@ -556,7 +563,8 @@ public class SearchFacets {
      */
     public String getAbsoluteMinRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!minValues.containsKey(field)) {
-            populateAbsoluteMinMaxValuesForField(field);
+            //            populateAbsoluteMinMaxValuesForField(field);
+            return "0";
         }
         return minValues.get(field);
     }
@@ -571,7 +579,8 @@ public class SearchFacets {
      */
     public String getAbsoluteMaxRangeValue(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
-            populateAbsoluteMinMaxValuesForField(field);
+            //            populateAbsoluteMinMaxValuesForField(field);
+            return "0";
         }
         return maxValues.get(field);
     }
@@ -586,7 +595,8 @@ public class SearchFacets {
      */
     public List<Integer> getValueRange(String field) throws PresentationException, IndexUnreachableException {
         if (!maxValues.containsKey(field)) {
-            populateAbsoluteMinMaxValuesForField(field);
+            //            populateAbsoluteMinMaxValuesForField(field);
+            return Collections.emptyList();
         }
         return valueRanges.get(field);
     }
@@ -601,7 +611,7 @@ public class SearchFacets {
      * @should populate values correctly
      * @should add all values to list
      */
-    void populateAbsoluteMinMaxValuesForField(String field) throws PresentationException, IndexUnreachableException {
+    void populateAbsoluteMinMaxValuesForField(String field, List<String> stringValues) throws PresentationException, IndexUnreachableException {
         if (field == null) {
             return;
         }
@@ -611,26 +621,28 @@ public class SearchFacets {
             return;
         }
 
-        //        List<String> values = SearchHelper.getFacetValues(SolrConstants.PI + ":*", field, 1);
-        List<Integer> values = null;
-        if (availableFacets.get(field) != null) {
-            values = new ArrayList<>(availableFacets.get(field).size());
-            for (FacetItem facetItem : availableFacets.get(field)) {
-                if (facetItem.getValue() == null) {
+        List<Integer> intValues = null;
+        for (String s : stringValues) {
+
+        }
+        if (stringValues != null) {
+            intValues = new ArrayList<>(stringValues.size());
+            for (String s : stringValues) {
+                if (s == null) {
                     continue;
                 }
-                values.add(Integer.valueOf(facetItem.getValue()));
+                intValues.add(Integer.valueOf(s));
             }
         } else {
             logger.trace("No facets found for field {}", field);
-            values = Collections.emptyList();
+            intValues = Collections.emptyList();
         }
-        if (!values.isEmpty()) {
-            Collections.sort(values);
+        if (!intValues.isEmpty()) {
+            Collections.sort(intValues);
             // Collections.sort(values, new AlphanumCollatorComparator(Collator.getInstance()));
-            valueRanges.put(field, values);
-            minValues.put(field, String.valueOf(values.get(0)));
-            maxValues.put(field, String.valueOf(values.get(values.size() - 1)));
+            valueRanges.put(field, intValues);
+            minValues.put(field, String.valueOf(intValues.get(0)));
+            maxValues.put(field, String.valueOf(intValues.get(intValues.size() - 1)));
             logger.trace("Absolute range for field {}: {} - {}", field, minValues.get(field), maxValues.get(field));
         }
     }

@@ -1749,6 +1749,16 @@ public final class Configuration extends AbstractConfiguration {
 
     /**
      * 
+     * @return List of facet fields to be used as range values
+     */
+    @SuppressWarnings("static-method")
+    public List<String> getRangeFacetFields() {
+        // TODO more fields than just YEAR
+        return Collections.singletonList(SolrConstants._CALENDAR_YEAR);
+    }
+
+    /**
+     * 
      * @return
      * @should return correct value
      */

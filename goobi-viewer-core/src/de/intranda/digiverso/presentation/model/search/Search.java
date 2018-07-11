@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -236,13 +237,37 @@ public class Search implements Serializable {
         String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
 
         // Apply current facets
-        List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator);
+        List<String> facetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, true);
         for (String fq : facetFilterQueries) {
             logger.trace("Facet query: {}", fq);
         }
 
         if (hitsCount == 0) {
             logger.trace("Final main query: {}", query);
+
+            // Search without range facet queries to determine absolute slider range
+            List<String> rangeFacetFields = DataManager.getInstance().getConfiguration().getRangeFacetFields();
+            List<String> nonRangeFacetFilterQueries = facets.generateFacetFilterQueries(advancedSearchGroupOperator, false);
+            resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, rangeFacetFields,
+                    Collections.singletonList(SolrConstants.IDDOC), nonRangeFacetFilterQueries, params);
+            if (resp != null && resp.getFacetFields() != null) {
+                for (FacetField facetField : resp.getFacetFields()) {
+                    if (rangeFacetFields.contains(facetField.getName())) {
+                        Map<String, Long> counts = new HashMap<>();
+                        List<String> values = new ArrayList<>();
+                        for (Count count : facetField.getValues()) {
+                            if (count.getCount() > 1) {
+                                counts.put(count.getName(), count.getCount());
+                                values.add(count.getName());
+                            }
+                        }
+                        if (!values.isEmpty()) {
+                            facets.populateAbsoluteMinMaxValuesForField(facetField.getName(), values);
+                        }
+                    }
+                }
+            }
+
             resp = DataManager.getInstance().getSearchIndex().search(query, 0, 0, null, allFacetFields,
                     Collections.singletonList(SolrConstants.IDDOC), facetFilterQueries, params);
             if (resp != null && resp.getResults() != null) {

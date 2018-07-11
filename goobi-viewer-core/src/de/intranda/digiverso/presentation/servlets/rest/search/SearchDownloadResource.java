@@ -93,8 +93,8 @@ public class SearchDownloadResource {
     @GET
     @Path("/excel")
     @Produces({ "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
-    public ExcelStreamingOutput downloadAsExcel(@Context HttpServletResponse response, @Context HttpServletRequest request) throws DAOException,
-            PresentationException, IndexUnreachableException, ViewerConfigurationException {
+    public ExcelStreamingOutput downloadAsExcel(@Context HttpServletResponse response, @Context HttpServletRequest request)
+            throws DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         SearchBean searchBean = (SearchBean) servletRequest.getSession().getAttribute("searchBean");
         String currentQuery = SearchHelper.prepareQuery(searchBean.getSearchString(), SearchHelper.getDocstrctWhitelistFilterSuffix());
         List<StringPair> sortFields = searchBean.getCurrentSearch().getSortFields();
@@ -103,13 +103,13 @@ public class SearchDownloadResource {
         final String query = SearchHelper.buildFinalQuery(currentQuery, DataManager.getInstance().getConfiguration().isAggregateHits());
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment;filename=\"viewer_search_" + DateTools.formatterISO8601DateTime.print(System
-                .currentTimeMillis()) + ".xlsx\"");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=\"viewer_search_" + DateTools.formatterISO8601DateTime.print(System.currentTimeMillis()) + ".xlsx\"");
 
         Map<String, String> params = SearchHelper.generateQueryParams();
-        final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields, searchBean.getFacets().generateFacetFilterQueries(
-                searchBean.getAdvancedSearchGroupOperator()), params, searchTerms, BeanUtils.getLocale(), DataManager.getInstance().getConfiguration()
-                        .isAggregateHits(), servletRequest);
+        final SXSSFWorkbook wb = SearchHelper.exportSearchAsExcel(query, currentQuery, sortFields,
+                searchBean.getFacets().generateFacetFilterQueries(searchBean.getAdvancedSearchGroupOperator(), true), params, searchTerms,
+                BeanUtils.getLocale(), DataManager.getInstance().getConfiguration().isAggregateHits(), servletRequest);
         try {
             return new ExcelStreamingOutput(wb);
         } finally {

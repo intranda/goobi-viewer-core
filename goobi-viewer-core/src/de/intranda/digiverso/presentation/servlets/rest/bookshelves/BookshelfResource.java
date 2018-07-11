@@ -695,7 +695,7 @@ public class BookshelfResource {
             logger.trace("Unable to get user: No user found in session store UserBean instance");
             return null;
         }
-        logger.trace("Found user {}", user);
+        // logger.trace("Found user {}", user);
         return user;
     }
 
