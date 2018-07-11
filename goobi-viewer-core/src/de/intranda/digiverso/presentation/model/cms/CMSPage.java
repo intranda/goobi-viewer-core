@@ -545,7 +545,7 @@ public class CMSPage {
     }
 
     private CMSPageLanguageVersion getBestLanguage(Locale locale) {
-        logger.trace("getBestLanguage");
+        // logger.trace("getBestLanguage");
         CMSPageLanguageVersion language = getLanguageVersion(locale);
         if (language != null && language.getStatus().equals(CMSPageStatus.FINISHED)) {
             return language;
