@@ -325,9 +325,12 @@ var viewerJS = ( function( viewer ) {
         
         hitSetTitle = $( '<div class="search-list__struct-title" />' );
         hitSetTitleH5 = $( '<h5 />' );
-        hitSetTitleLink = $( '<a />' );
-        hitSetTitleLink.attr( 'href', _defaults.contextPath + '/' + data.url );
-        hitSetTitleLink.append( data.labelShort );
+        if ( data.labelShort === 'TEI' ) {
+        	hitSetTitleLink = $( '<span />' ).text( data.labelShort );
+        }
+        else {
+        	hitSetTitleLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + data.url ).text( data.labelShort );        	
+        }
         hitSetTitleH5.append( hitSetTitleLink );
         hitSetTitle.append( hitSetTitleH5 );
         
@@ -368,7 +371,7 @@ var viewerJS = ( function( viewer ) {
                 // left cell
                 metadataTableCellLeft = $( '<td />' );
                 metadataKeyIcon = $( '<i />' ).attr( 'aria-hidden', 'true' ).addClass( 'fa fa-bookmark-o' );
-                metadataKeyLink = $( '<a />' ).attr( 'href', _defaults.contextPath + '/' + url ).html( metadata.one + ':' );
+                metadataKeyLink = $( '<span />' ).html( metadata.one + ':' );
                 metadataTableCellLeft.append( metadataKeyIcon ).append( metadataKeyLink );
                 
                 // right cell
@@ -470,7 +473,9 @@ var viewerJS = ( function( viewer ) {
         }
         hitSetChildrenDd.append( hitSetChildrenLink );
         hitSetChildrenDl.append( hitSetChildrenDt ).append( hitSetChildrenDd );
-        hitSetChildren.append( hitSetChildrenDl );
+        if ( type !== null ) {        	
+        	hitSetChildren.append( hitSetChildrenDl );        	
+        }
         
         return hitSetChildren;
     }
