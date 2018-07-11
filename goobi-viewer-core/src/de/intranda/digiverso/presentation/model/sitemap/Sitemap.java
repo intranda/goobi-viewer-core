@@ -61,7 +61,7 @@ public class Sitemap {
 
     /**
      *
-     * @param viewerRootUrl Root URL of the intranda viewer instance
+     * @param viewerRootUrl Root URL of the Goobi viewer instance
      * @param outputPath Destination folder path for the sitemap files.
      * @param firstPageOnly
      * @return

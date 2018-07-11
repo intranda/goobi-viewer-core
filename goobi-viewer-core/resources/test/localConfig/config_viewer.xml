@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!-- intranda viewer 2.x configuration file (for unit tests) -->
+<!-- Goobi viewer configuration file (for unit tests) -->
 <!-- It is important that the encoding of the file is UTF-8, otherwise there 
 	might be problems with german umlauts in the rss feed section -->
 
@@ -23,7 +23,7 @@
 		viewer (images, audio, video) -->
 	<mediaFolder>mediaFolder_value</mediaFolder>
 	<!-- sourceContentFolder: contains born-digital material that was uploaded 
-		in the intranda viewer (see <content> also) -->
+		in the Goobi viewer (see <content> also) -->
 	<origContentFolder>origContentFolder_value</origContentFolder>
 	<!-- overviewFolder: contains the configuration file for overview pages -->
 	<overviewFolder>overviewFolder_value</overviewFolder>
@@ -64,11 +64,11 @@
 		<!-- taskManager: Url of local taskManager for pdf-download -->
 		<taskManager>taskmanager_url/</taskManager>
 
-		<!-- solr: defines absolute path to the Solr interface the intranda viewer 
+		<!-- solr: defines absolute path to the Solr interface the Goobi viewer 
 			shall display data from -->
 		<solr>solr_value/</solr>
 
-		<!-- contentServer: relative path to contentServer from the intranda viewer 
+		<!-- contentServer: relative path to contentServer from the Goobi viewer 
 			context -->
 		<contentServer external="true">contentServer_value
 		</contentServer>
@@ -423,7 +423,7 @@
 
 	<metadata>
 		<!-- mainMetadataList: whitelist with metadata fields, that are displayed 
-			in the intranda viewer. The order of this files defines the order of the 
+			in the Goobi viewer. The order of this files defines the order of the 
 			fields in the bibliographic data as well. -->
 		<mainMetadataList>
 			<template name="_DEFAULT">

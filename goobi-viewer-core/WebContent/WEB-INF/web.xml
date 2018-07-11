@@ -2,7 +2,7 @@
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-	<display-name>intranda viewer</display-name>
+	<display-name>Goobi viewer</display-name>
 	<!-- Application-internal listeners are registered via @WebListener annotations -->
 	<listener>
 		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>

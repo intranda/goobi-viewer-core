@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" 
-    name="intranda viewer ContentServer Cache"
+    name="Goobi viewer ContentServer Cache"
     maxBytesLocalDisk="100g"
     updateCheck="false">
 

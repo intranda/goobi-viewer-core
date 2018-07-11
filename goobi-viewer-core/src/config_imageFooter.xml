@@ -5,5 +5,5 @@
     <image id="2"  x="10" y="5" origin="left" url="http://localhost:8080/viewer/resources/themes/intranda/images/watermark/intranda.png"/>
     <image id="3"  x="10" y="5" origin="right" url="http://localhost:8080/viewer/resources/themes/intranda/images/watermark/book.png"/>
 
-    <text id="4" x="200" y="30" fontname="Arial" fontsize="10" fontcolor="FFFFFF" origin="center">intranda viewer</text>
+    <text id="4" x="200" y="30" fontname="Arial" fontsize="10" fontcolor="FFFFFF" origin="center">Goobi viewer</text>
 </watermark>
