@@ -622,9 +622,6 @@ public class SearchFacets {
         }
 
         List<Integer> intValues = null;
-        for (String s : stringValues) {
-
-        }
         if (stringValues != null) {
             intValues = new ArrayList<>(stringValues.size());
             for (String s : stringValues) {

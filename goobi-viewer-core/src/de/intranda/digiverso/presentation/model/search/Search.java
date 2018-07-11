@@ -256,7 +256,7 @@ public class Search implements Serializable {
                         Map<String, Long> counts = new HashMap<>();
                         List<String> values = new ArrayList<>();
                         for (Count count : facetField.getValues()) {
-                            if (count.getCount() > 1) {
+                            if (count.getCount() > 0) {
                                 counts.put(count.getName(), count.getCount());
                                 values.add(count.getName());
                             }
