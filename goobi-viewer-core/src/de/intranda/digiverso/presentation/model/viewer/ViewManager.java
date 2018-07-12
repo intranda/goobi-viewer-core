@@ -1101,8 +1101,14 @@ public class ViewManager implements Serializable {
                 && isAccessPermissionPdf();
     }
 
-    public boolean isDisplayPagePdfLink() {
-        return DataManager.getInstance().getConfiguration().isPagePdfEnabled() && isAccessPermissionPdf();
+    @Deprecated
+    public boolean isDisplayPagePdfLink() throws IndexUnreachableException, DAOException {
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage != null) {
+            return currentPage.isDisplayPagePdfLink();
+        }
+
+        return false;
     }
 
     /**

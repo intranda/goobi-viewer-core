@@ -21,7 +21,7 @@
                         <ui:fragment rendered="#{!activeDocumentBean.viewManager.doublePageMode}">
                             <li class="image-controls__option pdf">
                                 <h:outputLink value="#{activeDocumentBean.viewManager.pdfPageDownloadLink}" title="#{msg.pdfDownloadCurrentPage}"
-                                    rendered="#{activeDocumentBean.viewManager.displayPagePdfLink}" target="_blank">
+                                    rendered="#{activeDocumentBean.viewManager.currentPage.displayPagePdfLink}" target="_blank">
                                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                     <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                     <f:passThroughAttribute name="data-placement" value="bottom" />
