@@ -49,7 +49,10 @@
                                 
                                 <!-- BOOKSHELF NAVIGATION DROPDOWN LIST SEND -->
                                 <div class="bookshelf-navigation__dropdown-list-send">
-                                    <a href="#{request.contextPath}/userBookshelfSendList/">#{msg.bookshelf_session_mail_sendList}</a>
+                                    <a href="#{request.contextPath}/userBookshelfSendList/">
+                                        <span>#{msg.bookshelf_session_mail_sendList}</span>
+                                        <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+                                    </a>
                                 </div>
                                 
                                 <!-- TODO: Link nur rendern, wenn auch Objekte in der Liste sind. -->
@@ -57,7 +60,10 @@
                                 
                                 <!-- BOOKSHELF NAVIGATION DROPDOWN LIST MIRADOR -->
                                 <div class="bookshelf-navigation__dropdown-list-mirador">
-                                    <a href="#{request.contextPath}/mirador/">#{msg.bookshelf_openMirador}</a>
+                                    <a href="#{request.contextPath}/mirador/" target="_blank">
+                                        <span>#{msg.bookshelf_openMirador}</span>
+                                        <i class="fa fa-th" aria-hidden="true"></i>
+                                    </a>
                                 </div>
                             </div>
                         </ui:fragment>

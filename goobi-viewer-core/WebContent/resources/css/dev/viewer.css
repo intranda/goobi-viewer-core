@@ -1207,7 +1207,7 @@ div.mce-fullscreen {
 .bookshelf-navigation__dropdown-list-remove [data-bookshelf-type="delete"] {
   width: 16px;
   height: 16px;
-  background-size: 10px;
+  color: #507ebf;
 }
 .bookshelf-navigation__dropdown-list-actions {
   border-top: 1px solid #ccc;
@@ -1216,6 +1216,7 @@ div.mce-fullscreen {
 .bookshelf-navigation__dropdown-list-send,
 .bookshelf-navigation__dropdown-list-mirador {
   font-size: 13px;
+  border-bottom: 1px solid #ccc;
 }
 .bookshelf-navigation__dropdown-list-reset a,
 .bookshelf-navigation__dropdown-list-send a,
@@ -1223,30 +1224,18 @@ div.mce-fullscreen {
 .bookshelf-navigation__dropdown-list-reset button,
 .bookshelf-navigation__dropdown-list-send button,
 .bookshelf-navigation__dropdown-list-mirador button {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
   width: 100%;
   padding: 10px;
-  text-align: left;
   color: #507ebf;
-  background-repeat: no-repeat;
-  background-position: 95% center;
-  background-size: 10px;
 }
-.bookshelf-navigation__dropdown-list-reset {
-  border-bottom: 1px solid #ccc;
-}
-.bookshelf-navigation__dropdown-list-reset button {
-  background-image: url("../../images/icons/icon-bs-remove.svg");
-}
-.bookshelf-navigation__dropdown-list-send a,
-.bookshelf-navigation__dropdown-list-mirador a {
-  display: block;
-}
-.bookshelf-navigation__dropdown-list-send a {
-  background-image: url("../../images/icons/icon-bs-link.svg");
-}
-.bookshelf-navigation__dropdown-list-mirador a {
-  border-top: 1px solid #ccc;
-  background-image: url("../../images/icons/icon-bs-mirador.svg");
+.bookshelf-navigation__dropdown-list-mirador {
+  border: none;
 }
 /* POPUPS */
 /* BLOCK */
@@ -1388,9 +1377,6 @@ div.mce-fullscreen {
 }
 [data-bookshelf-type="add"].added.white {
   background-image: url("../../images/icons/icon-bs-herz-weiss.svg");
-}
-[data-bookshelf-type="delete"] {
-  background-image: url("../../images/icons/icon-bs-remove.svg");
 }
 [data-bookshelf-type="link"] {
   background-image: url("../../images/icons/icon-bs-link.svg");
@@ -5968,7 +5954,7 @@ div[id*="-Modal"] .email-form .form-group {
   width: 100vw;
   max-width: 100%;
   height: 100vh;
-  max-height: 800px;
+  max-height: 100%;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
