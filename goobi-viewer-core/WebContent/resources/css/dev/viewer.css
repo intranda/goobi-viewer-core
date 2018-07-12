@@ -1213,13 +1213,16 @@ div.mce-fullscreen {
   border-top: 1px solid #ccc;
 }
 .bookshelf-navigation__dropdown-list-reset,
-.bookshelf-navigation__dropdown-list-send {
+.bookshelf-navigation__dropdown-list-send,
+.bookshelf-navigation__dropdown-list-mirador {
   font-size: 13px;
 }
 .bookshelf-navigation__dropdown-list-reset a,
 .bookshelf-navigation__dropdown-list-send a,
+.bookshelf-navigation__dropdown-list-mirador a,
 .bookshelf-navigation__dropdown-list-reset button,
-.bookshelf-navigation__dropdown-list-send button {
+.bookshelf-navigation__dropdown-list-send button,
+.bookshelf-navigation__dropdown-list-mirador button {
   width: 100%;
   padding: 10px;
   text-align: left;
@@ -1234,9 +1237,16 @@ div.mce-fullscreen {
 .bookshelf-navigation__dropdown-list-reset button {
   background-image: url("../../images/icons/icon-bs-remove.svg");
 }
-.bookshelf-navigation__dropdown-list-send a {
+.bookshelf-navigation__dropdown-list-send a,
+.bookshelf-navigation__dropdown-list-mirador a {
   display: block;
+}
+.bookshelf-navigation__dropdown-list-send a {
   background-image: url("../../images/icons/icon-bs-link.svg");
+}
+.bookshelf-navigation__dropdown-list-mirador a {
+  border-top: 1px solid #ccc;
+  background-image: url("../../images/icons/icon-bs-mirador.svg");
 }
 /* POPUPS */
 /* BLOCK */
