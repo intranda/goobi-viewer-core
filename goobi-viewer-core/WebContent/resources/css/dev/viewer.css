@@ -5936,6 +5936,25 @@ div[id*="-Modal"] .email-form .form-group {
 }
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
+   View Mirador
+   style declarations for viewMirador.xhtml 
+   ==============================================================*/
+/* VIEW MIRADOR */
+/* BLOCK */
+.view-mirador {
+  /* ELEMENT */
+}
+.view-mirador__viewer {
+  width: 100vw;
+  max-width: 100%;
+  height: 100vh;
+  max-height: 100%;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
    View NER Facetting
    style declarations for viewNerFacetting.xhtml
    ==============================================================*/

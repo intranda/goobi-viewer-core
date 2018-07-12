@@ -1,0 +1,101 @@
+ <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components" 
+	xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+	template="/resources/themes/#{navigationHelper.theme}/template.html">
+
+    <!-- METADATA -->
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('object')}" />
+        </f:metadata>
+    </ui:define>
+
+    <!-- HEAD -->
+    <ui:define name="head">
+        <f:view contentType="text/html" encoding="utf-8">
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.dublinCoreMetaTags}" rendered="#{configurationBean.addDublinCoreMetaTags}" />
+            <h:outputText escape="false" value="#{activeDocumentBean.viewManager.highwirePressMetaTags}" rendered="#{configurationBean.addHighwirePressMetaTags}" />
+        </f:view>
+    </ui:define>
+
+    <!-- BREADCRUMBS -->
+    <ui:define name="breadcrumbs">
+        <ui:include src="/resources/includes/breadcrumbs.xhtml" />
+    </ui:define>    
+
+    <!-- CONTENT -->
+    <ui:define name="content">
+		<f:view contentType="text/html" encoding="utf-8">
+            <!-- MIRADOR CSS -->
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resources/javascript/libs/mirador/css/mirador-combined.min.css" />
+            
+            <!-- MIRADOR JS -->
+            <script type="text/javascript" src="#{request.contextPath}/resources/javascript/libs/mirador/mirador.min.js"></script>
+        
+            <!-- MIRADOR WRAPPER -->
+            <div id="viewMirador" class="view-mirador">
+                <!-- MIRADOR CONTAINER -->                
+                <div id="miradorViewer" class="view-mirador__viewer"></div>
+            </div>
+
+            <script type="text/javascript">
+                $(function() {
+                    Mirador({
+                        id : "miradorViewer",
+                        layout : "1x2",
+                        data : [
+                            {
+                                /* monograph, annotation on page 78 */
+                                manifestUri : "https://viewer-demo01.intranda.com/viewer/rest/iiif/manifests/PPN615391702/manifest",
+                                location : "Goobi viewer"
+                            },
+                            {
+                                /* woman */
+                                manifestUri : "https://viewer-demo01.intranda.com/viewer/rest/iiif/manifests/02008012412076/manifest",
+                                location : "Goobi viewer"
+                            }
+                        ],
+                        windowObjects : [
+                            {
+                                loadedManifest : "https://viewer-demo01.intranda.com/viewer/rest/iiif/manifests/02008012412076/manifest",
+                                slotAddress : "row1.column1",
+                                sidePanel : false,
+                                viewType : "ImageView"
+                            },
+                            {
+                                loadedManifest : "https://viewer-demo01.intranda.com/viewer/rest/iiif/manifests/PPN615391702/manifest",
+                                slotAddress : "row1.column2",
+                                viewType : "BookView"
+                            }
+                        ]
+                    });
+                });
+            </script>
+        </f:view>
+    </ui:define>
+
+    <!-- SIDEBAR -->
+    <ui:define name="sidebar">
+		<h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+			<widgetComponent:widget_browsing />
+		</h:panelGroup>
+
+		<widgetComponent:widget_bookshelfList />
+        
+        <widgetComponent:widget_mySearches />
+        
+        <c:forEach var="module" items="#{configurationBean.modules}">
+            <c:forEach var="contribution" items="#{module.sidebarContributions}">
+                <ui:include src="/#{contribution}" />
+            </c:forEach>
+        </c:forEach>
+
+        <widgetComponent:widget_user />
+	</ui:define>
+</ui:composition>
