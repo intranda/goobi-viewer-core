@@ -44,6 +44,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
@@ -375,10 +378,12 @@ public class Bookshelf implements Serializable {
      * 
      * @return
      * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      * @should generate JSON object correctly
      */
     @SuppressWarnings("unchecked")
-    public String getMiradorJsonObject() throws ViewerConfigurationException {
+    public String getMiradorJsonObject() throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
         // int cols = (int) Math.sqrt(items.size());
         int cols = 2;
         int rows = (int) Math.ceil(items.size() / (float) cols);
@@ -389,6 +394,7 @@ public class Bookshelf implements Serializable {
 
         JSONArray dataArray = new JSONArray();
         JSONArray windowObjectsArray = new JSONArray();
+        String queryRoot = SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT + " AND " + SolrConstants.PI_TOPSTRUCT + ":";
         int row = 1;
         int col = 1;
         for (BookshelfItem bi : items) {
@@ -396,6 +402,11 @@ public class Bookshelf implements Serializable {
                     .append(bi.getPi())
                     .append("/manifest")
                     .toString();
+
+            boolean sidePanel = false;
+            if (DataManager.getInstance().getSearchIndex().getHitCount(queryRoot + bi.getPi()) > 1) {
+                sidePanel = true;
+            }
 
             JSONObject dataItem = new JSONObject();
             dataItem.put("manifestUri", manifestUrl);
@@ -405,7 +416,7 @@ public class Bookshelf implements Serializable {
             JSONObject windowObjectItem = new JSONObject();
             windowObjectItem.put("loadedManifest", manifestUrl);
             windowObjectItem.put("slotAddress", "row" + row + ".column" + col);
-            windowObjectItem.put("sidePanel", false);
+            windowObjectItem.put("sidePanel", sidePanel);
             windowObjectItem.put("viewType", "ImageView");
             windowObjectsArray.add(windowObjectItem);
 

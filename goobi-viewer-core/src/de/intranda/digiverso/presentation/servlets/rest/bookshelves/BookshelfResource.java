@@ -105,11 +105,13 @@ public class BookshelfResource {
      * @throws IOException
      * @throws RestApiException
      * @throws ViewerConfigurationException
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
      */
     @GET
     @Path("/session/mirador")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getSessionBookshelfForMirador() throws DAOException, IOException, RestApiException, ViewerConfigurationException {
+    public String getSessionBookshelfForMirador() throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
@@ -633,12 +635,14 @@ public class BookshelfResource {
      * @throws IOException
      * @throws RestApiException
      * @throws ViewerConfigurationException
+     * @throws PresentationException 
+     * @throws IndexUnreachableException 
      */
     @GET
     @Path("/user/mirador/{id}/")
     @Produces({ MediaType.APPLICATION_JSON })
     public String getSessionBookshelfForMirador(@PathParam("id") Long id)
-            throws DAOException, IOException, RestApiException, ViewerConfigurationException {
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         User user = getUser();
         if (user != null) {
             Optional<Bookshelf> bookshelf = getBookshelf(user, id);
