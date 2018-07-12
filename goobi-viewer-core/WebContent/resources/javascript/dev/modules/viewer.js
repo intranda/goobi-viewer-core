@@ -445,6 +445,7 @@ var viewerJS = (function(viewer) {
 
 			// render bookshelf dropdown list
 			_renderDropdownList();
+			_renderMiradorLink();
 
 			// toggle bookshelf dropdown
 			$('[data-bookshelf-type="dropdown"]').off().on('click', function(event) {
@@ -461,17 +462,6 @@ var viewerJS = (function(viewer) {
 					}
 				}).fail(function(error) {
 					console.error('ERROR - _getAllSessionElements: ', error.responseText);
-				});
-				
-				_getSessionElementCount(_defaults.root).then(function(elements) {
-					if ( elements > 1 ) {
-						$( '.bookshelf-navigation__dropdown-list-mirador' ).removeClass( 'hidden' );
-					}
-					else {
-						$( '.bookshelf-navigation__dropdown-list-mirador' ).addClass( 'hidden' );
-					}
-				}).fail(function(error) {
-					console.error('ERROR - _getSessionElementCount: ', error.responseText);
 				});
 			});
 
@@ -498,6 +488,7 @@ var viewerJS = (function(viewer) {
 								_setSessionElement(_defaults.root, currPi).then(function() {
 									_setSessionElementCount();
 									_renderDropdownList();
+									_renderMiradorLink();
 								});
 							} else {
 								return false;
@@ -507,6 +498,7 @@ var viewerJS = (function(viewer) {
 							_setSessionElement(_defaults.root, currPi).then(function() {
 								_setSessionElementCount();
 								_renderDropdownList();
+								_renderMiradorLink();
 							});
 						}
 					} else {
@@ -514,6 +506,7 @@ var viewerJS = (function(viewer) {
 						_deleteSessionElement(_defaults.root, currPi).then(function() {
 							_setSessionElementCount();
 							_renderDropdownList();
+							_renderMiradorLink();
 						});
 					}
 				}).fail(function(error) {
@@ -769,6 +762,7 @@ var viewerJS = (function(viewer) {
 					_setSessionElementCount();
 					_setAddActiveState();
 					_renderDropdownList();
+					_renderMiradorLink();
 				});
 			});
 
@@ -780,6 +774,7 @@ var viewerJS = (function(viewer) {
 						_setSessionElementCount();
 						_setAddActiveState();
 						_renderDropdownList();
+						_renderMiradorLink();
 					});
 				} else {
 					return false;
@@ -788,6 +783,27 @@ var viewerJS = (function(viewer) {
 
 		}).fail(function(error) {
 			console.error('ERROR - _getAllSessionElements: ', error.responseText);
+		});
+	}
+	/**
+	 * Method to render the element list in bookshelf dropdown (user not logged in).
+	 * 
+	 * @method _renderMiradorLink
+	 */
+	function _renderMiradorLink() {
+		if (_debug) {
+			console.log('---------- _renderMiradorLink() ----------');
+		}
+
+		_getSessionElementCount(_defaults.root).then(function(elements) {
+			if ( elements > 1 ) {
+				$( '.bookshelf-navigation__dropdown-list-mirador' ).removeClass( 'hidden' );
+			}
+			else {
+				$( '.bookshelf-navigation__dropdown-list-mirador' ).addClass( 'hidden' );
+			}
+		}).fail(function(error) {
+			console.error('ERROR - _getSessionElementCount: ', error.responseText);
 		});
 	}
 	/**
