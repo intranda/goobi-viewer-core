@@ -402,11 +402,7 @@ public class Bookshelf implements Serializable {
                     .append(bi.getPi())
                     .append("/manifest")
                     .toString();
-
-            boolean sidePanel = false;
-            if (DataManager.getInstance().getSearchIndex().getHitCount(queryRoot + bi.getPi()) > 1) {
-                sidePanel = true;
-            }
+            boolean sidePanel = DataManager.getInstance().getSearchIndex().getHitCount(queryRoot + bi.getPi()) > 1;
 
             JSONObject dataItem = new JSONObject();
             dataItem.put("manifestUri", manifestUrl);
