@@ -83,10 +83,12 @@
                                                 </a>
                                                 
                                                 <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
-                                                
-                                                <a href="#{request.contextPath}/mirador/" title="#{msg.bookshelf_openMirador}" data-toggle="tooltip" data-placement="top">
-                                                    <i class="fa fa-th-large" aria-hidden="true"></i>
-                                                </a>
+                                                <ui:fragment rendered="#{bookshelf.items.size() > 1}">
+                                                    <a href="#{request.contextPath}/mirador/" title="#{msg.bookshelf_openMirador}"
+                                                        data-toggle="tooltip" data-placement="top">
+                                                        <i class="fa fa-th-large" aria-hidden="true"></i>
+                                                    </a>
+                                                </ui:fragment>
                                                 
 												<h:commandLink title="#{msg.edit}" action="#{bookshelfBean.editBookshelfAction(bookshelf)}">
 													<i class="fa fa-pencil" aria-hidden="true"></i>
