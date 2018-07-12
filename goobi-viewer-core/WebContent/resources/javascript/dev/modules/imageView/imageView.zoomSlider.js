@@ -22,27 +22,21 @@ var ImageView = ( function( imageView ) {
         this.config = $.extend( true, {}, _defaults );
         $.extend( true, this.config, config.global );
         this.image = image;
-//        this.imageWidth = image.sizes.originalImageSize.x;
-//        this.imageViewWidth = image.container.width();
-        this.init();
     }
     
     imageView.ZoomSlider.prototype.init = function() {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'imageView.zoomSlider.init' );
-                console.log("config - ", this.config);
                 console.log( '##############################' );
             }
-            if ( $(this.config.zoomSlider).length > 0 ) {
                 this.addZoomSlider(this.config.zoomSlider );
-                
-                // handler for openSeadragon Object
+                this.buttonToZoom(this.image.viewer.viewport.getHomeZoom());
                 var zoom = this;
-                this.image.viewer.addHandler( 'zoom', function( data ) {
-                    zoom.buttonToZoom( data.zoom );
-                } );
-            }
+                    this.image.observables.viewerZoom.subscribe( function( event ) {
+                        var scale = zoom.image.viewer.viewport.getZoom();
+                        zoom.buttonToZoom( scale );
+                    });
         };
         imageView.ZoomSlider.prototype.exists = function() {
             return this.$element.length && this.$button.length;
@@ -99,29 +93,31 @@ var ImageView = ( function( imageView ) {
                 return;
             }
 
-            var factor = ( scale - this.image.viewer.viewport.getMinZoom() ) / ( this.image.viewer.viewport.getMaxZoom() - this.image.viewer.viewport.getMinZoom() );
-
-            factor = 1 / Math.atan( this.config.sliderDilation ) * Math.atan( this.config.sliderDilation * factor );
-            var newPos = factor * ( this.absoluteWidth - this.$button.width() );
-
-            
-            if ( Math.abs( this.image.viewer.viewport.getMaxZoom() - scale ) < 0.0000000001 ) {
-                newPos = this.absoluteWidth - this.$button.width();
+            if(this.$button) { 
+                var factor = ( scale - this.image.viewer.viewport.getMinZoom() ) / ( this.image.viewer.viewport.getMaxZoom() - this.image.viewer.viewport.getMinZoom() );
+                
+                factor = 1 / Math.atan( this.config.sliderDilation ) * Math.atan( this.config.sliderDilation * factor );
+                var newPos = factor * ( this.absoluteWidth - this.$button.width() );
+                
+                
+                if ( Math.abs( this.image.viewer.viewport.getMaxZoom() - scale ) < 0.0000000001 ) {
+                    newPos = this.absoluteWidth - this.$button.width();
+                }
+                
+                if ( newPos < 0 ) {
+                    newPos = 0;
+                }
+                
+                this.$button.css( {
+                    left: newPos
+                } );
+                this.buttonPosition = newPos;
             }
-            
-            if ( newPos < 0 ) {
-                newPos = 0;
-            }
-            
-            this.$button.css( {
-                left: newPos
-            } );
-            this.buttonPosition = newPos;
             this.setLabel(scale);
         },
         imageView.ZoomSlider.prototype.setLabel = function(scale) {
-            if(this.$label.length) {
-                var imageWidth = this.image.sizes.originalImageSize.x;
+            if(this.$label.length && this.image.sizes) {
+                var imageWidth = this.image.config.image.originalImageWidth;
                 var imageViewWidth = this.image.container.width();
                 scale = parseFloat(scale)/imageWidth*imageViewWidth;
                 this.$label.val((scale*100).toFixed(1));
@@ -129,11 +125,11 @@ var ImageView = ( function( imageView ) {
         };
         imageView.ZoomSlider.prototype.inputToZoom = function(input) {
             var imageScale = parseFloat(input);
-            if(imageScale) {
+            if(imageScale && this.image.sizes) {
                 if(_debug) {
                     console.log("scale to ", input);
                 }
-                var imageWidth = this.image.sizes.originalImageSize.x;
+                var imageWidth = this.image.config.image.originalImageWidth;
                 var imageViewWidth = this.image.container.width();
                 var scale = imageScale*imageWidth/imageViewWidth/100.0;
                 if(scale < this.image.viewer.viewport.getMinZoom()) {
@@ -172,6 +168,13 @@ var ImageView = ( function( imageView ) {
             if(this.$label.length) {
                 this.$label.on("change", function(event) {
                     slider.inputToZoom(event.target.value)
+                    return false;
+                });
+                this.$label.on("keypress", function(e) {
+                    if (e.which == 13) {
+                        slider.inputToZoom(e.target.value)
+                        return false;
+                    }
                 });
             }
             $( document ).on( 'mouseup', function(event) {
