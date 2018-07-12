@@ -49,4 +49,21 @@ public class BookshelfTest {
         String query = bookshelf.generateSolrQueryForItems();
         Assert.assertEquals("(PI:PI1) OR (PI_TOPSTRUCT:PI2 AND LOGID:LOG1) OR (URN:URN1 OR IMAGEURN:URN1)", query);
     }
+
+    /**
+     * @see Bookshelf#getMiradorJsonObject()
+     * @verifies generate JSON object correctly
+     */
+    @Test
+    public void getMiradorJsonObject_shouldGenerateJSONObjectCorrectly() throws Exception {
+        Bookshelf bookshelf = new Bookshelf();
+        for (int i = 1; i <= 16; ++i) {
+            BookshelfItem item = new BookshelfItem();
+            item.setPi("PI" + i);
+            bookshelf.getItems().add(item);
+        }
+
+        String json = bookshelf.getMiradorJsonObject();
+        System.out.println(json);
+    }
 }
