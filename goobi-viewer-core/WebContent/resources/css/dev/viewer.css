@@ -1628,7 +1628,9 @@ div.mce-fullscreen {
    Mobile Navigation
    style declarations for mobileNavigation.xhtml
    ==============================================================*/
-#mobileNav {
+/* MOBILE NAVIGATION */
+/* BLOCK */
+.mobile-navigation {
   display: none;
   position: fixed;
   top: 52px;
@@ -1642,12 +1644,15 @@ div.mce-fullscreen {
   background-color: #fff;
   overflow-y: auto !important;
   z-index: 999;
+  /* ELEMENT */
+  /* USER LOGIN */
+  /* SUBNAV */
 }
-#mobileNav ul li a {
+.mobile-navigation a {
   display: block;
   padding: 10px;
 }
-#mobileNav .mainsubnav {
+.mobile-navigation .mainsubnav {
   padding-left: 15px;
 }
 /* BREAKPOINT FOR LARGE DESKTOPS */
