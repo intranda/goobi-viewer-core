@@ -144,8 +144,6 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
     private Comment currentComment;
     /** Textual content of the previously created page comment. Workaround for duplicate posts via browser refresh. */
     private String previousCommentText;
-    /** set to false if the image cannot be read **/
-    //    private Boolean imageAvailable = null;
 
     /**
      * 
@@ -368,7 +366,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return getThumbnailUrl(thumbWidth, thumbHeight);
     }
 
-    public String getThumbnailUrl(int width, int height) throws ViewerConfigurationException {
+    public String getThumbnailUrl(int width, int height) {
         ThumbnailHandler thumbHandler = BeanUtils.getImageDeliveryBean().getThumbs();
         return thumbHandler.getThumbnailUrl(this, width, height);
     }
@@ -745,7 +743,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return getFileNameForFormat(format);
     }
 
-    public String getImageToPdfUrl() throws IndexUnreachableException, ViewerConfigurationException {
+    public String getImageToPdfUrl() throws IndexUnreachableException {
         return BeanUtils.getImageDeliveryBean().getPdf().getPdfUrl(BeanUtils.getActiveDocumentBean().getCurrentElement(), this);
     }
 
@@ -1118,4 +1116,31 @@ public class PhysicalElement implements Comparable<PhysicalElement>, Serializabl
         return baseName + (StringUtils.isNotBlank(extension) ? "." + extension : "");
     }
 
+    /**
+     * 
+     * @return true if page pdf link is allowed in configuration and no access conditions prevent PDF download; false otherwise
+     */
+    public boolean isDisplayPagePdfLink() {
+        logger.trace("isDisplayPagePdfLink");
+        return DataManager.getInstance().getConfiguration().isPagePdfEnabled() && isAccessPermissionPdf();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    boolean isAccessPermissionPdf() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        try {
+            boolean accessPermissionPdf = AccessConditionUtils.checkAccessPermissionForPagePdf(request, this);
+            logger.trace("accessPermissionPdf for {}: {}", pi, accessPermissionPdf);
+            return accessPermissionPdf;
+        } catch (IndexUnreachableException e) {
+            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
+            return false;
+        } catch (DAOException e) {
+            logger.debug("DAOException thrown here: {}", e.getMessage());
+            return false;
+        }
+    }
 }

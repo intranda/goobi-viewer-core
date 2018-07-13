@@ -33,14 +33,21 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.controller.Helper;
 import de.intranda.digiverso.presentation.controller.SolrConstants;
+import de.intranda.digiverso.presentation.controller.SolrConstants.DocType;
+import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
+import de.intranda.digiverso.presentation.exceptions.PresentationException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 
@@ -201,16 +208,30 @@ public class Bookshelf implements Serializable {
             if (StringUtils.isNotEmpty(item.getPi())) {
                 if (StringUtils.isNotEmpty(item.getLogId())) {
                     // with LOGID
-                    sb.append('(').append(SolrConstants.PI_TOPSTRUCT).append(':').append(item.getPi()).append(" AND ").append(SolrConstants.LOGID)
-                            .append(':').append(item.getLogId()).append(')');
+                    sb.append('(')
+                            .append(SolrConstants.PI_TOPSTRUCT)
+                            .append(':')
+                            .append(item.getPi())
+                            .append(" AND ")
+                            .append(SolrConstants.LOGID)
+                            .append(':')
+                            .append(item.getLogId())
+                            .append(')');
                 } else {
                     // just PI
                     sb.append('(').append(SolrConstants.PI).append(':').append(item.getPi()).append(')');
                 }
                 sb.append(" OR ");
             } else if (StringUtils.isNotEmpty(item.getUrn())) {
-                sb.append('(').append(SolrConstants.URN).append(':').append(item.getUrn()).append(" OR ").append(SolrConstants.IMAGEURN).append(
-                        ':').append(item.getUrn()).append(") OR ");
+                sb.append('(')
+                        .append(SolrConstants.URN)
+                        .append(':')
+                        .append(item.getUrn())
+                        .append(" OR ")
+                        .append(SolrConstants.IMAGEURN)
+                        .append(':')
+                        .append(item.getUrn())
+                        .append(") OR ");
             }
         }
         if (sb.length() >= 4) {
@@ -267,7 +288,7 @@ public class Bookshelf implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public boolean hasDescription() {
         return StringUtils.isNotBlank(getDescription());
     }
@@ -345,12 +366,69 @@ public class Bookshelf implements Serializable {
     public void setGroupShares(List<UserGroup> groupShares) {
         this.groupShares = groupShares;
     }
-    
+
     public String getOwnerName() {
-        if(getOwner() != null) {            
+        if (getOwner() != null) {
             return getOwner().getDisplayNameObfuscated();
-        } else {
-            return null;
         }
+        return null;
+    }
+
+    /**
+     * 
+     * @param applicationRoot
+     * @return
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @should generate JSON object correctly
+     */
+    @SuppressWarnings("unchecked")
+    public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
+        // int cols = (int) Math.sqrt(items.size());
+        int cols = 2;
+        int rows = (int) Math.ceil(items.size() / (float) cols);
+
+        JSONObject root = new JSONObject();
+        root.put("id", "miradorViewer");
+        root.put("layout", rows + "x" + cols);
+        root.put("buildPath", applicationRoot + "/resources/javascript/libs/mirador/");
+
+        JSONArray dataArray = new JSONArray();
+        JSONArray windowObjectsArray = new JSONArray();
+        String queryRoot = SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT + " AND " + SolrConstants.PI_TOPSTRUCT + ":";
+        //        int row = 1;
+        //        int col = 1;
+        for (BookshelfItem bi : items) {
+            String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("iiif/manifests/")
+                    .append(bi.getPi())
+                    .append("/manifest")
+                    .toString();
+            boolean sidePanel = DataManager.getInstance().getSearchIndex().getHitCount(queryRoot + bi.getPi()) > 1;
+
+            JSONObject dataItem = new JSONObject();
+            dataItem.put("manifestUri", manifestUrl);
+            dataItem.put("location", "Goobi viewer");
+            dataArray.add(dataItem);
+
+            JSONObject windowObjectItem = new JSONObject();
+            windowObjectItem.put("loadedManifest", manifestUrl);
+            //windowObjectItem.put("slotAddress", "row" + row + ".column" + col);
+            windowObjectItem.put("sidePanel", sidePanel);
+            windowObjectItem.put("sidePanelVisible", false);
+            windowObjectItem.put("bottomPanel", false);
+            windowObjectItem.put("viewType", "ImageView");
+            windowObjectsArray.add(windowObjectItem);
+
+            //            col++;
+            //            if (col > cols) {
+            //                col = 1;
+            //                row++;
+            //            }
+        }
+        root.put("data", dataArray);
+        root.put("windowObjects", windowObjectsArray);
+
+        return root.toJSONString();
     }
 }

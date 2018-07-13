@@ -81,6 +81,15 @@
                                                 <a href="#{request.contextPath}/bookshelf/#{bookshelf.id}/" title="#{msg.bookshelf_showBookshelf}" data-toggle="tooltip" data-placement="top">
                                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                                 </a>
+                                                
+                                                <!-- TODO: Dem Link die notwendigen Infos mitgeben, damit Mirador die richtigen Objekte anzeigt. -->
+                                                <ui:fragment rendered="#{bookshelf.items.size() > 1}">
+                                                    <a href="#{request.contextPath}/mirador/" class="view-mirador__link" title="#{msg.bookshelf_openMirador}"
+                                                        data-toggle="tooltip" data-placement="top" target="_blank" data-bookshelf-id="#{bookshelf.id}">
+                                                        <i class="fa fa-th" aria-hidden="true"></i>
+                                                    </a>
+                                                </ui:fragment>
+                                                
 												<h:commandLink title="#{msg.edit}" action="#{bookshelfBean.editBookshelfAction(bookshelf)}">
 													<i class="fa fa-pencil" aria-hidden="true"></i>
 													<f:passThroughAttribute name="data-toggle" value="tooltip" />

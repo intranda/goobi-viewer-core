@@ -171,7 +171,7 @@
 		<view-id value="/searchList.xhtml" />
 	</url-mapping>
 	
-	<!-- Collection browsing -->
+	<!-- COLLECTION BROWSING -->
 	<url-mapping id="browse4">
 		<pattern value="/browse/#{search:searchBean.searchStringForUrl}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacets:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
@@ -187,7 +187,7 @@
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
     
-    <!-- Term browsing -->
+    <!-- TERM BROWSING -->
 	<url-mapping id="searchTerm2">
 		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
@@ -213,7 +213,7 @@
         <action onPostback="false">#{searchBean.facets.resetCurrentFacetString}</action>
     </url-mapping>
 	
-	<!-- Simple search -->
+	<!-- SIMPLE SEARCH -->
     <url-mapping id="newSearch1">
         <pattern value="/search/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="/searchList.xhtml" />
@@ -252,7 +252,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	
-	<!-- Advanced search -->
+	<!-- ADVANCED SEARCH -->
 	   <url-mapping id="searchAdvanced1">
         <pattern value="/searchadvanced/#{currentFacetString:searchBean.facets.currentFacetString}/" />
         <view-id value="/searchAdvanced.xhtml" />
@@ -283,7 +283,7 @@
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	
-	<!-- Calendar search -->
+	<!-- CALENDAR SEARCH -->
 	<url-mapping id="searchCalendar4">
 		<pattern value="/searchcalendar/#{searchString:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
 		<view-id value="/searchList.xhtml" />
@@ -378,6 +378,20 @@
 		<pattern value="/object/#{action:activeDocumentBean.action}/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/#{logId:activeDocumentBean.logid}/" />
 		<view-id value="/viewObject.xhtml" />
 		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	
+	<!-- MIRADOR -->
+	<url-mapping id="mirador0">
+		<pattern value="/mirador" />
+		<view-id value="/viewMirador.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+	<url-mapping id="mirador1">
+		<pattern value="/mirador/" />
+		<view-id value="/viewMirador.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 
 	<!-- READING MODE -->

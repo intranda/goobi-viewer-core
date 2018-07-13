@@ -85,7 +85,7 @@
 		[data-bookshelf-type="delete"] {
 			width: 16px;
 			height: 16px;
-			background-size: 10px;
+			color: @blue;
 		}
 	}
 	/* DROPDOWN ACTIONS */
@@ -93,29 +93,35 @@
 		border-top: 1px solid @middlegray;		
 	}
 	&__dropdown-list-reset,
-	&__dropdown-list-send {
+	&__dropdown-list-send,
+	&__dropdown-list-mirador {
 		font-size: 13px;
+		border-bottom: 1px solid @middlegray;
 		a, button {
-			width: 100%;
+			display: flex;
+			align-items: center;
+		    justify-content: space-between;
+		    width: 100%;
 			padding: 10px;
-			text-align: left;
 			color: @blue;
-			background-repeat: no-repeat;
-			background-position: 95% center;
-			background-size: 10px;
 		}
 	}
 	&__dropdown-list-reset {
-		border-bottom: 1px solid @middlegray;
 		button {
-			background-image: url("@{images}/icons/icon-bs-remove.svg");
+			span {}
+			.fa {}
 		}
 	}
-	&__dropdown-list-send {
+	&__dropdown-list-send,
+	&__dropdown-list-mirador {
 		a {
-			display: block;
-			background-image: url("@{images}/icons/icon-bs-link.svg");
+			span {}
+			.fa {}
 		}
+	}
+	&__dropdown-list-send {}
+	&__dropdown-list-mirador {
+		border: none;
 	}
 }
 
@@ -155,14 +161,20 @@
 		right: 0;
 		left: 0;
 	}
+	&__header,
+	&__footer {
+		display: flex;
+		align-items: center;
+	}
 	&__header {
 		top: 0;
-		padding: 3px 10px 4px 10px;
+		height: 30px;
+		padding: 0 10px;
 		border-bottom: 1px solid @middlegray;
 	}
 	&__body {
 		top: 30px;
-		max-height: 280px;
+		max-height: 229px;
 		overflow-y: auto;
 	}
 	&__body-loader {
@@ -209,13 +221,15 @@
 	}
 	&__footer {
 		bottom: 0;
-		height: 50px;
-		padding: 5px 10px;
+		height: 40px;
+		padding: 0 10px;
 		border-top: 1px solid @middlegray;
+		.row {
+			width: 100%;
+		}
 		input {
 			width: 100%;
-			height: 40px;
-			padding: 10px 0;			
+			height: 40px;			
 			border: none;
 		}
 		[data-bookshelf-type="add"] {
@@ -264,9 +278,7 @@
 	}
 }
 
-[data-bookshelf-type="delete"] {
-	background-image: url("@{images}/icons/icon-bs-remove.svg");
-}
+[data-bookshelf-type="delete"] {}
 
 [data-bookshelf-type="link"] {
 	background-image: url("@{images}/icons/icon-bs-link.svg");

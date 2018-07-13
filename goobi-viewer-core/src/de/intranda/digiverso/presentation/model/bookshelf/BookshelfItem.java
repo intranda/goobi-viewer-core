@@ -192,9 +192,8 @@ public class BookshelfItem implements Serializable {
     public boolean bothEqualOrNull(Object o1, Object o2) {
         if (o1 == null) {
             return o2 == null;
-        } else {
-            return o1.equals(o2);
         }
+        return o1.equals(o2);
     }
     
     /**
@@ -302,12 +301,10 @@ public class BookshelfItem implements Serializable {
                 title = se.getDisplayLabel();
 //                title = SolrSearchIndex.getSingleFieldStringValue(doc, SolrConstants.TITLE);
                 return title;
-            } else {
-                throw new PresentationException("No document found with iddoc = " + iddoc);
             }
-        } else {
-            throw new PresentationException("No iddoc found for pi = " + pi + " and logId = " + logId);
+            throw new PresentationException("No document found with iddoc = " + iddoc);
         }
+        throw new PresentationException("No iddoc found for pi = " + pi + " and logId = " + logId);
     }
 
     /*********************************** Getter and Setter ***************************************/

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #003868;
+      }
+    </style>
+  </defs>
+  <g id="Gruppe_2" data-name="Gruppe 2" transform="translate(-776 122)">
+    <rect id="Rechteck_1" data-name="Rechteck 1" class="cls-1" width="35" height="35" transform="translate(776 -122)"/>
+    <rect id="Rechteck_3" data-name="Rechteck 3" class="cls-1" width="35" height="35" transform="translate(776 -77)"/>
+    <rect id="Rechteck_2" data-name="Rechteck 2" class="cls-1" width="35" height="35" transform="translate(821 -122)"/>
+    <rect id="Rechteck_4" data-name="Rechteck 4" class="cls-1" width="35" height="35" transform="translate(821 -77)"/>
+  </g>
+</svg>

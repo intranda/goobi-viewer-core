@@ -65,7 +65,6 @@ public class BookshelfBean implements Serializable {
     @Inject
     private UserBean userBean;
 
-
     /** Currently selected bookshelf. */
     private Bookshelf currentBookshelf = null;
     private String currentBookshelfName;
@@ -74,7 +73,7 @@ public class BookshelfBean implements Serializable {
 
     private BookshelfItem currentBookshelfItem;
     private UserGroup currentUserGroup;
-    
+
     /**
      * An email-address which a user may enter to receive the session store bookshelf as mail
      */
@@ -517,31 +516,29 @@ public class BookshelfBean implements Serializable {
         // logger.debug("currentOwnBookshelf set to "+currentOwnBookshelf.getName());
         this.currentBookshelf = currentOwnBookshelf;
     }
-    
+
     /**
      * @param currentBookshelf the currentBookshelf to set
-     * @throws DAOException 
+     * @throws DAOException
      */
     public void setCurrentBookshelfId(String bookshelfId) throws PresentationException, DAOException {
-        if(bookshelfId != null) {
-            try {                
+        if (bookshelfId != null) {
+            try {
                 Long id = Long.parseLong(bookshelfId);
-                Optional<Bookshelf> o = getBookshelves().stream()
-                        .filter(bookshelf -> id.equals(bookshelf.getId())) 
-                        .findFirst();
-                if(o.isPresent()) {
+                Optional<Bookshelf> o = getBookshelves().stream().filter(bookshelf -> id.equals(bookshelf.getId())).findFirst();
+                if (o.isPresent()) {
                     setCurrentBookshelf(o.get());
                 } else {
                     throw new PresentationException("No bookshelf found with id " + bookshelfId + " of current user");
                 }
-            } catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 throw new PresentationException(bookshelfId + " is not viable bookshelf id");
             }
         }
     }
-    
+
     public String getCurrentBookshelfId() {
-        if(getCurrentBookshelf() != null) {
+        if (getCurrentBookshelf() != null) {
             return getCurrentBookshelf().getId().toString();
         } else {
             return null;
@@ -636,36 +633,49 @@ public class BookshelfBean implements Serializable {
     public void setCurrentUserGroup(UserGroup currentUserGroup) {
         this.currentUserGroup = currentUserGroup;
     }
-    
+
     /**
      * @param sessionBookshelfEmail the sessionBookshelfEmail to set
      */
     public void setSessionBookshelfEmail(String sessionBookshelfEmail) {
         this.sessionBookshelfEmail = sessionBookshelfEmail;
     }
-    
+
     /**
      * @return the sessionBookshelfEmail
      */
     public String getSessionBookshelfEmail() {
         return sessionBookshelfEmail;
     }
-    
+
     public void sendSessionBookshelfAsMail() {
-        if(StringUtils.isNotBlank(getSessionBookshelfEmail())) {
-            DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession(false))
-            .ifPresent(bookshelf -> {
-                String body = SessionStoreBookshelfManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ITEM, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_EMPTY_LIST, null), bookshelf);
+        if (StringUtils.isNotBlank(getSessionBookshelfEmail())) {
+            DataManager.getInstance().getBookshelfManager().getBookshelf(BeanUtils.getRequest().getSession(false)).ifPresent(bookshelf -> {
+                String body = SessionStoreBookshelfManager.generateBookshelfInfo(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_BODY, null),
+                        Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ITEM, null), Helper.getTranslation(KEY_BOOKSHELF_EMAIL_EMPTY_LIST, null),
+                        bookshelf);
                 String subject = Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUBJECT, null);
                 try {
                     Helper.postMail(Collections.singletonList(getSessionBookshelfEmail()), subject, body);
                     Messages.info(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_SUCCESS, null));
                 } catch (UnsupportedEncodingException | MessagingException e) {
-                        logger.error(e.getMessage(), e);
-                        Messages.error(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ERROR, null).replace("{0}", DataManager.getInstance().getConfiguration()
-                        .getFeedbackEmailAddress()));
+                    logger.error(e.getMessage(), e);
+                    Messages.error(Helper.getTranslation(KEY_BOOKSHELF_EMAIL_ERROR, null).replace("{0}",
+                            DataManager.getInstance().getConfiguration().getFeedbackEmailAddress()));
                 }
             });
         }
+    }
+
+    /**
+     * 
+     * @return Size of items in the session bookshelf
+     */
+    public int countSessionBookshelfItems() {
+        return DataManager.getInstance()
+                .getBookshelfManager()
+                .getBookshelf(BeanUtils.getRequest().getSession(false))
+                .map(bookshelf -> bookshelf.getItems().size())
+                .orElse(0);
     }
 }

@@ -54,6 +54,7 @@ var viewerJS = (function(viewer) {
 
 			// render bookshelf dropdown list
 			_renderDropdownList();
+			_renderMiradorLink();
 
 			// toggle bookshelf dropdown
 			$('[data-bookshelf-type="dropdown"]').off().on('click', function(event) {
@@ -71,7 +72,6 @@ var viewerJS = (function(viewer) {
 				}).fail(function(error) {
 					console.error('ERROR - _getAllSessionElements: ', error.responseText);
 				});
-
 			});
 
 			// set element count of list to counter
@@ -97,6 +97,7 @@ var viewerJS = (function(viewer) {
 								_setSessionElement(_defaults.root, currPi).then(function() {
 									_setSessionElementCount();
 									_renderDropdownList();
+									_renderMiradorLink();
 								});
 							} else {
 								return false;
@@ -106,6 +107,7 @@ var viewerJS = (function(viewer) {
 							_setSessionElement(_defaults.root, currPi).then(function() {
 								_setSessionElementCount();
 								_renderDropdownList();
+								_renderMiradorLink();
 							});
 						}
 					} else {
@@ -113,6 +115,7 @@ var viewerJS = (function(viewer) {
 						_deleteSessionElement(_defaults.root, currPi).then(function() {
 							_setSessionElementCount();
 							_renderDropdownList();
+							_renderMiradorLink();
 						});
 					}
 				}).fail(function(error) {
@@ -156,6 +159,28 @@ var viewerJS = (function(viewer) {
 		}));
 
 		return promise;
+	}
+	/**
+	 * Method to get the number of objects in session.
+	 * 
+	 * @method _getSessionElementCount
+	 * @param {String} root The application root path.
+	 * @returns {Object} An JSON-Object which contains all session elements.
+	 */
+	function _getSessionElementCount(root) {
+		if (_debug) {
+			console.log('---------- _getSessionElementCount() ----------');
+			console.log('_getSessionElementCount: root - ', root);
+		}
+
+		var promise = Q($.ajax({
+			url : root + '/rest/bookshelves/session/count/',
+			type : "GET",
+			dataType : "JSON",
+			async : true
+		}));
+
+		return promise
 	}
 	/**
 	 * Method to check if element is in list (user not logged in).
@@ -285,7 +310,7 @@ var viewerJS = (function(viewer) {
 
 		_getAllSessionElements(_defaults.root).then(function(elements) {
 			// DOM-Elements
-			var dropdownListReset = $('<button>').addClass('btn-clean').attr('type', 'button').attr('data-bookshelf-type', 'reset').text(_defaults.msg.resetBookshelves);
+			var dropdownListReset = $('<button>').addClass('btn-clean').attr('type', 'button').attr('data-bookshelf-type', 'reset').html('<span>' + _defaults.msg.resetBookshelves + '</span><i class="fa fa-trash-o" aria-hidden="true"></i>');
 			var dropdownList = $('<ul />').addClass('list');
 			var dropdownListItem = null;
 			var dropdownListItemRow = null;
@@ -314,7 +339,7 @@ var viewerJS = (function(viewer) {
 					dropdownListItemName = $('<h4 />');
 					dropdownListItemNameLink = $('<a />').attr('href', _defaults.root + item.url).text(item.name);
 					dropdownListItemDelete = $('<button />').addClass('btn-clean').attr('type', 'button').attr('data-bookshelf-type', 'delete')
-						.attr('data-pi', item.pi);
+						.attr('data-pi', item.pi).html('<i class="fa fa-ban" aria-hidden="true"></i>');
 
 					// build bookshelf item
 					dropdownListItemName.append(dropdownListItemNameLink);
@@ -346,6 +371,7 @@ var viewerJS = (function(viewer) {
 					_setSessionElementCount();
 					_setAddActiveState();
 					_renderDropdownList();
+					_renderMiradorLink();
 				});
 			});
 
@@ -357,6 +383,7 @@ var viewerJS = (function(viewer) {
 						_setSessionElementCount();
 						_setAddActiveState();
 						_renderDropdownList();
+						_renderMiradorLink();
 					});
 				} else {
 					return false;
@@ -365,6 +392,27 @@ var viewerJS = (function(viewer) {
 
 		}).fail(function(error) {
 			console.error('ERROR - _getAllSessionElements: ', error.responseText);
+		});
+	}
+	/**
+	 * Method to render the element list in bookshelf dropdown (user not logged in).
+	 * 
+	 * @method _renderMiradorLink
+	 */
+	function _renderMiradorLink() {
+		if (_debug) {
+			console.log('---------- _renderMiradorLink() ----------');
+		}
+
+		_getSessionElementCount(_defaults.root).then(function(elements) {
+			if ( elements > 1 ) {
+				$( '.bookshelf-navigation__dropdown-list-mirador' ).removeClass( 'hidden' );
+			}
+			else {
+				$( '.bookshelf-navigation__dropdown-list-mirador' ).addClass( 'hidden' );
+			}
+		}).fail(function(error) {
+			console.error('ERROR - _getSessionElementCount: ', error.responseText);
 		});
 	}
 	/**
@@ -406,5 +454,3 @@ var viewerJS = (function(viewer) {
 // /rest/bookshelves/session/contains/{pi}/{logid}/{page}
 // gibt "true" zurück, wenn die Merkliste ein Item mit der angegebenen pi, logid und
 // Seitennummer enthält; sonst "false"
-// /rest/bookshelves/session/count
-// Gibt die Zahl der in der Merkliste enthaltenen Items zurück.

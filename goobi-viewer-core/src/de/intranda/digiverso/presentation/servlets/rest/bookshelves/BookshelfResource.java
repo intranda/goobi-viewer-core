@@ -40,6 +40,7 @@ import de.intranda.digiverso.presentation.exceptions.DAOException;
 import de.intranda.digiverso.presentation.exceptions.IndexUnreachableException;
 import de.intranda.digiverso.presentation.exceptions.PresentationException;
 import de.intranda.digiverso.presentation.exceptions.RestApiException;
+import de.intranda.digiverso.presentation.exceptions.ViewerConfigurationException;
 import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.bookshelf.Bookshelf;
@@ -49,6 +50,7 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.servlets.rest.SuccessMessage;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * @author Florian Alpers
@@ -92,6 +94,33 @@ public class BookshelfResource {
         if (session != null) {
             Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
             return bookshelf;
+        }
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
+    }
+
+    /**
+     * Returns the session stored bookshelf, creating a new empty one if needed
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IOException
+     * @throws RestApiException
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    @GET
+    @Path("/session/mirador")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getSessionBookshelfForMirador()
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
+        HttpSession session = servletRequest.getSession();
+        if (session != null) {
+            Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
+            if (bookshelf != null) {
+                return bookshelf.getMiradorJsonObject(servletRequest.getContextPath());
+            }
+            return "";
         }
         throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
@@ -598,6 +627,33 @@ public class BookshelfResource {
             return new SuccessMessage(false, "No bookshelf with id '" + id + "' found for user " + user);
         }
         throw new RestApiException("No user available - request refused", HttpServletResponse.SC_FORBIDDEN);
+    }
+
+    /**
+     * Returns the session stored bookshelf, creating a new empty one if needed
+     * 
+     * @return
+     * @throws DAOException
+     * @throws IOException
+     * @throws RestApiException
+     * @throws ViewerConfigurationException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    @GET
+    @Path("/user/mirador/{id}/")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public String getSessionBookshelfForMirador(@PathParam("id") Long id)
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
+        User user = getUser();
+        if (user != null) {
+            Optional<Bookshelf> bookshelf = getBookshelf(user, id);
+            if (bookshelf.isPresent()) {
+                return bookshelf.get().getMiradorJsonObject(servletRequest.getContextPath());
+            }
+        }
+
+        throw new RestApiException("No session available - request refused", HttpServletResponse.SC_FORBIDDEN);
     }
 
     /**

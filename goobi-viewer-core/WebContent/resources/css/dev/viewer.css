@@ -1215,36 +1215,35 @@ div.mce-fullscreen {
 .bookshelf-navigation__dropdown-list-remove [data-bookshelf-type="delete"] {
   width: 16px;
   height: 16px;
-  background-size: 10px;
+  color: #507ebf;
 }
 .bookshelf-navigation__dropdown-list-actions {
   border-top: 1px solid #ccc;
 }
 .bookshelf-navigation__dropdown-list-reset,
-.bookshelf-navigation__dropdown-list-send {
+.bookshelf-navigation__dropdown-list-send,
+.bookshelf-navigation__dropdown-list-mirador {
   font-size: 13px;
+  border-bottom: 1px solid #ccc;
 }
 .bookshelf-navigation__dropdown-list-reset a,
 .bookshelf-navigation__dropdown-list-send a,
+.bookshelf-navigation__dropdown-list-mirador a,
 .bookshelf-navigation__dropdown-list-reset button,
-.bookshelf-navigation__dropdown-list-send button {
+.bookshelf-navigation__dropdown-list-send button,
+.bookshelf-navigation__dropdown-list-mirador button {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: justify;
+      justify-content: space-between;
   width: 100%;
   padding: 10px;
-  text-align: left;
   color: #507ebf;
-  background-repeat: no-repeat;
-  background-position: 95% center;
-  background-size: 10px;
 }
-.bookshelf-navigation__dropdown-list-reset {
-  border-bottom: 1px solid #ccc;
-}
-.bookshelf-navigation__dropdown-list-reset button {
-  background-image: url("../../images/icons/icon-bs-remove.svg");
-}
-.bookshelf-navigation__dropdown-list-send a {
-  display: block;
-  background-image: url("../../images/icons/icon-bs-link.svg");
+.bookshelf-navigation__dropdown-list-mirador {
+  border: none;
 }
 /* POPUPS */
 /* BLOCK */
@@ -1278,14 +1277,22 @@ div.mce-fullscreen {
   right: 0;
   left: 0;
 }
+.bookshelf-popup__header,
+.bookshelf-popup__footer {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+}
 .bookshelf-popup__header {
   top: 0;
-  padding: 3px 10px 4px 10px;
+  height: 30px;
+  padding: 0 10px;
   border-bottom: 1px solid #ccc;
 }
 .bookshelf-popup__body {
   top: 30px;
-  max-height: 280px;
+  max-height: 229px;
   overflow-y: auto;
 }
 .bookshelf-popup__body-loader {
@@ -1330,14 +1337,16 @@ div.mce-fullscreen {
 }
 .bookshelf-popup__footer {
   bottom: 0;
-  height: 50px;
-  padding: 5px 10px;
+  height: 40px;
+  padding: 0 10px;
   border-top: 1px solid #ccc;
+}
+.bookshelf-popup__footer .row {
+  width: 100%;
 }
 .bookshelf-popup__footer input {
   width: 100%;
   height: 40px;
-  padding: 10px 0;
   border: none;
 }
 .bookshelf-popup__footer [data-bookshelf-type="add"] {
@@ -1376,9 +1385,6 @@ div.mce-fullscreen {
 }
 [data-bookshelf-type="add"].added.white {
   background-image: url("../../images/icons/icon-bs-herz-weiss.svg");
-}
-[data-bookshelf-type="delete"] {
-  background-image: url("../../images/icons/icon-bs-remove.svg");
 }
 [data-bookshelf-type="link"] {
   background-image: url("../../images/icons/icon-bs-link.svg");
@@ -5942,6 +5948,25 @@ div[id*="-Modal"] .email-form .form-group {
     margin: 0;
   }
 }
+/* BREAKPOINT FOR SMARTPHONES */
+/* ==============================================================
+   View Mirador
+   style declarations for viewMirador.xhtml 
+   ==============================================================*/
+/* VIEW MIRADOR */
+/* BLOCK */
+.view-mirador {
+  /* ELEMENT */
+}
+.view-mirador__viewer {
+  width: 100vw;
+  max-width: 100%;
+  height: 100vh;
+  max-height: 100%;
+}
+/* BREAKPOINT FOR LARGE DESKTOPS */
+/* BREAKPOINT FOR DESKTOP */
+/* BREAKPOINT FOR TABLETS */
 /* BREAKPOINT FOR SMARTPHONES */
 /* ==============================================================
    View NER Facetting

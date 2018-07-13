@@ -127,6 +127,13 @@ var viewerJS = ( function( viewer ) {
                     $( '#addBookshelfBtn' ).click();
                 }
             } );
+            
+            // set bookshelf id to session storage for mirador view
+            $( ".view-mirador__link" ).on( "click", function() {
+        		var currBookshelfId = $( this ).attr( "data-bookshelf-id" );
+                
+        		sessionStorage.setItem( 'bookshelfId', currBookshelfId );
+        	} );
         }
     };
     /* ######## ADD (CREATE) ######## */
