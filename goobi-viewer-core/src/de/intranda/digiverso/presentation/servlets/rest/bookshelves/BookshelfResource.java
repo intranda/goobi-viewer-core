@@ -50,6 +50,7 @@ import de.intranda.digiverso.presentation.model.security.user.User;
 import de.intranda.digiverso.presentation.model.security.user.UserGroup;
 import de.intranda.digiverso.presentation.servlets.rest.SuccessMessage;
 import de.intranda.digiverso.presentation.servlets.rest.ViewerRestServiceBinding;
+import de.intranda.digiverso.presentation.servlets.utils.ServletUtils;
 
 /**
  * @author Florian Alpers
@@ -105,18 +106,19 @@ public class BookshelfResource {
      * @throws IOException
      * @throws RestApiException
      * @throws ViewerConfigurationException
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
     @GET
     @Path("/session/mirador")
     @Produces({ MediaType.APPLICATION_JSON })
-    public String getSessionBookshelfForMirador() throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
+    public String getSessionBookshelfForMirador()
+            throws DAOException, IOException, RestApiException, ViewerConfigurationException, IndexUnreachableException, PresentationException {
         HttpSession session = servletRequest.getSession();
         if (session != null) {
             Bookshelf bookshelf = DataManager.getInstance().getBookshelfManager().getOrCreateBookshelf(session);
             if (bookshelf != null) {
-                return bookshelf.getMiradorJsonObject();
+                return bookshelf.getMiradorJsonObject(servletRequest.getContextPath());
             }
             return "";
         }
@@ -635,8 +637,8 @@ public class BookshelfResource {
      * @throws IOException
      * @throws RestApiException
      * @throws ViewerConfigurationException
-     * @throws PresentationException 
-     * @throws IndexUnreachableException 
+     * @throws PresentationException
+     * @throws IndexUnreachableException
      */
     @GET
     @Path("/user/mirador/{id}/")
@@ -647,7 +649,7 @@ public class BookshelfResource {
         if (user != null) {
             Optional<Bookshelf> bookshelf = getBookshelf(user, id);
             if (bookshelf.isPresent()) {
-                return bookshelf.get().getMiradorJsonObject();
+                return bookshelf.get().getMiradorJsonObject(servletRequest.getContextPath());
             }
         }
 

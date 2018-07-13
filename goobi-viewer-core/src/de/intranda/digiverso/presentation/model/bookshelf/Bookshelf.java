@@ -376,6 +376,7 @@ public class Bookshelf implements Serializable {
 
     /**
      * 
+     * @param applicationRoot
      * @return
      * @throws ViewerConfigurationException
      * @throws PresentationException
@@ -383,7 +384,7 @@ public class Bookshelf implements Serializable {
      * @should generate JSON object correctly
      */
     @SuppressWarnings("unchecked")
-    public String getMiradorJsonObject() throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
+    public String getMiradorJsonObject(String applicationRoot) throws ViewerConfigurationException, IndexUnreachableException, PresentationException {
         // int cols = (int) Math.sqrt(items.size());
         int cols = 2;
         int rows = (int) Math.ceil(items.size() / (float) cols);
@@ -391,12 +392,13 @@ public class Bookshelf implements Serializable {
         JSONObject root = new JSONObject();
         root.put("id", "miradorViewer");
         root.put("layout", rows + "x" + cols);
+        root.put("buildPath", applicationRoot + "/resources/javascript/libs/mirador");
 
         JSONArray dataArray = new JSONArray();
         JSONArray windowObjectsArray = new JSONArray();
         String queryRoot = SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT + " AND " + SolrConstants.PI_TOPSTRUCT + ":";
-        int row = 1;
-        int col = 1;
+        //        int row = 1;
+        //        int col = 1;
         for (BookshelfItem bi : items) {
             String manifestUrl = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl()).append("iiif/manifests/")
                     .append(bi.getPi())
@@ -413,14 +415,16 @@ public class Bookshelf implements Serializable {
             windowObjectItem.put("loadedManifest", manifestUrl);
             //windowObjectItem.put("slotAddress", "row" + row + ".column" + col);
             windowObjectItem.put("sidePanel", sidePanel);
+            windowObjectItem.put("sidePanelVisible", false);
+            windowObjectItem.put("bottomPanel", false);
             windowObjectItem.put("viewType", "ImageView");
             windowObjectsArray.add(windowObjectItem);
 
-            col++;
-            if (col > cols) {
-                col = 1;
-                row++;
-            }
+            //            col++;
+            //            if (col > cols) {
+            //                col = 1;
+            //                row++;
+            //            }
         }
         root.put("data", dataArray);
         root.put("windowObjects", windowObjectsArray);
