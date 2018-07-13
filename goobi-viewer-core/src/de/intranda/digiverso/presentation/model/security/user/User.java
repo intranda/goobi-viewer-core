@@ -405,7 +405,7 @@ public class User implements ILicensee, HttpSessionBindingListener {
      */
     public boolean canSatisfyAllAccessConditions(Set<String> conditionList, String privilegeName, String pi)
             throws PresentationException, IndexUnreachableException, DAOException {
-        // logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
+         logger.trace("canSatisfyAllAccessConditions({},{},{})", conditionList, privilegeName, pi);
         if (isSuperuser()) {
             logger.trace("User '{}' is superuser, access granted.", getDisplayName());
             return true;

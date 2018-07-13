@@ -93,7 +93,7 @@ public class PdfRequestFilter implements ContainerRequestFilter {
 
         boolean access = false;
         try {
-            
+           
            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, divId, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, servletRequest);
 
         } catch (IndexUnreachableException e) {

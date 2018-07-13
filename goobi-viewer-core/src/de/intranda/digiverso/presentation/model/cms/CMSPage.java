@@ -95,7 +95,7 @@ public class CMSPage {
     private Long pageSorting = null;
 
     @Column(name = "use_default_sidebar", nullable = false)
-    private boolean useDefaultSidebar = true;
+    private boolean useDefaultSidebar = false;
 
     @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
     @PrivateOwned

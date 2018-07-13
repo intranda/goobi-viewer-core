@@ -46,6 +46,7 @@ import de.intranda.digiverso.presentation.managedbeans.UserBean;
 import de.intranda.digiverso.presentation.managedbeans.utils.BeanUtils;
 import de.intranda.digiverso.presentation.model.security.user.IpRange;
 import de.intranda.digiverso.presentation.model.security.user.User;
+import de.intranda.digiverso.presentation.model.viewer.PhysicalElement;
 
 public class AccessConditionUtils {
 
@@ -224,6 +225,43 @@ public class AccessConditionUtils {
     }
 
     /**
+     * Checks whether the client may access an image (by PI + file name).
+     *
+     * @param identifier Work identifier (PI).
+     * @param fileName Image file name. For all files of a record, use "*".
+     * @param request Calling HttpServiceRequest.
+     * @return true if access is granted; false otherwise.
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    protected static boolean checkAccessPermissionByIdentifierAndPageOrder(PhysicalElement page, String privilegeName, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
+        if (page == null) {
+            throw new IllegalArgumentException("page may not be null");
+        }
+
+        String query = SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " AND " + SolrConstants.ORDER + ":" + page.getOrder();
+        try {
+            User user = BeanUtils.getUserFromRequest(request);
+            if (user == null) {
+                UserBean userBean = BeanUtils.getUserBean();
+                if (userBean != null) {
+                    user = userBean.getUser();
+                }
+            }
+            Map<String, Boolean> ret = new HashMap<>(page.getAccessConditions().size());
+            boolean access = checkAccessPermission(DataManager.getInstance().getDao().getNonOpenAccessLicenseTypes(), page.getAccessConditions(),
+                    privilegeName, user, Helper.getIpAddress(request), query);
+            return access;
+        } catch (PresentationException e) {
+            logger.debug("PresentationException thrown here: {}", e.getMessage());
+        }
+
+        return false;
+
+    }
+
+    /**
      * Checks whether the current users has the given access permissions to the element with the given identifier and LOGID.
      *
      * @param identifier The PI to check.
@@ -236,19 +274,22 @@ public class AccessConditionUtils {
      */
     public static boolean checkAccessPermissionByIdentifierAndLogId(String identifier, String logId, String privilegeName, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {}, {})", identifier, logId, privilegeName,
-        // request.getAttributeNames());
+        logger.trace("checkAccessPermissionByIdentifierAndLogId({}, {}, {})", identifier, logId, privilegeName);
         if (StringUtils.isNotEmpty(identifier)) {
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
             if (StringUtils.isNotEmpty(logId)) {
+                // Sub-docstruct
+                sbQuery.append(SolrConstants.PI_TOPSTRUCT).append(':').append(identifier);
                 sbQuery.append(" AND ").append(SolrConstants.LOGID).append(':').append(logId);
+            } else {
+                // Top document
+                sbQuery.append(SolrConstants.PI).append(':').append(identifier);
             }
-            // Only query docstruct docs because metadata/event docs may not contain values defined in the license type
-            // filter query
+            // Only query docstruct docs because metadata/event docs may not contain values defined in the license type filter query
             sbQuery.append(" AND ").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name());
             try {
                 Set<String> requiredAccessConditions = new HashSet<>();
+                logger.trace(sbQuery.toString());
                 SolrDocumentList results = DataManager.getInstance().getSearchIndex().search(sbQuery.toString(), 1, null,
                         Arrays.asList(new String[] { SolrConstants.ACCESSCONDITION }));
                 if (results != null) {
@@ -257,7 +298,7 @@ public class AccessConditionUtils {
                         if (fieldsAccessConddition != null) {
                             for (Object accessCondition : fieldsAccessConddition) {
                                 requiredAccessConditions.add((String) accessCondition);
-                                // logger.debug(accessCondition.toString());
+                                logger.debug(accessCondition.toString());
                             }
                         }
                     }
@@ -421,6 +462,25 @@ public class AccessConditionUtils {
     }
 
     /**
+     * Checks access permission for the given image and puts the permission status into the corresponding session map.
+     *
+     * @param request
+     * @param pi
+     * @param contentFileName
+     * @return
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public static boolean checkAccessPermissionForPagePdf(HttpServletRequest request, PhysicalElement page)
+            throws IndexUnreachableException, DAOException {
+        if (page == null) {
+            throw new IllegalArgumentException("page may not be null");
+        }
+        logger.trace("checkAccessPermissionForPagePdf: {}/{}", page.getPi(), page.getOrder());
+        return checkAccessPermissionByIdentifierAndPageOrder(page, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request);
+    }
+
+    /**
      * 
      * @param request
      * @param filePath FILENAME_ALTO or FILENAME_FULLTEXT value
@@ -531,7 +591,7 @@ public class AccessConditionUtils {
      */
     public static boolean checkAccessPermission(List<LicenseType> allLicenseTypes, Set<String> requiredAccessConditions, String privilegeName,
             User user, String remoteAddress, String query) throws IndexUnreachableException, PresentationException, DAOException {
-        logger.trace("checkAccessPermission({},{},{})", allLicenseTypes, requiredAccessConditions, privilegeName);
+        logger.trace("checkAccessPermission({},{})", requiredAccessConditions, privilegeName);
         // If OPENACCESS is the only condition, allow immediately
         if (requiredAccessConditions.isEmpty()) {
             logger.debug("No required access conditions given, access granted.");
