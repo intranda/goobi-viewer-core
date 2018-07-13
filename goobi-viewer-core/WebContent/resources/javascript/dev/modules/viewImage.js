@@ -922,7 +922,7 @@ var ImageView = ( function() {
       * 
       * @param rect  the rectangle to rotate. must be an object with properties height and width
       * @param degrees   the rotation angle in degrees
-      * @returns     An OpenSeadragon.Rect containing the rotated rectangle in the original coordinate system
+      * @return     An OpenSeadragon.Rect containing the rotated rectangle in the original coordinate system
       */
      function _getRotatedBounds(rect, degrees) {
              
@@ -1116,7 +1116,7 @@ var ImageView = ( function() {
       * get the rotation as a value between 0 and 360 degrees and rounded to 90 degrees 
       * 
       * @param degrees
-      * @returns
+      * @return    the rotation in 90 degree multiples
       */
      function _getRotation(degrees) {
          degrees += _MAX_DESKEW_ANGLE;
@@ -1130,7 +1130,7 @@ var ImageView = ( function() {
       * get the rotation modulo 90 degrees as a value between 0 and 45 degrees or between 315 and 360 degrees
       * 
       * @param degrees
-      * @returns
+      * @return the deskew part of the rotation
       */
      function _getDeskewAngle(degrees) {
          degrees += _MAX_DESKEW_ANGLE;
