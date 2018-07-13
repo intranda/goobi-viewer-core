@@ -392,7 +392,7 @@ public class Bookshelf implements Serializable {
         JSONObject root = new JSONObject();
         root.put("id", "miradorViewer");
         root.put("layout", rows + "x" + cols);
-        root.put("buildPath", applicationRoot + "/resources/javascript/libs/mirador");
+        root.put("buildPath", applicationRoot + "/resources/javascript/libs/mirador/");
 
         JSONArray dataArray = new JSONArray();
         JSONArray windowObjectsArray = new JSONArray();
