@@ -22,7 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BookshelfTest {
+import de.intranda.digiverso.presentation.AbstractSolrEnabledTest;
+
+public class BookshelfTest extends AbstractSolrEnabledTest {
 
     /**
      * @see Bookshelf#generateSolrQueryForItems()
