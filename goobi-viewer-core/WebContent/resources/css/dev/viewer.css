@@ -133,6 +133,14 @@ table,
 .table {
   width: 100%;
 }
+#ajaxloader_image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding-top: -15px;
+  padding-left: -15px;
+  display: none;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
@@ -6486,6 +6494,9 @@ div[id*="-Modal"] .email-form .form-group {
   margin: 0;
   padding: 0;
   background-color: #1a1a1a;
+}
+#readingModeImage {
+  position: relative;
 }
 /* BLOCK */
 .reading-mode {

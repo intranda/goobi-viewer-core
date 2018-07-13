@@ -41,7 +41,11 @@
                             src="#{request.contextPath}/resources/javascript/dist/objectView.min.js"></script>
 
         <div id="readingModeImageWrapper">            
-            <div id="readingModeImage"></div>
+            <div id="readingModeImage">
+              <div id="ajaxloader_image">
+                 <img src="#{request.contextPath}/resources/images/ajax-loader-large.gif" />
+               </div>
+            </div>
             
             <script type="text/javascript" rel="nofollow">          
                 //<![CDATA[
@@ -105,7 +109,6 @@
                     }
                 } else if(mimeType == 'object') {
                     $(window).load(function() {
-                    console.log("contentview height", $("#contentView").height());
                     imageMap.height($("#contentView").height());
 			        var worldConfig = {
 				 			controls: {

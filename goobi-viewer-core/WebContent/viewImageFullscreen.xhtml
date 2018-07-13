@@ -89,7 +89,11 @@
             <div id="fullscreenImageContainer">
 				<h:form id="fullscreenImageContainerForm" prependId="false">
 					<!-- fullscreen image -->
-					<div id="fullscreenMap"></div>
+					<div id="fullscreenMap">
+                        <div id="ajaxloader_image">
+                             <img src="#{request.contextPath}/resources/images/ajax-loader-large.gif" />
+                        </div>
+                    </div>
 					
 				    <h:outputScript library="primefaces" name="/jquery/jquery.js" target="head" />
 				    <h:outputScript library="primefaces" name="/jquery/jquery-plugins.js" target="head" />
