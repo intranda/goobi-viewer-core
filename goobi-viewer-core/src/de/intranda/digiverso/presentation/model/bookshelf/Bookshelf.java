@@ -411,7 +411,7 @@ public class Bookshelf implements Serializable {
 
             JSONObject windowObjectItem = new JSONObject();
             windowObjectItem.put("loadedManifest", manifestUrl);
-            windowObjectItem.put("slotAddress", "row" + row + ".column" + col);
+            //windowObjectItem.put("slotAddress", "row" + row + ".column" + col);
             windowObjectItem.put("sidePanel", sidePanel);
             windowObjectItem.put("viewType", "ImageView");
             windowObjectsArray.add(windowObjectItem);
