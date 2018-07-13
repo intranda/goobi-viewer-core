@@ -18,6 +18,7 @@ package de.intranda.digiverso.presentation.model.bookshelf;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,7 +64,8 @@ public class BookshelfTest {
             bookshelf.getItems().add(item);
         }
 
-        String json = bookshelf.getMiradorJsonObject();
-        System.out.println(json);
+        String json = bookshelf.getMiradorJsonObject("/viewer");
+        Assert.assertFalse(StringUtils.isBlank(json));
+        // TODO check json contents
     }
 }
