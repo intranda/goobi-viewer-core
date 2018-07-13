@@ -950,6 +950,13 @@ var viewerJS = ( function( viewer ) {
                     $( '#addBookshelfBtn' ).click();
                 }
             } );
+            
+            // set bookshelf id to session storage for mirador view
+            $( ".view-mirador__link" ).on( "click", function() {
+        		var currBookshelfId = $( this ).attr( "data-bookshelf-id" );
+                
+        		sessionStorage.setItem( 'bookshelfId', currBookshelfId );
+        	} );
         }
     };
     /* ######## ADD (CREATE) ######## */
@@ -3319,7 +3326,8 @@ var viewerJS = ( function( viewer ) {
     'use strict';
     
     // variables
-    var _debug = true;
+    var _debug = false;
+    var _sessionBookshelf = '';
     var _defaults = {
     	root: '',
     	userLoggedIn: false,
@@ -3341,20 +3349,22 @@ var viewerJS = ( function( viewer ) {
             
             $.extend( true, _defaults, config );
             
-            console.log(  );
-            
             // ckeck login status
+            // logged in
             if ( _defaults.userLoggedIn ) {
-            	_getMiradorObjects( _defaults.root ).then( function( elements ) {        			
-        			$( function() {
-						Mirador( elements );
-					});
-        		}).fail(function(error) {
-        			console.error('ERROR - _getMiradorObjects: ', error.responseText);
-        		});
+            	_sessionBookshelf = sessionStorage.getItem( 'bookshelfId' );
+
+            	_getMiradorObjects( _defaults.root, _sessionBookshelf ).then( function( elements ) {        			
+            		$( function() {
+            			Mirador( elements );
+            		});
+            	}).fail(function(error) {
+            		console.error('ERROR - _getMiradorObjects: ', error.responseText);
+            	});
             }
+            // not logged in
             else {
-            	_getMiradorSessionObjects( _defaults.root ).then( function( elements ) {
+            	_getMiradorSessionObjects( _defaults.root ).then( function( elements ) {            		
             		$( function() {
 						Mirador( elements );
 					});
@@ -3373,14 +3383,15 @@ var viewerJS = ( function( viewer ) {
 	 * @param {String} root The application root path.
 	 * @returns {Object} An JSON-Object which contains all session elements.
 	 */
-	function _getMiradorObjects( root ) {
+	function _getMiradorObjects( root, id ) {
 		if ( _debug ) { 
 			console.log( '---------- _getSessionElementCount() ----------' );
 			console.log( '_getSessionElementCount: root - ', root );
+			console.log( '_getSessionElementCount: id - ', id );
 		}
 
 		var promise = Q($.ajax({
-			url : root + '/rest/bookshelves/user/mirador/32/',
+			url : root + '/rest/bookshelves/user/mirador/' + id + '/',
 			type : "GET",
 			dataType : "JSON",
 			async : true
