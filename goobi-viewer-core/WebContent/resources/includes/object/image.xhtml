@@ -39,6 +39,11 @@
         		persistZoom: #{configurationBean.rememberImageZoom},
         		persistRotation: #{configurationBean.rememberImageRotation},
         		persistenceId: "#{activeDocumentBean.topDocumentIddoc}",
+        		controls : {
+        		    rotateLeft: '.image-rotate_left',
+        		    rotateRight: '.image-rotate_right',
+        		    reset: '.image-reset',
+        		}
         	},
         	image: {
         		mimeType: "#{activeDocumentBean.viewManager.currentPage.fullMimeType}",

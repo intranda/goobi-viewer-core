@@ -85,10 +85,18 @@ module.exports = function(grunt) {
 				src : [
 					'<%=src.jsDevFolderModules %>imageView/imageView.image.js',
 					'<%=src.jsDevFolderModules %>imageView/imageView.controls.js',
+					'<%=src.jsDevFolderModules %>imageView/imageView.overlay.js',
 					'<%=src.jsDevFolderModules %>imageView/imageView.*.js'
 				],
 				dest : '<%=src.jsDevFolderModules %>viewImage.js'
 			},
+			distViewObject : {
+                src : [
+                    '<%=src.jsDevFolderModules %>objectView/*Loader.js',
+                    '<%=src.jsDevFolderModules %>objectView/WorldGenerator.js',
+                ],
+                dest : '<%=src.jsDevFolderModules %>objectView.js'
+            },
 		},
 		uglify : {
 			options : {
@@ -102,6 +110,7 @@ module.exports = function(grunt) {
 				files : {
 					'<%=src.jsDistFolder%>viewer.min.js' : [ '<%=src.jsDevFolderModules%>viewer.js' ],
 					'<%=src.jsDistFolder%>viewImage.min.js' : [ '<%=src.jsDevFolderModules%>viewImage.js' ],
+					'<%=src.jsDistFolder%>objectView.min.js' : [ '<%=src.jsDevFolderModules%>objectView.js' ],
 				},
 			}
 		},

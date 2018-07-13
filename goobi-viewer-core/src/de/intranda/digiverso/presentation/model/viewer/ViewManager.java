@@ -190,7 +190,11 @@ public class ViewManager implements Serializable {
     }
 
     public String getCurrentImageInfo() throws IndexUnreachableException, DAOException {
-        return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
+        if(getCurrentPage().getMimeType().startsWith("image")) {            
+            return getCurrentImageInfo(BeanUtils.getNavigationHelper().getCurrentPagerType());
+        } else {
+            return "{}";
+        }
     }
 
     public String getCurrentImageInfo(PageType pageType) throws IndexUnreachableException, DAOException {
@@ -283,6 +287,10 @@ public class ViewManager implements Serializable {
 
     public String getCurrentImageUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
         return getCurrentImageUrl(PageType.viewImage);
+    }
+    
+    public String getCurrentObjectUrl() throws ViewerConfigurationException, IndexUnreachableException, DAOException {
+        return imageDelivery.getObjects3D().getObjectUrl(pi, getCurrentPage().getFilename());
     }
 
     /**

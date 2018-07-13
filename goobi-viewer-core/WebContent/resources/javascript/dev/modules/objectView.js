@@ -1,6 +1,312 @@
-/**
- * 
+/*!
+ * This file is part of the Goobi viewer - a content presentation and management application for digitized objects.
+ *
+ * Visit these websites for more information.
+ * - http://www.intranda.com
+ * - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *//**
+ * This loader loads a mesh from a ply file and adds a surface material of the
+ * given color
  */
+THREE.FBXMeshLoader = function(manager, color) {
+
+	this.color = color;
+	this.manager = (manager !== undefined) ? manager
+			: THREE.DefaultLoadingManager;
+
+};
+
+THREE.FBXMeshLoader.prototype = {
+
+	constructor : THREE.FBXMeshLoader,
+
+	load : function(url, onLoad, onProgress, onError) {
+
+		var loader = new THREE.FBXLoader(this.manager);
+		var color = this.color;
+		
+		Q($.getJSON(url)).then(function(info) {
+			console.log("loading object info = ", info);
+			var baseResourceUrl = info.uri.substring(0, info.uri.lastIndexOf("/"));
+			var objUrl = info.uri;
+
+			loader.load(objUrl, function(geometry) {
+				console.log("loaded mesh ", geometry);
+//				geometry.computeVertexNormals();
+//				var material = new THREE.MeshStandardMaterial({
+//					color : color,
+//					shading : THREE.FlatShading
+//				});
+//				var mesh = new THREE.Mesh(geometry, material);
+//				mesh.castShadow = true;
+//				mesh.receiveShadow = true;
+				onLoad(geometry);
+			}, function(status) {
+				console.log("loading ", status);
+			}, function(error) {
+				console.log("error ", error)
+			});
+		});
+	}
+}
+
+/**
+ * This loader loads a mesh from a .gltf file which may point to a .bin file and a number of texture image files
+ */
+THREE.GLTFDRACOLoader = function(manager) {
+
+	this.manager = (manager !== undefined) ? manager
+			: THREE.DefaultLoadingManager;
+
+};
+
+THREE.GLTFDRACOLoader.prototype = {
+
+	constructor : THREE.GLTFDRACOLoader,
+
+	load : function(url, onLoad, onProgress, onError) {
+
+		var gltfLoader = new THREE.GLTFLoader(this.manager);
+		THREE.DRACOLoader.setDecoderPath( '/../three/dependencies/draco' );
+		gltfLoader.setDRACOLoader( new THREE.DRACOLoader() );
+		
+		Q($.getJSON(url)).then(function(info) {
+			console.log("loading object info = ", info);
+			var baseResourceUrl = info.uri.substring(0, info.uri.lastIndexOf("/"));
+			var objUrl = info.uri;
+
+			gltfLoader.load(objUrl, function(gltf) {
+				console.log("loaded gltf ", gltf);
+//		        scene.add( gltf.scene );
+				onLoad(gltf.scene);
+			}, function(status) {
+				console.log("loading ", status);
+			}, function(error) {
+				console.log("error ", error)
+			});
+		});
+	}
+}
+/**
+ * This loader loads a mesh and surface from an obj file and a mtl file. The
+ * given url should be of the obj file and it is assumed the mtl url is the same
+ * with .obj replaced by .mtl
+ */
+THREE.OBJMTLLoader = function(manager) {
+
+	this.manager = (manager !== undefined) ? manager
+			: THREE.DefaultLoadingManager;
+
+};
+
+THREE.OBJMTLLoader.prototype = {
+
+	constructor : THREE.OBJMTLLoader,
+
+	load : function(url, onLoad, onProgress, onError) {
+
+		Q($.getJSON(url)).then(function(info) {
+			console.log("loading object info = ", info);
+			var baseResourceUrl = info.uri.substring(0, info.uri.lastIndexOf("/"));
+			var objUrl = info.uri;
+			var mtlUrl = info.resources.filter(function(resource) {
+				return resource.endsWith(".mtl");
+			}).shift();
+			var textureLoader = new THREE.MTLLoader(this.manager);
+			var objectLoader = new THREE.OBJLoader(this.manager);
+
+            textureLoader.setTexturePath(mtlUrl.substring(0, mtlUrl.lastIndexOf("/")) + "/");
+
+			var texture = textureLoader.load(mtlUrl, function(materials) {
+				materials.preload();
+				objectLoader.setMaterials(materials);
+				objectLoader.load(objUrl, onLoad, onProgress, onError);
+
+			}, onProgress, onError);
+		});
+	}
+}
+
+/**
+ * This loader loads a mesh from a ply file and adds a surface material of the
+ * given color
+ */
+THREE.PLYMeshLoader = function(manager, color) {
+
+	this.color = color;
+	this.manager = (manager !== undefined) ? manager
+			: THREE.DefaultLoadingManager;
+
+};
+
+THREE.PLYMeshLoader.prototype = {
+
+	constructor : THREE.PLYMeshLoader,
+
+	load : function(url, onLoad, onProgress, onError) {
+
+		var loader = new THREE.PLYLoader(this.manager);
+		var color = this.color;
+		
+		Q($.getJSON(url)).then(function(info) {
+			console.log("loading object info = ", info);
+			var baseResourceUrl = info.uri.substring(0, info.uri.lastIndexOf("/"));
+			var objUrl = info.uri;
+		
+			loader.load(objUrl, function(geometry) {
+				geometry.computeVertexNormals();
+				var material = new THREE.MeshStandardMaterial({
+					color : color,
+					shading : THREE.FlatShading
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				onLoad(mesh);
+			}, onProgress, onError);
+		});
+	}
+}
+
+/**
+ * This loader loads a mesh from a ply file and adds a surface material of the
+ * given color
+ */
+THREE.STLMeshLoader = function(manager, color) {
+
+	this.color = color;
+	this.manager = (manager !== undefined) ? manager
+			: THREE.DefaultLoadingManager;
+
+};
+
+THREE.STLMeshLoader.prototype = {
+
+	constructor : THREE.STLMeshLoader,
+
+	load : function(url, onLoad, onProgress, onError) {
+		var loader = new THREE.STLLoader(this.manager);
+		var color = this.color;
+
+		Q($.getJSON(url)).then(function(info) {
+			console.log("loading object info = ", info);
+			var baseResourceUrl = info.uri.substring(0, info.uri.lastIndexOf("/"));
+			var objUrl = info.uri;
+            console.log("loader ", loader);
+		
+    			loader.load(objUrl, function(geometry) {
+    				geometry.computeVertexNormals();
+    				var material = new THREE.MeshStandardMaterial({
+    					color : color,
+    					shading : THREE.FlatShading
+    				});
+    				var mesh = new THREE.Mesh(geometry, material);
+    				mesh.castShadow = true;
+    				mesh.receiveShadow = true;
+    				onLoad(mesh);
+    			}, onProgress, onError);
+
+		})
+		.catch(function(error) {
+		    onError(error);
+		});
+	}
+}
+
+/**
+ * This loader loads a mesh from a ply file and adds a surface material of the
+ * given color
+ */
+THREE.TDSMeshLoader = function(manager, color) {
+
+	this.color = color;
+	this.manager = (manager !== undefined) ? manager
+			: THREE.DefaultLoadingManager;
+
+};
+
+THREE.TDSMeshLoader.prototype = {
+
+	constructor : THREE.TDSMeshLoader,
+
+	load : function(url, onLoad, onProgress, onError) {
+		
+		var geometryLoader = new THREE.TDSLoader(this.manager);
+		var textureLoader = new THREE.TextureLoader();
+		
+		Q($.getJSON(url))
+		.then(function(info) {
+			console.log("loading object info = ", info);
+			var objUrl = info.uri;
+			var textureUrls = info.resources.filter(function(resource) {
+				return resource.match(/je?pg|png$/i);
+			});
+
+		
+			geometryLoader.load(objUrl, function(object) {
+				console.log("LOADING 3DS OBJECT", object);
+				// geometry.computeVertexNormals();
+				
+				if(object instanceof THREE.Mesh) {
+					console.log("object is already a mesh");
+				}
+
+				var textures = textureUrls
+				.map(function(url) {
+					return textureLoader.load( url );
+				})
+				console.log("loaded textures ", textures);
+				
+				object.traverse( function ( child ) {
+	
+					if ( child instanceof THREE.Mesh ) {
+						var texture = textures.shift();
+						child.material.map = texture;
+					}
+	
+				} );
+				
+				object.castShadow = true;
+				object.receiveShadow = true;
+				onLoad(object);
+			}, onProgress, onError);
+
+		});
+	}
+}
+
+/**
+ * This loader an object from an x3d file
+ */
+X3DLoader = function() {
+};
+
+X3DLoader.prototype = {
+
+    constructor : X3DLoader,
+
+    load : function($image, url, onLoad, onProgress, onError) {
+
+        return Q($.getJSON(url)).then(function(info) {
+            console.log("Loading x3dom ", info);
+            var imageWidth = $image.width() + "px";
+            var imageHeight =  $image.height() + "px";
+            var x3d = '<x3d width="' + imageWidth + '" height="' + imageHeight + '"><scene><inline url="' + info.uri + '"></inline></scene></x3d>';
+            $image.get(0).innerHTML += x3d;
+//            $image.append($x3d);
+            x3dom.reload()
+            onLoad();
+        });
+    }
+}
 
 var WorldGenerator = (function() {
     var _lightIntensity = 0.7;
@@ -156,8 +462,7 @@ var WorldGenerator = (function() {
 			
 	}
 	
-    class World {
-		constructor(config) {
+    var World = function(config) {
 			console.log("Constructing world with config ", config);
 			this.config = config;
 			this.time = 0;
@@ -226,7 +531,7 @@ var WorldGenerator = (function() {
 			this.tick = new Rx.Subject();
 		}
 		
-		initControls(object, controlsConfig, objectConfig) {
+	World.prototype.initControls = function(object, controlsConfig, objectConfig) {
 		    var world = this;
 		    if(controlsConfig.xAxis) {
 		        var $rotateLeftX = $(controlsConfig.xAxis.rotateLeft);
@@ -295,7 +600,7 @@ var WorldGenerator = (function() {
             }
 		}
 		
-		rotateLights(degrees, axis) {
+	World.prototype.rotateLights = function(degrees, axis) {
 		    for(var index in this.directionalLights) {
 		        var light = this.directionalLights[index];
 		        var pos = _rotate(light.position, degrees, axis);
@@ -311,7 +616,7 @@ var WorldGenerator = (function() {
 		 * config.offset: Vector3D defining the offset of the sphere's center
 		 * from point 0
 		 */
-		addSphere(config) {
+	World.prototype.addSphere = function(config) {
 			var sphereGeometry = new THREE.SphereGeometry(config.size/2, 64,64);
 			var sphereMaterial = new THREE.MeshLambertMaterial({
 				color: config.material.color,
@@ -331,7 +636,7 @@ var WorldGenerator = (function() {
 			}
 			this.scene.add(sphere);
 		}
-		addBlock(config) {
+	World.prototype.addBlock = function(config) {
 			var geometry = new THREE.BoxGeometry(
 					config.box.max.x-config.box.min.x, 
 					config.box.max.y-config.box.min.y, 
@@ -354,7 +659,7 @@ var WorldGenerator = (function() {
 			}
 			this.scene.add(box);
 		}
-		addPlane(config) {
+	World.prototype.addPlane = function(config) {
 			var geometry = new THREE.PlaneGeometry(config.size, config.size);
 			var material = new THREE.MeshLambertMaterial({
 				color: config.material.color,
@@ -372,7 +677,7 @@ var WorldGenerator = (function() {
 			}
 			this.scene.add(plane);
 		}
-		loadObject(config) {
+	World.prototype.loadObject = function(config) {
 		    console.log("Load object ", config);
 		    
 			var loader = _getObjectLoader(config, this.loadingManager);
@@ -388,7 +693,7 @@ var WorldGenerator = (function() {
 			}
 			return deferred.promise;
 		}
-		addObject(object, config) {
+	World.prototype.addObject = function(object, config) {
 			
 			this.setSize(object, config.size);
 			this.rotate(object, config.rotation);
@@ -407,21 +712,21 @@ var WorldGenerator = (function() {
 			this.object = object;
 			return object;
 		}
-		rotate(object, rotation) {
+	World.prototype.rotate = function(object, rotation) {
 		    console.log("rotate object by ", rotation);
 			object.rotation.set(rotation.x * Math.PI / 180, rotation.y * Math.PI / 180, rotation.z * Math.PI / 180);
 		}
-		center(object, position) {
+	World.prototype.center = function(object, position) {
 			var sphere = this.getBoundingSphere(object);
 			var offset = sphere.center;
 			object.position.set(position.x-offset.x, position.y-offset.y, position.z-offset.z);
 		}
-		setSize(object, size) {
+	World.prototype.setSize = function(object, size) {
 			var r = this.getBoundingSphere(object).radius;
 			var scale = size/r;
 			object.scale.set(scale, scale, scale);
 		}
-		getBoundingSphere(object) {
+	World.prototype.getBoundingSphere = function(object) {
 			var sphere;
 			if(object.geometry && object.geometry.computeBoundingSphere) {
 				if(!object.geometry.boundingSphere) {				
@@ -438,16 +743,16 @@ var WorldGenerator = (function() {
 				radius: sphere.radius
 			}
 		}
-		zoomToObject(object, padding, fieldOfView) {
+	World.prototype.zoomToObject = function(object, padding, fieldOfView) {
 			var sphere = this.getBoundingSphere(object);
 			this.zoomToPosition(sphere.center, 2*sphere.radius+padding, fieldOfView);
 		}
-		zoomToPosition(position, size, fieldOfView) {
+	World.prototype.zoomToPosition = function(position, size, fieldOfView) {
 			var d = size/(2*Math.sin(Math.PI / 180 * fieldOfView/2));
 			this.camera.position.set(position.x, position.y, position.z+d);
 //			this.camera.lookAt(position);
 		}
-		createShadowedLight( position, color, intensity, d, castShadow, showHelper) {
+	World.prototype.createShadowedLight = function( position, color, intensity, d, castShadow, showHelper) {
 			var directionalLight = new THREE.DirectionalLight( color, intensity );
 			directionalLight.position.set( position.x, position.y, position.z );
 			this.scene.add( directionalLight );
@@ -469,7 +774,7 @@ var WorldGenerator = (function() {
 			
 			return directionalLight;
 		}
-		render() {
+	World.prototype.render = function() {
 		    if(this.disposed) {
 		        return;
 		    }
@@ -482,12 +787,12 @@ var WorldGenerator = (function() {
 			});
 		}
 		
-		dispose() {
+	World.prototype.dispose = function() {
 		    this.disposeObject(this.object);
 		    this.disposed = true;
 		}
 		
-		disposeObject(object) {
+	World.prototype.disposeObject = function(object) {
 		    for(var index in object.children) {
 		        this.disposeObject(object.children[index]);
 		    }
@@ -510,8 +815,8 @@ var WorldGenerator = (function() {
                 object.material = undefined;
             }
 		}
-	}
 	
 	return Generator;
 	
 })();
+//# sourceMappingURL=objectView.js.map

@@ -4,7 +4,8 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html" 
     xmlns:p="http://primefaces.org/ui"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:svg="http://www.w3.org/2000/svg" >
     
     <!-- INTERFACE -->
     <composite:interface />
@@ -268,7 +269,7 @@
                                 </li>
                                 <li class="image-controls__action switch-pages">
                                     <h:commandLink action="#{activeDocumentBean.viewManager.togglePageOrientation()}" title="#{msg.switchPages}">
-                                        <svg id="icon_switch_pages" data-name="icon switch pages" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 885.86 887.46"><title>switchPages</title><line x1="408.97" y1="79.89" x2="408.97" y2="89.89"/><line x1="408.97" y1="168.6" x2="408.97" y2="178.6"/><line x1="408.97" y1="257.31" x2="408.97" y2="267.31"/><line x1="408.97" y1="346.02" x2="408.97" y2="356.02"/><line x1="408.97" y1="434.73" x2="408.97" y2="444.73"/><path d="M62.07,62.29V949.75H505V62.29ZM488.12,904.4H114.95V106.62H488.12Z" transform="translate(-62.07 -62.29)"/><line x1="45.83" y1="89.89" x2="45.83" y2="79.89"/><line x1="45.83" y1="178.6" x2="45.83" y2="168.6"/><line x1="45.83" y1="267.31" x2="45.83" y2="257.31"/><line x1="45.83" y1="356.02" x2="45.83" y2="346.02"/><line x1="45.83" y1="444.73" x2="45.83" y2="434.73"/><rect x="89.48" y="207.61" width="297.26" height="40.7"/><rect x="89.48" y="644.15" width="297.26" height="40.7"/><path d="M505,62.29V949.75H947.93V62.29Zm16.88,44.33H895.05V904.4H521.88Z" transform="translate(-62.07 -62.29)"/><line x1="840.03" y1="89.89" x2="840.03" y2="79.89"/><line x1="840.03" y1="178.6" x2="840.03" y2="168.6"/><line x1="840.03" y1="267.31" x2="840.03" y2="257.31"/><line x1="840.03" y1="356.02" x2="840.03" y2="346.02"/><line x1="840.03" y1="444.73" x2="840.03" y2="434.73"/><rect x="561.19" y="269.9" width="297.26" height="40.7" transform="translate(1357.57 518.21) rotate(-180)"/><rect x="561.19" y="706.44" width="297.26" height="40.7" transform="translate(1357.57 1391.29) rotate(-180)"/><path class="cls-1" d="M691.4,676.46H595.7L719,542.19H189.1V472.34H717.52L596.71,340.57h92.4L843.44,507.22Z" transform="translate(-62.07 -62.29)"/><polygon class="cls-2" points="666.82 415.05 546.01 283.28 624.86 283.28 774.61 444.98 627.1 609.16 545.01 609.16 668.32 474.9 132.03 474.9 132.03 444.98 132.03 415.05 666.82 415.05"/></svg>
+                                        <svg:svg id="icon_switch_pages" data-name="icon switch pages" viewBox="0 0 885.86 887.46"><title>switchPages</title><line x1="408.97" y1="79.89" x2="408.97" y2="89.89"/><line x1="408.97" y1="168.6" x2="408.97" y2="178.6"/><line x1="408.97" y1="257.31" x2="408.97" y2="267.31"/><line x1="408.97" y1="346.02" x2="408.97" y2="356.02"/><line x1="408.97" y1="434.73" x2="408.97" y2="444.73"/><path d="M62.07,62.29V949.75H505V62.29ZM488.12,904.4H114.95V106.62H488.12Z" transform="translate(-62.07 -62.29)"/><line x1="45.83" y1="89.89" x2="45.83" y2="79.89"/><line x1="45.83" y1="178.6" x2="45.83" y2="168.6"/><line x1="45.83" y1="267.31" x2="45.83" y2="257.31"/><line x1="45.83" y1="356.02" x2="45.83" y2="346.02"/><line x1="45.83" y1="444.73" x2="45.83" y2="434.73"/><rect x="89.48" y="207.61" width="297.26" height="40.7"/><rect x="89.48" y="644.15" width="297.26" height="40.7"/><path d="M505,62.29V949.75H947.93V62.29Zm16.88,44.33H895.05V904.4H521.88Z" transform="translate(-62.07 -62.29)"/><line x1="840.03" y1="89.89" x2="840.03" y2="79.89"/><line x1="840.03" y1="178.6" x2="840.03" y2="168.6"/><line x1="840.03" y1="267.31" x2="840.03" y2="257.31"/><line x1="840.03" y1="356.02" x2="840.03" y2="346.02"/><line x1="840.03" y1="444.73" x2="840.03" y2="434.73"/><rect x="561.19" y="269.9" width="297.26" height="40.7" transform="translate(1357.57 518.21) rotate(-180)"/><rect x="561.19" y="706.44" width="297.26" height="40.7" transform="translate(1357.57 1391.29) rotate(-180)"/><path class="cls-1" d="M691.4,676.46H595.7L719,542.19H189.1V472.34H717.52L596.71,340.57h92.4L843.44,507.22Z" transform="translate(-62.07 -62.29)"/><polygon class="cls-2" points="666.82 415.05 546.01 283.28 624.86 283.28 774.61 444.98 627.1 609.16 545.01 609.16 668.32 474.9 132.03 474.9 132.03 444.98 132.03 415.05 666.82 415.05"/></svg:svg>
                                         <span class="labeltext">#{msg.switchPages}</span>
                                         <f:passThroughAttribute name="data-toggle" value="tooltip" />
                                         <f:passThroughAttribute name="data-placement" value="bottom" />
@@ -279,20 +280,20 @@
                         <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                             <!-- ROTATE -->
                             <li class="image-controls__action rotate-left">
-                                <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateLeft}" onclick="viewImage.controls.rotateLeft();">
+                                <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateLeft}" >
                                     <i class="image-rotate_left"></i>
                                     <span class="labeltext">#{msg.rotateLeft}</span>
                                 </a>
                             </li>
                             <li class="image-controls__action rotate-right">
-                                <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateRight}" onclick="viewImage.controls.rotateRight();">
+                                <a data-toggle="tooltip" data-placement="bottom" title="#{msg.rotateRight}">
                                     <i class="image-rotate_right"></i>
                                     <span class="labeltext">#{msg.rotateRight}</span>
                                 </a>
                             </li>
                             <!-- RESET -->
                             <li class="image-controls__action reset">
-                                <a data-toggle="tooltip" data-placement="bottom" title="#{msg.resetImage}" onclick="viewImage.controls.reset(true);">
+                                <a data-toggle="tooltip" data-placement="bottom" title="#{msg.resetImage}">
                                     <i class="image-reset"></i>
                                     <span class="labeltext">#{msg.resetImage}</span>
                                 </a>
@@ -310,11 +311,13 @@
                             </ui:fragment>
                             <!-- ZOMMSLIDER -->
                             <!-- TODO: rendered Anweisung, wenn pageBrowse in der config aktiv -->
-                            <li class="image-controls__action zoom-slider">
-                                <div class="zoom-slider">
-                                    <span class="zoom-slider-handle"></span>
-                                </div>
-                            </li>
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'image'}">
+                                <li class="image-controls__action zoom-slider">
+                                    <div class="zoom-slider">
+                                        <span class="zoom-slider-handle"></span>
+                                    </div>
+                                </li>
+                            </ui:fragment>
                         </ui:fragment>
                     </ul>
                 </div>

@@ -56,6 +56,7 @@ public class ThumbnailHandler {
     private static final String EVENT_THUMB = "thumbnail_event.jpg";
     private static final String VIDEO_THUMB = "thumbnail_video.jpg";
     private static final String AUDIO_THUMB = "thumbnail_audio.jpg";
+    private static final String OBJECT_3D_THUMB = "thumbnail_3d.png";
     private static final String GROUP_THUMB = "thumbnail_group.jpg";
 
     private static final String ANCHOR_THUMBNAIL_MODE_GENERIC = "GENERIC";
@@ -63,7 +64,7 @@ public class ThumbnailHandler {
 
     public static final String[] REQUIRED_SOLR_FIELDS =
             { SolrConstants.IDDOC, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.MIMETYPE, SolrConstants.THUMBNAIL,
-                    SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED };
+                    SolrConstants.DOCTYPE, SolrConstants.METADATATYPE, SolrConstants.FILENAME, SolrConstants.FILENAME_HTML_SANDBOXED};
 
     private final int thumbWidth;
     private final int thumbHeight;
@@ -506,6 +507,11 @@ public class ThumbnailHandler {
             case PhysicalElement.MIME_TYPE_APPLICATION:
             case "application/pdf":
                 thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                break;
+            case "application/object":
+            case "object":
+                thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                break;
         }
         return thumbnailUrl;
     }
@@ -573,6 +579,11 @@ public class ThumbnailHandler {
                         case PhysicalElement.MIME_TYPE_APPLICATION:
                         case "application/pdf":
                             thumbnailUrl = getThumbnailPath(BORN_DIGITAL_THUMB).toString();
+                            break;
+                        case "application/object":
+                        case "object":
+                            thumbnailUrl = getThumbnailPath(OBJECT_3D_THUMB).toString();
+                            break;
                     }
             }
         }

@@ -38,6 +38,7 @@ import de.intranda.digiverso.presentation.controller.imaging.IIIFPresentationAPI
 import de.intranda.digiverso.presentation.controller.imaging.IIIFUrlHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ImageHandler;
 import de.intranda.digiverso.presentation.controller.imaging.MediaHandler;
+import de.intranda.digiverso.presentation.controller.imaging.Object3DHandler;
 import de.intranda.digiverso.presentation.controller.imaging.PdfHandler;
 import de.intranda.digiverso.presentation.controller.imaging.ThumbnailHandler;
 import de.intranda.digiverso.presentation.controller.imaging.WatermarkHandler;
@@ -91,6 +92,7 @@ public class ImageDeliveryBean implements Serializable {
     private WatermarkHandler footer;
     private IIIFUrlHandler iiif;
     private MediaHandler media;
+    private Object3DHandler objects3d;
     private IIIFPresentationAPIHandler presentation;
 
     @PostConstruct
@@ -119,6 +121,7 @@ public class ImageDeliveryBean implements Serializable {
                 DataManager.getInstance().getConfiguration().getViewerHome() + DataManager.getInstance().getConfiguration().getCmsMediaFolder();
         iiif = new IIIFUrlHandler();
         images = new ImageHandler();
+        objects3d = new Object3DHandler(config);
         footer = new WatermarkHandler(config, servletPath);
         thumbs = new ThumbnailHandler(iiif, config, this.staticImagesURI);
         pdf = new PdfHandler(footer, config);
@@ -373,6 +376,10 @@ public class ImageDeliveryBean implements Serializable {
      */
     public MediaHandler getMedia() {
         return media;
+    }
+    
+    public Object3DHandler getObjects3D() {
+        return objects3d;
     }
 
     /**

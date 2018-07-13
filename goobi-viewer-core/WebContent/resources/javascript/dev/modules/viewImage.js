@@ -25,28 +25,34 @@ var ImageView = ( function() {
                 zoomSlider: ".zoom-slider",
                 zoomSliderHandle: '.zoom-slider-handle',
                 overlayGroups: [ {
-                    name: "searchHighlighting",
-                    styleClass: "coords-highlighting",
-                    interactive: false
-                }, {
-                    name: "ugc",
-                    styleClass: "ugcBox",
-                    interactive: true
-                
-                } ],
+                        name: "searchHighlighting",
+                        styleClass: "coords-highlighting",
+                        interactive: false
+                    }, {
+                        name: "ugc",
+                        styleClass: "ugcBox",
+                        interactive: true
+                    
+                    }],
                 zoomSpeed: 1.25,
-                maxZoomLevel: 20,
+                maxZoomLevel: 2,
                 minZoomLevel: 1,
                 imageControlsActive: true,
-                visibilityRatio: 0.4,
+                visibilityRatio: 0.2,
                 loadImageTimeout: 10 * 60 * 1000,
-                maxParallelImageLoads: 1,
+                maxParallelImageLoads: 2,
                 adaptContainerHeight: false,
-                footerHeight: 50,
+                fitToContainer: true,
+                footerHeight: 0,
                 rememberZoom: false,
                 rememberRotation: false,
+                panHomeOnZoomOut: true,
+                showControls: false
             },
-            image: {},
+            image: {
+                initialRotation: 0,
+                mimeType: "image/jpeg"
+            },
             getOverlayGroup: function( name ) {
                 var allGroups = this.global.overlayGroups;
                 for ( var int = 0; int < allGroups.length; int++ ) {
@@ -78,7 +84,9 @@ var ImageView = ( function() {
          this.config = jQuery.extend(true, {}, _defaults);
          jQuery.extend(true, this.config, config);
          this.container = $( "#" + this.config.global.divId );
-         // console.log("initializing image view with config ", this.config);
+         if(_debug) {             
+             console.log("initializing image view with config ", this.config);
+         }
 
 //         this.originalImageSize = {x:this.config.imageWidth, y:this.config.imageHeight};
 //         this.imageViewWidth = parseFloat($('#'+this.config.div).css("width"));
@@ -124,8 +132,16 @@ var ImageView = ( function() {
                      minWidth = Math.min(minWidth, tileSource.width);
                      minHeight = Math.min(minHeight, tileSource.height);
                      minAspectRatio = Math.min(minAspectRatio, tileSource.aspectRatio);
+                     //make sure we have some values for original image size in config
+                     if(!image.config.image.originalImageWidth) {
+                         image.config.image.originalImageWidth = tileSource.width;
+                     }
+                     if(!image.config.image.originalImageHeight) {
+                         image.config.image.originalImageHeight = tileSource.height;
+                     }
                  }
-                 if(_debug) {                    
+                 if(_debug) {      
+                     console.log("original image size: ",  image.config.image.originalImageWidth,  image.config.image.originalImageHeight )
                      console.log("Min aspect ratio = " + minAspectRatio);                    
                  }
                  var x = 0;
@@ -138,7 +154,7 @@ var ImageView = ( function() {
                              y: 0,
                          }
                      x += tileSources[i].width;
-                     }              
+                     } 
                  var pr = image.loadImage(tileSources);
                  return pr;
              });
@@ -151,41 +167,52 @@ var ImageView = ( function() {
              }
                
              this.loadFooter();            
-          
-             this.viewer = new OpenSeadragon( {
-                 immediateRender: false,
-                 visibilityRatio: this.config.global.visibilityRatio,
-                 sequenceMode: false,
-                 id: this.config.global.divId,
-                 controlsEnabled: false,
-                 prefixUrl: "/openseadragon-bin/images/",
-                 zoomPerClick: 1,
-                 maxZoomLevel: this.config.global.maxZoomLevel,
-                 minZoomLevel: this.config.global.minZoomLevel,
-                 zoomPerScroll: this.config.global.zoomSpeed,
-                 mouseNavEnabled: this.config.global.zoomSpeed > 1,
-                 showNavigationControl: false,
-                 showZoomControl: false,
-                 showHomeControl: false,
-                 showFullPageControl: true,
-                 timeout: this.config.global.loadImageTimeout,
-                 tileSources: tileSources,
-                 blendTime: .5,
-                 alwaysBlend: false,
-                 imageLoaderLimit: this.config.global.maxParallelImageLoads,
-                 viewportMargins: {
-                     top: 0,
-                     left: 0,
-                     right: 0,
-                     bottom: this.config.global.footerHeight
+             var $div = $("#" + this.config.global.divId);
+             var osConfig = {
+                     tileSources: tileSources,
+                     id: this.config.global.divId,
+                     prefixUrl: this.config.resourcePath + "/javascript/openseadragon/images/",
+                     immediateRender: false,
+                     visibilityRatio: this.config.global.visibilityRatio,
+                     sequenceMode: false,
+                     degrees: this.config.image.initialRotation ? this.config.image.initialRotation : 0,
+                     zoomPerClick: 1.0,
+                     showRotationControl: true,
+                     showNavigationControl: this.config.global.showControls,
+                     minZoomLevel: this.config.global.minZoomLeve,//Math.min(this.config.global.minZoomLevel, this.config.global.minZoomLevel*this.config.image.originalImageWidth/$div.width()),
+                     maxZoomLevel: this.config.global.maxZoomLevel*this.config.image.originalImageWidth/$div.width(),
+                     zoomPerScroll: this.config.global.zoomSpeed,
+                     mouseNavEnabled: this.config.global.zoomSpeed > 1,
+                     homeButton: this.config.global.zoomHome,
+                     rotateLeftButton: this.config.global.rotateLeft,
+                     rotateRightButton: this.config.global.rotateRight,
+                     timeout: this.config.global.loadImageTimeout,
+                     blendTime: .5,
+                     alwaysBlend: false,
+                     imageLoaderLimit: this.config.global.maxParallelImageLoads,
+                     loadTilesWithAjax: true,
+                     ajaxHeaders: {
+                         "token" : this.config.global.webApiToken
+                     },
+                     viewportMargins: {
+                         top: 0,
+                         left: 0,
+                         right: 0,
+                         bottom: this.config.global.footerHeight
+                     }
                  }
-             } );
+             console.log("osconfig ", osConfig);
+             
+             this.viewer = new OpenSeadragon( osConfig );
              var result = Q.defer();
                  
              this.observables = _createObservables(window, this);  
+             if(this.config.global.rotationSlider || this.config.global.rotationInput) {                 
+                 _setupRotation(this);
+             }
              
              var image = this;
-             this.observables.viewerOpen.subscribe(function(openevent, loadevent) {            
+             this.observables.viewerOpen.subscribe(function(openevent, loadevent) {
                  result.resolve(image);                
              }, function(error) {            
                  result.reject(error);                
@@ -201,6 +228,7 @@ var ImageView = ( function() {
                  
                  image.redraw();
              });
+             
                  
              if ( imageView.Controls ) {
                  this.controls = new imageView.Controls(this.config, this);
@@ -209,6 +237,13 @@ var ImageView = ( function() {
              
              if ( imageView.ZoomSlider ) {
                  this.zoomSlider = new imageView.ZoomSlider(this.config, this);
+                 this.onFirstTileLoaded()
+                 .then(function() {
+                     if(image.zoomSlider) {
+                         image.zoomSlider.init();
+                         
+                     }
+                 })
 //                 osViewer.zoomSlider.init( _defaults );                
              }
              
@@ -230,40 +265,7 @@ var ImageView = ( function() {
              this.observables.redrawRequired.connect();                
              return result.promise;
          }
-         
-//     imageView.Image.prototype.loadOpenSeadragon = function(tileSource) {
-//             console.log("loading tilesource ", tileSource);                 
-//             var imageWidth = this.config.imageWidth;
-//             var canvasWidth = parseFloat(this.imageViewWidth);
-//             var zoomFactor = imageWidth/canvasWidth;
-//             console.log("init open seadragon with config ", this.config);
-//             this.viewer = OpenSeadragon ({
-//                 id: this.config.div,
-//                 prefixUrl: this.config.resourcePath + "/javascript/openseadragon/images/",
-//                 tileSources: tileSource,
-//                 minZoomLevel: 0.2,
-//                 maxZoomLevel: 2*zoomFactor,
-//                 zoomPerClick: 1.0,
-//                 showRotationControl: true,
-//                 showZoomControl: false,
-//                 degrees: this.config.initialRotation ? this.config.initialRotation : 0,
-//                 showFullPageControl: false,
-//                 visibilityRatio: 0,
-//                 imageLoaderLimit: 2,
-//                 homeButton: this.config.zoom.zoomHome,
-//                 rotateLeftButton: this.config.rotation.rotateLeft,
-//                 rotateRightButton: this.config.rotation.rotateRight,
-//                 loadTilesWithAjax: true,
-//                 ajaxHeaders: {
-//                     "token" : this.config.webApiToken
-//                 }
-//             })
-//
-//             console.log("devicePixelRatio", window.devicePixelRatio);
-//             _setupRotation(this);
-//             this.zoomSlider = _setupZoomSlider(this);
-//             
-//     }
+
      /**
       * @return the list of observables associated with this viewer
       */
@@ -451,8 +453,9 @@ var ImageView = ( function() {
       */
      imageView.Image.prototype.scaleToRotatedImage = function(roi) {
          var displayImageSize = this.viewer.world.getItemAt(0).source.dimensions;
-         var originalImageSize = {x:this.config.imageWidth, y:this.config.imageHeight};
-         
+//         var originalImageSize = {x:this.sizes.originalImageSize.x, y:this.sizes.originalImageSize.y};
+         var originalImageSize = {x:this.config.image.originalImageWidth, y:this.config.image.originalImageHeight};
+
          var displayImageRect = new OpenSeadragon.Rect(0,0,displayImageSize.x, displayImageSize.y);
          var originalImageRect = new OpenSeadragon.Rect(0,0,originalImageSize.x, originalImageSize.y);
          
@@ -472,9 +475,10 @@ var ImageView = ( function() {
       */
      imageView.Image.prototype.scaleToOpenSeadragonCoordinates = function(roi) {
          var displayImageSize = this.viewer.world.getItemAt(0).source.dimensions;
-         console.log("displayImageSize ", displayImageSize);
-         var originalImageSize = {x:this.config.imageWidth, y:this.config.imageHeight};
-         
+//         var originalImageSize = {x:this.viewer.tileSources[0].tileSource.width, y:this.viewer.tileSources[0].tileSource.height};
+         var originalImageSize = {x:this.config.image.originalImageWidth, y:this.config.image.originalImageHeight};
+
+//         console.log("originalImageSize", originalImageSize);
          var displayImageRect = new OpenSeadragon.Rect(0,0,displayImageSize.x, displayImageSize.y);
          var originalImageRect = new OpenSeadragon.Rect(0,0,originalImageSize.x, originalImageSize.y);
          
@@ -584,6 +588,29 @@ var ImageView = ( function() {
          var rect_unrotated = new OpenSeadragon.Rect(rect_fromTopLeft_unrotated.x-rect.width/2.0, rect_fromTopLeft_unrotated.y-rect.height/2.0, rect.width, rect.height);
          return rect_unrotated;
      }
+     
+     imageView.getPointInRotatedImage = function(point, viewer) {
+         var aspectRatio = viewer.source.width/viewer.source.height;
+         var rotation = viewer.viewport.getRotation();
+         var imageTopLeft_fromImageCenter = new OpenSeadragon.Point(0.5, 0.5/aspectRatio).times(-1);
+         
+         var point_fromImageCenter = imageTopLeft_fromImageCenter.plus(point);
+         var point_fromImageCenter_rotated = _rotate(point_fromImageCenter, rotation, false);
+         var point_fromImageTopLeft_rotated = point_fromImageCenter_rotated.minus(imageTopLeft_fromImageCenter);
+         return point_fromImageTopLeft_rotated;
+     }
+     
+     imageView.getPointInUnrotatedImage = function(point, viewer) {
+         var aspectRatio = viewer.source.width/viewer.source.height;
+         var rotation = viewer.viewport.getRotation();
+         var imageTopLeft_fromImageCenter = new OpenSeadragon.Point(0.5, 0.5/aspectRatio).times(-1);
+         var imageTopLeft_fromImageCenter_rotated = _rotate(imageTopLeft_fromImageCenter, rotation, false);
+         
+         var point_fromImageCenter_rotated = imageTopLeft_fromImageCenter_rotated.plus(point);
+         var point_fromImageCenter = _rotate(point_fromImageCenter_rotated, rotation, true);
+         var point_fromImageTopLeft = point_fromImageCenter.minus(imageTopLeft_fromImageCenter);
+         return point_fromImageTopLeft;
+     }
 
      function _createObservables(window, image) {
          var observables = {};
@@ -599,7 +626,7 @@ var ImageView = ( function() {
              } );
              image.viewer.addOnceHandler( 'open-failed', function( event ) {
                  event.osState = "open-failed";
-                 console.log("Failed to open openseadragon ");
+                 console.error("Failed to open openseadragon ");
                  
                  return observer.onError(event);
              } );
@@ -613,7 +640,7 @@ var ImageView = ( function() {
              } );
              image.viewer.addOnceHandler( 'tile-load-failed', function( event ) {
                  event.osState = "tile-load-failed";
-                 console.log("Failed to load tile");
+                 console.error("Failed to load tile");
                  
                  return observer.onError(event);
              } );
@@ -693,7 +720,8 @@ var ImageView = ( function() {
              event.targetLocation = location;
              
              return event;
-         }).publish();
+         })
+         .publish();
          
          return observables;
      }
@@ -735,10 +763,10 @@ var ImageView = ( function() {
      function _setupRotation(image) {
                   
          //set initial rotation
-         var degrees = image.config.initialRotation;
+         var degrees = image.config.image.initialRotation;
          var deskew = _getDeskewAngle(degrees);
          image.rotation = _getRotation(degrees);
-         var config = image.config.rotation;
+         var config = image.config.global;
          var viewer = image.viewer;
          
          //setup deskew slider
@@ -946,8 +974,7 @@ var ImageView = ( function() {
                      if(imageInfo.tiles && imageInfo.tiles.length > 0) {
                          tileSource = new OpenSeadragon.IIIFTileSource(imageInfo);                    
                      } else {                
-                         console.log("tiles? ", imageInfo.tiles);
-                         tileSource  = _createPyramid(imageInfo);                    
+                         tileSource  = _createPyramid(imageInfo, config);                    
                      }
                      
                      return tileSource;                
@@ -1089,7 +1116,7 @@ var ImageView = ( function() {
       * get the rotation as a value between 0 and 360 degrees and rounded to 90 degrees 
       * 
       * @param degrees
-      * @returns the rotation as a value between 0 and 360 degrees and rounded to 90 degrees  
+      * @returns
       */
      function _getRotation(degrees) {
          degrees += _MAX_DESKEW_ANGLE;
@@ -1103,7 +1130,7 @@ var ImageView = ( function() {
       * get the rotation modulo 90 degrees as a value between 0 and 45 degrees or between 315 and 360 degrees
       * 
       * @param degrees
-      * @returns the rotation modulo 90 degrees as a value between 0 and 45 degrees or between 315 and 360 degrees
+      * @returns
       */
      function _getDeskewAngle(degrees) {
          degrees += _MAX_DESKEW_ANGLE;
@@ -1188,6 +1215,17 @@ var ImageView = ( function( imageView ) {
             if(_debug) {                
                 console.log("Setting viewer location to", config.image.location);
             }
+            if(this.config.global.controls) {
+                $(this.config.global.controls.rotateLeft).on("click", function() {
+                    controls.rotateLeft();
+                })
+                $(this.config.global.controls.rotateRight).on("click", function() {
+                    controls.rotateRight();
+                })
+                $(this.config.global.controls.reset).on("click", function() {
+                    controls.reset(true);
+                })
+            }
             if( image.observables ) {
                 // set location after viewport update
                 image.observables.redrawRequired
@@ -1198,23 +1236,25 @@ var ImageView = ( function( imageView ) {
                 });
                 
                 // zoom home if min zoom reached
-                image.observables.viewerZoom.subscribe( function( event ) {
-                    if ( _debug ) {
-                        console.log( "zoom to " + image.viewer.viewport.getZoom( true ) );
-                    }
-                    if ( !controls.isPanning() ) {
-                        var currentZoom = image.viewer.viewport.getZoom();                   
-                        if ( currentZoom <= image.viewer.viewport.minZoomLevel ) {
-                            if ( _debug ) {
-                                console.log( "Zoomed out: Panning home" );
-                            }
-                            
-                            controls.setPanning(true);
-                            controls.goHome( true );
-                            controls.setPanning(false);
+                if(image.config.global.panHomeOnZoomOut) {                    
+                    image.observables.viewerZoom.subscribe( function( event ) {
+                        if ( _debug ) {
+                            console.log( "zoom to " + image.viewer.viewport.getZoom( true ) );
                         }
-                    }
-                } );
+                        if ( !controls.isPanning() ) {
+                            var currentZoom = image.viewer.viewport.getZoom();                   
+                            if ( currentZoom <= image.viewer.viewport.minZoomLevel ) {
+                                if ( _debug ) {
+                                    console.log( "Zoomed out: Panning home" );
+                                }
+                                
+                                controls.setPanning(true);
+                                controls.goHome( true );
+                                controls.setPanning(false);
+                            }
+                        }
+                    } );
+                }
             }
             
             // fade out fullscreen controls
@@ -1414,37 +1454,289 @@ var ImageView = ( function( imageView ) {
                 console.log("target location: ", event.targetLocation);
                 console.log("Home zoom = ", this.image.viewer.viewport.getHomeZoom());
             }
-             this.image.viewer.viewport.minZoomLevel = this.image.viewer.viewport.getHomeZoom() * this.config.global.minZoomLevel;
-             var targetZoom = event.targetLocation.zoom;
-             var targetLocation = new OpenSeadragon.Point(event.targetLocation.x, event.targetLocation.y);
-             var zoomDiff = targetZoom * this.image.viewer.viewport.getHomeZoom() - (this.image.viewer.viewport.minZoomLevel);
-    // console.log("zoomDiff: " + targetZoom + " * " + osViewer.viewer.viewport.getHomeZoom()
-    // + " - " + osViewer.viewer.viewport.minZoomLevel + " = ", zoomDiff);
-    // console.log("zoomDiff: " + targetZoom + " - " + osViewer.viewer.viewport.minZoomLevel +
-    // "/" + osViewer.controls.getCurrentRotationZooming() + " = ", zoomDiff);
-             var zoomedOut = zoomDiff < 0.001 || !targetZoom;
-             if(zoomedOut) {
-                 if(_debug) {                         
-                     console.log("Zooming home")
-                 }
-                 this.goHome( true );
-             } else {
-                 if(_debug) {                         
-                     console.log( "Zooming to " + targetZoom + " * " + this.getCurrentRotationZooming() );
-                     console.log("panning to ", targetLocation);
-                 }
-                 this.image.viewer.viewport.zoomTo( targetZoom * this.getCurrentRotationZooming(), null, true);
-                 this.setCenter( targetLocation);
-             }
-             if(event.osState === "open" && event.targetLocation.rotation !== 0) {
-                this.rotateTo(event.targetLocation.rotation);
-             }
+                this.image.viewer.viewport.minZoomLevel = this.image.viewer.viewport.getHomeZoom() * this.config.global.minZoomLevel;
+                var targetZoom = event.targetLocation.zoom;
+                var targetLocation = new OpenSeadragon.Point(event.targetLocation.x, event.targetLocation.y);
+                var zoomDiff = targetZoom * this.image.viewer.viewport.getHomeZoom() - (this.image.viewer.viewport.minZoomLevel);
+                
+                var zoomedOut = zoomDiff < 0.001 || !targetZoom;
+                if(zoomedOut && this.image.config.global.fitToContainer) {
+                    if(_debug) {                         
+                        console.log("Zooming home")
+                    }
+                    this.goHome( true );
+                } else {
+                    if(_debug) {                         
+                        console.log( "Zooming to " + targetZoom + " * " + this.getCurrentRotationZooming() );
+                        console.log("panning to ", targetLocation);
+                    }
+                    if(this.image.config.global.fitToContainer) {
+                        this.image.viewer.viewport.zoomTo( targetZoom * this.getCurrentRotationZooming(), null, true);
+                    }
+                    this.setCenter( targetLocation);
+                }
+                if(event.osState === "open" && event.targetLocation.rotation !== 0) {
+                    this.rotateTo(event.targetLocation.rotation);
+                }    
         }
 
     return imageView;
     
 } )( ImageView );
 
+var ImageView = ( function(imageView) {
+    'use strict';
+    
+    if(!imageView) {
+        throw "Image view must exist";
+    }    
+    
+    /**
+     * rect must be in openSeadragon image coordinates (0 <= x <= 1 / 0 <= y <= height/width)
+     */
+    imageView.Overlay = function(rect, viewer, style) {
+            
+        // OpenSeadragon viewer
+        this.viewer = viewer;
+        // OpenSeadragon rect
+        this.rect = rect;
+        // object containing properties borderWidth and borderColor
+        this.style = style;
+            
+    }
+    
+    imageView.Overlay.prototype.getRotation = function() {
+        return this.viewer.viewport.getRotation();
+    }
+    
+    imageView.Overlay.prototype.remove = function() {
+        if(this.eventHandler) {            
+            this.viewer.removeHandler( 'update-viewport', this.eventHandler, this );
+            this.viewer.forceRedraw();
+        }
+    }
+
+    imageView.Overlay.prototype.draw = function() {
+        _drawRect({userData: this});
+        this.eventHandler = function(event) {
+            _drawRect(event)
+        }
+//        this.viewer.removeHandler( 'update-viewport', _drawRect, this );
+        this.viewer.addHandler( 'update-viewport', this.eventHandler, this );
+    }
+    
+    imageView.Overlay.prototype.contains = function(point, extra, pointInCanvas) {
+        var rect = pointInCanvas ? imageView.convertCoordinatesFromImageToCanvas(this.rect, this.viewer) : this.rect;
+        return _isInside(rect, point, extra);
+    }
+    
+    imageView.Overlay.prototype.getHitArea = function(point, extra, pointInCanvas) {
+        var rect = pointInCanvas ? imageView.convertCoordinatesFromImageToCanvas(this.rect, this.viewer) : this.rect;
+        if(_isInside(rect, point, extra)) {
+            var area = _findCorner(rect, point, extra);
+            if(!area) {
+                area = _findEdge(rect, point, extra);
+            }
+//            if(!area && _isInside(rect, point, 0)){
+//                area = imageView.Overlay.HitAreas.CENTER;
+//            }
+        }
+        return area;
+    }
+    
+    imageView.Overlay.convertStringToRect = function(string) {
+        var parts = string.split(",");
+        if(parts && parts.length == 4) {            
+            var rect = new OpenSeadragon.Rect(parseFloat(parts[0]), parseFloat(parts[1]), parseFloat(parts[2]), parseFloat(parts[3]));
+            return rect;
+        } else {
+            throw "Cannot convert string '" + string + "' to Rectangle";
+        }
+    }
+    
+    imageView.Overlay.convertRectToString = function(rect, decimalPlaces) {
+        if(!decimalPlaces) {
+            decimalPlaces = 0;
+        }
+        return rect.x.toFixed(decimalPlaces) + "," +  rect.y.toFixed(decimalPlaces) + "," +  rect.width.toFixed(decimalPlaces) + "," +  rect.height.toFixed(decimalPlaces);
+    }
+    
+    imageView.Overlay.drawPoint = function(point, viewer, color, radius) {
+        _drawPoint({userData: [point, viewer, color, radius] });
+//        var eventHandler = function(event) {
+//            _drawPoint(event)
+//        }
+//        this.viewer.removeHandler( 'update-viewport', _drawRect, this );
+//        viewer.addHandler( 'update-viewport', eventHandler, [point, viewer, color, radius] );
+    }
+    
+    imageView.Overlay.HitAreas = {
+            TOP: "t",
+            BOTTOM: "b",
+            RIGHT: "r",
+            LEFT: "l",
+            TOPLEFT: "tl",
+            TOPRIGHT: "tr",
+            BOTTOMLEFT: "bl",
+            BOTTOMRIGHT: "br",
+            CENTER: "c",
+            isCorner: function( area ) {
+                return area === this.TOPRIGHT || area === this.TOPLEFT || area === this.BOTTOMLEFT || area === this.BOTTOMRIGHT;
+            },
+            isEdge: function( area ) {
+                return area === this.TOP || area === this.BOTTOM || area === this.LEFT || area === this.RIGHT;
+            },
+            getCursor: function( area ) {
+                var rotated = false;//draw.viewer.viewport.getRotation() % 180 === 90;
+                if ( area === this.TOPLEFT || area === this.BOTTOMRIGHT ) {
+                    return rotated ? "nesw-resize" : "nwse-resize";
+                }
+                else if ( area === this.TOPRIGHT || area === this.BOTTOMLEFT ) {
+                    return rotated ? "nwse-resize" : "nesw-resize";
+                }
+                else if ( area === this.TOP || area === this.BOTTOM ) {
+                    return rotated ? "ew-resize" : "ns-resize";
+                }
+                else if ( area === this.RIGHT || area === this.LEFT ) {
+                    return rotated ? "ns-resize" : "ew-resize";
+                }
+                else if ( area === this.CENTER ) {
+                    return "move";
+                }
+                else {
+                    return DEFAULT_CURSOR;
+                }
+            }
+        }
+    
+    function _drawRect(event) {
+        var overlay = event.userData;
+        var context = overlay.viewer.drawer.context;
+        var rect = ImageView.convertCoordinatesFromImageToCanvas(overlay.rect, overlay.viewer).times(window.devicePixelRatio);
+        context.beginPath();        
+        context.lineWidth = overlay.style.borderWidth;
+        context.strokeStyle = overlay.style.borderColor;
+        context.rect(rect.x, rect.y, rect.width, rect.height);
+        context.stroke();
+    }
+    
+    
+    
+    function _drawPoint(event) {
+        var point = event.userData[0].times(window.devicePixelRatio);
+        var viewer = event.userData[1];
+        var color = event.userData[2];
+        var radius = event.userData[3];
+        var context = viewer.drawer.context;
+//        console.log("draw on canvas ", viewer.drawer.context)
+//        var point_canvas = ImageView.convertPointFromImageToCanvas(point, viewer);
+        context.beginPath();
+        if(color) {
+            context.fillStyle = color;
+        }
+        context.arc(point.x, point.y, radius, 0, 2*Math.PI, true);
+        context.fill();
+    }
+    
+    function _isInside( rect, point, extra ) {
+//        console.log("point = " + point.x.toFixed(3) + "/" + point.y.toFixed(3));
+//        console.log("rect ul = " + rect.getTopLeft().x.toFixed(3) + "/" + rect.getTopLeft().y.toFixed(3));
+        return point.x > (rect.getTopLeft().x - extra) && point.x < ( rect.getBottomRight().x + extra ) && 
+        point.y > (rect.getTopLeft().y - extra)  && point.y < ( rect.getBottomRight().y + extra );
+    }
+
+    /*
+     * Determine the side of the rectangle rect the point lies on or closest at <=maxDist
+     * distance
+     */
+    function _findEdge( rect, point, maxDist ) {
+        var distanceToLeft = _distToSegment( point, rect.getTopLeft(), rect.getBottomLeft() );
+        var distanceToBottom = _distToSegment( point, rect.getBottomLeft(), rect.getBottomRight() );
+        var distanceToRight = _distToSegment( point, rect.getTopRight(), rect.getBottomRight() );
+        var distanceToTop = _distToSegment( point, rect.getTopLeft(), rect.getTopRight() );
+        
+        var minDistance = Math.min( distanceToLeft, Math.min( distanceToRight, Math.min( distanceToTop, distanceToBottom ) ) );
+        if ( minDistance <= maxDist ) {
+            if ( distanceToLeft === minDistance ) {
+                return imageView.Overlay.HitAreas.LEFT;
+            }
+            if ( distanceToRight === minDistance ) {
+                return imageView.Overlay.HitAreas.RIGHT;
+            }
+            if ( distanceToTop === minDistance ) {
+                return imageView.Overlay.HitAreas.TOP;
+            }
+            if ( distanceToBottom === minDistance ) {
+                return imageView.Overlay.HitAreas.BOTTOM;
+            }
+        }
+        return "";
+    }
+
+    /*
+     * Determine the cornder of the rectangle rect the point lies on or closest at
+     * <=maxDist distance
+     */
+    function _findCorner( rect, point, maxDist ) {
+        var distanceToTopLeft = _dist( point, rect.getTopLeft() );
+        var distanceToBottomLeft = _dist( point, rect.getBottomLeft() );
+        var distanceToTopRight = _dist( point, rect.getTopRight() );
+        var distanceToBottomRight = _dist( point, rect.getBottomRight() );
+        
+        var minDistance = Math.min( distanceToTopLeft, Math.min( distanceToTopRight, Math.min( distanceToBottomLeft, distanceToBottomRight ) ) );
+        if ( minDistance <= maxDist ) {
+            if ( distanceToTopLeft === minDistance ) {
+                return imageView.Overlay.HitAreas.TOPLEFT;
+            }
+            if ( distanceToTopRight === minDistance ) {
+                return imageView.Overlay.HitAreas.TOPRIGHT;
+            }
+            if ( distanceToBottomLeft === minDistance ) {
+                return imageView.Overlay.HitAreas.BOTTOMLEFT;
+            }
+            if ( distanceToBottomRight === minDistance ) {
+                return imageView.Overlay.HitAreas.BOTTOMRIGHT;
+            }
+        }
+        return "";
+    }
+
+    function _sqr( x ) {
+        return x * x
+    }
+    function _dist2( v, w ) {
+        return _sqr( v.x - w.x ) + _sqr( v.y - w.y )
+    }
+    function _dist( v, w ) {
+        return Math.sqrt( _dist2( v, w ) )
+    }
+    function _distToSegmentSquared( p, v, w ) {
+        var l2 = _dist2( v, w );
+        if ( l2 == 0 )
+            return _dist2( p, v );
+        var t = ( ( p.x - v.x ) * ( w.x - v.x ) + ( p.y - v.y ) * ( w.y - v.y ) ) / l2;
+        if ( t < 0 )
+            return _dist2( p, v );
+        if ( t > 1 )
+            return _dist2( p, w );
+        return _dist2( p, {
+            x: v.x + t * ( w.x - v.x ),
+            y: v.y + t * ( w.y - v.y )
+        } );
+    }
+    function _distToSegment( point, lineP1, lineP2 ) {
+        return Math.sqrt( _distToSegmentSquared( point, lineP1, lineP2 ) );
+    }
+
+
+
+    
+
+
+    
+return imageView;
+
+})( ImageView );
 var ImageView = ( function( imageView ) {
     'use strict';
     
@@ -1895,6 +2187,638 @@ ImageView = ( function( imageView ) {
         var excessHeight = this.config.global.adaptContainerHeight || this.fitToHeight() ? 0 : 0.5 * ( this.innerCanvasSize.y - imageSize.y );
         return excessHeight;
     };
+    
+    return imageView;
+    
+} )( ImageView );
+
+var ImageView = ( function(imageView) {
+    'use strict';
+    
+    if(!imageView || !imageView.Overlay) {
+        throw "imageView and imageView.Overlay must be initialized first";
+    }
+
+    var _hbAdd = 5;
+    var _minDistanceToExistingRect = 0.01;
+
+    
+    imageView.Draw = function(viewer, style, startCondition) {
+        
+        this.viewer = viewer;
+        this.style = style;
+        this.startCondition = startCondition;
+        this.active = true;
+        this.drawing = false;
+        this.currentRect = null;
+        this.startPoint = null;
+        this.finishedObservable = new Rx.Subject();
+        
+        _addInputHook(this);
+    }
+    imageView.Draw.prototype.finishedDrawing = function() {
+        return this.finishedObservable;
+    }
+    imageView.Draw.prototype.close = function() {
+        this.active = false;
+        this.finishedObservable.onCompleted();
+    }
+    imageView.Draw.prototype.isActive = function() {
+        return this.active;
+    }
+    imageView.Draw.prototype.isDrawing = function() {
+        return this.drawing;
+    }
+    /*
+     * Position is in viewer element coordinates
+     */
+    imageView.Draw.prototype.createEmptyRectAt = function(position) {
+        
+        this.currentRect = new OpenSeadragon.Rect(position.x, position.y, 0,0);
+        this.startPoint = position;
+        _drawRect(this.currentRect, this.style, this.viewer.drawer.context);
+        
+    }
+    imageView.Draw.prototype.updateOverlay = function(position) {
+            this.viewer.forceRedraw();
+            var draw = this;
+            this.viewer.addOnceHandler( 'update-viewport', function( event ) {
+                if(draw.isDrawing()) {
+                    draw.currentRect.x = Math.min(draw.startPoint.x, position.x);
+                    draw.currentRect.y = Math.min(draw.startPoint.y, position.y);
+                    draw.currentRect.width = Math.abs(draw.startPoint.x-position.x);
+                    draw.currentRect.height = Math.abs(draw.startPoint.y-position.y);
+                    _drawRect(draw.currentRect, draw.style, draw.viewer.drawer.context);
+                }
+            });
+    }
+    
+    function _drawRect(rect, style, context) {
+        rect = rect.times(window.devicePixelRatio);
+        context.beginPath();
+        context.lineWidth = style.borderWidth;
+        context.strokeStyle = style.borderColor;
+        context.rect(rect.x, rect.y, rect.width, rect.height);
+        context.stroke();
+    }
+    
+    function _addInputHook(draw) {
+        var hook = draw.viewer.addViewerInputHook( {
+            hooks: [ {
+                tracker: "viewer",
+                handler: "clickHandler",
+                hookHandler: function(event) { _disableViewerEvent(event, draw) }
+            // }, {
+            // tracker: "viewer",
+            // handler: "scrollHandler",
+            // hookHandler: _disableViewerEvent
+            }, {
+                tracker: "viewer",
+                handler: "dragHandler",
+                hookHandler: function(event) { _onViewerDrag(event, draw) }
+            }, {
+                tracker: "viewer",
+                handler: "pressHandler",
+                hookHandler: function(event) { _onViewerPress(event, draw) }
+            }, {
+                tracker: "viewer",
+                handler: "dragEndHandler",
+                hookHandler: function(event) { _onViewerDragEnd(event, draw) }
+            } ]
+        } );
+        return hook;
+    }
+
+
+    function _onViewerPress( event, draw) {
+        if ( draw.isActive() && draw.startCondition(event.originalEvent)) {
+            var position = new OpenSeadragon.Point(event.position.x, event.position.y);//.times(window.devicePixelRatio);
+            draw.createEmptyRectAt(position);
+            event.preventDefaultAction = false;
+            draw.drawing = true;
+            return true;
+        }
+    }
+    
+    function _onViewerDrag( event, draw) {
+        if ( draw.isDrawing() ) {
+            var position = new OpenSeadragon.Point(event.position.x, event.position.y);//.times(window.devicePixelRatio);
+            draw.updateOverlay(position);
+            event.preventDefaultAction = true;
+            return true; 
+        }
+    }
+    
+    function _onViewerDragEnd( event, draw) {
+        if ( draw.isDrawing() ) {
+            draw.drawing = false;
+            var rect = ImageView.convertCoordinatesFromCanvasToImage(draw.currentRect, draw.viewer);
+            var overlay = new ImageView.Overlay(rect, draw.viewer, draw.style);
+            console.log("rect ", overlay);
+            draw.finishedObservable.onNext(overlay);
+            event.preventDefaultAction = true;
+            return true;
+        }
+        
+    }
+    
+    function _disableViewerEvent( event, draw) {
+        if ( draw.isActive() ) {
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+    
+    function _rotatePoint(point, angle, center) {
+        if(angle !== 0 && !angle) {
+            angle = drawRect.viewer.viewport.getRotation();
+        }
+        if(!center) {
+            center = drawRect.viewer.viewport.getCenter();
+        }
+        angle = angle*Math.PI/180.0;
+        var rotated = {
+                x : Math.cos(angle) * (point.x-center.x) - Math.sin(angle) * (point.y-center.y) + center.x,
+                y : Math.sin(angle) * (point.x-center.x) + Math.cos(angle) * (point.y-center.y) + center.y
+        }
+        return rotated;
+    }
+    
+    function _checkForRectHit( point ) {
+        var i;
+        for ( i = 0; i < _rects.length; i++ ) {
+            var x = _rects[ i ];
+            if ( point.x > x.hitBox.l && point.x < x.hitBox.r && point.y > x.hitBox.t && point.y < x.hitBox.b ) {
+                var topLeftHb = {
+                    l: x.x - _hbAdd,
+                    t: x.y - _hbAdd,
+                    r: x.x + _hbAdd,
+                    b: x.y + _hbAdd
+                };
+                var topRightHb = {
+                    l: x.x + x.width - _hbAdd,
+                    t: x.y - _hbAdd,
+                    r: x.x + x.width + _hbAdd,
+                    b: x.y + _hbAdd
+                };
+                var bottomRightHb = {
+                    l: x.x + x.width - _hbAdd,
+                    t: x.y + x.height - _hbAdd,
+                    r: x.x + x.width + _hbAdd,
+                    b: x.y + x.height + _hbAdd
+                };
+                var bottomLeftHb = {
+                    l: x.x - _hbAdd,
+                    t: x.y + x.height - _hbAdd,
+                    r: x.x + _hbAdd,
+                    b: x.y + x.height + _hbAdd
+                };
+                var topHb = {
+                    l: x.x + _hbAdd,
+                    t: x.y - _hbAdd,
+                    r: x.x + x.width - _hbAdd,
+                    b: x.y + _hbAdd
+                };
+                var rightHb = {
+                    l: x.x + x.width - _hbAdd,
+                    t: x.y + _hbAdd,
+                    r: x.x + x.width + _hbAdd,
+                    b: x.y + x.height - _hbAdd
+                };
+                var bottomHb = {
+                    l: x.x + _hbAdd,
+                    t: x.y + x.height - _hbAdd,
+                    r: x.x + x.width - _hbAdd,
+                    b: x.y + x.height + _hbAdd
+                };
+                var leftHb = {
+                    l: x.x - _hbAdd,
+                    t: x.y + _hbAdd,
+                    r: x.x + _hbAdd,
+                    b: x.y + x.height - _hbAdd
+                };
+            }
+        }
+    }
+    
+    return imageView;
+    
+} )( ImageView );
+
+var ImageView = ( function(imageView) {
+    'use strict';
+    
+    if(!imageView || !imageView.Overlay) {
+        throw "imageView and imageView.Overlay must be initialized first";
+    }
+    
+    var DEFAULT_CURSOR = "default";
+    var REMOVE_CURSOR = "not-allowed";
+
+    var _hbAdd = 5;
+    var _sideClickPrecision = 4;
+    var _debug = true;
+    
+    imageView.Remove = function(viewer, startCondition) {
+        this.viewer = viewer;
+        this.startCondition = startCondition;
+        this.active = true;
+        this.currentOverlay = null;
+        this.overlays = [];
+        this.finishedObservable = new Rx.Subject();
+        _addInputHook(this);
+    }
+    imageView.Remove.prototype.addOverlay = function(overlay) {
+        if(!this.overlays.includes(overlay)) {
+            this.overlays.push(overlay);
+            return true;
+        }
+        return false;
+    }
+    imageView.Remove.prototype.removeOverlay = function(overlay) {
+        if(this.overlays.includes(overlay)) {
+            var index = this.overlays.indexOf(overlay);
+            this.overlays.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+    imageView.Remove.prototype.finishedRemoving = function() {
+        return this.finishedObservable;
+    }
+    imageView.Remove.prototype.close = function() {
+        this.active = false;
+        this.finishedObservable.onCompleted();
+    }
+    imageView.Remove.prototype.isActive = function() {
+        return this.active;
+    }
+    imageView.Remove.prototype.getContainingOverlay = function(point) {
+        for(var index in this.overlays) {
+            var overlay = this.overlays[index];
+            if(overlay.contains(point, _sideClickPrecision, true)) {
+                return overlay;
+            } 
+        }
+        return null;
+    }
+
+    
+    function _addInputHook(remove) {
+        var hook = remove.viewer.addViewerInputHook( {
+            hooks: [ {
+                tracker: "viewer",
+                handler: "clickHandler",
+                hookHandler: function(event) { _onViewerPress(event, remove) }
+            }, {
+                tracker: "viewer",
+                handler: "moveHandler",
+                hookHandler: function(event) { _onViewerMove(event, remove) }
+            } ]
+        } );
+        return hook;
+    }
+
+    
+    
+    function _isInside( rect, point, extra ) {
+
+        return point.x > rect.getTopLeft().x - extra && point.x < ( rect.x + rect.width + extra ) && point.y > rect.y - extra
+                && point.y < ( rect.y + rect.height + extra );
+    }
+
+    function _onViewerMove( event, remove ) {
+        if (remove.isActive() && remove.startCondition(event.originalEvent) ) {
+            
+            var coords = event.position;
+            var overlay = remove.getContainingOverlay(coords);
+            var viewerElement = remove.viewer.element;
+            if(overlay) {
+                remove.currentOverlay = overlay;
+            } else {
+                remove.currentOverlay = null;
+            }
+            
+            if ( remove.currentOverlay ) {
+                $( viewerElement ).css( {
+                    cursor: REMOVE_CURSOR
+                } );
+            } else {
+                $( viewerElement ).css( {
+                    cursor: DEFAULT_CURSOR
+                } );
+            }
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+    
+    function _onViewerPress( event, remove ) {
+        if ( remove.isActive()  && remove.startCondition(event.originalEvent)) {
+            if ( remove.currentOverlay) {
+                remove.currentOverlay.remove();
+                remove.finishedObservable.onNext(remove.currentOverlay);
+                remove.currentOverlay = null;
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    function _disableViewerEvent( event, remove ) {
+        if ( remove.isTransforming() ) {
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+
+    
+    return imageView;
+    
+} )( ImageView );
+
+var ImageView = ( function(imageView) {
+    'use strict';
+    
+    if(!imageView || !imageView.Overlay) {
+        throw "imageView and imageView.Overlay must be initialized first";
+    }
+    
+    var DEFAULT_CURSOR = "default";
+
+    var _hbAdd = 5;
+    var _sideClickPrecision = 4;
+    var _debug = true;
+    
+    imageView.Transform = function(viewer, style, startCondition) {
+
+        this.viewer = viewer;
+        this.style = style;
+        this.startCondition = startCondition;
+        this.active = true;
+        this.transforming = false;
+        this.currentOverlay = null;
+        this.drawArea = null;
+        this.startPoint = null;
+        this.overlays = [];
+        this.finishedObservable = new Rx.Subject();
+        _addInputHook(this);
+    }
+    imageView.Transform.prototype.addOverlay = function(overlay) {
+        if(!this.overlays.includes(overlay)) {
+            this.overlays.push(overlay);
+            return true;
+        }
+        return false;
+    }
+    imageView.Transform.prototype.removeOverlay = function(overlay) {
+        if(this.overlays.includes(overlay)) {
+            var index = this.overlays.indexOf(overlay);
+            this.overlays.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+    imageView.Transform.prototype.finishedTransforming = function() {
+        return this.finishedObservable;
+    }
+    imageView.Transform.prototype.close = function() {
+        this.active = false;
+        this.finishedObservable.onCompleted();
+    }
+    imageView.Transform.prototype.isActive = function() {
+        return this.active;
+    }
+    imageView.Transform.prototype.isTransforming = function() {
+        return this.transforming;
+    }
+    imageView.Transform.prototype.getContainingOverlay = function(point) {
+        for(var index in this.overlays) {
+            var overlay = this.overlays[i];
+            if(overlay.contains(point, _sideClickPrecision, true)) {
+                return overlay;
+            } 
+        }
+        return null;
+    }
+
+    
+    function _addInputHook(transform) {
+        var hook = transform.viewer.addViewerInputHook( {
+            hooks: [ {
+                tracker: "viewer",
+                handler: "clickHandler",
+                hookHandler: function(event) { _disableViewerEvent(event, transform) }
+            }, {
+                tracker: "viewer",
+                handler: "dragHandler",
+                hookHandler: function(event) { _onViewerDrag(event, transform) }
+            }, {
+                tracker: "viewer",
+                handler: "pressHandler",
+                hookHandler: function(event) { _onViewerPress(event, transform) }
+            }, {
+                tracker: "viewer",
+                handler: "dragEndHandler",
+                hookHandler: function(event) { _onViewerDragEnd(event, transform) }
+            }, {
+                tracker: "viewer",
+                handler: "releaseHandler",
+                hookHandler: function(event) { _onViewerRelease(event, transform) }
+            }, {
+                tracker: "viewer",
+                handler: "moveHandler",
+                hookHandler: function(event) { _onViewerMove(event, transform) }
+            } ]
+        } );
+        return hook;
+    }
+
+
+
+    
+    function _createOverlay(x,y,width,height) {
+        var element = document.createElement("div");
+        element.classList.add(_overlayStyleClass);
+        
+        var location = new OpenSeadragon.Rect(x,y,width,height);
+        var overlay = {
+                element: element,
+                location: location
+            }
+        draw.viewer.addOverlay(overlay);
+        return overlay;
+    }
+    
+    
+    function _isInside( rect, point, extra ) {
+
+        return point.x > rect.getTopLeft().x - extra && point.x < ( rect.x + rect.width + extra ) && point.y > rect.y - extra
+                && point.y < ( rect.y + rect.height + extra );
+    }
+
+    function _onViewerMove( event, transform ) {
+        if ( !transform.isTransforming() && transform.isActive() && transform.startCondition(event.originalEvent) ) {
+            
+            var coords = new OpenSeadragon.Point(event.position.x, event.position.y);//.times(1/window.devicePixelRatio);
+            var overlay = transform.getContainingOverlay(coords);
+            var viewerElement = transform.viewer.element;
+            if(overlay) {
+                transform.currentOverlay = overlay;
+                transform.drawArea = overlay.getHitArea(coords, _sideClickPrecision, true);
+            } else {
+                transform.currentOverlay = null;
+                transform.drawArea = null;
+            }
+            
+            if ( transform.drawArea ) {
+                $( viewerElement ).css( {
+                    cursor: imageView.Overlay.HitAreas.getCursor( transform.drawArea )
+                } );
+            } else {
+                $( viewerElement ).css( {
+                    cursor: DEFAULT_CURSOR
+                } );
+            }
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+    
+    function _onViewerPress( event, transform ) {
+        if ( transform.isActive()  && transform.startCondition(event.originalEvent)) {
+            if ( transform.currentOverlay && transform.drawArea ) {
+                var coords = new OpenSeadragon.Point(event.position.x, event.position.y);//.times(1/window.devicePixelRatio);
+                transform.startPoint = coords;
+                transform.transforming = true;
+                event.preventDefaultAction = true;
+                console.log("start transforming at ", transform.startPoint);
+                return true;
+            } else {
+                transform.transforming = false;
+                return false;
+            }
+        }
+    }
+    
+    function _onViewerDrag( event, transform ) {
+        if ( transform.isTransforming() ) {
+            var newPoint = new OpenSeadragon.Point(event.position.x, event.position.y);//.times(1/window.devicePixelRatio);
+            var rect = imageView.convertCoordinatesFromImageToCanvas(transform.currentOverlay.rect, transform.viewer);
+            var topLeft = null;//rect.getTopLeft();
+            var bottomRight = null;//rect.getBottomRight();
+            // if(_debug)console.log("Draw location = " + newPoint);
+            if ( transform.drawArea === imageView.Overlay.HitAreas.TOPLEFT ) {
+                topLeft = new OpenSeadragon.Point( Math.min( newPoint.x, rect.getBottomRight().x ), Math.min( newPoint.y, rect.getBottomRight().y ) );
+                bottomRight = rect.getBottomRight();
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.TOPRIGHT ) {
+                topLeft = new OpenSeadragon.Point( rect.getTopLeft().x, Math.min( newPoint.y, rect.getBottomRight().y ) );
+                bottomRight = new OpenSeadragon.Point( Math.max( newPoint.x, rect.getTopLeft().x ), rect.getBottomRight().y );
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.BOTTOMLEFT ) {
+                topLeft = new OpenSeadragon.Point( Math.min( newPoint.x, rect.getBottomRight().x ), rect.getTopLeft().y );
+                bottomRight = new OpenSeadragon.Point( rect.getBottomRight().x, Math.max( newPoint.y, rect.getTopLeft().y ) );
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.BOTTOMRIGHT ) {
+                topLeft = rect.getTopLeft();
+                bottomRight = new OpenSeadragon.Point( Math.max( newPoint.x, rect.getTopLeft().x ), Math.max( newPoint.y, rect.getTopLeft().y ) );
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.LEFT ) {
+                topLeft = new OpenSeadragon.Point( Math.min( newPoint.x, rect.getBottomRight().x ), rect.getTopLeft().y );
+                bottomRight = rect.getBottomRight();
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.RIGHT ) {
+                topLeft = rect.getTopLeft();
+                bottomRight = new OpenSeadragon.Point( Math.max( newPoint.x, rect.getTopLeft().x ), rect.getBottomRight().y );
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.TOP ) {
+//                var rectOrig = new OpenSeadragon.Rect(rect.x, newPoint.y, rect.width, rect.height+(rect.y-newPoint.y));
+//                var rectRotated = _createOverlay(rectOrig); 
+//                rect = _normalize(rectRotated);
+//                rect = rectOrig;
+                topLeft = new OpenSeadragon.Point( rect.getTopLeft().x, Math.min( newPoint.y, rect.getBottomRight().y ) );
+                bottomRight = rect.getBottomRight();
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.BOTTOM ) {
+                topLeft = rect.getTopLeft();
+                bottomRight = new OpenSeadragon.Point( rect.getBottomRight().x, Math.max( newPoint.y, rect.getTopLeft().y ) );
+            }
+            else if ( transform.drawArea === imageView.Overlay.HitAreas.CENTER && transform.startPoint ) {
+                var dx = transform.startPoint.x - newPoint.x;
+                var dy = transform.startPoint.y - newPoint.y;
+                rect.x -= dx;
+                rect.y -= dy;
+                transform.startPoint = newPoint;
+            }
+            
+            if(topLeft && bottomRight) {
+                rect = new OpenSeadragon.Rect(topLeft.x, topLeft.y, bottomRight.x-topLeft.x, bottomRight.y-topLeft.y);
+            }
+
+            transform.currentOverlay.rect = imageView.convertCoordinatesFromCanvasToImage(rect, transform.viewer);
+            transform.viewer.forceRedraw();
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+    
+    function _createOverlay(rect) {
+        var topLeft = rect.getTopLeft();
+        var bottomRight = rect.getBottomRight();
+//        var topLeft = {x: Math.min(p1.x, p2.x), y : Math.min(p1.y, p2.y)};
+//        var bottomRight = {x: Math.max(p1.x, p2.x),y: Math.max(p1.y, p2.y)}
+//        console.log("top left ", topLeft);
+//        console.log("bottom right ", bottomRight);
+        var topLeftRotated = _rotatePoint(topLeft);
+        var bottomRightRotated = _rotatePoint(bottomRight);
+        
+        var x = topLeft.x;
+        var y = topLeft.y;
+        var width = bottomRightRotated.x-topLeftRotated.x;
+        var height = bottomRightRotated.y-topLeftRotated.y;
+        
+        var rectRotated = new OpenSeadragon.Rect(x,y, width, height);
+        return rectRotated;
+    }
+    
+    function _normalize(rect) {
+        var p1 = rect.getTopLeft();
+        var p2 = rect.getBottomRight();
+        var topLeft = {x: Math.min(p1.x, p2.x), y : Math.min(p1.y, p2.y)};
+        var bottomRight = {x: Math.max(p1.x, p2.x),y: Math.max(p1.y, p2.y)}
+        console.log("top left ", topLeft);
+        console.log("bottom right ", bottomRight);
+        var norm = new OpenSeadragon.Rect(topLeft.x, topLeft.y, bottomRight.x-topLeft.x, bottomRight.y-topLeft.y);
+        return norm;
+    }
+    
+    function _onViewerRelease( event, transform ) {
+        if ( transform.isActive() ) {
+            if ( transform.transforming ) {
+                transform.finishedObservable.onNext(transform.currentOverlay);
+            }
+            transform.transforming = false;
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+    
+    function _onViewerDragEnd( event, transform ) {
+        if ( transform.isTransforming() ) {
+            transform.transforming = false;
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+    
+    function _disableViewerEvent( event, transform ) {
+        if ( transform.isTransforming() ) {
+            event.preventDefaultAction = true;
+            return true;
+        }
+    }
+
     
     return imageView;
     
@@ -3349,27 +4273,21 @@ var ImageView = ( function( imageView ) {
         this.config = $.extend( true, {}, _defaults );
         $.extend( true, this.config, config.global );
         this.image = image;
-//        this.imageWidth = image.sizes.originalImageSize.x;
-//        this.imageViewWidth = image.container.width();
-        this.init();
     }
     
     imageView.ZoomSlider.prototype.init = function() {
             if ( _debug ) {
                 console.log( '##############################' );
                 console.log( 'imageView.zoomSlider.init' );
-                console.log("config - ", this.config);
                 console.log( '##############################' );
             }
-            if ( $(this.config.zoomSlider).length > 0 ) {
                 this.addZoomSlider(this.config.zoomSlider );
-                
-                // handler for openSeadragon Object
+                this.buttonToZoom(this.image.viewer.viewport.getHomeZoom());
                 var zoom = this;
-                this.image.viewer.addHandler( 'zoom', function( data ) {
-                    zoom.buttonToZoom( data.zoom );
-                } );
-            }
+                    this.image.observables.viewerZoom.subscribe( function( event ) {
+                        var scale = zoom.image.viewer.viewport.getZoom();
+                        zoom.buttonToZoom( scale );
+                    });
         };
         imageView.ZoomSlider.prototype.exists = function() {
             return this.$element.length && this.$button.length;
@@ -3426,29 +4344,31 @@ var ImageView = ( function( imageView ) {
                 return;
             }
 
-            var factor = ( scale - this.image.viewer.viewport.getMinZoom() ) / ( this.image.viewer.viewport.getMaxZoom() - this.image.viewer.viewport.getMinZoom() );
-
-            factor = 1 / Math.atan( this.config.sliderDilation ) * Math.atan( this.config.sliderDilation * factor );
-            var newPos = factor * ( this.absoluteWidth - this.$button.width() );
-
-            
-            if ( Math.abs( this.image.viewer.viewport.getMaxZoom() - scale ) < 0.0000000001 ) {
-                newPos = this.absoluteWidth - this.$button.width();
+            if(this.$button) { 
+                var factor = ( scale - this.image.viewer.viewport.getMinZoom() ) / ( this.image.viewer.viewport.getMaxZoom() - this.image.viewer.viewport.getMinZoom() );
+                
+                factor = 1 / Math.atan( this.config.sliderDilation ) * Math.atan( this.config.sliderDilation * factor );
+                var newPos = factor * ( this.absoluteWidth - this.$button.width() );
+                
+                
+                if ( Math.abs( this.image.viewer.viewport.getMaxZoom() - scale ) < 0.0000000001 ) {
+                    newPos = this.absoluteWidth - this.$button.width();
+                }
+                
+                if ( newPos < 0 ) {
+                    newPos = 0;
+                }
+                
+                this.$button.css( {
+                    left: newPos
+                } );
+                this.buttonPosition = newPos;
             }
-            
-            if ( newPos < 0 ) {
-                newPos = 0;
-            }
-            
-            this.$button.css( {
-                left: newPos
-            } );
-            this.buttonPosition = newPos;
             this.setLabel(scale);
         },
         imageView.ZoomSlider.prototype.setLabel = function(scale) {
-            if(this.$label.length) {
-                var imageWidth = this.image.sizes.originalImageSize.x;
+            if(this.$label.length && this.image.sizes) {
+                var imageWidth = this.image.config.image.originalImageWidth;
                 var imageViewWidth = this.image.container.width();
                 scale = parseFloat(scale)/imageWidth*imageViewWidth;
                 this.$label.val((scale*100).toFixed(1));
@@ -3456,11 +4376,11 @@ var ImageView = ( function( imageView ) {
         };
         imageView.ZoomSlider.prototype.inputToZoom = function(input) {
             var imageScale = parseFloat(input);
-            if(imageScale) {
+            if(imageScale && this.image.sizes) {
                 if(_debug) {
                     console.log("scale to ", input);
                 }
-                var imageWidth = this.image.sizes.originalImageSize.x;
+                var imageWidth = this.image.config.image.originalImageWidth;
                 var imageViewWidth = this.image.container.width();
                 var scale = imageScale*imageWidth/imageViewWidth/100.0;
                 if(scale < this.image.viewer.viewport.getMinZoom()) {
@@ -3499,6 +4419,13 @@ var ImageView = ( function( imageView ) {
             if(this.$label.length) {
                 this.$label.on("change", function(event) {
                     slider.inputToZoom(event.target.value)
+                    return false;
+                });
+                this.$label.on("keypress", function(e) {
+                    if (e.which == 13) {
+                        slider.inputToZoom(e.target.value)
+                        return false;
+                    }
                 });
             }
             $( document ).on( 'mouseup', function(event) {

@@ -78,6 +78,12 @@
                     </ui:insert>                    
                 </h:panelGroup>
                 
+                <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'object'}">
+                    <ui:insert name="viewObject3d">
+                        <ui:include src="/resources/includes/object/object3d.xhtml" />        
+                    </ui:insert>                    
+                </h:panelGroup>
+                
                 <!-- TODO -->
                 <!-- VIEW TEXT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mimeType == 'text'}">
