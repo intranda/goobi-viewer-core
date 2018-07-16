@@ -847,12 +847,24 @@ public class CMSPage {
 
     public void addContentItem(CMSContentItem item) {
         synchronized (languageVersions) {
-            if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
-                getLanguageVersions().stream().filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
-                        lang -> lang.addContentItem(item));
-            } else {
-                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
-            }
+                List<CMSPageLanguageVersion> languages = new ArrayList<>(getLanguageVersions());
+                for (CMSPageLanguageVersion language : languages) {
+                    if (item.getType().equals(CMSContentItemType.HTML) || item.getType().equals(CMSContentItemType.TEXT)) {
+                        if(!language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+                            language.addContentItem(item);
+                        }
+                    } else {
+                        if(language.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)) {
+                            language.addContentItem(item);
+                        }
+                    }
+                }
+                
+//                getLanguageVersions().stream().filter(lang -> !lang.getLanguage().equals(CMSPage.GLOBAL_LANGUAGE)).forEach(
+//                        lang -> lang.addContentItem(item));
+//            } else {
+//                getLanguageVersion(CMSPage.GLOBAL_LANGUAGE).addContentItem(item);
+//            }
         }
     }
 
