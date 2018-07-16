@@ -2248,7 +2248,7 @@ public class JPADAO implements IDAO {
      * @should return correct page
      */
     @Override
-    public synchronized CMSPage getCMSPage(long id) throws DAOException {
+    public CMSPage getCMSPage(long id) throws DAOException {
         logger.trace("getCMSPage: {}", id);
         preQuery();
         try {
@@ -2272,8 +2272,8 @@ public class JPADAO implements IDAO {
         preQuery();
                 EntityManager em = factory.createEntityManager();
         try {
-            //            CMSPage o = em.getReference(CMSPage.class, id);
-            CMSPage o = em.find(CMSPage.class, id);
+                        CMSPage o = em.getReference(CMSPage.class, id);
+//            CMSPage o = em.find(CMSPage.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
