@@ -489,12 +489,16 @@ public class CmsBean implements Serializable {
         // resetImageDisplay();
         if (selectedPage != null) {
             // Validate
+            logger.trace("save sidebar elements");
             selectedPage.saveSidebarElements();
+            logger.trace("validate page");
             validatePage(selectedPage, getDefaultLocale().getLanguage());
+            logger.trace("reset item data");
             selectedPage.resetItemData();
             // Save
             boolean success = false;
             selectedPage.setDateUpdated(new Date());
+            logger.trace("update dao");
             if (selectedPage.getId() != null) {
                 success = DataManager.getInstance().getDao().updateCMSPage(selectedPage);
             } else {
@@ -502,16 +506,23 @@ public class CmsBean implements Serializable {
             }
             if (success) {
                 Messages.info("cms_pageSaveSuccess");
-                selectedPage = getCMSPage(selectedPage.getId());
+                logger.trace("reload cms page");
+//                selectedPage = getCMSPage(selectedPage.getId());
+                setSelectedPage(selectedPage);
+//                DataManager.getInstance().getDao().updateCMSPage(selectedPage);
+                logger.trace("update pages");
                 lazyModelPages.update();
             } else {
                 Messages.error("cms_pageSaveFailure");
             }
+            logger.trace("reset collections");
             resetCollectionsForPage(selectedPage.getId().toString());
             if (cmsNavigationBean != null) {
+                logger.trace("add navigation item");
                 cmsNavigationBean.getItemManager().addAvailableItem(new CMSNavigationItem(this.selectedPage));
             }
         }
+        logger.trace("Done saving page");
     }
 
     /**
