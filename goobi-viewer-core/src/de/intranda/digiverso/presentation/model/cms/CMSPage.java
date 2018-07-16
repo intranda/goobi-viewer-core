@@ -110,9 +110,9 @@ public class CMSPage {
     @Column(name = "subtheme_discriminator", nullable = true)
     private String subThemeDiscriminatorValue = null;
 
-//    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-//    @OrderBy("order")
-//    @PrivateOwned
+    @OneToMany(mappedBy = "ownerPage", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @OrderBy("order")
+    @PrivateOwned
     private List<CMSSidebarElement> sidebarElements = new ArrayList<>();
 
     @Transient
