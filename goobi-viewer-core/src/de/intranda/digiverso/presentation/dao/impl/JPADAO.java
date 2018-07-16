@@ -2270,7 +2270,7 @@ public class JPADAO implements IDAO {
     public CMSPage getCMSPageForEditing(long id) throws DAOException {
         logger.trace("getCMSPageForEditing: {}", id);
         preQuery();
-        //        EntityManager em = factory.createEntityManager();
+                EntityManager em = factory.createEntityManager();
         try {
             //            CMSPage o = em.getReference(CMSPage.class, id);
             CMSPage o = em.find(CMSPage.class, id);
