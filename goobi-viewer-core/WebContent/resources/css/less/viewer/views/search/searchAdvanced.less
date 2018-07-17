@@ -58,6 +58,9 @@
             border-right: none;
             &:focus {
                 border-right-color: @blue;
+                & + .input-group-addon {
+                	border-color: @blue;
+                }
             }
         }
         .input-group-addon {

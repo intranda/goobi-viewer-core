@@ -4277,6 +4277,9 @@ div[id*="-Modal"] .email-form .form-group {
 .search-advanced__input-group input[type="text"]:focus {
   border-right-color: #507ebf;
 }
+.search-advanced__input-group input[type="text"]:focus + .input-group-addon {
+  border-color: #507ebf;
+}
 .search-advanced__input-group .input-group-addon {
   padding: 0;
   border-radius: 0;
@@ -4480,6 +4483,9 @@ div[id*="-Modal"] .email-form .form-group {
 .search-list__current-search .input-group-addon.reset {
   background-color: #eee;
 }
+.search-list__current-search .input-group-addon.reset.focus {
+  border-color: #507ebf;
+}
 .search-list__current-search .input-group-addon.search {
   background-color: #507ebf;
   border-color: #507ebf;
@@ -4490,6 +4496,9 @@ div[id*="-Modal"] .email-form .form-group {
 }
 .search-list__current-search .form-control {
   border-right: none;
+}
+.search-list__current-search .form-control:focus {
+  border-left-color: #ccc;
 }
 .search-list__links button {
   padding-right: 12px;

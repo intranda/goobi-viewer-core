@@ -110,6 +110,9 @@
             }
             &.reset {
                 background-color: @lightgray;
+                &.focus {
+                	border-color: @blue;
+                }
             }
             &.search {
                 background-color: @blue;
@@ -122,6 +125,9 @@
         }
         .form-control {
             border-right: none;
+            &:focus {
+            	border-left-color: @middlegray;
+            }
         }
     }
     /* LINKS */
