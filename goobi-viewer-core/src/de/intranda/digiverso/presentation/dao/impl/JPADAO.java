@@ -2253,6 +2253,9 @@ public class JPADAO implements IDAO {
         preQuery();
         try {
             CMSPage o = em.getReference(CMSPage.class, id);
+            if (o != null) {
+                updateCMSPageFromDatabase(o.getId());
+            }
             return o;
         } catch (EntityNotFoundException e) {
             return null;
@@ -2270,10 +2273,12 @@ public class JPADAO implements IDAO {
     public CMSPage getCMSPageForEditing(long id) throws DAOException {
         logger.trace("getCMSPageForEditing: {}", id);
         preQuery();
-                EntityManager em = factory.createEntityManager();
+        EntityManager em = factory.createEntityManager();
         try {
-                        CMSPage o = em.getReference(CMSPage.class, id);
-//            CMSPage o = em.find(CMSPage.class, id);
+            CMSPage o = em.getReference(CMSPage.class, id);
+            if (o != null) {
+                updateCMSPageFromDatabase(o.getId());
+            }
             return o;
         } catch (EntityNotFoundException e) {
             return null;
