@@ -1118,6 +1118,56 @@ input.btn .ui-button-text,
 div.mce-fullscreen {
   z-index: 999;
 }
+/* IE 11 NOT SUPPORTED */
+.support-overlay {
+  display: none !important;
+  visibility: hidden !important;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 99999;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+.support-overlay__box {
+  position: absolute;
+  width: 400px;
+  height: 600px;
+  top: 50%;
+  left: 50%;
+  margin: -300px 0 0 -200px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.support-overlay__box-header,
+.support-overlay__box-body,
+.support-overlay__box-footer {
+  padding: 15px;
+}
+.support-overlay__box-header {
+  height: 50px;
+  padding-top: 13px;
+  padding-bottom: 0;
+  border-bottom: 1px solid #ccc;
+}
+.support-overlay__box-header h3 {
+  margin: 0;
+}
+.support-overlay__box-body {
+  height: 500px;
+}
+.support-overlay__box-footer {
+  height: 50px;
+  padding-top: 13px;
+  padding-bottom: 0;
+  text-align: right;
+  border-top: 1px solid #ccc;
+}
+html.is-IE .support-overlay {
+  display: block !important;
+  visibility: visible !important;
+}
 /* BREAKPOINT FOR LARGE DESKTOPS */
 /* BREAKPOINT FOR DESKTOP */
 /* BREAKPOINT FOR TABLETS */
