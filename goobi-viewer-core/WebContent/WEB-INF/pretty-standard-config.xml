@@ -683,13 +683,13 @@
 		<action obPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 	</url-mapping>
-	<url-mapping id="cmsOpenPageWithSearch">
-		<pattern
-			value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-	</url-mapping>
+<!-- 	<url-mapping id="cmsOpenPageWithSearch"> -->
+<!-- 		<pattern -->
+<!-- 			value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" /> -->
+<!-- 		<view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+<!-- 		<action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+<!-- 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
+<!-- 	</url-mapping> -->
 	<!-- <url-mapping id="cmsOpenPageWithSearchSimple"> -->
 	<!-- <pattern value="/cms/#{page:cmsBean.currentPageId}/search/#{query:cmsBean.currentPage.search.simpleSearchQuery}/#{pageNo:cmsBean.currentPage.search.pageNo}/#{sort:cmsBean.currentPage.search.solrSortFields}/#{currentFacetString:cmsBean.currentPage.search.facetString}/#{dc:cmsBean.currentPage.search.collection}/" 
 		/> -->

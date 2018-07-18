@@ -910,7 +910,7 @@ public class CmsBean implements Serializable {
             searchBean.setActiveSearchType(SearchHelper.SEARCH_TYPE_REGULAR);
             searchBean.setHitsPerPage(item.getElementsPerPage());
             searchBean.setExactSearchStringResetGui(item.getSolrQuery());
-            searchBean.setCurrentPage(item.getListPage());
+//            searchBean.setCurrentPage(item.getListPage());
             if (item.getSolrSortFields() != null) {
                 searchBean.setSortString(item.getSolrSortFields());
             }
