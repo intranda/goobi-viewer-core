@@ -647,42 +647,42 @@
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
 	</url-mapping>
-	<url-mapping id="cmsOpenPage2">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{cmsBean.cmsContextAction}</action>
-	</url-mapping>
-    <url-mapping id="cmsOpenPage3">
-        <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-    </url-mapping>
-    <url-mapping id="cmsOpenPage4">
-        <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-    </url-mapping>
-    <url-mapping id="cmsOpenPage5">
-        <pattern
-            value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" />
-        <view-id value="#{cmsBean.getCurrentPageUrl}" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{searchBean.resetHitsPerPage()}</action>
-        <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>
-    </url-mapping>
-	<url-mapping id="cmsOpenPageWithCollection">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" />
-		<view-id value="#{cmsBean.getCurrentPageUrl}" />
-		<action obPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
+<!-- 	<url-mapping id="cmsOpenPage2"> -->
+<!-- 		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{page:cmsBean.currentPage.listPage}/" /> -->
+<!-- 		<view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+<!-- 		<action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+<!-- 		<action onPostback="false">#{cmsBean.cmsContextAction}</action> -->
+<!-- 	</url-mapping> -->
+<!--     <url-mapping id="cmsOpenPage3"> -->
+<!--         <pattern -->
+<!--             value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/" /> -->
+<!--         <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+<!--         <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+<!--         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action> -->
+<!--         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
+<!--     </url-mapping> -->
+<!--     <url-mapping id="cmsOpenPage4"> -->
+<!--         <pattern -->
+<!--             value="/cms/#{page:cmsBean.currentPageId}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" /> -->
+<!--         <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+<!--         <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+<!--         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action> -->
+<!--         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
+<!--     </url-mapping> -->
+<!--     <url-mapping id="cmsOpenPage5"> -->
+<!--         <pattern -->
+<!--             value="/cms/#{page:cmsBean.currentPageId}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/#{query:searchBean.exactSearchString}/#{page:searchBean.currentPage}/#{sort:searchBean.sortString}/#{currentFacetString:searchBean.facets.currentFacetString}/" /> -->
+<!--         <view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+<!--         <action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+<!--         <action onPostback="false">#{searchBean.resetHitsPerPage()}</action> -->
+<!--         <action onPostback="false">#{cmsBean.cmsContextAction(false)}</action> -->
+<!--     </url-mapping> -->
+<!-- 	<url-mapping id="cmsOpenPageWithCollection"> -->
+<!-- 		<pattern value="/cms/#{page:cmsBean.currentPageId}/expandCollection/#{page:cmsBean.currentPage.collection.topVisibleElement}/" /> -->
+<!-- 		<view-id value="#{cmsBean.getCurrentPageUrl}" /> -->
+<!-- 		<action obPostback="false">#{cmsBean.currentPage.collection.populateCollectionList()}</action> -->
+<!-- 		<action onPostback="false">#{navigationHelper.resetTheme}</action> -->
+<!-- 	</url-mapping> -->
 	<url-mapping id="cmsOpenPageWithSearch">
 		<pattern
 			value="/cms/#{page:cmsBean.currentPageId}/search/#{page:cmsBean.currentPage.listPage}/#{currentFacetString:searchBean.facets.currentFacetString}/#{currentHierarchicalFacetString:searchBean.facets.currentHierarchicalFacetString}/" />
