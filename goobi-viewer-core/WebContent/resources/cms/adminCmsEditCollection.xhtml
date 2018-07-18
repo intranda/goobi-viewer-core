@@ -179,8 +179,8 @@
                                 </ui:fragment>
                                 <ui:fragment rendered="#{!cmsCollectionsBean.currentCollection.hasImage()}">
                                     <img
-                                        src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
-                                        class="img-responsive"
+                                        data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
+                                        class="img-responsive thumbnail"
                                         alt="" />
                                 </ui:fragment>
                             </div>
@@ -242,8 +242,8 @@
                                                 <h:commandLink action="#{cmsCollectionsBean.setSelectedMediaItem(null)}">
                                                     <span class="#{cmsCollectionsBean.isSelectedMediaItem(null) ? 'selected' : ''}">
                                                         <img
-                                                            src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
-                                                            class="img-responsive"
+                                                            data-src="#{imageDelivery.thumbs.getThumbnailPath(configurationBean.getDefaultBrowseIcon(collection.solrFieldValue))}"
+                                                            class="img-responsive thumbnail"
                                                             alt="" />
                                                         <figcaption>#{msg.cms_collections_noImage}</figcaption>
                                                     </span>
@@ -260,8 +260,8 @@
                                                     <h:commandLink action="#{cmsCollectionsBean.setSelectedMediaItem(mediaItem)}">
                                                         <span class="#{cmsCollectionsBean.isSelectedMediaItem(mediaItem) ? 'selected' : ''}">
                                                             <img
-                                                                src="#{imageDelivery.thumbs.getSquareThumbnailUrl(mediaItem, 150)}"
-                                                                class="img-responsive"
+                                                                data-src="#{imageDelivery.thumbs.getSquareThumbnailUrl(mediaItem, 150)}"
+                                                                class="img-responsive thumbnail"
                                                                 alt="" />
                                                             <figcaption>#{mediaItem.name}</figcaption>
                                                         </span>

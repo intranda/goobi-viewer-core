@@ -85,7 +85,7 @@ public class ImageRequestFilter implements ContainerRequestFilter {
             //            if (request.getUriInfo() != null && request.getUriInfo().getPath().endsWith("json")) {
             //                mediaType = MediaType.APPLICATION_JSON;
             //            }
-            Response response = Response.status(Status.NOT_FOUND).type(mediaType).entity(new ErrorMessage(Status.NOT_FOUND, e, false)).build();
+            Response response = Response.status(Status.FORBIDDEN).type(mediaType).entity(new ErrorMessage(Status.FORBIDDEN, e, false)).build();
             request.abortWith(response);
         } catch (ViewerConfigurationException e) {
             Response response =

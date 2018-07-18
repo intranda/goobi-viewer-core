@@ -28,7 +28,9 @@
         messageBoxTimeout: 8000,
         pageScrollSelector: '.icon-totop',
         pageScrollAnchor: '#top',
-        widgetNerSidebarRight: false
+        widgetNerSidebarRight: false,
+        accessDeniedImage: '/resources/images/access_denied.png',
+        notFoundImage: '/resources/images/not_found.png'
     };
     
     var viewer = {};
@@ -133,7 +135,7 @@
             var fadeoutScheduled = false;
             
             setInterval( function() {
-                if ( $( _defaults.messageBoxSelector ).size() > 0 ) {
+                if ( $( _defaults.messageBoxSelector ).length > 0 ) {
                     if ( !fadeoutScheduled ) {
                         fadeoutScheduled = true;
                         var messageTimer = setTimeout( function() {
@@ -181,6 +183,8 @@
         	$( this ).val( '' );
         } );
         
+        _loadThumbnails();
+        
         // AJAX Loader Eventlistener
         if ( typeof jsf !== 'undefined' ) {
             jsf.ajax.addOnEvent( function( data ) {
@@ -217,6 +221,7 @@
                                     viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
                                 } );
                             }
+                            _loadThumbnails();
                             break;
                     }
                 }
@@ -242,6 +247,7 @@
                                     viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
                                 } );
                             }
+                            _loadThumbnails();
                             break;
                     }
                 }
@@ -259,6 +265,7 @@
                                     viewerJS.helper.equalHeight( _defaults.sidebarSelector, _defaults.contentSelector );
                                 } );
                             }
+                            _loadThumbnails();
                             break;
                     }
                 }
@@ -365,17 +372,74 @@
             viewerJS.tinyMce.init( this.tinyConfig );
         }
         
+        // load images with error handling
+        function _loadThumbnails() {
+            $('.thumbnail').each(function() {
+                var element = this;
+                var source = element.dataset.src; 
+                if(source && !element.src) { 
+                    var accessDenied = currentPath + _defaults.accessDeniedImage;
+                    var notFound = currentPath + _defaults.notFoundImage;
+                    Q($.ajax({
+                        url: source,
+                        cache: true,
+                        xhrFields: {
+                            responseType: 'blob'
+                        }
+    //                    beforeSend: function (jqXHR, settings) {
+    //                        var self = this;
+    //                        var xhr = settings.xhr;
+    //                        settings.xhr = function () {
+    //                            var output = xhr();
+    //                            output.onreadystatechange = function () {
+    //                                if (typeof(self.readyStateChanged) == "function") {
+    //                                    self.readyStateChanged(this);
+    //                                }
+    //                            };
+    //                            return output;
+    //                        };
+    //                    },
+    //                     readyStateChanged: function(xhr) {
+    //                        if(xhr.readyState == 2) {
+    //                            if(xhr.status < 400) {
+    //                                xhr.responseType = "blob";
+    //                            } else {
+    //                                xhr.responseType = "text/plain";
+    //                            }
+    //                        }
+    //                    }
+                    }))
+                    .then(function(blob) {
+                        var url = window.URL || window.webkitURL;
+                        element.src = url.createObjectURL(blob);
+                    })
+                    .catch(function(error) {
+                        var status = error.status;
+                            switch(status) {
+                                case 403:
+                                    element.src = accessDenied;
+                                    break;
+                                case 404:
+                                    element.src = notFound;
+                                    break;
+                                default:
+                            }
+                        });                    
+                }
+            });
+        }
+        
         // handle browser bugs
         switch ( _defaults.browser ) {
             case 'Chrome':
                 /* BROKEN IMAGES */
-                $( 'img' ).error( function() {
+                $( 'img' ).on("error", function() {
                     $( this ).addClass( 'broken' );
                 } );
                 break;
             case 'Firefox':
                 /* BROKEN IMAGES */
-                $( "img" ).error( function() {
+                $( "img" ).on("error", function() {
                     $( this ).hide();
                 } );
                 /* 1px BUG */
@@ -387,19 +451,19 @@
                 /* SET IE CLASS TO HTML */
                 $( 'html' ).addClass( 'is-IE' );
                 /* BROKEN IMAGES */
-                $( "img" ).error( function() {
+                $( "img" ).on("error", function() {
                     $( this ).hide();
                 } );
                 break;
             case 'Edge':
                 /* BROKEN IMAGES */
-                $( "img" ).error( function() {
+                $( "img" ).on("error", function() {
                     $( this ).hide();
                 } );
                 break;
             case 'Safari':
                 /* BROKEN IMAGES */
-                $( "img" ).error( function() {
+                $( "img" ).on("error", function() {
                     $( this ).hide();
                 } );
                 break;

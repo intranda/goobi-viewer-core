@@ -325,7 +325,7 @@
 										<figure class="search-list__hit-thumbnail">
 											<!-- SINGLEVOLUME -->
 											<h:outputLink value="#{navigationHelper.applicationUrl}#{hit.browseElement.url}" rendered="#{hit.browseElement.thumbnailUrl != null and !hit.browseElement.anchor}" title="#{hit.browseElement.label}">
-												<img src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" />
+												<img data-src="#{hit.browseElement.thumbnailUrl}" alt="#{hit.browseElement.label}" class="thumbnail" />
 											</h:outputLink>
 
 											<!-- MULTIVOLUME -->

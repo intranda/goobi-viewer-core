@@ -87,8 +87,9 @@
                                                     <div class="col-xs-6 col-sm-2 col-md-1">
                                                         <!-- MV IMAGE -->
                                                         <div class="toc__mv-element-img text-center">
+                                                            
                                                             <h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
-                                                                <img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}" />
+                                                                <img data-src="#{tocElement.thumbnailUrl}" class="img-responsive thumbnail" alt="#{tocElement.label}" />
                                                             </h:outputLink>
                                                         </div>
                                                     </div>
@@ -131,7 +132,7 @@
     													<!-- MV IMAGE -->
     													<div class="toc__mv-element-img text-center">
     														<h:outputLink rendered="#{tocElement.thumbnailUrl != null and configurationBean.showThumbnailsInToc()}" value="#{tocElement.url}">
-    															<img src="#{tocElement.thumbnailUrl}" class="img-responsive" alt="#{tocElement.label}" />
+    															<img data-src="#{tocElement.thumbnailUrl}" class="img-responsive thumbnail" alt="#{tocElement.label}" />
     														</h:outputLink>
     													</div>
     												</div>
