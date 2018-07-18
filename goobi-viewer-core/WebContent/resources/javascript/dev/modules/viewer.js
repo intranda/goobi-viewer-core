@@ -438,10 +438,6 @@
                 } );
                 break;
             case 'Firefox':
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 /* 1px BUG */
                 if ( $( '.image-doublePageView' ).length > 0 ) {
                     $( '.image-doublePageView' ).addClass( 'oneUp' );
@@ -450,22 +446,10 @@
             case 'IE':
                 /* SET IE CLASS TO HTML */
                 $( 'html' ).addClass( 'is-IE' );
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 break;
             case 'Edge':
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 break;
             case 'Safari':
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 break;
         }
     };
@@ -5826,6 +5810,16 @@ var viewerJS = ( function( viewer ) {
             // focus save search modal input on show
             $( _defaults.saveSearchModalSelector ).on( 'shown.bs.modal', function() {
                 $( _defaults.saveSearchInputSelector ).focus();
+            } );
+            
+            // set focus class if searchfield is focused
+            $( '#currentSearchInput' ).on( {
+            	focus: function() {
+            		$( this ).prev().addClass( 'focus' );
+            	},
+            	blur: function() {
+            		$( this ).prev().removeClass( 'focus' );
+            	},
             } );
             
             // reset current search and redirect to standard search

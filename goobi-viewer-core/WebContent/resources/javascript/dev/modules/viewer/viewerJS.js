@@ -435,10 +435,6 @@ var viewerJS = ( function() {
                 } );
                 break;
             case 'Firefox':
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 /* 1px BUG */
                 if ( $( '.image-doublePageView' ).length > 0 ) {
                     $( '.image-doublePageView' ).addClass( 'oneUp' );
@@ -447,22 +443,10 @@ var viewerJS = ( function() {
             case 'IE':
                 /* SET IE CLASS TO HTML */
                 $( 'html' ).addClass( 'is-IE' );
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 break;
             case 'Edge':
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 break;
             case 'Safari':
-                /* BROKEN IMAGES */
-                $( "img" ).on("error", function() {
-                    $( this ).hide();
-                } );
                 break;
         }
     };

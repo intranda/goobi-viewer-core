@@ -72,6 +72,16 @@ var viewerJS = ( function( viewer ) {
                 $( _defaults.saveSearchInputSelector ).focus();
             } );
             
+            // set focus class if searchfield is focused
+            $( '#currentSearchInput' ).on( {
+            	focus: function() {
+            		$( this ).prev().addClass( 'focus' );
+            	},
+            	blur: function() {
+            		$( this ).prev().removeClass( 'focus' );
+            	},
+            } );
+            
             // reset current search and redirect to standard search
             $( _defaults.resetSearchSelector ).on( 'click', function() {
                 $( _defaults.searchInputSelector ).val( '' );
