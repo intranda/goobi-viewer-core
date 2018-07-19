@@ -2935,11 +2935,6 @@ input[id*="cmdMoveTo"] {
   cursor: not-allowed;
   opacity: 0.25;
 }
-.normdataLink.disabled i,
-.normdataDetailLink.disabled i,
-.sortPopovers.disabled i {
-  display: none;
-}
 .sortPopovers {
   display: none;
 }
