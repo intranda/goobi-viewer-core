@@ -25,7 +25,8 @@
     "karma-jasmine": "*",
     "karma-jasmine-jquery": "*",
     "karma-phantomjs-launcher": "*",
-    "karma-chrome-launcher": "*"    
+    "karma-chrome-launcher": "*",
+    "karma-mocha-reporter": "*"
   },
   "scripts": {
     "docs": "jsdoc -c jsdoc.conf",

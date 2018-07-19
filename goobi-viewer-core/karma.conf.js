@@ -9,7 +9,7 @@ module.exports = function(config) {
 
       // plugins starting with karma- are autoloaded
       //plugins: ['karma-chrome-launcher', 'karma-jasmine', 'karma-jasmine-jquery'],
-      plugins: ['karma-chrome-launcher', 'karma-jasmine'],
+      plugins: ['karma-chrome-launcher', 'karma-jasmine', 'karma-mocha-reporter'],
 
       // frameworks to use
       // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -43,15 +43,15 @@ module.exports = function(config) {
 	      'dev/modules/cms/cmsJS.tagList.js',
 	      'dev/modules/cms/cmsJS.stackedCollection.js',
 
-//	      'tests/spec/cms.tagList-spec.js',
+	      'tests/spec/cms.tagList-spec.js',
 	      'tests/spec/cms.stackedCollection-spec.js',
 	      'tests/spec/openseadragon-specs.js',
 	      'tests/spec/statistics-specs.js',
-	      'tests/spec/viewerHelper-spec.js'
-//	      'tests/spec/viewImage-spec.js',
-//	      'tests/spec/viewImage.controls-spec.js',
-//	      'tests/spec/viewImage.controls.persistence-spec.js',
-//	      'tests/spec/viewImage.tileSourceResolver-spec.js'
+	      'tests/spec/viewerHelper-spec.js',
+	      'tests/spec/viewImage-spec.js',
+	      'tests/spec/viewImage.controls-spec.js',
+	      'tests/spec/viewImage.controls.persistence-spec.js',
+	      'tests/spec/viewImage.tileSourceResolver-spec.js'
       ],
 
       // list of files to exclude
@@ -66,7 +66,7 @@ module.exports = function(config) {
       // test results reporter to use
       // possible values: 'dots', 'progress'
       // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-      reporters: ['progress'],
+      reporters: ['mocha'],
 
       // web server port
       port: 9876,
@@ -83,7 +83,7 @@ module.exports = function(config) {
 
       // start these browsers
       // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-      browsers: ['Chrome', 'ChromeCanary', 'Firefox', 'Opera', 'IE'],
+      browsers: ['Chrome'],
 
       // e.g see https://swizec.com/blog/how-to-run-javascript-tests-in-chrome-on-travis/swizec/6647
       customLaunchers: {

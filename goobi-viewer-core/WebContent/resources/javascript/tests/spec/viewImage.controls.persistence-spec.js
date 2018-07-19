@@ -10,7 +10,8 @@ describe( 'ImageView zoom/rotation persistence Tests', function() {
 	
 	beforeEach( function(){
 		
-		jasmine.getFixtures().load("viewImage.html");
+		$('<span id="test"><style> #map { width: 800px; }</style><form id="tagListForm"><div id="map"></div></form></span>').appendTo('body');
+//		jasmine.getFixtures().load("viewImage.html");
 		localStorage.imageLocation = "";
 //		viewImage.getConfig().image.location = null;
 		config = {
@@ -40,6 +41,11 @@ describe( 'ImageView zoom/rotation persistence Tests', function() {
 				    }
 				};
 	});
+
+	afterEach(function(){
+		$('#test').remove()
+	});
+
 
 		it(" zooms and rotates the image using config settings", function(done) {
 			

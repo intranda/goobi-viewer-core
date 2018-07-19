@@ -3,15 +3,19 @@ describe("Cms.tagList ", function() {
 	var config;
 	
 	beforeEach( function(){
-		
-		jasmine.getFixtures().load("tagList.html");
+		$('<p id="hello" /><form id="tagListForm"><input type="text" id="inputField"></input><input type="text" id="inputFieldWithTags" value=\'["tag1","tag2","tag3"]\'></input><ul id="tagList"></ul><div id="targetDiv"></div></form>').appendTo('body');
+
 		 config = {
 					inputFieldId: "inputField",
 					tagListId: "tagList",
 					autoSuggestUrl: "/http:viewer/rest/contentAssist/mediaTags/",
 			}
 	})
-	
+
+	afterEach(function(){
+		$('#tagListForm').remove()
+	});
+
 	it("is defined ", function() {
 		expect(cmsJS.tagList).toBeDefined();
 	})

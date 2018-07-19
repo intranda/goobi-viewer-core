@@ -7,7 +7,6 @@
  */
 describe( 'ImageView Controls Tests', function() {
     beforeEach( function() {
-        jasmine.getFixtures().load( 'fullScreenTest.html' );
         var body = $("body");
         body.attr("id", "fullscreenTemplate");
     } );
