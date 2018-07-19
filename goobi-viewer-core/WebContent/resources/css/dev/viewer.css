@@ -4597,9 +4597,14 @@ div[id*="-Modal"] .email-form .form-group {
   text-align: right;
 }
 .search-list__hit-thumbnail img {
+  display: inline;
+  padding: 0;
+  margin: 0;
   width: 100%;
   max-width: 80px;
+  line-height: normal;
   border: 2px solid #fff;
+  border-radius: 0;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 .search-list__hit-thumbnail [data-link="related-page"] {
