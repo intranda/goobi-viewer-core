@@ -9,7 +9,7 @@ module.exports = function(config) {
 
       // plugins starting with karma- are autoloaded
       //plugins: ['karma-chrome-launcher', 'karma-jasmine', 'karma-jasmine-jquery'],
-      plugins: ['karma-chrome-launcher', 'karma-jasmine', 'karma-mocha-reporter'],
+      plugins: ['karma-chrome-launcher', 'karma-firefox-launcher', 'karma-jasmine', 'karma-mocha-reporter'],
 
       // frameworks to use
       // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -83,7 +83,7 @@ module.exports = function(config) {
 
       // start these browsers
       // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-      browsers: ['Chrome'],
+      browsers: ['Chrome', 'Firefox'],
 
       // e.g see https://swizec.com/blog/how-to-run-javascript-tests-in-chrome-on-travis/swizec/6647
       customLaunchers: {
