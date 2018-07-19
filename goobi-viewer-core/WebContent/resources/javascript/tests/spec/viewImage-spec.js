@@ -39,25 +39,23 @@ describe("imageView tests", function() {
 		$('#test').remove()
 	});
 
-//	describe("Open image ", function() {
-//		it("opens an image from a static image url ", function(done) {
-//			
-//			config.image.tileSource = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
-//			
-//			 var viewImage = new ImageView.Image( config )
-//			 viewImage.load()
-//			    .then(function(osViewer) {
-//			       expect(osViewer.viewer).toExist();
-//			       expect(osViewer.viewer.viewport._contentSize.x).toBeGreaterThan(0);
-//			       done();
-//			    })
-//			    .catch(function(error){
-//			    	console.log(error);
-//			        done.fail("Faile loading image: " + error.message);
-//			    })
-//			
-//			
-//		})
-//	})
+	describe("Open image ", function() {
+		it("opens an image from a static image url ", function(done) {
+
+			config.image.tileSource = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
+
+			 var viewImage = new ImageView.Image( config )
+			 viewImage.load()
+			    .then(function(osViewer) {
+			       // expect(osViewer.viewer).toExist();
+			       expect(osViewer.viewer.viewport._contentSize.x).toBeGreaterThan(0);
+			       done();
+			    })
+			    .catch(function(error){
+				console.log(error);
+			        done.fail("Faile loading image: " + error.message);
+			    })
+		})
+	})
 	
 })
