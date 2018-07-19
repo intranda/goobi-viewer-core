@@ -4,7 +4,7 @@
 
 describe( "ImageView.TileSourceResolver Tests ", function() {
 
-    var iiifInfoURI = "http://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/info.json";
+    var iiifInfoURI = "https://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/info.json";
     var iiifImageURI = "https://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/full/full/0/native.jpg";
     var simpleImageURI = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
     var iiifInfoObject = {
