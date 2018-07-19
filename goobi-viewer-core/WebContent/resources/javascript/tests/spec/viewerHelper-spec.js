@@ -18,7 +18,7 @@ describe( 'ViewerJS Helper Tests', function() {
     
     describe( 'ViewerJS Helper: getRemoteData', function() {
         it( 'should take an URL and return an object.', function( done ) {
-            var url = 'http://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/info.json';
+            var url = 'https://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/info.json';
             
             viewerJS.helper.getRemoteData( url ).then( function( json ) {
                 expect( json ).toEqual( jasmine.any( Object ) );
