@@ -24,6 +24,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import de.intranda.digiverso.presentation.controller.Configuration;
 import de.intranda.digiverso.presentation.controller.DataManager;
 import de.intranda.digiverso.presentation.dao.impl.H2JdbcDatabaseTester;
 import de.intranda.digiverso.presentation.dao.impl.JPADAO;
@@ -41,6 +42,7 @@ public abstract class AbstractDatabaseEnabledTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration("resources/test/config_viewer.test.xml"));
         DataManager.getInstance().injectDao(new JPADAO("intranda_viewer_test"));
         databaseTester = new H2JdbcDatabaseTester();
         databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(new FileInputStream(
