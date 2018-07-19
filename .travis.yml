@@ -8,10 +8,15 @@ sudo: required
 before_install:
   - sudo apt-get -y install npm
   - npm --prefix goobi-viewer-core/ install
+  - export DISPLAY=:99.0
+  - export CHROME_BIN=chromium-browser
+  - sh -e /etc/init.d/xvfb start
 
 script:
-  - cd goobi-viewer-core; ant war-internal junit-simple javadoc
+  - cd goobi-viewer-core
+  - ant war-internal junit-simple javadoc
   - npm run docs
+  - npm run jasmine-tests
 
 deploy:
   provider: pages

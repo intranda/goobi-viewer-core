@@ -17,9 +17,18 @@
     "grunt-jsdoc": "^2.2.0",
     "ink-docstrap": "^1.3.2",
     "jsdoc": "^3.5.5",
-    "less-plugin-autoprefix": "^1.5.1"
+    "less-plugin-autoprefix": "^1.5.1",
+    "jasmine-core": "*",
+    "jasmine-jquery": "*",
+    "karma": "*",
+    "karma-cli": "*",
+    "karma-jasmine": "*",
+    "karma-jasmine-jquery": "*",
+    "karma-phantomjs-launcher": "*",
+    "karma-chrome-launcher": "*"    
   },
   "scripts": {
-    "docs": "jsdoc -c jsdoc.conf"
+    "docs": "jsdoc -c jsdoc.conf",
+    "jasmine-tests": "karma start karma.conf.js --single-run"
   }
 }
