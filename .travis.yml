@@ -5,6 +5,12 @@ jdk:
 
 sudo: required
 
+env:
+  - MOD_HEADLESS=1
+
+addons:
+  firefox: latest
+
 before_install:
   - sudo apt-get -y install npm
   - npm --prefix goobi-viewer-core/ install
