@@ -7,7 +7,7 @@ module.exports = function(config) {
       basePath: 'WebContent/resources/javascript/',
 
       // plugins starting with karma- are autoloaded
-      plugins: ['karma-chrome-launcher', 'karma-firefox-launcher', 'karma-jasmine', 'karma-mocha-reporter'],
+      plugins: ['karma-chrome-launcher', 'karma-firefox-launcher', 'karma-jasmine', 'karma-mocha-reporter', 'karma-htmlfile-reporter'],
 
       // frameworks to use
       // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -63,7 +63,17 @@ module.exports = function(config) {
       // test results reporter to use
       // possible values: 'dots', 'progress'
       // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-      reporters: ['mocha'],
+      reporters: ['mocha', 'html'],
+
+    htmlReporter: {
+          outputFile: '../../../test-reports-karma/index.html',
+            
+      pageTitle: 'Goobi viewer Core',
+      subPageTitle: 'Javascript Unit tests written in Jasmine',
+groupSuites: true,
+	  useCompactStyle: true,
+      useLegacyStyle: true
+    },
 
       // web server port
       port: 9876,
