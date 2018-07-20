@@ -4,21 +4,17 @@
 
 describe( "ImageView.TileSourceResolver Tests ", function() {
 
-    var iiifInfoURI = "https://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/info.json";
-    var iiifImageURI = "https://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2/full/full/0/native.jpg";
-    var simpleImageURI = "http://www.intranda.com/wp-content/uploads/2014/01/banner_digitisation_small.jpg";
+    var iiifInfoURI = "https://viewer-demo01.intranda.com/viewer/rest/image/-/file:U002FU002FU002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Fiiif-test.png/info.json";
+    var iiifImageURI = "https://viewer-demo01.intranda.com/viewer/rest/image/-/file:U002FU002FU002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Fiiif-test.png/full/max/0/default.jpg";
+    var simpleImageURI = "https://viewer-demo01.intranda.com/viewer/resources/images/multivolume_thumbnail.jpg";
     var iiifInfoObject = {
-        "profile": "http://library.stanford.edu/iiif/image-api/1.1/compliance.html#level2",
-        "scale_factors": [ 1, 2, 4, 8, 16, 32 ],
-        "tile_height": 1024,
-        "height": 7200,
-        "width": 5233,
-        "tile_width": 1024,
-        "qualities": [ "native", "bitonal", "grey", "color" ],
-        "formats": [ "jpg", "png", "gif" ],
-        "@context": "http://library.stanford.edu/iiif/image-api/1.1/context.json",
-        "@id": "https://libimages.princeton.edu/loris/pudl0001%2F4609321%2Fs42%2F00000001.jp2"
-    };
+            "@context": "http://iiif.io/api/image/2/context.json",
+            "@id": "https://viewer-demo01.intranda.com:443/viewer/rest/image/-/file%3AU002FU002FU002FoptU002FdigiversoU002FviewerU002Fcms_mediaU002Fiiif-test.png",
+            "protocol": "http://iiif.io/api/image",
+            "width": 1000,
+            "height": 1000,
+            "profile": "http://iiif.io/api/image/2/level2.json"
+        };
     var iiifInfoString = JSON.stringify( iiifInfoObject );
     
     function checkJson( json ) {
