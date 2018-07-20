@@ -1,5 +1,4 @@
 // Karma configuration
-// Generated on Wed Aug 17 2016 00:01:09 GMT+0200 (Mitteleuropäische Sommerzeit)
 
 module.exports = function(config) {
     var configuration = {
@@ -8,12 +7,10 @@ module.exports = function(config) {
       basePath: 'WebContent/resources/javascript/',
 
       // plugins starting with karma- are autoloaded
-      //plugins: ['karma-chrome-launcher', 'karma-jasmine', 'karma-jasmine-jquery'],
       plugins: ['karma-chrome-launcher', 'karma-firefox-launcher', 'karma-jasmine', 'karma-mocha-reporter'],
 
       // frameworks to use
       // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-      //frameworks: ['jasmine-jquery', 'jasmine'],
       frameworks: ['jasmine'],
 
       // list of files / patterns to load in the browser
