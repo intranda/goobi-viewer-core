@@ -167,7 +167,7 @@
 
 	<!-- Run all tests that work without special treatment -->
 	<target name="junit-simple" depends="resources,compile-tests" description="Run JUnit tests">
-		<echo>Running simple JUnit tests without database or solr...</echo>
+		<echo>Running simple JUnit tests without solr...</echo>
 		<mkdir dir="${dir.tests.report}" />
 		<junit printsummary="on" haltonerror="true" haltonfailure="true">
 			<classpath refid="test.classpath" />

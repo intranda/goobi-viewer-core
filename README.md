@@ -49,6 +49,9 @@ You can find technical documentation for backend and frontend developers here:
 - [Javadoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/javadoc/index.html)
 - [JSDoc](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/doc/jsdoc/index.html)
 
+You can find a HTML output of the latest unit test runs here:
+- [JUnit](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/test-reports-html/)
+- [Jasmine](https://intranda.github.io/goobi-viewer-core/goobi-viewer-core/test-reports-karma/)
 
 ## Technical background
 

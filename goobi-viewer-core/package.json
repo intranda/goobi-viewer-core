@@ -27,7 +27,8 @@
     "karma-phantomjs-launcher": "*",
     "karma-chrome-launcher": "*",
     "karma-firefox-launcher": "*",
-    "karma-mocha-reporter": "*"
+    "karma-mocha-reporter": "*",
+    "karma-htmlfile-reporter": "*"
   },
   "scripts": {
     "docs": "jsdoc -c jsdoc.conf",
