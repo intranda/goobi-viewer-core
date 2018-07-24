@@ -120,7 +120,7 @@ public class CmsBean implements Serializable {
     @PostConstruct
     public void init() {
         if (lazyModelPages == null) {
-            lazyModelPages = new PersistentTableDataProvider<>(new TableDataSource<CMSPage>() {
+            lazyModelPages = new TableDataProvider<>(new TableDataSource<CMSPage>() {
 
                 private Optional<Long> numCreatedPages = Optional.empty();
 
@@ -454,8 +454,8 @@ public class CmsBean implements Serializable {
      * @throws DAOException
      */
     public CMSPage getCMSPage(Long pageId) throws DAOException {
-        //        Optional<CMSPage> page = DataManager.getInstance().getDao().getCMSPage(pageId);
-        Optional<CMSPage> page = getAllCMSPages().stream().filter(p -> p.getId().equals(pageId)).findFirst();
+          Optional<CMSPage> page = Optional.ofNullable(DataManager.getInstance().getDao().getCMSPage(pageId));
+//        Optional<CMSPage> page = getAllCMSPages().stream().filter(p -> p.getId().equals(pageId)).findFirst();
         if (page.isPresent()) {
             PageValidityStatus validityStatus = isPageValid(page.get());
             page.get().setValidityStatus(validityStatus);

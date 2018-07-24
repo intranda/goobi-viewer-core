@@ -2275,10 +2275,7 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = factory.createEntityManager();
         try {
-            CMSPage o = em.getReference(CMSPage.class, id);
-            if (o != null) {
-                updateCMSPageFromDatabase(o.getId());
-            }
+            CMSPage o = em.find(CMSPage.class, id);
             return o;
         } catch (EntityNotFoundException e) {
             return null;
