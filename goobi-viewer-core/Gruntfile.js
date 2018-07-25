@@ -58,7 +58,8 @@ module.exports = function(grunt) {
 						})
 					],
 					compress : true,
-					sourceMap : true
+					sourceMap : true,
+					outputSourceFiles: true,
 				},
 				files : {
 					'<%=src.cssDistFolder %><%=theme.name%>.min.css' : '<%=src.lessDevFolder%>constructor.less'
@@ -70,7 +71,8 @@ module.exports = function(grunt) {
 				banner : banner,
 				separator : '\n',
 				stripBanners : true,
-				sourceMap : true
+				sourceMap : true,
+				outputSourceFiles: true,
 			},
 			distViewer : {
 				src : [
@@ -104,7 +106,8 @@ module.exports = function(grunt) {
 				mangle : true,
 				compress : true,
 				beautify : false,
-				sourceMap : true
+				sourceMap : true,
+				outputSourceFiles: true,
 			},
 			uglifyViewer : {
 				files : {
