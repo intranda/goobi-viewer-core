@@ -26,6 +26,18 @@ public class CMSSidebarElementWithSearch extends CMSSidebarElement {
     @Column(name = "additional_query")
     private String additionalQuery = "";
 
+    public CMSSidebarElementWithSearch() {
+        
+    }
+    
+    /**
+     * @param original
+     */
+    public CMSSidebarElementWithSearch(CMSSidebarElementWithSearch original, CMSPage owner) {
+        super(original, owner);
+        this.additionalQuery = original.additionalQuery;
+    }
+
     /**
      * @return the additionalQuery
      */

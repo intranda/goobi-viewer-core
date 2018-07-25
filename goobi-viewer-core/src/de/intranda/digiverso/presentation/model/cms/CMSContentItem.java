@@ -263,7 +263,10 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      * 
      * @param blueprint
      */
-    public CMSContentItem(CMSContentItem blueprint) {
+    public CMSContentItem(CMSContentItem blueprint, CMSPageLanguageVersion owner) {
+        if(blueprint.id != null) {            
+            this.id = blueprint.id;
+        }
         this.setItemId(blueprint.itemId);
         this.setItemLabel(blueprint.itemLabel);
         this.setType(blueprint.type);
@@ -278,6 +281,16 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
         this.setBaseCollection(blueprint.getBaseCollection());
         this.setMediaItem(blueprint.getMediaItem());
         this.setPageClassification(blueprint.getPageClassification());
+        this.setComponent(blueprint.component);
+        this.setNumberOfTiles(blueprint.numberOfTiles);
+        this.setNumberOfImportantTiles(blueprint.numberOfImportantTiles);
+        this.allowedTags = blueprint.allowedTags;
+        this.glossaryName = blueprint.glossaryName;
+        this.searchPrefix = blueprint.searchPrefix;
+        this.tocPI = blueprint.tocPI;
+        this.collectionDisplayParents = blueprint.collectionDisplayParents;
+        this.ownerPageLanguageVersion = owner;
+        
     }
 
     /**
@@ -327,7 +340,7 @@ public class CMSContentItem implements Comparable<CMSContentItem> {
      */
     @Override
     public CMSContentItem clone() {
-        CMSContentItem clone = new CMSContentItem(this);
+        CMSContentItem clone = new CMSContentItem(this, null);
         return clone;
     }
 

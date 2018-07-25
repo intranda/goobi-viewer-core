@@ -35,6 +35,21 @@ public class CMSSidebarElementWithQuery extends CMSSidebarElement {
     @Column(name = "descending_order")
     private boolean descendingOrder = false;
 
+    public CMSSidebarElementWithQuery() {
+        
+    }
+    
+    /**
+     * @param original
+     */
+    public CMSSidebarElementWithQuery(CMSSidebarElementWithQuery original, CMSPage owner) {
+        super(original, owner);
+        this.searchField = original.searchField;
+        this.resultDisplayLimit = original.resultDisplayLimit;
+        this.additionalQuery = original.additionalQuery;
+        this.descendingOrder = original.descendingOrder;
+    }
+
     /**
      * @return the searchField
      */

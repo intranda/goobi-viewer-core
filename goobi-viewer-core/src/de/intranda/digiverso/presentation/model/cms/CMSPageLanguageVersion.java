@@ -84,7 +84,34 @@ public class CMSPageLanguageVersion {
 	@Transient
 	private List<CMSContentItem> completeContentItemList = null;
 
+	public CMSPageLanguageVersion() {
+	    
+	}
+	
 	/**
+     * @param language2
+     * @param cmsPage
+     */
+    public CMSPageLanguageVersion(CMSPageLanguageVersion original, CMSPage ownerPage) {
+        if(original.id != null) {            
+            this.id = new Long(original.id);
+        }
+        this.ownerPage = ownerPage;
+        this.language = original.language;
+        this.status = original.status;
+        this.title = original.title;
+        this.menuTitle = original.menuTitle;
+        
+        if(original.contentItems != null) {     
+            this.contentItems = new ArrayList<>();
+            for (CMSContentItem item : original.contentItems) {
+                CMSContentItem copy = new CMSContentItem(item, this);
+                this.contentItems.add(copy);
+            }
+        }
+    }
+
+    /**
 	 * @return the id
 	 */
 	public Long getId() {
